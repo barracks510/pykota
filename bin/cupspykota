@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2004/02/04 23:41:27  jalet
+# Should fix the incorrect "backend died abnormally" problem.
+#
 # Revision 1.26  2004/01/30 16:35:03  jalet
 # Fixes stupid software accounting bug in CUPS backend
 #
@@ -380,6 +383,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         self.logdebug("Exiting streams polling loop...")
             
         # Check exit code of original CUPS backend.    
+        if status == -1 :
+            # we exited the loop before the real backend exited
+            # now we have to wait for it to finish and get its status
+            status = subprocess.wait()
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
         elif not killed :    
