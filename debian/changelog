@@ -1,20 +1,39 @@
+pykota (1.20alpha24) unstable; urgency=low
+
+  * Update from CVS. 
+
+ -- Sergio González González <sergio.gonzalez@hispalinux.es>  Wed, 13 Oct 2004 01:29:44 +0200
+
+pykota (1.20alpha23) unstable; urgency=low
+
+  * Update from CVS.
+  * Added debconf support.
+  * Slightly reorganized the directory debian.
+  * Move pykota.schema to /etc/ldap/schema.
+  * Modified a bit the script setup.py to improve the build process of Debian
+    package.
+  * Add python-psyco as Recommends
+  * Add jaxml and python-osd as Depends
+
+ -- Sergio González González <sergio.gonzalez@hispalinux.es>  Mon, 11 Oct 2004 11:59:15 +0200
+
 pykota (1.19) unstable; urgency=low
 
-  * Update from CVS
+  * Update from CVS.
   
  -- Jerome Alet <alet@librelogiciel.com>  Wed,  28 Jul 2004 15:59:03 +0100
  
 pykota (1.19alpha29) unstable; urgency=low
 
-  * Update from CVS 
+  * Update from CVS.
 
- -- Sergio Gonz'alez Gonz'alez <sergio@hispalinux.es>  Mon,  5 Jul 2004 15:59:03 +0100
+ -- Sergio González González <sergio.gonzalez@hispalinux.es>  Mon,  5 Jul 2004 15:59:03 +0100
 
 pykota (1.19alpha20.cvs.20040611-1) unstable; urgency=low
 
-  * Update from CVS
+  * Update from CVS.
 
- -- Sergio Gonz'alez Gonz'alez <sergio.gonzalez@hispalinux.es>  Fri, 11 Jun 2004 17:10:04 +0100
+ -- Sergio González González <sergio.gonzalez@hispalinux.es>  Fri, 11 Jun 2004 17:10:04 +0100
 
 pykota (1.16.cvs.20040119-1) unstable; urgency=low
 

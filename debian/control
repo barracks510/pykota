@@ -7,8 +7,8 @@ Standards-Version: 3.6.1
 
 Package: pykota
 Architecture: all
-Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys | lprng, python-pygresql | python-ldap, libapache-mod-python
-Recommends: snmp, netatalk
+Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys | lprng, python-pygresql | python-ldap, libapache-mod-python, jaxml, python-osd
+Recommends: snmp, netatalk, python-psyco
 Description: Print Quota/Accounting system for CUPS and LPRng
  PyKota is a complete GPLed Print Quota and Accounting Software Solution
  for the Common UNIX Printing System (aka CUPS) and LPR Next Generation
