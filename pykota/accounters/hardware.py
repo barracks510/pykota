@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2004/11/19 10:35:37  jalet
+# Catches TypeMismatchError in SNMP answer handling code
+#
 # Revision 1.32  2004/11/16 23:23:40  jalet
 # Fixed internal PJL handling wrt the 35078 PowerSave mode.
 #
@@ -144,6 +147,7 @@ ITERATIONDELAY = 1.0   # 1 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
 
 try :
+    from pysnmp.asn1.encoding.ber.error import TypeMismatchError
     from pysnmp.mapping.udp.error import SnmpOverUdpError
     from pysnmp.mapping.udp.role import Manager
     from pysnmp.proto.api import alpha
@@ -177,7 +181,7 @@ else :
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
-            except SnmpOverUdpError, msg :    
+            except (TypeMismatchError, SnmpOverUdpError), msg :    
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
             tsp.close()
     
