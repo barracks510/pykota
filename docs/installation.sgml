@@ -674,7 +674,7 @@ $ /etc/init.d/cupsys restart
         the three following lines :
         
 <screen>        
-  :ac=true:\
+  :achk=true:\
   :as=/usr/share/pykota/lprngpykota:\
   :ae=/usr/share/pykota/lprngpykota:\
 </screen>          
@@ -724,6 +724,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.27  2004/07/21 09:39:03  jalet
+LPRng documentation
+
 Revision 1.26  2004/07/16 12:22:46  jalet
 LPRng support early version
 

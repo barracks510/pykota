@@ -414,7 +414,7 @@ The rest of the installation depends on your printing system :
         Modify the printer's entry in /etc/printcap : you have to add
         the three following lines :
         
-          :ac=true:\
+          :achk=true:\
           :as=/usr/share/pykota/lprngpykota:\
           :ae=/usr/share/pykota/lprngpykota:\
           
