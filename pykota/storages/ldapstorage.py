@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.79  2004/10/03 19:52:59  jalet
+# More work done on LDAP and dumpykota
+#
 # Revision 1.78  2004/10/02 05:48:56  jalet
 # Should now correctly deal with charsets both when storing into databases and when
 # retrieving datas. Works with both PostgreSQL and LDAP.
@@ -1324,12 +1327,16 @@ class Storage(BaseStorage) :
         """Extracts all userpquota records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
+            for entry in entries :
+                userpquotas = [ upq for (u, upq) in self.getPrinterUsersAndQuotas(entry) ]
             pass    
         
     def extractGpquotas(self) :
         """Extracts all grouppquota records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
+            for entry in entries :
+                grouppquotas = [ gpq for (g, gpq) in self.getPrinterGroupsAndQuotas(entry) ]
             pass
         
     def extractUmembers(self) :
