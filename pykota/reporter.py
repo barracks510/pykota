@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2005/02/15 13:13:27  jalet
+# Fixes output when user has got a negative or nul overcharging factor.
+#
 # Revision 1.11  2005/02/13 22:02:29  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -126,7 +129,16 @@ class BaseReporter :
         
         #balance
         if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
-            if balance <= 0 :
+            if balance == 0.0 :
+                if entry.OverCharge > 0 :
+                    datelimit = "DENY"
+                    reached = "+B"
+                else :    
+                    # overcharging by a negative or nul factor means user is always allowed to print
+                    # TODO : do something when printer prices are negative as well !
+                    datelimit = ""
+                    reached = "-B"
+            elif balance < 0 :
                 datelimit = "DENY"
                 reached = "+B"
             elif balance <= self.tool.config.getPoorMan() :
