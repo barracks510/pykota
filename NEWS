@@ -21,9 +21,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha13 :
+    
+        - Pre and Post hooks are now available in the pykota
+          filter as well.
+          
+        - The pykota filter doesn't check last user's quota
+          anymore : this will be done anyway the next time
+          the last user will print again. 
+        
     - 1.18alpha12 :
     
-        - pre and post hooks to external commands with many 
+        - Pre and Post hooks to external commands with many 
           many environment variables available are useable 
           from the cupspykota backend.
           See sample configuration file for details and help.

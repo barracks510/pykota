@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2004/03/01 15:06:51  jalet
+# Pre and Post hooks should now work in the pykota filter too.
+# The pykota filter doesn't check the last user's quota anymore
+# when delayed hardware accounting is used : this will be checked
+# anyway the next time the last user will print
+#
 # Revision 1.53  2004/02/25 12:36:34  jalet
 # Avoids a database query even if caching was disabled.
 #
@@ -249,8 +255,20 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         # OK means : Both printer, user and user print quota exist, job should
         #            be allowed if current user is allowed to print on this printer
         if policy == "OK" :
+            # exports user information with initial values
+            self.exportUserInfo(userpquota)
+            
+            # enters first phase
+            os.putenv("PYKOTAPHASE", "BEFORE")
+            
             self.logdebug("Does accounting for user %s on printer %s." % (user.Name, printer.Name))
             action = self.accounter.doAccounting(userpquota)
+            
+            # exports some new environment variables
+            os.putenv("PYKOTAACTION", action)
+            
+            # launches the pre hook
+            self.prehook(userpquota)
         else :        
             action = "ALLOW"
             
@@ -301,10 +319,26 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                     self.accounter.counterafter = self.accounter.getPrinterInternalPageCounter() or 0
                     lastjobsize = self.accounter.getJobSize()
                     self.logdebug("Last Job size : %i" % lastjobsize)
-                    printer.LastJob.setSize(lastuserpquota, lastjobsize)
+                    lastjobprice = printer.LastJob.setSize(lastuserpquota, lastjobsize)
                     self.logdebug("Updating user %s's quota on printer %s" % (lastuserpquota.User.Name, printer.Name))
                     lastuserpquota.increasePagesUsage(lastjobsize)
-                    self.warnUserPQuota(lastuserpquota)
+                    
+                    # exports user information with final values
+                    self.exportUserInfo(lastuserpquota)
+                    
+                    # enters final phase
+                    os.putenv("PYKOTAPHASE", "AFTER")
+                    os.putenv("PYKOTAACTION", printer.LastJob.JobAction)
+                    os.putenv("PYKOTAJOBSIZE", str(lastjobsize))
+                    os.putenv("PYKOTAJOBPRICE", str(lastjobprice))
+                    
+                    # launches the post hook
+                    self.posthook(lastuserpquota)
+                    
+                    # Code below deactivated since this will be checked
+                    # anyway the next time this user prints 
+                    # finally check last user's quota
+                    # self.warnUserPQuota(lastuserpquota)
                     
         # then deal with current print job as usual            
         return PyKotaFilterOrBackend.mainWork(self)        

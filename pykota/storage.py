@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2004/03/01 15:06:51  jalet
+# Pre and Post hooks should now work in the pykota filter too.
+# The pykota filter doesn't check the last user's quota anymore
+# when delayed hardware accounting is used : this will be checked
+# anyway the next time the last user will print
+#
 # Revision 1.48  2004/02/27 13:50:12  jalet
 # Hopefully the final fix for groups (users and printers)
 #
@@ -473,6 +479,7 @@ class StorageLastJob(StorageJob) :
         self.parent.writeLastJobSize(self, jobsize, jobprice)
         self.JobSize = jobsize
         self.JobPrice = jobprice
+        return jobprice
         
 class BaseStorage :
     def __init__(self, pykotatool) :
