@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2004/09/24 21:19:48  jalet
+# Did a pass of PyChecker
+#
 # Revision 1.60  2004/09/24 20:21:50  jalet
 # Fixed pykotaAccountBalance object location during creation
 #
@@ -546,14 +549,13 @@ class BaseStorage :
         
     def getFromCache(self, cachetype, key) :
         """Tries to extract something from the cache."""
-        entry = None    # just to please pychecker
         if self.usecache :
             entry = self.caches[cachetype].get(key)
             if entry is not None :
                 self.tool.logdebug("Cache hit (%s->%s)" % (cachetype, key))
             else :    
                 self.tool.logdebug("Cache miss (%s->%s)" % (cachetype, key))
-        return entry    
+            return entry    
             
     def cacheEntry(self, cachetype, key, value) :        
         """Puts an entry in the cache."""

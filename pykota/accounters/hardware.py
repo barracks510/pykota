@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2004/09/24 21:19:48  jalet
+# Did a pass of PyChecker
+#
 # Revision 1.23  2004/09/23 19:18:12  jalet
 # Now loops when the external hardware accounter fails, until it returns a correct value
 #
@@ -103,7 +106,6 @@
 #
 #
 
-import sys
 import os
 import time
 import signal
@@ -151,7 +153,7 @@ else :
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries : %s") % msg, "warn")
             tsp.close()
     
-        def handleAnswer(self, wholeMsg, transportAddr, req):
+        def handleAnswer(self, wholeMsg, notusedhere, req):
             """Decodes and handles the SNMP answer."""
             ver = alpha.protoVersions[alpha.protoVersionId1]
             rsp = ver.Message()

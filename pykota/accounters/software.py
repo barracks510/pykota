@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/09/24 21:19:48  jalet
+# Did a pass of PyChecker
+#
 # Revision 1.10  2004/08/31 23:29:53  jalet
 # Introduction of the new 'onaccountererror' configuration directive.
 # Small fix for software accounter's return code which can't be None anymore.
@@ -63,7 +66,6 @@
 #
 #
 
-import sys
 import os
 import popen2
 from pykota.accounter import AccounterBase, PyKotaAccounterError

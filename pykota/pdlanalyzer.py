@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2004/09/24 21:19:48  jalet
+# Did a pass of PyChecker
+#
 # Revision 1.41  2004/09/04 14:18:55  jalet
 # Support for more laserjet models added.
 #
@@ -193,19 +196,19 @@ class PostScriptAnalyzer :
             child.tochild.flush()
             child.tochild.close()    
         except (IOError, OSError), msg :    
-            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
+            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document : %s" % msg
             
         pagecount = 0
         try :
             pagecount = int(child.fromchild.readline().strip())
-        except (IOError, OSError, AttributeError, ValueError) :
-            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
+        except (IOError, OSError, AttributeError, ValueError), msg :
+            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document : %s" % msg
         child.fromchild.close()
         
         try :
-            retcode = child.wait()
+            child.wait()
         except OSError, msg :    
-            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
+            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document : %s" % msg
         return pagecount * self.copies
         
     def natively(self) :
@@ -334,7 +337,7 @@ class PCLAnalyzer :
                      "*r" : "sbABC",
                      # "*b" : "VW", # treated specially because it occurs very often
                    }  
-        pagecount = resets = ejects = backsides = startgfx = endgfx = strangegfx = 0
+        pagecount = resets = ejects = backsides = startgfx = endgfx = 0
         starb = ispcl3 = 0
         tag = None
         copies = {}
