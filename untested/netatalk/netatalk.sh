@@ -2,8 +2,9 @@
 #
 # $Id$
 #
-# The following was found on usenet, as far as I'm concerned
-# this is completely untested.
+# The following was adapted from a post found on usenet, 
+# it works with my Apple LaserWriter 16/600 PS.
+# As always, YMMV.
 # 
-pap p <printer's nbpname> pagecount.ps
+/usr/bin/pap -p "MyPrinter:LaserWriter" pagecount.ps 2>/dev/null | grep -v status | grep -v Connect
 
