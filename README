@@ -26,6 +26,14 @@ READ SPECIAL LICENSING AND REDISTRIBUTION TERMS IN THE FILE 'LICENSE'
 PyKota features :
 -----------------
 
+    Free Software :
+    
+        - Licensed under the terms of the GNU General Public License.
+        
+    Commercially Supported :    
+    
+        - Support Contracts are available from http://www.librelogiciel.com/techsupport/
+        
     Operating systems :
     
         - Any Unix-like system as print server.
@@ -45,6 +53,9 @@ PyKota features :
           Complete LDAP schema and sample empty tree are included.
           Plugging PyKota into your existing LDAP infrastructure
           is really easy thanks to PyKota's great configurability.
+          
+        - The print jobs history can be stored in any database  
+          of your choice (or in plain text files) if needed. 
             
     Printers :        
     
@@ -107,7 +118,8 @@ PyKota features :
           account balances at specific intervals.
           
         - Administration tools can modify several users,  
-          groups, or printers at once.
+          groups, or printers at once with the use of
+          powerful wildcard characters.
           
         - Account balances can be set, incremented, or  
           decremented. History of payments is kept.
@@ -129,8 +141,8 @@ PyKota features :
           decision to any external tool.
           
         - Warning and error messages can be automatically  
-          sent via email to the administrator, the user,
-          both, or none.
+          sent via email or via any other mean to the administrator, 
+          the user, both, or none.
           
         - Warning and error messages' content is completely 
           configurable.
@@ -175,6 +187,10 @@ PyKota features :
         - Web based print quota monitor and data dumper are included.  
         
         - An On Screen Display X-Window print quota monitor is included.
+        
+        - An email gateway to allow users to retrieve their print quota
+          information by sending an email message to a dedicated address
+          is included.
         
         - A cross-platform print quota monitor will soon be available 
           as an purchaseable add-on.
