@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/02/08 22:09:52  jalet
+# Name check method moved here
+#
 # Revision 1.14  2003/02/07 10:42:45  jalet
 # Indentation problem
 #
@@ -163,6 +166,19 @@ class PyKotaTool :
             self.display_usage_and_quit()
         return (parsed, args)
     
+    def isValidName(self, name) :
+        """Checks if a user or printer name is valid."""
+        # unfortunately Python 2.1 string modules doesn't define ascii_letters...
+        asciiletters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        digits = '0123456789'
+        if name[0] in asciiletters :
+            validchars = asciiletters + digits + "-_"
+            for c in name[1:] :
+                if c not in validchars :
+                    return 0
+            return 1        
+        return 0
+        
     def sendMessage(self, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
         if "@" not in touser :
