@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2004/05/07 14:44:53  jalet
+# Fix for file handles unregistered twice from the polling object
+#
 # Revision 1.38  2004/04/09 22:24:46  jalet
 # Began work on correct handling of child processes when jobs are cancelled by
 # the user. Especially important when an external requester is running for a
@@ -279,6 +282,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
         return retcode    
                     
+    def unregisterFileNo(self, pollobj, fileno) :                
+        """Removes a file handle from the polling object."""
+        try :
+            pollobj.unregister(fileno)
+        except KeyError :    
+            self.logger.log_message(_("File number %s unregistered twice from polling object, ignored.") % fileno, "warn")
+        else :    
+            self.logdebug("File number %s unregistered from polling object." % fileno)
+            
     def handleData(self) :                    
         """Pass the job's data to the real backend."""
         # Now it becomes tricky...
@@ -368,7 +380,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 pass
                             indata = ""
                         if endinput :    
-                            pollster.unregister(tocfno)        
+                            self.unregisterFileNo(pollster, tocfno)        
                             self.logdebug("Closing real backend's stdin.")
                             os.close(tocfno)
                             inputclosed = 1
@@ -381,7 +393,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 pass
                             outdata = ""
                         if endoutput :    
-                            pollster.unregister(stdoutfno)        
+                            self.unregisterFileNo(pollster, stdoutfno)        
                             outputclosed = 1
                     elif fd == stderrfno :
                         if errdata :
@@ -392,7 +404,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 pass
                             errdata = ""
                         if enderr :    
-                            pollster.unregister(stderrfno)        
+                            self.unregisterFileNo(pollster, stderrfno)        
                             errclosed = 1
                 if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
                     # We have something to read
@@ -400,7 +412,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     if fd == infno :
                         indata += data
                         if not data :    # If yes, then no more input data
-                            pollster.unregister(infno)
+                            self.unregisterFileNo(pollster, infno)
                             self.logdebug("Input data ends.")
                             endinput = 1 # this happens with real files.
                     elif fd == fromcfno :
@@ -413,7 +425,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     # an EOF.
                     # 
                     # Some standard I/O stream has no more datas
-                    pollster.unregister(fd)
+                    self.unregisterFileNo(pollster, fd)
                     if fd == infno :
                         # Here we are in the case where the input file is stdin.
                         # which has no more data to be read.

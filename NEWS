@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha5 :
     
+        - cupspykota polling loop fix for MacOSX (at least)
+        
         - pkpgcounter enhancements.
         
         - pkprinters --skipexisting now tells pkprinters to not
