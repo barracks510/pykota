@@ -53,6 +53,8 @@ Actual working features :
                     
         - SNMP querying of any networked SNMP-enabled printer. 
         
+        - Netatalk querying of any networked AppleTalk-enabled printer. 
+        
         - External command querying of any printer : you can use
           you own querying command, e.g. to query a printer via
           the serial port, sending it a special PJL job and 
@@ -74,12 +76,12 @@ Planned features are described in the TODO file.
 Actually only the lazy quota method is implemented. What do I call
 lazy method ?
 
-  The lazy method consists in querying the printer (actually via SNMP)
-  for its total pages counter, just before the beginning of a job, and
-  use this to modify the *preceding* user's quota. So you're
-  always late of one print job, but this is generally ok, especially
-  because a check is also done to see if the current user is allowed
-  or not to print.
+  The lazy method consists in querying the printer (actually via SNMP 
+  or Netatalk) for its total pages counter, just before the beginning 
+  of a job, and use this to modify the *preceding* user's quota. So 
+  you're always late of one print job, but this is generally ok, 
+  especially because a check is also done to see if the current user 
+  is allowed or not to print. 
   
   Problem may theorically arise in batches of successive print jobs by 
   different users when there's no sleep time between two jobs : the 

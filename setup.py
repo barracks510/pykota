@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/04/15 17:49:29  jalet
+# Installation script now checks the presence of Netatalk
+#
 # Revision 1.7  2003/04/03 20:03:37  jalet
 # Installation script now allows to install the sample configuration file.
 #
@@ -139,7 +142,7 @@ if "install" in sys.argv :
     
     # checks if some needed Python modules are there or not.
     modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
-    commandstocheck = [("SNMP Tools", "snmpget")]
+    commandstocheck = [("SNMP Tools", "snmpget"), ("Netatalk", "pap")]
     for (name, module) in modulestocheck :
         action = checkWithPrompt(name, module=module)
         if action == ACTION_ABORT :
