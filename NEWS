@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.21 :
+    
+        - Improved documentation.
+        
+        - Improved dependencies checker.
+        
+        - Updated some translation files.
+        
     - 1.21beta2 :
     
         - Fixed an LPRng specific bug.

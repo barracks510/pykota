@@ -1,3 +1,9 @@
+pykota (1.21) unstable; urgency=low
+
+  * Update from CVS.
+  
+ -- Jerome Alet <alet@librelogiciel.com>  Sat, 5th Mar 2005 19:58:00 +0200
+ 
 pykota (1.21beta) unstable; urgency=low
 
   * Update from CVS.
