@@ -29,6 +29,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 How to improve PyKota's security :
 ----------------------------------
 
+  - In CUPS disable RAW printing, so that users can't bypass the accounting
+    filter.
+    
   - Ensure that only the user your printing system is run as can
     execute the pykota filter. Depending on your system's configuration,
     this may give something like :
