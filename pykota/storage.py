@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/07/16 21:53:07  jalet
+# Really big modifications wrt new configuration file's location and content.
+#
 # Revision 1.18  2003/07/07 08:33:18  jalet
 # Bug fix due to a typo in LDAP code
 #
@@ -313,7 +316,7 @@ def openConnection(pykotatool) :
     else :    
         host = backendinfo["storageserver"]
         database = backendinfo["storagename"]
-        admin = backendinfo["storageadmin"]
-        adminpw = backendinfo["storageadminpw"]
+        admin = backendinfo["storageadmin"] or backendinfo["storageuser"]
+        adminpw = backendinfo["storageadminpw"] or backendinfo["storageuserpw"]
         return getattr(storagebackend, "Storage")(pykotatool, host, database, admin, adminpw)
 

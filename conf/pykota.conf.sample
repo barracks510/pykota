@@ -1,7 +1,7 @@
 # PyKota sample configuration file
 #
-# Copy this file in cups' configuration directory
-# usually /etc/cups under the name pykota.conf
+# Copy this file into the /etc/pykota/ directory
+# under the name /etc/pykota/pykota.conf
 #
 # PyKota - Print Quotas for CUPS and LPRng
 #
@@ -39,9 +39,17 @@ storageserver: localhost
 # name of the Quota Storage Database
 storagename: pykota
 
-# Quota Storage administrator's and normal user's names and passwords
-storageadmin: pykotaadmin
-# storageadminpw: Comment out if unused, or set to Quota Storage admin password
+# 
+# Quota Storage normal user's name and password
+# These two fields contain a username and optional password 
+# which may give readonly access to your print quota database.
+# 
+# PLEASE ENSURE THAT THIS USER CAN'T WRITE TO YOUR PRINT QUOTA
+# DATABASE, OTHERWISE ANY USER WHO COULD READ THIS CONFIGURATION
+# FILE COULD CHANGE HIS PRINT QUOTA.
+#
+storageuser: pykotauser
+# storageuserpw: Comment out if unused, or set to Quota Storage user password
 
 # NB : storageuser and storageuserpw are not used anymore
 
@@ -49,8 +57,8 @@ storageadmin: pykotaadmin
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.librelogiciel.com:389
 #storagename: dc=librelogiciel,dc=com
-#storageadmin: cn=admin,dc=librelogiciel,dc=com
-#storageadminpw: abc.123
+#storageuser: cn=notadmin,dc=librelogiciel,dc=com
+#storageuserpw: abc.123
 #
 # Here we define some helpers to know where 
 # to plug into an existing LDAP directory

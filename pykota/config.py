@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2003/07/16 21:53:07  jalet
+# Really big modifications wrt new configuration file's location and content.
+#
 # Revision 1.32  2003/07/08 19:43:51  jalet
 # Configurable warning messages.
 # Poor man's treshold value added.
@@ -199,10 +202,23 @@ class PyKotaConfig :
         """Returns the storage backend information as a Python mapping."""        
         backendinfo = {}
         for option in [ "storagebackend", "storageserver", \
-                        "storagename", "storageadmin", \
+                        "storagename", "storageuser", \
                       ] :
             backendinfo[option] = self.getGlobalOption(option)
-        backendinfo["storageadminpw"] = self.getGlobalOption("storageadminpw", ignore=1)
+        backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=1)  # password is optional
+        backendinfo["storageadmin"] = None
+        backendinfo["storageadminpw"] = None
+        adminconf = ConfigParser.ConfigParser()
+        adminconf.read(["/etc/pykota/pykotadmin.conf"])
+        if adminconf.sections() : # were we able to read the file ?
+            try :
+                backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1)
+            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
+                raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", "/etc/pykota/pykotadmin.conf")
+            try :
+                backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1)
+            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
+                pass # Password is optional
         return backendinfo
         
     def getLDAPInfo(self) :    

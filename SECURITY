@@ -62,34 +62,35 @@ How to improve PyKota's security :
     set his account to noquota mode. In the worst case he could render
     PyKota and/or your printing system completely inoperative.
     
-  - Ensure that no regular user can read PyKota's configuration file,
-    but that both the print quota administrator and the user the
-    printing system is run as can read it. Depending on your system's
-    configuration, this may give something like :
+  - Ensure that no regular user can read PyKota administrator's 
+    configuration file, but that both the print quota administrator and 
+    the user the printing system is run as can read it. Depending on 
+    your system's configuration, this may give something like : 
     
-      $ chown lp.lpadmin /etc/pykota.conf
-      $ chmod 640 /etc/pykota.conf
+      $ chown lp.lpadmin /etc/pykota/pykotadmin.conf
+      $ chmod 640 /etc/pykota/pykotadmin.conf
     
     If the print quota administrator is root then he will always be
     able to read PyKota's configuration file.
     
-    Letting any user read PyKota's configuration file may expose
-    passwords or database information which would allow direct
-    connections to it if the user can write and execute his own
-    scripts or download and execute his own version of PyKota.
+    Letting any user read PyKota administrator's configuration file may 
+    expose passwords or database information which would allow direct 
+    connections to it if the user can write and execute his own scripts 
+    or download and execute his own version of PyKota. 
   
+    If you want to let users generate their own print quota reports, 
+    then ensure that /etc/pykota/pykota.conf is readable by
+    everyone, but writeable only by the root user :
+    
+      $ chown root.root /etc/pykota/pykota.conf
+      $ chmod 644 /etc/pykota/pykota.conf
+      
     NB : If you use the printquota.cgi CGI script, ensure that
          the user this script is run as (e.g. nobody or www-data)
-         can read PyKota's configuration file too, for example
-         by putting www-data in the lpadmin group.
-         WARNING : putting www-data in the lpadmin group so that
-         the CGI script can read the /etc/pykota.conf file is
-         dangerous. If any user can create CGI scripts launchable
-         as www-data then he could steal a copy of the /etc/pykota.conf 
-         file and learn database and database users' name and passwords.
-         The best solution is probably to create a pykota system
-         account and run the CGI script as this user using Apache's SuEXEC
-         facility. Refer to Apache's documentation for details.
+         can read PyKota's configuration file /etc/pykota/pykota.conf
+         BUT can't read PyKota administrator's configuration file
+         /etc/pykota/pykotadmin.conf
+         Refer to Apache's documentation for details.
   
   - Secure your database connection :
   

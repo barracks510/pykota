@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/07/16 21:53:07  jalet
+# Really big modifications wrt new configuration file's location and content.
+#
 # Revision 1.18  2003/07/03 09:44:00  jalet
 # Now includes the pykotme utility
 #
@@ -89,7 +92,6 @@ import sys
 import glob
 import os
 import shutil
-import ConfigParser
 try :
     from distutils.core import setup
 except ImportError, msg :    
@@ -148,54 +150,104 @@ if "install" in sys.argv :
         sys.stderr.write("PyKota needs at least Python v2.1 !\nYour version seems to be older than that, please update.\nAborted !\n")
         sys.exit(-1)
         
-    # checks if a configuration file is present in the old location
-    if os.path.isfile("/etc/cups/pykota.conf") :
-        if not os.path.isfile("/etc/pykota.conf") :
-            sys.stdout.write("From version 1.02 on, PyKota expects to find its configuration\nfile in /etc instead of /etc/cups.\n")
+    # checks if a configuration file is present in the new location
+    if not os.path.isfile("/etc/pykota/pykota.conf") :
+        if not os.path.isdir("/etc/pykota") :
+            try :
+                os.mkdir("/etc/pykota")
+            except OSError, msg :    
+                sys.stderr.write("An error occured while creating the /etc/pykota directory.\n%s\n" % msg)
+                sys.exit(-1)
+                
+        if os.path.isfile("/etc/pykota.conf") :
+            # upgrade from pre-1.14 to 1.14 and above
+            sys.stdout.write("From version 1.14 on, PyKota expects to find its configuration\nfile in /etc/pykota/ instead of /etc/\n")
             sys.stdout.write("It seems that you've got a configuration file in the old location,\nso it will not be used anymore,\nand there's no configuration file in the new location.\n")
-            answer = raw_input("Do you want to move /etc/cups/pykota.conf to /etc/pykota.conf (y/N) ? ")
+            answer = raw_input("Do you want to move /etc/pykota.conf to /etc/pykota/pykota.conf (y/N) ? ")
             if answer[0:1].upper() == 'Y' :
                 try :
-                    os.rename("/etc/cups/pykota.conf", "/etc/pykota.conf")
+                    os.rename("/etc/pykota.conf", "/etc/pykota/pykota.conf")
                 except OSError :    
-                    sys.stderr.write("ERROR : An error occured while moving /etc/cups/pykota.conf to /etc/pykota.conf\nAborted !\n")
+                    sys.stderr.write("ERROR : An error occured while moving /etc/pykota.conf to /etc/pykota/pykota.conf\nAborted !\n")
                     sys.exit(-1)
-            else :
-                sys.stderr.write("WARNING : Configuration file /etc/cups/pykota.conf won't be used ! Move it to /etc instead.\n")
-                sys.stderr.write("PyKota installation will continue anyway, but the software won't run until you put a proper configuration file in /etc\n")
-        else :        
-            sys.stderr.write("WARNING : Configuration file /etc/cups/pykota.conf will not be used !\nThe file /etc/pykota.conf will be used instead.\n")
-    elif not os.path.isfile("/etc/pykota.conf") :        
-        # no configuration file, first installation it seems.
-        if os.path.isfile("conf/pykota.conf.sample") :
-            answer = raw_input("Do you want to install conf/pykota.conf.sample as /etc/pykota.conf (y/N) ? ")
-            if answer[0:1].upper() == 'Y' :
-                try :
-                    shutil.copy("conf/pykota.conf.sample", "/etc/pykota.conf")        
-                except IOError :    
-                    sys.stderr.write("WARNING : Problem while installing /etc/pykota.conf, please do it manually.\n")
                 else :    
-                    sys.stdout.write("Configuration file /etc/pykota.conf installed.\nDon't forget to adapt /etc/pykota.conf to your needs.\n")
+                    sys.stdout.write("Configuration file /etc/pykota.conf moved to /etc/pykota/pykota.conf.\n")
+            else :
+                sys.stderr.write("WARNING : Configuration file /etc/pykota.conf won't be used ! Move it to /etc/pykota/ instead.\n")
+                sys.stderr.write("PyKota installation will continue anyway,\nbut the software won't run until you put a proper configuration file in /etc/pykota/\n")
+            dummy = raw_input("Please press ENTER when you have read the message above. ")
+        else :
+            # first installation
+            if os.path.isfile("conf/pykota.conf.sample") :
+                answer = raw_input("Do you want to install\n\tconf/pykota.conf.sample as /etc/pykota/pykota.conf (y/N) ? ")
+                if answer[0:1].upper() == 'Y' :
+                    try :
+                        shutil.copy("conf/pykota.conf.sample", "/etc/pykota/pykota.conf")        
+                        shutil.copy("conf/pykotadmin.conf.sample", "/etc/pykota/pykotadmin.conf")        
+                    except IOError, msg :    
+                        sys.stderr.write("WARNING : Problem while installing sample configuration files in /etc/pykota/, please do it manually.\n%s\n" % msg)
+                    else :    
+                        sys.stdout.write("Configuration file /etc/pykota/pykota.conf and /etc/pykota/pykotadmin.conf installed.\nDon't forget to adapt these files to your needs.\n")
+                else :        
+                    sys.stderr.write("WARNING : PyKota won't run without a configuration file !\n")
             else :        
-                sys.stderr.write("WARNING : PyKota won't run without a configuration file !\n")
-    else :            
-        # Configuration file already exists. Check if this is an old version or not
-        # if the 'method: lazy' line is present, then the configuration file
-        # has to be updated.
-        oldconf = ConfigParser.ConfigParser()
-        oldconf.read(["/etc/pykota.conf"])
-        try :
-            if oldconf.get("global", "method", raw=1).lower().strip() == "lazy" :
-                sys.stdout.write("You have got an OLD PyKota configuration file !\n")
-                sys.stdout.write("The 'method' statement IS NOT SUPPORTED ANYMORE\nand was replaced with the 'accounter' statement.\n") 
-                sys.stdout.write("You have to manually set an 'accounter' statement,\neither globally or for each printer.\n")
-                sys.stdout.write("Please read the sample configuration file conf/pykota.conf.sample\n")
-                sys.stdout.write("to learn how to MANUALLY apply the modifications needed,\nafter the installation is done.\n")
-                sys.stdout.write("If you don't do this, then PyKota will stop working !\n")
-                answer = raw_input("Please, press ENTER when you'll have read the above paragraph.")
-        except ConfigParser.NoOptionError :
-            # New configuration file, OK
-            pass
+                # Problem ?
+                sys.stderr.write("WARNING : PyKota's sample configuration file cannot be found.\nWhat you have downloaded seems to be incomplete,\nor you are not in the pykota directory.\nPlease double check, and restart the installation procedure.\n")
+            dummy = raw_input("Please press ENTER when you have read the message above. ")
+    else :    
+        # already at 1.14 or above, nothing to be done.
+        pass
+        
+    # Second stage, we will fail if onfiguration is incorrect for security reasons
+    from pykota.config import PyKotaConfig,PyKotaConfigError
+    try :
+        conf = PyKotaConfig("/etc/pykota/")
+    except PyKotaConfigError, msg :    
+        sys.stedrr.write("%s\nINSTALLATION ABORTED !\nPlease restart installation.\n" % msg)
+        sys.exit(-1)
+    else :
+        hasadmin = conf.getGlobalOption("storageadmin", ignore=1)
+        hasadminpw = conf.getGlobalOption("storageadminpw", ignore=1)
+        hasuser = conf.getGlobalOption("storageuser", ignore=1)
+        if hasadmin or hasadminpw : 
+            sys.stderr.write("From version 1.14 on, PyKota expects that /etc/pykota/pykota.conf doesn't contain the Quota Storage Administrator's name and optional password.\n")
+            sys.stderr.write("Please put these in a [global] section in /etc/pykota/pykotadmin.conf\n")
+            sys.stderr.write("Then replace these values with 'storageuser' and 'storageuserpw' in /etc/pykota/pykota.conf\n")
+            sys.stderr.write("These two fields were re-introduced to allow any user to read to his own quota, without allowing them to modify it.\n")
+            sys.stderr.write("You can look at the conf/pykota.conf.sample and conf/pykotadmin.conf.sample files for examples.\n")
+            sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
+            sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
+            sys.exit(-1)
+        if not hasuser :
+            sys.stderr.write("From version 1.14 on, PyKota expects that /etc/pykota/pykota.conf contains the Quota Storage Normal User's name and optional password.\n")
+            sys.stderr.write("Please put these in a [global] section in /etc/pykota/pykota.conf\n")
+            sys.stderr.write("These fields are respectively named 'storageuser' and 'storageuserpw'.\n")
+            sys.stderr.write("These two fields were re-introduced to allow any user to read to his own quota, without allowing them to modify it.\n")
+            sys.stderr.write("You can look at the conf/pykota.conf.sample and conf/pykotadmin.conf.sample files for examples.\n")
+            sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
+            sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
+            sys.exit(-1)
+            
+        sb = conf.getStorageBackend()
+        if (sb.get("storageadmin") is None) or (sb.get("storageuser") is None) :
+            sys.stderr.write("From version 1.14 on, PyKota expects that /etc/pykota/pykota.conf contains the Quota Storage Normal User's name and optional password which gives READONLY access to the Print Quota DataBase,")
+            sys.stderr.write("and that /etc/pykota/pykotadmin.conf contains the Quota Storage Administrator's name and optional password which gives READ/WRITE access to the Print Quota DataBase.\n")
+            sys.stderr.write("Your configuration doesn't seem to be OK, please modify your configuration files in /etc/pykota/\n")
+            sys.stderr.write("AND RESTART THE INSTALLATION.\n")
+            sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
+            sys.exit(-1)
+        
+    # change files permissions    
+    os.chmod("/etc/pykota/pykota.conf", 0644)
+    os.chmod("/etc/pykota/pykotadmin.conf", 0640)
+    
+    # WARNING MESSAGE    
+    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.14 TO 1.14 OR ABOVE\n")
+    sys.stdout.write("AND USE THE POSTGRESQL BACKEND, THEN YOU HAVE TO MODIFY YOUR\n")
+    sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.14.sql\n")
+    sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION.\n\n")
+    dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.
     modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend."),                                            

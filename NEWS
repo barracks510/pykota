@@ -21,6 +21,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha6 :
+    
+        - Configuration file split and moved to /etc/pykota/pykota.conf
+          and /etc/pykota/pykotadmin.conf to prevent simple users to
+          have Read/Write access to the Quota Database.
+          Don't forget to :
+          
+                $ chmod 640 /etc/pykota/pykotadmin.conf
+                
+        - storageuser and storageuserpw configuration fields reintroduced
+          for the same reason.
+          
+        - Code cleaning for future implementation of email addresses 
+          support in the PostgreSQL and LDAP backends.
+          
     - 1.14alpha5 :
         
         - Big bug fixed when changing the prices for a printer

@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.4  2003/07/16 21:53:07  jalet
+-- Really big modifications wrt new configuration file's location and content.
+--
 -- Revision 1.3  2003/07/09 20:17:07  jalet
 -- Email field added to PostgreSQL schema
 --
@@ -50,6 +53,7 @@ CREATE DATABASE pykota;
 -- Create the print quota database users
 -- 
 CREATE USER pykotaadmin;
+CREATE USER pykotauser;
 
 -- 
 -- Now connect to the new database
@@ -126,6 +130,9 @@ CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
 -- Set some ACLs                        
 --
 REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory FROM public;                        
+REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq FROM public;
+
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotaadmin;
 GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq TO pykotaadmin;
+GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotauser;
 

@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.2  2003/07/16 21:53:07  jalet
+-- Really big modifications wrt new configuration file's location and content.
+--
 -- Revision 1.1  2003/07/09 20:17:07  jalet
 -- Email field added to PostgreSQL schema
 --
@@ -39,3 +42,7 @@
 -- Modify the old database schema
 --
 ALTER TABLE users ADD COLUMN email TEXT;
+CREATE USER pykotauser;
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory FROM pykotauser;
+REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq FROM pykotauser;
+GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotauser;

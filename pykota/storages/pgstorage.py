@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/07/16 21:53:08  jalet
+# Really big modifications wrt new configuration file's location and content.
+#
 # Revision 1.9  2003/07/14 17:20:15  jalet
 # Bug in postgresql storage when modifying the prices for a printer
 #
@@ -332,7 +335,7 @@ class Storage :
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns its id."""
-        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid) VALUES (%s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy), self.doQuote(user.AccountBalance), self.doQuote(user.LifeTimePaid)))
+        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy), self.doQuote(user.AccountBalance), self.doQuote(user.LifeTimePaid), self.doQuote(user.Email)))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        

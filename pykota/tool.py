@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2003/07/16 21:53:08  jalet
+# Really big modifications wrt new configuration file's location and content.
+#
 # Revision 1.46  2003/07/09 20:17:07  jalet
 # Email field added to PostgreSQL schema
 #
@@ -222,7 +225,7 @@ class PyKotaTool :
     
         # pykota specific stuff
         self.documentation = doc
-        self.config = config.PyKotaConfig("/etc")
+        self.config = config.PyKotaConfig("/etc/pykota")
         self.logger = logger.openLogger(self)
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
