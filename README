@@ -78,8 +78,11 @@ Modify the PPD files for each printer on which you want to manage
 print quotas, for example /etc/cups/ppd/lp.ppd :
 
 --- Add the line below exactly as-is somewhere near the top ---
-*cupsFilter:  "application/vnd.cups-postscript 0 pykota"
+*cupsFilter:  "application/vnd.cups-postscript 0 /usr/bin/pykota"
 --- Add the line above exactly as-is somewhere near the top  ---
+
+Modify the path to pykota if needed, unfortunately you have to
+supply the correct absolute path here due to CUPS internals.
 
 Do this in each ppd file present in this directory if you want
 to enable quota on every printer.
