@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/05/13 13:59:30  jalet
+# Code simplifications
+#
 # Revision 1.11  2004/04/09 22:24:47  jalet
 # Began work on correct handling of child processes when jobs are cancelled by
 # the user. Especially important when an external requester is running for a
@@ -62,7 +65,10 @@
 #
 #
 
+import sys
 import os
+import popen2
+import signal
 from pykota.requester import PyKotaRequesterError
 
 class Requester :
@@ -81,11 +87,28 @@ class Requester :
         commandline = self.commandline % locals()
         if printer is None :
             raise PyKotaRequesterError, _("Unknown printer address in EXTERNAL(%s) for printer %s") % (commandline, self.printername)
-        answer = os.popen(commandline)
+        error = 1
+        pagecounter = None
+        child = popen2.Popen4(commandline)    
         try :
-            pagecounter = int(answer.readline().strip())
+            pagecounter = int(child.fromchild.readline().strip())
         except ValueError :    
+            pass
+        except IOError :    
+            # we were interrupted by a signal, certainely a SIGTERM
+            # caused by the user cancelling the current job
+            try :
+                os.kill(child.pid, signal.SIGTERM)
+            except :    
+                pass # already killed ?
+            self.kotabackend.logger.log_message(_("SIGTERM was sent to external requester %s (pid: %s)") % (commandline, child.pid), "info")
+        else :    
+            error = 0
+        child.fromchild.close()    
+        child.tochild.close()
+        status = child.wait()
+        if (not error) and os.WIFEXITED(status) and (not os.WEXITSTATUS(status)) :
+            return pagecounter
+        else :    
             raise PyKotaRequesterError, _("Unable to query printer %s via EXTERNAL(%s)") % (printer, commandline) 
-        answer.close()
-        return pagecounter
         

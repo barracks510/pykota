@@ -21,42 +21,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.13  2004/01/08 14:10:32  jalet
-# Copyright year changed.
-#
-# Revision 1.12  2003/12/27 16:49:25  uid67467
-# Should be ok now.
-#
-# Revision 1.10  2003/11/23 19:01:36  jalet
-# Job price added to history
-#
-# Revision 1.9  2003/11/21 14:28:45  jalet
-# More complete job history.
-#
-# Revision 1.8  2003/11/12 23:29:24  jalet
-# More work on new backend. This commit may be unstable.
-#
-# Revision 1.7  2003/10/07 09:07:28  jalet
-# Character encoding added to please latest version of Python
-#
-# Revision 1.6  2003/09/04 07:57:18  jalet
-# Problem with Python 2.3 fixed : a bug of me.
-#
-# Revision 1.5  2003/07/07 11:49:24  jalet
-# Lots of small fixes with the help of PyChecker
-#
-# Revision 1.4  2003/06/25 14:10:01  jalet
-# Hey, it may work (edpykota --reset excepted) !
-#
-# Revision 1.3  2003/05/27 23:00:21  jalet
-# Big rewrite of external accounting methods.
-# Should work well now.
-#
-# Revision 1.2  2003/05/13 13:54:20  jalet
-# Better handling of broken pipes
-#
-# Revision 1.1  2003/05/07 19:47:06  jalet
-# v1.07 Release of the Shame is out !
+# Revision 1.1  2004/05/13 13:59:30  jalet
+# Code simplifications
 #
 #
 #

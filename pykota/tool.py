@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.86  2004/05/13 13:59:28  jalet
+# Code simplifications
+#
 # Revision 1.85  2004/05/11 08:26:27  jalet
 # Now catches connection problems to SMTP server
 #
@@ -808,14 +811,14 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         os.putenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(userpquota.Printer)]))
             
     def prehook(self, userpquota) :
-        """Allows pluging of an external hook before the job gets printed."""
+        """Allows plugging of an external hook before the job gets printed."""
         prehook = self.config.getPreHook(userpquota.Printer.Name)
         if prehook :
             self.logdebug("Executing pre-hook [%s]" % prehook)
             os.system(prehook)
         
     def posthook(self, userpquota) :
-        """Allows pluging of an external hook after the job gets printed and/or denied."""
+        """Allows plugging of an external hook after the job gets printed and/or denied."""
         posthook = self.config.getPostHook(userpquota.Printer.Name)
         if posthook :
             self.logdebug("Executing post-hook [%s]" % posthook)

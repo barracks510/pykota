@@ -71,7 +71,7 @@
   </para>
   
   <para>
-    When using the <literal>querying</literal> accounting method,
+    When using the <literal>hardware</literal> accounting method,
     <application>pykota</application> asks the printer for its internal page counter, reads from the Quota DataBase the internal
     page counter for this printer when the previous job was launched, computes the difference, and report it as the 
     previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
@@ -85,13 +85,13 @@
   </para>
   
   <para>
-    When using the <literal>external</literal> accounting method,
+    When using the <literal>software</literal> accounting method,
     and if the user is still allowed to print,
     the command you specified is launched with the job's data on its 
     standard input. Your command must print the job's size in number of
     pages on a single line on its standard output. This number is then
     read by PyKota and used to update the current user's quota information.
-    Of course checks are also done like with the <literal>querying</literal>
+    Of course checks are also done like with the <literal>hardware</literal>
     accounting method, to see if the current job is allowed to be printed or not.
   </para>
   
@@ -107,6 +107,9 @@
 <!--
 
 $Log$
+Revision 1.10  2004/05/13 13:59:28  jalet
+Code simplifications
+
 Revision 1.9  2004/03/03 19:35:36  jalet
 Spelling problem. Thanks to Jurandy Martins
 

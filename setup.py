@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2004/05/13 13:59:27  jalet
+# Code simplifications
+#
 # Revision 1.39  2004/04/08 17:07:41  jalet
 # pkpgcounter added
 #
@@ -172,12 +175,23 @@ except ImportError, msg :
     sys.stderr.write("You need the DistUtils Python module.\nunder Debian, you may have to install the python-dev package.\nOf course, YMMV.\n")
     sys.exit(-1)
 
+from distutils import sysconfig
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
 
 ACTION_CONTINUE = 0
 ACTION_ABORT = 1
 
+def checkOldModule(path) :
+    """Checks if an old PyKota module is still in the destination (in case of upgrade)."""
+    fname = os.path.join(sysconfig.get_python_lib(), "pykota", path)
+    for ext in ["py", "pyc", "pyo"] :
+        fullname = "%s.%s" % (fname, ext)
+        if os.path.isfile(fullname) :
+            sys.stderr.write("ERROR : old module %s still exists. Remove it and restart installation.\n" % fullname)
+            sys.stderr.write("INSTALLATION ABORTED !\n")
+            sys.exit(-1)
+    
 def checkOldScript(cmd) :
     """Checks if an old shell script is still around in /usr/bin."""
     return os.path.isfile(os.path.join("/usr/bin", cmd))
@@ -281,6 +295,10 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
                     sys.stderr.write("\nBe sure to also remove the old symbolic link from /usr/lib/cups/backend/cupspykota to /usr/bin/cupspykota. You'll have to recreate it once the installation has finished successfully.\n")
                 sys.stderr.write("\nINSTALLATION ABORTED !\nPlease correct the problem and restart installation.\n")
                 sys.exit(-1)
+                
+        # now checks if pre-1.19alpha8 code is still there       
+        for module in ["accounters/querying", "accounters/external", "requesters/snmp"] :
+            checkOldModule(module)
         
     # Second stage, we will fail if onfiguration is incorrect for security reasons
     from pykota.config import PyKotaConfig,PyKotaConfigError
@@ -347,13 +365,12 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     os.chmod("/etc/pykota/pykotadmin.conf", 0640)
     
     # WARNING MESSAGE    
-    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.14 TO 1.16 OR ABOVE\n")
+    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha7 TO 1.19alpha7 OR ABOVE\n")
     sys.stdout.write("AND USE THE POSTGRESQL BACKEND, THEN YOU HAVE TO MODIFY YOUR\n")
-    sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.14.sql\n")
-    sys.stdout.write("AND initscripts/postgresql/upgrade-to-1.16.sql\n")
+    sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.19.sql\n")
     sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
     sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.16 OR ABOVE.\n\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha7 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.

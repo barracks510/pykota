@@ -42,24 +42,26 @@ PyKota features :
           Complete database creation script in SQL is included.
         
         - Supports OpenLDAP as the Quota Storage backend.
-          Complete LDAP schema and sample tree are included.
+          Complete LDAP schema and sample empty tree are included.
           Plugging PyKota into your existing LDAP infrastructure
           is really easy thanks to PyKota's great configurability.
             
     Printers :        
     
+        - Hardware or Software accounting methods are completely
+          configurable.
+          
         - Supports any printer which can report its internal
-          page counter.
+          page counter. Can ask printers for their internal 
+          page counter via SNMP, Netatalk, or any other way.
+          This is completely configurable.
+          
+        - Supports PostScript and PCL5 printers natively,
+          more formats to come.
           
         - Supports any other printer via GhostScript.
           Depending on the printer some configuration may
           be needed.
-        
-        - Can ask printers for their internal page counter
-          via SNMP, Netatalk, or any other mean of your
-          choice. This is completely configurable.
-          
-        - External accounting methods are configurable.
             
     Quota systems :        
     
@@ -155,7 +157,7 @@ Planned features are described in the TODO file.
 Actually three (or an infinity of) page accounting methods are
 implemented :
 
-  - The 'querying' method consists in querying the printer (via SNMP
+  - The 'hardware' method consists in querying the printer (via SNMP
     or Netatalk or any other method of your choice) for its total pages 
     counter.
     
@@ -167,19 +169,12 @@ implemented :
     this to modify the *preceding* user's quota. So you're always late 
     of one print job, but this is generally ok.
     
-  - The 'external' method consists in delegating the computation of the
+  - The 'software' method consists in delegating the computation of the
     job's size in number of pages to any external command of your choice.
     The command can read the job's data from its standard input and MUST
     output the job's size on its standard output. Changes to the user
     account are reported immediately, both with CUPS and LPRng.
     
-  - The 'stupid' method consists in counting the 'showpage' PostSript  
-    statements in the job. THIS IS UNRELIABLE, SO DON'T USE IT, but 
-    can serve as an example if you plan to write your own accounting 
-    method for integration into PyKota. It basically works like the 
-    'external' method, but does the computation internally and in
-    a non-reliable way.
-  
 PyKota is known to work fine with HP Laserjet 2100 and 2200, and 
 Apple LaserWriter 16/600 PS, both with CUPS and LPRng, under 
 Debian GNU/Linux (Sarge and Sid) operating systems. It should work

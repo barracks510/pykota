@@ -21,56 +21,16 @@
 # $Id$
 #
 # $Log$
-# Revision 1.13  2004/04/09 22:24:47  jalet
-# Began work on correct handling of child processes when jobs are cancelled by
-# the user. Especially important when an external requester is running for a
-# long time.
-#
-# Revision 1.12  2004/01/11 23:22:42  jalet
-# Major code refactoring, it's way cleaner, and now allows automated addition
-# of printers on first print.
-#
-# Revision 1.11  2004/01/08 14:10:32  jalet
-# Copyright year changed.
-#
-# Revision 1.10  2003/12/27 16:49:25  uid67467
-# Should be ok now.
-#
-# Revision 1.8  2003/11/21 14:28:46  jalet
-# More complete job history.
-#
-# Revision 1.7  2003/11/12 23:29:24  jalet
-# More work on new backend. This commit may be unstable.
-#
-# Revision 1.6  2003/10/07 09:07:29  jalet
-# Character encoding added to please latest version of Python
-#
-# Revision 1.5  2003/07/07 11:49:24  jalet
-# Lots of small fixes with the help of PyChecker
-#
-# Revision 1.4  2003/06/25 14:10:01  jalet
-# Hey, it may work (edpykota --reset excepted) !
-#
-# Revision 1.3  2003/05/06 14:55:47  jalet
-# Missing import !
-#
-# Revision 1.2  2003/04/30 13:36:40  jalet
-# Stupid accounting method was added.
-#
-# Revision 1.1  2003/04/29 18:37:54  jalet
-# Pluggable accounting methods (actually doesn't support external scripts)
+# Revision 1.1  2004/05/13 13:59:30  jalet
+# Code simplifications
 #
 #
 #
 
 import sys
 import os
-import time
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.requester import openRequester, PyKotaRequesterError
-
-MAXTRIES = 12    # maximum number of tries to get the printer's internal page counter
-TIMETOSLEEP = 10 # number of seconds to sleep between two tries to get the printer's internal page counter
 
 class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
@@ -81,20 +41,14 @@ class Accounter(AccounterBase) :
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
-        global MAXTRIES, TIMETOSLEEP
         self.filter.logdebug("Reading printer's internal page counter...")
-        for dummy in range(MAXTRIES) :
-            try :
-                counter = self.requester.getPrinterPageCounter(self.filter.printerhostname)
-            except PyKotaRequesterError, msg :
-                # can't get actual page counter, assume printer is off or warming up
-                # log the message anyway.
-                self.filter.logger.log_message("%s" % msg, "warn")
-                counter = None
-            else :    
-                # printer answered, it is on so we can exit the loop
-                break
-            time.sleep(TIMETOSLEEP)    
+        try :
+            counter = self.requester.getPrinterPageCounter(self.filter.printerhostname)
+        except PyKotaRequesterError, msg :
+            # can't get actual page counter, assume printer is off or warming up
+            # log the message anyway.
+            self.filter.logger.log_message("%s" % msg, "warn")
+            counter = None
         self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
         return counter    
         

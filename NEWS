@@ -21,6 +21,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha8 :
+    
+        - 'querying' accounting method is now called 'hardware'
+        
+        - 'external' accounting method is now called 'software'
+        
+        - 'stupid' accounting method doesn't exist anymore
+        
+        - 'snmp' requester doesn't exist anymore
+        
+        - code simplifications in external requester
+        
     - 1.19alpha7 :
      
         - Database schema change (both LDAP and PostgreSQL) to

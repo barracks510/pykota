@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/05/13 13:59:27  jalet
+# Code simplifications
+#
 # Revision 1.6  2004/03/30 12:59:47  jalet
 # Fixed path problem
 #
@@ -210,13 +213,13 @@ class PKHint(PyKotaTool) :
                         
                     snmpcommand = self.accepts(SNMPTESTS, hostname)
                     if snmpcommand is not None :
-                        accounter = "querying"
+                        accounter = "hardware"
                         requester = 'external(/usr/share/pykota/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
                         configuration.append((printer, accounter, requester))
                     else :    
                         netpjlcommand = self.accepts(NETPJLTESTS, hostname, port)
                         if netpjlcommand is not None :
-                            accounter = "querying"
+                            accounter = "hardware"
                             requester = 'external(' + netpjlcommand + ')'
                             configuration.append((printer, accounter, requester))
                 elif devicetype == "direct" : 

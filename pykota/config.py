@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2004/05/13 13:59:28  jalet
+# Code simplifications
+#
 # Revision 1.45  2004/03/01 10:22:30  jalet
 # Can now extract per printer pre and post hooks from the configuration file
 #
@@ -302,12 +305,12 @@ class PyKotaConfig :
     def getAccounterBackend(self, printername) :    
         """Returns the accounter backend to use for a given printer.
         
-           if it is not set, it defaults to 'querying' which means ask printer
+           if it is not set, it defaults to 'hardware' which means ask printer
            for its internal lifetime page counter.
         """   
-        validaccounters = [ "querying", "stupid", "external" ]     
+        validaccounters = [ "hardware", "software" ]     
         fullaccounter = self.getPrinterOption(printername, "accounter").strip()
-        if fullaccounter.lower().startswith("external") :    
+        if fullaccounter.lower().startswith("software") :    
             try :
                 (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
             except ValueError :    
@@ -342,8 +345,8 @@ class PyKotaConfig :
             fullrequester = self.getPrinterOption(printername, "requester")
         except PyKotaConfigError :    
             # No requester defined, maybe it is not needed if accounting method
-            # is not set to 'querying', but if we are called, then the accounting
-            # method really IS 'querying', and so there's a big problem.
+            # is not set to 'hardware', but if we are called, then the accounting
+            # method really IS 'hardware', and so there's a big problem.
             raise PyKotaConfigError, _("Option requester for printer %s was not set") % printername
         else :    
             try :
@@ -354,7 +357,7 @@ class PyKotaConfig :
                 args = args[:-1]
             if not args :
                 raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printername)
-            validrequesters = [ "snmp", "external" ] # TODO : add more requesters
+            validrequesters = [ "external" ] 
             requester = requester.lower()
             if requester not in validrequesters :
                 raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printername, str(validrequesters))

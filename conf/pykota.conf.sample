@@ -181,46 +181,38 @@ utolower: No
 # 
 # supported values :
 #
-#    - querying : asks the printer for its lifetime page counter
+#    - hardware : asks the printer for its lifetime page counter
 #                 via either SNMP, AppleTalk, or any external
 #                 command. This method is the method used by
 #                 default in PyKota since its beginning.
 #
-#    - external : delegates the job's size computation to any 
-#                 external command of your choice. A stupid and 
-#                 completely unreliable example, but which
-#                 shows what this command may be is :
+#    - software : delegates the job's size computation to any 
+#                 external command of your choice. 
 #
-#                   accounter: external(/bin/grep -c showpage)
+#                 best choice for this is probably to set it
+#                 this way :
 #
-#                 Another one, which should work with all DSC
-#                 compliant Postscript files :
+#                   accounter: software(/usr/bin/pkpgcounter)
 #
-#                   accounter: external(/bin/grep -c "%%Page:")
+#                 pkpgcounter is a command line tool which is
+#                 part of PyKota and which can handle both
+#                 DSC compliant PostScript documents and PCL5
+#                 documents. More file formats will be added
+#                 in the future, as time permits.
 #
-#                 Finally the new smart external accounter which
-#                 can handle both PostScript and PCL documents :
-#
-#                   accounter: external(/usr/bin/pkpgcounter)
+#                 while pkpgcounter is the recommended value
+#                 you can use whatever command you want provided
+#                 that your command accepts the job's data on its
+#                 standard input and prints the job's size in pages
+#                 as a single integer on its standard output.
 # 
-#    - stupid : counts the occurences of the 'showpage' postscript
-#               statement in the document to be printed.
-#               THIS IS NOT RELIABLE. This is just to serve as
-#               an example on how to implement your own accounting
-#               method. Use pkpgcounter instead.
-#
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
-# if not set it defaults to 'querying'.
-#
-# A script which seems to be accurate, copy it from the
-# untested/postscript directory to another place.
-# accounter: external(/usr/share/pykota/pagecount.sh)
-# WARNING : it may not work when multiple copies are asked.
-#           this breaks ghostscript, I don't know why yet.
+# if not set it defaults to 'hardware'.
 #
 # default value 
-accounter: querying
+accounter: hardware
+# accounter: software(/usr/bin/pkpgcounter)
 
 # Print Quota administrator
 # These values can be set either globally or per printer or both.
@@ -325,50 +317,38 @@ hardwarn: Your Print Quota Hard Limit is reached.
 [hpmarketing]
 
 # How to query the hpmarketing printer for its page counter.
-# THIS IS ONLY USED IF YOU HAVE SET 'accounter' TO 'querying'
+# THIS IS ONLY USED IF YOU HAVE SET 'accounter' TO 'hardware'
 # JUST COMMENT IT OUT IF YOU USE ANY OTHER ACCOUNTING METHOD.
 # (it would be ignored anyway)
 #
 # In the lines below "%(printer)s" is automatically replaced
 # at run time with your printer's Fully Qualified Domain Name
+# for network printers.
 # e.g. myprinter.example.com
 #
-# Only snmp(community, oid) and external(command) are supported
+# Only value supported is : external(... your command here...) 
 #
 # Example : 
-#     requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
-# and :
-#     requester: snmp(public, mib-2.43.10.2.1.4.1.1)
-# are equivalent
 #
-#################################################
-# NB : the 'snmp()' requester is now deprecated #
-# because it has some accuracy problems.        #
-# please use 'external()' instead.              #
-#################################################
+#     requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 #
 # Another untested example, using npadmin :
+#
 #     requester: external(/usr/bin/npadmin --pagecount %(printer)s)
 #
 # Another example, for AppleTalk printers which works fine :
 # (You may need the pap CUPS backend installed, and copy the 
 # pagecount.ps file from untested/netatalk into /etc or any 
 # appropriate location)
+#
 #     requester: external(/usr/share/pykota/papwaitprinter.sh "MyPrinter:LaserWriter@*" && /usr/bin/pap -p "MyPrinter:LaserWriter@*" /usr/share/pykota/pagecount.ps  2>/dev/null | /bin/grep -v status | /bin/grep -v Connect | /usr/bin/tail -1)
 #
 # An example for parallel printers like the HP Laserjet 5MP :
 #
 #     requester: external(/bin/cat /usr/share/pykota/pagecount.pjl >/dev/lp0 && /usr/bin/head -2 </dev/lp0 | /usr/bin/tail -1)
 # 
-# 
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
-#
-# NB : The SNMP oid mib-2.43.10.2.1.4.1.1 works on HP Laserjet Printers, but it may
-#      be different with other brands, refer to your printer's documentation 
-#      for details. Also you may have to specify -v2c or -v3 depending on your 
-#      printer's support for different versions of the SNMP specification.
-#
 #
 # Some examples and comments provided by Bob Martel from csuohio.edu
 #
@@ -382,19 +362,16 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #
 # requester: external(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2)
 #
-#
 # An example using netcat and a preformatted PJL job which you can find
 # in the untested/pjl directory, which is sent to a JetDirect print
 # server on port 9100 :
 #
 # requester: external(/bin/nc -w 2 %(printer)s 9100 </usr/share/pykota/pagecount.pjl | /usr/bin/tail -2)
 #
-#
 # An example using the contributed pagecount.pl script which does 
 # the same as above, but should work on more printers : 
 #
 # requester: external(/usr/share/pykota/pagecount.pl %(printer)s 9100)
-#
 #
 # WARNING : In any case, when using an external requester, please test the command line outside
 #           of PyKota before. This will save you some headaches in case it doesn't work as expected.
@@ -403,6 +380,13 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # This should prevent a job to be sent to the printer while another one is 
 # not yet finished (not all pages are printed, but the complete job is in 
 # the printer)
+#
+# YOU ABSOLUTELY HAVE TO BE SURE YOU HAVE A SCRIPT WHICH WAITS FOR THE
+# PRINTER BEING READY BEFORE ASKING FOR ITS INTERNAL PAGE COUNTER.
+#
+# PYKOTA INCLUDES SUCH SCRIPTS FOR SNMP AND APPLETALK PRINTERS, MORE TO COME
+#
+# default value
 requester: external(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
