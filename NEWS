@@ -54,6 +54,9 @@ PyKota NEWS :
           4L/5L/6L.
           See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
           
+        - A bug was fixed when edpykota --add was used with users who already
+          had a quota on the specified printer.
+          
     - 1.02 :
     
         - The installation script now checks for software availability
