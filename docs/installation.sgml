@@ -180,6 +180,15 @@ template1=# \i pykota-postgresql.sql
             ... a lot of output lines
 pykota=#       
         </screen>
+        <note>
+          <title>Note</title>
+          <para>
+            If you use RPM or DEB packages, usually the
+            <filename>pykota-postgresql.sql</filename> file gets installed into the
+            <filename>/usr/share/pykota/postgresql</filename> directory, along 
+            with a README file.
+          </para>
+        </note>  
       </para>
       
       <para>
@@ -245,10 +254,11 @@ jerome@nordine:~/pykota-1.20_official/initscripts/postgresql$
     </sect2>  
     
     <sect2>
-      <title>OpenLDAP</title>
+      <title>LDAP</title>
       
       <para>
-        From version 1.09 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
+        Any <acronym>LDAP</acronym> server, and particularly <application>OpenLDAP</application>, can be used 
+        as a Quota Storage Backend.
         Some other LDAP servers can be used, but this is currently untested in production.
       </para>
       
@@ -266,6 +276,15 @@ jerome@nordine:~/pykota-1.20_official/initscripts/postgresql$
         <screen>        
 $ cp pykota.schema /etc/ldap/schema
         </screen>
+        <note>
+          <title>Note</title>
+          <para>
+            If you use RPM or DEB packages, usually the
+            <filename>pykota.schema</filename> file gets installed into the
+            <filename>/usr/share/pykota/ldap</filename> directory, along 
+            with a README file.
+          </para>
+        </note>  
      </para>
      <para>   
        Then edit <filename>/etc/ldap/slapd.conf</filename> and add a line to    
@@ -341,7 +360,17 @@ $ /etc/init.d/slapd restart
         difficult to guess what is the best configuration for you. So you have to
         create them by yourself, either directly with a text editor and the
         <application>ldapadd</application> command, or with some specialized tool
-        like <application>gq</application>.
+        like <application>gq</application>. You can look at the <filename>initscripts/ldap/pykota-sample.ldif</filename>
+        file to see what minimal branches are necessary.
+        <note>
+          <title>Note</title>
+          <para>
+            If you use RPM or DEB packages, usually the
+            <filename>pykota-sample.ldif</filename> file gets installed into the
+            <filename>/usr/share/pykota/ldap</filename> directory, along 
+            with a README file.
+          </para>
+        </note>  
       </para>
       
       <para>
@@ -504,6 +533,14 @@ $ /etc/init.d/slapd restart
     </para>
     
     <para>
+       You can check that all needed software is installed by launching the <filename>checkdeps.py</filename>
+       command :
+      <screen>      
+$ python checkdeps.py      
+      </screen>
+    </para>
+    
+    <para>
       Once all these software are installed, installing PyKota itself is a breeze.
       PyKota being written entirely in the Python language, which is interpreted, 
       there's no need to compile anything. You just have to execute the installation
@@ -514,20 +551,15 @@ $ python setup.py install
     </para>
     
     <para>
-      The installation script will try to do a safe upgrade if needed. 
-      Also it will check if some needed software is missing or unavailable 
-      and will tell you so. This may be the case for example if you 
-      installed several versions of the Python language, and some Python 
-      modules are only available for one of them which is not the one you 
-      are actually running. 
-    </para>
-    
-    <para>
-      On your first installation, the setup script will automatically create
-      the <filename>/etc/pykota</filename> directory and put the sample 
+      The setup script will automatically create the 
+      <filename>/usr/share/pykota/conf</filename> directory and put the sample 
       configuration files <filename>conf/pykota.conf.sample</filename> and
-      <filename>conf/pykotadmin.conf.sample</filename> there, after having
-      renamed them respectively <filename>pykota.conf</filename> and 
+      <filename>conf/pykotadmin.conf.sample</filename> there, along with
+      a <filename>README</filename> file explaining their purpose.
+    </para>
+    <para>
+      You have to copy these files into the <filename>/etc/pykota</filename>
+      directory (you have to create it before), under the respective names <filename>pykota.conf</filename> and 
       <filename>pykotadmin.conf</filename>. Once copied there, you just
       have to modify these files to adapt them to your own setup.
       These files are heavily commented, so you should have no problem.
@@ -542,14 +574,8 @@ $ python setup.py install
     </para>
     
     <para>
-      On later installations, the setup script won't modify any of your
-      configuration files. However it will try to explain what have changed
-      and encourages you to manually do the modifications which are needed.
-      Please create a backup of the <filename>/etc/pykota</filename>
-      directory before modifying anything.
-      Under some circumstances, PyKota's setup script may refuse to install PyKota
-      until you have modified your configuration. Just do it and restart
-      the installation script as described above.
+      Please create a backup copy of the <filename>/etc/pykota</filename>
+      directory before modifying a working installation.
     </para>
     
     <para>
@@ -736,6 +762,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.29  2004/11/10 22:35:23  jalet
+Changes to the installation documentation
+
 Revision 1.28  2004/10/06 10:03:16  jalet
 Improved documentation
 

@@ -312,15 +312,15 @@ Download the latest PyKota version from the CVS tree on :
 
     http://savannah.nongnu.org/projects/pykota
 
-Just type :
+You can now check if the dependencies are correct by typing :
+
+    python checkdeps.py
+    
+To install the software, just type :
 
     python setup.py install
 
 You may need to be logged in with sufficient privileges (e.g. root)
-
-The installation script will now automatically check if some software
-is missing and ask you if you still want to proceed with the 
-installation or abort it completely.
 
 Go to the initscripts subdirectory of PyKota's sources, and choose
 the appropriate storage backend for your configuration. Read carefully
