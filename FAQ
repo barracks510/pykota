@@ -11,10 +11,13 @@ PyKota's FAQ :
     CUPS' error_log file will now contain many informations which
     will help diagnose your problem. You will receive failure
     notices by email, and you can send all this to us for
-    diagnostic.
+    diagnostic. Please send complete files and not some sparse
+    parts of them. Also please send the log files as gzipped 
+    (or bzip2-ed) attachments.
     
     For LPRng, better to put "logger: system" in pykota.conf so
-    that all debug messages for PyKota will go to syslog.
+    that all debug messages for PyKota will go to syslog's
+    destination for the LPR syslog facility.
   
   * Nothing prints when my printer is in PowerSave mode, what
     can I do ?
