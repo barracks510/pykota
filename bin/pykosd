@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/07/07 21:44:15  jalet
+# Formatting improvements
+#
 # Revision 1.2  2004/07/07 14:14:31  jalet
 # Now handles limits by quota in addition to limits by balance
 #
@@ -39,6 +42,8 @@ import time
 import pyosd
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
+
+DURATION = 5
 
 if __name__ == "__main__" :
     retcode = -1
@@ -57,22 +62,25 @@ if __name__ == "__main__" :
                 printers = cmd.storage.getMatchingPrinters("*")
                 upquotas = [ cmd.storage.getUserPQuota(user, p) for p in printers ]
                 nblines = len(upquotas)
-                display = pyosd.osd(colour="#FF0000", timeout=5, shadow=2, lines=nblines)
+                display = pyosd.osd(colour="#00FF00", timeout=DURATION, shadow=2, lines=nblines)
                 for line in range(nblines) :
                     upq = upquotas[line]
                     if upq.HardLimit is None :
                         if upq.SoftLimit is None :
-                            percent = 0
+                            percent = "%s" % upq.PageCounter
                         else :        
-                            percent = (upq.PageCounter * 100) / upq.SoftLimit
+                            percent = "%s%%" % min((upq.PageCounter * 100) / upq.SoftLimit, 100)
                     else :        
-                        percent = (upq.PageCounter * 100) / upq.HardLimit
-                    percent = min(percent, 100)
-                    display.display("Pages used on %s : %s%%" % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)    
+                        percent = "%s%%" % min((upq.PageCounter * 100) / upq.HardLimit, 100)
+                    display.display("Pages used on %s : %s" % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)
             else :
-                display = pyosd.osd(colour="#FF0000", timeout=5, shadow=2)
+                if user.AccountBalance <= 0 :
+                    color = "#FF0000"
+                else :    
+                    color = "#00FF00"
+                display = pyosd.osd(colour=color, timeout=DURATION, shadow=2)
                 display.display("PyKota Units left : %.2f" % user.AccountBalance, type=pyosd.TYPE_STRING)    
-            time.sleep(6)
+            time.sleep(DURATION + 1)
         except :
             cmd.crashed("Strange problem : please report it ASAP to alet@librelogiciel.com")
         else :
