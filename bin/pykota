@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2003/11/24 14:25:02  jalet
+# Missing import in pykota filter
+#
 # Revision 1.45  2003/11/19 23:19:37  jalet
 # Code refactoring work.
 # Explicit redirection to /dev/null has to be set in external policy now, just
@@ -187,7 +190,7 @@
 import sys
 import os
 
-from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
