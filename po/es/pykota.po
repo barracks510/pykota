@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/12/03 18:51:09  jalet
+# Fixed spanish translation
+#
 # Revision 1.3  2003/11/24 16:52:53  jalet
 # Line width in spanish translation
 #
@@ -127,10 +130,15 @@ msgstr ""
 msgid ""
 "\n"
 "\n"
-"Por favor contacte a su administrador del sistema:\n"
+"Please contact your system administrator :\n"
 "\n"
 "\t%s - <%s>\n"
 msgstr ""
+"\n"
+"\n"
+"Por favor contacte a su administrador del sistema:\n"
+"\n"
+"\t%s - <%s>\n"
 
 msgid "Invalid grace delay %s"
 msgstr "Tiempo de gracia %s inválido"
