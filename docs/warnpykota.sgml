@@ -29,29 +29,24 @@
     The <application>warnpykota</application> command was written with this in mind. 
     If you put this command in your <filename>crontab</filename>, launching it for example
     every day, then you'll be sure that all your users who are above their print quota
-    will not forget it !
+    will not forget it ! Of course they may delete the messages without having read them,
+    but at least they won't be able to say that they didn't received them ;-)
   </para>
   
   <para>
-    At the very least, try to make your best to disallow ordinary users to be able to
-    launch this command, since malicious users could fill other users mailboxes
-    by repeatedly running <application>warnpykota</application> : each user above
-    quota would receive multiple email messages, and possibly the administrator too !
+    When a non-root user launches this command, only him can receive a warning
+    message. He can specify a printer name's filter to check his quota only
+    on specific printers. If a non-root users uses the <literal>--groups</literal> command line
+    argument, then for each group he is a member of in the Quota Storage, each
+    group member may receive a warning message. You can take care of this if this
+    becomes annoying by forbidding normal users to launch the <application>warnpykota</application>
+    command.
   </para>
   
-  <sect1>
-    <title>Command line parameters</title>
-    <para>
-      TODO : blah
-    </para>
-  </sect1>
-  
-  <sect1>
-    <title>Examples</title>
-    <para>
-      TODO : blah
-    </para>
-  </sect1>
+  <para>
+    The <literal>root</literal> user can pass additionnal user or group names 
+    (or wildcard filters) to only check the users or groups whose name matches.
+  </para>  
   
   <sect1>
     <title>Reference</title>
@@ -66,10 +61,13 @@
           <arg>-P <replaceable>printername</replaceable></arg>
           <arg>--printer <replaceable>printername</replaceable></arg>
         </group>  
+        <group choice="opt">
+          <arg><replaceable>name1</replaceable></arg>
+          <arg><replaceable>name2</replaceable></arg>
+          <arg><replaceable>...</replaceable></arg>
+          <arg><replaceable>nameN</replaceable></arg>
+        </group>  
       </cmdsynopsis>
-    </para>
-    <para>
-      TODO
     </para>
   </sect1>
 </chapter>
@@ -77,6 +75,9 @@
 <!--
 
 $Log$
+Revision 1.5  2003/07/25 13:10:58  jalet
+Improved documentation
+
 Revision 1.4  2003/04/24 21:09:47  jalet
 Documentation slightly improved.
 
@@ -88,6 +89,5 @@ Improved documentation.
 
 Revision 1.1  2003/02/08 00:03:35  jalet
 Documentation skeleton added
-
 
 -->

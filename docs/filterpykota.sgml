@@ -6,7 +6,14 @@
   <para>Last modified on $Date$</para>
   
   <para>
-    To account for pages or eventually ink usage, you must plug your accounting
+    To account for pages or eventually ink usage 
+    <footnote>
+      <para>
+        PyKota doesn't currently account for ink usage, it only accounts
+        pages. To account for ink usage, you should use PrintBill instead.
+      </para>  
+    </footnote>  
+    , you must plug your accounting
     system somewhere into the printing system you use, be it either <application>CUPS</application>
     or <application>LPRng</application>. One way to do this without having
     to modify the printing system itself, is by using a <firstterm>filter</firstterm>.
@@ -53,8 +60,8 @@
   <para>
     When used with an <application>LPRng</application> backend, the accounting filter is not defined the same way 
     input filters are, so the problem described above doesn't exist, and <application>PyKota</application>
-    may work with non-postscript printers, provided they can report their page counter and you know how to do
-    this.
+    may work with non-postscript printers, provided they can report their page counter and you know how to retrieve
+    it.
   </para>
   
   <para>
@@ -70,7 +77,7 @@
     <application>pykota</application> then asks the printer for its internal page counter, read from the Quota DataBase the internal
     page counter for this printer when the previous job was launched, computes the difference, and report it as the 
     previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
-    warn him if he is over quota or his account balance below 0. Finally it checks if the user who launched the 
+    warn him if he is over quota or if his account balance is below 0. Finally it checks if the user who launched the 
     current job is below or above his print quota, and either allow or deny the job's datas to pass to the underlying 
     layer (the printer itself).
   </para>
@@ -82,6 +89,8 @@
     standard input. Your command must print the job's size in number of
     pages on a single line on its standard output. This number is then
     read by PyKota and used to update the current user's quota information.
+    Of course checks are also done like with the <literal>querying</literal>
+    accounting method, to see if the current job is allowed to be printed or not.
   </para>
   
   <para>
@@ -96,6 +105,9 @@
 <!--
 
 $Log$
+Revision 1.6  2003/07/25 13:10:58  jalet
+Improved documentation
+
 Revision 1.5  2003/07/25 10:41:29  jalet
 Better documentation.
 pykotme now displays the current user's account balance.

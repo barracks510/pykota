@@ -10,31 +10,66 @@
     reports describing current usage for every user on every printer.
   </para>
   
-  <para>
-    PyKota features a quota report generator, named <application>repykota</application>,
-    with which you can print the current state of the quota database.
-  </para>
-  
-  <para>
-    <application>PyKota</application> also features a CGI script to remotely access
-    to print quota reports with a web browser, it is called <application>printquota.cgi</application>
-    and you can put it in your web server's cgi-bin directory if a web server is installed on
-    any machine on which <application>PyKota</application> is also installed and configured
-    correctly.
-  </para>
-  
   <sect1>
-    <title><application>repykota</application> commmand line options</title>
+    <title>Command line based Print Quota reports</title>
+    
     <para>
-      Here's a decription of each of <application>repykota</application>
-      command line options.
+      PyKota features a quota report generator, named <application>repykota</application>,
+      with which you can print the current state of the quota database.
     </para>
+  
+    <sect2>
+      <title>Reference</title>
+      <para>
+        <cmdsynopsis>
+          <command>repykota</command>
+          <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+          <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+          <group choice="opt"><arg>-u</arg><arg>--users</arg></group>
+          <group choice="opt"><arg>-g</arg><arg>--groups</arg></group>
+          <group choice="opt">
+            <arg>-P <replaceable>printername</replaceable></arg>
+            <arg>--printer <replaceable>printername</replaceable></arg>
+          </group>  
+          <group choice="opt">
+            <arg><replaceable>name1</replaceable></arg>
+            <arg><replaceable>name2</replaceable></arg>
+            <arg><replaceable>...</replaceable></arg>
+            <arg><replaceable>nameN</replaceable></arg>
+          </group>  
+        </cmdsynopsis>
+      </para>
+    </sect2>
   </sect1>
   
   <sect1>
-    <title>examples</title>
+    <title>Web based Print Quota reports</title>
+    
     <para>
-      Here are some examples of <application>repykota</application> usage.
+      <application>PyKota</application> also features a CGI script to remotely access
+      to print quota reports with a web browser, it is called <application>printquota.cgi</application>
+      and you can put it in your web server's <filename>cgi-bin</filename> directory if a web server is installed on
+      any machine on which <application>PyKota</application> is also installed and configured
+      correctly.
+    </para>
+    
+    <para>
+      You can find <filename>printquota.cgi</filename> in the <filename>pykota/cgi-bin</filename>
+      directory. Here's how to install it, provided that your web server's <filename>cgi-bin</filename>
+      directory is <filename>/usr/lib/cgi-bin</filename> :
+<screen>      
+port50-2:/home/jerome/pykota$ cp cgi-bin/printquota.cgi /usr/lib/cgi-bin
+port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
+</screen>
+
+      <note>
+        <title>Note</title>
+        <para>
+          Please ensure that the user your web server is run as, for example <literal>www-data</literal> under
+          Debian, is allowed to read <filename>/etc/pykota/pykota.conf</filename> but for security reasons you
+          must ensure that this user <emphasis>is not</emphasis> allowed to read <filename>/etc/pykota/pykotadmin.conf</filename>
+        </para>
+      </note>  
     </para>
   </sect1>
 </chapter>
@@ -42,6 +77,9 @@
 <!--
 
 $Log$
+Revision 1.5  2003/07/25 13:10:58  jalet
+Improved documentation
+
 Revision 1.4  2003/04/24 21:09:47  jalet
 Documentation slightly improved.
 

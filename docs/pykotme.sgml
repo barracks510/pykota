@@ -62,11 +62,35 @@ port50-2:~$
 </screen>
     </para>
   </sect1>
+  
+  <sect1>
+    <title>Reference</title>
+    <para>
+      <cmdsynopsis>
+        <command>pykotme</command>
+        <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+        <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+        <group choice="opt">
+          <arg>-P <replaceable>printername</replaceable></arg>
+          <arg>--printer <replaceable>printername</replaceable></arg>
+        </group>  
+        <group choice="opt">
+          <arg><replaceable>filename1</replaceable></arg>
+          <arg><replaceable>filename2</replaceable></arg>
+          <arg><replaceable>...</replaceable></arg>
+          <arg><replaceable>filenameN</replaceable></arg>
+        </group>  
+      </cmdsynopsis>
+    </para>
+  </sect1>
 </chapter>
 
 <!--
 
 $Log$
+Revision 1.2  2003/07/25 13:10:58  jalet
+Improved documentation
+
 Revision 1.1  2003/07/25 10:41:30  jalet
 Better documentation.
 pykotme now displays the current user's account balance.
