@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in order of importance :
 
+        - Allow the --ingroups command line option to repykota, to
+          report only users members of the specified groups.
+          
         - Documentation...
           
         - Complete web administrative interface with graphical reports.
