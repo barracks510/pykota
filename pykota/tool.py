@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2003/11/25 13:33:43  jalet
+# Puts 'root' instead of '' when printing from CUPS web interface (which
+# gives an empty username)
+#
 # Revision 1.58  2003/11/21 14:28:45  jalet
 # More complete job history.
 #
@@ -663,7 +667,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             return ("CUPS", \
                     printerhostname, \
                     os.environ.get("PRINTER"), \
-                    sys.argv[2].strip(), \
+                    sys.argv[2].strip() or 'root', \
                     sys.argv[1].strip(), \
                     inputfile, \
                     int(sys.argv[4].strip()), \
