@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/12/29 14:12:48  uid67467
+# Tries to workaround possible integrity violations when retrieving printer groups
+#
 # Revision 1.25  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -397,12 +400,13 @@ class Storage(BaseStorage) :
     def getParentPrinters(self, printer) :    
         """Get all the printer groups this printer is a member of."""
         pgroups = []
-        result = self.doSearch("SELECT printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s;" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT groupid,printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s;" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                parentprinter = self.getPrinter(record.get("printername"))
-                if parentprinter.Exists :
-                    pgroups.append(parentprinter)
+                if record["groupid"] != printer.ident : # in case of integrity violation
+                    parentprinter = self.getPrinter(record.get("printername"))
+                    if parentprinter.Exists :
+                        pgroups.append(parentprinter)
         return pgroups
         
     def addPrinter(self, printername) :        

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2003/12/29 14:12:48  uid67467
+# Tries to workaround possible integrity violations when retrieving printer groups
+#
 # Revision 1.41  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -566,9 +569,10 @@ class Storage(BaseStorage) :
         result = self.doSearch("(&(objectClass=pykotaPrinter)(uniqueMember=%s))" % printer.ident, ["pykotaPrinterName"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
-                parentprinter = self.getPrinter(fields.get("pykotaPrinterName")[0])
-                if parentprinter.Exists :
-                    pgroups.append(parentprinter)
+                if printerid != printer.ident : # In case of integrity violation.
+                    parentprinter = self.getPrinter(fields.get("pykotaPrinterName")[0])
+                    if parentprinter.Exists :
+                        pgroups.append(parentprinter)
         return pgroups
         
     def addPrinter(self, printername) :        
