@@ -145,8 +145,8 @@ PyKota features :
           options and show usage examples.
           
         - Completely internationalized. Actually supports the  
-          English, French, Spanish, Portuguese and Swedish 
-          languages. More to come.
+          English, French, Spanish, Portuguese, Brasilian, Swedish 
+          and Italian languages. More to come.
 
 ====================================================================
         
@@ -165,9 +165,7 @@ implemented :
     
     With LPRng, this is done just before the beginning of a job, and used 
     this to modify the *preceding* user's quota. So you're always late 
-    of one print job, but this is generally ok, especially because a 
-    check is also done to see if the current user is allowed or not to 
-    print. 
+    of one print job, but this is generally ok.
     
   - The 'external' method consists in delegating the computation of the
     job's size in number of pages to any external command of your choice.
@@ -176,18 +174,16 @@ implemented :
     account are reported immediately, both with CUPS and LPRng.
     
   - The 'stupid' method consists in counting the 'showpage' PostSript  
-    statements in the job. THIS IS UNRELIABLE, but can serve as an
-    example if you plan to write your own accounting method for
-    integration into PyKota. It basically works like the 'external'
-    method, but does the computation internally.
+    statements in the job. THIS IS UNRELIABLE, SO DON'T USE IT, but 
+    can serve as an example if you plan to write your own accounting 
+    method for integration into PyKota. It basically works like the 
+    'external' method, but does the computation internally and in
+    a non-reliable way.
   
 PyKota is known to work fine with HP Laserjet 2100 and 2200, and 
 Apple LaserWriter 16/600 PS, both with CUPS and LPRng, under 
-Debian GNU/Linux (Sarge and Sid) operating systems.
-
-I'm interested in receiving success or failure reports with other
-brands or models of printers, as well as with other operating 
-systems.
+Debian GNU/Linux (Sarge and Sid) operating systems. It should work
+fine with most network printers.
 
 ============================================================
 
@@ -243,6 +239,11 @@ NB :
   PygreSQL must be linked with the PostgreSQL client libraries on 
   the Print Server. The PostgreSQL client libraries' version must 
   match the PostgreSQL version used on the Quota Storage Server. 
+  BEWARE : under Debian Sarge, as of March 15th 2004, there's a
+  problem with python2.2-pygresql and python-2.3-pygresql, so please
+  install python2.1-pygresql and use Python 2.1 to install and run
+  PyKota. This is not a bug in PyKota, and this should be fixed
+  by Debian in a few days I hope.
   
 or  
 
@@ -334,7 +335,8 @@ The rest of the installation depends on your printing system :
         
         Now double check /etc/pykota/pykota.conf 
         This file should contain a section named after the
-        printer you've just added.
+        printer you've just added, unless you have set
+        all options globally.
         
         That's all.
     
@@ -396,6 +398,13 @@ printers is named pkprinters
     
     will tell you how to create, manage or delete printers and
     printers groups.
+    
+    $ pkprinters --add --charge 0.05 hp2100
+    
+    would add the printer named hp2100 with a price per page
+    of 0.05 unit.
+
+Now set quotas for users on this printer :     
 
     $ edpykota --add -P hp2100 -S 40 -H 50 user1 ... userN
         
@@ -446,7 +455,8 @@ or :
 Quota reports are also available remotely by using the CGI script
 printquota.cgi provided in the cgi-bin/ subdirectory. You can 
 also use the CSS stylesheet present in the stylesheets/ subdirectory
-and put it at your web server's DocumentRoot.
+and put it at your web server's DocumentRoot, to benefit from a nicer 
+look, especially quota violations will appear in different colors.
 
 For different security concerns, please give a look at the SECURITY
 file which is part of this software.
