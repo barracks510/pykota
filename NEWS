@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha14 :
+    
+        - Now printing on a printer not defined in the Quota Storage,
+          results in the job being cancelled or stopped, depending
+          on the printing system.
+          
     - 1.16alpha13 :
     
         - Small bugfix wrt Python v2.1

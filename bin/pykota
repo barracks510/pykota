@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2003/11/26 19:17:35  jalet
+# Printing on a printer not present in the Quota Storage now results
+# in the job being stopped or cancelled depending on the system.
+#
 # Revision 1.46  2003/11/24 14:25:02  jalet
 # Missing import in pykota filter
 #
@@ -230,9 +234,10 @@ def main(thefilter) :
     # Get the last page counter and last username from the Quota Storage backend
     printer = thefilter.storage.getPrinter(thefilter.printername)
     if not printer.Exists :
-        # The printer is unknown from the Quota Storage perspective
-        # we let the job pass through, but log a warning message
-        thefilter.logger.log_message(_("Printer %s not registered in the PyKota system") % thefilter.printername, "warn")
+        # The printer is unknown from the Quota Storage perspective.
+        # we just cancel the job.
+        thefilter.logger.log_message(_("Printer %s not registered in the PyKota system") % thefilter.printername, "error")
+        return thefilter.removeJob()
     else :    
         for dummy in range(2) :
             user = thefilter.storage.getUser(thefilter.username)
@@ -278,10 +283,10 @@ def main(thefilter) :
             thefilter.logger.log_message(_("External policy %s for printer %s couldn't add user %s. Job rejected.") % (commandline, thefilter.printername, thefilter.username), "error")
             return thefilter.removeJob()
         
-    # pass the job untouched to the underlying layer
-    thefilter.accounter.filterInput(thefilter.inputfile)      
+        # pass the job untouched to the underlying layer
+        thefilter.accounter.filterInput(thefilter.inputfile)      
     
-    return thefilter.acceptJob()
+        return thefilter.acceptJob()
 
 if __name__ == "__main__" :    
     retcode = -1

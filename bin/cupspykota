@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/11/26 19:17:35  jalet
+# Printing on a printer not present in the Quota Storage now results
+# in the job being stopped or cancelled depending on the system.
+#
 # Revision 1.14  2003/11/25 13:25:45  jalet
 # Boolean problem with old Python, replaced with 0
 #
@@ -136,9 +140,10 @@ def main(thebackend) :
     printer = thebackend.storage.getPrinter(thebackend.printername)
     if not printer.Exists :
         # The printer is unknown from the Quota Storage perspective
-        # we let the job pass through, but log a warning message
-        thebackend.logger.log_message(_("Printer %s not registered in the PyKota system") % thebackend.printername, "warn")
-        action = "ALLOW"
+        # we send an error back to CUPS, which will stop
+        # the print queue.
+        thebackend.logger.log_message(_("Printer %s not registered in the PyKota system") % thebackend.printername, "error")
+        return 1
     else :    
         for dummy in range(2) :
             user = thebackend.storage.getUser(thebackend.username)
@@ -186,192 +191,192 @@ def main(thebackend) :
             thebackend.logger.log_message(_("External policy %s for printer %s couldn't add user %s. Job rejected.") % (commandline, thebackend.printername, thebackend.username), "error")
             return 0
         
-    if action not in ["ALLOW", "WARN"] :    
-        # if not allowed to print then die, else proceed.
-        # we die without error, so that the job doesn't 
-        # stop the print queue.
-        retcode = 0
-    else :
-        # pass the job untouched to the underlying layer
-        # and starts accounting at the same time
-        thebackend.accounter.beginJob(printer, user)
-        
-        # Now it becomes tricky...
-        
-        # First ensure that we have a file object as input
-        mustclose = 0    
-        if thebackend.inputfile is not None :    
-            if hasattr(thebackend.inputfile, "read") :
-                infile = thebackend.inputfile
-            else :    
-                infile = open(thebackend.inputfile, "rb")
-            mustclose = 1
-        else :    
-            infile = sys.stdin
+        if action not in ["ALLOW", "WARN"] :    
+            # if not allowed to print then die, else proceed.
+            # we die without error, so that the job doesn't 
+            # stop the print queue.
+            retcode = 0
+        else :
+            # pass the job untouched to the underlying layer
+            # and starts accounting at the same time
+            thebackend.accounter.beginJob(printer, user)
             
-        # Find the real backend pathname    
-        realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
-        
-        # And launch it
-        subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, bufsize=0, arg0=os.environ["DEVICE_URI"])
-        
-        # Save file descriptors, we will need them later.
-        infno = infile.fileno()
-        stdoutfno = sys.stdout.fileno()
-        stderrfno = sys.stderr.fileno()
-        fromcfno = subprocess.fromchild.fileno()
-        tocfno = subprocess.tochild.fileno()
-        cerrfno = subprocess.childerr.fileno()
-        
-        # We will have to be careful when dealing with I/O 
-        # So we use a poll object to know when to read or write
-        pollster = select.poll()
-        pollster.register(infno, select.POLLIN | select.POLLPRI)
-        pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
-        pollster.register(cerrfno, select.POLLIN | select.POLLPRI)
-        pollster.register(stdoutfno, select.POLLOUT)
-        pollster.register(stderrfno, select.POLLOUT)
-        pollster.register(tocfno, select.POLLOUT)
-        
-        # Initialize our buffers
-        indata = ""
-        outdata = ""
-        errdata = ""
-        endinput = 0
-        status = -1
-        while status == -1 :
-            # First check if original backend is still alive
-            status = subprocess.poll()
+            # Now it becomes tricky...
             
-            # Now if we got SIGTERM, we have 
-            # to kill -TERM the original backend
-            if gotSigTerm :
-                try :
-                    os.kill(subprocess.pid, signal.SIGTERM)
-                except : # ignore if process was already killed.
-                    pass
-            
-            # In any case, deal with any remaining I/O
-            availablefds = pollster.poll()
-            for (fd, mask) in availablefds :
-                if mask & select.POLLOUT :
-                    # We can write
-                    if fd == tocfno :
-                        if indata :
-                            os.write(fd, indata)    
-                            indata = ""
-                    elif fd == stdoutfno :
-                        if outdata :
-                            os.write(fd, outdata)
-                            outdata = ""
-                    elif fd == stderrfno :
-                        if errdata :
-                            os.write(fd, errdata)
-                            errdata = ""
-                if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
-                    # We have something to read
-                    data = os.read(fd, 256 * 1024)
-                    if fd == infno :
-                        indata += data
-                        if not data :    # If yes, then no more input data
-                            endinput = 1 # this happens with real files.
-                    elif fd == fromcfno :
-                        outdata += data
-                    elif fd == cerrfno :    
-                        errdata += data
-                if (mask & select.POLLHUP) or (mask & select.POLLERR) :
-                    # I've never seen POLLERR myself, but this probably
-                    # can't hurt to treat an error condition just like 
-                    # an EOF.
-                    # 
-                    # Some standard I/O stream has no more datas
-                    if fd == infno :
-                        # Here we are in the case where the input file is stdin.
-                        # which has no more data to be read.
-                        endinput = 1
-                    elif fd == fromcfno :    
-                        # This should never happen, since
-                        # CUPS backends don't send anything on their
-                        # standard output
-                        if outdata :                
-                            try :
-                                os.write(stdoutfno, outdata)
-                                outdata = ""
-                            except :    
-                                pass
-                        try :        
-                            pollster.unregister(fromcfno)        
-                        except KeyError :    
-                            pass
-                        else :    
-                            os.close(fromcfno)
-                    elif fd == cerrfno :    
-                        # Original CUPS backend has finished 
-                        # to write informations on its standard error
-                        if errdata :                
-                            # Try to write remaining info (normally "Ready to print.")
-                            try :
-                                os.write(stderrfno, errdata)
-                                errdata = ""
-                            except :    
-                                pass
-                        # We are no more interested in this file descriptor        
-                        try :        
-                            pollster.unregister(cerrfno)        
-                        except KeyError :    
-                            pass
-                        else :    
-                            os.close(cerrfno)
-                        
-            if endinput :            
-                # We deal with remaining input datas here
-                # because EOF can happen in two different
-                # situations and I don't want to duplicate
-                # code, nor making functions.
-                if indata :                
-                    try :
-                        os.write(tocfno, indata)
-                        indata = ""
-                    except :    
-                        pass
-                # Again, we're not interested in this file descriptor        
-                # anymore.
-                try :        
-                    pollster.unregister(tocfno)        
-                except KeyError :    
-                    pass
+            # First ensure that we have a file object as input
+            mustclose = 0    
+            if thebackend.inputfile is not None :    
+                if hasattr(thebackend.inputfile, "read") :
+                    infile = thebackend.inputfile
                 else :    
-                    os.close(tocfno)
+                    infile = open(thebackend.inputfile, "rb")
+                mustclose = 1
+            else :    
+                infile = sys.stdin
                 
-        # Input file was a real file, we have to close it.    
-        if mustclose :
-            infile.close()
+            # Find the real backend pathname    
+            realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
             
-        # Check exit code of original CUPS backend.    
-        if os.WIFEXITED(status) :
-            retcode = os.WEXITSTATUS(status)
-        else :    
-            thebackend.logger.log_message(_("CUPS backend %s died abnormally.") % realbackend, "error")
-            retcode = -1
-    
-    # stops accounting. 
-    thebackend.accounter.endJob(printer, user)
+            # And launch it
+            subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, bufsize=0, arg0=os.environ["DEVICE_URI"])
+            
+            # Save file descriptors, we will need them later.
+            infno = infile.fileno()
+            stdoutfno = sys.stdout.fileno()
+            stderrfno = sys.stderr.fileno()
+            fromcfno = subprocess.fromchild.fileno()
+            tocfno = subprocess.tochild.fileno()
+            cerrfno = subprocess.childerr.fileno()
+            
+            # We will have to be careful when dealing with I/O 
+            # So we use a poll object to know when to read or write
+            pollster = select.poll()
+            pollster.register(infno, select.POLLIN | select.POLLPRI)
+            pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
+            pollster.register(cerrfno, select.POLLIN | select.POLLPRI)
+            pollster.register(stdoutfno, select.POLLOUT)
+            pollster.register(stderrfno, select.POLLOUT)
+            pollster.register(tocfno, select.POLLOUT)
+            
+            # Initialize our buffers
+            indata = ""
+            outdata = ""
+            errdata = ""
+            endinput = 0
+            status = -1
+            while status == -1 :
+                # First check if original backend is still alive
+                status = subprocess.poll()
+                
+                # Now if we got SIGTERM, we have 
+                # to kill -TERM the original backend
+                if gotSigTerm :
+                    try :
+                        os.kill(subprocess.pid, signal.SIGTERM)
+                    except : # ignore if process was already killed.
+                        pass
+                
+                # In any case, deal with any remaining I/O
+                availablefds = pollster.poll()
+                for (fd, mask) in availablefds :
+                    if mask & select.POLLOUT :
+                        # We can write
+                        if fd == tocfno :
+                            if indata :
+                                os.write(fd, indata)    
+                                indata = ""
+                        elif fd == stdoutfno :
+                            if outdata :
+                                os.write(fd, outdata)
+                                outdata = ""
+                        elif fd == stderrfno :
+                            if errdata :
+                                os.write(fd, errdata)
+                                errdata = ""
+                    if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
+                        # We have something to read
+                        data = os.read(fd, 256 * 1024)
+                        if fd == infno :
+                            indata += data
+                            if not data :    # If yes, then no more input data
+                                endinput = 1 # this happens with real files.
+                        elif fd == fromcfno :
+                            outdata += data
+                        elif fd == cerrfno :    
+                            errdata += data
+                    if (mask & select.POLLHUP) or (mask & select.POLLERR) :
+                        # I've never seen POLLERR myself, but this probably
+                        # can't hurt to treat an error condition just like 
+                        # an EOF.
+                        # 
+                        # Some standard I/O stream has no more datas
+                        if fd == infno :
+                            # Here we are in the case where the input file is stdin.
+                            # which has no more data to be read.
+                            endinput = 1
+                        elif fd == fromcfno :    
+                            # This should never happen, since
+                            # CUPS backends don't send anything on their
+                            # standard output
+                            if outdata :                
+                                try :
+                                    os.write(stdoutfno, outdata)
+                                    outdata = ""
+                                except :    
+                                    pass
+                            try :        
+                                pollster.unregister(fromcfno)        
+                            except KeyError :    
+                                pass
+                            else :    
+                                os.close(fromcfno)
+                        elif fd == cerrfno :    
+                            # Original CUPS backend has finished 
+                            # to write informations on its standard error
+                            if errdata :                
+                                # Try to write remaining info (normally "Ready to print.")
+                                try :
+                                    os.write(stderrfno, errdata)
+                                    errdata = ""
+                                except :    
+                                    pass
+                            # We are no more interested in this file descriptor        
+                            try :        
+                                pollster.unregister(cerrfno)        
+                            except KeyError :    
+                                pass
+                            else :    
+                                os.close(cerrfno)
+                            
+                if endinput :            
+                    # We deal with remaining input datas here
+                    # because EOF can happen in two different
+                    # situations and I don't want to duplicate
+                    # code, nor making functions.
+                    if indata :                
+                        try :
+                            os.write(tocfno, indata)
+                            indata = ""
+                        except :    
+                            pass
+                    # Again, we're not interested in this file descriptor        
+                    # anymore.
+                    try :        
+                        pollster.unregister(tocfno)        
+                    except KeyError :    
+                        pass
+                    else :    
+                        os.close(tocfno)
+                    
+            # Input file was a real file, we have to close it.    
+            if mustclose :
+                infile.close()
+                
+            # Check exit code of original CUPS backend.    
+            if os.WIFEXITED(status) :
+                retcode = os.WEXITSTATUS(status)
+            else :    
+                thebackend.logger.log_message(_("CUPS backend %s died abnormally.") % realbackend, "error")
+                retcode = -1
         
-    # retrieve the job size    
-    jobsize = thebackend.accounter.getJobSize()
-    
-    # update the quota for the current user on this printer 
-    if printer.Exists :
-        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
-        if jobsize :
-            userquota = thebackend.storage.getUserPQuota(user, printer)
-            if userquota.Exists :
-                userquota.increasePagesUsage(jobsize)
+        # stops accounting. 
+        thebackend.accounter.endJob(printer, user)
+            
+        # retrieve the job size    
+        jobsize = thebackend.accounter.getJobSize()
         
-        # adds the current job to history    
-        printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize, jobprice, thebackend.preserveinputfile, thebackend.title, thebackend.copies, thebackend.options)
-    
-    return retcode # return (retcode or gotSigTerm) shouldn't be needed
+        # update the quota for the current user on this printer 
+        if printer.Exists :
+            jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
+            if jobsize :
+                userquota = thebackend.storage.getUserPQuota(user, printer)
+                if userquota.Exists :
+                    userquota.increasePagesUsage(jobsize)
+            
+            # adds the current job to history    
+            printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize, jobprice, thebackend.preserveinputfile, thebackend.title, thebackend.copies, thebackend.options)
+        
+        return retcode # return (retcode or gotSigTerm) shouldn't be needed
 
 if __name__ == "__main__" :    
     # This is a CUPS backend, we should act and die like a CUPS backend
