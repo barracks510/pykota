@@ -38,7 +38,8 @@ Actual working features :
           WARNING : actually all your printers must have an unique name,
                     but this may change in a future version.
                     
-        - SNMP querying of any networked SNMP-enabled printer.            
+        - SNMP querying of any networked SNMP-enabled printer. More
+          querying methods will be implemented soon.
         
         - Special scripts included for a seamless integration of
           PyKota on Debian machines.
