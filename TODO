@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Maybe put "gracedelay" in the database.
+        
+        - Allow admin to specify a prefix to delete from
+          usernames when printing, just like what is done
+          for the "utolower" directive.
+          
         - Price multiplier/divisor which can be set on a per
           user or per user group basis.
 
