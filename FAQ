@@ -99,16 +99,16 @@ PyKota's FAQ :
     have to modify it. See the rest of this document to
     learn how to really diagnose what went wrong.
     
-  * I've downloaded PyKota from CVS using a Windows based CVS  
-    tool, and now nothing works at all. What happened ?
+  * I've downloaded PyKota from Subversion using a Windows based Subversion
+    client, and now nothing works at all. What happened ?
     
-    Some (all?) Windows based CVS tools translate *nix line endings
-    (character Line Feed, ASCII code 10) into Windows line endings
+    Some (all?) Windows based CVS or Subversion tools translate *nix line 
+    endings (character Line Feed, ASCII code 10) into Windows line endings
     (character Carriage Return, ASCII code 13, followed with 
     character Line Feed). This breaks the software which has
     to run under *nix compatible systems. Set correct options
-    in your CVS software so that it doesn't do any translation,
-    or use an Unix-like version of CVS, download again and
+    in your Subversion software so that it doesn't do any translation,
+    or use an Unix-like version of Subversion, download again and
     reinstall the software. It should work.
     
   * Why doesn't CUPS under Debian Woody automatically

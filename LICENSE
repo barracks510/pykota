@@ -22,38 +22,36 @@ Download :
 
   * PyKota is distributed under the "GNU General Public License":/GPL
 
-  * You can access to PyKota's source code by using CVS from :
+  * You can access to PyKota's source code by using SubVersion (aka SVN) :
   
-      "http://savannah.nongnu.org/cvs/?group=pykota":http://savannah.nongnu.org/cvs/?group=pykota
-
-    Then follow the instructions in the section labeled "Getting a Copy of the CVS Repository". 
+      $ svn co svn://svn.librelogiciel.com/pykota/trunk pykota
 
   * Clients who purchased an **Official PyKota Package** can directly access to "the tarballs HERE":
 http://www.librelogiciel.com/software/PyKota/tarballs .
                
 Why no tarball is available for free :
 
-  * The CVS version will always be labelled as **unofficial** and the word **unofficial**
+  * The SVN version will always be labelled as **unofficial** and the word **unofficial**
     will appear whenever you run PyKota command line tools with the *--version* command line
     argument.
 
   * I ask you to not label or present a version of PyKota downloaded 
-    from CVS as being the 'OFFICIAL' one. 
+    from SVN as being the 'OFFICIAL' one. 
 
   * I encourage you to buy an 'OFFICIAL' PyKota package. See below for 
     the benefits of doing so. 
 
-  * A PyKota version obtained either from CVS (unofficial) or by 
+  * A PyKota version obtained either from SVN (unofficial) or by 
     purchasing an official package, **IS FREELY REDISTRIBUTABLE AND 
     MODIFIABLE, AT NO COST, UNDER THE TERMS OF THE GNU GENERAL PUBLIC 
     LICENSE.** 
 
   * Version number excepted, **THERE'S NO SOURCE CODE DIFFERENCE 
     BETWEEN 'OFFICIAL' AND 'UNOFFICIAL' VERSIONS OF PyKota.** However it 
-    should be clear to you that the latest version you can find in CVS 
+    should be clear to you that the latest version you can find in SVN 
     may be somewhat unstable or unfinished, since this software is a 
     work in progress, and that it's up to you to download working 
-    revisions from the CVS tree. That's why I suggest that you purchase 
+    revisions from the SVN tree. That's why I suggest that you purchase 
     an **'OFFICIAL'** version, because it will be simpler for you (and 
     better for me). Also the documentation included in the 
     **'UNOFFICIAL'** version is only delivered in DocBook XML/SGML 

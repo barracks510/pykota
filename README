@@ -390,27 +390,27 @@ Hint :
 Then :   
 ------
  
-Download the latest PyKota version from the CVS tree on :
+Download the latest PyKota version from the Subversion tree :
 
-    http://savannah.nongnu.org/projects/pykota
+    $ svn co svn://svn.librelogiciel.com/pykota/trunk pykota
 
 You can now check if the dependencies are correct by typing :
 
-    python checkdeps.py
+    $ python checkdeps.py
     
 To install the software, just type :
 
-    python setup.py install
+    $ python setup.py install
 
 You may need to be logged in with sufficient privileges (e.g. root)
 
 Create a system user for PyKota :
 
-    adduser --system --group --home /etc/pykota --gecos PyKota pykota
+    $ adduser --system --group --home /etc/pykota --gecos PyKota pykota
     
 Put the user your printing system is run as in the pykota system group :
 
-    adduser lp pykota
+    $ adduser lp pykota
     
     NB : on our system, the CUPS printing system runs as system user 'lp'.
     Please adapt this to your own system.
