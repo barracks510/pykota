@@ -133,6 +133,10 @@ WARNING :
   upgrade you Quota Storage Database. Please read the documentation 
   included in the initscripts subdirectory first ! 
   
+  Users of MacOS-X may find the following tutorial useful :
+
+      http://ell-tech.com/pages/pykota.php
+
 Prerequisite : 
 --------------
    
