@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.64  2005/01/18 19:47:50  jalet
+# Big bug fix wrt the datelimit attribute
+#
 # Revision 1.63  2005/01/01 08:16:17  jalet
 # Fixed a problem which occured when 'limitby' was unset in the PostgreSQL
 # database
@@ -521,7 +524,7 @@ class SQLStorage :
        
     def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
         """Sets the new page counters permanently for a user print quota."""
-        self.doModify("UPDATE userpquota SET pagecounter=%s,lifepagecounter=%s WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
+        self.doModify("UPDATE userpquota SET pagecounter=%s, lifepagecounter=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
        
     def decreaseUserAccountBalance(self, user, amount) :    
         """Decreases user's account balance from an amount."""

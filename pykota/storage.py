@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.67  2005/01/18 19:47:50  jalet
+# Big bug fix wrt the datelimit attribute
+#
 # Revision 1.66  2004/12/02 21:24:50  jalet
 # Integrated the patch by Wilson Roberto Afonso and Matt Hyclak to allow
 # edpykota to accept the -U | --used value command line option.
@@ -446,22 +449,33 @@ class StorageUserPQuota(StorageObject) :
         """Sets the PageCounter and LifePageCounter to used, or if used is + or - prefixed, changes the values of {Life,}PageCounter by that amount."""
         vused = int(used)
         if used.startswith("+") or used.startswith("-") :
-           self.parent.increaseUserPQuotaPagesCounters(self, vused)
-           self.PageCounter += vused
-           self.LifePageCounter += vused
+            self.parent.beginTransaction()
+            try :
+                self.parent.increaseUserPQuotaPagesCounters(self, vused)
+                self.parent.writeUserPQuotaDateLimit(self, None)
+            except PyKotaStorageError, msg :    
+                self.parent.rollbackTransaction()
+                raise PyKotaStorageError, msg
+            else :
+                self.parent.commitTransaction()
+            self.PageCounter += vused
+            self.LifePageCounter += vused
         else :
-           self.parent.writeUserPQuotaPagesCounters(self, vused, vused)
-           self.PageCounter = self.LifePageCounter = vused
+            self.parent.writeUserPQuotaPagesCounters(self, vused, vused)
+            self.PageCounter = self.LifePageCounter = vused
+        self.DateLimit = None
 
     def reset(self) :    
         """Resets page counter to 0."""
         self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))
         self.PageCounter = 0
+        self.DateLimit = None
         
     def hardreset(self) :    
         """Resets actual and life time page counters to 0."""
         self.parent.writeUserPQuotaPagesCounters(self, 0, 0)
         self.PageCounter = self.LifePageCounter = 0
+        self.DateLimit = None
         
     def computeJobPrice(self, jobsize) :    
         """Computes the job price as the sum of all parent printers' prices + current printer's ones."""
@@ -510,6 +524,38 @@ class StorageGroupPQuota(StorageObject) :
             return self.ParentPrintersGroupPQuota
         else :
             raise AttributeError, name
+        
+    def reset(self) :    
+        """Resets page counter to 0."""
+        self.parent.beginTransaction()
+        try :
+            for user in self.parent.getGroupMembers(self.Group) :
+                uq = self.parent.getUserPQuota(user, self.Printer)
+                uq.reset()
+            self.parent.writeGroupPQuotaDateLimit(self, None)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+        self.PageCounter = 0
+        self.DateLimit = None
+        
+    def hardreset(self) :    
+        """Resets actual and life time page counters to 0."""
+        self.parent.beginTransaction()
+        try :
+            for user in self.parent.getGroupMembers(self.Group) :
+                uq = self.parent.getUserPQuota(user, self.Printer)
+                uq.hardreset()
+            self.parent.writeGroupPQuotaDateLimit(self, None)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+        self.PageCounter = self.LifePageCounter = 0
+        self.DateLimit = None
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""

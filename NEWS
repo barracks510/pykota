@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha20 :
+    
+        - Big bug fix wrt the datelimit field which was never
+          reset.
+          
     - 1.21alpha19 :
     
         - Introduction of the new dumpykota.cgi CGI script, which

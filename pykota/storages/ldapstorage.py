@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.95  2005/01/18 19:47:50  jalet
+# Big bug fix wrt the datelimit attribute
+#
 # Revision 1.94  2005/01/01 18:53:27  jalet
 # Implemented in the LDAP backend code the same fix than in PostgreSQL backend
 # code for people who don't use PyKota tools to manage accounts.
@@ -1166,6 +1169,7 @@ class Storage(BaseStorage) :
         fields = {
                    "pykotaPageCounter" : str(newpagecounter),
                    "pykotaLifePageCounter" : str(newlifepagecounter),
+                   "pykotaDateLimit" : None,
                  }  
         return self.doModify(userpquota.ident, fields)         
        

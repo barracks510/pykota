@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.85  2005/01/18 19:47:49  jalet
+# Big bug fix wrt the datelimit attribute
+#
 # Revision 1.84  2005/01/17 08:44:23  jalet
 # Modified copyright years
 #
@@ -690,11 +693,13 @@ class EdPyKota(PyKotaTool) :
                             entry.setLimitBy(limitby)
                             changed[entry.Name]["limitby"] = limitby
                     
+                    if options["reset"] :
+                        entrypquota.reset()
+                        
+                    if options["hardreset"] :    
+                        entrypquota.hardreset()
+                        
                     if not options["groups"] :
-                        if options["reset"] :
-                            entrypquota.reset()
-                        if options["hardreset"] :    
-                            entrypquota.hardreset()
                         if options["used"] :
                             entrypquota.setUsage(used)
                             
@@ -772,7 +777,7 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif options["groups"] and (options["balance"] or options["ingroups"] or options["used"] or options["reset"] or options["hardreset"]) :
+        elif options["groups"] and (options["balance"] or options["ingroups"] or options["used"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = editor.main(args, options)
