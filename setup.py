@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/02/07 13:45:51  jalet
+# Preliminary work on the pkhint command
+#
 # Revision 1.33  2004/02/04 11:16:59  jalet
 # pkprinters command line tool added.
 #
@@ -382,7 +385,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
+      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
       data_files = data_files)
 
 if ("install" in sys.argv) and not ("help" in sys.argv) :

@@ -1,0 +1,229 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota tool to hint for printer accounters
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2004/02/07 13:45:51  jalet
+# Preliminary work on the pkhint command
+#
+#
+#
+
+import sys
+import os
+
+from pykota import version
+from pykota.tool import PyKotaTool,PyKotaToolError
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
+
+__doc__ = """pkhint v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+A tool to give hints on what accounting method is best for each printer.
+
+command line usage :
+
+  pkhint [options] [printer1 printer2 printer3 ... printerN]
+
+options :
+
+  -v | --version       Prints pkhint's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+examples :                              
+
+  $ pkhint "hp*" printer103 
+  
+  Will analyze your printing system to test which accounter
+  is the best for each of the defined printer which
+  name matches one of the parameters.
+  
+  If you don't pass any argument on the command line, all
+  printers will be analyzed.
+  
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+        
+SNMPTESTS = [ \
+              '/usr/bin/npadmin --pagecount %(printer)s', \
+              '/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " "', \
+              '/usr/bin/snmpwalk -v 1 -Cc -c public %(printer)s | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4', \
+              '/usr/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2', \
+            ]
+
+class PKHint(PyKotaTool) :
+    """A class to autodetect the best accounting method for printers."""
+    def extractPrintersInformation(self) :    
+        """Extracts printer information from the printing system.
+          
+           Returns a mapping { queuename : device, ... }
+        """   
+        printers = {}
+        current_printer = None
+        for line in [l.strip() for l in sys.stdin.readlines()] :
+            testline = line.lower()
+            if testline.startswith("<printer ") or testline.startswith("<defaultprinter ") :
+                # beginning of a CUPS printer definition
+                current_printer = line.split()[-1][:-1]
+            elif testline.startswith("</printer ") :
+                # end of a CUPS printer definition
+                current_printer = None
+            elif testline.startswith("deviceuri ") :
+                # CUPS printer device_uri
+                device = testline.split()[-1]
+                if current_printer is not None :
+                    printers[current_printer] = device
+            else :        
+                # LPRng printcap specific code here
+                pass
+        return printers
+        
+    def extractDevices(self) :    
+        """Extracts the list of available CUPS devices.
+        
+           Returns a mapping { device : devicetype, ... }
+           
+           WARNING : CUPS ONLY FOR NOW
+        """   
+        inp = os.popen("/usr/sbin/lpinfo -v 2>/dev/null")
+        deviceslist = [l.strip() for l in inp.readlines()]
+        inp.close()
+        devicestypes = {}
+        for device in deviceslist :
+            (dtype, dname) = device.split()
+            devicestypes[dname] = dtype
+        return devicestypes
+        
+    def searchDeviceType(self, devicestypes, device) :    
+        """Returns the device type for current device."""
+        for (k, v) in devicestypes.items() :
+            if device.startswith(k) :
+                return v
+                
+    def extractDeviceFromURI(self, device) :    
+        """Cleans the device URI to remove any trace of PyKota."""
+        if device.startswith("cupspykota:") :
+            fulldevice = device[:]
+            device = fulldevice[len("cupspykota:"):]
+            if device.startswith("//") :
+                device = device[2:]
+        try :
+            (backend, destination) = device.split(":", 1) 
+        except ValueError :    
+            raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device
+        while destination.startswith("/") :
+            destination = destination[1:]
+        checkauth = destination.split("@", 1)    
+        if len(checkauth) == 2 :
+            destination = checkauth[1]
+        return destination.split("/")[0]
+        
+    def acceptsSNMP(self, printer) :    
+        """Tries to get the printer's internal page counter via SNMP."""
+        for command in SNMPTESTS :
+            inp = os.popen((command + " 2>/dev/null") % locals())
+            value = inp.readline().strip()
+            inp.close()
+            try :
+                pagecounter = int(value)
+            except :    
+                pass
+            else :    
+                return command
+        
+    def main(self, args, options) :
+        """Main work is done here."""
+        print "Put the following lines into your /etc/pykota/pykota.conf file :\n"
+        printers = self.extractPrintersInformation()
+        devicestypes = self.extractDevices() # TODO : IT'S CUPS ONLY FOR NOW
+        for (printer, device) in printers.items() :
+            if self.matchString(printer, args) :
+                print "[%s]" % printer
+                devicetype = self.searchDeviceType(devicestypes, device)
+                device = self.extractDeviceFromURI(device)
+                if devicetype is None :
+                    sys.stderr.write("Unknown device %s for printer %s\n" % (device, printer))
+                elif devicetype == "network" :
+                    try :
+                        hostname, port = device.split(':')
+                    except ValueError :    
+                        hostname = device
+                    snmpcommand = self.acceptsSNMP(hostname)
+                    if snmpcommand is not None :
+                        print "accounter: querying"
+                        print 'requester: external(/usr/bin/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
+                elif devicetype == "direct" : 
+                    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                elif devicetype == "serial" : 
+                    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                else :
+                    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                print    
+        
+if __name__ == "__main__" : 
+    sys.stderr.write("BEWARE : This tool doesn't support LPRng's printcap files yet.\n")
+    retcode = 0
+    try :
+        short_options = "hv"
+        long_options = ["help", "version"]
+        
+        # Initializes the command line tool
+        manager = PKHint(doc=__doc__)
+        
+        (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        
+        if options["help"] :
+            manager.display_usage_and_quit()
+        elif options["version"] :
+            manager.display_version_and_quit()
+        else :
+            if not args :
+                args = [ "*" ]
+            retcode = manager.main(args, options)
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
+        sys.stderr.write("%s\n" % msg)
+        sys.stderr.flush()
+        retcode = -1
+
+    try :
+        manager.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    
