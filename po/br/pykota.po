@@ -663,3 +663,7 @@ msgstr "Tamanho do JOB : %i páginas"
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr "Custo da impresora %s : %.2f"
+
+#, python-format
+msgid "Previous page"
+msgstr ""

@@ -622,3 +622,7 @@ msgstr ""
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr ""
+
+#, python-format
+msgid "Previous page"
+msgstr ""

@@ -663,3 +663,7 @@ msgstr "Utskriftsstorlek : %i sidor"
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr "Kostnad på skrivare %s : %.2f"
+
+#, python-format
+msgid "Previous page"
+msgstr ""

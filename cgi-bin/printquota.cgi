@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/07/21 19:20:05  jalet
+# Missing translation in CGI script
+#
 # Revision 1.31  2004/07/21 13:32:02  jalet
 # All messages should be translatable now.
 #
@@ -323,7 +326,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 if hostname :    
                     dico.update({ "hostname" : hostname })
                 prevurl = "%s?%s" % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(dico))
-                self.report.append('<a href="%s">Previous page</a>' % prevurl)
+                self.report.append('<a href="%s">%s</a>' % (_("Previous page"), prevurl))
             self.body = "\n".join(self.report)    
             
 if __name__ == "__main__" :
