@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha27 :
     
+        - Additionnal 10% speed increase in PCL5 parser for GhostScript
+          generated files (untested yet with other PCL files).
+          
         - Reintroduced the use of mmap in PCL5 parser : this speedups
           PCL5 parsing by almost 4 times.
           This 4x with the 3x below give us in fact a twelvefold increase

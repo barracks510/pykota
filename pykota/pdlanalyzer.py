@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2004/06/26 23:20:01  jalet
+# Additionnal speedup for GhostScript generated PCL5 files
+#
 # Revision 1.16  2004/06/26 15:31:00  jalet
 # mmap reintroduced in PCL5 parser
 #
@@ -113,7 +116,7 @@ class PDFAnalyzer :
                 
     def getJobSize(self) :    
         """Counts pages in a PDF document."""
-        regexp = re.compile(r"(/Type) ?(/Page)[/ \r\n]")
+        regexp = re.compile(r"(/Type) ?(/Page)[/ \t\r\n]")
         pagecount = 0
         for line in self.infile.xreadlines() : 
             pagecount += len(regexp.findall(line))
@@ -150,12 +153,12 @@ class PCLAnalyzer :
                      "*v" : "W", 
                      "*c" : "W", 
                      "(f" : "W", 
-                     "*b" : "VW",
                      "(s" : "W", 
                      ")s" : "W", 
                      "&p" : "X", 
                      "&l" : "XH",
                      "&a" : "G",
+                     # "*b" : "VW", # treated specially because it occurs very often
                    }  
         pagecount = resets = ejects = backsides = 0
         tag = None
@@ -191,32 +194,34 @@ class PCLAnalyzer :
                             resets += 1
                         continue             # skip to next tag
                     tag = tagstart + minfile[pos] ; pos += 1
-                    try :
-                        tagend = tagsends[tag]
-                    except KeyError :    
-                        pass    # Unsupported PCL tag
+                    if tag == "*b" : 
+                        tagend = "VW"
                     else :    
-                        # Now read the numeric argument
-                        size = 0
-                        while 1 :
-                            char = minfile[pos] ; pos += 1
-                            if not char.isdigit() :
-                                break
-                            size = (size * 10) + int(char)    
-                        if char in tagend :    
-                            if (tag == "&l") and (char == "X") : # copies for current page
-                                copies[pagecount] = size
-                            elif (tag == "&l") and (char == "H") and (size == 0) :    
-                                ejects += 1         # Eject 
-                            elif (tag == "&a") and (size == 2) :
-                                backsides += 1      # Back side in duplex mode
-                            else :    
-                                # we just ignore the block.
-                                if tag == "&n" : 
-                                    # we have to take care of the operation id byte
-                                    # which is before the string itself
-                                    size += 1
-                                pos += size    
+                        try :
+                            tagend = tagsends[tag]
+                        except KeyError :    
+                            continue # Unsupported PCL tag
+                    # Now read the numeric argument
+                    size = 0
+                    while 1 :
+                        char = minfile[pos] ; pos += 1
+                        if not char.isdigit() :
+                            break
+                        size = (size * 10) + int(char)    
+                    if char in tagend :    
+                        if (tag == "&l") and (char == "X") : # copies for current page
+                            copies[pagecount] = size
+                        elif (tag == "&l") and (char == "H") and (size == 0) :    
+                            ejects += 1         # Eject 
+                        elif (tag == "&a") and (size == 2) :
+                            backsides += 1      # Back side in duplex mode
+                        else :    
+                            # we just ignore the block.
+                            if tag == "&n" : 
+                                # we have to take care of the operation id byte
+                                # which is before the string itself
+                                size += 1
+                            pos += size    
         except IndexError : # EOF ?
             minfile.close() # reached EOF
                             
