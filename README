@@ -313,6 +313,11 @@ The rest of the installation depends on your printing system :
         
           $ /etc/init.d/cupsys restart
           
+    For dumb printers : 
+    
+        The FAQ contains both the PyKota's definition of a 'dumb'
+        printer, and how to deal with them.
+    
     For new printers :
     
         Go to CUPS management interface (http://localhost:631) 
