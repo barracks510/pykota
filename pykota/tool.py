@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.94  2004/06/03 08:51:03  jalet
+# logs job's size in bytes now
+#
 # Revision 1.93  2004/06/02 21:51:02  jalet
 # Moved the sigterm capturing elsewhere
 #
@@ -812,6 +815,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.accounter = accounter.openAccounter(self)
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
+        os.putenv("PYKOTAJOBSIZEBYTES", str(self.JobSizeBytes))
+        self.logdebug("Job size is %s bytes" % self.JobSizeBytes)
         self.logdebug("Capturing SIGTERM events.")
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
@@ -823,11 +828,13 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # a temporary file and use it instead
             self.logdebug("Duplicating data stream from stdin to temporary file")
             MEGABYTE = 1024*1024
+            self.JobSizeBytes = 0
             infile = tempfile.TemporaryFile()
             while 1 :
                 data = sys.stdin.read(MEGABYTE) 
                 if not data :
                     break
+                self.JobSizeBytes += len(data)    
                 infile.write(data)
             infile.flush()    
             infile.seek(0)
@@ -835,6 +842,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         else :    
             # real file, just open it
             self.logdebug("Opening data stream %s" % self.preserveinputfile)
+            self.JobSizeBytes = os.stat(self.preserveinputfile)[6]
             return open(self.preserveinputfile, "rb")
         
     def closeJobDataStream(self) :    
