@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha15 :
+      
+        - dumpykota filtering capabilities are now supported within
+          the LDAP backend too.
+          
     - 1.21alpha14 :
     
         - dumpykota now supports extended filtering possibilities
