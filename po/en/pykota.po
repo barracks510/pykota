@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/06/15 22:26:52  jalet
+# More work on LDAP
+#
 # Revision 1.24  2003/04/30 19:53:58  jalet
 # 1.05
 #
@@ -350,4 +353,13 @@ msgid "Invalid external accounter %s for printer %s"
 msgstr ""
 
 msgid "Unable to compute job size with external accounter %s"
+msgstr ""
+
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr ""
+
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr ""
+
+msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr ""

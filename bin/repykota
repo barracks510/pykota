@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2003/06/15 22:26:52  jalet
+# More work on LDAP
+#
 # Revision 1.37  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -224,7 +227,7 @@ class RePyKota(PyKotaTool) :
             if options["groups"] :
                 print _("Group           used    soft    hard    balance grace         total       paid") 
                 print "------------------------------------------------------------------------------"
-                for (ident, name) in self.storage.getPrinterGroups(printerid) :
+                for (ident, name) in (self.storage.getPrinterGroups(printerid) or []) :
                     quota = self.storage.getGroupPQuota(ident, printerid) 
                     balance = self.storage.getGroupBalance(ident)
                     limitby = self.storage.getGroupLimitBy(ident)
@@ -235,7 +238,7 @@ class RePyKota(PyKotaTool) :
                 # default is user quota report
                 print _("User            used    soft    hard    balance grace         total       paid") 
                 print "------------------------------------------------------------------------------"
-                for (ident, name) in self.storage.getPrinterUsers(printerid) :
+                for (ident, name) in (self.storage.getPrinterUsers(printerid) or []) :
                     quota = self.storage.getUserPQuota(ident, printerid)
                     balance = self.storage.getUserBalance(ident)
                     limitby = self.storage.getUserLimitBy(ident)

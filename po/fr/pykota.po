@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/06/15 22:26:52  jalet
+# More work on LDAP
+#
 # Revision 1.23  2003/04/30 19:53:58  jalet
 # 1.05
 #
@@ -368,3 +371,12 @@ msgstr "Compteur de pages externe %s invalide pour l'imprimante %s"
 
 msgid "Unable to compute job size with external accounter %s"
 msgstr "Impossible de calculer la taille du job avec le compteur externe %s"
+
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "La recherche de %s(%s) depuis %s(scope=%s) n'a renvoyé aucun résultat."
+
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Problème durant l'ajout de l'entrée LDAP (%s, %s)"
+
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Problème durant la modification de l'entrée LDAP (%s, %s)"

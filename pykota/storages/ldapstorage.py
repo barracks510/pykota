@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/06/15 22:26:52  jalet
+# More work on LDAP
+#
 # Revision 1.7  2003/06/14 22:44:21  jalet
 # More work on LDAP storage backend.
 #
@@ -54,12 +57,15 @@
 # is 16868. Use this as a base to create the LDAP schema.
 #
 
+import time
+import md5
 import fnmatch
 
 from pykota.storage import PyKotaStorageError
 
 try :
     import ldap
+    from ldap import modlist
 except ImportError :    
     import sys
     # TODO : to translate or not to translate ?
@@ -92,17 +98,47 @@ class Storage :
             if self.debug :
                 self.tool.logger.log_message("Database closed.", "debug")
         
-    def doSearch(self, key, fields, base="", scope=ldap.SCOPE_SUBTREE) :
+    def genUUID(self) :    
+        """Generates an unique identifier.
+        
+           TODO : this one is not unique accross several print servers, but should be sufficient for testing.
+        """
+        return md5.md5("%s" % time.time()).hexdigest()
+        
+    def doSearch(self, key, fields=None, base="", scope=ldap.SCOPE_SUBTREE) :
         """Does an LDAP search query."""
         try :
-            # prepends something more restrictive at the beginning of the base dn
+            base = base or self.basedn
             if self.debug :
-                self.tool.logger.log_message("QUERY : BaseDN : %s, Scope : %s, Filter : %s, Attributes : %s" % ((base or self.basedn), scope, key, fields), "debug")
+                self.tool.logger.log_message("QUERY : BaseDN : %s, Scope : %s, Filter : %s, Attributes : %s" % (base, scope, key, fields), "debug")
             result = self.database.search_s(base or self.basedn, scope, key, fields)
-        except ldap.NO_SUCH_OBJECT :    
-            return
+        except ldap.LDAPError :    
+            raise PyKotaStorageError, _("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)
         else :     
             return result
+            
+    def doAdd(self, dn, fields) :
+        """Adds an entry in the LDAP directory."""
+        try :
+            if self.debug :
+                self.tool.logger.log_message("QUERY : ADD(%s, %s)" % (dn, str(fields)), "debug")
+            self.database.add_s(dn, modlist.addModlist(fields))
+        except ldap.LDAPError :
+            raise PyKotaStorageError, _("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))
+        else :
+            return dn
+            
+    def doModify(self, dn, fields) :
+        """Modifies an entry in the LDAP directory."""
+        try :
+            oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
+            if self.debug :
+                self.tool.logger.log_message("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields), "debug")
+            self.database.modify_s(dn, modlist.modifyModlist(oldentry[0][1], fields, ignore_oldexistent=1))
+        except ldap.LDAPError :
+            raise PyKotaStorageError, _("Problem modifying LDAP entry (%s, %s)") % (dn, fields)
+        else :
+            return dn
         
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers as tuples (id, name) for printer names which match a certain pattern."""
@@ -115,6 +151,12 @@ class Storage :
         result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPrinterName"], base=self.info["printerbase"])
         if result :
             return result[0][0]
+            
+    def getPrinterName(self, printerid) :        
+        """Returns a printerid given a printer id."""
+        result = self.doSearch("objectClass=*", ["pykotaPrinterName"], base=printerid, scope=ldap.SCOPE_BASE)
+        if result :
+            return result[0][1]["pykotaPrinterName"][0]
             
     def getPrinterPrices(self, printerid) :        
         """Returns a printer prices per page and per job given a printerid."""
@@ -181,23 +223,66 @@ class Storage :
         
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns its id."""
-        raise PyKotaStorageError, "Not implemented !"
+        fields = { self.info["printerrdn"] : printername,
+                   "objectClass" : ["pykotaObject", "pykotaPrinter"],
+                   "pykotaPrinterName" : printername,
+                   "pykotaPricePerPage" : "0.0",
+                   "pykotaPricePerJob" : "0.0",
+                 } 
+        dn = "%s=%s,%s" % (self.info["printerrdn"], printername, self.info["printerbase"])
+        return self.doAdd(dn, fields)
         
     def addUser(self, username) :        
         """Adds a user to the quota storage, returns its id."""
-        raise PyKotaStorageError, "Not implemented !"
+        fields = { self.info["userrdn"] : username,
+                   "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
+                   "pykotaUserName" : username,
+                   "pykotaLimitBy" : "quota",
+                   "pykotaBalance" : "0.0",
+                   "pykotaLifeTimePaid" : "0.0",
+                 } 
+        dn = "%s=%s,%s" % (self.info["userrdn"], username, self.info["userbase"])
+        return self.doAdd(dn, fields)
         
     def addGroup(self, groupname) :        
         """Adds a group to the quota storage, returns its id."""
-        raise PyKotaStorageError, "Not implemented !"
+        fields = { self.info["grouprdn"] : groupname,
+                   "objectClass" : ["pykotaObject", "pykotaGroup"],
+                   "pykotaGroupName" : groupname,
+                   "pykotaLimitBy" : "quota",
+                 } 
+        dn = "%s=%s,%s" % (self.info["grouprdn"], groupname, self.info["groupbase"])
+        return self.doAdd(dn, fields)
         
     def addUserPQuota(self, username, printerid) :
         """Initializes a user print quota on a printer, adds the user to the quota storage if needed."""
-        raise PyKotaStorageError, "Not implemented !"
+        uuid = self.genUUID()
+        fields = { "objectClass" : ["pykotaObject", "pykotaUserPQuota"],
+                   "cn" : uuid,
+                   "pykotaUserName" : username,
+                   "pykotaPrinterName" : self.getPrinterName(printerid), 
+                   "pykotaPageCounter" : "0",
+                   "pykotaLifePageCounter" : "0",
+                   "pykotaSoftLimit" : "0",
+                   "pykotaHardLimit" : "0",
+                   "pykotaDateLimit" : "None",
+                 } 
+        dn = "cn=%s,%s" % (uuid, self.info["userquotabase"])
+        return self.doAdd(dn, fields)
         
     def addGroupPQuota(self, groupname, printerid) :
         """Initializes a group print quota on a printer, adds the group to the quota storage if needed."""
-        raise PyKotaStorageError, "Not implemented !"
+        uuid = self.genUUID()
+        fields = { "objectClass" : ["pykotaObject", "pykotaGroupPQuota"],
+                   "cn" : uuid,
+                   "pykotaGroupName" : groupname,
+                   "pykotaPrinterName" : self.getPrinterName(printerid), 
+                   "pykotaSoftLimit" : "0",
+                   "pykotaHardLimit" : "0",
+                   "pykotaDateLimit" : "None",
+                 } 
+        dn = "cn=%s,%s" % (uuid, self.info["groupquotabase"])
+        return self.doAdd(dn, fields)
         
     def increaseUserBalance(self, userid, amount) :    
         """Increases (or decreases) an user's account balance by a given amount."""
@@ -275,13 +360,21 @@ class Storage :
         """Limits a given group based either on print quota or on sum of its users' account balances."""
         raise PyKotaStorageError, "Not implemented !"
         
-    def setUserPQuota(self, userid, printerid, softlimit, hardlimit) :
+    def setUserPQuota(self, userquotaid, printerid, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota on a specific printer given (userid, printerid)."""
-        raise PyKotaStorageError, "Not implemented !"
+        fields = { 
+                   "pykotaSoftLimit" : str(softlimit),
+                   "pykotaHardLimit" : str(hardlimit),
+                 } 
+        return self.doModify(userquotaid, fields)
         
-    def setGroupPQuota(self, groupid, printerid, softlimit, hardlimit) :
+    def setGroupPQuota(self, groupquotaid, printerid, softlimit, hardlimit) :
         """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
-        raise PyKotaStorageError, "Not implemented !"
+        fields = { 
+                   "pykotaSoftLimit" : str(softlimit),
+                   "pykotaHardLimit" : str(hardlimit),
+                 } 
+        return self.doModify(groupquotaid, fields)
         
     def resetUserPQuota(self, userid, printerid) :    
         """Resets the page counter to zero for a user on a printer. Life time page counter is kept unchanged."""
