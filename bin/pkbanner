@@ -22,45 +22,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.12  2005/01/17 08:44:23  jalet
-# Modified copyright years
-#
-# Revision 1.11  2004/12/03 12:34:28  jalet
-# Fixed the default value for the --savetoner command line option
-#
-# Revision 1.10  2004/11/17 13:28:19  jalet
-# Fixed some typo in the help
-#
-# Revision 1.9  2004/11/17 13:24:05  jalet
-# Improved pkbanner's help
-#
-# Revision 1.8  2004/11/17 13:12:04  jalet
-# Implemented the --savetoner command line option
-#
-# Revision 1.7  2004/11/15 22:29:01  jalet
-# Moved title and filename to the left to free some space.
-#
-# Revision 1.6  2004/11/15 22:20:27  jalet
-# Now outputs strings as-is, and not title-ized
-#
-# Revision 1.5  2004/11/15 22:01:34  jalet
-# Improved banner handling.
-# Fix for raw printing and banners.
-#
-# Revision 1.4  2004/11/15 19:59:34  jalet
-# PyKota banners now basically work !
-#
-# Revision 1.3  2004/11/12 23:46:44  jalet
-# Heavy work on pkbanner. Not finished yet though, but mostly works.
-#
-# Revision 1.2  2004/11/11 14:25:48  jalet
-# Added some TODO comments
-#
-# Revision 1.1  2004/11/10 22:48:47  jalet
-# Banner generator's skeleton added
-#
-#
 #
 
 import sys

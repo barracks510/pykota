@@ -17,10 +17,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.1  2005/01/08 17:13:01  jalet
-# Move some functions outside of the CGI to allow their use in other CGI scripts
-#
 #
 
 import os

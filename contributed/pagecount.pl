@@ -32,21 +32,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.3  2005/01/17 08:44:24  jalet
-# Modified copyright years
-#
-# Revision 1.2  2004/01/08 14:10:32  jalet
-# Copyright year changed.
-#
-# Revision 1.1  2003/12/27 16:57:42  uid67467
-# Added Perl script which does PJL accounting, contributed by René Lund Jensen
-#
-# Revision 1.1  2003/12/06 09:03:43  jalet
-# Added Perl script to retrieve printer's internal page counter via PJL,
-# contributed by René Lund Jensen.
-#
-#
 #
 
 use Socket;

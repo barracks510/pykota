@@ -20,49 +20,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.12  2005/02/15 13:13:27  jalet
-# Fixes output when user has got a negative or nul overcharging factor.
-#
-# Revision 1.11  2005/02/13 22:02:29  jalet
-# Big database structure changes. Upgrade script is now included as well as
-# the new LDAP schema.
-# Introduction of the -o | --overcharge command line option to edpykota.
-# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
-# Introduction of the new 'maxdenybanners' directive.
-#
-# Revision 1.10  2004/09/02 10:09:30  jalet
-# Fixed bug in LDAP user deletion code which didn't correctly delete the user's
-# pykotaLastJob entries.
-#
-# Revision 1.9  2004/07/01 17:45:49  jalet
-# Added code to handle the description field for printers
-#
-# Revision 1.8  2004/03/24 15:15:24  jalet
-# Began integration of Henrik Janhagen's work on quota-then-balance
-# and balance-then-quota
-#
-# Revision 1.7  2004/01/08 14:10:32  jalet
-# Copyright year changed.
-#
-# Revision 1.6  2003/12/27 16:49:25  uid67467
-# Should be ok now.
-#
-# Revision 1.4  2003/12/02 14:40:21  jalet
-# Some code refactoring.
-# New HTML reporter added, which is now used in the CGI script for web based
-# print quota reports. It will need some de-uglyfication though...
-#
-# Revision 1.3  2003/11/25 23:46:40  jalet
-# Don't try to verify if module name is valid, Python does this better than us.
-#
-# Revision 1.2  2003/10/07 09:07:28  jalet
-# Character encoding added to please latest version of Python
-#
-# Revision 1.1  2003/06/30 12:46:15  jalet
-# Extracted reporting code.
-#
-#
 #
 
 from mx import DateTime

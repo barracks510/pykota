@@ -48,14 +48,3 @@
   </sect1>
 </chapter>
 
-<!--
-
-$Log$
-Revision 1.2  2005/02/28 22:29:25  jalet
-More complete PostgreSQL configuration.
-Changed all occurences of /etc/pykota/ to ~pykota/
-
-Revision 1.1  2004/03/18 10:32:23  jalet
-Added pkhint's documentation
-
--->

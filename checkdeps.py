@@ -22,32 +22,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.6  2005/03/05 18:54:54  jalet
-# Improved the installation documentation.
-# Now checkdeps also checks for the presence of GhostScript, which
-# may be needed if PyKota's bannering facility is used or if some
-# printer driver produces non-DSC compliant PostScript.
-#
-# Revision 1.5  2005/02/14 23:37:58  jalet
-# Added a check for the presence of pythn-psyco
-#
-# Revision 1.4  2005/01/17 08:44:23  jalet
-# Modified copyright years
-#
-# Revision 1.3  2004/11/15 21:11:01  jalet
-# Modified some labels for Python modules
-#
-# Revision 1.2  2004/11/15 21:08:01  jalet
-# Now checks for the presence of ReportLab and PIL
-#
-# Revision 1.1  2004/11/10 22:17:12  jalet
-# Installation script is now non-interactive again, and doesn't install
-# the sample configuration files into /etc/pykota anymore.
-# Dependencies check is now done by running checkdeps.py
-# The database creation scripts will now be included in RPM packages.
-#
-#
 #
 
 import sys

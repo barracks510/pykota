@@ -20,14 +20,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.2  2004/12/03 20:29:33  jalet
-# ipp.py can now be run in standalone mode for testing purposes
-#
-# Revision 1.1  2004/11/06 22:35:58  jalet
-# Added a miniparser for IPP messages (RFC 2910). The job-originating-host-name
-# retrieval is now fiable, unless the CUPS developpers change something...
-#
 #
 
 import sys

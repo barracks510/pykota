@@ -22,27 +22,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.5  2005/01/19 08:49:41  jalet
-# Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
-# variables if the script is username+password protected.
-# Small fix in printquota.cgi wrt ldap auth with Apache : the workaround was
-# not used everywhere.
-#
-# Revision 1.4  2005/01/17 08:44:24  jalet
-# Modified copyright years
-#
-# Revision 1.3  2005/01/10 14:57:29  jalet
-# Fixed the default datatype which is now set to 'history'
-#
-# Revision 1.2  2005/01/08 19:47:00  jalet
-# Fixed a bad copy&paste
-#
-# Revision 1.1  2005/01/08 19:13:11  jalet
-# dumpykota.cgi was added to allow the use of dumpykota through the web.
-# This makes real time interfacing with the third party software phpPrintAnalyzer
-# a breeze !
-#
 #
 
 import sys

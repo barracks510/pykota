@@ -46,16 +46,3 @@
   </sect1>
 </chapter>
 
-<!--
-
-$Log$
-Revision 1.2  2005/02/28 00:07:37  jalet
-Added pkmail's doc.
-Used the <command> tag instead of <application> for commands.
-Fixed some typos.
-Added some missing command line options in the commands reference.
-
-Revision 1.1  2004/10/06 10:03:16  jalet
-Improved documentation
-
--->

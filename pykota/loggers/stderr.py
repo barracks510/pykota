@@ -20,31 +20,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.7  2004/05/24 11:59:49  jalet
-# More robust (?) code
-#
-# Revision 1.6  2004/05/07 14:43:44  jalet
-# Now logs the PID too
-#
-# Revision 1.5  2004/01/08 14:10:33  jalet
-# Copyright year changed.
-#
-# Revision 1.4  2003/10/07 09:07:29  jalet
-# Character encoding added to please latest version of Python
-#
-# Revision 1.3  2003/04/23 22:13:57  jalet
-# Preliminary support for LPRng added BUT STILL UNTESTED.
-#
-# Revision 1.2  2003/03/29 13:45:27  jalet
-# GPL paragraphs were incorrectly (from memory) copied into the sources.
-# Two README files were added.
-# Upgrade script for PostgreSQL pre 1.01 schema was added.
-#
-# Revision 1.1  2003/02/05 21:28:17  jalet
-# Initial import into CVS
-#
-#
 #
 
 import sys

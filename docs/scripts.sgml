@@ -115,15 +115,3 @@ accounter: hardware(somewaitscript.sh && pagecount.pl %(printer)s)
   </sect1>
 </chapter>
 
-<!--
-
-$Log$
-Revision 1.2  2004/05/18 14:48:48  jalet
-Big code changes to completely remove the need for "requester" directives,
-jsut use "hardware(... your previous requester directive's content ...)"
-
-Revision 1.1  2004/03/16 14:42:31  jalet
-Improved documentation
-
-
--->

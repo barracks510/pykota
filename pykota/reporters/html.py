@@ -20,36 +20,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.9  2005/02/13 22:02:29  jalet
-# Big database structure changes. Upgrade script is now included as well as
-# the new LDAP schema.
-# Introduction of the -o | --overcharge command line option to edpykota.
-# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
-# Introduction of the new 'maxdenybanners' directive.
-#
-# Revision 1.8  2004/01/12 15:28:45  jalet
-# Now can output the user's history on several printers at the same time.
-#
-# Revision 1.7  2004/01/12 15:12:50  jalet
-# Small fix for history
-#
-# Revision 1.6  2004/01/12 14:35:01  jalet
-# Printing history added to CGI script.
-#
-# Revision 1.5  2004/01/08 14:10:33  jalet
-# Copyright year changed.
-#
-# Revision 1.4  2004/01/06 15:51:46  jalet
-# Code factorization
-#
-# Revision 1.3  2003/12/27 16:49:25  uid67467
-# Should be ok now.
-#
-# Revision 1.1  2003/12/02 14:41:17  jalet
-# And as always, I forgot most of the new files :-)
-#
-#
 #
 
 import os

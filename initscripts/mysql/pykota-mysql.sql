@@ -18,14 +18,6 @@
 --
 -- $Id$
 --
--- $Log$
--- Revision 1.2  2005/01/17 08:44:24  jalet
--- Modified copyright years
---
--- Revision 1.1  2004/06/20 19:14:20  jalet
--- Added first draft of MySQL initialization script
---
---
 --
 
 --

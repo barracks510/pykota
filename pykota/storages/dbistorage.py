@@ -20,14 +20,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.2  2004/09/24 21:19:48  jalet
-# Did a pass of PyChecker
-#
-# Revision 1.1  2004/02/02 22:44:15  jalet
-# Preliminary work on Relationnal Database Independance via DB-API 2.0
-#
-#
 #
 
 ########################################################################

@@ -19,22 +19,6 @@
 #
 # $Id$
 #
-# $Log$
-# Revision 1.3  2005/01/19 09:00:54  jalet
-# Small fix for Python2.1 and variables scopes
-#
-# Revision 1.2  2005/01/19 08:49:41  jalet
-# Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
-# variables if the script is username+password protected.
-# Small fix in printquota.cgi wrt ldap auth with Apache : the workaround was
-# not used everywhere.
-#
-# Revision 1.1  2005/01/08 17:03:07  jalet
-# "--format cups" output more resembling CUPS' page_log.
-# Split into a command line tool and a module, to allow easier coding of
-# a CGI interface.
-#
-#
 #
 
 import sys
