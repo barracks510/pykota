@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.148  2005/01/06 23:24:21  jalet
+# Regain priviledge the time to open the job's data file when printing in
+# raw mode with CUPS.
+#
 # Revision 1.147  2005/01/06 22:52:53  jalet
 # Implemented the dropping of priviledges. Beware, beware...
 #
@@ -689,7 +693,7 @@ class Tool :
             except OSError, msg :    
                 self.printInfo(_("Impossible to regain priviledges : %s") % msg, "warn")
             else :    
-                self.logdebug(_("Regained priviledges."))
+                self.logdebug(_("Regained priviledges. Now running as root."))
                 self.privdropped = 0
         
     def getCharset(self) :    
@@ -1225,9 +1229,12 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             return infile
         else :    
             # real file, just open it
+            self.regainPriv()
             self.logdebug("Opening data stream %s" % self.preserveinputfile)
             self.jobSizeBytes = os.stat(self.preserveinputfile)[6]
-            return open(self.preserveinputfile, "rb")
+            infile = open(self.preserveinputfile, "rb")
+            self.dropPriv()
+            return infile
         
     def closeJobDataStream(self) :    
         """Closes the file which contains the job's datas."""
