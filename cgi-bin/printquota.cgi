@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2004/01/12 14:35:01  jalet
+# Printing history added to CGI script.
+#
 # Revision 1.22  2004/01/09 07:58:53  jalet
 # Changed URL to PyKota's logo
 #
@@ -95,6 +98,7 @@
 import sys
 import os
 import cgi
+import urllib
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
@@ -106,7 +110,7 @@ header = """Content-type: text/html
 <html>
   <head>
     <title>PyKota Reports</title>
-    <link rel="stylesheet" type="text/css" href="pykota.css" />
+    <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
     <form action="printquota.cgi" method="POST">
@@ -220,10 +224,61 @@ class PyKotaReportGUI(PyKotaTool) :
         self.body += self.htmlUGNamesInput(ugmask)
         self.body += "<br />"
         self.body += self.htmlGroupsCheckbox(isgroup)
-        if printers and ugmask :
-            self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
-            # self.body += "<pre>%s</pre>" % self.reportingtool.generateReport()
-            self.body += "%s" % self.reportingtool.generateReport()
+        if not self.form.has_key("history") :
+            if printers and ugmask :
+                self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
+                self.body += "%s" % self.reportingtool.generateReport()
+        else :        
+            remuser = os.environ.get("REMOTE_USER", "root")    
+            if remuser != "root" :
+                username = remuser
+            elif self.form.has_key("username") :    
+                username = self.form["username"].value
+            else :    
+                username = None
+            if username is not None :    
+                user = self.storage.getUser(username)
+            else :    
+                user =None
+            if self.form.has_key("printername") :
+                printer = self.storage.getPrinter(self.form["printername"].value)
+            else :    
+                printer = None
+            if self.form.has_key("datelimit") :    
+                datelimit = self.form["datelimit"].value
+            else :    
+                datelimit = None
+            self.report = ["<h2>History</h2>"]    
+            history = self.storage.retrieveHistory(user, printer, datelimit)
+            if not history :
+                self.report.append("<h3>Empty</h3>")
+            else :
+                self.report.append('<table class="pykotatable" border="1">')
+                headers = ["Date", "User", "Printer", "PageCounter", "JobId", "JobSize", "JobPrice", "Copies", "Title", "Filename", "Options", "Action"]
+                self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
+                oddeven = 0
+                for job in history :
+                    oddeven += 1
+                    if oddeven % 2 :
+                        oddevenclass = "odd"
+                    else :    
+                        oddevenclass = "even"
+                    if job.JobAction == "DENY" :
+                        oddevenclass = "deny"
+                    elif job.JobAction == "WARN" :    
+                        oddevenclass = "warn"
+                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate, job.User.Name, job.Printer.Name, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobAction)])))
+                self.report.append('</table>')
+                dico = { "history" : 1,
+                         "datelimit" : job.JobDate,
+                       }
+                if user and user.Exists :
+                    dico.update({ "username" : user.Name })
+                if printer and printer.Exists :
+                    dico.update({ "printername" : printer.Name })
+                prevurl = "%s?%s" % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(dico))
+                self.report.append('<a href="%s">Previous page</a>' % prevurl)
+            self.body = "\n".join(self.report)    
             
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()

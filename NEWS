@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.16alpha24 :
     
+        - CGI script now can show the printing history.
+        
         - Bug wrt number of copies should be fixed.
         
         - Major code refactoring => It is now possible to

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/01/12 14:35:01  jalet
+# Printing history added to CGI script.
+#
 # Revision 1.5  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -36,6 +39,7 @@
 #
 #
 
+import os
 from mx import DateTime
 
 from pykota.reporter import BaseReporter, PyKotaReporterError
@@ -74,6 +78,8 @@ class Reporter(BaseReporter) :
                         oddevenclass = "deny"
                     else :    
                         oddevenclass = "warn"
+                if not self.tool.config.getDisableHistory() :
+                    name = '<a href="%s?username=%s&printername=%s&history=1">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), name, printer.Name, name)
                 self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid)])))
                 total += pages
                 totalmoney += money

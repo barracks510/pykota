@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2004/01/12 14:35:02  jalet
+# Printing history added to CGI script.
+#
 # Revision 1.47  2004/01/10 09:44:02  jalet
 # Fixed potential accuracy problem if a user printed on several printers at
 # the very same time.
@@ -191,7 +194,7 @@ import types
 import time
 import md5
 
-from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 try :
     import ldap
@@ -860,6 +863,51 @@ class Storage(BaseStorage) :
                        "uniqueMember" : pgroup.uniqueMember
                      }  
             self.doModify(pgroup.ident, fields)         
+            
+    def retrieveHistory(self, user=None, printer=None, datelimit=None, limit=100) :    
+        """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
+        precond = "(objectClass=pykotaJob)"
+        where = []
+        if (user is not None) and user.Exists :
+            where.append("(pykotaUserName=%s)" % user.Name)
+        if (printer is not None) and printer.Exists :
+            where.append("(pykotaPrinterName=%s)" % printer.Name)
+        if where :    
+            where = "(&%s)" % "".join([precond] + where)
+        else :    
+            where = precond
+        jobs = []    
+        result = self.doSearch(where, fields=["pykotaUserName", "pykotaPrinterName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaAction", "pykotaJobSize", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base=self.info["jobbase"])
+        if result :
+            for (ident, fields) in result :
+                job = StorageJob(self)
+                job.ident = ident
+                job.JobId = fields.get("pykotaJobId")[0]
+                job.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter")[0] or 0)
+                job.JobSize = int(fields.get("pykotaJobSize", [0])[0])
+                job.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
+                job.JobAction = fields.get("pykotaAction")[0]
+                job.JobFileName = fields.get("pykotaFileName", [""])[0]
+                job.JobTitle = fields.get("pykotaTitle", [""])[0]
+                job.JobCopies = int(fields.get("pykotaCopies", [0])[0])
+                job.JobOptions = fields.get("pykotaOptions", [""])[0]
+                date = fields.get("createTimestamp")[0]
+                year = int(date[:4])
+                month = int(date[4:6])
+                day = int(date[6:8])
+                hour = int(date[8:10])
+                minute = int(date[10:12])
+                second = int(date[12:14])
+                job.JobDate = "%04i-%02i-%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
+                if (datelimit is None) or (job.JobDate <= datelimit) :
+                    job.User = self.getUser(fields.get("pykotaUserName")[0])
+                    job.Printer = self.getPrinter(fields.get("pykotaPrinterName")[0])
+                    job.Exists = 1
+                    jobs.append(job)
+            jobs.sort(lambda x,y : cmp(y.JobDate, x.JobDate))        
+            if limit :    
+                jobs = jobs[:int(limit)]
+        return jobs
         
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""

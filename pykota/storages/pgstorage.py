@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/01/12 14:35:02  jalet
+# Printing history added to CGI script.
+#
 # Revision 1.31  2004/01/10 09:44:02  jalet
 # Fixed potential accuracy problem if a user printed on several printers at
 # the very same time.
@@ -127,7 +130,7 @@
 #
 #
 
-from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 try :
     import pg
@@ -531,6 +534,43 @@ class Storage(BaseStorage) :
                 children.append(record.get("printerid")) # TODO : put this into the database integrity rules
         if printer.ident not in children :        
             self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
+        
+    def retrieveHistory(self, user=None, printer=None, datelimit=None, limit=100) :    
+        """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
+        query = "SELECT * FROM jobhistory"
+        where = []
+        if (user is not None) and user.Exists :
+            where.append("userid=%s" % self.doQuote(user.ident))
+        if (printer is not None) and printer.Exists :
+            where.append("printerid=%s" % self.doQuote(printer.ident))
+        if datelimit is not None :    
+            where.append("jobdate<=%s" % self.doQuote(datelimit))
+        if where :    
+            query += "WHERE %s" % " AND ".join(where)
+        query += " ORDER BY id DESC"
+        if limit :
+            query += " LIMIT %s" % self.doQuote(int(limit))
+        jobs = []    
+        result = self.doSearch(query)    
+        if result :
+            for fields in result :
+                job = StorageJob(self)
+                job.ident = fields.get("id")
+                job.JobId = fields.get("jobid")
+                job.PrinterPageCounter = fields.get("pagecounter")
+                job.JobSize = fields.get("jobsize")
+                job.JobPrice = fields.get("jobprice")
+                job.JobAction = fields.get("action")
+                job.JobFileName = fields.get("filename")
+                job.JobTitle = fields.get("title")
+                job.JobCopies = fields.get("copies")
+                job.JobOptions = fields.get("options")
+                job.JobDate = fields.get("jobdate")
+                job.User = self.getUser(fields.get("userid"))
+                job.Printer = self.getPrinter(fields.get("printerid"))
+                job.Exists = 1
+                jobs.append(job)
+        return jobs
         
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2004/01/12 14:35:01  jalet
+# Printing history added to CGI script.
+#
 # Revision 1.36  2004/01/10 09:44:02  jalet
 # Fixed potential accuracy problem if a user printed on several printers at
 # the very same time.
@@ -337,13 +340,13 @@ class StorageGroupPQuota(StorageObject) :
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
         
-class StorageLastJob(StorageObject) :
+class StorageJob(StorageObject) :
     """Printer's Last Job class."""
-    def __init__(self, parent, printer) :
+    def __init__(self, parent) :
         StorageObject.__init__(self, parent)
-        self.Printer = printer
-        self.JobId = None
         self.User = None
+        self.Printer = None
+        self.JobId = None
         self.PrinterPageCounter = None
         self.JobSize = None
         self.JobAction = None
@@ -354,13 +357,19 @@ class StorageLastJob(StorageObject) :
         self.JobCopies = None
         self.JobOptions = None
         
+class StorageLastJob(StorageJob) :
+    """Printer's Last Job class."""
+    def __init__(self, parent, printer) :
+        StorageJob.__init__(self, parent)
+        self.Printer = printer
+        
     def setSize(self, jobsize) :
         """Sets the last job's size."""
         jobprice = (float(self.Printer.PricePerPage or 0.0) * jobsize) + float(self.Printer.PricePerJob or 0.0)
         self.parent.writeLastJobSize(self, jobsize, jobprice)
         self.JobSize = jobsize
         self.JobPrice = jobprice
-    
+        
 class BaseStorage :
     def __init__(self, pykotatool) :
         """Opens the LDAP connection."""
