@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/02/12 22:43:58  jalet
+# Better integration in Debian and more LSB compliance, thanks to
+# Peter Hawkins.
+#
 # Revision 1.34  2004/02/07 13:45:51  jalet
 # Preliminary work on the pkhint command
 #
@@ -378,6 +382,9 @@ directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
 data_files.append((directory, manpages))
 
+directory = os.sep.join(["share", "pykota"])
+data_files.append((directory, ["bin/cupspykota", "bin/pykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
+
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",
       description = __doc__,
@@ -385,7 +392,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
+      scripts = [ "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
 
 if ("install" in sys.argv) and not ("help" in sys.argv) :

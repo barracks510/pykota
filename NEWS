@@ -23,6 +23,16 @@ PyKota NEWS :
 
     - 1.18alpha4 :
     
+        - Applied some of the modifications suggested by
+          Peter Hawkins, for better Debian integration.
+          Most notably cupspykota, pykota, and the shell
+          scripts are now installed into /usr/share/pykota
+          instead of into /usr/bin
+          BEWARE : double check that your symbolic link
+          to cupspykota is correct, and that your pykota.conf
+          file use correct path for the shell scripts like
+          waitprinter.sh and al.
+          
         - pkhint command added, to help in configuring correct
           accounting method for PyKota.
           

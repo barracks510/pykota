@@ -240,7 +240,7 @@ adminmail: root@localhost
 #
 # or more simply :
 #
-#       mailto: external(/usr/bin/mailandpopup.sh %(username)s %(printername)s "%(email)s" "%(message)s" 2>&1 >/dev/null)
+#       mailto: external(/usr/share/pykota/mailandpopup.sh %(username)s %(printername)s "%(email)s" "%(message)s" 2>&1 >/dev/null)
 #
 #   NB : The mailandpopup.sh shell script is now included in PyKota
 #
@@ -326,11 +326,11 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # (You may need the pap CUPS backend installed, and copy the 
 # pagecount.ps file from untested/netatalk into /etc or any 
 # appropriate location)
-#     requester: external(/usr/bin/papwaitprinter.sh "MyPrinter:LaserWriter@*" && /usr/bin/pap -p "MyPrinter:LaserWriter@*" /etc/pagecount.ps  2>/dev/null | grep -v status | grep -v Connect | tail -1)
+#     requester: external(/usr/share/pykota/papwaitprinter.sh "MyPrinter:LaserWriter@*" && /usr/bin/pap -p "MyPrinter:LaserWriter@*" /usr/share/pykota/pagecount.ps  2>/dev/null | /bin/grep -v status | /bin/grep -v Connect | /usr/bin/tail -1)
 #
 # An example for parallel printers like the HP Laserjet 5MP :
 #
-#     requester: external(/bin/cat /usr/share/pykota/untested/pjl/pagecount.pjl >/dev/lp0 && /usr/bin/head -2 </dev/lp0 | /usr/bin/tail -1)
+#     requester: external(/bin/cat /usr/share/pykota/pagecount.pjl >/dev/lp0 && /usr/bin/head -2 </dev/lp0 | /usr/bin/tail -1)
 # 
 # 
 # This value can be set either globally or per printer or both.
@@ -359,13 +359,13 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # in the untested/pjl directory, which is sent to a JetDirect print
 # server on port 9100 :
 #
-# requester: external(/bin/nc -w 2 %(printer)s 9100 <pagecount.pjl | /usr/bin/tail -2)
+# requester: external(/bin/nc -w 2 %(printer)s 9100 </usr/share/pykota/pagecount.pjl | /usr/bin/tail -2)
 #
 #
 # An example using the contributed pagecount.pl script which does 
 # the same as above, but should work on more printers : 
 #
-# requester: external(/usr/bin/pagecount.pl %(printer)s 9100)
+# requester: external(/usr/share/pykota/pagecount.pl %(printer)s 9100)
 #
 #
 # WARNING : In any case, when using an external requester, please test the command line outside
@@ -375,7 +375,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # This should prevent a job to be sent to the printer while another one is 
 # not yet finished (not all pages are printed, but the complete job is in 
 # the printer)
-requester: external(/usr/bin/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+requester: external(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
 # either allow or deny or external(some command here)

@@ -304,7 +304,7 @@ The rest of the installation depends on your printing system :
         in CUPS's backend directory :
         
           $ cd /usr/lib/cups/backend
-          $ ln -s /usr/bin/cupspykota cupspykota
+          $ ln -s /usr/share/pykota/cupspykota cupspykota
           
         Restart CUPS so that the new backend can be detected.
         
@@ -343,7 +343,11 @@ The rest of the installation depends on your printing system :
         PPD files for each printer already managed printers. Each 
         line to remove is of the form :
         
-          *cupsFilter: "application/vnd.cups-postscript 0 /usr/bin/pykota"
+          *cupsFilter: "application/vnd.cups-postscript 0 /usr/share/pykota/pykota"
+        
+        This means that each time the pstops filter will be executed, it will
+        pass the job's data through the pykota filter which is present in 
+        /usr/share/pykota
         
         Don't touch anything else, especially any other *cupsFilter line.
         Then save each of these files.
@@ -358,6 +362,10 @@ The rest of the installation depends on your printing system :
         with :    
     
             DeviceURI cupspykota:socket://myprinter.domain.com:9100
+            
+        or :    
+        
+            DeviceURI cupspykota://socket://myprinter.domain.com:9100
         
         Save the file and restart CUPS.
 
@@ -366,7 +374,7 @@ The rest of the installation depends on your printing system :
     Modify the /etc/printcap file to add two lines identical to these ones :
     
     :achk=true
-    :as=|/usr/bin/pykota
+    :as=|/usr/share/pykota/pykota
     
     For each printer on which you want to use print accounting.
     
@@ -378,6 +386,14 @@ Now you can begin to populate the PyKota's database with printers,
 users and groups :
   
 Add printers and users to the quota system and set their quota values : 
+
+Starting from version 1.18alpha2, the preferred command to manage
+printers is named pkprinters
+
+    $ pkprinters --help
+    
+    will tell you how to create, manage or delete printers and
+    printers groups.
 
     $ edpykota --add -P hp2100 -S 40 -H 50 user1 ... userN
         
@@ -426,7 +442,9 @@ or :
     a regular user, only your own quota report will be produced.
     
 Quota reports are also available remotely by using the CGI script
-printquota.cgi provided in the cgi-bin/ subdirectory.
+printquota.cgi provided in the cgi-bin/ subdirectory. You can 
+also use the CSS stylesheet present in the stylesheets/ subdirectory
+and put it at your web server's DocumentRoot.
 
 For different security concerns, please give a look at the SECURITY
 file which is part of this software.
