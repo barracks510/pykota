@@ -60,6 +60,12 @@ pykota.schema :
         index pykotaPrinterName eq
         index pykotaLastJobIdent eq
         
+      NB : PyKota's schema doesn't currently allow substring
+           matches, but they would probably be very helpful
+           for the pykotaUserName, pykotaGroupName and pykotaPrinterName
+           attributes. This problem will be solved in a future
+           release.
+        
     Finally, restart the OpenLDAP server :    
     
         $ /etc/init.d/slapd restart
