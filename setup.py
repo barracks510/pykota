@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2004/07/28 13:00:02  jalet
+# Now takes care of .sxi and .sxc files if any
+#
 # Revision 1.48  2004/07/27 07:14:24  jalet
 # Now warns the user if pyosd is not present
 #
@@ -440,6 +443,7 @@ docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO"
 data_files.append((docdir, docfiles))
 
 docfiles = glob.glob(os.sep.join(["docs", "*.pdf"]))
+docfiles += glob.glob(os.sep.join(["docs", "*.sx?"]))
 data_files.append((docdir, docfiles))
 
 docfiles = glob.glob(os.sep.join(["docs", "spanish", "*.pdf"]))
@@ -449,7 +453,7 @@ data_files.append((os.path.join(docdir, "spanish"), docfiles))
 docfiles = glob.glob(os.sep.join(["docs", "pykota", "*.html"]))
 data_files.append((os.path.join(docdir, "html"), docfiles))
 
-docfiles = glob.glob(os.sep.join(["openoffice", "*.sxw"]))
+docfiles = glob.glob(os.sep.join(["openoffice", "*.sx?"]))
 docfiles += glob.glob(os.sep.join(["openoffice", "*.png"]))
 docfiles += glob.glob(os.sep.join(["openoffice", "README"]))
 data_files.append((os.path.join(docdir, "openoffice"), docfiles))

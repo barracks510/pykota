@@ -1,7 +1,7 @@
 include README FAQ COPYING LICENSE TODO NEWS CREDITS SECURITY MANIFEST.in clean.sh bin/lprngpykota bin/cupspykota bin/edpykota bin/warnpykota bin/repykota bin/pykotme bin/pykosd bin/pkprinters bin/pkhint bin/pkpgcounter bin/snmpprinterstatus bin/waitprinter.sh bin/papwaitprinter.sh bin/mailandpopup.sh bin/README
 recursive-include po README *.po *.mo *.pot
 recursive-include man README *.sh *.1
-recursive-include docs README *.sgml *.png *.pdf *.html *.sxw
+recursive-include docs README *.sgml *.png *.pdf *.html *.sx?
 recursive-include cgi-bin README *.cgi
 recursive-include conf README *.sample
 recursive-include initscripts README README.* *.sql *.py *.schema *.ldif
@@ -10,5 +10,5 @@ recursive-include untested README *.sh *.ps *.pjl
 recursive-include logos README *.png *.xcf
 recursive-include contributed README *.pl *.sh *.py
 recursive-include stylesheets README *.css
-recursive-include openoffice README *.png *.sxw *.sxc *.pdf
+recursive-include openoffice README *.png *.sx? *.pdf
 recursive-include tests README *.ps.gz *.sh
