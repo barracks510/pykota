@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/04/11 08:56:49  jalet
+# Comment
+#
 # Revision 1.18  2003/04/11 08:50:39  jalet
 # Workaround for the HP "feature" of saving the page counter to NVRAM
 # only every time 10 new pages are printed...
@@ -176,6 +179,7 @@ def main() :
             # we let the job pass through, but log a warning message
             kotafilter.logger.log_message(_("User %s not registered in the PyKota system") % username, "warn")
         else :
+            # get last job information for this printer
             pgc = kotafilter.storage.getPrinterPageCounter(printerid)    
             if pgc is None :
                 # The printer hasn't been used yet, from PyKota's point of view
