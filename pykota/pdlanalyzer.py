@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2004/06/29 14:21:41  jalet
+# Smallish optimization
+#
 # Revision 1.21  2004/06/28 23:11:26  jalet
 # Code de-factorization in PCLXL parser
 #
@@ -92,7 +95,7 @@
 import sys
 import os
 import re
-import struct
+from struct import unpack
 import tempfile
 import mmap
     
@@ -346,14 +349,13 @@ class PCLXLAnalyzer :
             length = length()
             pos = self.pos
         posl = pos + length
-        sarraysize = self.minfile[pos:posl]
         self.pos = posl
         if length == 1 :    
-            return struct.unpack(self.endianness + "B", sarraysize)[0]
+            return unpack("B", self.minfile[pos:posl])[0]
         elif length == 2 :    
-            return struct.unpack(self.endianness + "H", sarraysize)[0]
+            return unpack(self.endianness + "H", self.minfile[pos:posl])[0]
         elif length == 4 :    
-            return struct.unpack(self.endianness + "I", sarraysize)[0]
+            return unpack(self.endianness + "I", self.minfile[pos:posl])[0]
         else :    
             raise PDLAnalyzerError, "Error on array size at %s" % self.pos
         
@@ -368,14 +370,13 @@ class PCLXLAnalyzer :
             length = length()
             pos = self.pos
         posl = pos + length
-        sarraysize = self.minfile[pos:posl]
         self.pos = posl
         if length == 1 :    
-            return 2 * struct.unpack(self.endianness + "B", sarraysize)[0]
+            return 2 * unpack("B", self.minfile[pos:posl])[0]
         elif length == 2 :    
-            return 2 * struct.unpack(self.endianness + "H", sarraysize)[0]
+            return 2 * unpack(self.endianness + "H", self.minfile[pos:posl])[0]
         elif length == 4 :    
-            return 2 * struct.unpack(self.endianness + "I", sarraysize)[0]
+            return 2 * unpack(self.endianness + "I", self.minfile[pos:posl])[0]
         else :    
             raise PDLAnalyzerError, "Error on array size at %s" % self.pos
         
@@ -390,14 +391,13 @@ class PCLXLAnalyzer :
             length = length()
             pos = self.pos
         posl = pos + length
-        sarraysize = self.minfile[pos:posl]
         self.pos = posl
         if length == 1 :    
-            return 4 * struct.unpack(self.endianness + "B", sarraysize)[0]
+            return 4 * unpack("B", self.minfile[pos:posl])[0]
         elif length == 2 :    
-            return 4 * struct.unpack(self.endianness + "H", sarraysize)[0]
+            return 4 * unpack(self.endianness + "H", self.minfile[pos:posl])[0]
         elif length == 4 :    
-            return 4 * struct.unpack(self.endianness + "I", sarraysize)[0]
+            return 4 * unpack(self.endianness + "I", self.minfile[pos:posl])[0]
         else :    
             raise PDLAnalyzerError, "Error on array size at %s" % self.pos
         
@@ -410,12 +410,10 @@ class PCLXLAnalyzer :
         
     def embeddedData(self) :
         """Handle normal amounts of data."""
-        fmt = self.endianness + "I"
         pos = self.pos
         pos4 = pos + 4
-        data = self.minfile[pos:pos4]
         self.pos = pos4
-        return struct.unpack(fmt, data)[0]
+        return unpack(self.indianness + "I", self.minfile[pos:pos4])[0]
         
     def littleEndian(self) :        
         """Toggles to little endianness."""

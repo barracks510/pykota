@@ -118,7 +118,7 @@ PyKota features :
           groups, or printers at once.
           
         - Account balances can be set, incremented, or  
-          decremented.
+          decremented. History of payments is kept.
           
         - Both printers and users can be automatically added on 
           first print in a completely configurable way.
