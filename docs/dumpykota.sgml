@@ -1,0 +1,89 @@
+<!-- $Id$ -->
+
+<chapter>
+  <title>Export datas to other software with dumppykota</title>
+  <para>Last modified on $Date$</para>
+  
+  <para>
+    If you want to reuse <application>PyKota</application> datas in another
+    software, but don't want to modify your existing application to
+    have it connect to <application>PyKota</application>'s database, your
+    best option is the new <application>dumpykota</application> command.
+  </para>
+  
+  <para>
+    <application>dumpykota</application> can export <application>PyKota</application>
+    datas in a number of formats. As of September 27th 2004, output formats are
+    comma separated values, semicolon separated values, and tab separated values.
+    More formats, different, are planned : <acronym>XML</acronym>, <acronym>SQL</acronym>,
+    and <acronym>LDIF</acronym> are planned, but are currently not implemented.
+  </para>
+  
+  <para>
+    <application>dumpykota</application> can't dump all datas at once though, you have
+    to specify which type of datas you want. The possible types are :
+    <itemizedlist>
+      <listitem><para>Users</para></listitem>
+      <listitem><para>Users groups</para></listitem>
+      <listitem><para>Printers</para></listitem>
+      <listitem><para>Printers groups membership</para></listitem>
+      <listitem><para>Users groups membership</para></listitem>
+      <listitem><para>Users print quota entries</para></listitem>
+      <listitem><para>Users groups print quota entries</para></listitem>
+      <listitem><para>History of payments</para></listitem>
+      <listitem><para>History of print jobs</para></listitem>
+    </itemizedlist>  
+  </para>
+  
+  <para>
+    You can then import the dumped datas into a spreadsheet for example, 
+    if you want to create complex reports with nice looking graphs and
+    the like.
+  </para>
+  
+  <para>
+    This command could also be used if you plan to write your own management
+    tools : just write wrappers around the <application>pkprinters</application>,
+    <application>edpykota</application>, and <application>dumpykota</application>
+    tools, and your own tools will automatically benefit from <application>PyKota</application>
+    database backend independance layer.
+  </para>
+  
+  <warning>
+    <title>Warning</title>
+    <para>
+      Contrary to the <application>repykota</application> command, <application>dumpykota</application>
+      doesn't currently limit which datas can be exported by normal users, so please take
+      care to not allow normal users to read the <filename>/etc/pykota/pykota.conf</filename>
+      file or to execute the <application>dumpykota</application> command if you don't
+      want to expose possibly sensitive datas.
+    </para>
+  </warning>  
+        
+  <sect1>
+    <title>Reference</title>
+    <para>
+      <cmdsynopsis>
+        <command>dumpykota</command>
+        <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+        <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+        <group choice="opt">
+          <arg>-f <replaceable>outputformat</replaceable></arg>
+          <arg>--format <replaceable>outputformat</replaceable></arg>
+        </group>
+        <group choice="req">
+          <arg>-d <replaceable>datatype</replaceable></arg>
+          <arg>--data <replaceable>datatype</replaceable></arg>
+        </group>
+      </cmdsynopsis>
+    </para>
+  </sect1>
+</chapter>
+
+<!--
+
+$Log$
+Revision 1.1  2004/09/27 08:19:14  jalet
+Wrote some doc for dumpykota
+
+-->

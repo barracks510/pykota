@@ -10,6 +10,7 @@
   <!entity SCRIPTS system "scripts.sgml">
   <!entity PKHINT system "pkhint.sgml">
   <!entity PYKOSD system "pykosd.sgml">
+  <!entity DUMPYKOTA system "dumpykota.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -117,11 +118,13 @@
   
   &WARNPYKOTA;
   
-  &SCRIPTS;
+  &DUMPYKOTA;
   
   &PKHINT;
   
   &PYKOSD;
+  
+  &SCRIPTS;
     
   &GNUGPL;
 
@@ -130,6 +133,9 @@
 <!--
 
 $Log$
+Revision 1.14  2004/09/27 08:19:14  jalet
+Wrote some doc for dumpykota
+
 Revision 1.13  2004/07/16 12:22:46  jalet
 LPRng support early version
 

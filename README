@@ -139,6 +139,9 @@ PyKota features :
         - Automated low quota or balance remainder can be 
           scheduled regularly or launched manually.
           
+        - Powerful data dumper to export datas to other
+          software (spreadsheets for example).
+          
     User Interface :          
     
         - All the command line tools accept the -h | --help 
