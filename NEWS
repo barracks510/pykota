@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.22alpha2 :
+    
+        - Fixed a potential race condition when several backend
+          wrappers were present in CUPS' backend directory.
+          
+        - Fixed dumpykota's output in CUPS' page_log format to better
+          match CUPS format.
+          
     - 1.22alpha1 :
     
         - Import into Subversion.
