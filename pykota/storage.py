@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/01/06 16:02:57  jalet
+# This time printer groups caching works.
+#
 # Revision 1.31  2004/01/06 15:51:24  jalet
 # Fixed caching of printer groups
 #
@@ -352,7 +355,7 @@ class BaseStorage :
         self.disablehistory = pykotatool.config.getDisableHistory()
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
-            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {}, "PARENTPRINTERS" : {} }
+            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }
         
     def close(self) :    
         """Must be overriden in children classes."""
@@ -430,11 +433,16 @@ class BaseStorage :
         
     def getParentPrinters(self, printer) :    
         """Extracts parent printers information for a given printer from cache."""
-        parents = self.getFromCache("PARENTPRINTERS", printer.Name)
-        if parents is None :
-            parents = self.getParentPrintersFromBackend(printer)
-            self.cacheEntry("PARENTPRINTERS", printer.Name, parents)
-        return parents    
+        if self.usecache :
+            if not hasattr(printer, "Parents") :
+                self.tool.logdebug("Cache miss (%s->Parents)" % printer.Name)
+                printer.Parents = self.getParentPrintersFromBackend(printer)
+                self.tool.logdebug("Cache store (%s->Parents)" % printer.Name)
+            else :
+                self.tool.logdebug("Cache hit (%s->Parents)" % printer.Name)
+        else :        
+            printer.Parents = self.getParentPrintersFromBackend(printer)
+        return printer.Parents
         
     def getGroupMembers(self, group) :        
         """Returns the group's members list from in-group cache."""
