@@ -1,15 +1,150 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title>TODO : Title here</title>
+  <title>Installation</title>
   <para>
-    TODO : blah
+    Before being able to use <application>PyKota</application>, you have of course to
+    install it first. But before installing, you must carefully plan your installation.
   </para>
+  
+  <para>
+    First you have to determine which machine will be the <application>PyKota</application>
+    <glossaryterm>Storage Server</glossaryterm>. The Storage Server is the host responsible
+    for keeping a centralized database of print usage for all your printers, users and groups.
+  </para>
+  
+  <para>
+    Then you have to list all the <glossaryterm>Print Servers</glossaryterm> for which
+    you plan to use <glossaryterm>print quota</glossaryterm> facilities.
+  </para>
+  
+  <para>
+    Now we will see what has to be done on all those servers.
+    <note>
+      <title>Note</title>
+      <para>
+        Of course, depending on the size of your network, you may very well
+        use the same machine as both a Print Server and a Storage Server.
+        This is especially the case if you've got only one server.
+      </para>
+    </note>  
+  </para>
+  
+  <sect1>
+    <title>Storage Server Installation</title>
+    
+    <para>
+      Depending on <application>PyKota</application>'s version number, different
+      types of storage backends may be supported, so we will see for each one of
+      them how to configure it.
+    </para>
+    
+    <sect2>
+      <title>PostgreSQL</title>
+      
+      <para>
+        <application>PostgreSQL</application> is an <glossaryterm>Object Relationnal DataBase
+        Management System</glossaryterm> distributed under a <glossaryterm>Free Software</glossaryterm>
+        license from the 
+        <ulink url="http://www.postgresql.org">http://www.postgresql.org</ulink>
+        web site. It certainely is the free <acronym>RDBMS</acronym> which has the most advanced
+        features, and is widely used all over the world.
+      </para>
+      
+      <para>
+        To configure your Storage Server, you must have PostgreSQL already working.
+        The complete installation of <application>PostgreSQL</application> is not covered by
+        the present manual, please refer to your system's documentation or to 
+        <ulink url="http://www.postgresql.org">http://www.postgresql.org</ulink> for
+        details.
+      </para>
+      
+      <para>
+        One thing you have to check, though, is that every Print Server on which you
+        want to install the print quota mechanism must be able to connect to the
+        <application>PostgreSQL</application> server. In the default installation of
+        <application>PostgreSQL</application> this may not be the case for security reasons, except if both
+        servers are in fact the same machine. In any case, it is recommended that you
+        check the <filename>/etc/postgresql/pg_hba.conf</filename> and modify it if
+        needed. This file is self documented and its modification is straightforward.
+        <tip>
+          <title>Tip</title>
+          <para>
+            Don't forget to restart <application>PostgreSQL</application> if you modify
+            any of its configuration files, in order for the changes to take effect.
+          </para>
+        </tip>  
+      </para>
+      
+      <para>
+        Be careful, you may be unable to connect from a Print Server to the <application>PostgreSQL</application>
+        server even if the configuration is correct. Sometimes your connections may be blocked by
+        one or more network firewalls along the route from one machine to the other. If this
+        is the case, then the best thing you can do is to ask your <glossaryterm>Network Administrator</glossaryterm>
+        to not filter the IP port used by <application>PostgreSQL</application>, which is
+        usually port 5432/tcp.
+        <tip>
+          <title>Tip</title>
+          <para>
+            The TCP/IP network port used by PostgreSQL may be different. When in doubt, ask your 
+            <glossaryterm>System Administrator</glossaryterm> for the correct value.
+          </para>
+        </tip>  
+      </para>
+      
+      <para>
+        TODO.
+      </para>
+    </sect2>  
+    
+    <sect2>
+      <title>MySQL</title>
+      
+      <para>
+        TODO.
+      </para>
+    </sect2>  
+    
+    <sect2>
+      <title>LDAP</title>
+      
+      <para>
+        TODO.
+      </para>
+    </sect2>  
+    
+    <sect2>
+      <title>Berkeley DB</title>
+      
+      <para>
+        TODO.
+      </para>
+    </sect2>  
+  </sect1>  
+  
+  <sect1>
+    <title>Print Server Installation</title>
+    
+    <para>
+      For each Print Server on which you plan to implement the print quota
+      mechanism, you have, of course, to have an already working printing environment. 
+      Currently <application>PyKota</application> only works with the
+      <ulink url="http://www.cups.org"><application>CUPS</application></ulink> environment,
+      but more may be added in the future.
+    </para>
+    
+    <para>
+      TODO
+    </para>
+  </sect1>  
 </chapter>
 
 <!--
 
 $Log$
+Revision 1.2  2003/03/18 22:10:54  jalet
+Documentation improvements.
+
 Revision 1.1  2003/02/08 00:03:35  jalet
 Documentation skeleton added
 
