@@ -454,3 +454,7 @@ msgstr ""
 msgid "Printer %s already exists, will be modified."
 msgstr ""
 
+#, python-format
+msgid "File number %s unregistered twice from polling object, ignored."
+msgstr ""
+

@@ -490,3 +490,7 @@ msgstr "L'imprimante %s existe déjà, ignorée."
 msgid "Printer %s already exists, will be modified."
 msgstr "L'imprimante %s existe déjà, elle sera modifiée."
 
+#, python-format
+msgid "File number %s unregistered twice from polling object, ignored."
+msgstr "Le fichier numéro %s a été retiré deux fois de l'objet poll, action ignorée."
+
