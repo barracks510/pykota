@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2004/08/11 16:25:38  jalet
+# Fixed index problem in PCLXL parser when retrieving number of copies for
+# each page
+#
 # Revision 1.28  2004/08/10 23:01:49  jalet
 # Fixed number of copies in PCL5 parser
 #
@@ -545,7 +549,7 @@ class PCLXLAnalyzer :
             self.minfile.close() # reached EOF
             
         # now handle number of copies for each page (may differ).
-        for pnum in range(self.pagecount) :
+        for pnum in range(1, self.pagecount + 1) :
             # if no number of copies defined, take 1, as explained
             # in PCLXL documentation.
             # NB : is number of copies is 0, the page won't be output
