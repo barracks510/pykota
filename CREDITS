@@ -64,6 +64,8 @@ Supporters :
     - Richard Potter
     - Ryan Lim
     - Michael Allerhand - University of Edinburgh
+    - Kjetil Knudsen
+    - Felix Hilmer
 
 Contributors :
 --------------
@@ -85,6 +87,7 @@ Contributors :
     - René Lund Jensen : Contributed the pagecount.pl script
     - Henrik Janhagen - Kungliga Tekniska Högskolan : Swedish translation
     - Hugo Monteiro : Portuguese Portuguese translation
+    - Peter Hawkins : First try at Debian packaging 
 
 ==============================================================
 
