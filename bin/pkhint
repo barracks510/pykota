@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2004/07/27 21:50:29  jalet
+# Small fix for %(port)s thanks to rpinheiro
+#
 # Revision 1.15  2004/07/20 22:19:45  jalet
 # Sanitized a bit + use of gettext
 #
@@ -217,7 +220,10 @@ class PKHint(PyKotaTool) :
             except :    
                 pass
             else :    
-                return command
+                if port is None :
+                    return command
+                else :    
+                    return command.replace("%(port)s", str(port))
         
     def main(self, args, options) :
         """Main work is done here."""
