@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2004/03/01 11:23:25  jalet
+# Pre and Post hooks to external commands are available in the cupspykota
+# backend. Forthe pykota filter they will be implemented real soon now.
+#
 # Revision 1.28  2004/02/26 14:18:07  jalet
 # Should fix the remaining bugs wrt printers groups and users groups.
 #
@@ -200,7 +204,18 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         # OK means : Both printer, user and user print quota exist, job should
         #            be allowed if current user is allowed to print on this printer
         if policy == "OK" :
+            # exports user information with initial values
+            self.exportUserInfo(userpquota)
+            
+            # checks the user's quota
             action = self.warnUserPQuota(userpquota)
+            
+            # exports some new environment variables
+            os.putenv("PYKOTAACTION", action)
+            
+            # launches the pre hook
+            self.prehook(userpquota)
+            
             self.logdebug("Job accounting begins.")
             self.accounter.beginJob(userpquota)
         else :    
@@ -235,6 +250,16 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # adds the current job to history    
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options)
             self.logdebug("Job added to history.")
+            
+            # exports some new environment variables
+            os.putenv("PYKOTAJOBSIZE", str(jobsize))
+            os.putenv("PYKOTAJOBPRICE", str(jobprice))
+            
+            # then re-export user information with new values
+            self.exportUserInfo(userpquota)
+            
+            # Launches the post hook
+            self.posthook(userpquota)
             
         return retcode    
                     

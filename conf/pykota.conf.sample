@@ -438,3 +438,56 @@ requester: external(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snm
 #
 policy: deny
 
+# Pre and Post Hooks 
+# These directives allow the easy plug-in of any command of your choice
+# at different phases of PyKota's execution.
+# Pre and Post Hooks can access some of PyKota's internal information
+# by reading environment variables as described below.
+# The actual phase of PyKota's execution is available in the
+# PYKOTAPHASE environment variable.
+# Pre and Post Hooks can be defined either globally, per printer,
+# or both if both are defined, the printer specific hook has
+# priority.
+#
+# List of available environment variables :
+# NB : Most of these variables are also available during the execution
+# of external commands defined in the accounter, requester or mailto 
+# directives.
+#
+# PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
+# PYKOTAUSERNAME : user's name
+# PYKOTAPRINTERNAME : printer's name
+# PYKOTAJOBID : job's id
+# PYKOTATITLE : job's title
+# PYKOTAFILENAME : job's filename
+# PYKOTACOPIES : number of copies
+# PYKOTAOPTIONS : job's options
+# PYKOTABALANCE : user's account balance
+# PYKOTALIFETIMEPAID : user's grand total paid 
+# PYKOTAPAGECOUNTER : user's page counter on this printer
+# PYKOTALIFEPAGECOUNTER : user's life time page counter on this printer
+# PYKOTASOFTLIMIT : user's soft page limit on this printer
+# PYKOTAHARDLIMIT : user's hard page limit on this printer
+# PYKOTADATELIMIT : user's soft to hard limit date limit on this printer
+
+# PreHook : gets executed after being sure the user, printer and user quota
+# entry on the printer both exist in the PyKota database, but just before
+# checking if the user is allowed to print or not.
+# prehook has access to many environment variables :
+#
+# PYKOTAACTION contains either "ALLOW", "WARN" or "DENY" and 
+# represents the action which is to be done wrt the print job.
+# PYKOTAPHASE contains 'BEFORE' during execution of prehook 
+#
+# uncomment the line below to see what environment variables are available
+# prehook: /usr/bin/printenv >/tmp/before
+
+# PostHook : gets executed after the job has been added to the history.
+# posthook has access to all the environment variables defined above,
+# as well as two additionnal environment variables : PYKOTAJOBPRICE 
+# and PYKOTAJOBSIZE. 
+# PYKOTAPHASE contains 'AFTER' during execution of posthook.
+#
+# uncomment the line below to see what environment variables are available
+#posthook: /usr/bin/printenv >/tmp/after
+

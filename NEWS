@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha12 :
+    
+        - pre and post hooks to external commands with many 
+          many environment variables available are useable 
+          from the cupspykota backend.
+          See sample configuration file for details and help.
+          
     - 1.18alpha11 : 
     
         - Hopefully final fix wrt groups (users and printers)

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.75  2004/03/01 11:23:25  jalet
+# Pre and Post hooks to external commands are available in the cupspykota
+# backend. Forthe pykota filter they will be implemented real soon now.
+#
 # Revision 1.74  2004/02/26 14:18:07  jalet
 # Should fix the remaining bugs wrt printers groups and users groups.
 #
@@ -720,7 +724,44 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             self.username = self.username.lower()
         self.preserveinputfile = self.inputfile 
         self.accounter = accounter.openAccounter(self)
+        self.exportJobInfo()
+        
+    def exportJobInfo(self) :    
+        """Exports job information to the environment."""
+        os.putenv("PYKOTAUSERNAME", self.username)
+        os.putenv("PYKOTAPRINTERNAME", self.printername)
+        os.putenv("PYKOTAJOBID", self.jobid)
+        os.putenv("PYKOTATITLE", self.title or "")
+        os.putenv("PYKOTAFILENAME", self.preserveinputfile or "")
+        os.putenv("PYKOTACOPIES", str(self.copies))
+        os.putenv("PYKOTAOPTIONS", self.options or "")
     
+    def exportUserInfo(self, userpquota) :
+        """Exports user information to the environment."""
+        os.putenv("PYKOTABALANCE", str(userpquota.User.AccountBalance or 0.0))
+        os.putenv("PYKOTALIFETIMEPAID", str(userpquota.User.LifeTimePaid or 0.0))
+        os.putenv("PYKOTAPAGECOUNTER", str(userpquota.PageCounter or 0))
+        os.putenv("PYKOTALIFEPAGECOUNTER", str(userpquota.LifePageCounter or 0))
+        os.putenv("PYKOTASOFTLIMIT", str(userpquota.SoftLimit))
+        os.putenv("PYKOTAHARDLIMIT", str(userpquota.HardLimit))
+        os.putenv("PYKOTADATELIMIT", str(userpquota.DateLimit))
+            
+    def prehook(self, userpquota) :
+        """Allows pluging of an external hook before the job gets printed."""
+        os.putenv("PYKOTAPHASE", "BEFORE")
+        prehook = self.config.getPreHook(userpquota.Printer.Name)
+        if prehook :
+            self.logdebug("Executing pre-hook [%s]" % prehook)
+            os.system(prehook)
+        
+    def posthook(self, userpquota) :
+        """Allows pluging of an external hook after the job gets printed and/or denied."""
+        os.putenv("PYKOTAPHASE", "AFTER")
+        posthook = self.config.getPostHook(userpquota.Printer.Name)
+        if posthook :
+            self.logdebug("Executing post-hook [%s]" % posthook)
+            os.system(posthook)
+        
     def extractInfoFromCupsOrLprng(self) :    
         """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
         
