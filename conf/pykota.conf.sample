@@ -228,13 +228,17 @@ adminmail: root@localhost
 #
 #       mailto: external(/usr/bin/callpager %(username)s "Quota problem on %(printername)s" >/dev/null)
 #
-#   To automatically send a WinPopup message :
+#   To automatically send a WinPopup message (this may only work with a PDC, 
+#   here the same machine does Samba as PDC + CUPS) :
 #
 #       mailto: external(echo "%(message)s"  | /usr/bin/iconv --to-code utf-8 --from-code iso-8859-15 | /usr/bin/smbclient -M "%(username)s" 2>&1 >/dev/null)
 #
-#   NB : Don't forget to redirect your command's standard output somewhere 
-#        (e.g. >/dev/null) so that there's no perturbation to the underlying
-#        layer (filter or backend)
+#   NB : I use ISO-8859-15, but Windows expects UTF-8, so we pipe the message
+#        into iconv before sending it to the Windows user.
+#
+#   NB : in ANY case, don't forget to redirect your command's standard output
+#        somewhere (e.g. >/dev/null) so that there's no perturbation to the 
+#        underlying layer (filter or backend)
 #
 mailto: both
 
