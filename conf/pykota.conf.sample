@@ -64,6 +64,10 @@ gracedelay: 7
 # are equivalent
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
+#
+# NB : The SNMP oid 43.10.2.1.4.1.1 works on HP Laserjet Printers, but it may
+#      be different with other brands, refer to your printer's documentation 
+#      for details.
 requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
