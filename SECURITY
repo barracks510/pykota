@@ -119,7 +119,7 @@ How to improve PyKota's security :
         $ /etc/init.d/postgresql restart
         
       Of course, depending on your needs, you may want to secure
-      your database connexions in a completely different way or 
+      your database connections in a completely different way or 
       add other security layers on top of this. To do so please
       refer to PostgreSQL's documentation because this is out of
       the scope of the present document.
@@ -167,7 +167,7 @@ How to improve PyKota's security :
         $ /etc/init.d/slapd restart
         
       Of course, depending on your needs, you may want to secure
-      your database connexions in a completely different way or 
+      your database connections in a completely different way or 
       add other security layers on top of this. To do so please
       refer to your LDAP server's documentation because this is out 
       of the scope of the present document.
