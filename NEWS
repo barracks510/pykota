@@ -23,6 +23,11 @@ PyKota NEWS :
        
     - 1.21alpha27 :
     
+        - Allows software() (no arguments) to the software accounting
+          directive. This saves a lot of CPU since the job is not
+          parsed again : the precomputed size is used directly in this
+          case.
+          
         - epykota's --prototype option now works fine with accounts
           limited by balance.
           

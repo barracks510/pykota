@@ -363,7 +363,17 @@ privacy : no
 #                 best choice for this is probably to set it
 #                 this way :
 #
+#                   accounter: software()
+#
+#                 which uses PyKota's internal parser to compute
+#                 the size of the job.
+#
+#                 You could obtain exactly the same result with :
+#
 #                   accounter: software(/usr/bin/pkpgcounter)
+#
+#                 But in this case the job would be passed through
+#                 PyKota's internal parser a second time.
 #
 #                 pkpgcounter is a command line tool which is
 #                 part of PyKota and which can handle both
@@ -371,11 +381,11 @@ privacy : no
 #                 and PDF documents. More file formats will be added
 #                 in the future, as time permits.
 #
-#                 while pkpgcounter is the recommended value
-#                 you can use whatever command you want provided
-#                 that your command accepts the job's data on its
-#                 standard input and prints the job's size in pages
-#                 as a single integer on its standard output.
+#                 while pkpgcounter is the recommended value if you want
+#                 to use an external command here, you can use whatever 
+#                 command you want provided your command accepts the job's
+#                 data on its standard input and prints the job's size in 
+#                 pages as a single integer on its standard output.
 # 
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
@@ -383,7 +393,10 @@ privacy : no
 # accounter: hardware(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 # accounter: hardware(snmp)
 # accounter: hardware(pjl)
-accounter: software(/usr/bin/pkpgcounter)
+# accounter: software(/usr/bin/pkpgcounter)
+#
+# The following is only allowed since PyKota 1.21 
+accounter: software()
 
 # What should we do if the accounter's subprocess doesn't return
 # a valid result (for example doesn't return an integer on its stdout)

@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2005/02/19 18:16:06  jalet
+# Optimize print job parsing by avoiding to pass the job's datas through
+# PyKota's internal parser if the special construct "software()" is used
+# with no argument in the 'accounter' directive.
+#
 # Revision 1.61  2005/02/16 00:29:33  jalet
 # Fixed the maxdenybanners directive.
 # Introduced the denyduplicates directive.
@@ -392,8 +397,8 @@ class PyKotaConfig :
             except ValueError :    
                 raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
             if args.endswith(')') :
-                args = args[:-1]
-            if not args :
+                args = args[:-1].strip()
+            if (accounter == "hardware") and not args :
                 raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
             return (accounter.lower(), args)    
         else :

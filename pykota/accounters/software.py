@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2005/02/19 18:16:06  jalet
+# Optimize print job parsing by avoiding to pass the job's datas through
+# PyKota's internal parser if the special construct "software()" is used
+# with no argument in the 'accounter' directive.
+#
 # Revision 1.11  2004/09/24 21:19:48  jalet
 # Did a pass of PyChecker
 #
@@ -74,52 +79,56 @@ class Accounter(AccounterBase) :
     def computeJobSize(self) :    
         """Feeds an external command with our datas to let it compute the job size, and return its value."""
         self.filter.printInfo(_("Launching SOFTWARE(%s)...") % self.arguments)
-        MEGABYTE = 1024*1024
-        self.filter.jobdatastream.seek(0)
-        child = popen2.Popen4(self.arguments)
-        try :
-            data = self.filter.jobdatastream.read(MEGABYTE)    
-            while data :
-                child.tochild.write(data)
-                data = self.filter.jobdatastream.read(MEGABYTE)
-            child.tochild.flush()
-            child.tochild.close()    
-        except (IOError, OSError), msg :    
-            msg = "%s : %s" % (self.arguments, msg) 
-            self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
-        
-        pagecounter = None
-        try :
-            answer = child.fromchild.read()
-        except (IOError, OSError), msg :    
-            msg = "%s : %s" % (self.arguments, msg) 
-            self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
-        else :    
-            lines = [l.strip() for l in answer.split("\n")]
-            for i in range(len(lines)) : 
-                try :
-                    pagecounter = int(lines[i])
-                except (AttributeError, ValueError) :
-                    self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
-                else :    
-                    break
-        child.fromchild.close()
-        
-        try :
-            status = child.wait()
-        except OSError, msg :    
-            self.filter.printInfo(_("Problem while waiting for software accounter pid %s to exit : %s") % (child.pid, msg))
-        else :    
-            if os.WIFEXITED(status) :
-                status = os.WEXITSTATUS(status)
-            self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
+        if not self.arguments :
+            pagecounter = self.filter.softwareJobSize   # Optimize : already computed !
+            self.filter.logdebug("Internal software accounter said job is %s pages long." % repr(pagecounter))
+        else :
+            MEGABYTE = 1024*1024
+            self.filter.jobdatastream.seek(0)
+            child = popen2.Popen4(self.arguments)
+            try :
+                data = self.filter.jobdatastream.read(MEGABYTE)    
+                while data :
+                    child.tochild.write(data)
+                    data = self.filter.jobdatastream.read(MEGABYTE)
+                child.tochild.flush()
+                child.tochild.close()    
+            except (IOError, OSError), msg :    
+                msg = "%s : %s" % (self.arguments, msg) 
+                self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
             
-        if pagecounter is None :    
-            message = _("Unable to compute job size with accounter %s") % self.arguments
-            if self.onerror == "CONTINUE" :
-                self.filter.printInfo(message, "error")
-            else :
-                raise PyKotaAccounterError, message
+            pagecounter = None
+            try :
+                answer = child.fromchild.read()
+            except (IOError, OSError), msg :    
+                msg = "%s : %s" % (self.arguments, msg) 
+                self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
+            else :    
+                lines = [l.strip() for l in answer.split("\n")]
+                for i in range(len(lines)) : 
+                    try :
+                        pagecounter = int(lines[i])
+                    except (AttributeError, ValueError) :
+                        self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
+                    else :    
+                        break
+            child.fromchild.close()
             
-        self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, repr(pagecounter)))
+            try :
+                status = child.wait()
+            except OSError, msg :    
+                self.filter.printInfo(_("Problem while waiting for software accounter pid %s to exit : %s") % (child.pid, msg))
+            else :    
+                if os.WIFEXITED(status) :
+                    status = os.WEXITSTATUS(status)
+                self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
+                
+            if pagecounter is None :    
+                message = _("Unable to compute job size with accounter %s") % self.arguments
+                if self.onerror == "CONTINUE" :
+                    self.filter.printInfo(message, "error")
+                else :
+                    raise PyKotaAccounterError, message
+            self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, repr(pagecounter)))
+            
         return pagecounter or 0
