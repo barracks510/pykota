@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha20 :
+    
+        - dumpykota can now output XML.
+        
     - 1.20alpha19 :
     
         - Improved user groups and user groups quotas dumps in dumpykota.

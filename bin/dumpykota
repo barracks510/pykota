@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/10/04 21:25:29  jalet
+# dumpykota can now output datas in the XML format
+#
 # Revision 1.6  2004/09/15 18:28:41  jalet
 # Updated help for dumpykota
 #
@@ -50,6 +53,15 @@
 import sys
 import os
 import pwd
+
+try :
+    import jaxml
+except ImportError :    
+    sys.stderr.write("The jaxml Python module is not installed. XML output is disabled.\n")
+    sys.stderr.write("Download jaxml from http://www.librelogiciel.com/software/ or from your Debian archive of choice\n")
+    hasJAXML = 0
+else :    
+    hasJAXML = 1
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
@@ -92,6 +104,23 @@ options :
                          - csv : separate datas with commas
                          - ssv : separate datas with semicolons
                          - tsv : separate datas with tabs
+                         - xml : dump data as XML
+                         
+  -o | --output fname  All datas will be dumped to the file instead of
+                       to the standard output. The special '-' filename
+                       is the default value and means stdout.
+                       WARNING : existing files are truncated !
+  
+Examples :
+
+  $ dumpykota --data history --format csv >myfile.csv
+  
+  This dumps the history in a comma separated values file, for possible
+  use in a spreadsheet.
+  
+  $ dumpykota --data users --format xml -o users.xml
+  
+  Dumps all users datas to the users.xml file.
   
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -130,12 +159,28 @@ class DumPyKota(PyKotaTool) :
         if format not in [ "csv",
                            "ssv",
                            "tsv",
+                           "xml",
                          ] :
             raise PyKotaToolError, _("Invalid modifier [%s] for --format command line option, see help.") % datatype
             
+        if (format == "xml") and not hasJAXML :
+            raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
+            
         entries = getattr(self.storage, "extract%s" % datatype.title())()    
-        if entries is not None :
-            return getattr(self, "dump%s" % format.title())(entries)
+        if entries :
+            mustclose = 0    
+            if options["output"].strip() == "-" :    
+                self.outfile = sys.stdout
+            else :    
+                self.outfile = open(options["output"], "w")
+                mustclose = 1
+                
+            retcode = getattr(self, "dump%s" % format.title())(entries, datatype)
+            
+            if mustclose :
+                self.outfile.close()
+                
+            return retcode    
         return 0
         
     def dumpWithSeparator(self, separator, entries) :    
@@ -143,32 +188,49 @@ class DumPyKota(PyKotaTool) :
         for entry in entries :
             line = separator.join([ '"%s"' % field for field in entry ])
             try :
-                print line
+                self.outfile.write("%s\n" % line)
             except IOError, msg :    
                 sys.stderr.write("%s : %s\n" % (_("PyKota data dumper failed : I/O error"), msg))
                 return -1
         return 0        
         
-    def dumpCsv(self, entries) :    
+    def dumpCsv(self, entries, dummy) :    
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator(",", entries)
                            
-    def dumpSsv(self, entries) :    
+    def dumpSsv(self, entries, dummy) :    
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator(";", entries)
                            
-    def dumpTsv(self, entries) :    
+    def dumpTsv(self, entries, dummy) :    
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator("\t", entries)
+        
+    def dumpXml(self, entries, datatype) :    
+        """Dumps datas as XML."""
+        x = jaxml.XML_document(encoding="UTF-8")
+        x.pykota(version=version.__version__)
+        x.dump(storage=self.config.getStorageBackend()["storagebackend"], type=datatype)
+        headers = entries[0]
+        for entry in entries[1:] :
+            x._push()
+            x.entry()
+            for i in range(len(entry)) :
+                value = entry[i]
+                strvalue = str(value).decode(self.getCharset()).encode("UTF-8")
+                x.attribute(strvalue, type=type(value).__name__, name=headers[i])
+            x._pop()    
+        x._output(self.outfile)
                            
 if __name__ == "__main__" : 
     retcode = 0
     try :
         defaults = { \
                      "format" : "csv", \
+                     "output" : "-", \
                    }
-        short_options = "vhd:f:"
-        long_options = ["help", "version", "data=", "format="]
+        short_options = "vhd:f:o:"
+        long_options = ["help", "version", "data=", "format=", "output="]
         
         # Initializes the command line tool
         dumper = DumPyKota(doc=__doc__)
@@ -181,6 +243,7 @@ if __name__ == "__main__" :
         options["version"] = options["v"] or options["version"]
         options["data"] = options["d"] or options["data"]
         options["format"] = options["f"] or options["format"] or defaults["format"]
+        options["output"] = options["o"] or options["output"] or defaults["output"]
         
         if options["help"] :
             dumper.display_usage_and_quit()

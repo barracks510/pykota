@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2004/10/04 21:25:29  jalet
+# dumpykota can now output datas in the XML format
+#
 # Revision 1.52  2004/09/30 09:52:45  jalet
 # Initial release of autopykota. Reading help or manpage is greatly
 # encouraged !
@@ -428,6 +431,7 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
                        ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.\nSee http://python-ldap.sf.net"),
                        ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
                        ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
+                       ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
                      ]
     commandstocheck = [("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")]
     for (name, module, helper) in modulestocheck :

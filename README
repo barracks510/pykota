@@ -209,8 +209,11 @@ Prerequisite :
     - CUPS or LPRng
     - Python v2.1 or above
     - eGenix' mxDateTime Python extension
-    - SNMP tools (specifically the snmpget command) if you plan to
-      request your printer's lifetime page counter via SNMP.
+    - The JAXML Python module to be able to dump datas in the XML format.
+    - The Python-SNMP module to query printers for their page counter.
+    - The Python-OSD module to use the graphical print quota reminder.
+    - SNMP tools (specifically the snmpget command) if you prefer to
+      use your own script to request query printers.
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
@@ -220,9 +223,9 @@ Prerequisite :
     - python-ldap Python module and the OpenLDAP client libraries  
       if you plan to use OpenLDAP as the Quota Storage backend.
     
-  On Intel i386 architecture, and for performance reasons if you 
-  print in PCL5 or PCL6 format, it is strongly suggested that you  
-  install the Python accelerator Psyco, available at :
+  On Intel i386 architecture, and for performance reasons, it is
+  strongly suggested that you install the Python accelerator Psyco, 
+  available at :
   
       http://psyco.sourceforge.net
       
