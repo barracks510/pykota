@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha22 :
+    
+        - Fixes a recently introduced bug with users groups and PostgreSQL.
+        
     - 1.20alpha21 :
     
         - Now dumpykota refuses to launch if the current user is not
