@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/01/15 12:50:41  jalet
+# Installation scripts now tells where the documentation was installed.
+#
 # Revision 1.30  2004/01/12 15:45:03  jalet
 # Now installs documentation in /usr/share/doc/pykota too.
 #
@@ -305,12 +308,13 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     os.chmod("/etc/pykota/pykotadmin.conf", 0640)
     
     # WARNING MESSAGE    
-    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.14 TO 1.14 OR ABOVE\n")
+    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.14 TO 1.16 OR ABOVE\n")
     sys.stdout.write("AND USE THE POSTGRESQL BACKEND, THEN YOU HAVE TO MODIFY YOUR\n")
     sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.14.sql\n")
+    sys.stdout.write("AND initscripts/postgresql/upgrade-to-1.16.sql\n")
     sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
     sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.14 OR ABOVE.\n\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.16 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.
@@ -339,8 +343,9 @@ for mofile in mofiles :
     directory = os.sep.join(["share", "locale", lang, "LC_MESSAGES"])
     data_files.append((directory, [ mofile ]))
     
+docdir = "/usr/share/doc/pykota"    
 docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO", "NEWS"] + glob.glob(os.sep.join(["docs", "*.pdf"])) + glob.glob(os.sep.join(["docs", "pykota", "*.html"]))
-data_files.append(("/usr/share/doc/pykota", docfiles))
+data_files.append((docdir, docfiles))
 
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
@@ -356,3 +361,5 @@ setup(name = "pykota", version = __version__,
       scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
       data_files = data_files)
 
+if ("install" in sys.argv) and not ("help" in sys.argv) :
+    sys.stdout.write("\n\nYou can give a look at PyKota's documentation in:\n%s\n\n" % docdir)
