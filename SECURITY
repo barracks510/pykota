@@ -42,7 +42,7 @@ How to improve PyKota's security :
     or don't let them execute unauthorized commands : they could
     very well compile and execute tools like NetCat, and send 
     datas directly to the printer in the case the printer is
-    networked.
+    networked, thus bypassing the printing system and PyKota.
     
   - Ensure that no regular user can read PyKota administrator's 
     configuration file, but that both the print quota administrator and 
