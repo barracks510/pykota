@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.87  2004/05/17 19:14:59  jalet
+# Now catches SIGPIPE and SIGCHLD
+#
 # Revision 1.86  2004/05/13 13:59:28  jalet
 # Code simplifications
 #
@@ -768,21 +771,30 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.exportJobInfo()
         
         # then deal with signals
-        # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
-        # Fortunately SIGPIPE is already ignored by Python
-        # It's there just in case this changes in the future.
-        # Here we have to handle SIGTERM correctly, and pass
-        # it to any child if needed.
-        self.gotSigTerm = 0
-        self.childProcesses = {}
-        signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+        # CUPS backends always ignore SIGPIPE and ignore SIGTERM
+        # when printing from their stdin
+        # Here we have to catch them correctly, and pass
+        # SIGTERM to any child if needed.
+        self.gotSigTerm = self.gotSigChld = self.gotSigPipe = 0
         signal.signal(signal.SIGTERM, self.sigterm_handler)
+        signal.signal(signal.SIGCHLD, self.sigchld_handler)
+        signal.signal(signal.SIGPIPE, self.sigpipe_handler)
         
     def sigterm_handler(self, signum, frame) :
-        """Sets a global variable whenever SIGTERM is received."""
+        """Sets an attribute whenever SIGTERM is received."""
         self.gotSigTerm = 1
         os.putenv("PYKOTASTATUS", "CANCELLED")
         self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
+        
+    def sigchld_handler(self, signum, frame) :
+        """Sets an attribute whenever SIGCHLD is received."""
+        self.gotSigChld = 1
+        self.logdebug("SIGCHLD received")
+        
+    def sigpipe_handler(self, signum, frame) :
+        """Sets an attribute whenever SIGPIPE is received."""
+        self.gotSigPipe = 1
+        self.logdebug("SIGPIPE received")
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""
