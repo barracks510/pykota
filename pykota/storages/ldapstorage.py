@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.101  2005/02/13 22:48:37  jalet
+# Added the md5sum to the history
+#
 # Revision 1.100  2005/02/13 22:02:29  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -1233,7 +1236,7 @@ class Storage(BaseStorage) :
                  }
         self.doModify(lastjob.ident, fields)         
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None) :
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
@@ -1258,7 +1261,7 @@ class Storage(BaseStorage) :
                    "pykotaOptions" : ((options is None) and "None") or self.userCharsetToDatabase(options), 
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
-                   # TODO : add the 3 missing fields
+                   "pykotaMD5Sum" : str(jobmd5sum),
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         

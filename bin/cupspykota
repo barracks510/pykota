@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.86  2005/02/13 22:48:37  jalet
+# Added the md5sum to the history
+#
 # Revision 1.85  2005/02/13 22:02:28  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -587,7 +590,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             jobprice = userpquota.increasePagesUsage(jobsize)
             
             # adds the current job to history    
-            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
+            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
+                                    action, jobsize, jobprice, self.preserveinputfile, \
+                                    self.title, self.copies, self.options, clienthost, \
+                                    self.jobSizeBytes, self.checksum)
             self.printMoreInfo(user, printer, _("Job added to history."))
             
             # exports some new environment variables

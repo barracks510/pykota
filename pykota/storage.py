@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.69  2005/02/13 22:48:37  jalet
+# Added the md5sum to the history
+#
 # Revision 1.68  2005/02/13 22:02:29  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -379,9 +382,9 @@ class StoragePrinter(StorageObject) :
         else :
             raise AttributeError, name
             
-    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None) :
         """Adds a job to the printer's history."""
-        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost, jobsizebytes)
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost, jobsizebytes, jobmd5sum)
         # TODO : update LastJob object ? Probably not needed.
         
     def addPrinterToGroup(self, printer) :    

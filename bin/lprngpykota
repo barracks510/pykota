@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2005/02/13 22:48:37  jalet
+# Added the md5sum to the history
+#
 # Revision 1.13  2005/01/17 08:44:23  jalet
 # Modified copyright years
 #
@@ -176,7 +179,10 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))
             jobprice = userpquota.increasePagesUsage(jobsize)
             
-            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
+            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
+                                    action, jobsize, jobprice, self.preserveinputfile, \
+                                    self.title, self.copies, self.options, clienthost, \
+                                    self.jobSizeBytes, self.checksum)
             self.printMoreInfo(user, printer, _("Job added to history."))
             
             # exports some new environment variables
@@ -192,7 +198,10 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             
             # here accounting was completed, either software, or hardware but over quota
         else :
-            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, filename=self.preserveinputfile, title=self.title, copies=self.copies, options=self.options, clienthost=clienthost, jobsizebytes=self.jobSizeBytes)
+            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
+                                    action, filename=self.preserveinputfile, title=self.title, \
+                                    copies=self.copies, options=self.options, clienthost=clienthost, \
+                                    jobsizebytes=self.jobSizeBytes, self.checksum)
             self.logdebug("Job added to history during first pass : Job's size and price are still unknown.")
             
         self.logdebug("First pass ends : ACTION_%s => %s => %s" % (action, getattr(printer, "Name", None), getattr(user, "Name", None)))
