@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/07/29 19:52:32  jalet
+# Forgot to read the email field from LDAP
+#
 # Revision 1.22  2003/07/29 09:54:03  jalet
 # Added configurable LDAP mail attribute support
 #
@@ -217,7 +220,7 @@ class Storage :
     def getUser(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
-        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaLimitBy"], base=self.info["userbase"])
+        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaLimitBy", self.info["usermail"]], base=self.info["userbase"])
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
