@@ -14,5 +14,13 @@
 # $Id$
 #
 for prog in autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pkhint pykosd ; do 
+    echo $prog ;
     help2man --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 --no-info $prog ; 
+    for loc in be br de el en es fr it pt sv th ; do
+        echo "  $loc" ;
+        cd $loc ;
+        help2man --locale=$loc --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 --no-info $prog ; 
+        cd .. ;
+    done ;
+    echo ;
 done
