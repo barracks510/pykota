@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2004/09/04 14:01:47  jalet
+# Support for PCL3 (HP Deskjets) added to generic PDL parser
+#
 # Revision 1.39  2004/09/02 23:30:05  jalet
 # Comments
 #
@@ -157,6 +160,7 @@ import popen2
     
 KILOBYTE = 1024    
 MEGABYTE = 1024 * KILOBYTE    
+LASTBLOCKSIZE = int(KILOBYTE / 4)
 
 class PDLAnalyzerError(Exception):
     """An exception for PDL Analyzer related stuff."""
@@ -324,9 +328,11 @@ class PCLAnalyzer :
                      "&l" : "XH",
                      "&a" : "G", # TODO : 0 means next side, 1 front side, 2 back side
                      "*g" : "W",
+                     "*r" : "sbABC",
                      # "*b" : "VW", # treated specially because it occurs very often
                    }  
-        pagecount = resets = ejects = backsides = 0
+        pagecount = resets = ejects = backsides = startgfx = endgfx = strangegfx = 0
+        starb = ispcl3 = 0
         tag = None
         copies = {}
         pos = 0
@@ -336,7 +342,9 @@ class PCLAnalyzer :
                 if char == "\014" :    
                     pagecount += 1
                 elif char == "\033" :    
+                    starb = 0
                     #
+                    #     <ESC>*b###y#m###v###w... -> PCL3 raster graphics
                     #     <ESC>*b###W -> Start of a raster data row/block
                     #     <ESC>*b###V -> Start of a raster data plane
                     #     <ESC>*c###W -> Start of a user defined pattern
@@ -344,6 +352,7 @@ class PCLAnalyzer :
                     #     <ESC>*l###W -> Start of a color lookup table
                     #     <ESC>*m###W -> Start of a download dither matrix block
                     #     <ESC>*v###W -> Start of a configure image data block
+                    #     <ESC>*r1A -> Start Gfx 
                     #     <ESC>(s###W -> Start of a characters description block
                     #     <ESC>)s###W -> Start of a fonts description block
                     #     <ESC>(f###W -> Start of a symbol set block
@@ -362,6 +371,7 @@ class PCLAnalyzer :
                         continue             # skip to next tag
                     tag = tagstart + minfile[pos] ; pos += 1
                     if tag == "*b" : 
+                        starb = 1
                         tagend = "VW"
                     else :    
                         try :
@@ -380,6 +390,17 @@ class PCLAnalyzer :
                             copies[pagecount] = size
                         elif (tag == "&l") and (char == "H") and (size == 0) :    
                             ejects += 1         # Eject 
+                        elif (tag == "*r") :
+                            # Special tests for PCL3
+                            if (char == "s") and size :
+                                while 1 :
+                                    char = minfile[pos] ; pos += 1
+                                    if char == "A" :
+                                        break
+                            elif (char == "b") and (minfile[pos] == "C") and not size :
+                                ispcl3 = 1 # Certainely a PCL3 file
+                            startgfx += (char == "A") and (minfile[pos - 2] in ("0", "1", "2", "3")) # Start Gfx
+                            endgfx += (not size) and (char in ("C", "B")) # End Gfx
                         elif (tag == "&a") and (size == 2) :
                             backsides += 1      # Back side in duplex mode
                         else :    
@@ -389,6 +410,22 @@ class PCLAnalyzer :
                                 # which is before the string itself
                                 size += 1
                             pos += size    
+                else :                            
+                    if starb :
+                        # special handling of PCL3 in which 
+                        # *b introduces combined ESCape sequences
+                        size = 0
+                        while 1 :
+                            char = minfile[pos] ; pos += 1
+                            if not char.isdigit() :
+                                break
+                            size = (size * 10) + int(char)    
+                        if char in ("w", "v") :    
+                            ispcl3 = 1  # certainely a PCL3 document
+                            pos += size - 1
+                        elif char in ("y", "m") :    
+                            ispcl3 = 1  # certainely a PCL3 document
+                            pos -= 1    # fix position : we were ahead
         except IndexError : # EOF ?
             minfile.close() # reached EOF
                             
@@ -414,25 +451,16 @@ class PCLAnalyzer :
             # if no number of copies defined, take the preceding one else the one set before any page else 1.
             nb = copies.get(pnum, copies.get(pnum-1, copies.get(0, 1)))
             pagecount += (nb - 1)
-        return pagecount
-        
-class PCL3GUIAnalyzer :
-    def __init__(self, infile) :
-        """Initialize PCL3GUI Analyzer."""
-        self.infile = infile
-        
-    def getJobSize(self) :     
-        """Count pages in a PCL3GUI document.
-         
-           Not much documentation available, so we will count occurences
-           of <ESC>*r1A which is start of graphical data.
-           
-           This is FAR from being accurate. PCL3 ressembles PCL5 in fact,
-           and PCL parser should be made better, but some documentation
-           definitely lacks.
-        """
-        data = self.infile.read()
-        pagecount = data.count("\033*r1A") # TODO : Allowed values 0, 1, 2, 3 after *r
+            
+        # in PCL3 files, there's one Start Gfx tag per page
+        if ispcl3 :
+            if endgfx == int(startgfx / 2) : # special case for cdj1600
+                pagecount = endgfx 
+            elif startgfx :
+                pagecount = startgfx
+            elif endgfx :    
+                pagecount = endgfx
+            
         return pagecount
         
 class PCLXLAnalyzer :
@@ -732,60 +760,54 @@ class PDLAnalyzer :
             except :    
                 pass    # probably stdin, which is not seekable
         
-    def isPostScript(self, data) :    
+    def isPostScript(self, sdata, edata) :    
         """Returns 1 if data is PostScript, else 0."""
-        if data.startswith("%!") or \
-           data.startswith("\004%!") or \
-           data.startswith("\033%-12345X%!PS") or \
-           ((data[:128].find("\033%-12345X") != -1) and \
-             ((data.find("LANGUAGE=POSTSCRIPT") != -1) or \
-              (data.find("LANGUAGE = POSTSCRIPT") != -1) or \
-              (data.find("LANGUAGE = Postscript") != -1))) or \
-              (data.find("%!PS-Adobe") != -1) :
+        if sdata.startswith("%!") or \
+           sdata.startswith("\004%!") or \
+           sdata.startswith("\033%-12345X%!PS") or \
+           ((sdata[:128].find("\033%-12345X") != -1) and \
+             ((sdata.find("LANGUAGE=POSTSCRIPT") != -1) or \
+              (sdata.find("LANGUAGE = POSTSCRIPT") != -1) or \
+              (sdata.find("LANGUAGE = Postscript") != -1))) or \
+              (sdata.find("%!PS-Adobe") != -1) :
             return 1
         else :    
             return 0
         
-    def isPDF(self, data) :    
+    def isPDF(self, sdata, edata) :    
         """Returns 1 if data is PDF, else 0."""
-        if data.startswith("%PDF-") or \
-           data.startswith("\033%-12345X%PDF-") or \
-           ((data[:128].find("\033%-12345X") != -1) and (data.upper().find("LANGUAGE=PDF") != -1)) or \
-           (data.find("%PDF-") != -1) :
+        if sdata.startswith("%PDF-") or \
+           sdata.startswith("\033%-12345X%PDF-") or \
+           ((sdata[:128].find("\033%-12345X") != -1) and (sdata.upper().find("LANGUAGE=PDF") != -1)) or \
+           (sdata.find("%PDF-") != -1) :
             return 1
         else :    
             return 0
         
-    def isPCL(self, data) :    
+    def isPCL(self, sdata, edata) :    
         """Returns 1 if data is PCL, else 0."""
-        if data.startswith("\033E\033") or \
-           (data[:128].find("\033%-12345X") != -1) :
+        if sdata.startswith("\033E\033") or \
+           (sdata.startswith("\033*rbC") and (not edata[-3:] == "\f\033@")) or \
+           (sdata.find("\033%-12345X") != -1) :
             return 1
         else :    
             return 0
         
-    def isPCL3GUI(self, data) :    
-        """Returns 1 if data is PCL3GUI, else 0."""
-        if data.find("@PJL ENTER LANGUAGE=PCL3GUI") != -1 :
-            return 1
-        else :    
-            return 0
-        
-    def isPCLXL(self, data) :    
+    def isPCLXL(self, sdata, edata) :    
         """Returns 1 if data is PCLXL aka PCL6, else 0."""
-        if ((data[:128].find("\033%-12345X") != -1) and \
-             (data.find(" HP-PCL XL;") != -1) and \
-             ((data.find("LANGUAGE=PCLXL") != -1) or \
-              (data.find("LANGUAGE = PCLXL") != -1))) :
+        if ((sdata[:128].find("\033%-12345X") != -1) and \
+             (sdata.find(" HP-PCL XL;") != -1) and \
+             ((sdata.find("LANGUAGE=PCLXL") != -1) or \
+              (sdata.find("LANGUAGE = PCLXL") != -1))) :
             return 1
         else :    
             return 0
             
-    def isESCP2(self, data) :        
+    def isESCP2(self, sdata, edata) :        
         """Returns 1 if data is ESC/P2, else 0."""
-        if data.startswith("\033@") or \
-           data.startswith("\033*") or \
-           data.startswith("\n\033@") :
+        if sdata.startswith("\033@") or \
+           sdata.startswith("\033*") or \
+           sdata.startswith("\n\033@") :
             return 1
         else :    
             return 0
@@ -798,18 +820,22 @@ class PDLAnalyzer :
         # Try to detect file type by reading first block of datas    
         self.infile.seek(0)
         firstblock = self.infile.read(4 * KILOBYTE)
+        try :
+            self.infile.seek(-LASTBLOCKSIZE, 2)
+        except IOError :    
+            lastblock = ""
+        else :    
+            lastblock = self.infile.read(LASTBLOCKSIZE)
         self.infile.seek(0)
-        if self.isPostScript(firstblock) :
+        if self.isPostScript(firstblock, lastblock) :
             return PostScriptAnalyzer
-        elif self.isPCLXL(firstblock) :    
+        elif self.isPCLXL(firstblock, lastblock) :    
             return PCLXLAnalyzer
-        elif self.isPDF(firstblock) :    
+        elif self.isPDF(firstblock, lastblock) :    
             return PDFAnalyzer
-        elif self.isPCL3GUI(firstblock) :    
-            return PCL3GUIAnalyzer
-        elif self.isPCL(firstblock) :    
+        elif self.isPCL(firstblock, lastblock) :    
             return PCLAnalyzer
-        elif self.isESCP2(firstblock) :    
+        elif self.isESCP2(firstblock, lastblock) :    
             return ESCP2Analyzer
         else :    
             raise PDLAnalyzerError, "Analysis of first data block failed."

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha8 :
+    
+        - Added full support of PCL3 : HP Deskjet printers are now 
+          supported.
+        
     - 1.20alpha7 :
     
         - First draft of PCL3GUI (Deskjet 640C for example) analyzer.

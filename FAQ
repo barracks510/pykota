@@ -61,13 +61,12 @@ PyKota's FAQ :
   * What is a 'dumb printer' ?
   
     In PyKota, the term 'dumb printer' defines a printer which doesn't 
-    natively understand PostScript, PCL5, PCLXL (aka PCL6), PDF or ESC/P2
-    and doesn't have an internal page counter, and for which you don't 
-    know how to compute a job's size in number of pages by analyzing its 
-    content. 
+    natively understand PostScript, PCL5 (up to), PCLXL (aka PCL6), PDF 
+    or ESC/P2 and doesn't have an internal page counter, and for which 
+    you don't know how to compute a job's size in number of pages by 
+    analyzing its content. 
     Any printer which is not a 'dumb printer' according to the above 
-    definition is supported by PyKota. HP Deskjet printers are 
-    currently considered as "dumb" printers by PyKota.
+    definition is supported by PyKota. 
 
   * How can I make PyKota work with my non-postscript printer under 
     CUPS ?  
