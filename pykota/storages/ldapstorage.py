@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.80  2004/10/03 19:57:57  jalet
+# Dump of payments should work with LDAP backend now.
+#
 # Revision 1.79  2004/10/03 19:52:59  jalet
 # More work done on LDAP and dumpykota
 #
@@ -1321,7 +1324,13 @@ class Storage(BaseStorage) :
         
     def extractPayments(self) :
         """Extracts all payment records."""
-        pass
+        entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames()] if u.Exists]
+        if entries :
+            result = [ ("pykotaUserName", "date", "amount") ]
+            for entry in entries :
+                for (date, amount) in entry.Payments :
+                    result.append((entry.Name, date, amount))
+            return result        
         
     def extractUpquotas(self) :
         """Extracts all userpquota records."""
