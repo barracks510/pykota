@@ -31,9 +31,8 @@ Files :
           by Dennis Romero L. I've added two paragraphs in
           Helvetica 12 Italic, one describing the warning below.
           
-          WARNING : This file only describes installation for 
-          PyKota v1.15, and not PyKota v1.16 or above, which is a bit
-          different. Please refer to the toplevel README file for
-          v1.16 specific instructions.
+          WARNING : This documentation is COMPLETELY OUTDATED.
+          Please don't use it for reasons other than historical
+          ones.
           
 ====================================================================
