@@ -24,4 +24,19 @@ well as 4-bit/pixel png big (925x925) and small (100x100) versions.
 
 PyKota's logo was drawn by Joël Collet, I added the text.
 
+IMPORTANT : I ask you to NOT use any image which displays the 
+"OFFICIAL" word on it unless you use or redistribute a complete and 
+unmodified version of a real "PyKota Official" package. 
+    
+If you redistribute a modified version of a real "PyKota Official", 
+or a work based on a modified version of a real "PyKota Official" 
+package, or a version of PyKota directly obtained from the CVS tree, 
+please use the images which don't display the word "OFFICIAL". 
+
+Both sets of images are included in this directory, please use the 
+one which correctly describes the software you redistribute or base 
+your work on. 
+
+Thanks in advance.
+
 ====================================================================
