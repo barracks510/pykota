@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/03/01 14:34:15  jalet
+# PYKOTAPHASE wasn't set at the right time at the end of data transmission
+# to underlying layer (real backend)
+#
 # Revision 1.29  2004/03/01 11:23:25  jalet
 # Pre and Post hooks to external commands are available in the cupspykota
 # backend. Forthe pykota filter they will be implemented real soon now.
@@ -211,6 +215,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             action = self.warnUserPQuota(userpquota)
             
             # exports some new environment variables
+            os.putenv("PYKOTAPHASE", "BEFORE")
             os.putenv("PYKOTAACTION", action)
             
             # launches the pre hook
@@ -231,6 +236,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             retcode = self.removeJob()
         
         if policy == "OK" :        
+            # indicate phase change
+            os.putenv("PYKOTAPHASE", "AFTER")
+            
             # stops accounting. 
             self.accounter.endJob(userpquota)
             self.logdebug("Job accounting ends.")

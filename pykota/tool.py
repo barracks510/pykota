@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.76  2004/03/01 14:34:15  jalet
+# PYKOTAPHASE wasn't set at the right time at the end of data transmission
+# to underlying layer (real backend)
+#
 # Revision 1.75  2004/03/01 11:23:25  jalet
 # Pre and Post hooks to external commands are available in the cupspykota
 # backend. Forthe pykota filter they will be implemented real soon now.
@@ -748,7 +752,6 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             
     def prehook(self, userpquota) :
         """Allows pluging of an external hook before the job gets printed."""
-        os.putenv("PYKOTAPHASE", "BEFORE")
         prehook = self.config.getPreHook(userpquota.Printer.Name)
         if prehook :
             self.logdebug("Executing pre-hook [%s]" % prehook)
@@ -756,7 +759,6 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         
     def posthook(self, userpquota) :
         """Allows pluging of an external hook after the job gets printed and/or denied."""
-        os.putenv("PYKOTAPHASE", "AFTER")
         posthook = self.config.getPostHook(userpquota.Printer.Name)
         if posthook :
             self.logdebug("Executing post-hook [%s]" % posthook)
