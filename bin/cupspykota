@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.74  2004/10/13 20:51:27  jalet
+# Made debugging levels be the same in cupspykota and lprngpykota.
+# Now outputs more information in informational messages : user, printer, jobid
+#
 # Revision 1.73  2004/10/13 16:56:45  jalet
 # Added a space to the pattern to differentiate jobs which id begins with
 # the same digits, like jobs 87 and 879 for example : if printed by same
@@ -409,7 +413,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # higher in the chain failed because of a misconfiguration.
             # we deny the job in this case (nothing to print anyway)
             if not self.jobSizeBytes :
-                self.printInfo(_("Job contains no data. Printing is denied."), "warn")
+                self.printMoreInfo(user, printer, _("Job contains no data. Printing is denied."), "warn")
                 action = "DENY"
             else :    
                 # checks the user's quota
@@ -421,7 +425,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # launches the pre hook
             self.prehook(userpquota)
             
-            self.printInfo(_("Job accounting begins."))
+            self.printMoreInfo(user, printer, _("Job accounting begins."))
             self.accounter.beginJob(printer)
         else :    
             action = "ALLOW"
@@ -442,15 +446,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # stops accounting. 
             self.accounter.endJob(printer)
-            self.printInfo(_("Job accounting ends."))
+            self.printMoreInfo(user, printer, _("Job accounting ends."))
                 
             # retrieve the job size    
             if action == "DENY" :
                 jobsize = 0
-                self.printInfo(_("Job size forced to 0 because printing is denied."))
+                self.printMoreInfo(user, printer, _("Job size forced to 0 because printing is denied."))
             else :    
                 jobsize = self.accounter.getJobSize(printer)
-            self.printInfo(_("Job size : %i") % jobsize)
+            self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
             
             # update the quota for the current user on this printer 
             self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))
@@ -458,7 +462,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # adds the current job to history    
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
-            self.printInfo(_("Job added to history."))
+            self.printMoreInfo(user, printer, _("Job added to history."))
             
             # exports some new environment variables
             os.environ["PYKOTAJOBSIZE"] = str(jobsize)

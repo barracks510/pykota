@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.129  2004/10/13 20:51:27  jalet
+# Made debugging levels be the same in cupspykota and lprngpykota.
+# Now outputs more information in informational messages : user, printer, jobid
+#
 # Revision 1.128  2004/10/11 22:53:06  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -1153,6 +1157,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
     def printInfo(self, message, level="info") :        
         """Sends a message to standard error."""
         self.logger.log_message("%s" % message, level)
+        
+    def printMoreInfo(self, user, printer, message, level="info") :            
+        """Prefixes the information printed with 'user@printer(jobid) =>'."""
+        self.printInfo("%s@%s(%s) => %s" % (user.Name, printer.Name, self.jobid, message), level)
         
     def extractInfoFromCupsOrLprng(self) :    
         """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
