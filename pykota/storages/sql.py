@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/04/27 08:04:15  jalet
+# LDAP storage backend's skeleton added. DOESN'T WORK.
+#
 # Revision 1.29  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -411,6 +414,7 @@ class SQLStorage :
         
     def computePrinterJobPrice(self, printerid, jobsize) :    
         """Returns the price for a job on a given printer."""
+        # TODO : create a base class with things like this
         prices = self.getPrinterPrices(printerid)
         if prices is None :
             perpage = perjob = 0.0

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/04/27 08:04:15  jalet
+# LDAP storage backend's skeleton added. DOESN'T WORK.
+#
 # Revision 1.8  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -55,15 +58,16 @@
 #
 #
 
+
+from pykota.storage import PyKotaStorageError
+from pykota.storages import sql
+
 try :
     import pg
 except ImportError :    
     import sys
-    sys.stderr.write("This python version (%s) doesn't seem to have the PygreSQL module installed correctly.\n" % sys.version.split()[0])
-    raise
-
-from pykota.storage import PyKotaStorageError
-from pykota.storages import sql
+    # TODO : to translate or not to translate ?
+    raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PygreSQL module installed correctly." % sys.version.split()[0]
 
 class Storage(sql.SQLStorage) :
     def __init__(self, host, dbname, user, passwd) :
