@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.71  2004/09/06 17:05:06  jalet
+# Fix for autodetection of SC_OPEN_MAX
+#
 # Revision 1.70  2004/07/26 09:20:27  jalet
 # Unneeded module
 #
@@ -288,7 +291,11 @@ class PyKotaPopen4(popen2.Popen4) :
         popen2.Popen4.__init__(self, cmd, bufsize)
         
     def _run_child(self, cmd):
-        for i in range(3, 256): # TODO : MAXFD in original popen2 module
+        try :
+            MAXFD = os.sysconf("SC_OPEN_MAX")
+        except (AttributeError, ValueError) :    
+            MAXFD = 256
+        for i in range(3, MAXFD) : 
             try:
                 os.close(i)
             except OSError:
