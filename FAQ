@@ -11,6 +11,18 @@ PyKota's FAQ :
     have to modify it. See the rest of this document to
     learn how to really diagnose what went wrong.
     
+  * I've downloaded PyKota from CVS using a Windows based CVS  
+    tool, and now nothing works at all. What happened ?
+    
+    Some (all?) Windows based CVS tools translate *nix line endings
+    (character Line Feed, ASCII code 10) into Windows line endings
+    (character Carriage Return, ASCII code 13, followed with 
+    character Line Feed). This breaks the software which has
+    to run under *nix compatible systems. Set correct options
+    in your CVS software so that it doesn't do any translation,
+    or use an Unix-like version of CVS, download again and
+    reinstall the software. It should work.
+    
   * How can I diagnose the problem when something goes wrong ?
   
     Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
