@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/07/05 07:46:50  jalet
+# The previous bug fix was incomplete.
+#
 # Revision 1.16  2003/06/25 19:52:31  jalet
 # Should be ready for testing :-)
 #
@@ -123,7 +126,10 @@ class StorageUser(StorageObject) :
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""
-        limitby = limitby.lower()
+        try :
+            limitby = limitby.lower()
+        except AttributeError :    
+            limitby = "quota"
         if limitby in ["quota", "balance"] :
             self.parent.writeUserLimitBy(self, limitby)
             self.LimitBy = limitby
@@ -150,7 +156,10 @@ class StorageGroup(StorageObject) :
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""
-        limitby = limitby.lower()
+        try :
+            limitby = limitby.lower()
+        except AttributeError :    
+            limitby = "quota"
         if limitby in ["quota", "balance"] :
             self.parent.writeGroupLimitBy(self, limitby)
             self.LimitBy = limitby

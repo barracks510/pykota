@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/07/05 07:46:50  jalet
+# The previous bug fix was incomplete.
+#
 # Revision 1.2  2003/07/02 09:29:12  jalet
 # Bug fixed when wanting a report and an user/group was limited by account balance
 #
@@ -83,7 +86,7 @@ class Reporter(BaseReporter) :
         balance = float(entry.AccountBalance or 0.0)
         lifetimepaid = float(entry.LifeTimePaid or 0.0)
         
-        if entry.LimitBy.lower() == "balance" :    
+        if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
             if balance <= 0 :
                 datelimit = "DENY"
                 reached = "+B"

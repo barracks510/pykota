@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/07/05 07:46:50  jalet
+# The previous bug fix was incomplete.
+#
 # Revision 1.12  2003/06/30 13:54:21  jalet
 # Sorts by user / group name
 #
@@ -187,7 +190,9 @@ class Storage :
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
-            user.LimitBy = fields.get("pykotaLimitBy")[0]
+            user.LimitBy = fields.get("pykotaLimitBy")
+            if user.LimitBy is not None :
+                user.LimitBy = user.LimitBy[0]
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid"], base=self.info["balancebase"])
             if result :
                 fields = result[0][1]
@@ -216,7 +221,9 @@ class Storage :
         if result :
             fields = result[0][1]
             group.ident = result[0][0]
-            group.LimitBy = fields.get("pykotaLimitBy")[0]
+            group.LimitBy = fields.get("pykotaLimitBy")
+            if group.LimitBy is not None :
+                group.LimitBy = group.LimitBy[0]
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
             group.Members = self.getGroupMembers(group)
