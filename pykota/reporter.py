@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/09/02 10:09:30  jalet
+# Fixed bug in LDAP user deletion code which didn't correctly delete the user's
+# pykotaLastJob entries.
+#
 # Revision 1.9  2004/07/01 17:45:49  jalet
 # Added code to handle the description field for printers
 #
@@ -87,10 +91,12 @@ class BaseReporter :
             return _("User            used    soft    hard    balance grace         total       paid")
             
     def getPrinterRealPageCounter(self, printer) :        
-        try :
-            msg = "%9i" % printer.LastJob.PrinterPageCounter
-        except TypeError :     
-            msg = _("unknown")
+        msg = _("unknown")
+        if printer.LastJob.Exists :
+            try :
+                msg = "%9i" % printer.LastJob.PrinterPageCounter
+            except TypeError :     
+                pass
         return _("Real : %s") % msg
                 
     def getTotals(self, total, totalmoney) :            

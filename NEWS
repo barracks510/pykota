@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha6 :
+      
+        - Fixed a bug in LDAP user deletion code.
+        
     - 1.20alpha5 :
       
         - Introduces the new configuration directive 'onaccountererror'

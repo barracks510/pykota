@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/09/02 10:09:30  jalet
+# Fixed bug in LDAP user deletion code which didn't correctly delete the user's
+# pykotaLastJob entries.
+#
 # Revision 1.57  2004/07/22 22:41:48  jalet
 # Hardware accounting for LPRng should be OK now. UNTESTED.
 #
@@ -479,7 +483,7 @@ class StorageGroupPQuota(StorageObject) :
         self.DateLimit = None
         
 class StorageJob(StorageObject) :
-    """Printer's Last Job class."""
+    """Printer's Job class."""
     def __init__(self, parent) :
         StorageObject.__init__(self, parent)
         self.UserName = None

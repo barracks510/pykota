@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.74  2004/09/02 10:09:30  jalet
+# Fixed bug in LDAP user deletion code which didn't correctly delete the user's
+# pykotaLastJob entries.
+#
 # Revision 1.73  2004/07/17 20:37:27  jalet
 # Missing file... Am I really stupid ?
 #
@@ -632,7 +636,11 @@ class Storage(BaseStorage) :
         if result :
             lastjob.lastjobident = result[0][0]
             lastjobident = result[0][1]["pykotaLastJobIdent"][0]
-            result = self.doSearch("objectClass=pykotaJob", ["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+            result = None
+            try :
+                result = self.doSearch("objectClass=pykotaJob", ["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+            except PyKotaStorageError :    
+                pass # Last job entry exists, but job probably doesn't exist anymore. 
             if result :
                 fields = result[0][1]
                 lastjob.ident = result[0][0]
@@ -1144,18 +1152,26 @@ class Storage(BaseStorage) :
         
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""
-        # TODO : What should we do if we delete the last person who used a given printer ?
-        # TODO : we can't reassign the last job to the previous one, because next user would be
-        # TODO : incorrectly charged (overcharged).
-        result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaUserName=%s))" % user.Name, base=self.info["lastjobbase"])
-        for (ident, fields) in result :
-            self.doDelete(ident)
+        todelete = []    
         result = self.doSearch("(&(objectClass=pykotaJob)(pykotaUserName=%s))" % user.Name, base=self.info["jobbase"])
         for (ident, fields) in result :
-            self.doDelete(ident)
-        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s))" % user.Name, ["pykotaUserName"], base=self.info["userquotabase"])
+            todelete.append(ident)
+            
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s))" % user.Name, ["pykotaPrinterName", "pykotaUserName"], base=self.info["userquotabase"])
         for (ident, fields) in result :
+            # ensure the user print quota entry will be deleted
+            todelete.append(ident)
+            
+            # if last job of current printer was printed by the user
+            # to delete, we also need to delete the printer's last job entry.
+            printername = fields["pykotaPrinterName"][0]
+            printer = self.getPrinter(printername)
+            if printer.LastJob.UserName == user.Name :
+                todelete.append(printer.LastJob.lastjobident)
+            
+        for ident in todelete :    
             self.doDelete(ident)
+            
         result = self.doSearch("objectClass=pykotaAccount", None, base=user.ident, scope=ldap.SCOPE_BASE)    
         if result :
             fields = result[0][1]
