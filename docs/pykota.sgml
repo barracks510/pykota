@@ -31,8 +31,9 @@
           <address>
             <street>48 Avenue Vincent Arnaud</street>
             <city>06300 Nice</city>
-            <para>Email : <email><ulink url="mailto:alet@librelogiciel.com">alet@librelogiciel.com</ulink></email>
-            <para>Tel : <phone>(+33) 4 93 27 12 98</phone></para>
+            <country>France</country>
+            Email : <email><ulink url="mailto:alet@librelogiciel.com">alet@librelogiciel.com</ulink></email>
+            Phone : <phone>(+33) 4 93 27 12 98</phone>
           </address>
         </affiliation>
       </author>
@@ -64,7 +65,7 @@
         <ulink url="mailto:info@librelogiciel.com">
           Jérôme Alet
         </ulink>
-        , author of this document.
+        , author of the present document.
       </para>
 
       <para>
@@ -107,6 +108,9 @@
 <!--
 
 $Log$
+Revision 1.2  2003/02/08 00:13:49  jalet
+What is the tag for the zip code ?
+
 Revision 1.1  2003/02/08 00:03:35  jalet
 Documentation skeleton added
 
