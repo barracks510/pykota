@@ -21,6 +21,9 @@ PyKota's FAQ :
     will help diagnose your problem. You will receive failure
     notices by email, and you can send all this to us for
     diagnostic.
+    
+    For LPRng, better to put "logger: system" in pykota.conf so
+    that all debug messages for PyKota will go to syslog.
   
   * Why doesn't CUPS under Debian Woody automatically
     detects PyKota managed devices ?
@@ -58,11 +61,13 @@ PyKota's FAQ :
   * What is a 'dumb printer' ?
   
     In PyKota, the term 'dumb printer' defines a printer which doesn't 
-    understand PostScript, PCL5, PCLXL (aka PCL6) or PDF AND doesn't 
-    have an internal page counter, AND for which you don't know how to 
-    compute a job's size in number of pages by analyzing its content. 
+    natively understand PostScript, PCL5, PCLXL (aka PCL6), PDF or ESC/P2
+    and doesn't have an internal page counter, and for which you don't 
+    know how to compute a job's size in number of pages by analyzing its 
+    content. 
     Any printer which is not a 'dumb printer' according to the above 
-    definition is supported by PyKota.
+    definition is supported by PyKota. HP Deskjet printers are 
+    currently considered as "dumb" printers by PyKota.
 
   * How can I make PyKota work with my non-postscript printer under 
     CUPS ?  
@@ -78,7 +83,7 @@ PyKota's FAQ :
     Page Description Language.
     
     PyKota natively understands DSC compliant PostScript, PCL5, 
-    PCLXL (aka PCL6) and PDF. Support for Binary PostScript is
+    PCLXL (aka PCL6), PDF and ESC/P2. Support for Binary PostScript is
     done through GhostScript. More PDLs will be added in the future. 
     However you can always plug your own PDL analyzer in PyKota.
           
