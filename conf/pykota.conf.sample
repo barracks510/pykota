@@ -124,6 +124,9 @@ disablehistory: No
 # This saves some search queries and may help with heavily
 # loaded LDAP servers.
 # This is EXPERIMENTAL.
+#
+# BEWARE : SETTING THIS TO 'YES' CAUSES PROBLEMS FOR NOW
+# BETTER TO LET IT SET TO 'NO'
 ldapcache: no
 
 # Where to log ?

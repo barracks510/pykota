@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2004/02/27 13:50:12  jalet
+# Hopefully the final fix for groups (users and printers)
+#
 # Revision 1.47  2004/02/27 09:30:33  jalet
 # datelimit wasn't reset when modifying soft and hard limits with the LDAP backend
 #
@@ -570,6 +573,10 @@ class BaseStorage :
             printer.Parents = self.getParentPrintersFromBackend(printer)
         for parent in printer.Parents[:] :    
             printer.Parents.extend(self.getParentPrinters(parent))
+        uniquedic = {}    
+        for parent in printer.Parents :
+            uniquedic[parent.Name] = parent
+        printer.Parents = uniquedic.values()    
         return printer.Parents
         
     def getGroupMembers(self, group) :        
