@@ -22,6 +22,30 @@ PyKota's FAQ :
     IMPORTANT : please don't send log files to the mailing list
     unless they are very small of unless someone asked for this.
   
+  * Some commands tell me I'm not allowed to use them, why ?
+  
+    Some commands refuse to work when launched as a normal user,
+    and output a message saying "You're not allowed to use this
+    command." This is because their use is reserved to PyKota
+    Administrators. A PyKota Administrator is any user allowed
+    to read the pykotadmin.conf file. Beware : any user who can
+    read this file can connect to PyKota's database in read+write
+    mode, so take care of not opening a breach when modifying
+    the permissions on this file.
+    
+  * What permissions should I use on PyKota's configuration files ?   
+  
+    It's probably best to do this :
+    
+        $ chown pykota.pykota pykota.conf pykotadmin.conf
+        $ chmod 640 pykota.conf
+        $ chmod 600 pykotadmin.conf
+        
+    Then the user 'pykota' will be the only PyKota Administrator    
+    (with user 'root' of course), but all members of the 'pykota'
+    group will be allowed to use unrestricted PyKota commands
+    like repykota.
+    
   * How can I limit my users to N pages per day (month/year) ?
   
     The easiest way to do this is to create their print quota
