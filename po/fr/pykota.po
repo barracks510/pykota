@@ -14,7 +14,7 @@
 # $Id$
 #
 # $Log$
-# Revision 1.3  2003/02/09 14:02:31  jalet
+# Revision 1.1  2003/02/09 14:02:31  jalet
 # French translation was added
 #
 # Revision 1.2  2003/02/09 13:10:46  jalet
@@ -44,138 +44,140 @@ msgstr ""
 
 #: edpykota:209
 msgid "Undefined soft limit set to hard limit (%s) on printer %s."
-msgstr ""
+msgstr "Limite souple indéfinie, positionnée à la limite dure (%s) sur l'imprimante %s."
 
 #: edpykota:191
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
-msgstr ""
+msgstr "Limite dure %i est inférieure à la limite souple %i, les valeurs seront échangées. "
 
 #: warnpykota:141
-msgid "warnpykota: option --group is currently not implemented."
-msgstr ""
+msgid "warnpykota: option --groups is currently not implemented."
+msgstr "warnpykota: l'option --groups n'est pas encore implémentée."
 
 #: edpykota:287
-msgid "edpykota: option --group is currently not implemented."
-msgstr ""
+msgid "edpykota: option --groups is currently not implemented."
+msgstr "edpykota: l'option --groups n'est pas encore implémentée."
 
 #: repykota:107
 msgid "Pages grace time: %idays"
-msgstr ""
+msgstr "Délai de grâce: %ijours"
 
 #: repykota:177
 msgid "repykota: unused arguments [%s]. Aborting."
-msgstr ""
+msgstr "repykota: arguments [%s] inutilisés. Abandon."
 
 #: edpykota:183
 msgid "Invalid softlimit value %s."
-msgstr ""
+msgstr "Valeur %s invalide pour la limite souple."
 
 #: edpykota:200
 msgid "Prototype %s not found in Quota Storage for printer %s."
-msgstr ""
+msgstr "Prototype %s non trouvé dans le Quota Storage pour l'imprimante %s."
 
 #: edpykota:285
 msgid "edpykota: options --softlimit or --hardlimit and --prototype are incompatible."
-msgstr ""
+msgstr "edpykota: les options --softlimit ou --hardlimit et --prototype sont incompatibles."
 
 #: pykota:114
 msgid "Printer %s not registered in the PyKota system"
-msgstr ""
+msgstr "Imprimante %s non enregistrée dans le système PyKota"
 
 #: repykota:175
-msgid "repykota: option --group is currently not implemented."
-msgstr ""
+msgid "repykota: option --groups is currently not implemented."
+msgstr "repykota: l'option --groups n'est pas encore implémentée."
 
 #: edpykota:237
 msgid "Quota not found for object %s on printer %s."
-msgstr ""
+msgstr "Quota non trouvé pour l'objet %s sur l'imprimante %s."
 
 #: repykota:173
 msgid "repykota: options --users and --groups are incompatible."
-msgstr ""
+msgstr "repykota: les options --users et --groups sont incompatibles."
 
 #: edpykota:229
 msgid "Invalid user name %s"
-msgstr ""
+msgstr "Nom d'utilisateur %s invalide"
 
 #: edpykota:211
 msgid "Both hard and soft limits must be set ! Aborting."
-msgstr ""
+msgstr "Les limites dures et souples doivent être positionnées ! Abandon."
 
 #: warnpykota:139
 msgid "warnpykota: options --users and --groups are incompatible."
-msgstr ""
+msgstr "warnpykota: les options --users et --groups sont incompatibles."
 
 #: edpykota:206
 msgid "Undefined hard limit set to soft limit (%s) on printer %s."
-msgstr ""
+msgstr "Limite dure indéfinie, positionnée à la limite souple (%s) sur l'imprimante %s."
 
 #: edpykota:283
 msgid "edpykota: options --users and --groups are incompatible."
-msgstr ""
+msgstr "edykota: les options --users et --groups sont incompatibles."
 
 #: warnpykota:143
 msgid "warnpykota: unused arguments [%s]. Aborting."
-msgstr ""
+msgstr "warnkota: arguments [%s] inutilisés. Abandon."
 
 #: edpykota:188
 msgid "Invalid hardlimit value %s."
-msgstr ""
+msgstr "Valeur %s invalide pour la limite dure."
 
 #: repykota:116
 msgid "Group            used     soft     hard   grace        total"
-msgstr ""
+msgstr "Groupe           used     soft     hard   grace        total"
 
 #: edpykota:177 warnpykota:102 repykota:104
 msgid "There's no printer matching %s"
-msgstr ""
+msgstr "Aucune imprimante ne correspond à %s"
 
 #: repykota:106
 msgid "*** Report for %s quota on printer %s"
-msgstr ""
+msgstr "*** Rapport pour le quota %s sur l'imprimante %s"
 
 #: pykota:137
 msgid "Error in page count value %i for user %s on printer %s"
-msgstr ""
+msgstr "Erreur dans la valeur %i du nombre de page pour l'utilisateur %s sur l'imprimante %s"
 
 #: edpykota:235
 msgid "Invalid group name %s"
-msgstr ""
+msgstr "Nom de groupe %s invalide"
 
 #: repykota:110
 msgid "User             used     soft     hard   grace        total"
-msgstr ""
+msgstr "Utilisateur      used     soft     hard   grace        total"
 
 #: edpykota:175
 msgid "Invalid printer name %s"
-msgstr ""
+msgstr "Nom d'imprimante %s invalide"
 
 
 #: config.py:97
 msgid "Option requester in section %s only supports values in %s"
-msgstr ""
+msgstr "L'option requester dans la section %s supporte seulement les valeurs %s"
 
 #: tool.py:263 tool.py:268
 msgid "Print Quota Exceeded"
-msgstr ""
+msgstr "Dépassement de Quota d'Impression"
 
 #: tool.py:269
 msgid "Print Quota"
-msgstr ""
+msgstr "Quota d'Impression"
 
 #: requesters/external.py:31 requesters/external.py:38
 msgid "Requester not implemented yet."
-msgstr ""
+msgstr "Requester non encore implémenté."
 
 #: config.py:88 config.py:101
 msgid "Option %s not found in section %s of %s"
-msgstr ""
+msgstr "Option %s non trouvée dans la section %s de %s"
 
 #: tool.py:268
 msgid ""
 "You will soon be forbidden to print anymore because\n"
 "your Print Quota is almost reached on printer %s."
 msgstr ""
+"Vous n'aurez bientôt plus le droit d'imprimer car\n"
+"votre Quota d'Impression sur l'imprimante %s est presque atteint."
 
 #: tool.py:202
 msgid ""
@@ -185,67 +187,74 @@ msgid ""
 "\n"
 "\t%s - <%s>\n"
 msgstr ""
+"\n"
+"\n"
+"Merci de contacter votre administrateur système :\n"
+"\n"
+"\t%s - <%s>\n"
 
 #: config.py:152
 msgid "Invalid grace delay %s"
-msgstr ""
+msgstr "Délai de grâce %s invalide"
 
 #: config.py:78
 msgid "Option logger only supports values in %s"
-msgstr ""
+msgstr "L'option logger supporte seulement les valeurs %s"
 
 #: config.py:73
 msgid "Option %s not found in section global of %s"
-msgstr ""
+msgstr "Option %s non trouvée dans la section global de %s"
 
 #: config.py:82
 msgid "Option method only supports values in %s"
-msgstr ""
+msgstr "L'option method supporte seulement les valeurs %s"
 
 #: tool.py:219
 msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr ""
+msgstr "Impossible de trouver l'utilisateur %s sur l'imprimante %s, action par défaut (%s) appliquée"
 
 #: tool.py:252
 msgid "Group quotas are currently not implemented."
-msgstr ""
+msgstr "Les quota de groupes ne sont pas encore implémentés."
 
 #: requesters/snmp.py:47
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
-msgstr ""
+msgstr "Adresse d'imprimante inconnue dans SNMP(%s, %s) pour l'imprimante %s"
 
 #: tool.py:266
 msgid "Print Quota soft limit exceeded for user %s on printer %s"
-msgstr ""
+msgstr "Limite souple de Quota d'Impression dépassée pour l'utilisateur %s sur l'imprimante %s"
 
 #: logger.py:49
 msgid "Unsupported logging subsystem %s"
-msgstr ""
+msgstr "Système de log %s non supporté"
 
 #: requesters/snmp.py:52
 msgid "Unable to query printer %s via SNMP(%s, %s)"
-msgstr ""
+msgstr "Impossible d'interroger l'imprimante %s par SNMP(%s, %s)"
 
 #: requester.py:47
 msgid "Unsupported requester backend %s"
-msgstr ""
+msgstr "Backend requester %s non supporté" 
 
 #: config.py:92
 msgid "Option policy in section %s only supports values in %s"
-msgstr ""
+msgstr "L'option policy dans la section %s supporte seulement les valeurs %s"
 
 #: storage.py:111
 msgid "Unsupported quota storage backend %s"
-msgstr ""
+msgstr "Backend de stockage de quota %s non supporté"
 
 #: tool.py:263
 msgid ""
 "You are not allowed to print anymore because\n"
 "your Print Quota is exceeded on printer %s."
 msgstr ""
+"Vous n'êtes plus autorisé à imprimer car\n"
+"votre Quota d'Impression est dépassé sur l'imprimante %s."
 
 #: tool.py:261
 msgid "Print Quota exceeded for user %s on printer %s"
-msgstr ""
+msgstr "Dépassement de Quota d'Impression pour l'utilisateur %s sur l'imprimante %s"
 
 
