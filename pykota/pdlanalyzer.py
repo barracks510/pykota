@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2004/06/25 09:50:28  jalet
+# More debug info in PCLXL parser
+#
 # Revision 1.13  2004/06/25 08:10:08  jalet
 # Another fix for PCL5 parser
 #
@@ -282,18 +285,18 @@ class PCLXLAnalyzer :
         if not found :
             raise PDLAnalyzerError, "This file doesn't seem to be PCLXL (aka PCL6)"
         else :    
-            self.tags = [lambda: None] * 256    
+            self.tags = [ self.skipped ] * 256    
             self.tags[0x28] = self.bigendian    # big endian
             self.tags[0x29] = self.littleendian # big endian
             self.tags[0x43] = self.beginPage    # BeginPage
             self.tags[0x44] = self.endPage      # EndPage
             
-            self.tags[0xc0] = lambda: 1 # ubyte
-            self.tags[0xc1] = lambda: 2 # uint16
-            self.tags[0xc2] = lambda: 4 # uint32
-            self.tags[0xc3] = lambda: 2 # sint16
-            self.tags[0xc4] = lambda: 4 # sint32
-            self.tags[0xc5] = lambda: 4 # real32
+            self.tags[0xc0] = lambda: self.debug("%08x : ubyte" % self.infile.tell()) or 1 # ubyte
+            self.tags[0xc1] = lambda: self.debug("%08x : uint16" % self.infile.tell()) or 2 # uint16
+            self.tags[0xc2] = lambda: self.debug("%08x : uint32" % self.infile.tell()) or 4 # uint32
+            self.tags[0xc3] = lambda: self.debug("%08x : sint16" % self.infile.tell()) or 2 # sint16
+            self.tags[0xc4] = lambda: self.debug("%08x : sint32" % self.infile.tell()) or 4 # sint32
+            self.tags[0xc5] = lambda: self.debug("%08x : real32" % self.infile.tell()) or 4 # real32
             
             self.tags[0xc8] = self.array_8  # ubyte_array
             self.tags[0xc9] = self.array_16 # uint16_array
@@ -302,22 +305,22 @@ class PCLXLAnalyzer :
             self.tags[0xcc] = self.array_32 # sint32_array
             self.tags[0xcd] = self.array_32 # real32_array
             
-            self.tags[0xd0] = lambda: 2 # ubyte_xy
-            self.tags[0xd1] = lambda: 4 # uint16_xy
-            self.tags[0xd2] = lambda: 8 # uint32_xy
-            self.tags[0xd3] = lambda: 4 # sint16_xy
-            self.tags[0xd4] = lambda: 8 # sint32_xy
-            self.tags[0xd5] = lambda: 8 # real32_xy
+            self.tags[0xd0] = lambda: self.debug("%08x : ubyte_xy" % self.infile.tell()) or 2 # ubyte_xy
+            self.tags[0xd1] = lambda: self.debug("%08x : uint16_xy" % self.infile.tell()) or 4 # uint16_xy
+            self.tags[0xd2] = lambda: self.debug("%08x : uint32_xy" % self.infile.tell()) or 8 # uint32_xy
+            self.tags[0xd3] = lambda: self.debug("%08x : sint16_xy" % self.infile.tell()) or 4 # sint16_xy
+            self.tags[0xd4] = lambda: self.debug("%08x : sint32_xy" % self.infile.tell()) or 8 # sint32_xy
+            self.tags[0xd5] = lambda: self.debug("%08x : real32_xy" % self.infile.tell()) or 8 # real32_xy
             
-            self.tags[0xd0] = lambda: 4  # ubyte_box
-            self.tags[0xd1] = lambda: 8  # uint16_box
-            self.tags[0xd2] = lambda: 16 # uint32_box
-            self.tags[0xd3] = lambda: 8  # sint16_box
-            self.tags[0xd4] = lambda: 16 # sint32_box
-            self.tags[0xd5] = lambda: 16 # real32_box
+            self.tags[0xd0] = lambda: self.debug("%08x : ubyte_box" % self.infile.tell()) or 4  # ubyte_box
+            self.tags[0xd1] = lambda: self.debug("%08x : uint16_box" % self.infile.tell()) or 8  # uint16_box
+            self.tags[0xd2] = lambda: self.debug("%08x : uint32_box" % self.infile.tell()) or 16 # uint32_box
+            self.tags[0xd3] = lambda: self.debug("%08x : sint16_box" % self.infile.tell()) or 8  # sint16_box
+            self.tags[0xd4] = lambda: self.debug("%08x : sint32_box" % self.infile.tell()) or 16 # sint32_box
+            self.tags[0xd5] = lambda: self.debug("%08x : real32_box" % self.infile.tell()) or 16 # real32_box
             
-            self.tags[0xf8] = lambda: 1 # attr_ubyte
-            self.tags[0xf9] = lambda: 2 # attr_uint16
+            self.tags[0xf8] = lambda: self.debug("%08x : attr_ubyte" % self.infile.tell()) or 1 # attr_ubyte
+            self.tags[0xf9] = lambda: self.debug("%08x : attr_uint16" % self.infile.tell()) or 2 # attr_uint16
             
             self.tags[0xfa] = self.embeddedData      # dataLength
             self.tags[0xfb] = self.embeddedDataSmall # dataLengthByte
@@ -327,19 +330,24 @@ class PCLXLAnalyzer :
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()
         
+    def skipped(self) :    
+        """Skips a byte."""
+        self.debug("%08x : skip" % self.infile.tell())
+        
     def beginPage(self) :
         """Indicates the beginning of a new page."""
         self.pagecount += 1
-        self.debug("Begin page %i at %s" % (self.pagecount, self.infile.tell()))
+        self.debug("%08x : beginPage (%i)" % (self.infile.tell(), self.pagecount))
         
     def endPage(self) :
         """Indicates the end of a page."""
-        self.debug("End page %i at %s" % (self.pagecount, self.infile.tell()))
+        self.debug("%08x : endPage (%i)" % (self.infile.tell(), self.pagecount))
         
     def handleArray(self, itemsize) :        
         """Handles arrays."""
         pos = self.infile.tell()
         datatype = self.infile.read(1)
+        self.debug("%08x : Array of datatype 0x%02x" % (pos, ord(datatype)))
         length = self.tags[ord(datatype)]()
         if length is None :
             self.debug("Bogus array length at %s" % pos)
@@ -358,45 +366,52 @@ class PCLXLAnalyzer :
             else :    
                 raise PDLAnalyzerError, "Error on array size at %s" % self.infile.tell()
             arraysize = struct.unpack(fmt, sarraysize)[0]
-            self.debug("Array at %s, itemsize %s, datatype 0x%02x, size %s" % (pos, itemsize, ord(datatype), arraysize))
+            self.debug("itemsize %s * size %s = %s" % (itemsize, arraysize, itemsize*arraysize))
             return arraysize * itemsize
         
     def array_8(self) :    
         """Handles byte arrays."""
+        self.debug("%08x : array_8" % self.infile.tell())
         return self.handleArray(1)
         
     def array_16(self) :    
         """Handles byte arrays."""
+        self.debug("%08x : array_16" % self.infile.tell())
         return self.handleArray(2)
         
     def array_32(self) :    
         """Handles byte arrays."""
+        self.debug("%08x : array_32" % self.infile.tell())
         return self.handleArray(4)
         
     def embeddedDataSmall(self) :
         """Handle small amounts of data."""
+        self.debug("%08x : small_datablock" % self.infile.tell())
         pos = self.infile.tell()
         val = ord(self.infile.read(1))
-        self.debug("smalldatablock at %s (0x%02x)" % (pos, val))
+        self.debug("%08x : Small datablock length : 0x%02x" % (self.infile.tell()-1, val))
         return val
         
     def embeddedData(self) :
         """Handle normal amounts of data."""
+        self.debug("%08x : large_datablock" % self.infile.tell())
         if self.islittleendian :
             fmt = "<I"
         else :    
             fmt = ">I"
         pos = self.infile.tell()
         val = struct.unpack(fmt, self.infile.read(4))[0]
-        self.debug("datablock at %s (0x%08x)" % (pos, val))
+        self.debug("%08x : Large datablock length : 0x%04x" % (self.infile.tell()-4, val))
         return val
         
     def littleendian(self) :        
         """Toggles to little endianness."""
+        self.debug("%08x : littleendian" % self.infile.tell())
         self.islittleendian = 1 # little endian
         
     def bigendian(self) :    
         """Toggles to big endianness."""
+        self.debug("%08x : bigendian" % self.infile.tell())
         self.islittleendian = 0 # big endian
     
     def getJobSize(self) :

@@ -27,6 +27,8 @@ PyKota NEWS :
         
         - Fixed number of copies handling in PCL5 parser : the number
           of copies could vary from page to page.
+          
+        - Added more debug information to PCLXL parser.  
         
     - 1.19alpha25 :
     
