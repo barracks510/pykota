@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.103  2004/06/18 13:17:26  jalet
+# Now includes PyKota's version number in messages sent by the crashrecipient
+# directive.
+#
 # Revision 1.102  2004/06/17 13:26:51  jalet
 # Better exception handling code
 #
@@ -476,8 +480,8 @@ class PyKotaTool :
             crashrecipient = self.config.getCrashRecipient()
             if crashrecipient :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
-                fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
-                                (msg, \
+                fullmessage = "========== Traceback for PyKota v%s :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
+                                (version.__version__, msg, \
                                  "\n".join(["    %s" % repr(a) for a in sys.argv]), \
                                  "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
                 server = smtplib.SMTP(self.smtpserver)

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha23 :
+    
+        - Messages sent by the crashrecipient directive now include
+          PyKota's version number.
+          
     - 1.19alpha22 :
     
         - Ensures that the file pointer for job's data is 
