@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19beta :
+    
+        - LPRng support for both software and hardware accounting seems
+          to be OK.
+          
+        - Translation files fixed because of fuzzy matching problem.  
+        
     - 1.19alpha35 :
     
         - Generic PDL analyzer now supports Binary PostScript documents

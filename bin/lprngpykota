@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/07/23 11:19:48  jalet
+# 1.19beta is out !
+#
 # Revision 1.4  2004/07/22 22:41:48  jalet
 # Hardware accounting for LPRng should be OK now. UNTESTED.
 #
@@ -81,7 +84,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
     def firstPass(self, policy, printer, user, userpquota) :            
         """First pass done here."""
         # first we have to check if previous job was correctly accounted for
-        if (printer.LastJob.JobAction != "DENY") and (printer.LastJob.JobSize is None) :
+        if printer.LastJob.Exists and not printer.LastJob.JobSize :
             # here we know that previous job wasn't accounted for correctly
             # we are sure (?) that it was hardware accounting which was used
             # and that the second pass didn't work or wasn't even launched
@@ -138,7 +141,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             jobsize = 0
             self.logdebug("Job size forced to 0 because printing was denied.")
             
-        if self.accounter.isSoftware :    
+        if (self.accounter.isSoftware) or (action == "DENY") :    
             # update the quota for the current user on this printer 
             self.logdebug("Job size : %i" % jobsize)
             self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
@@ -158,7 +161,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             # Launches the post hook
             self.posthook(userpquota)
             
-            # here software accounting was completed.
+            # here accounting was completed, either software, or hardware but over quota
         else :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, filename=self.preserveinputfile, title=self.title, copies=self.copies, options=self.options, clienthost=clienthost, jobsizebytes=self.jobSizeBytes)
             self.logdebug("Job added to history during first pass : Job's size and price are still unknown.")
@@ -176,17 +179,12 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             # Software accounting method was used, and we are
             # in second pass, so all work is already done, 
             # now we just have to exit successfully
-            self.printInfo(_("Software accounting already done in first pass. Exiting."))
+            self.printInfo(_("Software accounting already done in first pass. Ignoring."))
+        elif printer.LastJob.JobAction == "DENY" :
+            # Hardware accounting method was used, but job
+            # was rejected during first pass, so nothing to do
+            self.printInfo(_("Hardware accounting already done in first pass. Ignoring."))
         else :    
-            # Now we have to check if accounting was completely finished :
-            # if it is, then a big problem occured because with hardware
-            # accounting, only the second pass can know the job's size.
-            if (printer.LastJob.JobSize is not None) :
-                # this could only occur if configuration was modified 
-                # between first and second pass, and accounter changed
-                # from software to hardware during this short (?) time.
-                raise PyKotaToolError, _("Hardware accounting already finished ! This should be impossible, please report this problem ASAP.")
-                
             # here if user and userpquota are both None
             # then it's a special second pass for a job
             # which should have had one but didn't, so
