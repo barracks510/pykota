@@ -47,8 +47,9 @@ PyKota NEWS :
           if you switch them off and then on, the reported page counter
           may be lower than the real number of pages printed.
           See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
-          We unconditionnally set the last job's page count to five in this
-          case. 
+          We unconditionnally set the last job's page count to 
+          abs(int((10 - abs(lastcounter(snmp) - lastcounter(storage)) / 2))
+          in this case. 
           For a more accurate accounting, never switch your HP printers
           off.
           
