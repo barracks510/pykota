@@ -684,11 +684,11 @@ msgstr "L'utilisateur %s n'existe pas dans la base PyKota"
 
 #, python-format
 msgid "Pages used on %s : %s"
-msgstr "Pages utilisées sur %s : %s"
+msgstr "Pages utilisees sur %s : %s"
 
 #, python-format
 msgid "PyKota Units left : %.2f"
-msgstr "Unités PyKota restantes : %.2f"
+msgstr "Unites PyKota restantes : %.2f"
 
 #, python-format
 msgid "Your account balance : %.2f"
