@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2004/07/05 21:00:39  jalet
+# Fix for number of copies for each page in PCLXL parser
+#
 # Revision 1.23  2004/07/03 08:21:59  jalet
 # Testsuite for PDL Analyzer added
 #
@@ -146,21 +149,23 @@ class PCLAnalyzer :
         self.infile = infile
         
     def getJobSize(self) :     
-        """Count pages in a PCL5 document."""
-        #
-        # Algorithm from pclcount
-        # (c) 2003, by Eduardo Gielamo Oliveira & Rodolfo Broco Manin 
-        # published under the terms of the GNU General Public Licence v2.
-        # 
-        # Backported from C to Python by Jerome Alet, then enhanced
-        # with more PCL tags detected. I think all the necessary PCL tags
-        # are recognized to correctly handle PCL5 files wrt their number
-        # of pages. The documentation used for this was :
-        #
-        # HP PCL/PJL Reference Set
-        # PCL5 Printer Language Technical Quick Reference Guide
-        # http://h20000.www2.hp.com/bc/docs/support/SupportManual/bpl13205/bpl13205.pdf 
-        #
+        """Count pages in a PCL5 document.
+         
+           Should also work for PCL3 and PCL4 documents.
+           
+           Algorithm from pclcount
+           (c) 2003, by Eduardo Gielamo Oliveira & Rodolfo Broco Manin 
+           published under the terms of the GNU General Public Licence v2.
+          
+           Backported from C to Python by Jerome Alet, then enhanced
+           with more PCL tags detected. I think all the necessary PCL tags
+           are recognized to correctly handle PCL5 files wrt their number
+           of pages. The documentation used for this was :
+         
+           HP PCL/PJL Reference Set
+           PCL5 Printer Language Technical Quick Reference Guide
+           http://h20000.www2.hp.com/bc/docs/support/SupportManual/bpl13205/bpl13205.pdf 
+        """
         infileno = self.infile.fileno()
         minfile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
         tagsends = { "&n" : "W", 
@@ -270,7 +275,6 @@ class PCLAnalyzer :
 class PCLXLAnalyzer :
     def __init__(self, infile) :
         """Initialize PCLXL Analyzer."""
-        # raise PDLAnalyzerError, "PCLXL (aka PCL6) is not supported yet."
         self.infile = infile
         self.endianness = None
         found = 0
@@ -288,7 +292,7 @@ class PCLXLAnalyzer :
                 # elif endian == 0x27 : TODO : What can we do here ?    
                 # 
                 else :    
-                    raise PDLAnalyzerError, "No endianness marker 0x%02x at start !" % endian
+                    raise PDLAnalyzerError, "Unknown endianness marker 0x%02x at start !" % endian
         if not found :
             raise PDLAnalyzerError, "This file doesn't seem to be PCLXL (aka PCL6)"
         else :    
@@ -301,6 +305,7 @@ class PCLXLAnalyzer :
             self.tags[0x29] = self.littleEndian # LittleEndian
             
             self.tags[0x43] = self.beginPage    # BeginPage
+            self.tags[0x44] = self.endPage      # EndPage
             
             self.tags[0xc0] = 1 # ubyte
             self.tags[0xc1] = 2 # uint16
@@ -339,6 +344,18 @@ class PCLXLAnalyzer :
     def beginPage(self) :
         """Indicates the beginning of a new page."""
         self.pagecount += 1
+        return 0
+        
+    def endPage(self) :    
+        """Indicates the end of a page."""
+        pos = self.pos
+        minfile = self.minfile
+        if (ord(minfile[pos-3]) == 0xf8) and (ord(minfile[pos-2]) == 0x31) :
+            # The EndPage operator is preceded by a PageCopies attribute
+            # So set number of copies for current page.
+            # From what I read in PCLXL documentation, the number
+            # of copies is an unsigned 16 bits integer
+            self.copies[self.pagecount] = unpack(self.endianness + "H", minfile[pos-5:pos-3])[0]
         return 0
         
     def array_8(self) :    
@@ -429,8 +446,18 @@ class PCLXLAnalyzer :
         return 0
     
     def getJobSize(self) :
-        """Counts pages in a PCLXL (PCL6) document."""
+        """Counts pages in a PCLXL (PCL6) document.
+        
+           Algorithm by Jerome Alet.
+           
+           The documentation used for this was :
+         
+           HP PCL XL Feature Reference
+           Protocol Class 2.0
+           http://www.hpdevelopersolutions.com/downloads/64/358/xl_ref20r22.pdf 
+        """
         infileno = self.infile.fileno()
+        self.copies = {}
         self.minfile = minfile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
         tags = self.tags
         self.pagecount = 0
@@ -449,6 +476,16 @@ class PCLXLAnalyzer :
                 pos += length    
         except IndexError : # EOF ?
             self.minfile.close() # reached EOF
+            
+        # now handle number of copies for each page (may differ).
+        for pnum in range(self.pagecount) :
+            # if no number of copies defined, take 1, as explained
+            # in PCLXL documentation.
+            # NB : is number of copies is 0, the page won't be output
+            # but the formula below is still correct : we want 
+            # to decrease the total number of pages in this case.
+            self.pagecount += (self.copies.get(pnum, 1) - 1)
+            
         return self.pagecount
         
 class PDLAnalyzer :    
