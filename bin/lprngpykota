@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2005/02/14 22:53:44  jalet
+# Now always precomputes the job's size with the internal PDL parser, and not
+# only when 'enforcement: strict' was set in pykota.conf
+#
 # Revision 1.14  2005/02/13 22:48:37  jalet
 # Added the md5sum to the history
 #
@@ -136,13 +140,10 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         # indicates first pass
         os.environ["PYKOTAPHASE"] = "BEFORE"
         
-        # do we want strict or laxist quota enforcement ?
-        if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
-            self.softwareJobSize = self.precomputeJobSize()
-            self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
-            self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
-        os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
+        # precomputes the job's price
+        self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
         os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
+        self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
         
         # if no data to pass to real backend, probably a filter
         # higher in the chain failed because of a misconfiguration.
@@ -250,6 +251,8 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                 
             # retrieve the job size    
             jobsize = self.accounter.getJobSize(printer)
+            if self.softwareJobSize and (jobsize != self.softwareJobSize) :
+                self.printInfo(_("Beware : computed job size (%s) != precomputed job size (%s)") % (jobsize, self.softwareJobSize), "error")
             
             self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
             self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))

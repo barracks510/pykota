@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.150  2005/02/14 22:53:44  jalet
+# Now always precomputes the job's size with the internal PDL parser, and not
+# only when 'enforcement: strict' was set in pykota.conf
+#
 # Revision 1.149  2005/02/13 22:02:29  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -1189,8 +1193,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
         self.checksum = self.computeChecksum()
+        self.softwareJobSize = self.precomputeJobSize()
+        os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
         os.environ["PYKOTAJOBSIZEBYTES"] = str(self.jobSizeBytes)
-        self.logdebug("Job size is %s bytes" % self.jobSizeBytes)
+        self.logdebug("Job size is %s bytes on %s pages." % (self.jobSizeBytes, self.softwareJobSize))
         self.logdebug("Capturing SIGTERM events.")
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
@@ -1326,48 +1332,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         if posthook :
             self.logdebug("Executing post-hook [%s]" % posthook)
             os.system(posthook)
-
-    def genBanner(self, bannerfileorcommand) :
-        """Reads a banner or generates one through an external command.
-        
-           Returns the banner's content in a format which MUST be accepted
-           by the printer.
-        """
-        if bannerfileorcommand :
-            banner = "" # no banner by default
-            if os.access(bannerfileorcommand, os.X_OK) or not os.path.isfile(bannerfileorcommand) :
-                self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
-                child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
-                banner = child.fromchild.read()
-                child.tochild.close()
-                child.childerr.close()
-                child.fromchild.close()
-                status = child.wait()
-                if os.WIFEXITED(status) :
-                    status = os.WEXITSTATUS(status)
-                self.printInfo(_("Banner generator %s exit code is %s") % (bannerfileorcommand, str(status)))
-            else :
-                self.logdebug("Using %s as the banner." % bannerfileorcommand)
-                try :
-                    fh = open(bannerfileorcommand, 'r')
-                except IOError, msg :    
-                    self.printInfo("Impossible to open %s : %s" % (bannerfileorcommand, msg), "error")
-                else :    
-                    banner = fh.read()
-                    fh.close()
-            if banner :        
-                return cStringIO.StringIO(banner)
-    
-    def startingBanner(self, printername) :
-        """Retrieves a starting banner for current printer and returns its content."""
-        self.logdebug("Retrieving starting banner...")
-        return self.genBanner(self.config.getStartingBanner(printername))
-    
-    def endingBanner(self, printername) :
-        """Retrieves an ending banner for current printer and returns its content."""
-        self.logdebug("Retrieving ending banner...")
-        return self.genBanner(self.config.getEndingBanner(printername))
-        
+            
     def printInfo(self, message, level="info") :        
         """Sends a message to standard error."""
         self.logger.log_message("%s" % message, level)
