@@ -68,6 +68,9 @@ PyKota NEWS :
         - A bug was fixed when edpykota --add was used with users who already
           had a quota on the specified printer.
           
+        - A small display bug in repykota was introduced in preliminary 
+          1.03 versions, and fixed later on.
+        
     - 1.02 :
     
         - The installation script now checks for software availability
