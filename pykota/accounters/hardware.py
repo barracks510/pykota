@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2004/09/14 06:53:53  jalet
+# Small test added
+#
 # Revision 1.13  2004/09/13 16:02:45  jalet
 # Added fix for incorrect job's size when hardware accounting fails
 #
@@ -123,10 +126,11 @@ class Accounter(AccounterBase) :
                 after = max(self.counterbefore, self.counterafter)    
                 self.counterbefore = before
                 self.counterafter = after
-                if self.counterbefore == self.counterafter :
+                if (not self.counterbefore) or (self.counterbefore == self.counterafter) :
                     self.filter.printInfo(_("Couldn't retrieve printer %s's internal page counter either before or after printing.") % printer.Name, "warn")
                     self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
-                    self.counterafter = self.counterbefore + 1
+                    self.counterbefore = 0
+                    self.counterafter = 1
             else :
                 self.filter.printInfo(_("No previous job in database for printer %s.") % printer.Name, "warn")
                 self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
