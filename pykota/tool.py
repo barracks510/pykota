@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.112  2004/07/16 12:22:47  jalet
+# LPRng support early version
+#
 # Revision 1.111  2004/07/06 18:09:42  jalet
 # Reduced the set of invalid characters in names
 #
@@ -930,6 +933,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.logdebug("Capturing SIGTERM events.")
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
+    def sendBackChannelData(self, message) :    
+        """Sends an informational message to CUPS via back channel stream (stderr)."""
+        self.printInfo("PyKota (PID %s) : %s" % (os.getpid(), message.strip()))
+        
     def openJobDataStream(self) :    
         """Opens the file which contains the job's datas."""
         if self.preserveinputfile is None :
@@ -1104,9 +1111,14 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             if (rseen is None) and jseen and Pseen and nseen :    
                 self.printInfo(_("Printer hostname undefined, set to 'localhost'"), "warn")
                 rseen = "localhost"
+            try :    
+                df_name = [line[8:] for line in os.environ.get("HF").split() if line.startswith("df_name=")][0]
+            except IndexError :
+                inputfile = None        
+            else :    
+                inputfile = os.path.join(os.environ.get("SPOOL_DIR", "."), df_name)
             if jseen and Pseen and nseen and rseen :        
-                # job is always in stdin (None)
-                return ("LPRNG", rseen, Pseen, nseen, jseen, None, Kseen, None, None, None)
+                return ("LPRNG", rseen, Pseen, nseen, jseen, inputfile, Kseen, None, None, None)
         self.printInfo(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
         return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system
         

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2004/07/16 12:22:47  jalet
+# LPRng support early version
+#
 # Revision 1.16  2004/05/25 09:15:15  jalet
 # accounter.py : old code deleted
 # the rest : now exports PYKOTAPRECOMPUTEDJOBSIZE and PYKOTAPRECOMPUTEDJOBPRICE
@@ -90,6 +93,7 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
+        self.isSoftware = 1 # by default software accounting
         
     def getLastPageCounter(self) :    
         """Returns last internal page counter value (possibly faked)."""

@@ -9,6 +9,7 @@
   <!entity WARNPYKOTA system "warnpykota.sgml">
   <!entity SCRIPTS system "scripts.sgml">
   <!entity PKHINT system "pkhint.sgml">
+  <!entity PYKOSD system "pykosd.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -119,6 +120,8 @@
   &SCRIPTS;
   
   &PKHINT;
+  
+  &PYKOSD;
     
   &GNUGPL;
 
@@ -127,6 +130,9 @@
 <!--
 
 $Log$
+Revision 1.13  2004/07/16 12:22:46  jalet
+LPRng support early version
+
 Revision 1.12  2004/03/18 10:32:23  jalet
 Added pkhint's documentation
 

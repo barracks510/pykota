@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.18_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.18_official
-jerome@nordine:~/pykota-1.18_official$
+jerome@nordine:~$ tar -zxf pykota-1.19_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.19_official
+jerome@nordine:~/pykota-1.19_official$
     </screen>
   </para>
   
@@ -151,7 +151,7 @@ jerome@nordine:~/pykota-1.18_official$
             You can choose other names if you want, just modify the 
             <filename>initscripts/postgresql/pykota-postgresql.sql</filename> file
             accordingly, and report your changes into <application>PyKota</application>'s
-            configuration file.
+            configuration files.
           </para>
         </note>  
       </para>
@@ -164,8 +164,8 @@ jerome@nordine:~/pykota-1.18_official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.18_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.18_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.19_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.19_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -196,7 +196,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.18_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.19_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -209,8 +209,8 @@ jerome@nordine:~/pykota-1.18_official/initscripts/postgresql$
         To improve security further, you could encrypt your database connections, or
         take any other step as needed. Please refer to <application>PostgreSQL</application>'s
         documentation for details. Also if <application>PyKota</application>'s configuration
-        file <filename>/etc/pykota/pykotadmin.conf</filename> is readable by anyone with access on your file system, a local user could 
-        create some script to modify his own print quota.
+        file <filename>/etc/pykota/pykotadmin.conf</filename> is readable by anyone with access on your file system, 
+        a local user could create some script to modify his own print quota.
         <warning>
           <title>Warning</title>
           <para>
@@ -247,7 +247,7 @@ jerome@nordine:~/pykota-1.18_official/initscripts/postgresql$
       
       <para>
         From version 1.09 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
-        It is possible that other LDAP servers can be used, but this is currently untested.
+        Some other LDAP servers can be used, but this is currently untested in production.
       </para>
       
       <para>
@@ -282,17 +282,31 @@ include         /etc/ldap/schema/pykota.schema
       <para>
         While this is not mandatory, it is recommended that you setup
         some indexes for some often accessed PyKota attributes.
-        Actually, the <acronym>LDAP</acronym> schema included with
-        PyKota doesn't allow indexes of another type than <literal>eq</literal>,
-        but this will change in a next release. Here are the minimal indexes
+        Here are the minimal indexes
         lines you may want to put in <filename>slapd.conf</filename> :
         <screen>
 # Indexes for PyKota
-index pykotaUserName eq
-index pykotaGroupName eq
-index pykotaPrinterName eq
+index pykotaUserName pres,eq,sub
+index pykotaGroupName pres,eq,sub
+index pykotaPrinterName pres,eq,sub
 index pykotaLastJobIdent eq
         </screen>
+      </para>
+      
+      <para>
+        Now you must ensure that the DNs you'll use to bind to    
+        your OpenLDAP server don't have search queries size limits,
+        which gives for example (OpenLDAP 2.1.x or above) :
+        
+<screen>        
+# No Limits for PyKota's administrator and read-only user
+limits dn="cn=RWadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+limits dn="cn=ROadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+</screen>        
+
+        Where RWadmin and ROadmin are the usernames used to bind to your
+        OpenLDAP server within PyKota, respectively in ReadWrite mode 
+        (as set in pykotadmin.conf) and in ReadOnly mode (as set in pykota.conf).
       </para>
       
       <para>
@@ -380,7 +394,7 @@ $ /etc/init.d/slapd restart
         <listitem>
           <para>
             <application>CUPS</application> version 1.1 or above, or <application>LPRng</application>
-            version 3.8.20 or above (it probably works with older versions but this is untested).
+            version 3.8.27 or above (it probably works with older versions but this is untested).
             You can download them from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
             or <ulink url="http://lprng.sourceforge.net">http://lprng.sourceforge.net</ulink>
           </para>
@@ -531,7 +545,7 @@ $ python setup.py install
       and encourages you to manually do the modifications which are needed.
       Please create a backup of the <filename>/etc/pykota</filename>
       directory before modifying anything.
-      Under some circumstances, the setup PyKota may refuse to install PyKota
+      Under some circumstances, PyKota's setup script may refuse to install PyKota
       until you have modified your configuration. Just do it and restart
       the installation script as described above.
     </para>
@@ -610,7 +624,16 @@ $ /etc/init.d/cupsys restart
       
       <para>
         Then when creating new printers or reconfiguring existing ones, just
-        choose devices which are <literal>PyKota managed</literal> instead of
+        choose devices which are <literal>PyKota managed</literal>
+        <footnote>
+          <para>
+            Debian 3.0 Woody is known to have problems : CUPS 1.1.14 doesn't automatically
+            detect <literal>PyKota managed</literal> devices. So you have to manually
+            modify CUPS' <filename>printers.conf</filename> file as explained in 
+            PyKota's toplevel <filename>README</filename> file.
+          </para>
+        </footnote>
+        instead of
         normal devices. You've got one <literal>PyKota managed</literal> device
         for each regular device available from CUPS, so just choose the appropriate
         one.
@@ -644,21 +667,34 @@ $ /etc/init.d/cupsys restart
     
     <sect2>
       <title>With LPRng</title>
-      <para>
-        ######### TODO ##########
-      </para>
       
       <para>
-        You have to restart <application>LPRng</application> for this modification to
-        take effect : 
-        <screen>
-$ /etc/init.d/lprng restart        
-        </screen>
+        For each printer on which you want to use <application>PyKota</application>, just modify the printer's 
+        entry in <filename>/etc/printcap</filename> : you have to add
+        the three following lines :
+        
+<screen>        
+  :ac=true:\
+  :as=/usr/share/pykota/lprngpykota:\
+  :ae=/usr/share/pykota/lprngpykota:\
+</screen>          
+
+        This will tell <application>LPRng</application> to activate accounting, and use the <filename>lprngpykota</filename> 
+        accounting filter both at the start and at the end of printing. 
       </para>
+      
       
       <para>
         Repeat the above procedure for each print queue on which you want to use
         PyKota. That's all !
+      </para>
+      
+      <para>
+        When all modifications are done, just save the <filename>/etc/printcap</filename> file 
+        and restart <application>LPRng</application> for the changes to take effect : 
+        <screen>
+$ /etc/init.d/lprng restart        
+        </screen>
       </para>
       
       <sect3>
@@ -688,6 +724,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.26  2004/07/16 12:22:46  jalet
+LPRng support early version
+
 Revision 1.25  2004/05/25 09:49:53  jalet
 The old pykota filter has been removed. LPRng support disabled for now.
 

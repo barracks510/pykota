@@ -1,0 +1,46 @@
+<!-- $Id$ -->
+
+<chapter>
+  <title>Uses On Screen Display to show personal print quota information with pykosd</title>
+  <para>Last modified on $Date$</para>
+  
+  <para>
+    <filename>pykosd</filename> is a graphical <application>X Window</application> application which when launched 
+    will display print quota information for the current user.
+  </para>  
+  
+  <para>
+    Whenever you launch <filename>pykosd</filename>, it will display the current user's print quota
+    information in the top-left corner of the screen, above all existing windows, and with
+    a transparent background. Then after five seconds, the information displayed will disappear
+    and the program will exit.
+  </para>
+  
+  <para>
+    In the future, this command will accept some parameters which will render it more
+    useful.
+  </para>
+  
+  <sect1>
+    <title>Reference</title>
+    <para>
+      <cmdsynopsis>
+        <command>pykosd</command>
+      </cmdsynopsis>
+      <warning>
+        <para>
+          <filename>pykosd</filename> doesn't currently accept any command line
+          option. This will change in the future.
+        </para>  
+      </warning>
+    </para>
+  </sect1>
+</chapter>
+
+<!--
+
+$Log$
+Revision 1.1  2004/07/16 12:22:46  jalet
+LPRng support early version
+
+-->

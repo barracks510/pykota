@@ -10,7 +10,7 @@
     <footnote>
       <para>
         PyKota doesn't currently account for ink usage, it only accounts
-        pages. To account for ink usage, you should use PrintBill instead.
+        pages. To account for ink usage, you should use PrintBill instead for now.
       </para>  
     </footnote>  
     , you must plug your accounting
@@ -25,7 +25,7 @@
     contains many filters. For example there's one filter named <filename>pstops</filename> which accepts 
     PostScript data as its input, and, as its name implies, outputs PostScript data too, but after having
     eventually rearranged the pages to fit several pages on a single sheet of paper, or other manipulations
-    like that. 
+    like that. <application>LPRng</application> also contains several filters like this.
   </para>
   
   <para>
@@ -35,15 +35,16 @@
   </para>
   
   <para>
-    <application>LPRng</application> can also use filters, one often used in combination with
-    <application>LPRng</application> is <application>magicfilter</application> which can convert 
-    different input formats to native printers languages like PostScript or ESC/P2.
+    <application>LPRng</application> can also use filters, often used in combination with
+    <application>LPRng</application> are <application>magicfilter</application> which can convert 
+    different input formats to native printers languages like PostScript or ESC/P2 and 
+    <application>ifhp</application> which can do low-level accounting.
   </para>  
   
   <para>
     So to do its own accounting, <application>PyKota</application> has its own filters, for <application>CUPS</application>
     it's named <filename>cupspykota</filename>, which is in fact a <application>CUPS</application> backends wrapper,
-    and for <application>LPRng</application> it's named ########## TODO ########## .
+    and for <application>LPRng</application> it's named <filename>lprngpykota</filename>, as you have probably guessed.
     The procedure to plug the correct filter into your printing system is described in the 
     <xref linkend="installation" endterm="installation"> chapter.
   </para>
@@ -51,42 +52,24 @@
   <para>
     Currently with a <application>CUPS</application> internal accounting mechanism, the <filename>pstops</filename>
     filter can be bypassed. That's why <application>PyKota</application> uses its own backend.
-    The <filename>cupspykota</filename> backend wrapper ensures that jobs can't bypass the filtering mechanism, so you can use
+    The <filename>cupspykota</filename> backend wrapper ensures that jobs can't bypass it, so you can use
     any printer with any driver and any command line option, and you can be sure that your
     print job will be correctly accounted for.
   </para>
   
   <para>
-    When used with an <application>LPRng</application> backend, the accounting filter is not defined the same way 
-    input filters are, so the problem described above doesn't exist, and <application>PyKota</application>
-    may work with non-postscript printers, provided they can report their page counter and you know how to retrieve
-    it.
-  </para>
-  
-  <para>
-    When you submit a print job, <application>PyKota</application>'s accounting mechanism is automatically launched by your printing system,
-    so it has to detect which system you are using (<application>CUPS</application> or <application>LPRng</application>)
-    and behave like if it was specifically designed for your printing system. Fortunately there's not a lot
-    of differences, the more important one is the exit codes used to tell the printing environment if a job
-    has to be accepted or rejected. 
-  </para>
-  
-  <para>
     When using the <literal>hardware</literal> accounting method,
-    the <application>cupspykota</application> CUPS backend 
-    asks the printer for its internal page counter at the start and at the end of the print job, and
-    computes the values' difference so accounting is done immediately. 
+    <application>PyKota</application> launches the script you specified to
+    ask the printer for its internal page counter at the start and at the end of the print job, and
+    computes the values' difference to know the job's size. 
   </para>
   
   <para>
     When using the <literal>software</literal> accounting method,
-    and if the user is still allowed to print,
     the command you specified is launched with the job's data on its 
     standard input. Your command must print the job's size in number of
     pages on a single line on its standard output. This number is then
     read by <application>PyKota</application> and used to update the current user's quota information.
-    Of course checks are also done like with the <literal>hardware</literal>
-    accounting method, to see if the current job is allowed to be printed or not.
   </para>
   
   <para>
@@ -102,6 +85,9 @@
 <!--
 
 $Log$
+Revision 1.12  2004/07/16 12:22:45  jalet
+LPRng support early version
+
 Revision 1.11  2004/05/25 09:49:52  jalet
 The old pykota filter has been removed. LPRng support disabled for now.
 

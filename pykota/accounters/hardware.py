@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/07/16 12:22:47  jalet
+# LPRng support early version
+#
 # Revision 1.6  2004/07/01 19:56:42  jalet
 # Better dispatching of error messages
 #
@@ -53,6 +56,7 @@ class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments)
+        self.isSoftware = 0
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2004/07/16 12:22:45  jalet
+# LPRng support early version
+#
 # Revision 1.46  2004/07/07 13:21:26  jalet
 # Introduction of the pykosd command
 #
@@ -452,7 +455,7 @@ manpages = glob.glob(os.sep.join(["man", "*.1"]))
 data_files.append((directory, manpages))
 
 directory = os.sep.join(["share", "pykota"])
-data_files.append((directory, ["bin/cupspykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
+data_files.append((directory, ["bin/cupspykota", "bin/lprngpykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
 
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",

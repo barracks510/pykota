@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.67  2004/07/16 12:22:45  jalet
+# LPRng support early version
+#
 # Revision 1.66  2004/07/01 19:56:25  jalet
 # Better dispatching of error messages
 #
@@ -470,10 +473,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         if mask & select.POLLNVAL :
             maskval.append("POLLNVAL")
         return "%s (%s)" % (fd, " | ".join(maskval))
-        
-    def sendBackChannelData(self, message) :    
-        """Sends an informational message to CUPS via back channel stream (stderr)."""
-        self.printInfo("PyKota (PID %s) : %s" % (os.getpid(), message.strip()))
         
     def handleData(self) :                    
         """Pass the job's data to the real backend."""

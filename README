@@ -24,8 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
      FROM MAY 21ST 2004 ON, AND UNTIL THIS NOTE IS REMOVED
      FROM THIS FILE, PYKOTA CAN'T BE USED ANYMORE WITH LPRNG.
      
-     SUPPORT FOR LPRNG SHOULD BE RE-ADDED SOON WHEN A HUGE REWRITE
-     OF SOME PARTS OF PYKOTA WILL HAVE TAKEN PLACE
+     LPRNG SUPPORT IS CURRENTLY BEING REWRITTEN, AND YOU CAN
+     ALREADY PLAY WITH IT, BUT DON'T USE IT IN PRODUCTION UNTIL
+     THIS NOTE IS REMOVED.
 
 ====================================================================
 
@@ -46,9 +47,6 @@ PyKota features :
     
         - Supports both CUPS and LPRng as the printing system.
         
-          NB : LPRng support is currently being rewritten, so
-          LPRng is actually not supported in latest CVS versions.
-            
     Databases :
     
         - Supports PostgreSQL as the Quota Storage backend.
@@ -173,24 +171,19 @@ implemented :
     or Netatalk or any other method of your choice) for its total pages 
     counter.
     
-    With CUPS, this is done both at the beginning and at the end of a
+    This is done both at the beginning and at the end of a
     print job. The counters difference is then immediately used to 
     decrease the user's account balance or increase his quota usage.
-    
-    With LPRng, this is done just before the beginning of a job, and used 
-    this to modify the *preceding* user's quota. So you're always late 
-    of one print job, but this is generally ok.
     
   - The 'software' method consists in delegating the computation of the
     job's size in number of pages to any external command of your choice.
     The command can read the job's data from its standard input and MUST
     output the job's size on its standard output. Changes to the user
-    account are reported immediately, both with CUPS and LPRng.
+    account are reported immediately.
     
-PyKota is known to work fine with HP Laserjet 2100 and 2200, and 
-Apple LaserWriter 16/600 PS, both with CUPS and LPRng, under 
-Debian GNU/Linux (Sarge and Sid) operating systems. It should work
-fine with most network printers.
+PyKota is known to work fine with most laser printers, either with
+software accounting, or with hardware accounting if the printer
+supports this.
 
 ============================================================
 
@@ -236,15 +229,15 @@ Prerequisite :
       $ apt-get install python-psyco
       
   Other architectures may be supported as well in the future, check    
-  on Psyco's website.
+  this on Psyco's website.
   
   Installing Psyco is not mandatory, but it will speedup PCL5 parsing
   by almost 3 times. PostScript and PDF parsing can also benefit,
   but in an almost unnoticeable manner since this part of the code
   is already optimal. For PCL5 this is a completely different matter,
   and if you install Psyco you will never regret it !
-  Same remark applies for PCL6 (aka PCLXL) but performance improvement
-  is yet to be fully tested (it is very high anyway).
+  Same remark applies for PCL6 (aka PCLXL) : the parser is completely
+  different, but the performance gain with Psyco is impressive.
   
   You may also benefit from having the following tools installed to
   deal with some printers :
@@ -267,11 +260,6 @@ NB :
   PygreSQL must be linked with the PostgreSQL client libraries on 
   the Print Server. The PostgreSQL client libraries' version must 
   match the PostgreSQL version used on the Quota Storage Server. 
-  BEWARE : under Debian Sarge, as of March 15th 2004, there's a
-  problem with python2.2-pygresql and python-2.3-pygresql, so please
-  install python2.1-pygresql and use Python 2.1 to install and run
-  PyKota. This is not a bug in PyKota, and this should be fixed
-  by Debian in a few days I hope.
   
 or  
 
@@ -306,16 +294,16 @@ is missing and ask you if you still want to proceed with the
 installation or abort it completely.
 
 Go to the initscripts subdirectory of PyKota's sources, and choose
-the appropriate storage backend for your configuration. Read
+the appropriate storage backend for your configuration. Read carefully
 the associated README file and execute the initialization script
 to create an empty PyKota Storage. Upgrade scripts may be 
 provided as well.
 
 Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample 
 sample configuration files to /etc/pykota/pykota.conf and 
-/etc/pykota/pykotadmin.conf. The installation script tries to do 
-this for you if needed and you agreed to this action. You need to 
-adapt these files to your own needs. Especially you have to create 
+/etc/pykota/pykotadmin.conf (the installation script tries to do 
+this for you if needed and you agreed to this action). You need to 
+adapt these files to your own needs. Especially you may have to create 
 sections named after your own printers, and change the 
 administrator's email address which by default is root@localhost.
 Read and try to understand these two very well commented files,
@@ -341,6 +329,12 @@ The rest of the installation depends on your printing system :
         
           $ /etc/init.d/cupsys restart
           
+        or :    
+      
+          $ /etc/rc.d/init.d/cupsysrestart
+          
+        or any similar command depending on your operating system.  
+          
     For new printers :
     
         Go to CUPS management interface (http://localhost:631) 
@@ -357,12 +351,22 @@ The rest of the installation depends on your printing system :
         Configure your printer as usual.    
         
         Now double check /etc/pykota/pykota.conf 
-        This file should contain a section named after the
+        
+        You should manually create a section named after the
         printer you've just added, unless you have set
         all options globally.
+        
         The new pkhint command can help you with correct settings 
         for your printers, but don't rely on it because it is still
-        incomplete.
+        experimental work. To use pkhint, you have to feed it with
+        CUPS' printers.conf file this way :
+        
+          $ pkhint </etc/cups/printers.conf
+        
+        pkhint will try to tell you what is the best accounting
+        method for each printer and will print some lines you'll
+        just have to copy&paste in the appropriate sections in
+        /etc/pykota/pykota.conf
         
         That's all.
     
@@ -398,10 +402,39 @@ The rest of the installation depends on your printing system :
             DeviceURI cupspykota://socket://myprinter.example.com:9100
         
         Save the file and restart CUPS.
+        
+        Here too, you may find it interesting to use the pkhint command as
+        described above to help with manual configuration of the file
+        /etc/pykota/pykota.conf
 
   - LPRng Printing System :
   
-      For now LPRng support in PyKota is deactivated. Please be patient.
+    For each printer on which you want to use PyKota :
+    
+        Modify the printer's entry in /etc/printcap : you have to add
+        the three following lines :
+        
+          :ac=true:\
+          :as=/usr/share/pykota/lprngpykota:\
+          :ae=/usr/share/pykota/lprngpykota:\
+          
+        This will tell LPRng to activate accounting, and use the lprngpykota 
+        accounting filter both at the start and at the end of printing. 
+        
+    When all modifications are done, just save the /etc/printcap file and    
+    restart LPRng :
+    
+          $ /etc/init.d/lprng restart
+          
+        or :    
+      
+          $ /etc/rc.d/init.d/lprng restart
+          
+        or any similar command depending on your operating system.  
+        
+    NB : the pkhint command can't be used with LPRng for now, so you    
+         have to modify /etc/pykota/pykota.conf carefully. The comments
+         in this file will help you.
       
 Now you can begin to populate the PyKota's database with printers,
 users and groups :
@@ -488,6 +521,14 @@ Mailing list :
   
     http://cgi.librelogiciel.com/mailman/listinfo/pykota
     
+  The mailing list is the preferred way to obtain support, because  
+  all members can help and can also benefit from the solutions
+  proposed by other members. 
+  
+  Posts by non-members are usually rejected.
+  
+  The mailing list language is english and only english.
+    
 IRC :    
 -----
 
@@ -495,6 +536,13 @@ IRC :
   
         /server irc.freenode.net
         /join #pykota
+        
+  Preferred language on this channel is english, but french      
+  is also accepted. Try to avoid exposing complex problems
+  in french because english speaking people on the channel
+  wouldn't benefit from the solutions.
+  
+  PyKota's main author is known as 'tamere' on IRC.
     
 ============================================================
     
