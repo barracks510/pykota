@@ -75,4 +75,11 @@ with it, I've added these screenshots and here's a small howto :
         - When you've got something nice, please contribute it back  
           so we can learn from your experience.
         
+WARNING :        
+
+        The above procedure doesn't work if you use the OpenLDAP backend
+        to store PyKota's datas. A similar procedure is probably possible
+        but last time I checked, the LDAP attributes accessible from
+        OpenOffice.org were limited to what one usually finds in 
+        address books, unfortunately.
 ====================================================================
