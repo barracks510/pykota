@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha16 :
+    
+        - Internal handling of socket based PJL queries over
+          port tcp/9100 is now available with the magic
+          'pjl' value in the hardware accounter.
+          
     - 1.20alpha15 :
     
         - LDAP pykotaAccountBalance objects were always created

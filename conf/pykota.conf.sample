@@ -212,7 +212,19 @@ utolower: No
 #                 for network printers.
 #                 e.g. myprinter.example.com
 #
-#         Example : 
+#         Recommended values :
+#
+#             accounter: hardware(snmp)
+#
+#               Extracts the printer's internal page counter via SNMP.
+#
+#         Or :
+#
+#             accounter: hardware(pjl)
+# 
+#               Extracts the printer's internal page counter via PJL queries over port tcp/9100.
+#
+#         Other Examples : 
 #         
 #             accounter: hardware(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 #         
@@ -220,12 +232,6 @@ utolower: No
 #         
 #             accounter: hardware(/usr/bin/npadmin --pagecount %(printer)s)
 #         
-#         Another example, using the special 'snmp' value, which doesn't launch
-#         any subprocess but instead all SNMP processing is done from PyKota's main
-#         code (this is less configurable, but requires less CPU and can prevent zombies) : 
-#
-#             accounter: hardware(snmp)
-#
 #         Another example, for AppleTalk printers which works fine :
 #         (You may need the pap CUPS backend installed, and copy the 
 #         pagecount.ps file from untested/netatalk into /etc or any 
@@ -274,12 +280,19 @@ utolower: No
 #         not yet finished (not all pages are printed, but the complete job is in 
 #         the printer)
 #         
-#         YOU ABSOLUTELY HAVE TO BE SURE YOU HAVE A SCRIPT WHICH WAITS FOR THE
-#         PRINTER BEING READY BEFORE ASKING FOR ITS INTERNAL PAGE COUNTER.
+#   YOU ABSOLUTELY HAVE TO BE SURE YOU HAVE A SCRIPT WHICH WAITS FOR THE
+#   PRINTER BEING READY BEFORE ASKING FOR ITS INTERNAL PAGE COUNTER.
 #         
-#         PYKOTA INCLUDES SUCH SCRIPTS FOR SNMP AND APPLETALK PRINTERS, MORE TO COME
+#   PYKOTA INCLUDES SUCH SCRIPTS FOR SNMP AND APPLETALK PRINTERS, MORE TO COME
 #
-#         SOME OF THE ABOVE EXAMPLES DON'T USE SUCH A SCRIPT, YOU HAVE BEEN WARNED
+#   SOME OF THE ABOVE EXAMPLES DON'T USE SUCH A SCRIPT, YOU HAVE BEEN WARNED
+#
+#
+#   WITH THE SPECIAL MAGIC hardware(snmp) AND hardware(pjl) VALUES, PYKOTA
+#   TAKES CARE OF ALL THIS FOR YOU, SO PLEASE UNDERSTAND THAT IT IS PREFERABLE
+#   TO USE THESE TWO METHODS : THEY WORK FINE, REQUIRE LITTLE TO NO CPU,
+#   AND DO ALL THE HARD WORK AUTOMATICALLY. IF YOU REALLY NEED TO YOU CAN USE
+#   YOUR OWN EXTERNAL COMMANDS AS DESCRIBED ABOVE, JUST BE CAREFUL WITH THIS.
 #         
 #
 #    - software : delegates the job's size computation to any 

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2004/09/27 19:56:27  jalet
+# Added internal handling for PJL queries over port tcp/9100. Now waits
+# for printer being idle before asking, just like with SNMP.
+#
 # Revision 1.25  2004/09/27 09:21:37  jalet
 # Now includes printer's hostname in SNMP error messages
 #
@@ -110,6 +114,7 @@
 #
 
 import os
+import socket
 import time
 import signal
 import popen2
@@ -207,6 +212,95 @@ else :
                     idle_num = 0
                 self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.printername)    
                 time.sleep(SNMPDELAY)
+                
+pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
+pjlStatusValues = {
+                    "10000" : "Powersave Mode",
+                    "10001" : "Ready Online",
+                    "10002" : "Ready Offline",
+                    "10003" : "Warming Up",
+                    "10004" : "Self Test",
+                    "10005" : "Reset",
+                    "10023" : "Printing",
+                  }
+class PJLAccounter :
+    """A class for PJL print accounting."""
+    def __init__(self, parent, printerhostname) :
+        self.parent = parent
+        self.printerHostname = printerhostname
+        self.printerInternalPageCounter = self.printerStatus = None
+        self.printerInternalPageCounter = self.printerStatus = None
+        self.timedout = 0
+        
+    def alarmHandler(self, signum, frame) :    
+        """Query has timedout, handle this."""
+        self.timedout = 1
+        raise IOError, "Waiting for PJL answer timed out. Please try again later."
+        
+    def retrievePJLValues(self) :    
+        """Retrieves a printer's internal page counter and status via PJL."""
+        port = 9100
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try :
+            sock.connect((self.printerHostname, port))
+        except socket.error, msg :
+            self.parent.filter.printInfo(_("Problem during connection to %s:%s : %s") % (self.printerHostname, port, msg), "warn")
+        else :
+            try :
+                sock.send(pjlMessage)
+            except socket.error, msg :
+                self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, port, msg), "warn")
+            else :    
+                actualpagecount = self.printerStatus = None
+                self.timedout = 0
+                while (self.timedout = 0) or (actualpagecount is None) or (self.printerStatus is None) :
+                    signal.signal(signal.SIGALRM, self.alarmHandler)
+                    signal.alarm(5)
+                    try :
+                        answer = sock.recv(1024)
+                    except IOError, msg :    
+                        break   # our alarm handler was launched, probably
+                    else :    
+                        readnext = 0
+                        for line in [l.strip() for l in answer.split()] : 
+                            if line.startswith("CODE=") :
+                                self.printerStatus = line.split("=")[1]
+                            elif line.startswith("PAGECOUNT") :    
+                                readnext = 1 # page counter is on next line
+                            elif readnext :    
+                                actualpagecount = int(line.strip())
+                                readnext = 0
+                    signal.alarm(0)
+                self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
+        sock.close()
+        
+    def waitPrinting(self) :
+        """Waits for printer status being 'printing'."""
+        while 1:
+            self.retrievePJLValues()
+            if self.printerStatus in ('10000', '10001', '10023') :
+                break
+            # In reality, and if I'm not mistaken, we will NEVER get there.    
+            self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)
+            time.sleep(ITERATIONDELAY)
+        
+    def waitIdle(self) :
+        """Waits for printer status being 'idle'."""
+        idle_num = idle_flag = 0
+        while 1 :
+            self.retrievePJLValues()
+            idle_flag = 0
+            if self.printerStatus in ('10000', '10001',) :
+                idle_flag = 1
+            if idle_flag :    
+                idle_num += 1
+                if idle_num > STABILIZATIONDELAY :
+                    # printer status is stable, we can exit
+                    break
+            else :    
+                idle_num = 0
+            self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.printername)
+            time.sleep(ITERATIONDELAY)
     
 class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
@@ -288,11 +382,14 @@ class Accounter(AccounterBase) :
            The external command must report the life time page number of the printer on stdout.
         """
         commandline = self.arguments.strip() % locals()
-        if commandline.lower() == "snmp" :
+        cmdlower = commandline.lower()
+        if cmdlower == "snmp" :
             if hasSNMP :
                 return self.askWithSNMP(printer)
             else :    
                 raise PyKotaAccounterError, _("Internal SNMP accounting asked, but Python-SNMP is not available. Please download it from http://pysnmp.sourceforge.net")
+        elif cmdlower == "pjl" :
+            return self.askWithPJL(printer)
             
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
@@ -353,4 +450,20 @@ class Accounter(AccounterBase) :
                 raise
             else :    
                 self.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (acc.printerInternalPageCounter, self.filter.printername), "warn")
+        return acc.printerInternalPageCounter
+        
+    def askWithPJL(self, printer) :
+        """Returns the page counter from the printer via internal PJL handling."""
+        acc = PJLAccounter(self, printer)
+        try :
+            if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
+               (os.environ.get("PYKOTAACTION") != "DENY") and \
+               (os.environ.get("PYKOTAPHASE") == "AFTER") :
+                acc.waitPrinting()
+            acc.waitIdle()    
+        except :    
+            if acc.printerInternalPageCounter is None :
+                raise
+            else :    
+                self.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (acc.printerInternalPageCounter, self.filter.printername), "warn")
         return acc.printerInternalPageCounter
