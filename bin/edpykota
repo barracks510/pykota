@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.73  2004/06/03 21:50:34  jalet
+# Improved error logging.
+# crashrecipient directive added.
+# Now exports the job's size in bytes too.
+#
 # Revision 1.72  2004/04/16 16:20:19  jalet
 # Note about not implemented limitby values
 #
@@ -689,9 +694,11 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = editor.main(args, options)
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
-        sys.stderr.write("%s\n" % msg)
-        sys.stderr.flush()
+    except :
+        try :
+            editor.crashed("edpykota failed")
+        except :    
+            pass
         retcode = -1
 
     try :

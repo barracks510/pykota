@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.95  2004/06/03 21:50:34  jalet
+# Improved error logging.
+# crashrecipient directive added.
+# Now exports the job's size in bytes too.
+#
 # Revision 1.94  2004/06/03 08:51:03  jalet
 # logs job's size in bytes now
 #
@@ -390,11 +395,11 @@ class PyKotaTool :
         # pykota specific stuff
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc/pykota")
-        self.logger = logger.openLogger(self.config.getLoggingBackend())
         self.debug = self.config.getDebug()
-        self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
         self.maildomain = self.config.getMailDomain()
+        self.logger = logger.openLogger(self.config.getLoggingBackend())
+        self.storage = storage.openConnection(self)
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
         
@@ -421,6 +426,29 @@ class PyKotaTool :
         self.clean()
         print self.documentation
         sys.exit(0)
+        
+    def crashed(self, message) :    
+        """Outputs a crash message, and optionally sends it to software author."""
+        import traceback
+        lines = []
+        for line in traceback.format_exception(*sys.exc_info()) :
+            lines.extend([l for l in line.split("\n") if l])
+        msg = "ERROR : ".join(["%s\n" % l for l in ([message] + lines)])
+        sys.stderr.write(msg)
+        sys.stderr.flush()
+        crashrecipient = self.config.getCrashRecipient()
+        if crashrecipient :
+            try :
+                admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
+                fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
+                                (msg, \
+                                 "\n".join(["    %s" % repr(a) for a in sys.argv]), \
+                                 "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
+                server = smtplib.SMTP(self.smtpserver)
+                server.sendmail(admin, [admin, crashrecipient], "From: %s\nTo: %s\nCc: %s\nSubject: PyKota crash traceback !\n\n%s" % (admin, crashrecipient, admin, fullmessage))
+                server.quit()
+            except :
+                pass
         
     def parseCommandline(self, argv, short, long, allownothing=0) :
         """Parses the command line, controlling options."""
@@ -815,8 +843,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.accounter = accounter.openAccounter(self)
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
-        os.putenv("PYKOTAJOBSIZEBYTES", str(self.JobSizeBytes))
-        self.logdebug("Job size is %s bytes" % self.JobSizeBytes)
+        os.environ["PYKOTAJOBSIZEBYTES"] = str(self.jobSizeBytes)
+        self.logdebug("Job size is %s bytes" % self.jobSizeBytes)
         self.logdebug("Capturing SIGTERM events.")
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
@@ -828,13 +856,13 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # a temporary file and use it instead
             self.logdebug("Duplicating data stream from stdin to temporary file")
             MEGABYTE = 1024*1024
-            self.JobSizeBytes = 0
+            self.jobSizeBytes = 0
             infile = tempfile.TemporaryFile()
             while 1 :
                 data = sys.stdin.read(MEGABYTE) 
                 if not data :
                     break
-                self.JobSizeBytes += len(data)    
+                self.jobSizeBytes += len(data)    
                 infile.write(data)
             infile.flush()    
             infile.seek(0)
@@ -842,7 +870,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         else :    
             # real file, just open it
             self.logdebug("Opening data stream %s" % self.preserveinputfile)
-            self.JobSizeBytes = os.stat(self.preserveinputfile)[6]
+            self.jobSizeBytes = os.stat(self.preserveinputfile)[6]
             return open(self.preserveinputfile, "rb")
         
     def closeJobDataStream(self) :    
@@ -878,35 +906,35 @@ class PyKotaFilterOrBackend(PyKotaTool) :
     def sigterm_handler(self, signum, frame) :
         """Sets an attribute whenever SIGTERM is received."""
         self.gotSigTerm = 1
-        os.putenv("PYKOTASTATUS", "CANCELLED")
+        os.environ["PYKOTASTATUS"] = "CANCELLED"
         self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""
-        os.putenv("PYKOTAUSERNAME", str(self.username))
-        os.putenv("PYKOTAPRINTERNAME", str(self.printername))
-        os.putenv("PYKOTAJOBID", str(self.jobid))
-        os.putenv("PYKOTATITLE", self.title or "")
-        os.putenv("PYKOTAFILENAME", self.preserveinputfile or "")
-        os.putenv("PYKOTACOPIES", str(self.copies))
-        os.putenv("PYKOTAOPTIONS", self.options or "")
+        os.environ["PYKOTAUSERNAME"] = str(self.username)
+        os.environ["PYKOTAPRINTERNAME"] = str(self.printername)
+        os.environ["PYKOTAJOBID"] = str(self.jobid)
+        os.environ["PYKOTATITLE"] = self.title or ""
+        os.environ["PYKOTAFILENAME"] = self.preserveinputfile or ""
+        os.environ["PYKOTACOPIES"] = str(self.copies)
+        os.environ["PYKOTAOPTIONS"] = self.options or ""
     
     def exportUserInfo(self, userpquota) :
         """Exports user information to the environment."""
-        os.putenv("PYKOTALIMITBY", str(userpquota.User.LimitBy))
-        os.putenv("PYKOTABALANCE", str(userpquota.User.AccountBalance or 0.0))
-        os.putenv("PYKOTALIFETIMEPAID", str(userpquota.User.LifeTimePaid or 0.0))
-        os.putenv("PYKOTAPAGECOUNTER", str(userpquota.PageCounter or 0))
-        os.putenv("PYKOTALIFEPAGECOUNTER", str(userpquota.LifePageCounter or 0))
-        os.putenv("PYKOTASOFTLIMIT", str(userpquota.SoftLimit))
-        os.putenv("PYKOTAHARDLIMIT", str(userpquota.HardLimit))
-        os.putenv("PYKOTADATELIMIT", str(userpquota.DateLimit))
+        os.environ["PYKOTALIMITBY"] = str(userpquota.User.LimitBy)
+        os.environ["PYKOTABALANCE"] = str(userpquota.User.AccountBalance or 0.0)
+        os.environ["PYKOTALIFETIMEPAID"] = str(userpquota.User.LifeTimePaid or 0.0)
+        os.environ["PYKOTAPAGECOUNTER"] = str(userpquota.PageCounter or 0)
+        os.environ["PYKOTALIFEPAGECOUNTER"] = str(userpquota.LifePageCounter or 0)
+        os.environ["PYKOTASOFTLIMIT"] = str(userpquota.SoftLimit)
+        os.environ["PYKOTAHARDLIMIT"] = str(userpquota.HardLimit)
+        os.environ["PYKOTADATELIMIT"] = str(userpquota.DateLimit)
         
         # not really an user information, but anyway
         # exports the list of printers groups the current
         # printer is a member of
-        os.putenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(userpquota.Printer)]))
-            
+        os.environ["PYKOTAPGROUPS"] = ",".join([p.Name for p in self.storage.getParentPrinters(userpquota.Printer)])
+        
     def prehook(self, userpquota) :
         """Allows plugging of an external hook before the job gets printed."""
         prehook = self.config.getPreHook(userpquota.Printer.Name)

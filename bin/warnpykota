@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2004/06/03 21:50:34  jalet
+# Improved error logging.
+# crashrecipient directive added.
+# Now exports the job's size in bytes too.
+#
 # Revision 1.26  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -246,9 +251,11 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = sender.main(args, options)
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
-        sys.stderr.write("%s\n" % msg)
-        sys.stderr.flush()
+    except :
+        try :
+            sender.crashed("warnpykota failed")
+        except :    
+            pass
         retcode = -1
         
     try :

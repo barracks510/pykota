@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/06/03 21:50:33  jalet
+# Improved error logging.
+# crashrecipient directive added.
+# Now exports the job's size in bytes too.
+#
 # Revision 1.57  2004/06/02 22:18:07  jalet
 # I think the bug when cancelling jobs should be fixed right now
 #
@@ -329,22 +334,22 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # tries to extract job-originating-hostname 
             clienthost = self.getJobOriginatingHostname(printer.Name, user.Name, self.jobid)
             self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
-            os.putenv("PYKOTAJOBORIGINATINGHOSTNAME", str(clienthost or ""))
+            os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
             
             # enters first phase
-            os.putenv("PYKOTAPHASE", "BEFORE")
+            os.environ["PYKOTAPHASE"] = "BEFORE"
             
             # checks the user's quota
             if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
                 self.softwareJobSize = self.precomputeJobSize()
                 self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
                 self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
-            os.putenv("PYKOTAPRECOMPUTEDJOBSIZE", str(self.softwareJobSize))    
-            os.putenv("PYKOTAPRECOMPUTEDJOBPRICE", str(self.softwareJobPrice))    
+            os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
+            os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
             action = self.warnUserPQuota(userpquota)
             
             # exports some new environment variables
-            os.putenv("PYKOTAACTION", action)
+            os.environ["PYKOTAACTION"] = action
             
             # launches the pre hook
             self.prehook(userpquota)
@@ -353,7 +358,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.accounter.beginJob(userpquota)
         else :    
             action = "ALLOW"
-            os.putenv("PYKOTAACTION", action)
+            os.environ["PYKOTAACTION"] = action
             
         # pass the job's data to the real backend    
         if action in ["ALLOW", "WARN"] :
@@ -366,7 +371,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         
         if policy == "OK" :        
             # indicate phase change
-            os.putenv("PYKOTAPHASE", "AFTER")
+            os.environ["PYKOTAPHASE"] = "AFTER"
             
             # stops accounting. 
             self.accounter.endJob(userpquota)
@@ -389,10 +394,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.logdebug("Job added to history.")
             
             # exports some new environment variables
-            os.putenv("PYKOTAJOBSIZE", str(jobsize))
-            os.putenv("PYKOTAJOBPRICE", str(jobprice))
+            os.environ["PYKOTAJOBSIZE"] = str(jobsize)
+            os.environ["PYKOTAJOBPRICE"] = str(jobprice)
             
-            # then re-export user information with new values
+            # then re-export user information with new value
             self.exportUserInfo(userpquota)
             
             # Launches the post hook
@@ -659,12 +664,10 @@ if __name__ == "__main__" :
             kotabackend = PyKotaBackend()    
             retcode = kotabackend.mainWork()
         except :
-            import traceback
-            lines = []
-            for line in traceback.format_exception(*sys.exc_info()) :
-                lines.extend([l for l in line.split("\n") if l])
-            sys.stderr.write("ERROR : cupspykota backend failed : \n%s" % (msg, "ERROR : ".join(["%s\n" % l for l in lines])))
-            sys.stderr.flush()
+            try :
+                kotabackend.crashed("cupspykota backend failed")
+            except :    
+                pass
             retcode = 1
         
         try :

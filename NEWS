@@ -22,6 +22,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 PyKota NEWS :
 
 
+    - 1.19alpha17 :
+    
+        - Mysterious bug (program exited unexpectedly without leaving
+          any log message) which occured once in a while when
+          cancelling jobs should be fixed now.
+          
+        - New 'crashrecipient' directive. Disabled by  
+          default. See sample configuration file to see how
+          to activate it. It is suggested that you activate it.
+          
+        - New PYKOTAJOBSIZEBYTES environment variable exported,  
+          which contains the job's size in bytes.
+          
     - 1.19alpha16 :
     
         - the newuser and newgroup LDAP specific directives now accept

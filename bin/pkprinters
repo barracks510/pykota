@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/06/03 21:50:34  jalet
+# Improved error logging.
+# crashrecipient directive added.
+# Now exports the job's size in bytes too.
+#
 # Revision 1.8  2004/05/06 20:30:24  jalet
 # Added --skipexisting command line option to pkprinters
 #
@@ -254,9 +259,11 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("You have to pass printer names on the command line")
         else :
             retcode = manager.main(args, options)
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
-        sys.stderr.write("%s\n" % msg)
-        sys.stderr.flush()
+    except :
+        try :
+            manager.crashed("pkprinters failed")
+        except :    
+            pass
         retcode = -1
 
     try :

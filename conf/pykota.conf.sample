@@ -152,6 +152,22 @@ debug : Yes
 # If the value is not set then localhost is used.
 smtpserver: localhost
 
+# Crash messages' recipient : in addition to the log files
+# each software crash can be sent to the author of PyKota
+# or any other person of your choice. By default this
+# is disabled. The recipient pykotacrashed@librelogiciel.com
+# reaches PyKota's author.
+# The 'adminmail' (defined a bit below) is CCed.
+#
+# Privacy concerns : what is sent is only :
+#
+#        - a copy of the software's traceback
+#        - a copy of the software's command line arguments
+#        - a copy of the software's environment variables
+# 
+# suggested value
+# crashrecipient: pykotacrashed@librelogiciel.com
+
 # Email domain
 # If the value is not set, and the mail attribute for the user
 # is not set in the PyKota storage, be it LDAP (see usermail directive
@@ -457,6 +473,7 @@ policy: deny
 # PYKOTADATELIMIT : user's soft to hard limit date limit on this printer
 # PYKOTASTATUS : contains "CANCELLED" when SIGTERM was received by PyKota
 #                else is not set.
+# PYKOTAJOBSIZEBYTES : contains the job's size in bytes. Always available.
 # PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size
 # PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price
 # PYKOTAJOBORIGINATINGHOSTNAME : contains the client's hostname if 

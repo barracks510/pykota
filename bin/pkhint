@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/06/03 21:50:34  jalet
+# Improved error logging.
+# crashrecipient directive added.
+# Now exports the job's size in bytes too.
+#
 # Revision 1.8  2004/05/18 14:48:47  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -265,9 +270,11 @@ if __name__ == "__main__" :
             if not args :
                 args = [ "*" ]
             retcode = manager.main(args, options)
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
-        sys.stderr.write("%s\n" % msg)
-        sys.stderr.flush()
+    except :
+        try :
+            manager.crashed("pkhint failed")
+        except :    
+            pass
         retcode = -1
 
     try :
