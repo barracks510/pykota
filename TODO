@@ -21,7 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Price multiplier/divisor which can be set on a per
+          user or per user group basis.
+
         - Ink accounting ala PrintBill.
+        
+        - Price and statistics per page format.
         
         - Add a description field to users/groups.
         
