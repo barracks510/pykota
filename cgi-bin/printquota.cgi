@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/04/17 21:30:09  jalet
+# Now includes the logo
+#
 # Revision 1.4  2003/04/08 21:20:25  jalet
 # CGI Script now displays a link to PyKota's website.
 #
@@ -58,6 +61,8 @@ footer = """
       </pre>
     </p>  
     <p>
+      <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/calllogo" /></a>
+      <br />
       Report generated with <a href="http://www.librelogiciel.com/software/">PyKota</a>
     </p>
   </body>
