@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.71  2004/01/11 23:22:42  jalet
+# Major code refactoring, it's way cleaner, and now allows automated addition
+# of printers on first print.
+#
 # Revision 1.70  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -774,35 +778,44 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                 if not userpquota.Exists :
                     self.logger.log_message(_("User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s") % (self.username, self.printername, commandline, self.printername), "info")
                 if os.system(commandline) :
-                    # if an error occured, we die without error,
-                    # so that the job doesn't stop the print queue.
                     self.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, self.printername), "error")
                     policy = "EXTERNALERROR"
                     break
             else :        
+                if not printer.Exists :
+                    self.logger.log_message(_("Printer %s not registered in the PyKota system, applying default policy (%s)") % (self.printername, policy), "info")
+                if not user.Exists :
+                    self.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (self.username, policy, self.printername), "info")
+                if not userpquota.Exists :
+                    self.logger.log_message(_("User %s doesn't have quota on printer %s in the PyKota system, applying default policy (%s)") % (self.username, self.printername, policy), "info")
                 break
+        if policy == "EXTERNAL" :    
+            if not printer.Exists :
+                self.logger.log_message(_("Printer %s still not registered in the PyKota system, job will be rejected") % self.printername, "info")
+            if not user.Exists :
+                self.logger.log_message(_("User %s still not registered in the PyKota system, job will be rejected on printer %s") % (self.username, self.printername), "info")
+            if not userpquota.Exists :
+                self.logger.log_message(_("User %s still doesn't have quota on printer %s in the PyKota system, job will be rejected") % (self.username, self.printername), "info")
         return (policy, printer, user, userpquota)
         
-    def main(self) :    
+    def mainWork(self) :    
         """Main work is done here."""
         (policy, printer, user, userpquota) = self.getPrinterUserAndUserPQuota()
+        # TODO : check for last user's quota in case pykota filter is used with querying
         if policy == "EXTERNALERROR" :
             # Policy was 'EXTERNAL' and the external command returned an error code
-            pass # TODO : reject job
+            return self.removeJob()
         elif policy == "EXTERNAL" :
             # Policy was 'EXTERNAL' and the external command wasn't able
             # to add either the printer, user or user print quota
-            pass # TODO : reject job
-        elif policy == "ALLOW":
-            # Either printer, user or user print quota doesn't exist,
-            # but the job should be allowed anyway.
-            pass # TODO : accept job
-        elif policy == "OK" :
-            # Both printer, user and user print quota exist, job should
-            # be allowed if current user is allowed to print on this
-            # printer
-            pass # TODO : decide what to do based on user quota.
-        else : # DENY
+            return self.removeJob()
+        elif policy == "DENY" :    
             # Either printer, user or user print quota doesn't exist,
             # and the job should be rejected.
-            pass # TODO : reject job
+            return self.removeJob()
+        else :
+            if policy not in ("OK", "ALLOW") :
+                self.logger.log_message(_("Invalid policy %s for printer %s") % (policy, self.printername))
+                return self.removeJob()
+            else :
+                return self.doWork(policy, printer, user, userpquota)

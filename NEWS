@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha24 :
+    
+        - Major code refactoring => It is now possible to
+          automatically add printers on first print.
+        
     - 1.16alpha23 :
     
         - Fixed potential accuracy problem if a user printed on

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/01/11 23:22:42  jalet
+# Major code refactoring, it's way cleaner, and now allows automated addition
+# of printers on first print.
+#
 # Revision 1.11  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -68,6 +72,7 @@ class Accounter(AccounterBase) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments)
         self.requester = openRequester(kotabackend.config, kotabackend.printername)
+        self.isDelayed = 1 # With the pykota filter, accounting is delayed by one job
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
@@ -88,12 +93,12 @@ class Accounter(AccounterBase) :
         self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
         return counter    
         
-    def beginJob(self, printer, user) :    
+    def beginJob(self, userpquota) :    
         """Saves printer internal page counter at start of job."""
         # save page counter before job
         self.LastPageCounter = self.counterbefore = self.getPrinterInternalPageCounter()
         
-    def endJob(self, printer, user) :    
+    def endJob(self, userpquota) :    
         """Saves printer internal page counter at end of job."""
         # save page counter after job
         self.LastPageCounter = self.counterafter = self.getPrinterInternalPageCounter()
@@ -121,73 +126,15 @@ class Accounter(AccounterBase) :
             jobsize = 0
         return jobsize
         
-    def doAccounting(self, printer, user) :
+    def doAccounting(self, userpquota) :
         """Does print accounting and returns if the job status is ALLOW or DENY."""
         # Get the page counter directly from the printer itself
-        # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
-        # This was seen with my Apple LaserWriter 16/600 PS which doesn't answer before having warmed up.
-        counterbeforejob = self.getPrinterInternalPageCounter()
+        counterbeforejob = self.getPrinterInternalPageCounter() or 0
         
-        # get last job information for this printer
-        if not printer.LastJob.Exists :
-            # The printer hasn't been used yet, from PyKota's point of view
-            lastuser = user
-            lastpagecounter = counterbeforejob
-        else :    
-            # get last values from Quota Storage
-            lastuser = printer.LastJob.User
-            lastpagecounter = printer.LastJob.PrinterPageCounter
-            
-        # if printer is off then we assume the correct counter value is the last one
-        if counterbeforejob is None :
-            counterbeforejob = lastpagecounter
-            
-        # if the internal lifetime page counter for this printer is 0    
-        # then this may be a printer with a volatile counter (never
-        # saved to NVRAM) which has just been switched off and then on
-        # so we use the last page counter from the Quota Storage instead
-        # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
-        if counterbeforejob == 0 :
-            counterbeforejob = lastpagecounter
-            
-        # Computes the last job size as the difference between internal page
-        # counter in the printer and last page counter taken from the Quota
-        # Storage database for this particular printer
-        try :
-            jobsize = (counterbeforejob - lastpagecounter)    
-        except TypeError :    
-            # never used, and internal page counter not accessible
-            jobsize = 0
-            
-        if jobsize < 0 :
-            # Probably an HP printer which was switched off and back on, 
-            # its primary counter is only saved in a 10 increment, so
-            # it may be lower than the last page counter saved in the
-            # Quota Storage. 
-            # We unconditionnally set the last job's size to 
-            # abs(int((10 - abs(lastcounter(snmp) - lastcounter(storage)) / 2))
-            # For more accurate accounting, don't switch off your HP printers !
-            # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
-            self.filter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastuser.Name, self.filter.printername), "error")
-            jobsize = abs(int((10 - abs(jobsize)) / 2))     # Workaround for HP printers' feature !
-            
-        # update the quota for the previous user on this printer 
-        lastuserquota = self.filter.storage.getUserPQuota(lastuser, printer)
-        if lastuserquota.Exists :
-            lastuserquota.increasePagesUsage(jobsize)
-        
-        # update the last job size in the history
-        if printer.LastJob.Exists :
-            printer.LastJob.setSize(jobsize)
-        
-        # warns the last user if he is over quota
-        if lastuserquota.Exists :
-            self.filter.warnUserPQuota(lastuserquota)
-            
         # Is the current user allowed to print at all ?
-        action = self.filter.warnUserPQuota(self.filter.storage.getUserPQuota(user, printer))
+        action = self.filter.warnUserPQuota(userpquota)
         
         # adds the current job to history    
-        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, filename=self.filter.preserveinputfile, title=self.filter.title, copies=self.filter.copies, options=self.filter.options)
+        userpquota.Printer.addJobToHistory(self.filter.jobid, userpquota.User, counterbeforejob, action, filename=self.filter.preserveinputfile, title=self.filter.title, copies=self.filter.copies, options=self.filter.options)
         return action
             

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/01/11 23:22:42  jalet
+# Major code refactoring, it's way cleaner, and now allows automated addition
+# of printers on first print.
+#
 # Revision 1.10  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -68,6 +72,7 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
+        self.isDelayed = 0      # Accounting is immediate by default
         
     def getLastPageCounter(self) :    
         """Returns last internal page counter value (possibly faked)."""
@@ -75,41 +80,23 @@ class AccounterBase :
             return self.LastPageCounter
         except :    
             return 0
-        
-    def filterInput(self, inputfile) :
-        """Transparent filter."""
-        mustclose = 0    
-        if inputfile is not None :    
-            if hasattr(inputfile, "read") :
-                infile = inputfile
-            else :    
-                infile = open(inputfile, "rb")
-            mustclose = 1
-        else :    
-            infile = sys.stdin
-        data = infile.read(256*1024)    
-        while data :
-            sys.stdout.write(data)
-            data = infile.read(256*1024)
-        if mustclose :    
-            infile.close()
             
-    def beginJob(self, printer, user) :    
+    def beginJob(self, userpquota) :    
         """Saves the computed job size."""
         # computes job's size
         self.JobSize = self.computeJobSize()
         
         # get last job information for this printer
-        if not printer.LastJob.Exists :
+        if not userpquota.Printer.LastJob.Exists :
             # The printer hasn't been used yet, from PyKota's point of view
             self.LastPageCounter = 0
         else :    
             # get last job size and page counter from Quota Storage
             # Last lifetime page counter before actual job is 
             # last page counter + last job size
-            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
+            self.LastPageCounter = int(userpquota.Printer.LastJob.PrinterPageCounter or 0) + int(userpquota.Printer.LastJob.JobSize or 0)
         
-    def endJob(self, printer, user) :    
+    def endJob(self, userpquota) :    
         """Do nothing."""
         pass
         
@@ -120,18 +107,18 @@ class AccounterBase :
         except AttributeError :    
             return 0
         
-    def doAccounting(self, printer, user) :
-        """Deletgates the computation of the job size to an external command.
+    def doAccounting(self, userpquota) :
+        """Delegates the computation of the job size to an external command.
         
            The command must print the job size on its standard output and exit successfully.
         """
-        self.beginJob(printer, user)
+        self.beginJob(userpquota)
         
         # get the job size, which is real job size * number of copies.
+        # TODO : Double check with CUPS documentation : this is not always correct
         jobsize = self.getJobSize() * self.filter.copies
             
         # Is the current user allowed to print at all ?
-        userpquota = self.filter.storage.getUserPQuota(user, printer)
         action = self.filter.warnUserPQuota(userpquota)
         
         # update the quota for the current user on this printer, if allowed to print
@@ -141,9 +128,9 @@ class AccounterBase :
             userpquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
-        printer.addJobToHistory(self.filter.jobid, user, self.getLastPageCounter(), action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
-        self.endJob(printer, user)
+        jobprice = (float(userpquota.Printer.PricePerPage or 0.0) * jobsize) + float(userpquota.Printer.PricePerJob or 0.0)
+        userpquota.Printer.addJobToHistory(self.filter.jobid, userpquota.User, self.getLastPageCounter(), action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
+        self.endJob(userpquota)
         return action
         
     def computeJobSize(self) :    

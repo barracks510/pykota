@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2004/01/11 23:22:42  jalet
+# Major code refactoring, it's way cleaner, and now allows automated addition
+# of printers on first print.
+#
 # Revision 1.49  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -227,82 +231,80 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         else :    
             # UNKNOWN
             return -1
-            
-def main(thefilter) :    
-    """Do it, and do it right !"""
-    #
-    # If this is a CUPS filter, we should act and die like a CUPS filter when needed
-    if thefilter.printingsystem == "CUPS" :
-        if len(sys.argv) not in (6, 7) :    
-            sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
-            return thefilter.removeJob()
-    
-    # Get the last page counter and last username from the Quota Storage backend
-    printer = thefilter.storage.getPrinter(thefilter.printername)
-    if not printer.Exists :
-        # The printer is unknown from the Quota Storage perspective.
-        # we just cancel the job.
-        thefilter.logger.log_message(_("Printer %s not registered in the PyKota system") % thefilter.printername, "error")
-        return thefilter.removeJob()
-    else :    
-        for dummy in range(2) :
-            user = thefilter.storage.getUser(thefilter.username)
-            if user.Exists :
-                break
-            else :    
-                # The user is unknown from the Quota Storage perspective
-                # Depending on the default policy for this printer, we
-                # either let the job pass through or reject it, but we
-                # log a message in any case.
-                (policy, args) = thefilter.config.getPrinterPolicy(thefilter.printername)
-                if policy == "ALLOW" :
-                    action = "POLICY_ALLOW"
-                elif policy == "EXTERNAL" :    
-                    commandline = thefilter.formatCommandLine(args, user, printer)
-                    thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (thefilter.username, commandline, thefilter.printername), "info")
-                    if os.system(commandline) :
-                        thefilter.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, thefilter.printername), "error")
-                        return thefilter.removeJob()
-                    else :    
-                        # here we try a second time, because the goal
-                        # of the external action was to add the user
-                        # in the database.
-                        continue 
-                else :    
-                    action = "POLICY_DENY"
-                thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (thefilter.username, action, thefilter.printername), "warn")
-                if action == "POLICY_DENY" :
-                    return thefilter.removeJob()
-                # when we get there, the printer policy allows the job to pass 
-                break    
-                    
-        # if user exists, do accounting
-        if user.Exists :
-            # Now does the accounting and act depending on the result
-            thefilter.logdebug("Does accounting for user %s on printer %s." % (user.Name, printer.Name))
-            action = thefilter.accounter.doAccounting(printer, user)
         
-            # if not allowed to print then die, else proceed.
+    def doWork(self, policy, printer, user, userpquota) :    
+        """Most of the work is done here."""
+        # Two different values possible for policy here :
+        # ALLOW means : Either printer, user or user print quota doesn't exist,
+        #               but the job should be allowed anyway.
+        # OK means : Both printer, user and user print quota exist, job should
+        #            be allowed if current user is allowed to print on this printer
+        if policy == "OK" :
+            self.logdebug("Does accounting for user %s on printer %s." % (user.Name, printer.Name))
+            action = self.accounter.doAccounting(userpquota)
             if action == "DENY" :
-                # No, just die cleanly
-                thefilter.logdebug("Printing is denied.")
-                return thefilter.removeJob()
-        elif policy == "EXTERNAL" :                
-            thefilter.logger.log_message(_("External policy %s for printer %s couldn't add user %s. Job rejected.") % (commandline, thefilter.printername, thefilter.username), "error")
-            return thefilter.removeJob()
+                # Just die.
+                self.logdebug("Printing is denied.")
+                return self.removeJob()
+            
+        # pass the job's data to the next filter
+        self.logdebug("Passing input data to next filter.")
+        mustclose = 0    
+        if self.inputfile is not None :    
+            if hasattr(self.inputfile, "read") :
+                infile = self.inputfile
+            else :    
+                infile = open(self.inputfile, "rb")
+            mustclose = 1
+        else :    
+            infile = sys.stdin
+        data = infile.read(256*1024)    
+        while data :
+            sys.stdout.write(data)
+            data = infile.read(256*1024)
+        if mustclose :    
+            infile.close()
         
-        # pass the job untouched to the underlying layer
-        thefilter.logdebug("Passing input data to next filter.")
-        thefilter.accounter.filterInput(thefilter.inputfile)      
-    
-        return thefilter.acceptJob()
-
+        return self.acceptJob()
+        
+    def mainWork(self) :    
+        # If this is a CUPS filter, we should act and die like a CUPS filter when needed
+        if self.printingsystem == "CUPS" :
+            if len(sys.argv) not in (6, 7) :    
+                sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
+                return self.removeJob()
+                
+        if self.accounter.isDelayed :        
+            # Here we need to update the last user's print quota        
+            # because hardware accounting is delayed by one print job
+            # in the pykota filter.
+            printer = self.storage.getPrinter(self.printername)        
+            if not printer.Exists :
+                self.logger.log_message(_("Printer %s not registered in the PyKota system") % self.printername, "info")
+            else :    
+                if not printer.LastJob.Exists :
+                    self.logger.log_message(_("Printer %s was never used") % self.printername, "info")
+                else :
+                    self.logdebug("Updating print quota for last user %s on printer %s" % (printer.LastJob.User.Name, printer.Name))
+                    lastuserpquota = self.storage.getUserPQuota(printer.LastJob.User, printer)
+                    self.accounter.counterbefore = printer.LastJob.PrinterPageCounter
+                    self.accounter.counterafter = self.accounter.getPrinterInternalPageCounter() or 0
+                    lastjobsize = self.accounter.getJobSize()
+                    self.logdebug("Last Job size : %i" % lastjobsize)
+                    printer.LastJob.setSize(lastjobsize)
+                    self.logdebug("Updating user %s's quota on printer %s" % (lastuserpquota.User.Name, printer.Name))
+                    lastuserpquota.increasePagesUsage(lastjobsize)
+                    self.warnUserPQuota(lastuserpquota)
+                    
+        # then deal with current print job as usual            
+        PyKotaFilterOrBackend.mainWork(self)        
+            
 if __name__ == "__main__" :    
     retcode = -1
     try :
         # Initializes the current tool
         kotafilter = PyKotaFilter()    
-        retcode = main(kotafilter)
+        retcode = kotafilter.mainWork()
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, PyKotaRequesterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
