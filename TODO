@@ -30,8 +30,6 @@ TODO, in no particular order :
           
         - Allow soft and hard limits to be increased/decreased.
         
-        - Better --prototype option in edpykota
-        
         - Web enabled pykotme.
         
         - Maybe put "gracedelay" in the database.

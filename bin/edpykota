@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.88  2005/02/19 17:47:19  jalet
+# Fixed the --prototype command line option to edpykota
+#
 # Revision 1.87  2005/02/13 22:02:28  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -599,9 +602,6 @@ class EdPyKota(PyKotaTool) :
         else :    
             groupnames = []
             
-        if options["prototype"] :    
-            protoentry = getattr(self.storage, "get%s" % suffix)(options["prototype"])
-            
         rejectunknown = self.config.getRejectUnknown()    
         printeradded = 0
         printers = self.storage.getMatchingPrinters(options["printer"])
@@ -633,6 +633,16 @@ class EdPyKota(PyKotaTool) :
         if options["pgroups"] :        
             printersgroups = self.storage.getMatchingPrinters(options["pgroups"])
             
+        if options["prototype"] :    
+            protoentry = getattr(self.storage, "get%s" % suffix)(options["prototype"])
+            if not protoentry.Exists :
+                raise PyKotaToolError, _("Prototype object %s not found in Quota Storage.") % protoentry.Name
+            else :    
+                limitby = protoentry.LimitBy
+                balancevalue = protoentry.AccountBalance
+                balance = str(balance)
+                overcharge = getattr(protoentry, "OverCharge", None)
+            
         todelete = {}    
         changed = {} # tracks changes made at the user/group level
         for printer in printers :
@@ -644,15 +654,11 @@ class EdPyKota(PyKotaTool) :
                 printer.setPrices(perpage, perjob)    
                 
             if options["prototype"] :
-                if protoentry.Exists :
-                    protoquota = getattr(self.storage, "get%sPQuota" % suffix)(protoentry, printer)
-                    if not protoquota.Exists :
-                        self.printInfo(_("Prototype %s not found in Quota Storage for printer %s.") % (protoentry.Name, printer.Name))
-                        continue    # skip this printer
-                    else :    
-                        (softlimit, hardlimit) = (protoquota.SoftLimit, protoquota.HardLimit)
-                else :        
-                    self.printInfo(_("Prototype object %s not found in Quota Storage.") % protoentry.Name)
+                protoquota = getattr(self.storage, "get%sPQuota" % suffix)(protoentry, printer)
+                if not protoquota.Exists :
+                    self.printInfo(_("Prototype %s not found in Quota Storage for printer %s.") % (protoentry.Name, printer.Name))
+                else :    
+                    (softlimit, hardlimit) = (protoquota.SoftLimit, protoquota.HardLimit)
                     
             if not options["noquota"] :    
                 if hardlimit is None :    
@@ -744,7 +750,7 @@ class EdPyKota(PyKotaTool) :
                         entrypquota.hardreset()
                         
                     if not options["groups"] :
-                        if options["used"] :
+                        if used :
                             entrypquota.setUsage(used)
                             
                         if overcharge is not None :    
@@ -823,7 +829,7 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif (options["add"] or options["prototype"]) and options["delete"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
+        elif (options["reset"] or options["hardreset"] or options["limitby"] or options["used"] or options["balance"] or options["overcharge"] or options["softlimit"] or options["hardlimit"]) and options["prototype"] :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
