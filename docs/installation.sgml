@@ -243,7 +243,7 @@ jerome@nordine:~/pykota-1.14_official/initscripts/postgresql$
       <title>LDAP</title>
       
       <para>
-        From version 1.14 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
+        From version 1.09 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
         It is possible that other LDAP servers can be used, but this is currently untested.
       </para>
       
@@ -411,6 +411,9 @@ $ /etc/init.d/slapd restart
 <!--
 
 $Log$
+Revision 1.20  2003/07/25 13:20:32  jalet
+Typo which wasn't
+
 Revision 1.19  2003/07/25 13:18:44  jalet
 Typos
 
