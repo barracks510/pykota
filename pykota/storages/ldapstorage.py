@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.76  2004/09/28 09:11:56  jalet
+# Fix for accented chars in print job's title, filename, and options
+#
 # Revision 1.75  2004/09/24 20:21:50  jalet
 # Fixed pykotaAccountBalance object location during creation
 #
@@ -279,6 +282,7 @@
 # is 16868. Use this as a base to create the LDAP schema.
 #
 
+import os
 import types
 import time
 import md5
@@ -1048,10 +1052,10 @@ class Storage(BaseStorage) :
                    "pykotaJobId" : jobid,
                    "pykotaPrinterPageCounter" : str(pagecounter),
                    "pykotaAction" : action,
-                   "pykotaFileName" : str(filename), 
-                   "pykotaTitle" : str(title), 
+                   "pykotaFileName" : ((filename is None) and "None") or filename.decode(os.environ.get("CHARSET", "ISO-8859-15")).encode("UTF-8"), 
+                   "pykotaTitle" : ((title is None) and "None") or title.decode(os.environ.get("CHARSET", "ISO-8859-15")).encode("UTF-8"), 
                    "pykotaCopies" : str(copies), 
-                   "pykotaOptions" : str(options), 
+                   "pykotaOptions" : ((options is None) and "None") or options.decode(os.environ.get("CHARSET", "ISO-8859-15")).encode("UTF-8"), 
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
                  }
