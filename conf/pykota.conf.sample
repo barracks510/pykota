@@ -132,7 +132,7 @@ disablehistory: No
 #
 # BEWARE : SETTING THIS TO 'YES' CAUSES PROBLEMS FOR NOW
 # BETTER TO LET IT SET TO 'NO'
-ldapcache: no
+# ldapcache: no
 
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
@@ -299,9 +299,8 @@ utolower: No
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
 #
-# default value
-accounter: hardware(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
-# accounter: software(/usr/bin/pkpgcounter)
+# accounter: hardware(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+accounter: software(/usr/bin/pkpgcounter)
 
 # Print Quota administrator
 # These values can be set either globally or per printer or both.
@@ -400,10 +399,9 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # one section per printer, or no other section at all if all options 
 # are defined globally.
 # Each section's name must be the same as the printer's queue name as defined
-# in your printing system, be it CUPS or LPRng.
-# If you don't want any special printer section, just comment out
-# the line below so that following options are global.
-[hpmarketing]
+# in your printing system, be it CUPS or LPRng, between square brackets, for
+# example a print queue named 'hpmarketing' would appear in this file as
+# [hpmarketing]
 
 
 # Default policy to apply when either :

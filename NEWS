@@ -23,7 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha32 :
     
-        - Early (not working) version of the LPRng support rewrite
+        - Early (not working) version of the LPRng support rewrite.
+        
+        - Saner default configuration file.
         
     - 1.19alpha31 :
     
