@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2004/02/17 23:41:48  jalet
+# Preliminary work on low-level LDAP specific cache.
+#
 # Revision 1.51  2004/02/04 13:24:41  jalet
 # pkprinters can now remove printers from printers groups.
 #
@@ -228,6 +231,7 @@ class Storage(BaseStorage) :
         except ldap.LDAPError :    
             raise PyKotaStorageError, "Unable to connect to LDAP server %s as %s." % (host, user) # TODO : translate
         else :    
+            self.ldapcache = {} # low-level cache specific to LDAP backend
             self.closed = 0
             self.tool.logdebug("Database opened (host=%s, dbname=%s, user=%s)" % (host, dbname, user))
             
@@ -272,15 +276,19 @@ class Storage(BaseStorage) :
         try :
             base = base or self.basedn
             self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
-            result = self.database.search_s(base, scope, key, fields)
+            result = self.database.search_s(base, scope, key, fields) # TODO : put 'None' instead of 'fields'
         except ldap.LDAPError, msg :    
             raise PyKotaStorageError, (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
         else :     
             self.tool.logdebug("QUERY : Result : %s" % result)
+            for (dn, attributes) in result :
+                self.tool.logdebug("LDAP cache store (%s)" % dn)
+                self.ldapcache[dn] = attributes
             return result
             
     def doAdd(self, dn, fields) :
         """Adds an entry in the LDAP directory."""
+        # TODO : store into LDAP specific cache
         fields = self.normalizeFields(fields)
         try :
             self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
@@ -292,6 +300,7 @@ class Storage(BaseStorage) :
             
     def doDelete(self, dn) :
         """Deletes an entry from the LDAP directory."""
+        # TODO : delete from LDAP specific cache
         try :
             self.tool.logdebug("QUERY : Delete(%s)" % dn)
             self.database.delete_s(dn)
@@ -301,6 +310,11 @@ class Storage(BaseStorage) :
     def doModify(self, dn, fields, ignoreold=1) :
         """Modifies an entry in the LDAP directory."""
         try :
+            # TODO : take care of, and update LDAP specific cache
+            if self.ldapcache.has_key(dn) :
+                self.tool.logdebug("LDAP cache hit (%s)" % dn)
+            else :    
+                self.tool.logdebug("LDAP cache miss (%s)" % dn)
             oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
             for (k, v) in fields.items() :
                 if type(v) == type({}) :
