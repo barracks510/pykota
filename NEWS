@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.15alpha3 :
+    
+        - CGI script now tries to restrict view when the 
+          REMOTE_USER environment variable is set. This allows
+          people to protect its use with .htaccess files.
+          When unprotected, or if REMOTE_USER is 'root', then 
+          unrestricted access is granted.
+          
     - 1.15alpha2 :
     
         - Better detection of LPRng.

@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/08/25 11:23:05  jalet
+# More powerful CGI script for quota reports
+#
 # Revision 1.12  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #
@@ -157,10 +160,21 @@ class PyKotaReportGUI(PyKotaTool) :
                     printers = [self.storage.getPrinter(p.value) for p in printersfield]
                 else :    
                     printers = self.storage.getMatchingPrinters("*")
-                if self.form.has_key("ugmask") :     
-                    ugmask = self.form["ugmask"].value
-                else :     
-                    ugmask = "*"
+                remuser = os.environ.get("REMOTE_USER", "root")    
+                if remuser == "root" :
+                    if self.form.has_key("ugmask") :     
+                        ugmask = self.form["ugmask"].value
+                    else :     
+                        ugmask = "*"
+                else :        
+                    if self.form.has_key("isgroup") :    
+                        user = self.storage.getUser(remuser)
+                        if user.Exists :
+                            ugmask = " ".join([ g.Name for g in self.storage.getUserGroups(user) ])
+                        else :    
+                            ugmask = remuser # result will probably be empty, we don't care
+                    else :    
+                        ugmask = remuser
                 if self.form.has_key("isgroup") :    
                     isgroup = 1
                 else :    
