@@ -1471,3 +1471,6 @@ msgstr "Παράμετροι"
 
 msgid "Previous page"
 msgstr "Προηγούμενη σελίδα"
+
+msgid "Please click on the above button"
+msgstr ""

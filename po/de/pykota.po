@@ -1471,3 +1471,6 @@ msgstr "Optionen"
 
 msgid "Previous page"
 msgstr "Vorherige Seite"
+
+msgid "Please click on the above button"
+msgstr ""

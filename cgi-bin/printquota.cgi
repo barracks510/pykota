@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2004/10/13 09:38:25  jalet
+# Added a translatable message from the CGI script
+#
 # Revision 1.38  2004/10/02 13:47:46  jalet
 # The CGI script doesn't depend anymore on what is in the submit button
 # to display the print quota report.
@@ -227,7 +230,7 @@ class PyKotaReportGUI(PyKotaTool) :
         """Displays the printers multiple selection list."""
         printers = self.storage.getMatchingPrinters(mask)
         selectednames = [p.Name for p in selected]
-        message = '<table><tr><td valign="top">Printer :</td><td valign="top"><select name="printers" multiple="multiple">'
+        message = '<table><tr><td valign="top">%s :</td><td valign="top"><select name="printers" multiple="multiple">' % _("Printer")
         for printer in printers :
             if printer.Name in selectednames :
                 message += '<option value="%s" selected="selected">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
@@ -250,7 +253,7 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiAction(self) :
         """Main function"""
         printers = ugmask = isgroup = None
-        self.body = "<p>Please click on the button above</p>\n"
+        self.body = "<p>%s</p>\n" % _("Please click on the above button")
         if self.form.has_key("report") :
             if self.form.has_key("printers") :
                 printersfield = self.form["printers"]

@@ -1411,3 +1411,6 @@ msgstr ""
 
 msgid "Previous page"
 msgstr ""
+
+msgid "Please click on the above button"
+msgstr ""

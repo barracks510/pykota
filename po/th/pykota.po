@@ -1448,3 +1448,6 @@ msgstr "ตัวเลือก"
 
 msgid "Previous page"
 msgstr "หน้าที่แล้ว"
+
+msgid "Please click on the above button"
+msgstr ""
