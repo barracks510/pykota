@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2005/01/08 11:25:48  jalet
+# Fixed the time zone field in page_log output to make PrintAnalyzer happy
+#
 # Revision 1.19  2005/01/08 10:52:01  jalet
 # Now dumpykota can dump the history into CUPS' page_log format, allowing the
 # use of tools like PrintAnalyzer or phpPrintAnalyzer along with PyKota
@@ -307,7 +310,9 @@ class DumPyKota(PyKotaTool) :
             printername = entry[fields["printername"]]
             username = entry[fields["username"]]
             jobid = entry[fields["jobid"]]
-            jobdate = DateTime.ISO.ParseDateTime(entry[fields["jobdate"]]).strftime("%d/%b/%Y:%H:%M:%S %z")
+            jobdate = DateTime.ISO.ParseDateTime(entry[fields["jobdate"]])
+            gmtoffset = jobdate.gmtoffset()
+            jobdate = "%s %+03i00" % (jobdate.strftime("%d/%b/%Y:%H:%M:%S"), gmtoffset.hour)
             jobsize = entry[fields["jobsize"]]
             copies = entry[fields["copies"]]
             hostname = entry[fields["hostname"]]
