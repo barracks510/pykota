@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2003/07/21 06:32:42  jalet
+# Prevents email messages to be sent at modification/creation time for
+# a user/group quota
+#
 # Revision 1.53  2003/07/09 06:03:41  jalet
 # Fixed typo when using edpykota --prototype
 #
@@ -517,7 +521,10 @@ class EdPyKota(PyKotaTool) :
                                     else :
                                         self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
                                         
-                        getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
+                        # This line disabled to prevent sending of unwanted email                 
+                        # messages if quota is reached at creation/modification time.
+                        # The check will be done at print time anyway.
+                        # getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
                      
 if __name__ == "__main__" : 
     try :

@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha7 :
+    
+        - edpykota now doesn't check if the user/group is above
+          quota. The check is only done at print time. This 
+          prevents the sending of email messages when creating
+          user quotas if quota is already reached at creation
+          time.
+          
     - 1.14alpha6 :
     
         - Configuration file split and moved to /etc/pykota/pykota.conf
