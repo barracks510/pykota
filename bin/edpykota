@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.70  2004/02/27 09:23:21  jalet
+# Minor code reorganisation
+#
 # Revision 1.69  2004/02/19 15:05:56  jalet
 # domain names changed to example.com in the doc, according to RFC2606
 #
@@ -573,6 +576,8 @@ class EdPyKota(PyKotaTool) :
                                 self.logger.log_message(_("Invalid group name %s") % entry.Name)
                             else :    
                                 self.logger.log_message(_("Invalid user name %s") % entry.Name)
+                elif options["delete"] :                
+                    todelete[entry.Name] = entry
                                 
                 if entry.Exists and (not entrypquota.Exists) :
                     # not found
@@ -582,46 +587,43 @@ class EdPyKota(PyKotaTool) :
                 if not entrypquota.Exists :     
                     self.logger.log_message(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
                 else :    
-                    if options["delete"] :
-                        todelete[entry.Name] = entry # will be done for each printer, we don't care.
-                    else :
-                        if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
-                            entrypquota.setLimits(softlimit, hardlimit)
-                        if limitby :
-                            if changed[entry.Name].get("limitby") is None :
-                                entry.setLimitBy(limitby)
-                                changed[entry.Name]["limitby"] = limitby
-                        
-                        if not options["groups"] :
-                            if options["reset"] :
-                                entrypquota.reset()
+                    if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
+                        entrypquota.setLimits(softlimit, hardlimit)
+                    if limitby :
+                        if changed[entry.Name].get("limitby") is None :
+                            entry.setLimitBy(limitby)
+                            changed[entry.Name]["limitby"] = limitby
+                    
+                    if not options["groups"] :
+                        if options["reset"] :
+                            entrypquota.reset()
+                            
+                        if balance :
+                            if changed[entry.Name].get("balance") is None :
+                                if balance.startswith("+") or balance.startswith("-") :
+                                    newbalance = float(entry.AccountBalance or 0.0) + balancevalue
+                                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
+                                    entry.setAccountBalance(newbalance, newlifetimepaid)
+                                else :
+                                    diff = balancevalue - float(entry.AccountBalance or 0.0)
+                                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
+                                    entry.setAccountBalance(balancevalue, newlifetimepaid)
+                                changed[entry.Name]["balance"] = balance
                                 
-                            if balance :
-                                if changed[entry.Name].get("balance") is None :
-                                    if balance.startswith("+") or balance.startswith("-") :
-                                        newbalance = float(entry.AccountBalance or 0.0) + balancevalue
-                                        newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
-                                        entry.setAccountBalance(newbalance, newlifetimepaid)
-                                    else :
-                                        diff = balancevalue - float(entry.AccountBalance or 0.0)
-                                        newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
-                                        entry.setAccountBalance(balancevalue, newlifetimepaid)
-                                    changed[entry.Name]["balance"] = balance
+                        for groupname in groupnames :        
+                            # not executed if option --ingroups is not used
+                            if groupname not in changed[entry.Name]["ingroups"] :
+                                group = self.storage.getGroup(groupname)
+                                if group.Exists :
+                                    self.storage.addUserToGroup(entry, group)
+                                    changed[entry.Name]["ingroups"].append(groupname)
+                                else :
+                                    self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
                                     
-                            for groupname in groupnames :        
-                                # not executed if option --ingroups is not used
-                                if groupname not in changed[entry.Name]["ingroups"] :
-                                    group = self.storage.getGroup(groupname)
-                                    if group.Exists :
-                                        self.storage.addUserToGroup(entry, group)
-                                        changed[entry.Name]["ingroups"].append(groupname)
-                                    else :
-                                        self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
-                                        
-                        # This line disabled to prevent sending of unwanted email                 
-                        # messages if quota is reached at creation/modification time.
-                        # The check will be done at print time anyway.
-                        # getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
+                    # This line disabled to prevent sending of unwanted email                 
+                    # messages if quota is reached at creation/modification time.
+                    # The check will be done at print time anyway.
+                    # getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
                         
         # Now delete what has to be deleted                
         for (name, entry) in todelete.items() :                
