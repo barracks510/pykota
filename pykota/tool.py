@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.105  2004/06/21 08:17:38  jalet
+# Added version number in subject message for directive crashrecipient.
+#
 # Revision 1.104  2004/06/18 13:34:49  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -494,8 +497,8 @@ class PyKotaTool :
                                  "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
                 server = smtplib.SMTP(self.smtpserver)
                 server.sendmail(admin, [admin, crashrecipient], \
-                                       "From: %s\nTo: %s\nCc: %s\nSubject: PyKota crash traceback !\n\n%s" % \
-                                       (admin, crashrecipient, admin, fullmessage))
+                                       "From: %s\nTo: %s\nCc: %s\nSubject: PyKota v%s crash traceback !\n\n%s" % \
+                                       (admin, crashrecipient, admin, version.__version__, fullmessage))
                 server.quit()
         except :
             pass
