@@ -1,4 +1,4 @@
-include COPYING TODO NEWS CREDITS MANIFEST.in bin/pykota bin/edpykota bin/warnpykota bin/repykota bin/README
+include COPYING TODO NEWS CREDITS MANIFEST.in clean.sh bin/pykota bin/edpykota bin/warnpykota bin/repykota bin/README
 recursive-include po README *.po *.mo *.pot
 recursive-include man README *.1
 recursive-include docs README *.sgml *.png *.pdf *.html
