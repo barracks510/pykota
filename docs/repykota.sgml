@@ -89,6 +89,13 @@
     </para>
     
     <para>
+      You may also want to copy the <acronym>CSS</acronym> stylesheets which are present in the
+      <filename>stylesheets/</filename> directory to your web server's <literal>DocumentRoot</literal>
+      (e.g. <filename>/var/lib/www</filename>) so that the CGI script can find them to present
+      a nicer web interface.
+    </para>
+    
+    <para>
       You can find <filename>printquota.cgi</filename> in the <filename>pykota/cgi-bin</filename>
       directory. Here's how to install it, provided that your web server's <filename>cgi-bin</filename>
       directory is <filename>/usr/lib/cgi-bin</filename> :
@@ -144,6 +151,9 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
 <!--
 
 $Log$
+Revision 1.7  2004/01/12 23:10:35  jalet
+PyKota 1.16beta1 is finally out.
+
 Revision 1.6  2003/10/12 20:47:51  jalet
 Doc enhanced.
 

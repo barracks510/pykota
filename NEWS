@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16beta1 :
+    
+        - Manpages upgraded.
+        
     - 1.16alpha26 :
     
         - Job price is now computed like this :
