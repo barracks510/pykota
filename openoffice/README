@@ -23,7 +23,12 @@ This directory contains some screenshots of direct access to PyKota's
 database through OpenOffice.org
 
 Since it works but I don't know OpenOffice enough to do something nice
-with it, I've added these screenshots and here's a small howto :
+with it, I've added these screenshots and here's a small howto below.
+For people interested in a more complete howto, please see :
+http://kandalaya.org/download/oo-pgsql.html
+
+PyKota + PostgreSQL + OpenOffice.org HowTO :
+--------------------------------------------
 
         - Install and configure :
         
