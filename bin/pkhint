@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/06/29 07:55:18  jalet
+# Doesn't output the warning message when --help or --version is asked
+#
 # Revision 1.12  2004/06/29 07:53:11  jalet
 # Improved pkhint
 #
@@ -212,6 +215,7 @@ class PKHint(PyKotaTool) :
         
     def main(self, args, options) :
         """Main work is done here."""
+        sys.stderr.write("BEWARE : This tool doesn't support LPRng's printcap files yet.\n")
         print "\nPlease wait while pkhint analyzes your printing system's configuration..."
         printers = self.extractPrintersInformation()
         devicestypes = self.extractDevices() # TODO : IT'S CUPS ONLY FOR NOW
@@ -262,7 +266,6 @@ class PKHint(PyKotaTool) :
                 print    
         
 if __name__ == "__main__" : 
-    sys.stderr.write("BEWARE : This tool doesn't support LPRng's printcap files yet.\n")
     retcode = 0
     try :
         short_options = "hv"
