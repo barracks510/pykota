@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/02/08 21:44:49  jalet
+# Python 2.1 string module doesn't define ascii_letters
+#
 # Revision 1.11  2003/02/08 09:42:44  jalet
 # Better handle wrong or bad command line arguments
 #
@@ -135,9 +138,11 @@ class EdPyKota(PyKotaTool) :
     """A class for edpykota."""
     def isValidPrinterName(self, printername) :
         """Checks if a printername is valid."""
-        import string
-        if printername[0] in string.ascii_letters :
-            validchars = string.ascii_letters + string.digits + "-_"
+        # unfortunately Python 2.1 string modules doesn't define ascii_letters...
+        asciiletters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        digits = '0123456789'
+        if printername[0] in asciiletters :
+            validchars = asciiletters + digits + "-_"
             for c in printername[1:] :
                 if c not in validchars :
                     return 0
