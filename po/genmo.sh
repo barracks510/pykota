@@ -17,7 +17,7 @@ for dir in br en es fr it pt sv th el de be ; do
     echo -n $dir ;
     cd $dir ;
     chmod 644 *.?o ;
-    msgmerge -N pykota.po ../pykota.pot >pykota.po.new ;
+    msgmerge --no-location --no-fuzzy-matching --output-file=pykota.po.new pykota.po ../pykota.pot ;
     mv pykota.po.new pykota.po ;
     rm pykota.mo ;
     msgfmt -o pykota.mo pykota.po ;
