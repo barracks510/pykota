@@ -406,8 +406,14 @@ hardwarn: Your Print Quota Hard Limit is reached.
 [hpmarketing]
 
 
-# Default policy for inexistant users (e.g. root)
-# either allow or deny or external(some command here)
+# Default policy to apply when either :
+#
+#       - Printer doesn't exist in PyKota's database
+#       - User doesn't exist in PyKota's database
+#       - User has no quota entry for this Printer in PyKota's database
+#
+# Value can be either allow or deny or external(some command here)
+#
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
 # If the value is not set then the default policy DENY applies.
@@ -417,11 +423,11 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # for example to automatically add the user to the quota storage 
 # if he is unknown. Example :
 # 
-#       policy: external(/usr/bin/edpykota --add --printer %(printername)s --softlimit 50 --hardlimit 60 %(username)s >/dev/null) 
+#   policy: external(/usr/bin/edpykota --add --printer %(printername)s --softlimit 50 --hardlimit 60 %(username)s >/dev/null) 
 #
 # Of course you can launch any command of your choice with this, e.g. :
 #
-#       policy: external(/usr/local/bin/myadminscript.sh %(username)s >/dev/null)
+#   policy: external(/usr/local/bin/myadminscript.sh %(username)s >/dev/null)
 
 # You can use :
 #
@@ -434,9 +440,10 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #        (e.g. >/dev/null) so that there's no perturbation to the underlying
 #        layer (filter or backend)
 #
-# If the user still doesn't exist after external policy command was 
-# launched (the external command didn't add it), or if an error occured
-# during the execution of the external policy command, the job is rejected.
+# If the printer, user, or user quota entry still doesn't exist after 
+# external policy command was launched (the external command didn't add it), 
+# or if an error occured during the execution of the external policy 
+# command, then the job is rejected.
 #
 policy: deny
 
