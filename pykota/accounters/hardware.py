@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/08/25 22:34:39  jalet
+# Now both software and hardware accounting raise an exception when no valid
+# result can be extracted from the subprocess' output.
+# Hardware accounting now reads subprocess' output until an integer is read
+# or data is exhausted : it now behaves just like software accounting in this
+# aspect.
+#
 # Revision 1.8  2004/07/22 22:41:48  jalet
 # Hardware accounting for LPRng should be OK now. UNTESTED.
 #
@@ -121,14 +128,10 @@ class Accounter(AccounterBase) :
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
         self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
-        error = 1
         pagecounter = None
         child = popen2.Popen4(commandline)    
         try :
-            line = child.fromchild.readline()
-            pagecounter = int(line.strip())
-        except ValueError :    
-            self.filter.printInfo(_("Incorrect answer : %s") % repr(line), "error")
+            answer = child.fromchild.read()
         except IOError :    
             # we were interrupted by a signal, certainely a SIGTERM
             # caused by the user cancelling the current job
@@ -138,15 +141,21 @@ class Accounter(AccounterBase) :
                 pass # already killed ?
             self.filter.printInfo(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid))
         else :    
-            error = 0
+            lines = [l.strip() for l in answer.split("\n")]
+            for i in range(len(lines)) : 
+                try :
+                    pagecounter = int(lines[i])
+                except (AttributeError, ValueError) :
+                    self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
+                else :    
+                    break
         child.fromchild.close()    
         child.tochild.close()
         try :
             status = child.wait()
         except OSError, msg :    
             self.filter.logdebug("Error while waiting for hardware accounter pid %s : %s" % (child.pid, msg))
-            error = 1
-        if (not error) and os.WIFEXITED(status) and (not os.WEXITSTATUS(status)) :
+        if (pagecounter is not None) and os.WIFEXITED(status) and (not os.WEXITSTATUS(status)) :
             return pagecounter
         else :    
             raise PyKotaAccounterError, _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline) 

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha3 :
+       
+        - Now hardware accounting method works like software
+          accounting method wrt the subprocess' output.
+          
     - 1.20alpha2 :
     
         - Now software accounting method reads accounter's

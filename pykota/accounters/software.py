@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/08/25 22:34:39  jalet
+# Now both software and hardware accounting raise an exception when no valid
+# result can be extracted from the subprocess' output.
+# Hardware accounting now reads subprocess' output until an integer is read
+# or data is exhausted : it now behaves just like software accounting in this
+# aspect.
+#
 # Revision 1.8  2004/08/22 14:04:47  jalet
 # Tries to fix problem with subprocesses outputting more datas than needed
 #
@@ -73,7 +80,7 @@ class Accounter(AccounterBase) :
             msg = "%s : %s" % (self.arguments, msg) 
             self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
         
-        pagecount = 0
+        pagecounter = None
         try :
             answer = child.fromchild.read()
         except (IOError, OSError), msg :    
@@ -83,10 +90,9 @@ class Accounter(AccounterBase) :
             lines = [l.strip() for l in answer.split("\n")]
             for i in range(len(lines)) : 
                 try :
-                    pagecount = int(lines[i])
+                    pagecounter = int(lines[i])
                 except (AttributeError, ValueError) :
-                    self.filter.printInfo(_("Unable to compute job size with accounter %s") % self.arguments)
-                    self.filter.printInfo(_("Line skipped in accounter's output. Trying again..."))
+                    self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
                 else :    
                     break
         child.fromchild.close()
@@ -101,6 +107,10 @@ class Accounter(AccounterBase) :
             else :    
                 status = retcode
             self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
-        self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, pagecount))
-        return pagecount    
+            
+        if pagecounter is None :    
+            raise PyKotaAccounterError, _("Unable to compute job size with accounter %s") % self.arguments
+            
+        self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, pagecounter))
+        return pagecounter    
             
