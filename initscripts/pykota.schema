@@ -45,7 +45,7 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.4 NAME 'pykotaPricePerPage'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
-attributetype ( 1.3.6.1.4.1.16868.1.1.3 NAME 'pykotaPricePerJob'
+attributetype ( 1.3.6.1.4.1.16868.1.1.5 NAME 'pykotaPricePerJob'
         DESC 'Price per job for a printer, float'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
