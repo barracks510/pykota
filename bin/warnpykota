@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/06 23:25:40  jalet
+# Cleaner docstring
+#
 # Revision 1.3  2003/02/06 23:20:02  jalet
 # warnpykota doesn't need any user/group name argument, mimicing the
 # warnquota disk quota tool.
@@ -32,7 +35,8 @@ from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
 
 __doc__ = """warnpykota v%s (C) 2003 C@LL - Conseil Internet & Logiciels Libres
-send mail to users over print quota
+
+Sends mail to users over print quota.
 
 command line usage :
 
