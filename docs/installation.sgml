@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.08-official.tar.gz    
-jerome@nordine:~$ cd pykota-1.08-official
-jerome@nordine:~/pykota-1.08-official$
+jerome@nordine:~$ tar -zxf pykota-1.09_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.09_official
+jerome@nordine:~/pykota-1.09_official$
     </screen>
   </para>
   
@@ -157,8 +157,8 @@ jerome@nordine:~/pykota-1.08-official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.08-official/initscripts/postgresql
-jerome@nordine:~/pykota-1.08-official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.09_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.09_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -189,7 +189,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.09_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -236,15 +236,6 @@ jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
     </sect2>  
     
     <sect2>
-      <title>MySQL</title>
-      
-      <para>
-        A <application>MySQL</application> Storage Backend is planned, but it actually
-        doesn't exist.
-      </para>
-    </sect2>  
-    
-    <sect2>
       <title>LDAP</title>
       
       <para>
@@ -252,6 +243,15 @@ jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
         You can already give a look at the LDAP schema which was defined for PyKota.
         Full support for LDAP in PyKota should be OK by the end of July 2003, if all
         continues to go well.
+      </para>
+    </sect2>  
+    
+    <sect2>
+      <title>MySQL</title>
+      
+      <para>
+        A <application>MySQL</application> Storage Backend is planned, but it actually
+        doesn't exist.
       </para>
     </sect2>  
     
@@ -371,6 +371,9 @@ jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
 <!--
 
 $Log$
+Revision 1.16  2003/06/24 21:37:05  jalet
+Minor changes
+
 Revision 1.15  2003/06/10 16:37:54  jalet
 Deletion of the second user which is not needed anymore.
 Added a debug configuration field in /etc/pykota.conf

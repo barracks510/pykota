@@ -45,7 +45,7 @@ storageadmin: pykotaadmin
 
 # NB : storageuser and storageuserpw are not used anymore
 
-# LDAP example (DOESN'T WORK YET) :
+# LDAP example, uncomment and adapt it to your own configuration :
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.librelogiciel.com:389
 #storagename: dc=librelogiciel,dc=com
@@ -56,6 +56,8 @@ storageadmin: pykotaadmin
 # to plug into an existing LDAP directory
 #userbase: ou=People,dc=librelogiciel,dc=com
 #userrdn: uid
+#balancebase: ou=People,dc=librelogiciel,dc=com
+#balancerdn: uid
 #groupbase: ou=Groups,dc=librelogiciel,dc=com
 #grouprdn: cn
 #printerbase: ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
@@ -198,5 +200,6 @@ requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2
 #     Before 1.04 the default value was ALLOW, but unknown users
 #     allowed to print causes accuracy problems : their jobs are
 #     charged to the next person who prints on the same printer.
+# There's no policy wrt inexistant groups, they are ignored.
 policy: deny
 
