@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha9 :
        
+        - pkpgcounter is now just a wrapper around the PDLAnalyzer class
+        
         - pykotaOptions LDAP attribute now accepts non-ascii characters
           too.
           
