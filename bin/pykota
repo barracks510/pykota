@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2004/03/15 10:47:56  jalet
+# This time the traceback formatting should be correct !
+#
 # Revision 1.56  2004/03/05 12:46:08  jalet
 # Improve tracebacks
 #
@@ -357,7 +360,8 @@ if __name__ == "__main__" :
         retcode = kotafilter.mainWork()
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, PyKotaRequesterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
         import traceback
-        sys.stderr.write("ERROR : PyKota filter failed (%s)\n%s" % (msg, "ERROR : ".join(traceback.format_stack())))
+        mm = [((f.endswith('\n') and f) or (f + '\n')) for f in traceback.format_exception(*sys.exc_info())]
+        sys.stderr.write("ERROR : pykota filter failed (%s)\n%s" % (msg, "ERROR : ".join(mm)))
         sys.stderr.flush()
         try :
             retcode = kotafilter.removeJob()
