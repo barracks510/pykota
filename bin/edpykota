@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/03/09 23:56:21  jalet
+# Option noquota added to do accounting only.
+#
 # Revision 1.24  2003/02/27 23:48:41  jalet
 # Correctly maps PyKota's log levels to syslog log levels
 #
@@ -127,6 +130,8 @@ options :
   -p | --prototype u|g Uses user u or group g as a prototype to set
                        print quotas
                        
+  -n | --noquota       Doesn't set a quota but only does accounting.
+  
   -r | --reset         Resets the printed page counter for the user
                        or group to zero. The life time page counter 
                        is kept unchanged.
@@ -169,6 +174,12 @@ examples :
   This will reset jerome's page counter to zero on all printers, as
   well as every user whose name begins with 'jo'.
   Their life time page counter on each printer will be kept unchanged.
+  
+  $ edpykota --noquota jerome
+  
+  This will tell PyKota to not limit jerome when printing. All his
+  jobs will be allowed, but accounting of the pages he used will
+  still be kept.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -238,7 +249,7 @@ class EdPyKota(PyKotaTool) :
             if softlimit is None :    
                 softlimit = hardlimit
                 self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
-            if (not options["reset"]) and ((hardlimit is None) or (softlimit is None)) :        
+            if (not options["reset"] and not options["noquota"]) and ((hardlimit is None) or (softlimit is None)) :
                 raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
             if options["add"] :    
                 allnames = names
@@ -275,12 +286,12 @@ class EdPyKota(PyKotaTool) :
                     self.logger.log_message(_("Quota not found for object %s on printer %s.") % (name, printer))
                 else :    
                     if options["users"] :
-                        if (softlimit is not None) and (hardlimit is not None) :
+                        if options["noquota"] or ((softlimit is not None) and (hardlimit is not None)) :
                             self.storage.setUserPQuota(name, printer, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetUserPQuota(name, printer)
                     else :
-                        if (softlimit is not None) and (hardlimit is not None) :
+                        if options["noquota"] or ((softlimit is not None) and (hardlimit is not None)) :
                             self.storage.setGroupPQuota(name, printer, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetGroupPQuota(name, printer)
@@ -292,8 +303,8 @@ if __name__ == "__main__" :
                      "groups" : 0, \
                      "printer" : "*", \
                    }
-        short_options = "vhaugrp:P:S:H:"
-        long_options = ["help", "version", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
+        short_options = "vhnaugrp:P:S:H:"
+        long_options = ["help", "version", "noquota", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -312,17 +323,20 @@ if __name__ == "__main__" :
         options["softlimit"] = options["S"] or options["softlimit"]
         options["hardlimit"] = options["H"] or options["hardlimit"] 
         options["reset"] = options["r"] or options["reset"] 
+        options["noquota"] = options["n"] or options["noquota"]
         
         if options["help"] :
             editor.display_usage_and_quit()
         elif options["version"] :
             editor.display_version_and_quit()
         elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, _("edpykota: options --users and --groups are incompatible.")
+            raise PyKotaToolError, _("incompatible options, see help.")
         elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
-            raise PyKotaToolError, _("edpykota: options --softlimit or --hardlimit and --prototype are incompatible.")
+            raise PyKotaToolError, _("incompatible options, see help.")
+        elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
+            raise PyKotaToolError, _("incompatible options, see help.")
         elif options["groups"] :    
-            raise PyKotaToolError, _("edpykota: option --groups is currently not implemented.")
+            raise PyKotaToolError, _("option --groups is currently not implemented.")
         else :
             sys.exit(editor.main(args, options))
     except PyKotaToolError, msg :            

@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/03/09 23:56:21  jalet
+# Option noquota added to do accounting only.
+#
 # Revision 1.15  2003/03/09 23:39:14  jalet
 # Simplified translations.
 #
@@ -158,8 +161,8 @@ class RePyKota(PyKotaTool) :
         if quota is not None :
             lifepagecounter = quota["lifepagecounter"]
             pagecounter = quota["pagecounter"]
-            softlimit = quota["softlimit"] or 0
-            hardlimit = quota["hardlimit"] or 0
+            softlimit = quota["softlimit"]
+            hardlimit = quota["hardlimit"]
             datelimit = quota["datelimit"]
             if datelimit is not None :
                 now = DateTime.now()
@@ -168,8 +171,8 @@ class RePyKota(PyKotaTool) :
                     datelimit = "DENY"
             else :    
                 datelimit = ""
-            reached = ((pagecounter >= softlimit) and "+") or "-"
-            print "%-10.10s %c %8i %8i %8i %10s %9i" % (name, reached, pagecounter, softlimit, hardlimit, str(datelimit)[:10], lifepagecounter)
+            reached = ((softlimit is not None) and (pagecounter >= softlimit) and "+") or "-"
+            print "%-10.10s %c %8i %8s %8s %10s %9i" % (name, reached, pagecounter, str(softlimit), str(hardlimit), str(datelimit)[:10], lifepagecounter)
             return lifepagecounter
         
                     
