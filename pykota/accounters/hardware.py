@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2004/09/21 13:30:53  jalet
+# First try at full SNMP handling from the Python code.
+#
 # Revision 1.15  2004/09/14 11:38:59  jalet
 # Minor fix
 #
@@ -81,10 +84,101 @@
 
 import sys
 import os
+import time
 import signal
 import popen2
+
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
+try :
+    from pysnmp.mapping.udp.role import Manager
+    from pysnmp.proto.api import alpha
+except ImportError :
+    hasSNMP = 0
+else :    
+    hasSNMP = 1
+    SNMPDELAY = 2.0             # 2 Seconds
+    STABILIZATIONDELAY = 3      # We must read three times the same value to consider it to be stable
+    pageCounterOID = ".1.3.6.1.2.1.43.10.2.1.4.1.1"
+    hrPrinterStatusOID = ".1.3.6.1.2.1.25.3.5.1.1.1"
+    printerStatusValues = { 1 : 'other',
+                            2 : 'unknown',
+                            3 : 'idle',
+                            4 : 'printing',
+                            5 : 'warmup',
+                          }
+                          
+    class SNMPAccounter :
+        """A class for SNMP print accounting."""
+        def __init__(self, parent, printerhostname) :
+            self.parent = parent
+            self.printerHostname = printerhostname
+            self.printerInternalPageCounter = self.printerStatus = None
+            
+        def retrieveSNMPValues(self) :    
+            """Retrieves a printer's internal page counter and status via SNMP."""
+            ver = alpha.protoVersions[alpha.protoVersionId1]
+            req = ver.Message()
+            req.apiAlphaSetCommunity('public')
+            req.apiAlphaSetPdu(ver.GetRequestPdu())
+            req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), (hrPrinterStatusOID, ver.Null()))
+            tsp = Manager()
+            try :
+                tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
+            except pysnmp.mapping.udp.SnmpOverUdpError, msg :    
+                raise PyKotaAccounterError, _("Network error while doing SNMP queries : %s") % msg
+            tsp.close()
+    
+        def handleAnswer(self, wholeMsg, transportAddr, req):
+            """Decodes and handles the SNMP answer."""
+            ver = alpha.protoVersions[alpha.protoVersionId1]
+            rsp = ver.Message()
+            rsp.berDecode(wholeMsg)
+            if req.apiAlphaMatch(rsp):
+                errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
+                if errorStatus:
+                    self.parent.filter.printInfo(_("Problem encountered while doing SNMP queries : %s") % errorStatus, "warn")
+                else:
+                    self.values = []
+                    for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
+                        self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
+                    try :    
+                        # keep maximum value seen for printer's internal page counter
+                        self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
+                        self.printerStatus = self.values[1]
+                    except IndexError :    
+                        pass
+                    else :    
+                        return 1
+                        
+        def waitPrinting(self) :
+            """Waits for printer status being 'printing'."""
+            while 1:
+                self.retrieveSNMPValues()
+                statusAsString = printerStatusValues.get(self.printerStatus)
+                if statusAsString in ('idle', 'printing') :
+                    break
+                time.sleep(SNMPDELAY)
+            
+        def waitIdle(self) :
+            """Waits for printer status being 'idle'."""
+            idle_num = idle_flag = 0
+            while 1 :
+                self.retrieveSNMPValues()
+                statusAsString = printerStatusValues.get(self.printerStatus)
+                idle_flag = 0
+                if statusAsString in ('idle',) :
+                    idle_flag = 1
+                if idle_flag :    
+                    idle_num += 1
+                    if idle_num > STABILIZATIONDELAY :
+                        # printer status is stable, we can exit
+                        break
+                else :    
+                    idle_num = 0
+                self.parent.filter.printInfo(_("Waiting for printer's status to stabilize..."))    
+                time.sleep(SNMPDELAY)
+    
 class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
         """Initializes querying accounter."""
@@ -165,6 +259,12 @@ class Accounter(AccounterBase) :
            The external command must report the life time page number of the printer on stdout.
         """
         commandline = self.arguments.strip() % locals()
+        if commandline.lower() == "snmp" :
+            if hasSNMP :
+                return self.askWithSNMP(printer)
+            else :    
+                raise PyKotaAccounterError, _("Internal SNMP accounting asked, but Python-SNMP is not available. Please download it from http://pysnmp.sourceforge.net")
+            
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
         self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
@@ -207,3 +307,19 @@ class Accounter(AccounterBase) :
             else :
                 raise PyKotaAccounterError, message 
         return pagecounter        
+        
+    def askWithSNMP(self, printer) :
+        """Returns the page counter from the printer via internal SNMP handling."""
+        acc = SNMPAccounter(self, printer)
+        try :
+            if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
+               (os.environ.get("PYKOTAACTION") != "DENY") and \
+               (os.environ.get("PYKOTAPHASE") == "AFTER" :
+                acc.waitPrinting()
+            acc.waitIdle()    
+        except :    
+            if acc.printerInternalPageCounter is None :
+                raise
+            else :    
+                self.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s).") % acc.printerInternalPageCounter, "warn")
+        return acc.printerInternalPageCounter

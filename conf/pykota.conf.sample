@@ -220,6 +220,12 @@ utolower: No
 #         
 #             accounter: hardware(/usr/bin/npadmin --pagecount %(printer)s)
 #         
+#         Another example, using the special 'snmp' value, which doesn't launch
+#         any subprocess but instead all SNMP processing is done from PyKota's main
+#         code (this is less configurable, but requires less CPU and can prevent zombies) : 
+#
+#             accounter: hardware(snmp)
+#
 #         Another example, for AppleTalk printers which works fine :
 #         (You may need the pap CUPS backend installed, and copy the 
 #         pagecount.ps file from untested/netatalk into /etc or any 
