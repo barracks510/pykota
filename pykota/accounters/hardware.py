@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/05/24 14:36:40  jalet
+# Revert to old polling loop. Will need optimisations
+#
 # Revision 1.2  2004/05/18 14:49:22  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -127,7 +130,11 @@ class Accounter(AccounterBase) :
             error = 0
         child.fromchild.close()    
         child.tochild.close()
-        status = child.wait()
+        try :
+            status = child.wait()
+        except OSError, msg :    
+            self.filter.logdebug("Error while waiting for hardware accounter pid %s : %s" % (child.pid, msg))
+            error = 1
         if (not error) and os.WIFEXITED(status) and (not os.WEXITSTATUS(status)) :
             return pagecounter
         else :    

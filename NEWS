@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha13 :
+    
+        - Get back to an old version of the polling loop which
+          worked fine, but non-optimally. Will be optimized
+          as time permits.
+          
     - 1.19alpha12 :
     
         - Job's size is now precomputed unconditionnally using 
