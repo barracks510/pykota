@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/01/12 15:12:50  jalet
+# Small fix for history
+#
 # Revision 1.33  2004/01/12 14:44:47  jalet
 # Missing space in SQL query
 #
@@ -540,7 +543,7 @@ class Storage(BaseStorage) :
         
     def retrieveHistory(self, user=None, printer=None, datelimit=None, limit=100) :    
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
-        query = "SELECT * FROM jobhistory"
+        query = "SELECT jobhistory.*,username,printername FROM jobhistory,users,printers WHERE users.id=userid AND printers.id=printerid"
         where = []
         if (user is not None) and user.Exists :
             where.append("userid=%s" % self.doQuote(user.ident))
@@ -549,7 +552,7 @@ class Storage(BaseStorage) :
         if datelimit is not None :    
             where.append("jobdate<=%s" % self.doQuote(datelimit))
         if where :    
-            query += " WHERE %s" % " AND ".join(where)
+            query += " AND %s" % " AND ".join(where)
         query += " ORDER BY id DESC"
         if limit :
             query += " LIMIT %s" % self.doQuote(int(limit))
@@ -569,8 +572,8 @@ class Storage(BaseStorage) :
                 job.JobCopies = fields.get("copies")
                 job.JobOptions = fields.get("options")
                 job.JobDate = fields.get("jobdate")
-                job.User = self.getUser(fields.get("userid"))
-                job.Printer = self.getPrinter(fields.get("printerid"))
+                job.User = self.getUser(fields.get("username"))
+                job.Printer = self.getPrinter(fields.get("printername"))
                 job.Exists = 1
                 jobs.append(job)
         return jobs
