@@ -291,7 +291,7 @@ msgstr "inconnu"
 
 #, python-format
 msgid "Real : %s"
-msgstr "Réèl : %s"
+msgstr "Réel : %s"
 
 #, python-format
 msgid "Total : %9i"
