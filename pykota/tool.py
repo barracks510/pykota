@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.130  2004/10/19 15:21:48  jalet
+# Fixed incorrect setting of the user's locale
+#
 # Revision 1.129  2004/10/13 20:51:27  jalet
 # Made debugging levels be the same in cupspykota and lprngpykota.
 # Now outputs more information in informational messages : user, printer, jobid
@@ -516,7 +519,7 @@ def crashed(message) :
 
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, lang=None, charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
         try :
