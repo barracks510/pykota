@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/02/06 15:05:13  jalet
+# self was forgotten
+#
 # Revision 1.10  2003/02/06 15:03:11  jalet
 # added a method to set the limit date
 #
@@ -125,7 +128,7 @@ class SQLStorage :
         if (userid is not None) and (printerid is not None) :
             self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userid), self.doQuote(printerid)))
         
-    def setDateLimit(username, printername, datelimit) :
+    def setDateLimit(self, username, printername, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (username, printername)."""
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
