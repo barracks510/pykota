@@ -26,7 +26,7 @@
 ## Pykota related LDAP attributes
 
 attributetype ( 1.3.6.1.4.1.16868.1.1.1 NAME 'pykotaLimitBy'
-        DESC 'How to limit the user : quota or balance'
+        DESC 'How to limit the user/group : quota or balance'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
@@ -55,6 +55,61 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.6 NAME 'pykotaPrinterName'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
+attributetype ( 1.3.6.1.4.1.16868.1.1.7 NAME 'pykotaSoftLimit'
+        DESC 'Soft limit in maximal number of pages'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+        
+attributetype ( 1.3.6.1.4.1.16868.1.1.8 NAME 'pykotaHardLimit'
+        DESC 'Hard limit in maximal number of pages'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.9 NAME 'pykotaDateLimit'
+        DESC 'Date at which the soft limit becomes a hard one'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.10 NAME 'pykotaPageCounter'
+        DESC 'Current page counter for the user on a particular printer'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.11 NAME 'pykotaLifePageCounter'
+        DESC 'Total page counter for the user on a particular printer'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.12 NAME 'pykotaJobHistoryId'
+        DESC 'Id of an entry in a printer history of jobs'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.13 NAME 'pykotaJobId'
+        DESC 'Id of a job in a printer history of jobs'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.14 NAME 'pykotaPrinterPageCounter'
+        DESC 'Life time page counter of a printer when the job began'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.15 NAME 'pykotaJobSize'
+        DESC 'Current job size in number of pages in the history'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.16 NAME 'pykotaAction'
+        DESC 'Was the job allowed, or denied'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+attributetype ( 1.3.6.1.4.1.16868.1.1.17 NAME 'pykotaJobDate'
+        DESC 'Date of when the job began'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
 
 ## New Pykota User object type
 objectclass ( 1.3.6.1.4.1.16868.1.2.1 NAME 'pykotaUser' SUP top AUXILIARY
@@ -73,3 +128,22 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top STRUCTURAL
         DESC 'PyKota Printer'
         MUST ( pykotaPrinterName )
         MAY  ( pykotaPricePerPage $ pykotaPricePerJob ) )
+        
+## New PyKota User Print Quota on a Printer        
+objectclass ( 1.3.6.1.4.1.16868.1.2.4 NAME 'pykotaUserPQuota' SUP top STRUCTURAL
+        DESC 'PyKota User Quota on a Printer'
+        MUST ( uid )
+        MAY  ( pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit ) )
+        
+## New PyKota Group Print Quota on a Printer        
+objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top STRUCTURAL
+        DESC 'PyKota Group Quota on a Printer'
+        MUST ( cn )
+        MAY  ( pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit ) )
+        
+## New PyKota Job entry in a Printer's history        
+objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaPrinterJob' SUP top STRUCTURAL
+        DESC 'An entry in the job history for a printer'
+        MUST ( pykotaJobHistoryId $ uid $ pykotaJobId )
+        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobDate ) )
+        
