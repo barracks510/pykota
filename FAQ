@@ -2,6 +2,15 @@ PyKota's FAQ :
 
   # $Id$
   
+  * Nothing prints when my printer is in PowerSave mode, what
+    can I do ?
+    This happens if you use hardware accounting with SNMP, because
+    some (all ?) printers don't say they are idle when they are
+    in PowerSave mode.
+    For now your best bet is to disable PowerSave mode in
+    your printer. In the future, PyKota will modified to
+    handle such problems.
+  
   * I've installed all correctly, I've created users
     and printers, but when printing nothing works. 
     What is the problem ?
