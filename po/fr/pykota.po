@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/06/24 21:54:25  jalet
+# More translations.
+#
 # Revision 1.25  2003/06/24 14:53:05  jalet
 # More translations
 #
@@ -383,6 +386,9 @@ msgstr "Problème durant l'ajout de l'entrée LDAP (%s, %s)"
 
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problème durant la modification de l'entrée LDAP (%s, %s)"
+
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Problème durant la suppression de l'entrée LDAP (%s)"
 
 msgid "Impossible to add printer %s"
 msgstr "Impossible d'ajouter l'imprimante %s"
