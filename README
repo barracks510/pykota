@@ -58,7 +58,7 @@ PyKota features :
           This is completely configurable.
           
         - Supports DSC compliant and binary PostScript, PDF, PCL5, 
-          and PCLXL (aka PCL6) and ESC/P2 printers natively for software
+          PCLXL (aka PCL6) and ESC/P2 printers natively for software
           accounting methods. More formats to come.
           
         - Hewlett-Packard Deskjet printers are currently NOT supported.  
