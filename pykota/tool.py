@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.82  2004/04/13 09:38:03  jalet
+# More work on correct child processes handling
+#
 # Revision 1.81  2004/04/09 22:24:47  jalet
 # Began work on correct handling of child processes when jobs are cancelled by
 # the user. Especially important when an external requester is running for a
@@ -315,6 +318,7 @@ import getopt
 import smtplib
 import gettext
 import locale
+import signal
 
 from mx import DateTime
 
@@ -752,15 +756,33 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         # Here we have to handle SIGTERM correctly, and pass
         # it to any child if needed.
         self.gotSigTerm = 0
+        self.childProcesses = {}
         signal.signal(signal.SIGPIPE, signal.SIG_IGN)
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
+    def registerChild(self, pid, name) :    
+        """Registers a child process so that we will be able to kill it later if needed."""
+        self.childProcesses[pid] = name
+        
+    def unregisterChild(self, pid) :    
+        try :
+            del self.childProcesses[pid]
+        except KeyError :    
+            pass
+            
     def sigterm_handler(self, signum, frame) :
         """Sets a global variable whenever SIGTERM is received."""
         # SIGTERM will be ignore most of the time, but during
         # the call to the real backend, we have to pass it through.
         self.gotSigTerm = 1
         self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
+        for (childpid, childname) in self.childProcesses.items() :
+            try :
+                os.kill(childpid, signal.SIGTERM)
+            except :    
+                pass
+            else :    
+                self.logdebug("SIGTERM sent to process %s (%s)." % (childpid, childname))
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""
