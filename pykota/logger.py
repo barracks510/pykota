@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/11/25 22:37:22  jalet
+# Small code move
+#
 # Revision 1.9  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -65,13 +68,9 @@ class PyKotaLoggingError(Exception):
         return self.message
     __str__ = __repr__
 
-def openLogger(pykotatool) :
+def openLogger(pykotatool, backend) :
     """Returns the appropriate logger subsystem object."""
-    backend = pykotatool.config.getLoggingBackend()
     try :
-        if not backend.isalpha() :
-            # don't trust user input
-            raise ImportError
         exec "from pykota.loggers import %s as loggingbackend" % backend.lower()    
     except ImportError :
         raise PyKotaLoggingError, _("Unsupported logging subsystem %s") % backend

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2003/11/25 22:37:22  jalet
+# Small code move
+#
 # Revision 1.61  2003/11/25 22:03:28  jalet
 # No more message on stderr when the translation is not available.
 #
@@ -250,8 +253,7 @@ import locale
 
 from mx import DateTime
 
-from pykota import version, config, storage, logger
-from pykota.accounter import openAccounter
+from pykota import version, config, storage, logger, accounter
 
 class PyKotaToolError(Exception):
     """An exception for PyKota config related stuff."""
@@ -277,7 +279,7 @@ class PyKotaTool :
         # pykota specific stuff
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc/pykota")
-        self.logger = logger.openLogger(self)
+        self.logger = logger.openLogger(self, self.config.getLoggingBackend())
         self.debug = self.config.getDebug()
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
@@ -638,7 +640,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
         self.username = self.username or 'root' 
         self.preserveinputfile = self.inputfile 
-        self.accounter = openAccounter(self)
+        self.accounter = accounter.openAccounter(self)
     
     def extractInfoFromCupsOrLprng(self) :    
         """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
