@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.98  2005/01/24 17:35:24  jalet
+# Performance improvement for user print quota entries search
+#
 # Revision 1.97  2005/01/24 17:27:35  jalet
 # typo
 #
@@ -1519,9 +1522,8 @@ class Storage(BaseStorage) :
             result = [ ("username", "printername", "dn", "userdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit") ]
             uname = extractonly.get("username")
             for entry in entries :
-                for (user, userpquota) in self.getPrinterUsersAndQuotas(entry) :
-                    if (uname is None) or (user.Name == uname) :
-                        result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
+                for (user, userpquota) in self.getPrinterUsersAndQuotas(entry, names=[uname or "*"]) :
+                    result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
             return result
         
     def extractGpquotas(self, extractonly={}) :
