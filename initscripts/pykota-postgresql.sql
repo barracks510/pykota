@@ -13,6 +13,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.3  2003/02/26 20:34:22  jalet
+-- Default value for printer page counter set to 0
+--
 -- Revision 1.2  2003/02/08 22:12:09  jalet
 -- Life time counter for users and groups added.
 --
@@ -63,7 +66,7 @@ CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
 CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
                       printername TEXT UNIQUE NOT NULL,
                       lastusername TEXT,
-                      pagecounter INT4);
+                      pagecounter INT4 DEFAULT 0);
                     
 --
 -- Create the print quota table for users
