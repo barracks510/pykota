@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2004/09/04 14:18:55  jalet
+# Support for more laserjet models added.
+#
 # Revision 1.40  2004/09/04 14:01:47  jalet
 # Support for PCL3 (HP Deskjets) added to generic PDL parser
 #
@@ -788,6 +791,7 @@ class PDLAnalyzer :
         """Returns 1 if data is PCL, else 0."""
         if sdata.startswith("\033E\033") or \
            (sdata.startswith("\033*rbC") and (not edata[-3:] == "\f\033@")) or \
+           sdata.startswith("\033%8\033") or \
            (sdata.find("\033%-12345X") != -1) :
             return 1
         else :    
