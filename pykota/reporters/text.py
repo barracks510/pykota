@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/01/06 15:51:46  jalet
+# Code factorization
+#
 # Revision 1.7  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -54,6 +57,10 @@ class Reporter(BaseReporter) :
     def generateReport(self) :
         """Produces a simple text report."""
         self.report = []
+        if self.isgroup :
+            prefix = "Group"
+        else :    
+            prefix = "User"
         for printer in self.printers :
             self.report.append(self.getPrinterTitle(printer))
             self.report.append(self.getPrinterGraceDelay(printer))
@@ -63,25 +70,15 @@ class Reporter(BaseReporter) :
             
             total = 0
             totalmoney = 0.0
-            if self.isgroup :
-                header = self.getReportHeader()
-                self.report.append(header)
-                self.report.append('-' * len(header))
-                for (group, grouppquota) in self.tool.storage.getPrinterGroupsAndQuotas(printer, self.ugnames) :
-                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
-                    self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
-                    total += pages
-                    totalmoney += money
-            else :
-                # default is user quota report
-                header = self.getReportHeader()
-                self.report.append(header)
-                self.report.append('-' * len(header))
-                for (user, userpquota) in self.tool.storage.getPrinterUsersAndQuotas(printer, self.ugnames) :
-                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(user, userpquota)
-                    self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
-                    total += pages
-                    totalmoney += money
+            header = self.getReportHeader()
+            self.report.append(header)
+            self.report.append('-' * len(header))
+            for (entry, entrypquota) in getattr(self.tool.storage, "getPrinter%ssAndQuotas" % prefix)(printer, self.ugnames) :
+                (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(entry, entrypquota)
+                self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
+                total += pages
+                totalmoney += money
+                
             if total or totalmoney :        
                 (tpage, tmoney) = self.getTotals(total, totalmoney)
                 self.report.append((" " * 50) + tpage + tmoney)

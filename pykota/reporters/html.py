@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/01/06 15:51:46  jalet
+# Code factorization
+#
 # Revision 1.3  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -39,6 +42,10 @@ class Reporter(BaseReporter) :
     def generateReport(self) :
         """Produces a simple HTML report."""
         self.report = []
+        if self.isgroup :
+            prefix = "Group"
+        else :    
+            prefix = "User"
         for printer in self.printers :
             self.report.append('<h2 class="printername">%s</h2>' % self.getPrinterTitle(printer))
             self.report.append('<h3 class="printergracedelay">%s</h3>' % self.getPrinterGraceDelay(printer))
@@ -52,29 +59,22 @@ class Reporter(BaseReporter) :
             headers.insert(1, "LimitBy")
             self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
             oddeven = 0
-            if self.isgroup :
-                for (group, grouppquota) in self.tool.storage.getPrinterGroupsAndQuotas(printer, self.ugnames) :
-                    oddeven += 1
-                    if oddeven % 2 :
-                        oddevenclass = "odd"
+            for (entry, entrypquota) in getattr(self.tool.storage, "getPrinter%ssAndQuotas" % prefix)(printer, self.ugnames) :
+                oddeven += 1
+                if oddeven % 2 :
+                    oddevenclass = "odd"
+                else :    
+                    oddevenclass = "even"
+                (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(entry, entrypquota)
+                if datelimit :
+                    if datelimit == "DENY" :
+                        oddevenclass = "deny"
                     else :    
-                        oddevenclass = "even"
-                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid)])))
-                    total += pages
-                    totalmoney += money
-            else :
-                # default is user quota report
-                for (user, userpquota) in self.tool.storage.getPrinterUsersAndQuotas(printer, self.ugnames) :
-                    oddeven += 1
-                    if oddeven % 2 :
-                        oddevenclass = "odd"
-                    else :    
-                        oddevenclass = "even"
-                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(user, userpquota)
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid)])))
-                    total += pages
-                    totalmoney += money
+                        oddevenclass = "warn"
+                self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid)])))
+                total += pages
+                totalmoney += money
+                
             if total or totalmoney :        
                 (tpage, tmoney) = self.getTotals(total, totalmoney)
                 self.report.append('<tr class="totals"><td colspan="7">&nbsp;</td><td align="right">%s</td><td align="right">%s</td></tr>' % (tpage, tmoney))
