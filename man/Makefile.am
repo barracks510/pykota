@@ -8,6 +8,7 @@ pykotaman_DATA = 		\
 	repykota.1			\
 	waitprinter.sh.1	\
 	pkpgcounter.1	\
+	pykosd.1	\
 	warnpykota.1
 
 EXTRA_DIST =	\

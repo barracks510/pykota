@@ -12,13 +12,21 @@
   <para>
     Whenever you launch <filename>pykosd</filename>, it will display the current user's print quota
     information in the top-left corner of the screen, above all existing windows, and with
-    a transparent background. Then after five seconds, the information displayed will disappear
-    and the program will exit.
+    a transparent background. 
   </para>
   
   <para>
-    In the future, this command will accept some parameters which will render it more
-    useful.
+    By default, the information will remain displayed during <literal>3</literal> seconds, and
+    will be refreshed every <literal>180</literal> seconds. The program will loop forever 
+    until <keysym>Ctrl+C</keysym> is pressed, unless a specific number of iterations was
+    asked for.
+    
+    <tip>
+      <title>Tip</title>
+      <para>
+        Use command line options to change this behaviour.
+      </para>
+    </tip>
   </para>
   
   <sect1>
@@ -26,13 +34,21 @@
     <para>
       <cmdsynopsis>
         <command>pykosd</command>
+        <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+        <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+        <group choice="opt">
+          <arg>-d <replaceable>d</replaceable></arg>
+          <arg>--duration <replaceable>d</replaceable></arg>
+        </group>
+        <group choice="opt">
+          <arg>-l <replaceable>n</replaceable></arg>
+          <arg>--loop <replaceable>n</replaceable></arg>
+        </group>
+        <group choice="opt">
+          <arg>-s <replaceable>s</replaceable></arg>
+          <arg>--sleep <replaceable>s</replaceable></arg>
+        </group>
       </cmdsynopsis>
-      <warning>
-        <para>
-          <filename>pykosd</filename> doesn't currently accept any command line
-          option. This will change in the future.
-        </para>  
-      </warning>
     </para>
   </sect1>
 </chapter>
@@ -40,6 +56,9 @@
 <!--
 
 $Log$
+Revision 1.2  2004/07/19 22:37:13  jalet
+pykosd is now a very good tool
+
 Revision 1.1  2004/07/16 12:22:46  jalet
 LPRng support early version
 

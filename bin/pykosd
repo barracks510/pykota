@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/07/19 22:37:13  jalet
+# pykosd is now a very good tool
+#
 # Revision 1.3  2004/07/07 21:44:15  jalet
 # Formatting improvements
 #
@@ -41,28 +44,85 @@ import pwd
 import time
 import pyosd
 
+from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 
-DURATION = 5
+__doc__ = """pykosd v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+An OSD quota monitor for PyKota.
 
-if __name__ == "__main__" :
-    retcode = -1
-    try :
-        cmd = PyKotaTool(doc="A tool to display remaining print units")
-    except :    
-        crashed("Initialization problem.")
-    else :    
-        try :
-            uid = os.geteuid()
-            uname = pwd.getpwuid(uid)[0]
-            user = cmd.storage.getUser(uname)
+command line usage :
+
+  pykosd [options]
+
+options :
+
+  -v | --version       Prints pkprinters's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -d | --duration d    Sets the duration of the display in seconds. 
+                       Defaults to 3 seconds.
+  
+  -l | --loop n        Sets the number of times the info will be displayed.
+                       Defaults to 0, which means loop forever.
+                       
+  -s | --sleep s       Sets the sleeping duration between two displays 
+                       in seconds. Defaults to 180 seconds (3 minutes).
+                       
+  
+examples :                              
+
+  $ pykosd -s 60 --loop 5
+  
+  Will launch pykosd. Display will be refreshed every 60 seconds,
+  and will last for 3 seconds (the default) each time. After five
+  iterations, the program will exit.
+  
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+
+
+class PyKOSD(PyKotaTool) :
+    def main(self, args, options) :
+        """Main function starts here."""
+        try :    
+            duration = int(options["duration"])
+        except :    
+            raise PyKotaToolError, "Invalid duration option %s" % str(options["duration"])
+            
+        try :    
+            loop = int(options["loop"])
+        except :    
+            raise PyKotaToolError, "Invalid loop option %s" % str(options["loop"])
+            
+        try :    
+            sleep = float(options["sleep"])
+        except :    
+            raise PyKotaToolError, "Invalid sleep option %s" % str(options["sleep"])
+            
+        uid = os.geteuid()
+        uname = pwd.getpwuid(uid)[0]
+        while 1 :
+            user = cmd.storage.getUserFromBackend(uname)        # don't use cache
             if not user.Exists :
                 raise PyKotaToolError, "User %s doesn't exist in PyKota's database." % uname
             if user.LimitBy == "quota" :    
                 printers = cmd.storage.getMatchingPrinters("*")
-                upquotas = [ cmd.storage.getUserPQuota(user, p) for p in printers ]
+                upquotas = [ cmd.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache
                 nblines = len(upquotas)
-                display = pyosd.osd(colour="#00FF00", timeout=DURATION, shadow=2, lines=nblines)
+                display = pyosd.osd(colour="#00FF00", timeout=duration, shadow=2, lines=nblines)
                 for line in range(nblines) :
                     upq = upquotas[line]
                     if upq.HardLimit is None :
@@ -72,21 +132,65 @@ if __name__ == "__main__" :
                             percent = "%s%%" % min((upq.PageCounter * 100) / upq.SoftLimit, 100)
                     else :        
                         percent = "%s%%" % min((upq.PageCounter * 100) / upq.HardLimit, 100)
-                    display.display("Pages used on %s : %s" % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)
+                    display.display(_("Pages used on %s : %s") % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)
             else :
                 if user.AccountBalance <= 0 :
                     color = "#FF0000"
                 else :    
                     color = "#00FF00"
-                display = pyosd.osd(colour=color, timeout=DURATION, shadow=2)
-                display.display("PyKota Units left : %.2f" % user.AccountBalance, type=pyosd.TYPE_STRING)    
-            time.sleep(DURATION + 1)
-        except :
-            cmd.crashed("Strange problem : please report it ASAP to alet@librelogiciel.com")
-        else :
-            retcode = 0
+                display = pyosd.osd(colour=color, timeout=duration, shadow=2)
+                display.display(_("PyKota Units left : %.2f") % user.AccountBalance, type=pyosd.TYPE_STRING)
+            time.sleep(duration + 1)
+            if loop :
+                loop -= 1
+                if not loop :
+                    break
+            time.sleep(sleep)        
+            
+        return 0    
+        
+if __name__ == "__main__" :
+    retcode = -1
+    try :
+        defaults = { \
+                     "duration" : "3", \
+                     "loop" : "0", \
+                     "sleep" : "180", \
+                   }
+        short_options = "hvd:l:s:"
+        long_options = ["help", "version", "duration=", "loop=", "sleep="]
+        
+        cmd = PyKOSD(doc=__doc__)
+        
+        # parse and checks the command line
+        (options, args) = cmd.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["duration"] = options["d"] or options["duration"] or defaults["duration"]
+        options["loop"] = options["l"] or options["loop"] or defaults["loop"]
+        options["sleep"] = options["s"] or options["sleep"] or defaults["sleep"]
+        
+        if options["help"] :
+            cmd.display_usage_and_quit()
+        elif options["version"] :
+            cmd.display_version_and_quit()
+        else :    
+            retcode = cmd.main(args, options)
+    except KeyboardInterrupt :
+        retcode = 0
+    except SystemExit :        
+        pass
+    except :    
         try :
-            cmd.storage.close()
+            cmd.crashed("pykosd failed")
         except :    
-            pass
+            crashed("pykosd failed")
+        
+    try :
+        cmd.storage.close()
+    except :    
+        pass
+        
     sys.exit(retcode)

@@ -13,6 +13,6 @@
 #
 # $Id$
 #
-for prog in edpykota pykotme repykota warnpykota pkprinters pkhint ; do 
+for prog in edpykota pykotme repykota warnpykota pkprinters pkhint pykosd ; do 
     help2man --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 --no-info $prog ; 
 done
