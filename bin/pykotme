@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2004/10/06 10:05:47  jalet
+# Minor changes to allow any PyKota administrator to launch enhanced versions
+# of the commands, and not only the root user.
+#
 # Revision 1.13  2004/07/01 19:56:42  jalet
 # Better dispatching of error messages
 #
@@ -156,8 +160,7 @@ class PyKotMe(PyKotaTool) :
                 self.printInfo(msg)
             
         # get current user
-        uid = os.geteuid()
-        username = pwd.getpwuid(uid)[0]
+        username = pwd.getpwuid(os.geteuid())[0]
         user = self.storage.getUser(username)
         if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
             print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/10/06 10:05:47  jalet
+# Minor changes to allow any PyKota administrator to launch enhanced versions
+# of the commands, and not only the root user.
+#
 # Revision 1.9  2004/10/05 20:08:46  jalet
 # Misleading help message. Thx to Johannes Laemmermann.
 #
@@ -148,6 +152,9 @@ class DumPyKota(PyKotaTool) :
     """A class for dumpykota."""
     def main(self, arguments, options) :
         """Print Quota Data Dumper."""
+        if not self.config.isAdmin :
+            raise PyKotaToolError, _("You're not allowed to dump PyKota's datas.")
+            
         datatype = options["data"]
         if datatype not in [ "history",
                              "users",

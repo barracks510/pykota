@@ -21,6 +21,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha21 :
+    
+        - Now dumpykota refuses to launch if the current user is not
+          a PyKota administrator (a PyKota administrator is an user
+          allowed to read the pykotadmin.conf file).
+          
+        - Now any PyKota administrator can use repykota and warnpykota
+          with additionnal arguments, not only the root user.
+          
+        - Improved documentation a bit.
+        
     - 1.20alpha20 :
     
         - Reduced delay in internal SNMP and PJL_over_TCP handlers

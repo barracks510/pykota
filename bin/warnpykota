@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/10/06 10:05:47  jalet
+# Minor changes to allow any PyKota administrator to launch enhanced versions
+# of the commands, and not only the root user.
+#
 # Revision 1.29  2004/06/18 13:34:49  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -170,9 +174,9 @@ examples :
   who have exceeded their print quota on any printer which name begins 
   with "laserjet"
   
-  If launched by a non-root user, additionnal arguments representing
-  users or groups names are ignored, and only the current user/group
-  is warned.
+  If launched by an user who is not a PyKota administrator, additionnal
+  arguments representing users or groups names are ignored, and only the
+  current user/group is reported.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -194,19 +198,18 @@ class WarnPyKota(PyKotaTool) :
     """A class for warnpykota."""
     def main(self, ugnames, options) :
         """Warn users or groups over print quota."""
-        uid = os.geteuid()
-        if not uid :
-            # root user
+        if self.config.isAdmin :
+            # PyKota administrator
             if not ugnames :
                 # no username, means all usernames
                 ugnames = [ "*" ]
         else :        
-            # not the root user
+            # not a PyKota administrator
             # warns only the current user
             # the utility of this is discutable, but at least it
             # protects other users from mail bombing if they are
             # over quota.
-            username = pwd.getpwuid(uid)[0]
+            username = pwd.getpwuid(os.geteuid())[0]
             if options["groups"] :
                 user = self.storage.getUser(username)
                 if user.Exists :

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2004/10/06 10:05:47  jalet
+# Minor changes to allow any PyKota administrator to launch enhanced versions
+# of the commands, and not only the root user.
+#
 # Revision 1.49  2004/06/18 13:34:49  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -238,9 +242,9 @@ examples :
   whose name begins with "jo" on all printers which name begins
   with "laser" or ends with "pson".
   
-  If launched by a non-root user, additionnal arguments representing
-  users or groups names are ignored, and only the current user/group
-  is reported.
+  If launched by an user who is not a PyKota administrator, additionnal
+  arguments representing users or groups names are ignored, and only the
+  current user/group is reported.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -262,16 +266,15 @@ class RePyKota(PyKotaTool) :
     """A class for repykota."""
     def main(self, ugnames, options) :
         """Print Quota reports generator."""
-        uid = os.geteuid()
-        if not uid :
-            # root user
+        if self.config.isAdmin :
+            # PyKota administrator
             if not ugnames :
                 # no username, means all usernames
                 ugnames = [ "*" ]
         else :        
             # not the root user
             # reports only the current user
-            username = pwd.getpwuid(uid)[0]
+            username = pwd.getpwuid(os.geteuid())[0]
             if options["groups"] :
                 user = self.storage.getUser(username)
                 if user.Exists :

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2004/10/06 10:05:47  jalet
+# Minor changes to allow any PyKota administrator to launch enhanced versions
+# of the commands, and not only the root user.
+#
 # Revision 1.52  2004/09/29 20:20:52  jalet
 # Added the winbind_separator directive to pykota.conf to allow the admin to
 # strip out the Samba/Winbind domain name when users print.
@@ -236,6 +240,8 @@ class PyKotaConfig :
     """A class to deal with PyKota's configuration."""
     def __init__(self, directory) :
         """Reads and checks the configuration file."""
+        self.isAdmin = 0
+        self.directory = directory
         self.filename = os.path.join(directory, "pykota.conf")
         if not os.path.isfile(self.filename) :
             raise PyKotaConfigError, _("Configuration file %s not found.") % self.filename
@@ -285,12 +291,15 @@ class PyKotaConfig :
         backendinfo["storageadmin"] = None
         backendinfo["storageadminpw"] = None
         adminconf = ConfigParser.ConfigParser()
-        adminconf.read(["/etc/pykota/pykotadmin.conf"])
+        filename = os.path.join(self.directory, "pykotadmin.conf")
+        adminconf.read([filename])
         if adminconf.sections() : # were we able to read the file ?
             try :
                 backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1)
             except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
-                raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", "/etc/pykota/pykotadmin.conf")
+                raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", filename)
+            else :    
+                self.isAdmin = 1 # We are a PyKota administrator
             try :
                 backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1)
             except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    

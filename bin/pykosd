@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/10/06 10:05:47  jalet
+# Minor changes to allow any PyKota administrator to launch enhanced versions
+# of the commands, and not only the root user.
+#
 # Revision 1.7  2004/07/20 22:42:26  jalet
 # pykosd now supports setting color
 #
@@ -140,8 +144,7 @@ class PyKOSD(PyKotaTool) :
             raise PyKotaToolError, _("Invalid color option %s") % str(color)
         savecolor = color
         
-        uid = os.geteuid()
-        uname = pwd.getpwuid(uid)[0]
+        uname = pwd.getpwuid(os.geteuid())[0]
         while 1 :
             color = savecolor
             user = cmd.storage.getUserFromBackend(uname)        # don't use cache
