@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/09 13:40:29  jalet
+# typo
+#
 # Revision 1.8  2003/02/09 12:56:53  jalet
 # Internationalization begins...
 #
@@ -175,7 +178,7 @@ if __name__ == "__main__" :
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("repykota: options --users and --groups are incompatible.")
         elif options["groups"] :    
-            raise PyKotaToolError, _("repykota: options --groups is currently not implemented.")
+            raise PyKotaToolError, _("repykota: option --groups is currently not implemented.")
         elif args :    
             raise PyKotaToolError, _("repykota: unused arguments [%s]. Aborting.") % ", ".join(args)
         else :

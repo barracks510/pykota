@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/02/09 13:40:29  jalet
+# typo
+#
 # Revision 1.18  2003/02/09 12:56:53  jalet
 # Internationalization begins...
 #
@@ -287,7 +290,7 @@ if __name__ == "__main__" :
         elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
             raise PyKotaToolError, _("edpykota: options --softlimit or --hardlimit and --prototype are incompatible.")
         elif options["groups"] :    
-            raise PyKotaToolError, _("edpykota: options --groups is currently not implemented.")
+            raise PyKotaToolError, _("edpykota: option --groups is currently not implemented.")
         else :
             sys.exit(editor.main(args, options))
     except PyKotaToolError, msg :            

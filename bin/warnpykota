@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/09 13:40:29  jalet
+# typo
+#
 # Revision 1.6  2003/02/09 12:56:53  jalet
 # Internationalization begins...
 #
@@ -141,7 +144,7 @@ if __name__ == "__main__" :
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("warnpykota: options --users and --groups are incompatible.")
         elif options["groups"] :    
-            raise PyKotaToolError, _("warnpykota: options --groups is currently not implemented.")
+            raise PyKotaToolError, _("warnpykota: option --groups is currently not implemented.")
         elif args :    
             raise PyKotaToolError, _("warnpykota: unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
