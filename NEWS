@@ -24,7 +24,6 @@ PyKota NEWS :
     - 1.08 :
     
         - Major bug fix wrt LPRng support for remote jobs.
-        
         - Major bug fix wrt increase/decrease account balances.
         
     - 1.08alpha8 :
