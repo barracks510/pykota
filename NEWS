@@ -23,6 +23,11 @@ PyKota NEWS :
 
     - 1.19alpha14 :
     
+        - Pre-computation of the job's size is now only
+          done when enforcement is "STRICT", this saves
+          CPU for people who don't want to use this new
+          feature.
+          
         - New 'enforcement' directive which accepts either
           STRICT or LAXIST. See sample configuration file
           for details.

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2004/05/25 05:17:50  jalet
+# Now precomputes the job's size only if current printer's enforcement
+# is "STRICT"
+#
 # Revision 1.49  2004/05/24 22:45:48  jalet
 # New 'enforcement' directive added
 # Polling loop improvements
@@ -255,7 +259,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             os.putenv("PYKOTAPHASE", "BEFORE")
             
             # checks the user's quota
-            self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
+            if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
+                self.softwareJobSize = self.precomputeJobSize()
+                self.logdebug("Precomputed job's size is : %s pages" % self.softwareJobSize)
+                self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
             action = self.warnUserPQuota(userpquota)
             
             # exports some new environment variables

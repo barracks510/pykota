@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.91  2004/05/25 05:17:52  jalet
+# Now precomputes the job's size only if current printer's enforcement
+# is "STRICT"
+#
 # Revision 1.90  2004/05/24 22:45:49  jalet
 # New 'enforcement' directive added
 # Polling loop improvements
@@ -382,6 +386,7 @@ class PyKotaTool :
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
         self.maildomain = self.config.getMailDomain()
+        self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
         
     def logdebug(self, message) :    
@@ -801,8 +806,6 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.accounter = accounter.openAccounter(self)
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
-        self.softwareJobSize = self.precomputeJobSize()
-        self.logdebug("Precomputed job's size is : %s pages" % self.softwareJobSize)
         
     def openJobDataStream(self) :    
         """Opens the file which contains the job's datas."""
@@ -837,6 +840,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
     def precomputeJobSize(self) :    
         """Computes the job size with a software method."""
         self.logdebug("Precomputing job's size with generic PDL analyzer...")
+        self.jobdatastream.seek(0)
         try :
             parser = pdlanalyzer.PDLAnalyzer(self.jobdatastream)
             jobsize = parser.getJobSize()
