@@ -598,10 +598,10 @@ msgstr ""
 msgid "You have to pass printer names on the command line"
 msgstr "Bisogna specificare i nomi delle stampanti sulla riga di comando"
 
-msgid "Software accounting already done in first pass. Exiting."
+msgid "Software accounting already done in first pass. Ignoring."
 msgstr ""
 
-msgid "Hardware accounting already done in first pass. Exiting."
+msgid "Hardware accounting already done in first pass. Ignoring."
 msgstr ""
 
 #, python-format
