@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/04/05 09:28:56  jalet
+# Unnecessary message was logged
+#
 # Revision 1.28  2003/03/29 13:45:26  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -263,10 +266,12 @@ class EdPyKota(PyKotaTool) :
                     (softlimit, hardlimit) = (prototype["softlimit"], prototype["hardlimit"])
             if hardlimit is None :    
                 hardlimit = softlimit
-                self.logger.log_message(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer))
+                if hardlimit is not None :
+                    self.logger.log_message(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer))
             if softlimit is None :    
                 softlimit = hardlimit
-                self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
+                if softlimit is not None :
+                    self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
             if (not options["reset"] and not options["noquota"]) and ((hardlimit is None) or (softlimit is None)) :
                 raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
             if options["add"] :    
