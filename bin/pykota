@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2003/08/18 16:20:59  jalet
+# Improvement of the printing system detection code.
+#
 # Revision 1.37  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #
@@ -209,9 +212,13 @@ class PyKotaFilter(PyKotaTool) :
                     Kseen = int(arg[2:].strip())
             if Kseen is None :        
                 Kseen = 1       # we assume the user wants at least one copy...
+            if (rseen is None) and jseen and Pseen and nseen :    
+                self.logger.log_message(_("Printer hostname undefined, set to 'localhost'"), "warn")
+                rseen = "localhost"
             if jseen and Pseen and nseen and rseen :        
                 # job is always in stdin (None)
                 return ("LPRNG", rseen, Pseen, nseen, jseen, None, Kseen)
+        self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
         return (None, None, None, None, None, None, None)   # Unknown printing system          
         
     def acceptJob(self) :        

@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.15alpha2 :
+    
+        - Better detection of LPRng.
+        
+        - Outputs a warning if printing system is unknown.
+        
     - 1.15alpha1 :
     
         - Bug fix in SQL code.

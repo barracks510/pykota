@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2003/08/18 16:20:59  jalet
+# Improvement of the printing system detection code.
+#
 # Revision 1.32  2003/07/25 10:41:30  jalet
 # Better documentation.
 # pykotme now displays the current user's account balance.
@@ -432,4 +435,10 @@ msgstr "Quota d'Impression Bas"
 
 msgid "Your account balance : %.2f"
 msgstr "Votre solde : %.2f"
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Nom d'hôte de l'imprimante indéfini, positionné à 'localhost'"
+
+msgid "Printing system unknown, args=%s"
+msgstr "Système d'impression inconnu, args=%s"
 
