@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha27 :
+    
+        - The Python accelerator Psyco is now used if available
+          in the generic PDL parser : it speedups PCL5 parsing by
+          almost three times automagically.
+          
     - 1.19alpha26 :
     
         - Fixed PCL5 parser according to the sources of rastertohp.

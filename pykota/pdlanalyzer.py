@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2004/06/26 14:14:31  jalet
+# Now uses Psyco if it is available
+#
 # Revision 1.14  2004/06/25 09:50:28  jalet
 # More debug info in PCLXL parser
 #
@@ -437,6 +440,21 @@ class PDLAnalyzer :
            supports read() and seek().
         """
         self.filename = filename
+        try :
+            import psyco 
+        except ImportError :    
+            pass # Psyco is not installed
+        else :    
+            # Psyco is installed, tell it to compile
+            # the CPU intensive methods : PCL and PCLXL
+            # parsing will greatly benefit from this, 
+            # for PostScript and PDF the difference is
+            # barely noticeable since they are already
+            # almost optimal, and much more speedy anyway.
+            psyco.bind(PostScriptAnalyzer.getJobSize)
+            psyco.bind(PDFAnalyzer.getJobSize)
+            psyco.bind(PCLAnalyzer.getJobSize)
+            psyco.bind(PCLXLAnalyzer.getJobSize)
         
     def getJobSize(self) :    
         """Returns the job's size."""

@@ -224,6 +224,18 @@ Prerequisite :
     - python-ldap Python module and the OpenLDAP client libraries  
       if you plan to use OpenLDAP as the Quota Storage backend.
     
+  For performance reasons if you print in PCL format, it is strongly
+  suggested that you install the Python accelerator Psyco, available
+  at :
+  
+      http://psyco.sourceforge.net
+      
+  Installing Psyco is not mandatory, but it woud speedup PCL parsing
+  by almost 3 times. PostScript and PDF parsing can also benefit,
+  but in an almost unnoticeable manner since this part of the code
+  is already optimal. For PCL this is a completely different matter,
+  and if you install Psyco you will never regret it !
+  
   You may also benefit from having the following tools installed to
   deal with some printers :
   
