@@ -55,9 +55,9 @@ pykota.schema :
         
       But we recommend that you add these :  
       
-        index pykotaUserName eq,sub
-        index pykotaGroupName eq,sub
-        index pykotaPrinterName eq,sub
+        index pykotaUserName eq
+        index pykotaGroupName eq
+        index pykotaPrinterName eq
         index pykotaLastJobIdent eq
         
     Finally, restart the OpenLDAP server :    
