@@ -245,6 +245,13 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # requester: external(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2)
 #
 #
+# An example using netcat and a preformatted PJL job which you can find
+# in the untested/pjl directory, which is sent to a JetDirect print
+# server on port 9100 :
+#
+# requester: external(/usr/bin/nc -w 2 %(printer)s 9100 <pagecount.pjl | /usr/bin/tail -2)
+#
+#
 # WARNING : In any case, when using an external requester, please test the command line outside
 #           of PyKota before. This will save you some headaches in case it doesn't work as expected.
 requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
