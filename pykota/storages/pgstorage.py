@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/10/03 18:01:49  jalet
+# Nothing interesting...
+#
 # Revision 1.15  2003/10/03 12:27:03  jalet
 # Several optimizations, especially with LDAP backend
 #
@@ -298,13 +301,13 @@ class Storage(BaseStorage) :
                     self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
         
-    def getPrinterUsersAndQuotas(self, printer, names=None) :        
+    def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
         result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,email,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                if (names is None) or self.tool.matchString(record.get("username"), names) :
+                if self.tool.matchString(record.get("username"), names) :
                     user = StorageUser(self, record.get("username"))
                     user.ident = record.get("uid")
                     user.LimitBy = record.get("limitby")
@@ -325,13 +328,13 @@ class Storage(BaseStorage) :
                     self.cacheEntry("USERPQUOTAS", "%s@%s" % (user.Name, printer.Name), userpquota)
         return usersandquotas
                 
-    def getPrinterGroupsAndQuotas(self, printer, names=None) :        
+    def getPrinterGroupsAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of groups which uses a given printer, along with their quotas."""
         groupsandquotas = []
         result = self.doSearch("SELECT groupname FROM groups JOIN grouppquota ON groups.id=grouppquota.groupid AND printerid=%s ORDER BY groupname ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                if (names is None) or self.tool.matchString(record.get("groupname"), names) :
+                if self.tool.matchString(record.get("groupname"), names) :
                     group = self.getGroup(record.get("groupname"))
                     grouppquota = self.getGroupPQuota(group, printer)
                     groupsandquotas.append((group, grouppquota))
