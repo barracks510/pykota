@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.20alpha1 : 
     
+        - Fixed problem with number of copies in PCL5 parser,
+          when number of copies was set outside of and before first
+          page.
+        
         - Added workaround for number of copies directly set in
           PostScript code.
           

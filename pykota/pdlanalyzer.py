@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2004/08/10 23:01:49  jalet
+# Fixed number of copies in PCL5 parser
+#
 # Revision 1.27  2004/08/09 18:14:22  jalet
 # Added workaround for number of copies and some PostScript drivers
 #
@@ -331,8 +334,8 @@ class PCLAnalyzer :
         # now handle number of copies for each page (may differ).
         # in duplex mode, number of copies may be sent only once.
         for pnum in range(pagecount) :
-            # if no number of copies defined, take the preceding one else 1.
-            nb = copies.get(pnum, copies.get(pnum-1, 1))
+            # if no number of copies defined, take the preceding one else the one set before any page else 1.
+            nb = copies.get(pnum, copies.get(pnum-1, copies.get(0, 1)))
             pagecount += (nb - 1)
         return pagecount
         
