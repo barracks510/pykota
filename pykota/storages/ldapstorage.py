@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2004/03/02 14:35:46  jalet
+# Missing test when searching printer objects when these objects were manually
+# created and don't contain the pykotaPrinterName attribute
+#
 # Revision 1.58  2004/02/27 09:30:33  jalet
 # datelimit wasn't reset when modifying soft and hard limits with the LDAP backend
 #
@@ -645,7 +649,7 @@ class Storage(BaseStorage) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
         # see comment at the same place in pgstorage.py
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)" % pname for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
                 printername = fields["pykotaPrinterName"][0]
