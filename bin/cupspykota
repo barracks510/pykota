@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2004/01/12 22:43:40  jalet
+# New formula to compute a job's price
+#
 # Revision 1.21  2004/01/12 18:17:36  jalet
 # Denied jobs weren't stored into the history anymore, this is now fixed.
 #
@@ -191,10 +194,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.logdebug("Job size : %i" % jobsize)
             
             # update the quota for the current user on this printer 
-            jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
-            if jobsize :
-                self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
-                userpquota.increasePagesUsage(jobsize)
+            self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
+            jobprice = userpquota.increasePagesUsage(jobsize)
             
             # adds the current job to history    
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options)

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2004/01/12 22:43:40  jalet
+# New formula to compute a job's price
+#
 # Revision 1.37  2004/01/12 14:35:01  jalet
 # Printing history added to CGI script.
 #
@@ -299,22 +302,32 @@ class StorageUserPQuota(StorageObject) :
         self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))
         self.PageCounter = 0
         
-    def increasePagesUsage(self, nbpages) :
+    def computeJobPrice(self, jobsize) :    
+        """Computes the job price as the sum of all parent printers' prices + current printer's ones."""
+        totalprice = 0.0    
+        if jobsize :
+            for upq in [ self ] + self.ParentPrintersUserPQuota :
+                price = (float(upq.Printer.PricePerPage or 0.0) * jobsize) + float(upq.Printer.PricePerJob or 0.0)
+                totalprice += price
+        return totalprice    
+            
+    def increasePagesUsage(self, jobsize) :
         """Increase the value of used pages and money."""
-        jobprice = (float(self.Printer.PricePerPage or 0.0) * nbpages) + float(self.Printer.PricePerJob or 0.0)
-        self.parent.beginTransaction()
-        try :
-            if nbpages :
+        jobprice = self.computeJobPrice(jobsize)
+        if jobsize :
+            self.parent.beginTransaction()
+            try :
                 self.User.consumeAccountBalance(jobprice)
                 for upq in [ self ] + self.ParentPrintersUserPQuota :
-                    self.parent.increaseUserPQuotaPagesCounters(upq, nbpages)
-                    upq.PageCounter = int(upq.PageCounter or 0) + nbpages
-                    upq.LifePageCounter = int(upq.LifePageCounter or 0) + nbpages
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
+                    self.parent.increaseUserPQuotaPagesCounters(upq, jobsize)
+                    upq.PageCounter = int(upq.PageCounter or 0) + jobsize
+                    upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
+            except PyKotaStorageError, msg :    
+                self.parent.rollbackTransaction()
+                raise PyKotaStorageError, msg
+            else :    
+                self.parent.commitTransaction()
+        return jobprice
         
 class StorageGroupPQuota(StorageObject) :
     """Group Print Quota class."""
@@ -365,7 +378,7 @@ class StorageLastJob(StorageJob) :
         
     def setSize(self, jobsize) :
         """Sets the last job's size."""
-        jobprice = (float(self.Printer.PricePerPage or 0.0) * jobsize) + float(self.Printer.PricePerJob or 0.0)
+        jobprice = self.parent.getUserPQuota(self.User, self.Printer).computeJobPrice(jobsize)
         self.parent.writeLastJobSize(self, jobsize, jobprice)
         self.JobSize = jobsize
         self.JobPrice = jobprice

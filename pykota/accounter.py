@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/01/12 22:43:40  jalet
+# New formula to compute a job's price
+#
 # Revision 1.12  2004/01/11 23:43:31  jalet
 # Bug wrt number of copies with CUPS should be fixed.
 #
@@ -130,7 +133,7 @@ class AccounterBase :
             userpquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        jobprice = (float(userpquota.Printer.PricePerPage or 0.0) * jobsize) + float(userpquota.Printer.PricePerJob or 0.0)
+        jobprice = userpquota.computeJobPrice(jobsize)
         userpquota.Printer.addJobToHistory(self.filter.jobid, userpquota.User, self.getLastPageCounter(), action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
         self.endJob(userpquota)
         return action

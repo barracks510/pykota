@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/01/12 22:43:40  jalet
+# New formula to compute a job's price
+#
 # Revision 1.6  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -156,7 +159,8 @@ class PyKotMe(PyKotaTool) :
             
         print _("Job size : %i pages") % nbpages    
         for printer in printers :
-            cost = (nbpages * float(printer.PricePerPage or 0)) + float(printer.PricePerJob or 0)
+            userpquota = self.storage.getUserPQuota(user, printer)
+            cost = userpquota.computeJobPrice(nbpages)
             print _("Cost on printer %s : %.2f") % (printer.Name, cost)
             
     def getNbPages(self, stream) :        

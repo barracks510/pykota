@@ -21,6 +21,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha26 :
+    
+        - Job price is now computed like this :
+        
+          SUM((NbPages * PricePerPage) + PricePerJob)
+          
+          For current printer and all the printers groups it is 
+          a member of.
+          
+          This may be difficult to grasp, but offers unprecedented
+          flexibility.
+          
     - 1.16alpha25 :
     
         - Email address can be set at user creation time,
