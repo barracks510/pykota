@@ -223,10 +223,24 @@ class PJLAccounter :
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
+        firstvalue = None
         while 1:
             self.retrievePJLValues()
-            if self.printerStatus in ('10023',) :
+            if self.printerStatus in ('10023', '10003') :
                 break
+            if self.printerInternalPageCounter is not None :    
+                if firstvalue is None :
+                    # first time we retrieved a page counter, save it
+                    firstvalue = self.printerInternalPageCounter
+                else :     
+                    # second time (or later)
+                    if firstvalue < self.printerInternalPageCounter :
+                        # Here we have a printer which lies :
+                        # it says it is not printing or warming up
+                        # BUT the page counter increases !!!
+                        # So we can probably quit being sure it is printing.
+                        self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.printername, "warn")
+                        break
             self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.printername)
             time.sleep(ITERATIONDELAY)
         
