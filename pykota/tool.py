@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/05 23:45:09  jalet
+# Better DateTime manipulation wrt grace delay
+#
 # Revision 1.4  2003/02/05 23:26:22  jalet
 # Incorrect handling of grace delay
 #
@@ -85,17 +88,18 @@ class PyKotaTool :
         softlimit = quota["softlimit"]
         hardlimit = quota["hardlimit"]
         datelimit = quota["datelimit"]
-        if datelimit :
-            datelimit = DateTime.DateTime(datelimit)    # TODO : check this !
+        if datelimit is not None :
+            datelimit = DateTime.ISO.ParseDateTime(datelimit)
         if softlimit is not None :
             if pagecounter < softlimit :
                 action = "ALLOW"
             elif hardlimit is not None :
+                 gracedelay = self.config.getGraceDelay()
                  if softlimit <= pagecounter < hardlimit :    
                      if datelimit is None :
-                         self.storage.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i" % (now.year, now.month, now.day, now.hour, now.minute)), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
-                         datelimit = now
-                     if (now - datelimit) <= self.config.getGraceDelay() :
+                         datelimit = now + gracedelay
+                         self.storage.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
+                     if (now + gracedelay) < datelimit :
                          action = "WARN"
                      else :    
                          action = "DENY"
@@ -109,7 +113,7 @@ class PyKotaTool :
     
     def warnQuotaPrinter(self, username) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
-        (action, grace, gracedate) = self.storage.checkUserPQuota(username, self.printername)
+        (action, grace, gracedate) = self.checkUserPQuota(username, self.printername)
         if action == "DENY" :
             adminmessage = "Print Quota exceeded for user %s on printer %s" % (username, self.printername)
             self.logger.log_message(adminmessage)
