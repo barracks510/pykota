@@ -27,6 +27,9 @@ PyKota NEWS :
           is now fixed.
           
         - improved PCL support in pkpgcounter.  
+        
+        - pkpgcounter now uses mmap to speed things up : duration
+          is halved with the sample 87 pages PCL document I use.
           
     - 1.19alpha3 :
     

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/05/04 12:21:55  jalet
+# Now uses mmap in PCL mode
+#
 # Revision 1.3  2004/05/04 04:39:26  jalet
 # Better PCL support
 #
@@ -35,6 +38,8 @@
 #
 
 import sys
+import os
+import mmap
 import tempfile
 
 def ispostscript(data) :    
@@ -80,14 +85,24 @@ def pcl(infile) :
     # (c) 2003, by Eduardo Gielamo Oliveira & Rodolfo Broco Manin 
     # published under the terms of the GNU General Public Licence v2.
     # 
-    # Backported from C to Python by Jerome Alet
+    # Backported from C to Python by Jerome Alet, then enhanced
+    # with more PCL tags detected. I think all the necessary PCL tags
+    # are recognized to correctly handle PCL5e files wrt their number
+    # of pages
     # 
+    infileno = infile.fileno()
+    infile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
     tagsends = { "&n" : "W", "&b": "W", "*i" : "W", "*l" : "W", "*m" : "W", "*v": "W", "*c" : "W", "(f" : "W", "*b" : "VW", "(s" : "W", ")s" : "W", "&p" : "X", "&l" : "X" } 
     copies = 1
     pagecount = 0
     tag = None
+    position = 0
     while 1 :
-        char = infile.read(1)   # TODO : speed this up if possible
+        try :
+            char = infile[position]
+        except IndexError :     # EOF    
+            break
+        position += 1
         if not char :
             break
         if char == "\014" :    
@@ -109,10 +124,12 @@ def pcl(infile) :
             #     <ESC>&n###W -> Starts an alphanumeric string ID block
             #     <ESC>&p###X -> Start of a non printable characters block
             #
-            tagstart = infile.read(1)
+            tagstart = infile[position]
+            position += 1
             if tagstart in "E9=YZ" : # one byte PCL tag
                 continue             # skip to next tag
-            tag = tagstart + infile.read(1)
+            tag = tagstart + infile[position]
+            position += 1
             try :
                 tagend = tagsends[tag]
             except KeyError :    
@@ -121,7 +138,8 @@ def pcl(infile) :
                 # Now read the numeric argument
                 size = 0
                 while 1 :
-                    char = infile.read(1)
+                    char = infile[position]
+                    position += 1
                     if not char.isdigit() :
                         break
                     size = (size * 10) + int(char)    
@@ -136,7 +154,7 @@ def pcl(infile) :
                             # we have to take care of the operation id byte
                             # which is before the string itself
                             size += 1
-                        infile.read(size) 
+                        position += size    
     return copies * pagecount        
 
 def smartpagecounter(filename) :
