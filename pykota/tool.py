@@ -21,6 +21,7 @@
 # $Id$
 #
 # $Log$
+# $Rev$
 #
 # $Log$
 # Revision 1.151  2005/02/22 17:56:58  jalet
