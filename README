@@ -72,14 +72,20 @@ lazy method ?
   because a check is also done to see if the current user is allowed
   or not to print.
   
-  Problem may arise however in batches on successive print jobs 
-  by different users when there's no sleep time between two jobs :
-  the used pages may be attributed to incorrect user. This
-  depends on the printer speed and time between jobs.
+  Problem may theorically arise in batches of successive print jobs by 
+  different users when there's no sleep time between two jobs : the 
+  used pages may theorically be attributed to an incorrect user in the 
+  case that the printer is asked for its page counter at the beginning 
+  of a new job and before the end of the previous job. This depends on 
+  the printer speed and time between jobs, but so far I've not seen 
+  any problem with moderately used printers. This also depends on CUPS 
+  internal behavior : if CUPS doesn't begin to send a job to a printer 
+  before the previous one is completely printed, then there's no 
+  problem. 
   
-  Other querying methods which won't suffer from this problem,
-  but probably from other ones ;-) will be implemented in the 
-  future.
+  Other querying methods which won't suffer from this possible 
+  problem, but probably from other ones ;-) will be implemented in the 
+  future. 
   
 PyKota is known to work fine with HP Laserjet 2100 and 2200   
 networked printers, and should work with any SNMP-enabled 
@@ -112,12 +118,14 @@ Prerequisite :
   Server must match the PostgreSQL version used on the Quota Storage 
   Server.
   
-  Of course the CUPS Server and the Quota Storage Server can be the  
-  very same machine. 
-  
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
   alternatives.
+  
+  Of course the CUPS Server and the Quota Storage Server can be the 
+  very same machine if you've got a tiny network, or you can have 
+  multiple CUPS Servers all storing their quotas on the same Quota 
+  Storage Server if you've got a bigger network. 
   
 Then :   
 ------
@@ -157,6 +165,18 @@ instead of into /usr/bin.
 Do this for each ppd file present in this directory if you want
 to enable quota on every printer.
           
+WARNING : In the case you've got a non-postscript printer, chances
+          are that the *cupsFilter is already filled-in and points
+          to cupsomatic or such a print filter. In this case please
+          check if you can switch your printer to PostScript mode
+          or if there's a way to make it accept PostScript jobs.
+          If yes then ensure that your workstations uses a PostScript
+          printer driver, and replace the *cupsFilter line with the
+          one pointing to the pykota filter. This should work, but
+          is currently untested.
+          If your printer really needs the original *cupsFilter line
+          then you may not be able to use PyKota easily for now.
+
 Add printers and users to the quota system and set their quota values : 
 
     $ edpykota --add -P printer -S softlimit -H hardlimit user1 ... userN
