@@ -25,96 +25,97 @@ Supporters :
   The following people supports the PyKota project enhancement
   by funding it :
   
-    - Daniel Garcia
-    - Ted Buchanan - Vincennes University
-    - Victor Hiebert - Simon Fraser University
-    - Andres de la Cruz
-    - Anwar Bashir - University of Teesside
-    - Jan-David Hoivik - Oslo University College
-    - Peg Shafer - Tufts University
-    - Lonnie Norton - University of Utah
-    - Ian Taylor - University of Melbourne
-    - Steven Blair - Parergy
-    - Greg Paynter
-    - Pablo Acchiardio
-    - Peter Allmaker - Massachusetts College of Liberal Arts
-    - Nigel Pallett - Optimus UK Ltd
-    - Joby Mathew
-    - Alejandra Rodriguez
-    - Matt Hyclak - Ohio University
-    - Brian Choy
-    - Oscar Maqueda Hortells 
-    - Roger Crawford - University of Oxford
-    - Paolo Del Romano
-    - Peter Strauss / Stefan Marschall - University of Mannheim
-    - Kennie Cruz - Universidad de Puerto Rico
-    - Johan Fehrman - Kungliga Tekniska Högskolan
-    - Pam Luther - Georgia Institute of Technology
-    - Xavier Palou - Ecole Française de Gestion Commerciale
-    - Jean-François Pollozec - Austral Informatique
-    - Alain Soyeur
-    - David Collier-Brown - Sun Microsystems Canada
-    - Laurent Evrard - Polytechnic of Namibia
-    - James Affeld
-    - King Man Leung
-    - Stephen Markan - Faculty of Environmental Studies, University of Waterloo
-    - Jeremy Worth - University of Oxford
-    - Roger Morgan - Höhere Technische Bundeslehranstalt Steyr
-    - Pal Monstad
-    - Richard Potter
-    - Ryan Lim
-    - Michael Allerhand - University of Edinburgh
-    - Kjetil Knudsen
-    - Felix Hilmer
-    - Michael Stone - University of Texas
-    - Konstantin Schikarski
-    - Philippe Ciaravola - McGill University
-    - Jose Luis - Instituto Politécnico de Bragança
-    - David Ball
-    - Daniel Fonseca
-    - Computer Network Service - Rhode Island School of Design
-    - Nicholas Wai - University of Ballarat
-    - Peter Palmer - Bournville College of Further Education
-    - Faouzi Gassemi - University of Montreal
-    - Dave Williams
-    - Nelson Vieira
-    - Robert M. Martel - Cleveland State University
-    - Julie Leary - Villa Julie College
-    - Nessim Hemmer - Universität Bremen
-    - Morten Hoyrup - Ribe Katedralskole
-    - Jean-Pascal Lahieyte - Université de Bretagne Occidentale
-    - David Tepaße - Universität Bielefeld
-    - Jane Gao - University of New South Wales
-    - Oliver Klagges - FH Detmold
-    - Daryl Sarwan
-    - Björn-Bastian Behnke
+  - Daniel Garcia
+  - Ted Buchanan - Vincennes University
+  - Victor Hiebert - Simon Fraser University
+  - Andres de la Cruz
+  - Anwar Bashir - University of Teesside
+  - Jan-David Hoivik - Oslo University College
+  - Peg Shafer - Tufts University
+  - Lonnie Norton - University of Utah
+  - Ian Taylor - University of Melbourne
+  - Steven Blair - Parergy
+  - Greg Paynter
+  - Pablo Acchiardio
+  - Peter Allmaker - Massachusetts College of Liberal Arts
+  - Nigel Pallett - Optimus UK Ltd
+  - Joby Mathew
+  - Alejandra Rodriguez
+  - Matt Hyclak - Ohio University
+  - Brian Choy
+  - Oscar Maqueda Hortells 
+  - Roger Crawford - University of Oxford
+  - Paolo Del Romano
+  - Peter Strauss / Stefan Marschall - University of Mannheim
+  - Kennie Cruz - Universidad de Puerto Rico
+  - Johan Fehrman - Kungliga Tekniska Högskolan
+  - Pam Luther - Georgia Institute of Technology
+  - Xavier Palou - Ecole Française de Gestion Commerciale
+  - Jean-François Pollozec - Austral Informatique
+  - Alain Soyeur
+  - David Collier-Brown - Sun Microsystems Canada
+  - Laurent Evrard - Polytechnic of Namibia
+  - James Affeld
+  - King Man Leung
+  - Stephen Markan - Faculty of Environmental Studies, University of Waterloo
+  - Jeremy Worth - University of Oxford
+  - Roger Morgan - Höhere Technische Bundeslehranstalt Steyr
+  - Pal Monstad
+  - Richard Potter
+  - Ryan Lim
+  - Michael Allerhand - University of Edinburgh
+  - Kjetil Knudsen
+  - Felix Hilmer
+  - Michael Stone - University of Texas
+  - Konstantin Schikarski
+  - Philippe Ciaravola - McGill University
+  - Jose Luis - Instituto Politécnico de Bragança
+  - David Ball
+  - Daniel Fonseca
+  - Computer Network Service - Rhode Island School of Design
+  - Nicholas Wai - University of Ballarat
+  - Peter Palmer - Bournville College of Further Education
+  - Faouzi Gassemi - University of Montreal
+  - Dave Williams
+  - Nelson Vieira
+  - Robert M. Martel - Cleveland State University
+  - Julie Leary - Villa Julie College
+  - Nessim Hemmer - Universität Bremen
+  - Morten Hoyrup - Ribe Katedralskole
+  - Jean-Pascal Lahieyte - Université de Bretagne Occidentale
+  - David Tepaße - Universität Bielefeld
+  - Jane Gao - University of New South Wales
+  - Oliver Klagges - FH Detmold
+  - Daryl Sarwan
+  - Björn-Bastian Behnke
+  - Ryan Suarez - Sheridan College Institute of Technology & Advanced Learning
 
 Contributors :
 --------------
 
   The following people contributed code or ideas to PyKota :
   
-    - Joël Collet : PyKota's logo
-    - Stefan Wold - Stockholm University : inital code for external policies
-    - John Flynn - University of Belize : LDAP support
-    - Wayne Godoy - University of Belize : LDAP support
-    - Leif Johansson - Stockholm University : LDAP support
-    - Bob Martel - Cleveland State University : SNMP examples
-    - Michael Stuebiger : Non-postscript printers support documentation
-    - Oleg Biteryakov - University of Michigan : Bug fix in SQL code
-    - Charl W. Möller - University of Stellenbosch : LDAP testing
-    - Dennis Romero L. : Spanish translation and installation guide.
-    - Daniel Mikkelsen : Sample configuration file fix
-    - Carlos Fernandes : Brasilian Portuguese translation
-    - René Lund Jensen : Contributed the pagecount.pl script
-    - Henrik Janhagen - Kungliga Tekniska Högskolan : Swedish translation
-    - Hugo Monteiro : Portuguese Portuguese translation
-    - Peter Hawkins : First try at Debian packaging 
-    - Michele Baldessari : Italian translation
-    - Ryan Suarez : Created a WiKi with lots of shemas
-    - Eduardo Gielamo Oliveira and Rodolfo Broco Manin : PCL page counter
-    - Sergey Romanov : bug fix
-    - Sergio González González : More work on Debian packaging + Doc
+  - Joël Collet : PyKota's logo
+  - Stefan Wold - Stockholm University : inital code for external policies
+  - John Flynn - University of Belize : LDAP support
+  - Wayne Godoy - University of Belize : LDAP support
+  - Leif Johansson - Stockholm University : LDAP support
+  - Bob Martel - Cleveland State University : SNMP examples
+  - Michael Stuebiger : Non-postscript printers support documentation
+  - Oleg Biteryakov - University of Michigan : Bug fix in SQL code
+  - Charl W. Möller - University of Stellenbosch : LDAP testing
+  - Dennis Romero L. : Spanish translation and installation guide.
+  - Daniel Mikkelsen : Sample configuration file fix
+  - Carlos Fernandes : Brasilian Portuguese translation
+  - René Lund Jensen : Contributed the pagecount.pl script
+  - Henrik Janhagen - Kungliga Tekniska Högskolan : Swedish translation
+  - Hugo Monteiro : Portuguese Portuguese translation
+  - Peter Hawkins : First try at Debian packaging 
+  - Michele Baldessari : Italian translation
+  - Ryan Suarez : Created a WiKi with lots of shemas
+  - Eduardo Gielamo Oliveira and Rodolfo Broco Manin : PCL page counter
+  - Sergey Romanov : bug fix
+  - Sergio González González : More work on Debian packaging + Doc
 
 ==============================================================
 
