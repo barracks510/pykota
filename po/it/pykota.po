@@ -483,3 +483,7 @@ msgstr "Errore avvenuto durante la modifica della entry LDAP (%s, %s)"
 msgid "Printer %s already exists, skipping."
 msgstr ""
 
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr ""
+

@@ -450,3 +450,7 @@ msgstr ""
 msgid "Printer %s already exists, skipping."
 msgstr ""
 
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr ""
+

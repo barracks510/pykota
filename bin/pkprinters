@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/05/06 20:30:24  jalet
+# Added --skipexisting command line option to pkprinters
+#
 # Revision 1.7  2004/05/06 12:51:58  jalet
 # Documentation
 #
@@ -68,8 +71,8 @@ options :
   -h | --help          Prints this message then exits.
   
   -a | --add           Adds printers if they don't exist on the Quota 
-                       Storage Server. Doesn't modify any already
-                       existing printer.
+                       Storage Server. If they exist, they are modified
+                       unless -s|--skipexisting is also used.
                        
   -d | --delete        Deletes printers from the quota storage.
                        
@@ -98,6 +101,9 @@ options :
                        
   -r | --remove        In combination with the --groups option above,                       
                        remove printers from the specified printers groups.
+                       
+  -s | --skipexisting  In combination with the --add option above, tells
+                       pkprinters to not modify existing printers.
   
   printer1 through printerN can contain wildcards if the --add option 
   is not set.
@@ -172,7 +178,11 @@ class PKPrinters(PyKotaTool) :
             for pname in names :
                 printer = self.storage.getPrinter(pname)
                 if printer.Exists :
-                    self.logger.log_message(_("Printer %s already exists, skipping.") % printer.Name, "warn")
+                    if options["skipexisting"] :
+                        self.logger.log_message(_("Printer %s already exists, skipping.") % printer.Name, "warn")
+                    else :    
+                        self.logger.log_message(_("Printer %s already exists, will be modified.") % printer.Name, "warn")
+                        printers.append(printer)
                 else :
                     if self.isValidName(pname) :
                         printer = self.storage.addPrinter(pname)
@@ -210,8 +220,8 @@ class PKPrinters(PyKotaTool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvac:dg:lr"
-        long_options = ["help", "version", "add", "charge=", "delete", "groups=", "list", "remove"]
+        short_options = "hvac:dg:lrs"
+        long_options = ["help", "version", "add", "charge=", "delete", "groups=", "list", "remove", "skipexisting"]
         
         # Initializes the command line tool
         manager = PKPrinters(doc=__doc__)
@@ -228,12 +238,14 @@ if __name__ == "__main__" :
         options["groups"] = options["g"] or options["groups"]
         options["list"] = options["l"] or options["list"]
         options["remove"] = options["r"] or options["remove"]
+        options["skipexisting"] = options["s"] or options["skipexisting"]
         
         if options["help"] :
             manager.display_usage_and_quit()
         elif options["version"] :
             manager.display_version_and_quit()
         elif (options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"])) \
+           or (options["skipexisting"] and not options["add"]) \
            or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"])) :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["remove"] and not options["groups"] :    

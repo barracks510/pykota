@@ -486,3 +486,7 @@ msgstr "dans"
 msgid "Printer %s already exists, skipping."
 msgstr "L'imprimante %s existe déjà, ignorée."
 
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr "L'imprimante %s existe déjà, elle sera modifiée."
+

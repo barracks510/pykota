@@ -23,8 +23,10 @@ PyKota NEWS :
 
     - 1.19alpha5 :
     
-        - pkprinters --add now completely skips existing printers, but
-          logs a warning.
+        - pkprinters --skipexisting now tells pkprinters to not
+          modify existing printers when --add is used.
+          pkprinters logs a warning message whenever --add is
+          used and a printer already exists.
           
     - 1.19alpha4 :
     

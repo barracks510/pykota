@@ -20,8 +20,8 @@ Prints this message then exits.
 .TP
 \fB\-a\fR | \fB\-\-add\fR
 Adds printers if they don't exist on the Quota
-Storage Server. Doesn't modify any already
-existing printer.
+Storage Server. If they exist, they are modified
+unless \fB\-s\fR|--skipexisting is also used.
 .TP
 \fB\-d\fR | \fB\-\-delete\fR
 Deletes printers from the quota storage.
@@ -54,6 +54,10 @@ printers groups it is a member of.
 \fB\-r\fR | \fB\-\-remove\fR
 In combination with the \fB\-\-groups\fR option above,
 remove printers from the specified printers groups.
+.TP
+\fB\-s\fR | \fB\-\-skipexisting\fR
+In combination with the \fB\-\-add\fR option above, tells
+pkprinters to not modify existing printers.
 .IP
 printer1 through printerN can contain wildcards if the \fB\-\-add\fR option
 is not set.
