@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/07/14 14:18:17  jalet
+# Wrong documentation strings
+#
 # Revision 1.7  2003/07/09 20:17:07  jalet
 # Email field added to PostgreSQL schema
 #
@@ -401,7 +404,7 @@ class Storage :
         self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userpquota.ident)))
         
     def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
-        """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
+        """Sets soft and hard limits for a group quota on a specific printer."""
         self.doModify("UPDATE grouppquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(grouppquota.ident)))
 
     def deleteUser(self, user) :    

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/07/14 14:18:16  jalet
+# Wrong documentation strings
+#
 # Revision 1.18  2003/07/11 14:23:13  jalet
 # When adding an user only adds one object containing both the user and
 # its account balance instead of two objects.
@@ -624,7 +627,7 @@ class Storage :
         self.doModify(userpquota.ident, fields)
         
     def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
-        """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
+        """Sets soft and hard limits for a group quota on a specific printer."""
         fields = { 
                    "pykotaSoftLimit" : str(softlimit),
                    "pykotaHardLimit" : str(hardlimit),
