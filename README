@@ -88,6 +88,9 @@ PyKota features :
           all printers. The history of payments (positive
           or negative credits to an user account) is kept.
           
+        - Supports high granularity periodic print quotas : down
+          to one minute intervals if needed.
+        
         - Page quotas and account balance can be set/reset
           independantly.
           
