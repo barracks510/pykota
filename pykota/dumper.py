@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2005/01/19 09:00:54  jalet
+# Small fix for Python2.1 and variables scopes
+#
 # Revision 1.2  2005/01/19 08:49:41  jalet
 # Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
 # variables if the script is username+password protected.
@@ -151,7 +154,7 @@ class DumPyKota(PyKotaTool) :
             fields[fieldnames[i]] = i
         sortindex = fields["jobdate"]    
         entries = entries[1:]
-        entries.sort(lambda m,n : cmp(m[sortindex], n[sortindex]))
+        entries.sort(lambda m,n,si=sortindex : cmp(m[si], n[si]))
         for entry in entries[1:] :    
             printername = entry[fields["printername"]]
             username = entry[fields["username"]]
