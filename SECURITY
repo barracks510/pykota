@@ -75,6 +75,11 @@ How to improve PyKota's security :
     connections to it if the user can write and execute his own
     scripts or download and execute his own version of PyKota.
   
+    NB : If you use the printquota.cgi CGI script, ensure that
+         the user this script is run as (e.g. nobody or www-data)
+         can read PyKota's configuration file too, for example
+         by putting www-data in the lpadmin group.
+  
   - Secure your database connection :
   
     Depending on the database backend used (currently only PostgreSQL
