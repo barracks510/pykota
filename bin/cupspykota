@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.80  2004/11/15 22:12:46  jalet
+# Fix for the Fix !!!
+#
 # Revision 1.79  2004/11/15 22:01:34  jalet
 # Improved banner handling.
 # Fix for raw printing and banners.
@@ -603,8 +606,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         else :    
             # Here we absolutely WANT to remove any filename from the command line !
             arguments = [ "Fake this because we are printing a banner" ] + sys.argv[1:6]
-        self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + arguments)])))
-        subprocess = PyKotaPopen4([realbackend] + arguments, bufsize=0, arg0=os.environ["DEVICE_URI"])
+        self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + arguments[1:])])))
+        subprocess = PyKotaPopen4([realbackend] + arguments[1:], bufsize=0, arg0=os.environ["DEVICE_URI"])
         
         # Save file descriptors, we will need them later.
         stderrfno = sys.stderr.fileno()
