@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/04/30 13:40:47  jalet
+# Small fix
+#
 # Revision 1.1  2003/04/30 13:36:40  jalet
 # Stupid accounting method was added.
 #
@@ -51,7 +54,7 @@ class Accounter(AccounterBase) :
             # get last job size and page counter from Quota Storage
             # Last lifetime page counter before actual job is 
             # last page counter + last job size
-            counterbeforejob = pgc["pagecounter"] + pgc["jobsize"]
+            counterbeforejob = (pgc["pagecounter"] or 0) + (pgc["jobsize"] or 0)
             
         # Is the current user allowed to print at all ?
         action = self.filter.warnUserPQuota(self.filter.username, self.filter.printername)
