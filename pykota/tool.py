@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.144  2004/11/18 06:01:53  jalet
+# Fix for the fix
+#
 # Revision 1.143  2004/11/18 05:54:15  jalet
 # Fix problem with spaces at the end of filenames in LPRng
 #
@@ -1371,16 +1374,15 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                             except IndexError :    
                                 raise PyKotaToolError, "Unable to find the file which holds the job's datas. Please file a bug report for PyKota."
                             else :    
-                                inputfile = os.path.join(spooldir, df_name)
+                                inputfile = os.path.join(spooldir, df_name) # no need to strip()
                         else :    
-                            inputfile = os.path.join(spooldir, "d" + cftransfername[1:])
+                            inputfile = os.path.join(spooldir, "d" + cftransfername[1:]) # no need to strip()
                     else :    
-                        inputfile = os.path.join(spooldir, df_name)
+                        inputfile = os.path.join(spooldir, df_name) # no need to strip()
                 else :    
-                    inputfile = os.path.join(spooldir, df_name)
+                    inputfile = os.path.join(spooldir, df_name) # no need to strip()
             else :    
-                inputfile = os.path.join(spooldir, df_name)
-            inputfile = inputfile.strip()    
+                inputfile = os.path.join(spooldir, df_name.strip())
                 
             if jseen and Pseen and nseen and rseen :        
                 options = os.environ.get("HF", "") or os.environ.get("CONTROL", "")
