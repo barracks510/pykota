@@ -86,6 +86,10 @@ TODO, in no particular order :
           Matt Hyclak has sent a patch for cupspykota which seems
           to be ok, but we have to find how to do the same with
           lprngpykota...
+          Add a "printDenyBanner: once(/path/to/banner)" directive
+                "printDenyBanner: always(/path/to/banner)"
+                "printDenyBanner: never"
+          This requires a database schema change. 
           
         - Think about some possible client <=> PyKota dialog
           possibilities, like embedding a small web server in
