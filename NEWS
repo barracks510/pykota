@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.06 :
+    
+        - Severe bug fixed : if you had a printer in 
+          power saving state which couldn't answer immediately, 
+          a bug was triggered.
+          It was caused by a bad copy/paste which
+          forgot to import a Python module at run time.
+          
     - 1.05 :
     
         - External accounters are finally available !
