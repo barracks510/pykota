@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha30 :
     
+        - Usernames, Groupnames and Printernames can now contain
+          ANY character, expected '/' and '@'.
+        
         - Integrated most of the Debian work from Sergio 
           González González
           

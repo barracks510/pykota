@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.111  2004/07/06 18:09:42  jalet
+# Reduced the set of invalid characters in names
+#
 # Revision 1.110  2004/07/01 19:56:42  jalet
 # Better dispatching of error messages
 #
@@ -584,12 +587,9 @@ class PyKotaTool :
     
     def isValidName(self, name) :
         """Checks if a user or printer name is valid."""
-        # unfortunately Python 2.1 string modules doesn't define ascii_letters...
-        asciiletters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        digits = '0123456789'
-        validchars = asciiletters + digits + "-_."
-        for c in name :
-            if c not in validchars :
+        invalidchars = "/@"
+        for c in invalidchars :
+            if c in name :
                 return 0
         return 1        
         
