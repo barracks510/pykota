@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.67  2004/01/02 17:37:09  jalet
+# I'm completely stupid !!! Better to not talk while coding !
+#
 # Revision 1.66  2004/01/02 17:31:26  jalet
 # Forgot to remove some code
 #
@@ -293,7 +296,7 @@ class PyKotaTool :
         # pykota specific stuff
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc/pykota")
-        self.logger = logger.openLogger(self)
+        self.logger = logger.openLogger(self, self.config.getLoggingBackend())
         self.debug = self.config.getDebug()
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
