@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/11/01 14:32:26  jalet
+# Fix for unneeded out of band status in pjl_over_tcp/9100
+#
 # Revision 1.30  2004/10/05 09:21:34  jalet
 # Removed misleading comments
 #
@@ -226,7 +229,7 @@ else :
                 self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.printername)    
                 time.sleep(ITERATIONDELAY)
                 
-pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
+pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 pjlStatusValues = {
                     "10000" : "Powersave Mode",
                     "10001" : "Ready Online",
