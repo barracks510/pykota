@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2003/07/07 11:55:50  jalet
+# Small fix
+#
 # Revision 1.50  2003/07/05 12:33:53  jalet
 # More on previous fix.
 #
@@ -498,7 +501,7 @@ class EdPyKota(PyKotaTool) :
                                         entry.setAccountBalance(balancevalue, newlifetimepaid)
                                     changed[entry.Name]["balance"] = balance
                             for groupname in groupnames :        
-                                if groupname not in changed[name]["ingroups"] :
+                                if groupname not in changed[entry.Name]["ingroups"] :
                                     group = self.storage.getGroup(groupname)
                                     if group.Exists :
                                         self.storage.addUserToGroup(entry, group)
