@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/02/26 10:40:40  jalet
+# Fixed nested printer groups accounting.
+#
 # Revision 1.44  2004/02/25 19:09:24  jalet
 # Fix for LDAP problem when job price was 0.
 #
@@ -549,6 +552,9 @@ class BaseStorage :
                 self.tool.logdebug("Cache hit (%s->Parents)" % printer.Name)
         else :        
             printer.Parents = self.getParentPrintersFromBackend(printer)
+        for parent in printer.Parents[:] :    
+            printer.Parents.extend(self.getParentPrinters(parent))
+        self.tool.logdebug("=== %i ===> %s" % (len(printer.Parents), [p.Name for p in printer.Parents]))
         return printer.Parents
         
     def getGroupMembers(self, group) :        
@@ -578,10 +584,11 @@ class BaseStorage :
         return user.Groups   
         
     def getParentPrintersUserPQuota(self, userpquota) :     
-        """Returns all user print quota on the printer and its parents."""
-        upquotas = [ ]
+        """Returns all user print quota on the printer and all its parents recursively."""
+        upquotas = []
         for printer in self.getParentPrinters(userpquota.Printer) :
             upquotas.append(self.getUserPQuota(userpquota.User, printer))
+        self.tool.logdebug("UPQUOTAS : %i ===> %s" % (len(upquotas), ["%s/%s" % (upq.User.Name, upq.Printer.Name) for upq in upquotas]))
         return upquotas        
         
 def openConnection(pykotatool) :
