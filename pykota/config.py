@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2004/11/15 15:23:07  jalet
+# Strips spaces just in case
+#
 # Revision 1.55  2004/11/15 15:14:06  jalet
 # Preliminary integration of Matt's patch for banners.
 #
@@ -566,21 +569,21 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return "BOTH"       # Default value of BOTH
         else :    
-            value = value.upper()
+            value = value.strip().upper()
             if value not in validvalues :
-                raise PyKotaConfigError, _("Option onaccountererror in section %s only supports values in %s") % (printername, str(validvalues))
+                raise PyKotaConfigError, _("Option accountbanner in section %s only supports values in %s") % (printername, str(validvalues))
             return value  
 
     def getStartingBanner(self, printername) :
         """Returns the startingbanner value if set, else None."""
         try :
-            return self.getPrinterOption(printername, "startingbanner")
+            return self.getPrinterOption(printername, "startingbanner").strip()
         except PyKotaConfigError :
             return None
 
     def getEndingBanner(self, printername) :
         """Returns the endingbanner value if set, else None."""
         try :
-            return self.getPrinterOption(printername, "endingbanner")
+            return self.getPrinterOption(printername, "endingbanner").strip()
         except PyKotaConfigError :
             return None
