@@ -50,6 +50,11 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.5 NAME 'pykotaPricePerJob'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
+attributetype ( 1.3.6.1.4.1.16868.1.1.6 NAME 'pykotaPrinterName'
+        DESC 'Printer name as defined in the printing environment, e.g. lp'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
 
 ## New Pykota User object type
 objectclass ( 1.3.6.1.4.1.16868.1.2.1 NAME 'pykotaUser' SUP top AUXILIARY
@@ -64,7 +69,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.2 NAME 'pykotaGroup' SUP top AUXILIARY
         MAY  ( pykotaLimitBy ) )
         
 ## New Pykota Printer object type
-objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top AUXILIARY
-        DESC 'PyKota Auxiliary Printer'
-        MUST ( cn )
+objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top STRUCTURAL
+        DESC 'PyKota Printer'
+        MUST ( pykotaPrinterName )
         MAY  ( pykotaPricePerPage $ pykotaPricePerJob ) )

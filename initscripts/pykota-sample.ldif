@@ -1,0 +1,48 @@
+#dn: ou=People,dc=librelogiciel,dc=com
+#ou: People
+#objectClass: organizationalUnit
+
+#dn: ou=Groups,dc=librelogiciel,dc=com
+#ou: Groups
+#objectClass: organizationalUnit
+
+#dn: ou=Printers,dc=librelogiciel,dc=com
+#ou: Printers
+#objectClass: organizationalUnit
+
+#dn: uid=jerome,ou=People,dc=librelogiciel,dc=com
+#uid: jerome
+#cn:: SmVyb21lIEFsZXQ=
+#objectClass: account
+#objectClass: posixAccount
+#objectClass: top
+#objectClass: shadowAccount
+#objectClass: pykotaUser
+#userPassword: {crypt}PvuIT4Mz8.lCM
+#shadowLastChange: 12093
+#shadowMax: 99999
+#shadowWarning: 7
+#loginShell: /bin/bash
+#uidNumber: 500
+#gidNumber: 500
+#homeDirectory: /home/jerome
+#gecos: Jerome Alet,,,
+#pykotaLimitBy: quota
+#pykotaBalance: 0
+#pykotaLifeTimePaid: 0
+
+#dn: cn=jerome,ou=Groups,dc=librelogiciel,dc=com
+#objectClass: posixGroup
+#objectClass: top
+#objectClass: pykotaGroup
+#cn: jerome
+#userPassword: {crypt}x
+#gidNumber: 500
+#pykotaLimitBy: quota
+
+#dn: pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
+#objectClass: pykotaPrinter
+#pykotaPrinterName: apple
+#pykotaPricePerPage: 0.1
+#pykotaPricePerJob: 0.25
+
