@@ -454,7 +454,8 @@ policy: deny
 #                else is not set.
 # PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size
 # PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price
-#
+# PYKOTAJOBORIGINATINGHOSTNAME : contains the client's hostname if 
+#                                it is possible to retrieve it.
 
 # PreHook : gets executed after being sure the user, printer and user quota
 # entry on the printer both exist in the PyKota database, and after

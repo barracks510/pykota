@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2004/05/26 14:49:40  jalet
+# First try at saving the job-originating-hostname in the database
+#
 # Revision 1.26  2004/03/24 19:37:04  jalet
 # Doesn't retrieve users or printers objects to display the history,
 # this is not needed, and saves a lot of time (and database queries
@@ -265,7 +268,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 self.report.append("<h3>Empty</h3>")
             else :
                 self.report.append('<table class="pykotatable" border="1">')
-                headers = ["Date", "User", "Printer", "PageCounter", "JobId", "JobSize", "JobPrice", "Copies", "Title", "Filename", "Options", "Action"]
+                headers = ["Date", "User", "Printer", "PageCounter", "JobId", "JobSize", "JobPrice", "Copies", "Title", "Filename", "Options", "HostName", "Action"]
                 self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
                 oddeven = 0
                 for job in history :
@@ -279,7 +282,7 @@ class PyKotaReportGUI(PyKotaTool) :
                     elif job.JobAction == "WARN" :    
                         oddevenclass = "warn"
                     username = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate[:19], username, job.PrinterName, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobAction)])))
+                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate[:19], username, job.PrinterName, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobHostName, job.JobAction)])))
                 self.report.append('</table>')
                 dico = { "history" : 1,
                          "datelimit" : job.JobDate,

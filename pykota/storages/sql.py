@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2004/05/26 14:50:12  jalet
+# First try at saving the job-originating-hostname in the database
+#
 # Revision 1.38  2004/05/06 12:37:47  jalet
 # pkpgcounter : comments
 # pkprinters : when --add is used, existing printers are now skipped.
@@ -142,7 +145,7 @@ class SQLStorage :
     def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
         lastjob = StorageLastJob(self, printer)
-        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, jobdate FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
         if result :
             fields = result[0]
             lastjob.ident = fields.get("id")
@@ -157,6 +160,7 @@ class SQLStorage :
             lastjob.JobCopies = fields.get("copies")
             lastjob.JobOptions = fields.get("options")
             lastjob.JobDate = fields.get("jobdate")
+            lastjob.JobHostName = fields.get("hostname")
             lastjob.Exists = 1
         return lastjob
             
@@ -334,16 +338,16 @@ class SQLStorage :
         """Sets the last job's size permanently."""
         self.doModify("UPDATE jobhistory SET jobsize=%s, jobprice=%s WHERE id=%s" % (self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(lastjob.ident)))
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None) :    
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None) :    
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost)))
             else :    
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options, hostname) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost)))
         else :        
             # here we explicitly want to reset jobsize to NULL if needed
-            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(printer.LastJob.ident)))
+            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(printer.LastJob.ident)))
             
     def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota."""
@@ -367,7 +371,7 @@ class SQLStorage :
         """Removes a printer from a printer group."""
         self.doModify("DELETE FROM printergroupsmembers WHERE groupid=%s AND printerid=%s" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
-    def retrieveHistory(self, user=None, printer=None, datelimit=None, limit=100) :    
+    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, limit=100) :    
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
         query = "SELECT jobhistory.*,username,printername FROM jobhistory,users,printers WHERE users.id=userid AND printers.id=printerid"
         where = []
@@ -375,6 +379,8 @@ class SQLStorage :
             where.append("userid=%s" % self.doQuote(user.ident))
         if (printer is not None) and printer.Exists :
             where.append("printerid=%s" % self.doQuote(printer.ident))
+        if hostname is not None :    
+            where.append("hostname=%s" % self.doQuote(hostname))
         if datelimit is not None :    
             where.append("jobdate<=%s" % self.doQuote(datelimit))
         if where :    
@@ -398,6 +404,7 @@ class SQLStorage :
                 job.JobCopies = fields.get("copies")
                 job.JobOptions = fields.get("options")
                 job.JobDate = fields.get("jobdate")
+                job.JobHostName = fields.get("hostname")
                 job.UserName = fields.get("username")
                 job.PrinterName = fields.get("printername")
                 job.Exists = 1

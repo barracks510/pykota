@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2004/05/26 14:49:57  jalet
+# First try at saving the job-originating-hostname in the database
+#
 # Revision 1.51  2004/03/24 15:15:24  jalet
 # Began integration of Henrik Janhagen's work on quota-then-balance
 # and balance-then-quota
@@ -299,9 +302,9 @@ class StoragePrinter(StorageObject) :
         else :
             raise AttributeError, name
             
-    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None) :
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None) :
         """Adds a job to the printer's history."""
-        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options)
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost)
         # TODO : update LastJob object ? Probably not needed.
         
     def addPrinterToGroup(self, printer) :    
@@ -453,6 +456,7 @@ class StorageJob(StorageObject) :
         self.JobTitle = None
         self.JobCopies = None
         self.JobOptions = None
+        self.JobHostName = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""

@@ -22,6 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 PyKota NEWS :
 
 
+    - 1.19alpha16 :
+    
+        - The job's originating hostname is now stored in the database,
+          and exported as PYKOTAJOBORIGINATINGHOSTNAME in the environment.
+        
     - 1.19alpha15 :
     
         - The old pykota filter is now removed. This means that

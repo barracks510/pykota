@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2004/05/26 14:49:35  jalet
+# First try at saving the job-originating-hostname in the database
+#
 # Revision 1.52  2004/05/25 09:15:13  jalet
 # accounter.py : old code deleted
 # the rest : now exports PYKOTAPRECOMPUTEDJOBSIZE and PYKOTAPRECOMPUTEDJOBPRICE
@@ -251,6 +254,52 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         """   
         return 0
         
+    def getPageLogLocation(self) :
+        """Retrieves CUPS' page_log file location."""
+        location = None
+        cupsroot = os.environ.get("CUPS_SERVERROOT", "/etc/cups")
+        cupsdconf = os.path.join(cupsroot, "cupsd.conf")
+        try :
+            conffile = open(cupsdconf, "r")
+        except IOError :    
+            return # file doesn't exist or can't be read
+        else :    
+            for line in conffile.readlines() :
+                linecopy = line.strip().lower()
+                if linecopy.startswith("pagelog ") :
+                    try :
+                        location = line.split()[1]
+                    except :    
+                        pass # ignore errors, we take the last value in any case.
+            conffile.close()            
+            return location            
+            
+    def getJobOriginatingHostname(self, printername, username, jobid) :
+        """Retrieves the job-originating-hostname from the CUPS page_log file if possible."""
+        pagelogpath = self.getPageLogLocation() or "/var/log/cups/page_log"
+        try :
+            pagelog = open(pagelogpath, "r")
+        except IOError :    
+            return # no page log or can't read it, originating hostname unknown yet
+        else :    
+            # TODO : read backward so we could take first value seen
+            # TODO : here we read forward so we must take the last value seen
+            prefix = "%s %s %s" % (printername, username, jobid)
+            matchingline = None
+            while 1 :
+                line = pagelog.readline()
+                if not line :
+                    break
+                else :
+                    line = line.strip()
+                    if line.startswith(prefix) :    
+                        matchingline = line # no break, because we read forward
+            pagelog.close()        
+            if matchingline is None :
+                return # correct line not found, job-originating-hostname unknown
+            else :    
+                return matchingline.split()[-1]
+                
     def doWork(self, policy, printer, user, userpquota) :    
         """Most of the work is done here."""
         # Two different values possible for policy here :
@@ -261,6 +310,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         if policy == "OK" :
             # exports user information with initial values
             self.exportUserInfo(userpquota)
+            
+            # tries to extract job-originating-hostname 
+            clienthost = self.getJobOriginatingHostname(printer.Name, user.Name, self.jobid)
+            os.putenv("PYKOTAJOBORIGINATINGHOSTNAME", str(clienthost or ""))
             
             # enters first phase
             os.putenv("PYKOTAPHASE", "BEFORE")
@@ -316,7 +369,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             jobprice = userpquota.increasePagesUsage(jobsize)
             
             # adds the current job to history    
-            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options)
+            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost)
             self.logdebug("Job added to history.")
             
             # exports some new environment variables
