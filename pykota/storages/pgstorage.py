@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/10/03 08:57:55  jalet
+# Caching mechanism now caches all that's cacheable.
+#
 # Revision 1.13  2003/10/02 20:23:18  jalet
 # Storage caching mechanism added.
 #
@@ -269,6 +272,7 @@ class Storage(BaseStorage) :
                 user.Email = record.get("email")
                 user.Exists = 1
                 groupmembers.append(user)
+                self.cacheEntry("USERS", user.Name, user)
         return groupmembers        
         
     def getMatchingPrinters(self, printerpattern) :
@@ -288,6 +292,7 @@ class Storage(BaseStorage) :
                     printer.LastJob = self.getPrinterLastJob(printer)
                     printer.Exists = 1
                     printers.append(printer)
+                    self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
         
     def getPrinterUsersAndQuotas(self, printer, names=None) :        
@@ -313,6 +318,8 @@ class Storage(BaseStorage) :
                     userpquota.DateLimit = record.get("datelimit")
                     userpquota.Exists = 1
                     usersandquotas.append((user, userpquota))
+                    self.cacheEntry("USERS", user.Name, user)
+                    self.cacheEntry("USERPQUOTAS", "%s@%s" % (user.Name, printer.Name), userpquota)
         return usersandquotas
                 
     def getPrinterGroupsAndQuotas(self, printer, names=None) :        
