@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/10/12 09:14:03  jalet
+# Ensures that warnpykota still test other quota entries for each user if
+# he has not been warned, even if limited by his account balance.
+#
 # Revision 1.34  2004/10/12 09:09:04  jalet
 # Now warnpykota warns users limited by balance only once per launch.
 #
@@ -246,9 +250,11 @@ class WarnPyKota(PyKotaTool) :
                     if (user.AccountBalance and (user.AccountBalance != user.LifeTimePaid)) or \
                        userpquota.PageCounter or userpquota.LifePageCounter or \
                        self.storage.getUserNbJobsFromHistory(user) :
-                        if (user.LimitBy.lower() != 'balance') or not alreadydone.get(user.Name) :
-                            self.warnUserPQuota(userpquota)
-                        alreadydone[user.Name] = 1
+                        done = alreadydone.get(user.Name)
+                        if (user.LimitBy.lower() != 'balance') or not done :
+                            action = self.warnUserPQuota(userpquota)
+                            if not done :
+                                alreadydone[user.Name] = (action in ('WARN', 'DENY'))
                      
 if __name__ == "__main__" : 
     retcode = 0
