@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/01/12 15:28:45  jalet
+# Now can output the user's history on several printers at the same time.
+#
 # Revision 1.7  2004/01/12 15:12:50  jalet
 # Small fix for history
 #
@@ -43,6 +46,7 @@
 #
 
 import os
+import urllib
 from mx import DateTime
 
 from pykota.reporter import BaseReporter, PyKotaReporterError
@@ -57,7 +61,8 @@ class Reporter(BaseReporter) :
         else :    
             prefix = "User"
         for printer in self.printers :
-            self.report.append('<h2 class="printername">%s</h2>' % self.getPrinterTitle(printer))
+            phistoryurl = { "printername" : printer.Name, "history" : 1 }
+            self.report.append('<a href="%s?%s"><h2 class="printername">%s</h2></a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(phistoryurl), self.getPrinterTitle(printer)))
             self.report.append('<h3 class="printergracedelay">%s</h3>' % self.getPrinterGraceDelay(printer))
             (pjob, ppage) = self.getPrinterPrices(printer)
             self.report.append('<h4 class="priceperjob">%s</h4>' % pjob)

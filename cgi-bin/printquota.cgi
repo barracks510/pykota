@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2004/01/12 15:28:45  jalet
+# Now can output the user's history on several printers at the same time.
+#
 # Revision 1.24  2004/01/12 14:52:03  jalet
 # Cuts the date string
 #
@@ -270,7 +273,8 @@ class PyKotaReportGUI(PyKotaTool) :
                         oddevenclass = "deny"
                     elif job.JobAction == "WARN" :    
                         oddevenclass = "warn"
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate[:19], job.User.Name, job.Printer.Name, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobAction)])))
+                    username = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.User.Name}), job.User.Name)
+                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate[:19], username, job.Printer.Name, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobAction)])))
                 self.report.append('</table>')
                 dico = { "history" : 1,
                          "datelimit" : job.JobDate,
