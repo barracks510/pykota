@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha19 :
     
+        - Improved user groups and user groups quotas dumps in dumpykota.
+        
         - Finished implementation of LDAP support in dumpykota.
         
         - The md5 sum of the job's datas is now available as an 
