@@ -35,6 +35,9 @@ PyKota NEWS :
         
         - The CGI script displays a link to PyKota's website.
         
+        - The job history is now kept, this will allow per-period
+          reports in the future.
+        
     - 1.02 :
     
         - The installation script now checks for software availability
