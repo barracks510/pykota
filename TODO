@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Ink accounting ala PrintBill.
+        
         - Add a description field to users/groups.
         
         - Allow the admin to choose an action to take when the database
