@@ -28,7 +28,7 @@ PyKota NEWS :
           SUM((NbPages * PricePerPage) + PricePerJob)
           
           For current printer and all the printers groups it is 
-          a member of.
+          a member of, if any.
           
           This may be difficult to grasp, but offers unprecedented
           flexibility.

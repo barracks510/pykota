@@ -143,7 +143,7 @@ PyKota's FAQ :
     all the printers groups it belongs to, recursively.
     If quota is reached on ANY of these printers for the current user,
     printing is denied.
-
+    
   * Is this feature robust ?
   
     It should be. However, beware of integrity problems. LDAP has no 
@@ -153,6 +153,17 @@ PyKota's FAQ :
     another tool (e.g. psql or gq), then you are mostly on you 
     own to not create infinite loops.
     
+  * How is computed the job's price ?  
+  
+    A job's price is computed with this formula :
+    
+      SUM((NbPages * PricePerPage) + PricePerJob)
+      
+    For current printer and all the printers groups it is 
+    a member of, if any.
+    This may be difficult to grasp, but offers unprecedented
+    flexibility.
+
   * My question isn't answered there, can you help ?  
   
     Sure. Ask your question to the mailing list. If this is a
