@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.102  2004/06/17 13:26:51  jalet
+# Better exception handling code
+#
 # Revision 1.101  2004/06/16 20:56:34  jalet
 # Smarter initialisation code
 #
@@ -423,6 +426,7 @@ class PyKotaTool :
             sys.stderr.write("ERROR: Problem encountered while parsing configuration file : %s\n" % msg)
             sys.stderr.flush()
             sys.exit(-1)
+            
         try :
             self.debug = self.config.getDebug()
             self.smtpserver = self.config.getSMTPServer()
@@ -465,7 +469,7 @@ class PyKotaTool :
         lines = []
         for line in traceback.format_exception(*sys.exc_info()) :
             lines.extend([l for l in line.split("\n") if l])
-        msg = "ERROR : ".join(["%s\n" % l for l in ([message] + lines)])
+        msg = "ERROR: ".join(["%s\n" % l for l in ([message] + lines)])
         sys.stderr.write(msg)
         sys.stderr.flush()
         try :

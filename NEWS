@@ -21,9 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha22 :
+    
+        - Even better debugging code.
+        
     - 1.19alpha21 :
     
-        - Additionnal check
+        - Additionnal check.
         
     - 1.19alpha20 :
     

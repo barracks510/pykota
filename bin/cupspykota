@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.63  2004/06/17 13:26:50  jalet
+# Better exception handling code
+#
 # Revision 1.62  2004/06/16 20:56:34  jalet
 # Smarter initialisation code
 #
@@ -641,8 +644,19 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             retcode = self.removeJob()
         return retcode    
     
+def crashed(message) :    
+    """Minimal crash method."""
+    import traceback
+    lines = []
+    for line in traceback.format_exception(*sys.exc_info()) :
+        lines.extend([l for l in line.split("\n") if l])
+    msg = "ERROR: ".join(["%s\n" % l for l in ([message] + lines)])
+    sys.stderr.write(msg)
+    sys.stderr.flush()
+
 if __name__ == "__main__" :    
     # This is a CUPS backend, we should act and die like a CUPS backend
+    retcode = 0
     if len(sys.argv) == 1 :
         # we will execute each existing backend in device enumeration mode
         # and generate their PyKota accounting counterpart
@@ -679,32 +693,29 @@ if __name__ == "__main__" :
                         if fullname.startswith('"') and fullname.endswith('"') :
                             fullname = fullname[1:-1]
                         print '%s cupspykota:%s "PyKota+%s" "PyKota managed %s"' % (devicetype, device, name, fullname)
-        retcode = 0
+        retcode = 0                
     elif len(sys.argv) not in (6, 7) :    
         sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
         retcode = 1
     else :    
         try :
-            # Initializes the backend
-            kotabackend = PyKotaBackend()    
-            retcode = kotabackend.mainWork()
+            try :
+                # Initializes the backend
+                kotabackend = PyKotaBackend()    
+            except SystemExit :    
+                retcode = -1
+            except :    
+                crashed("cupspykota backend initialization failed")
+                retcode = 1
+            else :    
+                retcode = kotabackend.mainWork()
+                kotabackend.storage.close()
+                kotabackend.closeJobDataStream()    
         except :
             try :
                 kotabackend.crashed("cupspykota backend failed")
             except :    
-                pass
-            retcode = 1
-        
-        try :
-            kotabackend.storage.close()
-        except (TypeError, NameError, AttributeError) :    
-            pass
-            
-        try :
-            kotabackend.closeJobDataStream()    
-        except NameError, msg :    
-            sys.stderr.write("ERROR: PyKota's CUPS backend wrapper didn't initialize correctly : %s\n" % msg)
-            sys.stderr.flush()
-            retcode = 1
+                crashed("cupspykota backend failed")
+            retcode = 1    
         
     sys.exit(retcode)    
