@@ -15,6 +15,18 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 PyKota NEWS :
 
+    - 0.97 :
+    
+        - edpykota accepts wildcards on its command line for users/groups too
+          if the --add option is not set, e.g. :
+          
+              $ edpykota --printer lp --softlimit 50 --hardlimit 100 "jer*"
+              
+          If no user name is passed at all, then a default wildcard of "*"
+          which means apply the command on ALL users for this printer is used.
+          
+        - Small bug fixes.
+        
     - 0.96 :
 
         - Options requester, policy, admin, adminmail and gracedelay can now
