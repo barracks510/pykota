@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2003/04/24 08:08:27  jalet
+# Debug message forgotten
+#
 # Revision 1.36  2003/04/24 07:59:40  jalet
 # LPRng support now works !
 #
@@ -215,8 +218,6 @@ class PyKotaTool :
         else :    
             # Try to detect LPRng
             jseen = Jseen = Pseen = nseen = rseen = None
-            sys.stderr.write("ARGS : %s\n" % str(sys.argv))
-            sys.stderr.flush()
             for arg in sys.argv :
                 if arg.startswith("-j") :
                     jseen = arg[2:].strip()
