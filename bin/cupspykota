@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.69  2004/07/22 22:41:47  jalet
+# Hardware accounting for LPRng should be OK now. UNTESTED.
+#
 # Revision 1.68  2004/07/20 22:19:44  jalet
 # Sanitized a bit + use of gettext
 #
@@ -399,7 +402,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.prehook(userpquota)
             
             self.printInfo(_("Job accounting begins."))
-            self.accounter.beginJob(userpquota)
+            self.accounter.beginJob(printer)
         else :    
             action = "ALLOW"
             os.environ["PYKOTAACTION"] = action
@@ -418,7 +421,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             os.environ["PYKOTAPHASE"] = "AFTER"
             
             # stops accounting. 
-            self.accounter.endJob(userpquota)
+            self.accounter.endJob(printer)
             self.printInfo(_("Job accounting ends."))
                 
             # retrieve the job size    

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/07/22 22:41:48  jalet
+# Hardware accounting for LPRng should be OK now. UNTESTED.
+#
 # Revision 1.7  2004/07/16 12:22:47  jalet
 # LPRng support early version
 #
@@ -71,12 +74,17 @@ class Accounter(AccounterBase) :
         self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
         return counter    
         
-    def beginJob(self, userpquota) :    
+    def beginJob(self, printer) :    
         """Saves printer internal page counter at start of job."""
         # save page counter before job
-        self.LastPageCounter = self.counterbefore = self.getPrinterInternalPageCounter()
+        self.LastPageCounter = self.getPrinterInternalPageCounter()
+        self.fakeBeginJob()
         
-    def endJob(self, userpquota) :    
+    def fakeBeginJob(self) :    
+        """Fakes a begining of a job."""
+        self.counterbefore = self.getLastPageCounter()
+        
+    def endJob(self, printer) :    
         """Saves printer internal page counter at end of job."""
         # save page counter after job
         self.LastPageCounter = self.counterafter = self.getPrinterInternalPageCounter()

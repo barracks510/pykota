@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/07/22 22:41:48  jalet
+# Hardware accounting for LPRng should be OK now. UNTESTED.
+#
 # Revision 1.3  2004/07/21 09:35:48  jalet
 # Software accounting seems to be OK with LPRng support now
 #
@@ -83,7 +86,12 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             # we are sure (?) that it was hardware accounting which was used
             # and that the second pass didn't work or wasn't even launched
             # we know have to act just as if we were in second pass
-            raise PyKotaToolError, "Not implemented yet !"
+            # for previous user on this printer, then we will continue
+            # with normal processing of current user.
+            self.secondPass(policy, printer, None, None)
+        
+        # export user info with initial values
+        self.exportUserInfo(userpquota)
         
         # tries to extract job-originating-hostname 
         clienthost = self.getJobOriginatingHostname(printer.Name, user.Name, self.jobid)
@@ -118,11 +126,11 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         self.prehook(userpquota)
         
         self.logdebug("Job accounting begins.")
-        self.accounter.beginJob(userpquota)
+        self.accounter.beginJob(printer)
         
         jobsize = None
         if self.accounter.isSoftware :
-            self.accounter.endJob(userpquota)
+            self.accounter.endJob(printer)
             jobsize = self.accounter.getJobSize()
             self.logdebug("Job accounting ends.")
             
@@ -130,7 +138,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             jobsize = 0
             self.logdebug("Job size forced to 0 because printing was denied.")
             
-        if jobsize is not None :    
+        if self.accounter.isSoftware :    
             # update the quota for the current user on this printer 
             self.logdebug("Job size : %i" % jobsize)
             self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
@@ -179,17 +187,51 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                 # from software to hardware during this short (?) time.
                 raise PyKotaToolError, _("Hardware accounting already finished ! This should be impossible, please report this problem ASAP.")
                 
+            # here if user and userpquota are both None
+            # then it's a special second pass for a job
+            # which should have had one but didn't, so
+            # we need to get the last user, not the current one.
+            if (user is None) and (userpquota is None) :
+                user = printer.LastJob.User
+                userpquota = self.storage.getUserPQuota(user, printer)
+                
+            # exports user info for last user    
+            self.exportUserInfo(userpquota)
+            
             # indicate phase change
             os.environ["PYKOTAPHASE"] = "AFTER"
             
+            # fakes beginning of job with old page counter
+            self.accounter.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0)
+            self.accounter.fakeBeginJob()
+            self.logdebug("Fakes beginning of job with LastPageCounter: %s" % self.accounter.getLastPageCounter())
+            
             # stops accounting. 
-            self.accounter.endJob(userpquota)
+            self.accounter.endJob(printer)
             self.logdebug("Job accounting ends.")
                 
             # retrieve the job size    
             jobsize = self.accounter.getJobSize()
+            
             self.logdebug("Job size : %i" % jobsize)
-            raise PyKotaToolError, "Not implemented !"
+            self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
+            jobprice = userpquota.increasePagesUsage(jobsize)
+            
+            self.storage.writeLastJobSize(printer.LastJob, jobsize, jobprice)
+            self.logdebug("Job size and price now set in history.")
+            
+            # exports some new environment variables
+            os.environ["PYKOTAPHASE"] = "AFTER"
+            os.environ["PYKOTAJOBSIZE"] = str(jobsize)
+            os.environ["PYKOTAJOBPRICE"] = str(jobprice)
+            
+            # then re-export user information with new value
+            self.exportUserInfo(userpquota)
+            
+            # Launches the post hook
+            self.posthook(userpquota)
+            
+            # here hardware accounting was completed.
         return self.acceptJob()
         
     def doWork(self, policy, printer, user, userpquota) :    
@@ -203,9 +245,6 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             # nothing to do, just accept the job
             return self.acceptJob()
         else :    
-            # exports user information with initial values
-            self.exportUserInfo(userpquota)
-            
             if (not printer.LastJob.Exists) or (printer.LastJob.JobId != self.jobid) :
                 # Last job for current printer has a different JobId than
                 # the current job, so we know we are in the first pass.

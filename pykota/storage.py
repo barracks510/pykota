@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2004/07/22 22:41:48  jalet
+# Hardware accounting for LPRng should be OK now. UNTESTED.
+#
 # Revision 1.56  2004/07/01 17:45:49  jalet
 # Added code to handle the description field for printers
 #
@@ -511,22 +514,6 @@ class StorageLastJob(StorageJob) :
         StorageJob.__init__(self, parent)
         self.PrinterName = printer.Name # not needed
         self.Printer = printer
-        
-    def __getattr__(self, name) :    
-        """Delays data retrieval until it's really needed."""
-        if name == "User" : 
-            self.User = self.parent.getUser(self.UserName)
-            return self.User
-        else :    
-            raise AttributeError, name
-        
-    def setSize(self, userpquota, jobsize) :
-        """Sets the last job's size."""
-        jobprice = userpquota.computeJobPrice(jobsize)
-        self.parent.writeLastJobSize(self, jobsize, jobprice)
-        self.JobSize = jobsize
-        self.JobPrice = jobprice
-        return jobprice
         
 class BaseStorage :
     def __init__(self, pykotatool) :

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2004/07/22 22:41:48  jalet
+# Hardware accounting for LPRng should be OK now. UNTESTED.
+#
 # Revision 1.17  2004/07/16 12:22:47  jalet
 # LPRng support early version
 #
@@ -102,7 +105,7 @@ class AccounterBase :
         except :    
             return 0
             
-    def beginJob(self, userpquota) :    
+    def beginJob(self, printer) :    
         """Saves the computed job size."""
         # computes job's size
         self.JobSize = self.computeJobSize()
@@ -112,16 +115,20 @@ class AccounterBase :
                 self.JobSize *= self.filter.copies
         
         # get last job information for this printer
-        if not userpquota.Printer.LastJob.Exists :
+        if not printer.LastJob.Exists :
             # The printer hasn't been used yet, from PyKota's point of view
             self.LastPageCounter = 0
         else :    
             # get last job size and page counter from Quota Storage
             # Last lifetime page counter before actual job is 
             # last page counter + last job size
-            self.LastPageCounter = int(userpquota.Printer.LastJob.PrinterPageCounter or 0) + int(userpquota.Printer.LastJob.JobSize or 0)
+            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
         
-    def endJob(self, userpquota) :    
+    def fakeBeginJob(self) :    
+        """Do nothing."""
+        pass
+        
+    def endJob(self, printer) :    
         """Do nothing."""
         pass
         
