@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/07/01 12:37:31  jalet
+# Nicer UI
+#
 # Revision 1.10  2003/07/01 07:30:32  jalet
 # Message changed.
 #
@@ -117,13 +120,13 @@ class PyKotaReportGUI(PyKotaTool) :
         """Displays the printers multiple selection list."""
         printers = self.storage.getMatchingPrinters(mask)
         selectednames = [p.Name for p in selected]
-        message = 'Printer : <select name="printers" multiple="multiple">'
+        message = '<table><tr><td valign="top">Printer :</td><td valign="top"><select name="printers" multiple="multiple">'
         for printer in printers :
             if printer.Name in selectednames :
                 message += '<option value="%s" selected="selected">%s</option>' % (printer.Name, printer.Name)
             else :
                 message += '<option value="%s">%s</option>' % (printer.Name, printer.Name)
-        message += '</select>'
+        message += '</select></td></tr></table>'
         return message
         
     def htmlUGNamesInput(self, value="*") :    
