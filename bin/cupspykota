@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/03/16 12:05:01  jalet
+# Small fix for new waitprinter.sh : when job was denied, would wait forever
+# for printer being in printing mode.
+#
 # Revision 1.34  2004/03/15 10:47:56  jalet
 # This time the traceback formatting should be correct !
 #
@@ -239,6 +243,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.accounter.beginJob(userpquota)
         else :    
             action = "ALLOW"
+            os.putenv("PYKOTAACTION", action)
             
         # pass the job's data to the real backend    
         if action in ["ALLOW", "WARN"] :

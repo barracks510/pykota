@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.18beta :
     
+        - Small fix for new waitprinter.sh script
+        
         - Better tracebacks on error conditions
         
         - Improved translations
