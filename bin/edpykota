@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/07 22:53:57  jalet
+# Checks if printer name is valid before adding it
+#
 # Revision 1.7  2003/02/07 22:17:58  jalet
 # Incomplete test
 #
@@ -121,14 +124,29 @@ Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
 class EdPyKota(PyKotaTool) :        
     """A class for edpykota."""
+    def isValidPrinterName(self, printername) :
+        """Checks if a printername is valid."""
+        import string
+        if printername[0] in string.ascii_letters :
+            validchars = string.ascii_letters + string.digits + "-_"
+            for c in printername[1:] :
+                if c not in validchars :
+                    return 0
+            return 1        
+        return 0
+        
     def main(self, names, options) :
         """Edit user or group quotas."""
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
-            if options["add"] and options["printer"] and options["printer"].isalpha() :
-                self.storage.addPrinter(options["printer"])
+            pname = options["printer"]
+            if options["add"] and pname :
+                if self.isValidPrinterName(pname) :
+                    self.storage.addPrinter(pname)
+                else :    
+                    raise PyKotaToolError, "Invalid printer name %s" % pname
             else :
-                raise PyKotaToolError, "There's no printer matching %s" % options["printer"]
+                raise PyKotaToolError, "There's no printer matching %s" % pname
         softlimit = hardlimit = None    
         if options["softlimit"] :
             try :
