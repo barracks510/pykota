@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.146  2004/12/09 23:03:57  jalet
+# Fixed a bug when pkbanner's output was piped into another command (e.g. gs)
+#
 # Revision 1.145  2004/11/27 22:52:07  jalet
 # Now PyKota searches its configuration files first in system user pykota's
 # home directory
@@ -1266,7 +1269,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         """
         if bannerfileorcommand :
             banner = "" # no banner by default
-            if (os.access(bannerfileorcommand, os.X_OK)) :
+            if os.access(bannerfileorcommand, os.X_OK) or not os.path.isfile(bannerfileorcommand) :
                 self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
                 child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
                 banner = child.fromchild.read()

@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.21alpha12 :
     
+        - Fixed a bug with non standard pkbanner command lines.
+        
         - Now logs as errors the differences between precomputed and 
           computed job sizes. **CUPS only for now**
           
