@@ -24,9 +24,6 @@ TODO, in order of importance :
         - Add full support for printer groups, now that we know
           how simple it is to do so :-)
           
-        - Add more fields to the job history (title, originating  
-          host name, number of copies, ...)
-          
         - Documentation...
           
         - Find a way to fill the 'email' field in the PgStorage.
