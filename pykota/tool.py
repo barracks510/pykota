@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.84  2004/04/21 08:36:32  jalet
+# Exports the PYKOTASTATUS environment variable when SIGTERM is received.
+#
 # Revision 1.83  2004/04/16 17:03:49  jalet
 # The list of printers groups the current printer is a member of is
 # now exported in the PYKOTAPGROUPS environment variable
@@ -764,29 +767,11 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         signal.signal(signal.SIGPIPE, signal.SIG_IGN)
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
-    def registerChild(self, pid, name) :    
-        """Registers a child process so that we will be able to kill it later if needed."""
-        self.childProcesses[pid] = name
-        
-    def unregisterChild(self, pid) :    
-        try :
-            del self.childProcesses[pid]
-        except KeyError :    
-            pass
-            
     def sigterm_handler(self, signum, frame) :
         """Sets a global variable whenever SIGTERM is received."""
-        # SIGTERM will be ignore most of the time, but during
-        # the call to the real backend, we have to pass it through.
         self.gotSigTerm = 1
+        os.putenv("PYKOTASTATUS", "CANCELLED")
         self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
-        for (childpid, childname) in self.childProcesses.items() :
-            try :
-                os.kill(childpid, signal.SIGTERM)
-            except :    
-                pass
-            else :    
-                self.logdebug("SIGTERM sent to process %s (%s)." % (childpid, childname))
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""
