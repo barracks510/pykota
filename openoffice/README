@@ -20,12 +20,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 ====================================================================
 
 This directory contains some screenshots of direct access to PyKota's
-database through OpenOffice.org
+database through OpenOffice.org, as well as a sample report in both
+PDF and OpenOffice.org's sxc format.
 
-Since it works but I don't know OpenOffice enough to do something nice
-with it, I've added these screenshots and here's a small howto below.
-For people interested in a more complete howto, please see :
-http://kandalaya.org/download/oo-pgsql.html
+The sample report is a Jobs per User diagram, created from a
+simple SQL query to PyKota's database from within OpenOffice.org
+
+Since it works but I don't know OpenOffice enough to do something 
+really nice with it, I've added these screenshots and here's a small 
+howto below. For people interested in a more complete howto, please 
+see : http://kandalaya.org/download/oo-pgsql.html 
 
 PyKota + PostgreSQL + OpenOffice.org HowTO :
 --------------------------------------------
