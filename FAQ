@@ -93,9 +93,10 @@ PyKota's FAQ :
     create a script which understands your printer's
     Page Description Language.
     
-    PyKota natively understands DSC compliant PostScript, PCL5, 
-    PCLXL (aka PCL6), PDF and ESC/P2. Support for Binary PostScript is
-    done through GhostScript. More PDLs will be added in the future. 
+    PyKota natively understands DSC compliant PostScript, 
+    PCL3, PCL4, PCL5, PCLXL (aka PCL6), PDF and ESC/P2. Support 
+    for Binary PostScript is done through GhostScript. More PDLs
+    will be added in the future.  
     However you can always plug your own PDL analyzer in PyKota.
           
   * I've got a great number of users. How can I automatically
@@ -107,7 +108,7 @@ PyKota's FAQ :
     
   * What does the --prototype command line option to edpykota do ?
   
-    This option currently (v1.17) only copies the soft and hard
+    This option currently (v1.20) only copies the soft and hard
     page limits from a template user to other users. This option
     needs to be updated to new PyKota functionnalities, because it
     currently lacks.
