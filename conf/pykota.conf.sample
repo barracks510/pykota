@@ -60,6 +60,8 @@ storageuser: pykotauser
 # IF AN USER PRINTS ON SEVERAL PRINTERS AT THE SAME TIME.
 # YOU MAY FIND IT INTERESTING ANYWAY, ESPECIALLY FOR LDAP.
 #
+# FYI, I ALWAYS SET IT TO YES !
+#
 storagecaching: No
 
 # Should full job history be disabled ?
