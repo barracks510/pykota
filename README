@@ -164,7 +164,7 @@ PyKota features :
         
 Planned features are described in the TODO file.
 
-Actually three (or an infinity of) page accounting methods are
+Actually two (or an infinity of) page accounting methods are
 implemented :
 
   - The 'hardware' method consists in querying the printer (via SNMP

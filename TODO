@@ -25,7 +25,7 @@ TODO, in no particular order :
         
         - Think about some possible client <=> PyKota dialog
           possibilities, like embedding a small web server in
-          PyKota for example.
+          PyKota for example, or something like that.
         
         - Log something when --add is used with existing entries.
           Maybe add a new command line option to force/not force
