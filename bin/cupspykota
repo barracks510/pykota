@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2004/03/18 19:11:25  jalet
+# Fix for raw jobs in cupspykota
+#
 # Revision 1.36  2004/03/18 14:03:18  jalet
 # Added fsync() calls
 #
@@ -316,7 +319,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, bufsize=0, arg0=os.environ["DEVICE_URI"])
         
         # Save file descriptors, we will need them later.
-        infno = infile.fileno()
         stdoutfno = sys.stdout.fileno()
         stderrfno = sys.stderr.fileno()
         fromcfno = subprocess.fromchild.fileno()
@@ -326,7 +328,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         # We will have to be careful when dealing with I/O 
         # So we use a poll object to know when to read or write
         pollster = select.poll()
-        pollster.register(infno, select.POLLIN | select.POLLPRI)
         pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
         pollster.register(cerrfno, select.POLLIN | select.POLLPRI)
         pollster.register(stdoutfno, select.POLLOUT)
@@ -339,6 +340,19 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         errdata = ""
         endinput = endoutput = enderr = 0
         inputclosed = outputclosed = errclosed = 0
+        
+        if self.preserveinputfile is None :
+            # this is not a real file, we read the job's data
+            # from stdin 
+            infno = infile.fileno()
+            pollster.register(infno, select.POLLIN | select.POLLPRI)
+        else :    
+            # job's data is in a file, no need to pass the data
+            # to the real backend
+            self.logdebug("Job's data is in %s" % self.preserveinputfile)
+            infno = None
+            endinput = 1
+        
         killed = 0
         self.logdebug("Entering streams polling loop...")
         status = -1
@@ -365,7 +379,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     if fd == tocfno :
                         if indata :
                             os.write(fd, indata)    
-                            os.fsync(fd)
+                            try :
+                                os.fsync(fd)
+                            except OSError :
+                                pass
                             indata = ""
                         if endinput :    
                             pollster.unregister(tocfno)        
@@ -375,7 +392,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     elif fd == stdoutfno :
                         if outdata :
                             os.write(fd, outdata)
-                            os.fsync(fd)
+                            try :
+                                os.fsync(fd)
+                            except OSError :    
+                                pass
                             outdata = ""
                         if endoutput :    
                             pollster.unregister(stdoutfno)        
@@ -383,7 +403,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     elif fd == stderrfno :
                         if errdata :
                             os.write(fd, errdata)
-                            os.fsync(fd)
+                            try :
+                                os.fsync(fd)
+                            except OSError :    
+                                pass
                             errdata = ""
                         if enderr :    
                             pollster.unregister(stderrfno)        
