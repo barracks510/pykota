@@ -17,26 +17,39 @@ PyKota is a complete Print Quota system for the Common Unix Printing
 System (aka CUPS), which works by directly querying the printers
 for the number of pages they have printed.
 
-Current or planned features are :
+Actually only the lazy quota method is implemented. What do I call
+lazy method ?
 
-        - Easy installation.
+  The lazy method consists in querying the printer via SNMP for
+  its total pages counter, just before the beginning of a job, and
+  use this to modify the *preceding* user's quota. So you're
+  always late of one print job, but this is generally ok, especially
+  because a check is also done to see if the current user is allowed
+  or not to print.
+  
+  Problem may arise however in batches on successive print jobs 
+  my different users when there's no sleep time between two jobs :
+  the used pages may be attributed to incorrect user. This
+  depends on the printer speed and time between jobs.
+  
+  Other querying methods which won't suffer from this problem,
+  but probably from other ones ;-) will be implemented in the 
+  future.
+  
+PyKota is know to work fine with HP Laserjet 2100 and 2200   
+networked printers.
+
+Planned features are :
+
+        - Easier installation.
         
         - Per printer User and Group quotas. Currently Group
           quotas are only at skeleton stage.
         
-        - Centralized configurable storage : currently
-          only a PostgreSQL database backend is supported,
-          but at least LDAP and MySQL are planned.
-          
-        - Automated mailing of warning or error messages to  
-          users and print administrator when print quota is 
-          exceeded.
-          
         - Configurable printer querying methods. Currently
           only SNMP method is supported.
-
-Look at the documentation in the docs subdirectory to learn
-more.
+          
+        - More Quota Storage backends.  
 
 ============================================================
 
@@ -74,19 +87,9 @@ Prerequisite :
 Then :   
 ------
  
-Download the latest PyKota version from :
+Download the latest PyKota version from the CVS tree on :
 
-        http://www.librelogiciel.com/software/
-
-Extract it and install it on the CUPS Server :
-
-        gzip -d pykota-x.xx.tar.gz | tar -xf -
-
-        where x.xx is PyKota's latest version number.
-
-Go to PyKota's directory :
-
-        cd pykota-x.xx
+        http://savannah.nongnu.org/projects/pykota
 
 Just type :
 
@@ -111,17 +114,20 @@ print quotas, for example /etc/cups/ppd/lp.ppd :
 *cupsFilter:  "application/vnd.cups-postscript 0 /usr/bin/pykota"
 --- Add the line above exactly as-is somewhere near the top  ---
 
-Modify the path to pykota if needed, unfortunately you have to
-supply the correct absolute path here due to CUPS internals, or
-put the pykota executable into /usr/lib/cups/filter instead of
-into /usr/bin.
+Modify the path to the pykota executable if needed, unfortunately 
+you have to supply the correct absolute path here due to CUPS 
+internals, or put the pykota executable into /usr/lib/cups/filter 
+instead of into /usr/bin. 
 
-Do this in each ppd file present in this directory if you want
+Do this for each ppd file present in this directory if you want
 to enable quota on every printer.
           
 Add printers and users to the quota system and set their quota values : 
 
         $ edpykota -P printer -S softlimit -H hardlimit user1 ... userN
+        
+        launching edpykota without any argument or with the --help
+        command line option will show you all the possibilities.
 
 Restart CUPS, for example under Debian GNU/Linux systems :          
 
@@ -129,6 +135,9 @@ Restart CUPS, for example under Debian GNU/Linux systems :
         
 Your users now should be able to print but not exceed their 
 printing quota.
+
+WARNING : as of today, 2003-02-06, group quotas are not
+implemented.
 
 ============================================================
 
