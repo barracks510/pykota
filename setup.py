@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/01/12 15:45:03  jalet
+# Now installs documentation in /usr/share/doc/pykota too.
+#
 # Revision 1.29  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -336,6 +339,9 @@ for mofile in mofiles :
     directory = os.sep.join(["share", "locale", lang, "LC_MESSAGES"])
     data_files.append((directory, [ mofile ]))
     
+docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO", "NEWS"] + glob.glob(os.sep.join(["docs", "*.pdf"])) + glob.glob(os.sep.join(["docs", "pykota", "*.html"]))
+data_files.append(("/usr/share/doc/pykota", docfiles))
+
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
 data_files.append((directory, manpages))
