@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha23 :
     
+        - Smart PDL analyzer now recognizes PDF too.
+        
         - All tracebacks now include PyKota's version number.
           
     - 1.19alpha22 :

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/06/18 14:00:16  jalet
+# Added PDF support in smart PDL analyzer (through GhostScript for now)
+#
 # Revision 1.5  2004/06/18 10:09:05  jalet
 # Resets file pointer to start of file in all cases
 #
@@ -40,8 +43,10 @@
 #
 
 import sys
+import os
 import struct
 import tempfile
+import popen2
     
 KILOBYTE = 1024    
 MEGABYTE = 1024 * KILOBYTE    
@@ -70,6 +75,41 @@ class PostScriptAnalyzer :
             if line.startswith("%%Page: ") :
                 pagecount += 1
         return pagecount
+        
+class PDFAnalyzer :
+    def __init__(self, infile) :
+        """Initialize PDF Analyzer."""
+        self.infile = infile
+        
+    def getJobSize(self) :    
+        """Counts pages in a PDF document. TODO : don't use GhostScript in the future."""
+        MEGABYTE = 1024*1024
+        child = popen2.Popen4("gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pswrite -sOutputFile=- -c save pop -f - 2>/dev/null")
+        try :
+            data = self.infile.read(MEGABYTE)    
+            while data :
+                child.tochild.write(data)
+                data = self.infile.read(MEGABYTE)
+            child.tochild.flush()
+            child.tochild.close()    
+        except (IOError, OSError), msg :    
+            raise PDLAnalyzerError, "Unable to convert PDF input to PS with GhostScript : %s" % msg
+        
+        psanalyzer = PostScriptAnalyzer(child.fromchild)
+        pagecount = psanalyzer.getJobSize()
+        child.fromchild.close()
+        try :
+            retcode = child.wait()
+        except OSError, msg :    
+            self.filter.logger.log_message(_("Problem while waiting for PDF to PS converter (GhostScript pid %s) to exit : %s") % (child.pid, msg))
+        else :    
+            if os.WIFEXITED(retcode) :
+                status = os.WEXITSTATUS(retcode)
+            else :    
+                status = retcode
+            if status :    
+                raise PDLAnalyzerError, "PDF to PS converter (GhostScript pid %s) exit code is %s" % (child.pid, repr(status))
+        return pagecount    
         
 class PCLAnalyzer :
     def __init__(self, infile) :
@@ -429,6 +469,16 @@ class PDLAnalyzer :
         else :    
             return 0
         
+    def isPDF(self, data) :    
+        """Returns 1 if data is PDF, else 0."""
+        if data.startswith("%PDF-") or \
+           data.startswith("\033%-12345X%PDF-") or \
+           ((data[:128].find("\033%-12345X") != -1) and (data.upper().find("LANGUAGE=PDF") != -1)) or \
+           (data.find("%PDF-") != -1) :
+            return 1
+        else :    
+            return 0
+        
     def isPCL(self, data) :    
         """Returns 1 if data is PCL, else 0."""
         if data.startswith("\033E\033") or \
@@ -465,6 +515,8 @@ class PDLAnalyzer :
             return PCLXLAnalyzer
         elif self.isPCL(firstblock) :    
             return PCLAnalyzer
+        elif self.isPDF(firstblock) :    
+            return PDFAnalyzer
         else :    
             raise PDLAnalyzerError, "Analysis of first data block failed."
             
