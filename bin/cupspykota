@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2004/05/21 22:02:51  jalet
+# Preliminary work on pre-accounting
+#
 # Revision 1.45  2004/05/19 07:15:32  jalet
 # Could the 'misterious' bug in my loop be finally fixed ???
 #
@@ -380,6 +383,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
         killed = 0
         status = -1
+        self.logdebug("Catching SIGTERM.")
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
         self.logdebug("Entering streams polling loop...")
         while status == -1 :
             # Catches IOErrors caused by interrupted system calls
@@ -458,6 +463,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 time.sleep(0.01) # give some time to the CPU
                 
         self.logdebug("Exiting streams polling loop...")
+        
+        self.logdebug("Ignoring SIGTERM again.")
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        
         status = subprocess.wait()      # just in case
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
@@ -527,5 +536,7 @@ if __name__ == "__main__" :
             kotabackend.storage.close()
         except (TypeError, NameError, AttributeError) :    
             pass
+            
+        kotabackend.closeJobDataStream()    
         
     sys.exit(retcode)    

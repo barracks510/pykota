@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha12 :
+    
+        - Job's size is now precomputed unconditionnally using 
+          the generic PDL analyzer.
+          NB : This value is not yet used to pre-allow/deny the
+          job.
+        
     - 1.19alpha11 :
     
         - The pykota filter is now completely deprecated and

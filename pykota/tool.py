@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.89  2004/05/21 22:02:52  jalet
+# Preliminary work on pre-accounting
+#
 # Revision 1.88  2004/05/18 14:49:20  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -340,10 +343,11 @@ import gettext
 import locale
 import signal
 import socket
+import tempfile
 
 from mx import DateTime
 
-from pykota import version, config, storage, logger, accounter
+from pykota import version, config, storage, logger, accounter, pdlanalyzer
 
 class PyKotaToolError(Exception):
     """An exception for PyKota config related stuff."""
@@ -756,6 +760,12 @@ class PyKotaFilterOrBackend(PyKotaTool) :
     """Class for the PyKota filter or backend."""
     def __init__(self) :
         """Initialize local datas from current environment."""
+        # We begin with ignoring signals, we may de-ignore them later on.
+        self.gotSigTerm = 0
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+        signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+        
         PyKotaTool.__init__(self)
         (self.printingsystem, \
          self.printerhostname, \
@@ -773,32 +783,58 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.preserveinputfile = self.inputfile 
         self.accounter = accounter.openAccounter(self)
         self.exportJobInfo()
+        self.jobdatastream = self.openJobDataStream()
+        self.softwareJobSize = self.precomputeJobSize()
+        self.logdebug("Precomputed job's size is : %s pages" % self.softwareJobSize)
         
-        # then deal with signals
-        # CUPS backends always ignore SIGPIPE and ignore SIGTERM
-        # when printing from their stdin
-        # Here we have to catch them correctly, and pass
-        # SIGTERM to any child if needed.
-        self.gotSigTerm = self.gotSigChld = self.gotSigPipe = 0
-        signal.signal(signal.SIGTERM, self.sigterm_handler)
-        signal.signal(signal.SIGCHLD, self.sigchld_handler)
-        signal.signal(signal.SIGPIPE, self.sigpipe_handler)
+    def openJobDataStream(self) :    
+        """Opens the file which contains the job's datas."""
+        if self.preserveinputfile is None :
+            # Job comes from sys.stdin, but this is not
+            # seekable and complexifies our task, so create
+            # a temporary file and use it instead
+            self.logdebug("Duplicating data stream from stdin to temporary file")
+            MEGABYTE = 1024*1024
+            infile = tempfile.TemporaryFile()
+            while 1 :
+                data = sys.stdin.read(MEGABYTE) 
+                if not data :
+                    break
+                infile.write(data)
+            infile.flush()    
+            infile.seek(0)
+            return infile
+        else :    
+            # real file, just open it
+            self.logdebug("Opening data stream %s" % self.preserveinputfile)
+            return open(self.preserveinputfile, "rb")
         
+    def closeJobDataStream(self) :    
+        """Closes the file which contains the job's datas."""
+        self.logdebug("Closing data stream.")
+        try :
+            self.jobdatastream.close()
+        except :    
+            pass
+        
+    def precomputeJobSize(self) :    
+        """Computes the job size with a software method."""
+        try :
+            parser = pdlanalyzer.PDLAnalyzer(self.jobdatastream)
+            return parser.getJobSize()
+        except pdlanalyzer.PDLAnalyzerError, msg :    
+            # Here we just log the failure, but
+            # we finally ignore it and return 0 since this
+            # computation is just an indication of what the
+            # job's size MAY be.
+            self.logger.log_message(_("Unable to precompute the job's size with the generic PDL analyzer."), "warn")
+            return 0
+            
     def sigterm_handler(self, signum, frame) :
         """Sets an attribute whenever SIGTERM is received."""
         self.gotSigTerm = 1
         os.putenv("PYKOTASTATUS", "CANCELLED")
         self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
-        
-    def sigchld_handler(self, signum, frame) :
-        """Sets an attribute whenever SIGCHLD is received."""
-        self.gotSigChld = 1
-        self.logdebug("SIGCHLD received")
-        
-    def sigpipe_handler(self, signum, frame) :
-        """Sets an attribute whenever SIGPIPE is received."""
-        self.gotSigPipe = 1
-        self.logdebug("SIGPIPE received")
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""
