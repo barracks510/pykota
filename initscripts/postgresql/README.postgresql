@@ -68,8 +68,8 @@ Upgrade scripts :
         
     This script adds some fields to the print job history, so that
     more complete information will be known. The fields that
-    are added are : filename, title, copies and print command options.
-    Also some indexes are created to speed things up.
+    are added are : jobprice, filename, title, copies and print 
+    command options. Also some indexes are created to speed things up.
   
 What is below is for historical reasons only, real people don't use  
 such old beasts, and YOU SHOULDN'T EITHER !

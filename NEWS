@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha12 :
+    
+        - Job price added to job history, to keep accounting correct
+          if a printer price per page or per job is modified and the
+          history is not reset : the history would have given a false
+          amount of money charged before the printer's prices were
+          modified, this addition solves the problem.
+          
     - 1.16alpha11 :
     
         - Some preliminary modifications to the database structure for 

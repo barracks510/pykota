@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2003/11/23 19:01:37  jalet
+# Job price added to history
+#
 # Revision 1.36  2003/11/21 14:28:46  jalet
 # More complete job history.
 #
@@ -406,7 +409,7 @@ class Storage(BaseStorage) :
         if result :
             lastjob.lastjobident = result[0][0]
             lastjobident = result[0][1]["pykotaLastJobIdent"][0]
-            result = self.doSearch("objectClass=pykotaJob", ["pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+            result = self.doSearch("objectClass=pykotaJob", ["pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
             if result :
                 fields = result[0][1]
                 lastjob.ident = result[0][0]
@@ -414,7 +417,12 @@ class Storage(BaseStorage) :
                 lastjob.User = self.getUser(fields.get("pykotaUserName")[0])
                 lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter")[0] or 0)
                 lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
+                lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 lastjob.JobAction = fields.get("pykotaAction")[0]
+                lastjob.JobFileName = fields.get("pykotaFileName")[0]
+                lastjob.JobTitle = fields.get("pykotaTitle")[0]
+                lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
+                lastjob.JobOptions = fields.get("pykotaOptions")[0]
                 date = fields.get("createTimestamp")[0]
                 year = int(date[:4])
                 month = int(date[4:6])
@@ -685,14 +693,15 @@ class Storage(BaseStorage) :
             fields.update({ "pykotaLifeTimePaid" : str(newlifetimepaid) })
         return self.doModify(user.idbalance, fields)         
             
-    def writeLastJobSize(self, lastjob, jobsize) :        
+    def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
         fields = {
                    "pykotaJobSize" : str(jobsize),
+                   "pykotaJobPrice" : str(jobprice),
                  }
         self.doModify(lastjob.ident, fields)         
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, filename=None, title=None, copies=None, options=None) :    
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None) :
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
@@ -715,11 +724,11 @@ class Storage(BaseStorage) :
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         
-                fields.update({ "pykotaJobSize" : str(jobsize) })
+                fields.update({ "pykotaJobSize" : str(jobsize), "pykotaJobPrice" : str(jobprice) })
             self.doAdd(dn, fields)
         else :    
             # here we explicitly want to reset jobsize to 'None' if needed
-            fields.update({ "pykotaJobSize" : str(jobsize) })
+            fields.update({ "pykotaJobSize" : str(jobsize), "pykotaJobPrice" : str(jobprice) })
             self.doModify(dn, fields)
             
         if printer.LastJob.Exists :

@@ -162,6 +162,12 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.22 NAME 'pykotaOptions'
         SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
+# pykotaJobPrice
+attributetype ( 1.3.6.1.4.1.16868.1.1.23 NAME 'pykotaJobPrice'
+        DESC 'Price of a particular job in the history, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
 #        
 # PyKota Object Classes
 #
@@ -200,7 +206,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
         DESC 'An entry in the job history for a printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName $ pykotaJobId )
-        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions ) )
+        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions ) )
         
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/11/23 19:01:35  jalet
+# Job price added to history
+#
 # Revision 1.12  2003/11/21 14:28:43  jalet
 # More complete job history.
 #
@@ -356,13 +359,14 @@ def main(thebackend) :
     
     # update the quota for the current user on this printer 
     if printer.Exists :
+        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
         if jobsize :
             userquota = thebackend.storage.getUserPQuota(user, printer)
             if userquota.Exists :
                 userquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize, thebackend.preserveinputfile, thebackend.title, thebackend.copies, thebackend.options)
+        printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize, jobprice, thebackend.preserveinputfile, thebackend.title, thebackend.copies, thebackend.options)
     
     return retcode # return (retcode or gotSigTerm) shouldn't be needed
 

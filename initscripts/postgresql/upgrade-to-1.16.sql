@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.2  2003/11/23 19:01:36  jalet
+-- Job price added to history
+--
 -- Revision 1.1  2003/11/21 14:29:14  jalet
 -- Forgot to add this file...
 --
@@ -38,6 +41,7 @@
 --                         
 -- Modify the old database schema
 --
+ALTER TABLE jobhistory ADD COLUMN jobprice FLOAT;
 ALTER TABLE jobhistory ADD COLUMN filename TEXT;
 ALTER TABLE jobhistory ADD COLUMN title TEXT;
 ALTER TABLE jobhistory ADD COLUMN copies INT4;

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/11/23 19:01:37  jalet
+# Job price added to history
+#
 # Revision 1.7  2003/11/21 14:28:46  jalet
 # More complete job history.
 #
@@ -108,7 +111,8 @@ class Accounter(AccounterBase) :
             userpquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, jobsize, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
+        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
+        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
             
         return action
         

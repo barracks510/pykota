@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.6  2003/11/23 19:01:36  jalet
+-- Job price added to history
+--
 -- Revision 1.5  2003/11/21 14:28:45  jalet
 -- More complete job history.
 --
@@ -110,6 +113,7 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         printerid INT4 REFERENCES printers(id),
                         pagecounter INT4 DEFAULT 0,
                         jobsize INT4,
+                        jobprice FLOAT,
                         action TEXT,
                         filename TEXT,
                         title TEXT,

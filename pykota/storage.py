@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/11/23 19:01:36  jalet
+# Job price added to history
+#
 # Revision 1.26  2003/11/21 14:28:45  jalet
 # More complete job history.
 #
@@ -213,9 +216,9 @@ class StoragePrinter(StorageObject) :
         self.PricePerJob = None
         self.LastJob = None
         
-    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, filename=None, title=None, copies=None, options=None) :    
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None) :
         """Adds a job to the printer's history."""
-        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, filename, title, copies, options)
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options)
         # TODO : update LastJob object ? Probably not needed.
         
     def setPrices(self, priceperpage = None, priceperjob = None) :    
@@ -313,11 +316,18 @@ class StorageLastJob(StorageObject) :
         self.JobSize = None
         self.JobAction = None
         self.JobDate = None
+        self.JobPrice = None
+        self.JobFileName = None
+        self.JobTitle = None
+        self.JobCopies = None
+        self.JobOptions = None
         
     def setSize(self, jobsize) :
         """Sets the last job's size."""
-        self.parent.writeLastJobSize(self, jobsize)
+        jobprice = (float(self.Printer.PricePerPage or 0.0) * jobsize) + float(self.Printer.PricePerJob or 0.0)
+        self.parent.writeLastJobSize(self, jobsize, jobprice)
         self.JobSize = jobsize
+        self.JobPrice = jobprice
     
 class BaseStorage :
     def __init__(self, pykotatool) :
