@@ -98,6 +98,11 @@ gracedelay: 7
 # Another untested example, using npadmin :
 #     requester: external(npadmin --pagecount %(printer)s)
 #
+# Another example, for AppleTalk printers which works fine :
+# (You need the pap CUPS backend installed, and copy the 
+# pagecount.ps file from untested/netatalk into /etc)
+#     requester: external(/usr/bin/pap -p "%(printer)s:LaserWriter" /etc/pagecount.ps  2>/dev/null | grep -v status | grep -v Connect)
+#
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
 #

@@ -96,16 +96,18 @@ lazy method ?
   problem, but probably from other ones ;-) will be implemented in the 
   future. 
   
-PyKota is known to work fine with HP Laserjet 2100 and 2200   
-networked printers, and should work with any SNMP-enabled 
-network printer capable of outputing its lifetime printed pages 
-number.
+PyKota is known to work fine with HP Laserjet 2100 and 2200, and 
+Apple LaserWriter 16/600 PS. 
 
-If your printers don't support SNMP, then making them work with 
-PyKota is up to you. Some sample scripts which can query non-SNMP 
-printers for their lifetime page counter are included in the 
-./untested directory. You'll have to test and adapt them though, and 
-define them as external requesters in the PyKota configuration file. 
+It should also work fine with any printer capable of outputing 
+its lifetime printed pages counter via either SNMP or AppleTalk. 
+
+If your printers don't support SNMP or AppleTalk, then making them 
+work with PyKota is up to you. Some sample scripts which can query 
+non-SNMP printers for their lifetime page counter are included in 
+the ./untested directory. You'll have to test and adapt them though, 
+and define them as external requesters in the PyKota configuration 
+file. See the sample configuration file to learn how to do that.
 
 ============================================================
 
@@ -129,7 +131,10 @@ Prerequisite :
     - eGenix' mxDateTime Python extension
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
       libraries.
-    - SNMP tools (specifically the snmpget command)
+    - SNMP tools (specifically the snmpget command) if you plan to
+      request your printer's lifetime page counter via SNMP.
+    - Netatalk (specifically the pap command) if you plan to
+      request your printer's lifetime page counter via AppleTalk.
     
   You need to have the following tools installed on the Quota Storage  
   Server :
