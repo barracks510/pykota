@@ -645,14 +645,7 @@ $ /etc/init.d/cupsys restart
     <sect2>
       <title>With LPRng</title>
       <para>
-        To plug PyKota into your <application>LPRng</application> setup, 
-        you have to modify the <filename>/etc/printcap</filename>.
-        You just have to add the following lines to each queue on 
-        which you want to use PyKota :
-        <screen>
-  :achk=true
-  :as=|/usr/share/pykota/pykota
-        </screen>
+        ######### TODO ##########
       </para>
       
       <para>
@@ -695,6 +688,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.25  2004/05/25 09:49:53  jalet
+The old pykota filter has been removed. LPRng support disabled for now.
+
 Revision 1.24  2004/02/13 08:46:32  jalet
 Fixed documentation wrt installation paths changed
 

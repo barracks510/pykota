@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2004/05/25 09:49:41  jalet
+# The old pykota filter has been removed. LPRng support disabled for now.
+#
 # Revision 1.42  2004/05/18 14:48:46  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -437,7 +440,7 @@ manpages = glob.glob(os.sep.join(["man", "*.1"]))
 data_files.append((directory, manpages))
 
 directory = os.sep.join(["share", "pykota"])
-data_files.append((directory, ["bin/cupspykota", "bin/pykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
+data_files.append((directory, ["bin/cupspykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
 
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",

@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+
+    - 1.19alpha15 :
+    
+        - The old pykota filter is now removed. This means that
+          currently PyKota doesn't support LPRng anymore, but 
+          LPRng support will be re-added, improved, in the near future.
+          
     - 1.19alpha14 :
     
         - PYKOTAPRECOMPUTEDJOBSIZE and PYKOTAPRECOMPUTEDJOBPRICE 

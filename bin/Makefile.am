@@ -5,7 +5,6 @@ pykotashare_DATA = 		\
 	cupspykota			\
 	mailandpopup.sh		\
 	papwaitprinter.sh	\
-	pykota				\
 	waitprinter.sh
 
 EXTRA_DIST = 			\

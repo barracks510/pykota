@@ -62,34 +62,14 @@ PyKota's FAQ :
     
   * How can I use my 'dumb printer' with CUPS and PyKota.  
   
-    The solution is to plug the pykota filter into the
-    filtering chain when the print job is still in 
-    PostScript format, before being converted to the
-    dumb printer's native format. You can't use the
-    cupspykota CUPS backend with 'dumb printers'.
+    You have to use a software accounter directive, and 
+    create a script which understands your printer's
+    Page Description Language.
     
-    Here's how to do :
-    
-        - Disable raw mode by modifying *.convs and
-          *.types files in /etc/cups, then restart
-          CUPS.
-          
-        - If you print from Windows through Samba, 
-          don't put '-o raw' in the print command 
-          definition in smb.conf
-          
-        - Under Windows, use a PostScript driver  
-          set to maximum compatibility mode.
-          
-        - Modify *.convs and *.types files to  
-          insert the pykota filter into the
-          filtering chain, as described
-          here (url should be on a single line) :
-          
-          http://cgi.librelogiciel.com/pipermail/  ...
-             ... pykota/attachments/20030721/753239b5/attachment.eml
-          
-          and restart CUPS.
+    PyKota natively understands PostScript and PCL5,
+    but PCL6 support is in the works, and more PDLs
+    will be added in the future. However you can always
+    plug your own PDL analyzer in PyKota.
           
   * I've got a great number of users. How can I automatically
     set an initial print quota for them on first print ?
@@ -118,25 +98,6 @@ PyKota's FAQ :
     and their result, be your database PostgreSQL or OpenLDAP.
     With these two files the problem can usually be diagnosed within
     minutes. Send them to the mailing list and wait for an answer.
-    
-  * Some, not all, print jobs are never accounted for, why ?
-  
-    From version 1.16alpha7, you can now use the cupspykota
-    CUPS backend, which ensures that all print jobs will be
-    accounted for. The use of the old pykota filter is deprecated
-    with CUPS. It remains the filter of choice for LPRng though,
-    or when you absolutely need to support a 'dumb printer' (see
-    definition above).
-    
-  * When printing from Windows, the jobs are never accounted for,
-    but from *nix they are. Could you explain the reason for this ?
-    
-    First refer to the point above. If this doesn't solve your
-    problem, try to set your print driver to PostScript mode
-    and check the "maximum compatibility" box in its configuration,
-    instead of "maximum speed". Often HP printers come with both
-    a PCL and a PostScript driver under Windows. Don't install the 
-    PCL one.
     
   * How can I share print quota between some printers only (not all) ?   
   
@@ -187,7 +148,7 @@ PyKota's FAQ :
       SUM((NbPages * PricePerPage) + PricePerJob)
       
     For current printer and all the printers groups it is 
-    a member of, if any.
+    a member of, if any, recursively.
     This may be difficult to grasp, but offers unprecedented
     flexibility.
 

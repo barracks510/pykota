@@ -22,14 +22,14 @@
   <para>
     A filter is a computer program which takes data in one format as its input, and outputs the
     same data but transformed into another format. <application>CUPS</application> already
-    contains many filters. For example there's one filter named <application>pstops</application> which accepts 
+    contains many filters. For example there's one filter named <filename>pstops</filename> which accepts 
     PostScript data as its input, and, as its name implies, outputs PostScript data too, but after having
     eventually rearranged the pages to fit several pages on a single sheet of paper, or other manipulations
     like that. 
   </para>
   
   <para>
-    The <application>pstops</application> filter described above is also in charge of doing basic page
+    The <filename>pstops</filename> filter described above is also in charge of doing basic page
     accounting, but <application>PyKota</application> currently doesn't use this facility since it may
     prove to be unreliable depending on the drivers used or if a paper jam occurs for example.
   </para>
@@ -41,16 +41,17 @@
   </para>  
   
   <para>
-    So to do its own accounting, <application>PyKota</application> has its own filter, named <application>pykota</application>,
-    which you have to plug into the different set of filters used by your printing system of choice. The procedure to 
-    install the <application>pykota</application> filter is described in the 
+    So to do its own accounting, <application>PyKota</application> has its own filters, for <application>CUPS</application>
+    it's named <filename>cupspykota</filename>, which is in fact a <application>CUPS</application> backends wrapper,
+    and for <application>LPRng</application> it's named ########## TODO ########## .
+    The procedure to plug the correct filter into your printing system is described in the 
     <xref linkend="installation" endterm="installation"> chapter.
   </para>
   
   <para>
-    Currently with a <application>CUPS</application> backend, the <application>pykota</application> filter is 
-    deprecated. You have to use the <application>cupspykota</application> CUPS backend instead.
-    This CUPS backend ensures that jobs can't bypass the filtering mechanism, so you can use
+    Currently with a <application>CUPS</application> internal accounting mechanism, the <filename>pstops</filename>
+    filter can be bypassed. That's why <application>PyKota</application> uses its own backend.
+    The <filename>cupspykota</filename> backend wrapper ensures that jobs can't bypass the filtering mechanism, so you can use
     any printer with any driver and any command line option, and you can be sure that your
     print job will be correctly accounted for.
   </para>
@@ -63,7 +64,7 @@
   </para>
   
   <para>
-    When you submit a print job, <application>cupspykota</application> (with CUPS) or <application>pykota</application> (with LPRng) is automatically launched by your printing system,
+    When you submit a print job, <application>PyKota</application>'s accounting mechanism is automatically launched by your printing system,
     so it has to detect which system you are using (<application>CUPS</application> or <application>LPRng</application>)
     and behave like if it was specifically designed for your printing system. Fortunately there's not a lot
     of differences, the more important one is the exit codes used to tell the printing environment if a job
@@ -72,16 +73,9 @@
   
   <para>
     When using the <literal>hardware</literal> accounting method,
-    <application>pykota</application> asks the printer for its internal page counter, reads from the Quota DataBase the internal
-    page counter for this printer when the previous job was launched, computes the difference, and report it as the 
-    previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
-    warn him if he is over quota or if his account balance is below 0. Finally it checks if the user who launched the 
-    current job is below or above his print quota, and either allows or denies the job's datas to pass to the underlying 
-    layer (the printer itself). The <application>cupspykota</application> CUPS backend on the other hand,
+    the <application>cupspykota</application> CUPS backend 
     asks the printer for its internal page counter at the start and at the end of the print job, and
-    computes the values' difference so accounting is done immediately. This way it doesn't let open a window for abuse in the case
-    several printers are managed. That's why the use of <application>cupspykota</application>
-    instead of <application>pykota</application> is recommended with CUPS.
+    computes the values' difference so accounting is done immediately. 
   </para>
   
   <para>
@@ -90,16 +84,17 @@
     the command you specified is launched with the job's data on its 
     standard input. Your command must print the job's size in number of
     pages on a single line on its standard output. This number is then
-    read by PyKota and used to update the current user's quota information.
+    read by <application>PyKota</application> and used to update the current user's quota information.
     Of course checks are also done like with the <literal>hardware</literal>
     accounting method, to see if the current job is allowed to be printed or not.
   </para>
   
   <para>
-    If a problem occurs, it is logged either to the filter's standard output or to the system logger, depending on
+    If a problem occurs, it is logged either to the filter's standard error or to the system logger, depending on
     your preferences in <application>PyKota</application>'s configuration files. Also if a print quota is reached
     you may choose if the administrator, the user, both or no-one will receive an email message explaining
-    the situation and proposing a solution.
+    the situation and proposing a solution. You can even configure another action instead of sending email
+    messages if you want.
   </para>
   
 </chapter>
@@ -107,6 +102,9 @@
 <!--
 
 $Log$
+Revision 1.11  2004/05/25 09:49:52  jalet
+The old pykota filter has been removed. LPRng support disabled for now.
+
 Revision 1.10  2004/05/13 13:59:28  jalet
 Code simplifications
 

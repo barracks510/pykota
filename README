@@ -318,11 +318,6 @@ The rest of the installation depends on your printing system :
         
           $ /etc/init.d/cupsys restart
           
-    For dumb printers : 
-    
-        The FAQ contains both the PyKota's definition of a 'dumb'
-        printer, and how to deal with them.
-    
     For new printers :
     
         Go to CUPS management interface (http://localhost:631) 
@@ -383,17 +378,8 @@ The rest of the installation depends on your printing system :
 
   - LPRng Printing System :
   
-    Modify the /etc/printcap file to add two lines identical to these ones :
-    
-    :achk=true
-    :as=|/usr/share/pykota/pykota
-    
-    For each printer on which you want to use print accounting.
-    
-    And then save the file and restart LPRng :
-    
-        $ /etc/init.d/lprng restart
-        
+      For now LPRng support in PyKota is deactivated. Please be patient.
+      
 Now you can begin to populate the PyKota's database with printers,
 users and groups :
   
