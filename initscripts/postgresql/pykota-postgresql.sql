@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.11  2004/06/20 16:15:21  jalet
+-- Added "description" attribute for printers
+--
 -- Revision 1.10  2004/06/03 23:14:09  jalet
 -- Now stores the job's size in bytes in the database.
 -- Preliminary work on payments storage : database schemas are OK now,
@@ -103,6 +106,7 @@ CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
 --
 CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
                       printername TEXT UNIQUE NOT NULL,
+                      description TEXT,
                       priceperpage FLOAT DEFAULT 0.0,
                       priceperjob FLOAT DEFAULT 0.0);
                     

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha25 :
+    
+        - added new "description" field to printers in both
+          PostgreSQL and LDAP. No code to handle this yet.
+          
     - 1.19alpha24 :
     
         - Native PDF parsing code now works perfectly with

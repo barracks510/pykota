@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.3  2004/06/20 16:15:21  jalet
+-- Added "description" attribute for printers
+--
 -- Revision 1.2  2004/06/03 23:14:10  jalet
 -- Now stores the job's size in bytes in the database.
 -- Preliminary work on payments storage : database schemas are OK now,
@@ -44,6 +47,7 @@
 --                         
 -- Modify the old database schema
 --
+ALTER TABLE printers ADD COLUMN description TEXT;
 ALTER TABLE jobhistory ADD COLUMN jobsizebytes INT8;
 ALTER TABLE jobhistory ADD COLUMN hostname TEXT;
 CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
