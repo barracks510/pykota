@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2005/01/19 08:48:17  jalet
+# Fix exception's name wrt newer versions of PygreSQL
+#
 # Revision 1.37  2004/09/14 22:29:12  jalet
 # First version of dumpykota. Works fine but only with PostgreSQL backend
 # for now.
@@ -158,6 +161,11 @@ except ImportError :
     import sys
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PygreSQL module installed correctly." % sys.version.split()[0]
+else :    
+    try :
+        PGError = pg.Error
+    except AttributeError :    
+        PGError = pg.error
 
 class Storage(BaseStorage, SQLStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
@@ -171,7 +179,7 @@ class Storage(BaseStorage, SQLStorage) :
         
         try :
             self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
-        except pg.error, msg :
+        except PGError, msg :
             raise PyKotaStorageError, msg
         else :    
             self.closed = 0
@@ -207,7 +215,7 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
-        except pg.error, msg :    
+        except PGError, msg :    
             raise PyKotaStorageError, msg
         else :    
             return result
@@ -226,7 +234,7 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
-        except pg.error, msg :    
+        except PGError, msg :    
             raise PyKotaStorageError, msg
         else :    
             return result
