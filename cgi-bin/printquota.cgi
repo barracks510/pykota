@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2004/01/06 16:05:45  jalet
+# Will now search the stylesheet on my own website.
+#
 # Revision 1.18  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -93,7 +96,7 @@ header = """Content-type: text/html
 <html>
   <head>
     <title>PyKota Reports</title>
-    <link rel="stylesheet" type="text/css" href="pykota.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.librelogiciel.com/software/PyKota/pykota.css" />
   </head>
   <body>
     <form action="printquota.cgi" method="POST">
