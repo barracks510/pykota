@@ -171,15 +171,17 @@ Prerequisite :
   
     - OpenLDAP
     
-  PygreSQL and the PostgreSQL client libraries' versions on the Print
-  Server must match the PostgreSQL version used on the Quota Storage 
-  Server.
+NB :    
+
+  PygreSQL must be linked with the PostgreSQL client libraries on 
+  the Print Server. The PostgreSQL client libraries' version must 
+  match the PostgreSQL version used on the Quota Storage Server. 
   
 or  
 
-  python-ldap and the OpenLDAP client libraries' versions on the Print
-  Server must match the OpenLDAP version used on the Quota Storage 
-  Server.
+  python-ldap must be linked with the OpenLDAP client libraries on the 
+  Print Server. The OpenLDAP client libraries' version must match the 
+  OpenLDAP version used on the Quota Storage Server. 
   
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
@@ -260,10 +262,26 @@ printers, and change the administrator's email address.
   
 Add printers and users to the quota system and set their quota values : 
 
-    $ edpykota --add -P printer -S softlimit -H hardlimit user1 ... userN
+    $ edpykota --add -P hp2100 -S 40 -H 50 user1 ... userN
         
     launching edpykota without any argument or with the --help
     command line option will show you all the possibilities.
+    
+    by default, each user is limited by "quota", this means that on
+    each printer he can have a different soft and hard limit.
+    You may want to limit the user by his account balance value, 
+    in which case, the print quota is shared between all pinters
+    instead of being different. To do this, use the following :
+    
+    $ edpykota --add -P hp2100 --limitby balance --balance 10 user1 ... userN
+    
+    This will put 10 $ (or Euros, PyKota doesn't care) on each user's account
+    balance, and tell PyKota to limit them by their account balance value.
+    Whenever they print on any printer, their account balance value is
+    decreased by an amount which depends on the particular price per page
+    and per job that you may have defined on the printer with edpykota's
+    --charge command line option.
+    Soft and Hard limits are not used if "--limitby balance" is used.
 
 Restart CUPS or LPRng, for example under Debian GNU/Linux systems :          
 
