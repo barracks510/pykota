@@ -210,7 +210,9 @@ adminmail: root@localhost
 # If both are defined, the printer option has priority.
 # If the value is not set, then the default BOTH applies.
 #
-#   For mailto: external(/usr/bin/mycommand >/dev/null)
+#   Format of the external syntax :
+#
+#       mailto: external(/usr/bin/mycommand >/dev/null)
 #
 #   You can use :
 #
@@ -225,6 +227,10 @@ adminmail: root@localhost
 #   Example :
 #
 #       mailto: external(/usr/bin/callpager %(username)s "Quota problem on %(printername)s" >/dev/null)
+#
+#   To automatically send a WinPopup message :
+#
+#       mailto: external(echo "%(message)s" | /usr/bin/smbclient -M "%(username)s" 2>&1 >/dev/null)
 #
 #   NB : Don't forget to redirect your command's standard output somewhere 
 #        (e.g. >/dev/null) so that there's no perturbation to the underlying
