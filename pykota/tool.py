@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/05 22:16:20  jalet
+# DEVICE_URI is undefined outside of CUPS, i.e. for normal command line tools
+#
 # Revision 1.2  2003/02/05 22:10:29  jalet
 # Typos
 #
@@ -48,7 +51,6 @@ class PyKotaTool :
         self.logger = logger.openLogger(self.config)
         self.storage = storage.openConnection(self.config, asadmin=(not isfilter))
         self.printername = os.environ.get("PRINTER", None)
-        self.printerhostname = self.getPrinterHostname()
         self.smtpserver = self.config.getSMTPServer()
         self.admin = self.config.getAdmin()
         self.adminmail = self.config.getAdminMail()
@@ -69,18 +71,6 @@ class PyKotaTool :
     def sendMessageToAdmin(self, subject, message) :
         """Sends an email message to the Print Quota administrator."""
         self.sendMessage(self.adminmail, "Subject: %s\n\n%s" % (subject, message))
-        
-    def getPrinterHostname(self) :
-        """Returns the printer hostname."""
-        device_uri = os.environ.get("DEVICE_URI", "")
-        # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
-        try :
-            (backend, destination) = device_uri.split(":", 1) 
-        except ValueError :    
-            raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
-        while destination.startswith("/") :
-            destination = destination[1:]
-        return destination.split("/")[0].split(":")[0]
         
     def warnQuotaPrinter(self, username) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""

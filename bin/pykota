@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 22:16:20  jalet
+# DEVICE_URI is undefined outside of CUPS, i.e. for normal command line tools
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -33,7 +36,20 @@ class PyKotaFiler(PyKotaTool) :
         PyKotaTool.__init__(self, isfilter=1)
         self.username = username
         self.requester = requester.openRequester(self.config, self.printername)
+        self.printerhostname = self.getPrinterHostname()
     
+    def getPrinterHostname(self) :
+        """Returns the printer hostname."""
+        device_uri = os.environ.get("DEVICE_URI", "")
+        # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
+        try :
+            (backend, destination) = device_uri.split(":", 1) 
+        except ValueError :    
+            raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
+        while destination.startswith("/") :
+            destination = destination[1:]
+        return destination.split("/")[0].split(":")[0]
+        
     def filterInput(self, inputfile) :
         """Transparent filter."""
         mustclose = 0    
