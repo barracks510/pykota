@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2004/09/27 09:21:37  jalet
+# Now includes printer's hostname in SNMP error messages
+#
 # Revision 1.24  2004/09/24 21:19:48  jalet
 # Did a pass of PyChecker
 #
@@ -150,7 +153,7 @@ else :
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
             except SnmpOverUdpError, msg :    
-                self.parent.filter.printInfo(_("Network error while doing SNMP queries : %s") % msg, "warn")
+                self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
             tsp.close()
     
         def handleAnswer(self, wholeMsg, notusedhere, req):
@@ -161,7 +164,7 @@ else :
             if req.apiAlphaMatch(rsp):
                 errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
                 if errorStatus:
-                    self.parent.filter.printInfo(_("Problem encountered while doing SNMP queries : %s") % errorStatus, "warn")
+                    self.parent.filter.printInfo(_("Problem encountered while doing SNMP queries on printer %s : %s") % (self.printerHostname, errorStatus), "warn")
                 else:
                     self.values = []
                     for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
