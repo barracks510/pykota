@@ -4,179 +4,180 @@
 edpykota \- manual page for edpykota 1.20beta_unofficial
 .SH DESCRIPTION
 edpykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
-A Print Quota editor for PyKota.
+Διορθωτής Ορίου Εκτυπώσεων για το PyKota.
 .PP
-command line usage :
+χρήση γραμμής εντολών :
 .IP
-edpykota [options] user1 user2 ... userN
+edpykota [παράμετροι] χρήστης1 χρήστης2 ... χρήστηςN
 .IP
-edpykota [options] group1 group2 ... groupN
+edpykota [παράμετροι] ομάδα1 ομάδα2 ... ομάδαN
 .PP
-options :
+παράμετροι :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints edpykota's version number then exits.
+Εμφανίζει την έκδοση του edpykotaκαι τερματίζει.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Εμφανίζει αυτό το μήνυμα και τερματίζει.
 .TP
 \fB\-a\fR | \fB\-\-add\fR
-Adds users and/or printers if they don't
-exist on the Quota Storage Server.
+Προσθέτει χρήστες και/ή εκτυπωτές αν δεν υπάρχουν
+στη Βάση Δεδομένων Ορίων Εκτύπωσης.
 .TP
 \fB\-d\fR | \fB\-\-delete\fR
-Deletes users/groups from the quota storage.
-Printers are never deleted.
+Αφαιρεί χρήστες/ομάδες από τη βάση δεδομένων των
+Ορίων εκτύπωσης. Οι εκτυπωτές δεν αφαιρούνται.
 .TP
 \fB\-c\fR | \fB\-\-charge\fR p[,j]
-Sets the price per page and per job to charge
-for a particular printer. Job price is optional.
-If both are to be set, separate them with a comma.
-Floating point values are allowed.
+Ορίζει την τιμή χρέωσης ανά σελίδα και ανά εργασία
+για συγκεκριμένο εκτυπωτή. Η τιμή της εργασίας είναι
+προαιρετική. Αν οριστούν και οι δύο, χωρίστε τις με ένα
+κόμμα. Επιτρέπονται δεκαδικοί αριθμοί.
 .TP
 \fB\-i\fR | \fB\-\-ingroups\fR g1[,g2...]
-Puts the users into each of the groups
-listed, separated by commas. The groups
-must already exist in the Quota Storage.
+Προσθέτει τους χρήστες σε καθεμία από τις ομάδες
+που δίνονται χωρισμένες με κόμμα. Οι ομάδες
+πρέπει να υπάρχουν ήδη στη βάση δεδομένων.
 .TP
 \fB\-u\fR | \fB\-\-users\fR
-Edit users print quotas, this is the default.
+Μεταβάλλει τα όρια εκτυπώσεων χρηστών. Αυτή είναι η
+προεπιλεγμένη εργασία.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Edit quotas on printer p only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Μεταβάλλει όρια εκτυπώσεων μόνο για τον εκτυπωτή p.
+Η παράμετρος p μπορεί να περιέχει μπαλαντέρ για να
+επιλεγούν μόνο κάποιοι εκτυπωτές. Η προεπιλεγμένη τιμή
+είναι *, δηλαδή όλοι οι εκτυπωτές.
+Μπορείτε να ορίσετε πολλά ονόματα ή μπαλαντέρ,
+διαχωρίζοντάς τα με κόμματα.
 .TP
-\fB\-G\fR | \fB\-\-pgroups\fR pg1[,pg2...] Adds the printer(s) to the printer groups
-pg1, pg2, etc... which must already exist.
-A printer group is just like a normal printer,
-only that it is usually unknown from the printing
-system. Create printer groups exactly the same
-way that you create printers, then add other
-printers to them with this option.
-Accounting is done on a printer and on all
-the printer groups it belongs to, quota checking
-is done on a printer and on all the printer groups
-it belongs to.
+\fB\-G\fR | \fB\-\-pgroups\fR pg1[,pg2...] Προσθέτει τον/τους εκτυπωτή/ές στις ομάδες
+εκτυπωτών pg1, pg2, κ.λ.π που πρέπει να προϋπάρχουν.
+Μια ομάδα εκτυπωτών συμπεριφέρεται ως εκτυπωτής, μόνο
+που συνήθως είναι άγνωστη στο σύστημα εκτυπώσεων.
+Δημιουργήστε ομάδες εκτυπωτών με τον ίδιο τρόπο που
+δημιουργείτε εκτυπωτές, μετά προσθέστε άλλους εκτυπωτές
+σε αυτές με αυτή την παράμετρο.
+Η σελιδομέτρηση και ο έλεγχος ορίων γίνονται για τον
+εκτυπωτή και για όλες τις ομάδες εκτυπωτών στις οποίες
+ανήκει.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Edit users groups print quotas instead of users.
+Μεταβάλλει όρια εκτυπώσεων για ομάδες χρηστών αντί για
+απλούς χρήστες.
 .TP
-\fB\-p\fR | \fB\-\-prototype\fR u|g Uses user u or group g as a prototype to set
-print quotas
+\fB\-p\fR | \fB\-\-prototype\fR u|g Χρησιμοποιεί τον χρήστη u ή την ομάδα g ως πρότυπο για
+τον ορισμό ορίων εκτυπώσεων
 .TP
 \fB\-n\fR | \fB\-\-noquota\fR
-Doesn't set a quota but only does accounting.
+Δεν θέτει όριο εκτυπώσεων, μόνο κάνει σελιδομέτρηση.
 .TP
 \fB\-r\fR | \fB\-\-reset\fR
-Resets the actual page counter for the user
-or group to zero on the specified printers.
-The life time page counter is kept unchanged.
+Μηδενίζει το μετρητή σελίδων για τον χρήστη ή την
+ομάδα για τους συγκεκριμένους εκτυπωτές.
+Ο μόνιμος σελιδομετρητής δε μεταβάλλεται.
 .TP
 \fB\-R\fR | \fB\-\-hardreset\fR
-Resets the actual and life time page counters
-for the user or group to zero on the specified
-printers.
+Μηδενίζει τον πραγματικό και τον μόνιμο σελιδομετρητή
+για τον χρήστη ή την ομάδα στους συγκεκριμένους
+εκτυπωτές.
 .TP
 \fB\-l\fR | \fB\-\-limitby\fR l
-Choose if the user/group is limited in printing
-by its account balance or by its page quota.
-The default value is 'quota'. Allowed values
-are 'quota' 'balance' 'quota-then-balance' and
-\&'balance-then-quota'.
-WARNING : quota-then-balance and balance-then-quota
-are not yet implemented.
+Επιλογή αν ο χρήστης/ομάδα περιορίζεται στις εκτυπώσεις                       από το υπόλοιπο του λογαριασμού του ή το όριο εκτυπώσεών του.
+Η προεπιλεγμένη τιμή είναι 'quota' (όριο εκτυπώσεων).
+Επιτρεπτές τιμές είναι 'quota' (όριο εκτυπώσεων),
+\&'balance' (υπόλοιπο λογαριασμού), 'quota-then-balance' (πρώτα
+όριο μετά υπόλοιπο) και 'balance-then-quota' (πρώτα υπόλοιπο
+μετά όριο).                       ΠΡΟΣΟΧΗ : Οι επιλογές quota-then-balance και balance-then-quota
+δεν έχουν υλοποιηθεί ακόμη.
 .TP
 \fB\-b\fR | \fB\-\-balance\fR b
-Sets the user's account balance to b.
-Account balance may be increase or decreased
-if b is prefixed with + or -.
-WARNING : when decreasing account balance,
-the total paid so far by the user is decreased
-too.
-Groups don't have a real balance, but the
-sum of their users' account balance.
+Ορίζει το υπόλοιπο εκτυπώσεων ενός λογαριασμού χρήστη σε b.
+Το υπόλοιπο εκτυπώσεων μπορεί να αυξηθεί ή να μειωθεί αν δοθεί
+πριν από το b ένα πρόσημο + ή -.
+ΠΡΟΣΟΧΗ : όταν μειώνετε το υπόλοιπο εκτυπώσεων, μειώνεται και,
+το ποσό που έχει εξοφληθεί από το χρήστη μέχρι εκείνη τη
+στιγμή.
+Οι ομάδες δεν έχουν πραγματικό υπόλοιπο, αλλά το άθροισμα των
+υπολοίπων των χρηστών τους.
 .TP
 \fB\-S\fR | \fB\-\-softlimit\fR sl
-Sets the quota soft limit to sl pages.
+Θέτει το όριο προειδοποίησης σε sl σελίδες
 .TP
 \fB\-H\fR | \fB\-\-hardlimit\fR hl
-Sets the quota hard limit to hl pages.
+Θέτει το ανώτατο όριο εκτυπώσεων σε hl σελίδες.
 .IP
-user1 through userN and group1 through groupN can use wildcards
-if the \fB\-\-add\fR option is not set.
+οι παράμετροι χρήστης1 εως χρήστηςN και ομάδα1 εως ομάδαN μπορούν να χρησιμοποιούν
+μπαλαντέρ αν δεν οριστεί η παράμετρος \fB\-\-add\fR.
 .PP
-examples :
+παραδείγματα :
 .IP
 \f(CW$ edpykota --add -p jerome john paul george ringo/ringo@example.com\fR
 .IP
-This will add users john, paul, george and ringo to the quota
-database, and set their print quotas to the same values than user
-jerome. User jerome must already exist.
-User ringo's email address will also be set to 'ringo@example.com'
+Προσθέτει τους χρήστες john, paul, george και ringo στη βάση
+δεδομένων, και θέτει τα όρια εκτύπωσής τους στις ίδιες τιμές
+με του χρήστη jerome. Ο χρήστης jerome πρέπει να προϋπάρχει.
+Επίσης ορίζεται η email διεύθυνση του χρήστη ringo σε
+\&'ringo@example.com'
 .IP
 \f(CW$ edpykota --printer lp -S 50 -H 60 jerome\fR
 .IP
-This will set jerome's print quota on the lp printer to a soft limit
-of 50 pages, and a hard limit of 60 pages. If either user jerome or
-printer lp doesn't exist on the Quota Storage Server then nothing is done.
+Θέτει τα όρια του χρήστη jerome στον εκτυπωτή lp με όριο προειδοποίησης
+50 σελίδων, και ανώτατο όριο 60 σελίδων. Αν είτε ο χρήστης jerome είτε
+ο εκτυπωτής lp δεν υπάρχει στη βάση δεδομένων, καμία μεταβολή δεν    εκτελείται.
 .IP
 \f(CW$ edpykota --add --printer lp --ingroups coders,it -S 50 -H 60 jerome\fR
 .IP
-Same as above, but if either user jerome or printer lp doesn't exist
-on the Quota Storage Server they are automatically added. Also
-user jerome is put into the groups "coders" and "it" which must
-already exist in the Quota Storage.
+Όπως και παραπάνω, αλλά αν δεν υπάρχουν είτε ο χρήστης jerome είτε ο
+εκτυπωτής lp στη βάση δεδομένων, προστίθενται αυτόματα. Επίσης ο χρήστης
+jerome εισάγεται στις ομάδες "coders" και "it" που πρέπει να
+προϋπάρχουν στη βάση δεδομένων.
 .IP
 \f(CW$ edpykota -g -S 500 -H 550 financial support\fR
 .IP
-This will set print quota soft limit to 500 pages and hard limit
-to 550 pages for groups financial and support on all printers.
+Θέτει το όριο προειδοποίησης σε 500 σελίδες και το ανώτατο όριο σε 550
+σελίδες για τις ομάδες financial και support σε όλους τους εκτυπωτές.
 .IP
 \f(CW$ edpykota --reset jerome "jo*"\fR
 .IP
-This will reset jerome's page counter to zero on all printers, as
-well as every user whose name begins with 'jo'.
-Their life time page counter on each printer will be kept unchanged.
-You can also reset the life time page counters by using the
-\fB\-\-hardreset\fR | \fB\-R\fR command line option.
+Μηδενίζει τους μετρητές σελίδων του χρήστη jerome και των χρηστών των οποίων
+το όνομα αρχίζει με 'jo' σε όλους τους εκτυπωτές.
+Ο μόνιμος μετρητής τους σε κάθε εκτυπωτή παραμένει αμετάβλητος.
+Μπορείτε επίσης να μηδενίσετε τους μόνιμους μετρητές χρησιμοποιώντας την
+παράμετρο \fB\-\-hardreset\fR | \fB\-R\fR .
 .IP
 \f(CW$ edpykota --printer hpcolor --noquota jerome\fR
 .IP
-This will tell PyKota to not limit jerome when printing on the
-hpcolor printer. All his jobs will be allowed on this printer, but
-accounting of the pages he prints will still be kept.
-Print Quotas for jerome on other printers are unchanged.
+Αφαιρεί το όριο εκτυπώσεων του χρήστη jerome για τον εκτυπωτή hpcolor.
+Όλες οι εργασίες του θα επιτρέπονται στον εκτυπωτή, αλλά η σελιδομέτρηση
+των εκτυπώσεών του θα γίνεται κανονικά.
+Τα όρια εκτυπώσεων του jerome σε άλλους εκτυπωτές παραμένουν αμετάβλητα.
 .IP
 \f(CW$ edpykota --limitby balance jerome\fR
 .IP
-This will tell PyKota to limit jerome by his account's balance
-when printing.
+Περιορίζει το χρήστη jerome με βάση το υπόλοιπο εκτυπώσεών του.
 .IP
 \f(CW$ edpykota --balance +10.0 jerome\fR
 .IP
-This will increase jerome's account balance by 10.0 (in your
-own currency). You can decrease the account balance with a
-dash prefix, and set it to a fixed amount with no prefix.
+Αυξάνει το υπόλοιπο του λογαριασμού jerome κατά 10.0 μονάδες (στο τρέχον
+νόμισμα). Μπορείτε να μειώσετε το υπόλοιπο με το πρόσημο (-) ή να το
+θέσετε σε κάποιο σταθερό ποσό χωρίς πρόσημο.
 .IP
 \f(CW$ edpykota --delete jerome rachel\fR
 .IP
-This will completely delete jerome and rachel from the Quota Storage
-database. All their quotas and jobs will be deleted too.
+Αφαιρεί εντελώς τους χρήστες jerome και rachel από τη βάση δεδομένων.
+Όλα τα όρια εκτυπώσεων και η ιστορία εργασιών θα διαγραφεί επίσης.
 .IP
 \f(CW$ edpykota --printer lp --charge 0.1\fR
 .IP
-This will set the page price for printer lp to 0.1. Job price
-will not be changed.
+Θέτε την τιμή της σελίδας για τον εκτυπωτή σε 0.1. Η τιμή της εργασίας
+δε θα μεταβληθεί.
 .IP
 \f(CW$ edpykota --printer hplj1,hplj2 --pgroups Laser,HP\fR
 .IP
-This will put printers hplj1 and hplj2 in printers groups Laser and HP.
-When printing either on hplj1 or hplj2, print quota will also be
-checked and accounted for on virtual printers Laser and HP.
+Αναθέτει τους εκτυπωτές hplj1 και hplj2 στις ομάδες εκτυπωτών Laser και HP.
+Όταν γίνεται εκτύπωση είτε στον hplj1 είτε hplj2, τα όρια εκτυπώσεων θα
+ελεγχθούν και θα ενημερωθούν για τους εικονικούς εκτυπωτές Laser και HP.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -192,4 +193,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Για τυχόν προβλήματα στείλτε e-mail στο: Jerome Alet - alet@librelogiciel.com

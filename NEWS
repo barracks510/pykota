@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20beta :
     
+        - Greek translation was finalized.
+        
         - For urgent legal reasons, a "privacy" directive has been added 
           to pykota.conf, to hide jobs' title, filename and options
           in the history.

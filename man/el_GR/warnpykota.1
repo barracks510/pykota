@@ -5,59 +5,57 @@ warnpykota \- manual page for warnpykota 1.20beta_unofficial
 .SH DESCRIPTION
 warnpykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Sends mail to users over print quota.
+Στέλνει email σε χρήστες που έχουν υπερβεί το όριο εκτυπώσεων.
 .PP
-command line usage :
+χρήση γραμμής εντολών :
 .TP
 warnpykota
-[options]  [names]
+[παράμετροι]  [ονόματα]
 .PP
-options :
+παράμετροι :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints warnpykota's version number then exits.
+Εμφανίζει την έκδοση του warnpykota και τερματίζει.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Εμφανίζει αυτό το μήνυμα και τερματίζει.
 .TP
 \fB\-u\fR | \fB\-\-users\fR
-Warns users over their print quota, this is the
-default.
+Προειδοποιεί τους χρήστες σχετικά με το όριο
+εκτυπώσεών τους. Αυτή είναι η προεπιλογή.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Warns users whose groups quota are over limit.
+Προειδοποιεί τους χρήστες που έχουν υπερβεί τα όρια ομάδας.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Verify quotas on this printer only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Επαληθεύει τα όρια στο συγκεκριμένο εκτυπωτή. Η παράμετρος
+p μπορεί να χρησιμοποιεί μπαλαντέρ για να επιλεγούν μόνο
+κάποιοι εκτυπωτές. Η προεπιλεγμένη τιμή είναι *, που
+σημαίνει όλοι οι εκτυπωτές.
+Μπορείτε να ορίσετε πολλά ονόματα ή μπαλαντέρ, με τη
+χρήση διαχωριστικών κομμάτων.
 .PP
-examples :
+παραδείγματα :
 .IP
 \f(CW$ warnpykota --printer lp\fR
 .IP
-This will warn all users of the lp printer who have exceeded their
-print quota.
+Προειδοποιεί όλους τους χρήστες του εκτυπωτή lp που έχουν υπερβεί τα
+όρια εκτυπώσεών τους.
 .IP
 \f(CW$ warnpykota\fR
-.TP
-This will warn all users
-who have exceeded their print quota on
 .IP
-any printer.
+Προειδοποιεί όλους τους χρήστες που έχουν υπερβεί τα όρια εκτυπώσεών
+τους σε οποιονδήποτε εκτυπωτή.
 .IP
 \f(CW$ warnpykota --groups --printer "laserjet*" "dev*"\fR
 .IP
-This will warn all users of groups which names begins with "dev" and
-who have exceeded their print quota on any printer which name begins
-with "laserjet"
+Προειδοποιεί όλους τους χρήστες των ομάδων με ονόματα που αρχίζουν από
+"dev" οι οποίοι έχουν υπερβεί το όριο εκτυπώσεών τους σε οποιονδήποτε
+εκτυπωτή που το όνομά του αρχίζει από  "laserjet"
 .IP
-If launched by an user who is not a PyKota administrator, additionnal
-arguments representing users or groups names are ignored, and only the
-current user/group is reported.
+Αν εκτελεστεί από χρήστη που δεν είναι διαχειριστής του PyKota, οι
+παράμετροι που αναφέρονται σε χρήστες ή ομάδες παραλείπονται, και
+αναφέρονται μόνο πληροφορίες που αφορούν τον τρέχοντα χρήστη/ομάδα.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -73,4 +71,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Για τυχόν προβλήματα στείλτε e-mail στο: Jerome Alet - alet@librelogiciel.com

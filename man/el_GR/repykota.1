@@ -5,54 +5,58 @@ repykota \- manual page for repykota 1.20beta_unofficial
 .SH DESCRIPTION
 repykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Generates print quota reports.
+Παράγει αναφορές ορίων εκτυπώσεων.
 .PP
-command line usage :
+χρήση γραμμής εντολών :
 .IP
-repykota [options]
+repykota [παράμετροι]
 .PP
-options :
+παράμετροι :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints repykota's version number then exits.
+Εμφανίζει την έκδοση του repykota και τερματίζει.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Εμφανίζει αυτό το μήνυμα και τερματίζει.
 .TP
 \fB\-u\fR | \fB\-\-users\fR
-Generates a report on users quota, this is
-the default.
+Παράγει μια αναφορά με τα όρια εκτυπώσεων των
+χρηστών. Αυτή είναι η προεπιλογή.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Generates a report on group quota instead of users.
+Παράγει μια αναφορά με το όρια εκτυπώσεων ομάδων
+ορίων αντί για χρηστών.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Report quotas on this printer only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Αναφέρει όρια μόνο σε αυτό τον εκτυπωτή. Η
+παράμετρος p μπορεί να περιέχει μπαλαντέρ για να
+επιλεγούν μόνο κάποιοι εκτυπωτές.
+Η προεπιλογη είναι *, δηλαδή όλοι οι εκτυπωτές.
+Μπορείτε να ορίσετε πολλά ονόματα ή μπαλαντέρ,
+διαχωρίζοντάς τα με κόμματα.
 .PP
-examples :
+παραδείγματα :
 .IP
 \f(CW$ repykota --printer lp\fR
 .IP
-This will print the quota status for all users who use the lp printer.
+Εμφανίζει την κατάσταση ορίων εκτυπώσεων για όλους τους χρήστες που
+χρησιμοποιούν τον εκτυπωτή lp.
 .IP
 \f(CW$ repykota\fR
 .IP
-This will print the quota status for all users on all printers.
+Εμφανίζει την κατάσταση ορίων εκτυπώσεων για όλους τους χρήστες σε
+όλους τους εκτυπωτές.
 .IP
 \f(CW$ repykota --printer "laser*,*pson" jerome "jo*"\fR
 .IP
-This will print the quota status for user jerome and all users
-whose name begins with "jo" on all printers which name begins
-with "laser" or ends with "pson".
+Εμφανίζει την κατάσταση ορίων εκτυπώσεων για το χρήστη jerome και
+όλους τους χρήστες που το όνομά τους αρχίζει από "jo" σε όλους
+τους εκτυπωτές που το όνομά τους αρχίζει από "laser" ή τελειώνει
+σε "pson".
 .IP
-If launched by an user who is not a PyKota administrator, additionnal
-arguments representing users or groups names are ignored, and only the
-current user/group is reported.
+Αν εκτελεστεί από χρήστη που δεν είναι διαχειριστής του PyKota, επιπλέον
+παράμετροι για χρήστες ή ονόματα ομάδων παραβλέπονται, και μόνο ο
+τρέχων χρήστης/τρέχουσα ομάδα αναφέρονται.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,4 +72,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Για τυχόν προβλήματα στείλτε e-mail στο: Jerome Alet - alet@librelogiciel.com
