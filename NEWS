@@ -25,6 +25,9 @@ PyKota NEWS :
     
         - cupspykota polling loop fix for MacOSX (at least)
         
+        - logging subsystem now logs PID too, to ease diagnosing
+          problems under heavy load.
+          
         - pkpgcounter enhancements.
         
         - pkprinters --skipexisting now tells pkprinters to not
