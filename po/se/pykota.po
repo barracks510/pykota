@@ -23,7 +23,6 @@
 # Copyright (c) 2003-2004 Conseil Internet & Logiciels Libres
 # Jerome Alet <alet@librelogiciel.com>, 2003-2004.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PyKota v1.16\n"

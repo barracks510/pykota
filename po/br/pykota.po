@@ -434,6 +434,7 @@ msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
 msgstr ""
+"O utilizador %s ainda não tem cota definida na impressora %s, o pedido será rejeitado"
 
 #, python-format
 msgid "Unable to compute job size with external accounter %s"
@@ -443,8 +444,7 @@ msgid "Using the 'stupid' accounting method is unreliable."
 msgstr "Usar o metodo 'stupid' não é confiavel."
 
 msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr ""
-"o Total pode não ser exato se os usuarios forem mebros de varios grupos."
+msgstr "O Total pode não ser exato se os usuarios forem mebros de varios grupos."
 
 #, python-format
 msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
