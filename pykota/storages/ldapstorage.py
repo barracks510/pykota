@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.94  2005/01/01 18:53:27  jalet
+# Implemented in the LDAP backend code the same fix than in PostgreSQL backend
+# code for people who don't use PyKota tools to manage accounts.
+#
 # Revision 1.93  2004/12/31 16:10:57  jalet
 # Fixed recently introduced bugs due to extended userquotabase and groupquotabase
 # directives.
@@ -638,6 +642,8 @@ class Storage(BaseStorage) :
             user.LimitBy = fields.get("pykotaLimitBy")
             if user.LimitBy is not None :
                 user.LimitBy = user.LimitBy[0]
+            else :    
+                user.LimitBy = "quota"
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], base=self.info["balancebase"])
             if not result :
                 raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
@@ -676,6 +682,8 @@ class Storage(BaseStorage) :
             group.LimitBy = fields.get("pykotaLimitBy")
             if group.LimitBy is not None :
                 group.LimitBy = group.LimitBy[0]
+            else :    
+                group.LimitBy = "quota"
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
             for member in self.getGroupMembers(group) :
@@ -849,6 +857,8 @@ class Storage(BaseStorage) :
                     group.LimitBy = fields.get("pykotaLimitBy")
                     if group.LimitBy is not None :
                         group.LimitBy = group.LimitBy[0]
+                    else :    
+                        group.LimitBy = "quota"
                     group.AccountBalance = 0.0
                     group.LifeTimePaid = 0.0
                     for member in self.getGroupMembers(group) :
