@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/11/15 22:29:01  jalet
+# Moved title and filename to the left to free some space.
+#
 # Revision 1.6  2004/11/15 22:20:27  jalet
 # Now outputs strings as-is, and not title-ized
 #
@@ -124,31 +127,6 @@ Please e-mail bugs to: %s""")
         
 class PyKotaBanner(Tool) :        
     """A class for pkbanner."""
-    primaryfields = [ 
-                ("PRINTERNAME", N_("Printer")),
-                ("JOBID", N_("JobId")),
-                ("JOBORIGINATINGHOSTNAME", N_("Client host")),
-                ("TITLE", N_("Title")),
-                ("FILENAME", N_("Filename")),
-                ("COPIES", N_("Copies")),
-                ("JOBSIZEBYTES", N_("Job size in bytes")),
-                ("PRECOMPUTEDJOBSIZE", N_("Estimated job size")),
-                ("PRECOMPUTEDJOBPRICE", N_("Estimated job price")),
-             ]   
-             
-    secondaryfields = [
-                ("LIMITBY", N_("Account limited by")),
-                ("BALANCE", N_("Account balance")),
-                ("PAGECOUNTER", N_("Number of pages on this printer")),
-                ("SOFTLIMIT", N_("Soft limit")),
-                ("HARDLIMIT", N_("Hard limit")),
-                ("DATELIMIT", N_("Date limit")),
-             ]                           
-    
-    tertiaryfields = [
-                ("ACTION", N_("Action taken for current job")),
-             ]                           
-    
     def getPageSize(self, pgsize) :
         """Returns the correct page size or None if not found."""
         try :
@@ -243,11 +221,12 @@ class PyKotaBanner(Tool) :
         ypos -= 20
         
         # Outputs title and filename
+        # We put them at x=0.25*pagewidth so that the line is long enough to hold them
         title = self.getVar("PYKOTATITLE")
-        ypos -= self.printVar(c, xcenter, ypos, _("Title"), title, 10, darkness) 
+        ypos -= self.printVar(c, xcenter / 2.0, ypos, _("Title"), title, 10, darkness) 
         
         filename = self.getVar("PYKOTAFILENAME")
-        ypos -= self.printVar(c, xcenter, ypos, _("Filename"), filename, 10, darkness) 
+        ypos -= self.printVar(c, xcenter / 2.0, ypos, _("Filename"), filename, 10, darkness) 
         
         # skip some space
         ypos -= 20
