@@ -13,6 +13,9 @@
 #
 # $Id$
 #
+#
+# First ensures there's no existing file
 rm -f /tmp/pykota.po
+#
+# Then extract messages
 xgettext --language=python --default-domain=pykota --output-dir=/tmp --no-location --msgid-bugs-address="alet@librelogiciel.com" $*
-
