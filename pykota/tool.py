@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.139  2004/11/15 15:54:03  jalet
+# Continued integration of Matt's patch for banners
+#
 # Revision 1.138  2004/11/12 23:46:44  jalet
 # Heavy work on pkbanner. Not finished yet though, but mostly works.
 #
@@ -512,6 +515,8 @@ import socket
 import tempfile
 import md5
 import ConfigParser
+import popen2
+import cStringIO
 
 from mx import DateTime
 
@@ -1208,6 +1213,46 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         if posthook :
             self.logdebug("Executing post-hook [%s]" % posthook)
             os.system(posthook)
+
+    def genBanner(self, bannerfileorcommand) :
+        """Reads a banner or generates one through an external command.
+        
+           Returns the banner's content in a format which MUST be accepted
+           by the printer.
+        """
+        banner = "" # no banner by default
+        if bannerfileorcommand :
+            if (os.access(bannerfileorcommand, os.X_OK)) :
+                self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
+                child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
+                child.tochild.close()
+                child.childerr.close()
+                banner = child.fromchild.read()
+                child.fromchild.close()
+                status = child.wait()
+                if os.WIFEXITED(status) :
+                    status = os.WEXITSTATUS(status)
+                self.printInfo(_("Banner generator %s exit code is %s") % (bannerfileorcommand, str(status)))
+            else :
+                self.logdebug("Using %s as the banner." % bannerfileorcommand)
+                try :
+                    fh = open(bannerfileorcommand, 'r')
+                except IOError, msg :    
+                    self.printInfo("Impossible to open %s : %s" % (bannerfileorcommand, msg), "error")
+                else :    
+                    banner = fh.read()
+                    fh.close()
+        return cStringIO.StringIO(banner)
+    
+    def startingBanner(self, printername) :
+        """Retrieves a starting banner for current printer and returns its content."""
+        self.logdebug("Retrieving starting banner...")
+        return self.genBanner(self.config.getStartingBanner(printername))
+    
+    def endingBanner(self, printername) :
+        """Retrieves an ending banner for current printer and returns its content."""
+        self.logdebug("Retrieving ending banner...")
+        return self.genBanner(self.config.getEndingBanner(printername))
         
     def printInfo(self, message, level="info") :        
         """Sends a message to standard error."""
