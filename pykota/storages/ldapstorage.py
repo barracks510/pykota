@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2004/02/25 16:52:39  jalet
+# Small fix wrt empty user groups
+#
 # Revision 1.55  2004/02/23 22:53:21  jalet
 # Don't retrieve data when it's not needed, to avoid database queries
 #
@@ -538,7 +541,9 @@ class Storage(BaseStorage) :
                 grouppquota.PageCounter = 0
                 grouppquota.LifePageCounter = 0
                 usernamesfilter = "".join(["(pykotaUserName=%s)" % member.Name for member in self.getGroupMembers(group)])
-                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
+                if usernamesfilter :
+                    usernamesfilter = "(|%s)" % usernamesfilter
+                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)%s)" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
                 if result :
                     for userpquota in result :    
                         grouppquota.PageCounter += int(userpquota[1].get("pykotaPageCounter")[0] or 0)
