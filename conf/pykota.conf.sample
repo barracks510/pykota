@@ -82,6 +82,7 @@ smtpserver: localhost
 # A script which seems to be accurate, copy it from the
 # untested/postscript directory to another place.
 # accounter: external(/usr/local/bin/pagecount.sh)
+# WARNING : it may produce broken pipes, I don't know why yet. YMMV.
 #
 # default value 
 accounter: querying
@@ -122,9 +123,9 @@ gracedelay: 7
 # Only snmp(community, oid) and external(command) are supported
 #
 # Example : 
-#     requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+#     requester: external(snmpget -v 2c -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 # and :
-#     requester: snmp(public, 43.10.2.1.4.1.1)
+#     requester: snmp(public, mib-2.43.10.2.1.4.1.1)
 # are equivalent
 #
 # Another untested example, using npadmin :
@@ -139,11 +140,10 @@ gracedelay: 7
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
 #
-# NB : The SNMP oid 43.10.2.1.4.1.1 works on HP Laserjet Printers, but it may
+# NB : The SNMP oid mib-2.43.10.2.1.4.1.1 works on HP Laserjet Printers, but it may
 #      be different with other brands, refer to your printer's documentation 
 #      for details.
-requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
-
+requester: external(snmpget -v 2c -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
 # either allow or deny

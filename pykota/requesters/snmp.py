@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/05/21 10:07:09  jalet
+# Now works with net-snmp v5.0 and above.
+# (It already worked, but the sample configuration file didn't contain
+# appropriate values)
+#
 # Revision 1.8  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -70,7 +75,7 @@ class Requester :
         """
         if hostname is None :
             raise PyKotaRequesterError, _("Unknown printer address in SNMP(%s, %s) for printer %s") % (self.community, self.oid, self.printername)
-        answer = os.popen("snmpget -c %s -Ov %s %s" % (self.community, hostname, self.oid))
+        answer = os.popen("snmpget -v 2c -c %s -Ov %s %s" % (self.community, hostname, self.oid))
         try :
             pagecounter = int(answer.readline().split()[-1].strip())
         except IndexError :    
