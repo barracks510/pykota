@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha4 :
+    
+        - Added support for more ghostscript devices in ESC/P2
+          analyzer : stcolor, st800, escp, escpc are now supported.
+          
     - 1.20alpha3 :
        
         - Small improvement in PostScript parser to avoid being

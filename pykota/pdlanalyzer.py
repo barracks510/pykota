@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/08/30 23:10:24  jalet
+# Improved the ESC/P2 analyzer so that more GhostScript devices are supported
+#
 # Revision 1.34  2004/08/27 09:08:22  jalet
 # Improvement in PostScript parser to avoid being fooled by clever "students"
 #
@@ -236,13 +239,46 @@ class ESCP2Analyzer :
                 
     def getJobSize(self) :    
         """Counts pages in an ESC/P2 document."""
-        # with GhostScript, at least, for each page there
+        # with Gimpprint, at least, for each page there
         # are two Reset Printer sequences (ESC + @)
-        marker = "\033@"
-        pagecount = 0
+        marker1 = "\033@"
+        pagecount1 = 0
+        
+        # with other software or printer driver, we
+        # may prefer to search for "\r\n\fESCAPE"
+        # or "\r\fESCAPE"
+        marker2r = "\r\f\033"
+        marker2rn = "\r\n\f\033"
+        pagecount2 = 0
+        
+        # and ghostscript's stcolor for example seems to
+        # output ESC + @ + \f for each page plus one
+        marker3 = "\033@\f"
+        pagecount3 = 0
+        
+        # while ghostscript's escp driver outputs instead
+        # \f + ESC + @
+        marker4 = "\f\033@"
+        pagecount4 = 0
+        
         for line in self.infile.xreadlines() : 
-            pagecount += line.count(marker)
-        return int(pagecount / 2)       
+            pagecount1 += line.count(marker1)
+            generic = line.count(marker2r)
+            if not generic :
+                generic = line.count(marker2rn)
+            pagecount2 += generic    
+            pagecount3 += line.count(marker3)
+            pagecount4 += line.count(marker4)
+            
+        if pagecount2 :    
+            return pagecount2
+        elif pagecount3 > 1 :     
+            return pagecount3 - 1
+        elif pagecount4 :    
+            return pagecount4
+        else :    
+            return int(pagecount1 / 2)       
+        
         
 class PCLAnalyzer :
     def __init__(self, infile) :
@@ -612,6 +648,7 @@ class PDLAnalyzer :
             # almost optimal, and much more speedy anyway.
             psyco.bind(PostScriptAnalyzer.getJobSize)
             psyco.bind(PDFAnalyzer.getJobSize)
+            psyco.bind(ESCP2Analyzer.getJobSize)
             psyco.bind(PCLAnalyzer.getJobSize)
             psyco.bind(PCLXLAnalyzer.getJobSize)
         
@@ -714,8 +751,8 @@ class PDLAnalyzer :
     def isESCP2(self, data) :        
         """Returns 1 if data is ESC/P2, else 0."""
         if data.startswith("\033@") or \
+           data.startswith("\033*") or \
            data.startswith("\n\033@") :
-            #data.startswith("\033*") or 
             return 1
         else :    
             return 0
