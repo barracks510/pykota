@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/10/03 09:02:20  jalet
+# Logs cache store actions too
+#
 # Revision 1.20  2003/10/02 20:23:18  jalet
 # Storage caching mechanism added.
 #
@@ -329,6 +332,7 @@ class BaseStorage :
         """Puts an entry in the cache."""
         if self.usecache :
             self.caches[cachetype][key] = value
+            self.tool.logdebug("Cache store (%s->%s)" % (cachetype, key))
             
     def getUser(self, username) :        
         """Returns the user from cache."""
