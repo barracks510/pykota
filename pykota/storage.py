@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.64  2004/10/08 20:19:18  jalet
+# Added ugly workaround for strange locale problem
+#
 # Revision 1.63  2004/10/07 21:14:28  jalet
 # Hopefully final fix for data encoding to and from the database
 #
@@ -693,7 +696,11 @@ class BaseStorage :
             try :
                 return unicode(text, "UTF-8").encode(self.tool.getCharset()) 
             except UnicodeError :    
-                pass
+                try :
+                    # Incorrect locale settings ?
+                    return unicode(text, "UTF-8").encode("ISO-8859-15") 
+                except UnicodeError :    
+                    pass
         return text
         
     def userCharsetToDatabase(self, text) :
@@ -702,7 +709,11 @@ class BaseStorage :
             try :
                 return unicode(text, self.tool.getCharset()).encode("UTF-8") 
             except UnicodeError :    
-                pass
+                try :
+                    # Incorrect locale settings ?
+                    return unicode(text, "ISO-8859-15").encode("UTF-8") 
+                except UnicodeError :    
+                    pass
         return text
         
 def openConnection(pykotatool) :

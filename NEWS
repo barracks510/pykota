@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha23 :
+    
+        - Add workaround for locale problem.
+        
     - 1.20alpha22 :
     
         - Hopefully final fix for data encoding charset.
