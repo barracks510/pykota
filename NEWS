@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.19alpha22 :
     
+        - Improved PostScript detection code for bad drivers
+          which don't correctly switch languages between PJL
+          and PS.
+       
         - Even better debugging code.
         
     - 1.19alpha21 :

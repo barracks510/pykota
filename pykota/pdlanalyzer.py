@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/06/18 06:16:14  jalet
+# Fixes PostScript detection code for incorrect drivers
+#
 # Revision 1.3  2004/05/21 20:40:08  jalet
 # All the code for pkpgcounter is now in pdlanalyzer.py
 #
@@ -408,7 +411,8 @@ class PDLAnalyzer :
            ((data[:128].find("\033%-12345X") != -1) and \
              ((data.find("LANGUAGE=POSTSCRIPT") != -1) or \
               (data.find("LANGUAGE = POSTSCRIPT") != -1) or \
-              (data.find("LANGUAGE = Postscript") != -1))) :
+              (data.find("LANGUAGE = Postscript") != -1))) or \
+              (data.find("%!PS-Adobe") != -1) :
             return 1
         else :    
             return 0
