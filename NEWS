@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha11 :
+    
+        - The pykota filter is now completely deprecated and
+          can't be used anymore. LPRng users MUST download 
+          an older version of PyKota. CUPS users MUST use
+          cupspykota. Better support for LPRng will come
+          in the near future.
+          
     - 1.19alpha10 :
     
         - pykotme now uses generic PDL Analyzer directly instead

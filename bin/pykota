@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2004/05/21 21:02:56  jalet
+# The pykota filter is now deprecated
+#
 # Revision 1.58  2004/05/18 14:48:47  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -356,6 +359,16 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         return PyKotaFilterOrBackend.mainWork(self)        
             
 if __name__ == "__main__" :    
+    sys.stderr.write("ERROR : pykota is now deprecated. With CUPS use cupspykota instead.\n")
+    sys.stderr.write("ERROR : pykota is now deprecated. With LPRng please wait for a new version.\n")
+    sys.stderr.flush()
+    sys.exit(-1)
+    
+    ##############
+    #            #
+    # DEPRECATED #
+    #            #
+    ##############
     retcode = -1
     try :
         # Initializes the current tool
