@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/08/21 23:16:57  jalet
+# First draft of ESC/P2 (mini-)parser.
+#
 # Revision 1.29  2004/08/11 16:25:38  jalet
 # Fixed index problem in PCLXL parser when retrieving number of copies for
 # each page
@@ -212,6 +215,25 @@ class PDFAnalyzer :
         pagecount = 0
         for line in self.infile.xreadlines() : 
             pagecount += len(regexp.findall(line))
+        return pagecount    
+        
+class ESCP2Analyzer :
+    def __init__(self, infile) :
+        """Initialize ESC/P2 Analyzer."""
+        self.infile = infile
+                
+    def getJobSize(self) :    
+        """Counts pages in an ESC/P2 document."""
+        # typical new page marker is Carriage Return (with optional Line Feed)
+        # followed by Form Feed, followed by Escape character
+        marker1 = chr(13) + chr(12) + chr(27)
+        marker2 = chr(13) + chr(10) + chr(12) + chr(27)
+        pagecount = 0
+        for line in self.infile.xreadlines() : 
+            c = line.count(marker1)
+            if not c :
+                c = line.count(marker2)
+            pagecount += c    
         return pagecount    
         
 class PCLAnalyzer :
@@ -684,6 +706,13 @@ class PDLAnalyzer :
         else :    
             return 0
             
+    def isESCP2(self, data) :        
+        """Returns 1 if data is ESC/P2, else 0."""
+        if (data[:2] == "\033@") or (data[:2] == "\033*") :
+            return 1
+        else :    
+            return 0
+    
     def detectPDLHandler(self) :    
         """Tries to autodetect the document format.
         
@@ -701,6 +730,8 @@ class PDLAnalyzer :
             return PCLAnalyzer
         elif self.isPDF(firstblock) :    
             return PDFAnalyzer
+        elif self.isESCP2(firstblock) :    
+            return ESCP2Analyzer
         else :    
             raise PDLAnalyzerError, "Analysis of first data block failed."
             

@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha2 :
+    
+        - First version of ESC/P2 analyzer. Seems to work
+          ok at least with 'epson', 'epsonc', 'eps9mid' 
+          and 'esp9high' ghostscript devices. Needs more
+          work to correctly analyze other devices.
+        
     - 1.20alpha1 : 
     
         - Fixed problem with number of copies in PCLXL parser.
