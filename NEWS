@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha12 :
+    
+        - waitprinter.sh rewritten from scratch to wait
+          for printer status stabilization.
+        
     - 1.20alpha11 : 
     
         - Generic data dumper 'dumpykota' introduced.
