@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/06/18 22:24:03  jalet
+# Removed old comments
+#
 # Revision 1.9  2004/06/18 22:21:27  jalet
 # Native PDF parser greatly improved.
 # GhostScript based PDF parser completely removed because native code
@@ -416,13 +419,12 @@ class PDLAnalyzer :
             infile = sys.stdin
         else :    
             # normal file
-            self.infile = open(self.filename, "rb") # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
+            self.infile = open(self.filename, "rb")
             self.mustclose = 1
             return
             
         # Use a temporary file, always seekable contrary to standard input.
-        # This also has the benefit to let us use the "U" mode (new in Python 2.3)
-        self.infile = tempfile.TemporaryFile(mode="w+b")   # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
+        self.infile = tempfile.TemporaryFile(mode="w+b")
         while 1 :
             data = infile.read(MEGABYTE) 
             if not data :
