@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/04/24 07:59:40  jalet
+# LPRng support now works !
+#
 # Revision 1.35  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -212,6 +215,8 @@ class PyKotaTool :
         else :    
             # Try to detect LPRng
             jseen = Jseen = Pseen = nseen = rseen = None
+            sys.stderr.write("ARGS : %s\n" % str(sys.argv))
+            sys.stderr.flush()
             for arg in sys.argv :
                 if arg.startswith("-j") :
                     jseen = arg[2:].strip()
@@ -225,7 +230,7 @@ class PyKotaTool :
                     Pseen = arg[2:].strip()
                 elif arg.startswith("-r") :    
                     rseen = arg[2:].strip()
-            if jseen and Jseen and Pseen and nseen and rseen :        
+            if jseen and Pseen and nseen and rseen :        
                 return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen)
         return (None, None, None, None, None, None)   # Unknown printing system          
         
