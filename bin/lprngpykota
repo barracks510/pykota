@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/09/02 14:40:13  jalet
+# Another bunch of LPRng fixes
+#
 # Revision 1.5  2004/07/23 11:19:48  jalet
 # 1.19beta is out !
 #
@@ -79,7 +82,10 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         try :
             return [line[11:] for line in os.environ.get("HF", "").split() if line.startswith("remotehost=")][0]
         except IndexError :    
-            return None
+            try :
+                return [line[1:] for line in os.environ.get("CONTROL", "").split() if line.startswith("H")][0]
+            except IndexError :    
+                return None
                 
     def firstPass(self, policy, printer, user, userpquota) :            
         """First pass done here."""
@@ -243,13 +249,13 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             # nothing to do, just accept the job
             return self.acceptJob()
         else :    
-            if (not printer.LastJob.Exists) or (printer.LastJob.JobId != self.jobid) :
+            if printer.LastJob.Exists and (printer.LastJob.JobId == self.jobid) :
+                # here we know we are in second pass.
+                return self.secondPass(policy, printer, user, userpquota)
+            else :    
                 # Last job for current printer has a different JobId than
                 # the current job, so we know we are in the first pass.
                 return self.firstPass(policy, printer, user, userpquota)
-            else :    
-                # and here we know we are in second pass.
-                return self.secondPass(policy, printer, user, userpquota)
             
 if __name__ == "__main__" :    
     retcode = JSUCC
