@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2005/03/05 18:54:54  jalet
+# Improved the installation documentation.
+# Now checkdeps also checks for the presence of GhostScript, which
+# may be needed if PyKota's bannering facility is used or if some
+# printer driver produces non-DSC compliant PostScript.
+#
 # Revision 1.5  2005/02/14 23:37:58  jalet
 # Added a check for the presence of pythn-psyco
 #
@@ -97,7 +103,8 @@ if __name__ == "__main__" :
                        ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners.\nSee http://www.pythonware.com/downloads/"),
                        ("Python-Psyco", "psyco", "Python-Psyco speedups parsing of print files, you should use it.\nSee http://psyco.sourceforge.net/"),
                      ]
-    commandstocheck = [ ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), 
+    commandstocheck = [ ("GhostScript", "gs", "Depending on your configuration, GhostScript may be needed in different parts of PyKota."),
+                        ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), 
                         ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")
                       ]
     for (name, module, helper) in modulestocheck :

@@ -240,16 +240,20 @@ SUPPORT CONTRACTS:
 ==================
 
   You can now purchase 8x5x365@NextBusinessDay Technical
-Support Contracts from us. The yearly fee is computed with  
-the following formula :
+  Support Contracts from us. The yearly fee is computed with  
+  the following formula :
 
   (100.0 * NbPrintServers) + (2.5 * NbPrinters) + (0.04 * NbUsers) EUROS.
   
   This fee includes the VAT, and a free subscription to official  
-PyKota packages.  
+  PyKota packages.  
 
   Please send an email to alet@librelogiciel.com if you're
-interested in purchasing such a contract.   
+  interested in purchasing such a contract.   
+
+  Remember that purchasing a support contract for Free Software like PyKota
+  is a great way to show your appreciation for the work already being done 
+  on this project, and will help to improve this software in the future.
 
 ============================================================
 
@@ -642,9 +646,19 @@ Some people have developped tools around PyKota, and make
 them available under the GNU General Public License :
 
   - Kanakorn Horsiritham developped phpPykotaAdmin which is 
-    a web based database independant administrative GUI :
+    a web based database independant administrative GUI,
+    written in PHP.
   
       http://opensource.psu.ac.th/~kanakorn/mambo/
+      
+    He was also kind enough to write an installation guide  
+    in english for CUPS and PyKota with phpPykotaAdmin on Fedora
+    Core 3. You'll find this document on the same website.
+    
+    This great software currently at version 0.3 is a wonderful
+    basis for an administrative GUI since it only depends on 
+    PyKota commands to be present to successfully manage
+    PyKota's database. 
   
 Additionnal software will be listed here when they will be  
 ready.

@@ -121,7 +121,9 @@ jerome@nordine:~/pykota-1.21_official$
      <para>
         Of course if your print server and your database servers have different <acronym>IP</acronym>
         addresses, you have to replace the <literal>127.0.0.1</literal> address above with your print
-        server's <acronym>IP</acronym> address.
+        server's <acronym>IP</acronym> address. As an alternative, you could still keep these
+        lines and add similar lines with other <acronym>IP</acronym> addresses if have several
+        print servers for which you want a single centralized database.
         <tip>
           <title>Tip</title>
           <para>
@@ -296,10 +298,11 @@ $ cp pykota.schema /etc/ldap/schema
         <note>
           <title>Note</title>
           <para>
-            If you use RPM or DEB packages, usually the
-            <filename>pykota.schema</filename> file gets installed into the
-            <filename>/usr/share/pykota/ldap</filename> directory, along 
-            with a README file.
+            If you use RPM or DEB packages, the
+            <filename>pykota.schema</filename> file is usually installed into the
+            <filename>/usr/share/pykota/ldap</filename> directory, along
+            with a README file, and may also be installed automatically in
+            your <acronym>LDAP</acronym> server's schemas directory.
           </para>
         </note>  
      </para>
@@ -378,12 +381,12 @@ $ /etc/init.d/slapd restart
         create them by yourself, either directly with a text editor and the
         <command>ldapadd</command> command, or with some specialized tool
         like <command>gq</command>. You can look at the <filename>initscripts/ldap/pykota-sample.ldif</filename>
-        file to see what minimal branches are necessary.
+        file to see which minimal branches are necessary.
         <note>
           <title>Note</title>
           <para>
             If you use RPM or DEB packages, usually the
-            <filename>pykota-sample.ldif</filename> file gets installed into the
+            <filename>pykota-sample.ldif</filename> file is installed into the
             <filename>/usr/share/pykota/ldap</filename> directory, along 
             with a README file.
           </para>
@@ -446,7 +449,7 @@ $ /etc/init.d/slapd restart
       <itemizedlist>
         <listitem>
           <para>
-            <application>CUPS</application> version 1.1 or above, or <application>LPRng</application>
+            <application>CUPS</application> version 1.1.14 or above, or <application>LPRng</application>
             version 3.8.27 or above (it probably works with older versions but this is untested).
             You can download them from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
             or <ulink url="http://lprng.sourceforge.net">http://lprng.sourceforge.net</ulink>
@@ -454,8 +457,12 @@ $ /etc/init.d/slapd restart
         </listitem>  
         <listitem>
           <para>
-            Python version 2.1 or above.
+            <application>Python</application> version 2.1 or above.
             You can download it from <ulink url="http://www.python.org">http://www.python.org</ulink>.
+            While <application>PyKota</application> itself will try to preserve compatibility
+            with <application>Python</application> version 2.1 for the near future, some <application>Python</application>
+            modules which are needed by <application>PyKota</application> may mandate the use of a more recent version
+            of this language.
           </para>
         </listitem>  
         <listitem>
@@ -569,6 +576,12 @@ $ /etc/init.d/slapd restart
         </listitem>  
         <listitem>
           <para>
+            The <application>Python Imaging Library - PIL</application> module. 
+            You can download it from <ulink url="http://www.pythonware.com">http://www.pythonware.com</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
             The <application>PyOSD</application> Python module. 
             You can download it from <ulink url="http://repose.cx/pyosd/">http://repose.cx/pyosd/</ulink>.
           </para>
@@ -634,7 +647,7 @@ $ python setup.py install
       be familiar with this syntax.
       In a future release, this documentation will include the complete
       reference for all configuration fields available. Keep in mind that
-      PyKota can be really heavily customized, and can delegate some work
+      <application>PyKota</application> can be really heavily customized, and can delegate some work
       to any external command of your choice.
     </para>
     
@@ -647,7 +660,7 @@ $ python setup.py install
       PyKota features some interesting possibilities which allow you to
       define options either globally so that they apply to all printers,
       or on a per printer basis. Please see the sample configuration files
-      to see what I mean. In the simplest form, only a global section is
+      to see what I mean. In the simplest form, only a <literal>[global]</literal> section is
       needed. In more complex configurations, you will have to create 
       one section per printer. Each section in the configuration files
       begins with a name between square brackets <literal>[]</literal>.
@@ -656,14 +669,15 @@ $ python setup.py install
     </para>
     
     <para>
-      After you have modified PyKota's configuration files, you have to
+      After you have modified <application>PyKota</application>'s configuration files, you have to
       double check their permissions, otherwise your installation may be
       insecure or may not work at all.
       The main configuration file <filename>~pykota/pykota.conf</filename>
       doesn't contain much sensitive information, so it can be made
       readable by anyone. If normal users read this file, at best they
       will learn the username and optional password of the read-only
-      database user, so they won't be allowed to do any harm.
+      database user. This means that beside being allowed to read all the contents of
+      the quota database, they won't be allowed to modify or delete it.
       On the other hand, the <filename>~pykota/pykotadmin.conf</filename>
       file contains the read-write user's identity and password. You must then
       ensure that no normal user can read this file. It should only be readable
@@ -691,6 +705,10 @@ $ chmod 640 ~pykota/pykotadmin.conf
       </warning>
     </para>
     
+    <para>
+      Don't forget to restart your print server sofware if you changed group membership for the user it runs
+      as, otherwise your change wouldn't be taken into account.
+    </para>
     
     <para>
       Now depending on your printing system, the configuration to do is particular.
@@ -701,13 +719,13 @@ $ chmod 640 ~pykota/pykotadmin.conf
       <title>With CUPS</title>
       
       <para>
-        From version 1.16alpha7 on, configuring PyKota to integrate
-        within CUPS is more than easy.
+        From version 1.16alpha7 on, configuring <application>PyKota</application> to integrate
+        within <application>CUPS</application> is more than easy.
       </para>
       
       <para>
         You just have to create a symbolic link to the <filename>cupspykota</filename>
-        command in CUPS' backend directory :
+        command in <application>CUPS</application>' backend directory :
         <screen>        
 $ cd /usr/lib/cups/backend        
 $ ln -s /usr/share/pykota/cupspykota cupspykota
@@ -830,6 +848,12 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.33  2005/03/05 18:54:54  jalet
+Improved the installation documentation.
+Now checkdeps also checks for the presence of GhostScript, which
+may be needed if PyKota's bannering facility is used or if some
+printer driver produces non-DSC compliant PostScript.
+
 Revision 1.32  2005/02/28 23:17:40  jalet
 Improved documentation
 
