@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.73  2004/02/19 14:20:21  jalet
+# maildomain pykota.conf directive added.
+# Small improvements on mail headers quality.
+#
 # Revision 1.72  2004/01/14 15:51:19  jalet
 # Docstring added.
 #
@@ -316,6 +320,7 @@ class PyKotaTool :
         self.debug = self.config.getDebug()
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
+        self.maildomain = self.config.getMailDomain()
         
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
@@ -424,10 +429,10 @@ class PyKotaTool :
     def sendMessage(self, adminmail, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
         if "@" not in touser :
-            touser = "%s@%s" % (touser, self.smtpserver)
+            touser = "%s@%s" % (touser, self.maildomain or self.smtpserver)
         server = smtplib.SMTP(self.smtpserver)
         try :
-            server.sendmail(adminmail, [touser], fullmessage)
+            server.sendmail(adminmail, [touser], "From: %s\nTo: %s\n%s" % (adminmail, touser, fullmessage))
         except smtplib.SMTPRecipientsRefused, answer :    
             for (k, v) in answer.recipients.items() :
                 self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
@@ -573,7 +578,7 @@ class PyKotaTool :
         printername = printer.Name
         email = user.Email or user.Name
         if "@" not in email :
-            email = "%s@%s" % (email, self.smtpserver)
+            email = "%s@%s" % (email, self.maildomain or self.smtpserver)
         os.system(cmd % locals())
     
     def formatCommandLine(self, cmd, user, printer) :

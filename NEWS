@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha6 :
+        
+        - New configuration directive added : maildomain
+          to specify the domain to send mail to when user 
+          email address is not set in PyKota database.
+          
+        - More complete email message headers.  
+          
     - 1.18alpha5 :
     
         - Debian packaging specific files, contributed by

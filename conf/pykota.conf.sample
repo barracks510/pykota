@@ -32,7 +32,7 @@
 storagebackend: pgstorage
 
 # Quota Storage Server hostname (and optional port)
-# e.g. db.mydomain.com:5432
+# e.g. db.example.com:5432
 storageserver: localhost
 
 #
@@ -135,6 +135,18 @@ debug : Yes
 # Mail server to use to warn users
 # If the value is not set then localhost is used.
 smtpserver: localhost
+
+# Email domain
+# If the value is not set, and the mail attribute for the user
+# is not set in the PyKota storage, be it LDAP (see usermail directive
+# above) or PostgreSQL, then email messages are sent to 
+# username@smtpserver
+#
+# If the value is set, then email messages are sent to
+# username@maildomain using the SMTP server defined above
+#
+# Set the appropriate value below, example.com set as per RFC2606.
+maildomain: example.com
 
 # Should we force usernames to be all lowercase when printing ?
 # Default is No. 
@@ -303,7 +315,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #
 # In the lines below "%(printer)s" is automatically replaced
 # at run time with your printer's Fully Qualified Domain Name
-# e.g. myprinter.domain.com
+# e.g. myprinter.example.com
 #
 # Only snmp(community, oid) and external(command) are supported
 #

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2004/02/19 14:20:21  jalet
+# maildomain pykota.conf directive added.
+# Small improvements on mail headers quality.
+#
 # Revision 1.42  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -369,6 +373,13 @@ class PyKotaConfig :
             return self.getGlobalOption("smtpserver")
         except PyKotaConfigError :    
             return "localhost"
+        
+    def getMailDomain(self) :    
+        """Returns the mail domain to use to send messages to users."""
+        try :
+            return self.getGlobalOption("maildomain")
+        except PyKotaConfigError :    
+            return 
         
     def getAdminMail(self, printername) :    
         """Returns the Email address of the Print Quota Administrator."""
