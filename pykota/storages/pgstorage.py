@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/06/12 21:09:57  jalet
+# wrongly placed code.
+#
 # Revision 1.1  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -55,10 +58,10 @@ class Storage :
         
         try :
             self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
-            self.closed = 0
         except pg.error, msg :
             raise PyKotaStorageError, msg
         else :    
+            self.closed = 0
             if self.debug :
                 self.tool.logger.log_message("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user), "debug")
             
