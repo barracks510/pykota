@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2004/09/15 06:58:25  jalet
+# User groups membership and printer groups membership can now be dumped too
+#
 # Revision 1.45  2004/09/14 22:29:13  jalet
 # First version of dumpykota. Works fine but only with PostgreSQL backend
 # for now.
@@ -103,6 +106,16 @@ class SQLStorage :
     def extractGpquotas(self) :
         """Extracts all grouppquota records."""
         result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.* FROM groups,printers,grouppquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid")
+        return self.prepareRawResult(result)
+        
+    def extractUmembers(self) :
+        """Extracts all user groups members."""
+        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid")
+        return self.prepareRawResult(result)
+        
+    def extractPmembers(self) :
+        """Extracts all printer groups members."""
+        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid")
         return self.prepareRawResult(result)
         
     def extractHistory(self) :
