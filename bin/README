@@ -17,18 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-============================================================
+====================================================================
 
-This directory contains scripts to initialise the PyKota
-storage database. Use the one which best suits your need
-depending on the storage backend you want to use. Each
-script has an associated README file, be sure to read 
-this as well :
+This directory contains the print filters and command line tools
+which really make PyKota what it is.
 
-        File                            Backend
-        --------------------------------------------------
-         pykota-posgresql.sql | PostgreSQL storage
-pykota-upgrade-postgresql.sql | Upgrade database schema from pre 1.01
-                              |
-        
-============================================================
+====================================================================
