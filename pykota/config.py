@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/08/31 23:29:53  jalet
+# Introduction of the new 'onaccountererror' configuration directive.
+# Small fix for software accounter's return code which can't be None anymore.
+# Make software and hardware accounting code look similar : will be factorized
+# later.
+#
 # Revision 1.50  2004/07/27 07:07:27  jalet
 # Typo : treshold ==> threshold
 #
@@ -364,6 +370,19 @@ class PyKotaConfig :
             if enforcement not in validenforcements :
                 raise PyKotaConfigError, _("Option enforcement in section %s only supports values in %s") % (printername, str(validenforcements))
             return enforcement    
+            
+    def getPrinterOnAccounterError(self, printername) :    
+        """Returns what must be done whenever the accounter fails."""
+        validactions = [ "CONTINUE", "STOP" ]     
+        try :
+            action = self.getPrinterOption(printername, "onaccountererror")
+        except PyKotaConfigError :    
+            return "STOP"
+        else :    
+            action = action.upper()
+            if action not in validactions :
+                raise PyKotaConfigError, _("Option onaccountererror in section %s only supports values in %s") % (printername, str(validactions))
+            return action  
             
     def getPrinterPolicy(self, printername) :    
         """Returns the default policy for the current printer."""

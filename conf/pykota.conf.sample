@@ -302,6 +302,27 @@ utolower: No
 # accounter: hardware(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 accounter: software(/usr/bin/pkpgcounter)
 
+# What should we do if the accounter's subprocess doesn't return
+# a valid result (for example doesn't return an integer on its stdout)
+#
+# Valid values are : 'continue' and 'stop'. 'stop' is the default
+# if unset.
+#
+# 'continue' means try to process as usual, this may introduce
+# accounting errors and free jobs. This was the default behavior
+# until v1.20alpha5.
+#
+# 'stop' means fail and stop the print queue. If an accounter
+# error occurs, most of the time this is a misconfiguration, so
+# stopping the print queue is usually the better thing to do 
+# until the admin has fixed the configuration.
+#
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+#
+# onaccountererror: continue
+onaccountererror: stop
+
 # Print Quota administrator
 # These values can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.

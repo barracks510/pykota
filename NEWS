@@ -21,6 +21,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha5 :
+      
+        - Introduces the new configuration directive 'onaccountererror'
+          to specify what must be done whenever the software or
+          hardware accounter fails. Allowed values are 'continue' and
+          'stop' (default). 
+          
+        - Minor fix in software accounter for a recently introduced
+          problem.
+          
     - 1.20alpha4 :
     
         - Added support for more ghostscript devices in ESC/P2

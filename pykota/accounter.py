@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2004/08/31 23:29:53  jalet
+# Introduction of the new 'onaccountererror' configuration directive.
+# Small fix for software accounter's return code which can't be None anymore.
+# Make software and hardware accounting code look similar : will be factorized
+# later.
+#
 # Revision 1.18  2004/07/22 22:41:48  jalet
 # Hardware accounting for LPRng should be OK now. UNTESTED.
 #
@@ -96,6 +102,7 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
+        self.onerror = self.filter.config.getPrinterOnAccounterError(self.filter.printername)
         self.isSoftware = 1 # by default software accounting
         
     def getLastPageCounter(self) :    

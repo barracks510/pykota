@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/08/31 23:29:53  jalet
+# Introduction of the new 'onaccountererror' configuration directive.
+# Small fix for software accounter's return code which can't be None anymore.
+# Make software and hardware accounting code look similar : will be factorized
+# later.
+#
 # Revision 1.10  2004/08/27 22:49:04  jalet
 # No answer from subprocess now is really a fatal error. Waiting for some
 # time to make this configurable...
@@ -153,8 +159,15 @@ class Accounter(AccounterBase) :
             status = child.wait()
         except OSError, msg :    
             self.filter.logdebug("Error while waiting for hardware accounter pid %s : %s" % (child.pid, msg))
-        if (pagecounter is not None) and os.WIFEXITED(status) and (not os.WEXITSTATUS(status)) :
-            return pagecounter
         else :    
-            raise PyKotaAccounterError, _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline) 
+            if os.WIFEXITED(status) :
+                status = os.WEXITSTATUS(status)
+            self.filter.printInfo(_("Hardware accounter %s exit code is %s") % (self.arguments, str(status)))
             
+        if pagecounter is None :
+            message = _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline)
+            if self.onerror == "CONTINUE" :
+                self.filter.printInfo(message, "error")
+            else :
+                raise PyKotaAccounterError, message 
+        return pagecounter        

@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/08/31 23:29:53  jalet
+# Introduction of the new 'onaccountererror' configuration directive.
+# Small fix for software accounter's return code which can't be None anymore.
+# Make software and hardware accounting code look similar : will be factorized
+# later.
+#
 # Revision 1.9  2004/08/25 22:34:39  jalet
 # Now both software and hardware accounting raise an exception when no valid
 # result can be extracted from the subprocess' output.
@@ -98,19 +104,20 @@ class Accounter(AccounterBase) :
         child.fromchild.close()
         
         try :
-            retcode = child.wait()
+            status = child.wait()
         except OSError, msg :    
             self.filter.printInfo(_("Problem while waiting for software accounter pid %s to exit : %s") % (child.pid, msg))
         else :    
-            if os.WIFEXITED(retcode) :
-                status = os.WEXITSTATUS(retcode)
-            else :    
-                status = retcode
+            if os.WIFEXITED(status) :
+                status = os.WEXITSTATUS(status)
             self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
             
         if pagecounter is None :    
-            raise PyKotaAccounterError, _("Unable to compute job size with accounter %s") % self.arguments
+            message = _("Unable to compute job size with accounter %s") % self.arguments
+            if self.onerror == "CONTINUE" :
+                self.filter.printInfo(message, "error")
+            else :
+                raise PyKotaAccounterError, message
             
-        self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, pagecounter))
-        return pagecounter    
-            
+        self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, repr(pagecounter)))
+        return pagecounter or 0
