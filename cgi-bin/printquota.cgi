@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: ISO-8859-15 -*-
 
 # PyKota Print Quota Reports generator
 #
@@ -22,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/07/24 20:07:13  jalet
+# Added special Python comment to remove warning at runtime
+#
 # Revision 1.33  2004/07/21 19:24:48  jalet
 # Inversion
 #
