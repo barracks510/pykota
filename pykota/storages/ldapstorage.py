@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/02/27 09:30:33  jalet
+# datelimit wasn't reset when modifying soft and hard limits with the LDAP backend
+#
 # Revision 1.57  2004/02/26 14:18:07  jalet
 # Should fix the remaining bugs wrt printers groups and users groups.
 #
@@ -939,6 +942,7 @@ class Storage(BaseStorage) :
         fields = { 
                    "pykotaSoftLimit" : str(softlimit),
                    "pykotaHardLimit" : str(hardlimit),
+                   "pykotaDateLimit" : "None",
                  }
         self.doModify(userpquota.ident, fields)
         
@@ -947,6 +951,7 @@ class Storage(BaseStorage) :
         fields = { 
                    "pykotaSoftLimit" : str(softlimit),
                    "pykotaHardLimit" : str(hardlimit),
+                   "pykotaDateLimit" : "None",
                  }
         self.doModify(grouppquota.ident, fields)
             

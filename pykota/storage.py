@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2004/02/27 09:30:33  jalet
+# datelimit wasn't reset when modifying soft and hard limits with the LDAP backend
+#
 # Revision 1.46  2004/02/26 14:18:07  jalet
 # Should fix the remaining bugs wrt printers groups and users groups.
 #
@@ -350,6 +353,7 @@ class StorageUserPQuota(StorageObject) :
         self.parent.writeUserPQuotaLimits(self, softlimit, hardlimit)
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
+        self.DateLimit = None
         
     def reset(self) :    
         """Resets page counter to 0."""
@@ -415,6 +419,7 @@ class StorageGroupPQuota(StorageObject) :
         self.parent.writeGroupPQuotaLimits(self, softlimit, hardlimit)
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
+        self.DateLimit = None
         
 class StorageJob(StorageObject) :
     """Printer's Last Job class."""
