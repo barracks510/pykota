@@ -600,6 +600,8 @@ policy: deny
 # posthook: /usr/bin/printenv >/tmp/after
 
 # AccountBanner : how should banner accounting be done ?
+#
+# NB : CUPS ONLY FOR NOW !
 # 
 # If enabled, banner pages printed from StartingBanner and/or EndingBanner 
 # (depending on the value) will be included in the accounting for the
@@ -625,6 +627,8 @@ policy: deny
 # is printed. The argument can be a printable file, or an executable file.
 # If not executable, the file will be printed as is. If executable, the 
 # file will be executed and its output will be printed.
+#
+# NB : CUPS ONLY FOR NOW !
 # 
 # In any case, the banner content which will be sent to the printer
 # MUST be in a format your printer will accept !!!
@@ -640,6 +644,8 @@ policy: deny
 # is printed. The argument can be a printable file, or an executable file.
 # If not executable, the file will be printed as is. If executable, the 
 # file will be executed and its output will be printed.
+#
+# NB : CUPS ONLY FOR NOW !
 #
 # In any case, the banner content which will be sent to the printer
 # MUST be in a format your printer will accept !!!
