@@ -23,12 +23,14 @@ PyKota NEWS :
 
     - 1.19alpha25 :
     
-        - added new "description" field to printers in both
+        - Added new "description" field to printers in both
           PostgreSQL and LDAP. No code to handle this yet.
           
-        - reversed the fix for power save mode in printers :  
+        - Reversed the fix for power save mode in printers :  
           no paper or tray open would have caused people to
           be undercharged.
+          
+        - Preliminary version of MySQL initialization script.
           
     - 1.19alpha24 :
     
