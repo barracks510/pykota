@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.21alpha17 :
      
+        - Fixed field type's name in XML dumps.
+        
         - Now drops priviledges to user 'pykota' when launched as root
           (directly or as a CUPS backend), if such an user exists.
           

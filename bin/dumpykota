@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2005/01/07 12:40:53  jalet
+# Fixed field type's name in XML dumps.
+#
 # Revision 1.17  2004/12/21 15:50:00  jalet
 # The dumpykota command now supports extended filtering capabilities with
 # the PostgreSQL backend. LDAP doesn't yet support such possibilities.
@@ -293,11 +296,12 @@ class DumPyKota(PyKotaTool) :
             x.entry()
             for i in range(len(entry)) :
                 value = str(entry[i])
+                typval = type(entry[i]).__name__
                 try :
                     value = unicode(value, self.getCharset()).encode("UTF-8")
                 except UnicodeError :    
                     pass
-                x.attribute(value, type=type(value).__name__, name=headers[i])
+                x.attribute(value, type=typval, name=headers[i])
             x._pop()    
         x._output(self.outfile)
                            
