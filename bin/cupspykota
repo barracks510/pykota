@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/11/14 20:13:11  jalet
+# We exit the loop too soon.
+#
 # Revision 1.5  2003/11/14 18:31:27  jalet
 # Not perfect, but seems to work with the poll() loop.
 #
@@ -145,6 +148,7 @@ def format_commandline(prt, usr, cmdline) :
 
 def sigterm_handler(signum, frame) :
     """Handler for SIGTERM."""
+    sys.stderr.write("INFO: PyKota backend aborted.")
     sys.exit(1)
     
 def main(thebackend) :    
@@ -234,34 +238,58 @@ def main(thebackend) :
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
         subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, arg0=os.environ["DEVICE_URI"])
         pollster = select.poll()
-        pollster.register(infile.fileno(), select.POLLIN)
-        pollster.register(subprocess.fromchild.fileno(), select.POLLIN)
-        pollster.register(subprocess.childerr.fileno(), select.POLLIN)
-        pollster.register(subprocess.tochild.fileno(), select.POLLOUT)
-        inputdata = ""
+        infno = infile.fileno()
+        stdoutfno = sys.stdout.fileno()
+        stderrfno = sys.stderr.fileno()
+        fromcfno = subprocess.fromchild.fileno()
+        tocfno = subprocess.tochild.fileno()
+        cerrfno = subprocess.childerr.fileno()
+        pollster.register(infno, select.POLLIN | select.POLLPRI)
+        pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
+        pollster.register(cerrfno, select.POLLIN | select.POLLPRI)
+        pollster.register(stdoutfno, select.POLLOUT)
+        pollster.register(stderrfno, select.POLLOUT)
+        pollster.register(tocfno, select.POLLOUT)
+        indata = ""
+        outdata = ""
+        errdata = ""
         end = 0
         while not end :
-            availablestreams = pollster.poll()
-            for (stream, mask) in availablestreams :
-                if mask & select.POLLHUP :
-                    if stream == infile.fileno() :
-                        end = 1
-                if mask & select.POLLOUT :
-                    if stream == subprocess.tochild.fileno() :
-                        if inputdata :
-                            os.write(stream, inputdata)    
-                            inputdata = ""
-                if mask & select.POLLIN :     
-                    data = os.read(stream, 256 * 1024)
-                    if stream == infile.fileno() :
-                        inputdata += data
-                    elif stream == subprocess.fromchild.fileno() :
-                        sys.stdout.write(data)
-                    elif stream == subprocess.childerr.fileno() :    
-                        sys.stderr.write(data)
-        if inputdata :                
+            availablefds = pollster.poll(500)
+            if not availablefds :
+                end = 1
+            else :    
+                for (fd, mask) in availablefds :
+                    thebackend.logdebug("Stream: %02i  Mask: %02x" % (fd, mask))
+                    if mask & select.POLLHUP :
+                        if fd == infno :
+                            end = 1 # this happens with real stdin
+                    if mask & select.POLLOUT :
+                        if fd == tocfno :
+                            if indata :
+                                os.write(fd, indata)    
+                                indata = ""
+                        elif fd == stdoutfno :
+                            if outdata :
+                                os.write(fd, outdata)
+                                outdata = ""
+                        elif fd == stderrfno :
+                            if errdata :
+                                os.write(fd, errdata)
+                                errdata = ""
+                    if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
+                        data = os.read(fd, 256 * 1024)
+                        if fd == infno :
+                            indata += data
+                            if not data :
+                                end = 1 # this happens with real files
+                        elif fd == fromcfno :
+                            outdata += data
+                        elif fd == cerrfno :    
+                            errdata += data
+        if indata :                
             try :
-                os.write(subprocess.tochild.fileno(), inputdata)
+                os.write(tocfno, indata)
             except :    
                 pass
         sys.stdout.flush()                
