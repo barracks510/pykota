@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2004/01/07 16:07:17  jalet
+# The stylesheet is again expected to be local, it was a bad idea to use
+# the one on my server.
+#
 # Revision 1.19  2004/01/06 16:05:45  jalet
 # Will now search the stylesheet on my own website.
 #
@@ -96,7 +100,7 @@ header = """Content-type: text/html
 <html>
   <head>
     <title>PyKota Reports</title>
-    <link rel="stylesheet" type="text/css" href="http://www.librelogiciel.com/software/PyKota/pykota.css" />
+    <link rel="stylesheet" type="text/css" href="pykota.css" />
   </head>
   <body>
     <form action="printquota.cgi" method="POST">
