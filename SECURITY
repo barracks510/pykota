@@ -79,6 +79,14 @@ How to improve PyKota's security :
          the user this script is run as (e.g. nobody or www-data)
          can read PyKota's configuration file too, for example
          by putting www-data in the lpadmin group.
+         WARNING : putting www-data in the lpadmin group so that
+         the CGI script can read the /etc/pykota.conf file is
+         dangerous. If any user can create CGI scripts launchable
+         as www-data then he could steal a copy of the /etc/pykota.conf 
+         file and learn database and database users' name and passwords.
+         The best solution is probably to create a pykota system
+         account and run the CGI script as this user using Apache's SuEXEC
+         facility. Refer to Apache's documentation for details.
   
   - Secure your database connection :
   
