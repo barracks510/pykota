@@ -50,7 +50,9 @@ Actual working features :
         - External command querying of any printer : you can use
           you own querying command, e.g. to query a printer via
           the serial port, sending it a special PJL job and 
-          reading the result.
+          reading the result. See the example scripts in the
+          "untested" directory and try to adapt them to your
+          configuration.
         
         - Special scripts included for a seamless integration of
           PyKota on Debian machines.
