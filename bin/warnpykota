@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/04/08 21:13:44  jalet
+# Prepare --groups option to work.
+#
 # Revision 1.12  2003/04/08 21:10:18  jalet
 # Checks --groups option presence instead of --users because --users is the default.
 #
@@ -141,7 +144,7 @@ class WarnPyKota(PyKotaTool) :
 if __name__ == "__main__" : 
     try :
         defaults = { \
-                     "users"  : 1, \
+                     "users"  : 0, \
                      "groups" : 0, \
                      "printer" : "*", \
                    }
