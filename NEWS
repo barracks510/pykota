@@ -28,6 +28,9 @@ PyKota NEWS :
           support. You can now get quotes for PCL in addition to 
           PostScript.
           
+        - pkpgcounter now includes first try at PCLXL parser.  
+          It is currently disabled until it's finished.
+          
     - 1.19alpha5 :
     
         - cupspykota polling loop fix for MacOSX (at least)
