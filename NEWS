@@ -42,6 +42,18 @@ PyKota NEWS :
           a quota check is done to eventually warn the user/admin about
           a quota which is too low to print.
           
+        - A workaround is provided for HP Printers : their internal
+          page counter is only saved to NVRAM in a 10 increment, so
+          if you switch them off and then on, the reported page counter
+          may be lower than the real number of pages printed.
+          See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
+          
+        - A fix is provided for printers which only have a volatile  
+          page counter (reset to 0 every time you switch the printer on)
+          This should allow PyKota to work fine with HP Laserjet
+          4L/5L/6L.
+          See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
+          
     - 1.02 :
     
         - The installation script now checks for software availability

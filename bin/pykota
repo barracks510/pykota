@@ -22,6 +22,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/04/11 08:50:39  jalet
+# Workaround for the HP "feature" of saving the page counter to NVRAM
+# only every time 10 new pages are printed...
+# Workaround for printers with volatile page counters.
+#
 # Revision 1.17  2003/04/10 21:47:20  jalet
 # Job history added. Upgrade script neutralized for now !
 #
@@ -187,15 +192,36 @@ def main() :
             if printerIsOff :
                 counterbeforejob = lastpagecounter
                 
-            # Update the quota for the previous user on this printer according 
-            # to the job size (difference between actual counter and latest one from storage)
+            # if the internal lifetime page counter for this printer is 0    
+            # then this may be a printer with a volatile counter (never
+            # saved to NVRAM) which has just been switched off and then on
+            # so we use the last page counter from the Quota Storage instead
+            # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
+            if counterbeforejob == 0 :
+                counterbeforejob = lastpagecounter
+                
+            # Computes the last job size as the difference between internal page
+            # counter in the printer and last page counter taken from the Quota
+            # Storage database for this particular printer
             jobsize = (counterbeforejob - lastpagecounter)    
-            if jobsize >= 0 :
-                kotafilter.storage.updateUserPQuota(lastuserid, printerid, jobsize)
-                kotafilter.storage.updateJobSizeInHistory(lasthistoryid, jobsize)
-                kotafilter.warnUserPQuota(lastusername)
-            else :    
+            if jobsize < 0 :
+                # Probably an HP printer which was switched off and back on, 
+                # its primary counter is only saved in a 10 increment, so
+                # it may be lower than the last page counter saved in the
+                # Quota Storage, we take the absolute value of the difference
+                # this should take care of the "missing" pages.
+                # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
                 kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastusername, kotafilter.printername), "error")
+                jobsize = abs(jobsize)
+                
+            # update the quota for the previous user on this printer 
+            kotafilter.storage.updateUserPQuota(lastuserid, printerid, jobsize)
+            
+            # update the last job size in the history
+            kotafilter.storage.updateJobSizeInHistory(lasthistoryid, jobsize)
+            
+            # warns the last user if he is over quota
+            kotafilter.warnUserPQuota(lastusername)
                 
             # Is the current user allowed to print at all ?
             action = kotafilter.warnUserPQuota(username)
