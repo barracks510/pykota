@@ -313,6 +313,12 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #     requester: snmp(public, mib-2.43.10.2.1.4.1.1)
 # are equivalent
 #
+#################################################
+# NB : the 'snmp()' requester is now deprecated #
+# because it has some accuracy problems.        #
+# please use 'external()' instead.              #
+#################################################
+#
 # Another untested example, using npadmin :
 #     requester: external(/usr/bin/npadmin --pagecount %(printer)s)
 #
