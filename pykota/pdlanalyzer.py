@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/12/13 20:39:46  jalet
+# Added a --debug command line option to pkpgcounter, for people interested
+# in seeing what happens, and what will be available in the future :-)
+#
 # Revision 1.44  2004/11/17 15:10:31  jalet
 # Fixed Epson Stylus Photo problem in software accounting
 #
@@ -185,13 +189,16 @@ class PDLAnalyzerError(Exception):
     
 class PostScriptAnalyzer :
     """A class to parse PostScript documents."""
-    def __init__(self, infile) :
+    def __init__(self, infile, debug=0) :
         """Initialize PostScript Analyzer."""
+        self.debug = debug
         self.infile = infile
         self.copies = 1
        
     def throughGhostScript(self) :
         """Get the count through GhostScript, useful for non-DSC compliant PS files."""
+        if self.debug :
+            sys.stderr.write("Internal parser sucks, using GhostScript instead...\n")
         self.infile.seek(0)
         command = 'gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET - 2>&1 | grep -c "%%HiResBoundingBox:" 2>/dev/null'
         child = popen2.Popen4(command)
@@ -251,8 +258,9 @@ class PostScriptAnalyzer :
         
 class PDFAnalyzer :
     """A class to parse PDF documents."""
-    def __init__(self, infile) :
+    def __init__(self, infile, debug=0) :
         """Initialize PDF Analyzer."""
+        self.debug = debug
         self.infile = infile
                 
     def getJobSize(self) :    
@@ -265,8 +273,9 @@ class PDFAnalyzer :
         
 class ESCP2Analyzer :
     """A class to parse ESC/P2 documents."""
-    def __init__(self, infile) :
+    def __init__(self, infile, debug=0) :
         """Initialize ESC/P2 Analyzer."""
+        self.debug = debug
         self.infile = infile
                 
     def getJobSize(self) :    
@@ -355,8 +364,9 @@ class PCLAnalyzer :
                    }
                    
                    
-    def __init__(self, infile) :
+    def __init__(self, infile, debug=0) :
         """Initialize PCL Analyzer."""
+        self.debug = debug
         self.infile = infile
         
     def setPageDict(self, pages, number, attribute, value) :
@@ -565,10 +575,11 @@ class PCLAnalyzer :
             elif endgfx :    
                 pagecount = endgfx
                 
-        #for pnum in range(pagecount) :
-        #    # if no number of copies defined, take the preceding one else the one set before any page else 1.
-        #    page = pages.get(pnum, pages.get(pnum - 1, pages.get(0, { "copies" : 1, "mediasource" : "Main", "mediasize" : "Default", "mediatype" : "Plain", "orientation" : "Portrait"})))
-        #    print "%s*%s*%s*%s*%s" % (page["copies"], page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"])
+        if self.debug :        
+            for pnum in range(pagecount) :
+                # if no number of copies defined, take the preceding one else the one set before any page else 1.
+                page = pages.get(pnum, pages.get(pnum - 1, pages.get(0, { "copies" : 1, "mediasource" : "Main", "mediasize" : "Default", "mediatype" : "Plain", "orientation" : "Portrait"})))
+                print "%s*%s*%s*%s*%s" % (page["copies"], page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"])
             
         return pagecount
         
@@ -613,8 +624,9 @@ class PCLXLAnalyzer :
                      3 : "ReverseLandscape",
                    }
                    
-    def __init__(self, infile) :
+    def __init__(self, infile, debug=0) :
         """Initialize PCLXL Analyzer."""
+        self.debug = debug
         self.infile = infile
         self.endianness = None
         found = 0
@@ -872,19 +884,21 @@ class PCLXLAnalyzer :
             page = self.pages.get(pnum, 1)
             copies = page["copies"]
             self.pagecount += (copies - 1)
-            # print "%s*%s*%s*%s*%s" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"])
+            if self.debug :
+                print "%s*%s*%s*%s*%s" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"])
             
         return self.pagecount
         
 class PDLAnalyzer :    
     """Generic PDL Analyzer class."""
-    def __init__(self, filename) :
+    def __init__(self, filename, debug=0) :
         """Initializes the PDL analyzer.
         
            filename is the name of the file or '-' for stdin.
            filename can also be a file-like object which 
            supports read() and seek().
         """
+        self.debug = debug
         self.filename = filename
         try :
             import psyco 
@@ -913,7 +927,7 @@ class PDLAnalyzer :
             raise PDLAnalyzerError, "ERROR : Unknown file format for %s (%s)" % (self.filename, msg)
         else :
             try :
-                size = pdlhandler(self.infile).getJobSize()
+                size = pdlhandler(self.infile, self.debug).getJobSize()
             finally :    
                 self.closeFile()
             return size
@@ -967,6 +981,8 @@ class PDLAnalyzer :
               (sdata.find("LANGUAGE = POSTSCRIPT") != -1) or \
               (sdata.find("LANGUAGE = Postscript") != -1))) or \
               (sdata.find("%!PS-Adobe") != -1) :
+            if self.debug :  
+                sys.stderr.write("%s is a PostScript file\n" % str(self.filename))
             return 1
         else :    
             return 0
@@ -977,6 +993,8 @@ class PDLAnalyzer :
            sdata.startswith("\033%-12345X%PDF-") or \
            ((sdata[:128].find("\033%-12345X") != -1) and (sdata.upper().find("LANGUAGE=PDF") != -1)) or \
            (sdata.find("%PDF-") != -1) :
+            if self.debug :  
+                sys.stderr.write("%s is a PDF file\n" % str(self.filename))
             return 1
         else :    
             return 0
@@ -987,6 +1005,8 @@ class PDLAnalyzer :
            (sdata.startswith("\033*rbC") and (not edata[-3:] == "\f\033@")) or \
            sdata.startswith("\033%8\033") or \
            (sdata.find("\033%-12345X") != -1) :
+            if self.debug :  
+                sys.stderr.write("%s is a PCL3/4/5 file\n" % str(self.filename))
             return 1
         else :    
             return 0
@@ -997,6 +1017,8 @@ class PDLAnalyzer :
              (sdata.find(" HP-PCL XL;") != -1) and \
              ((sdata.find("LANGUAGE=PCLXL") != -1) or \
               (sdata.find("LANGUAGE = PCLXL") != -1))) :
+            if self.debug :  
+                sys.stderr.write("%s is a PCLXL (aka PCL6) file\n" % str(self.filename))
             return 1
         else :    
             return 0
@@ -1007,6 +1029,8 @@ class PDLAnalyzer :
            sdata.startswith("\033*") or \
            sdata.startswith("\n\033@") or \
            sdata.startswith("\0\0\0\033\1@EJL") : # ESC/P Raster ??? Seen on Stylus Photo 1284
+            if self.debug :  
+                sys.stderr.write("%s is an ESC/P2 file\n" % str(self.filename))
             return 1
         else :    
             return 0
@@ -1045,9 +1069,14 @@ def main() :
         sys.argv.append("-")
         
     totalsize = 0    
-    for arg in sys.argv[1:] :
+    debug = 0
+    minindex = 1
+    if sys.argv[1] == "--debug" :
+        minindex = 2
+        debug = 1
+    for arg in sys.argv[minindex:] :
         try :
-            parser = PDLAnalyzer(arg)
+            parser = PDLAnalyzer(arg, debug)
             totalsize += parser.getJobSize()
         except PDLAnalyzerError, msg :    
             sys.stderr.write("ERROR: %s\n" % msg)

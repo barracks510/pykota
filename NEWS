@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha13 :
+    
+        - Added a --debug command line option to pkpgcounter, so
+          that people may see what really happens, and what will
+          be available in the future :-)
+          
     - 1.21alpha12 :
     
         - Fixed a bug with non standard pkbanner command lines.
