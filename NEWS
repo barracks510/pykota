@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.13 :
     
+        - Some small fixes wrt group handling. 
+        
         - The whole module code was passed through PyChecker and
           several small code inconsistencies were fixed,
           as well as a bug in the groups code.
