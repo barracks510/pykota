@@ -253,7 +253,7 @@ PyKota NEWS :
     - 1.20alpha27 : 
     
         - Fixed many problems with translation files. In particular
-          the brasilian portuguese translation file was incorrectly
+          the Brazilian Portuguese translation file was incorrectly
           installed into the french "breton" locale directory.
           
         - Finished French translation.  
@@ -1012,8 +1012,8 @@ PyKota NEWS :
           added to the documentation. Doesn't yet document v1.16
           though.
         
-        - Portuguese Portuguese translation replaces Brasilian 
-          Portuguese Translation. Brasilian portuguese 
+        - Portuguese Portuguese translation replaces Brazilian 
+          Portuguese Translation. Brazilian portuguese 
           translation is still available under the 'br' locale.
         
     - 1.16beta3 :
