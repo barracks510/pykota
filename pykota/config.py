@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2004/06/03 21:53:24  jalet
+# crashrecipient directive
+#
 # Revision 1.48  2004/05/24 22:45:49  jalet
 # New 'enforcement' directive added
 # Polling loop improvements
@@ -383,6 +386,13 @@ class PyKotaConfig :
                 raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printername, str(validpolicies))
             return (policy, args)
         
+    def getCrashRecipient(self) :    
+        """Returns the email address of the software crash messages recipient."""
+        try :
+            return self.getGlobalOption("crashrecipient")
+        except :    
+            return
+            
     def getSMTPServer(self) :    
         """Returns the SMTP server to use to send messages to users."""
         try :
