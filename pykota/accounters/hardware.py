@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/10/05 09:21:34  jalet
+# Removed misleading comments
+#
 # Revision 1.29  2004/10/05 09:20:07  jalet
 # Reduced delay from 2 to 1 seconds in internal SNMP and PJL_over_TCP
 # handlers
@@ -201,7 +204,6 @@ else :
                 statusAsString = printerStatusValues.get(self.printerStatus)
                 if statusAsString in ('idle', 'printing') :
                     break
-                # In reality, and if I'm not mistaken, we will NEVER get there.    
                 self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)    
                 time.sleep(ITERATIONDELAY)
             
@@ -291,7 +293,6 @@ class PJLAccounter :
             self.retrievePJLValues()
             if self.printerStatus in ('10000', '10001', '10023') :
                 break
-            # In reality, and if I'm not mistaken, we will NEVER get there.    
             self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)
             time.sleep(ITERATIONDELAY)
         
