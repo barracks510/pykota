@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.99  2005/01/24 17:44:17  jalet
+# Same fix for group print quota entries wrt LDAP performance
+#
 # Revision 1.98  2005/01/24 17:35:24  jalet
 # Performance improvement for user print quota entries search
 #
@@ -1534,9 +1537,8 @@ class Storage(BaseStorage) :
             result = [ ("groupname", "printername", "dn", "groupdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit") ]
             gname = extractonly.get("groupname")
             for entry in entries :
-                for (group, grouppquota) in self.getPrinterGroupsAndQuotas(entry) :
-                    if (gname is None) or (group.Name == gname) :
-                        result.append((group.Name, entry.Name, grouppquota.ident, group.ident, entry.ident, grouppquota.LifePageCounter, grouppquota.PageCounter, grouppquota.SoftLimit, grouppquota.HardLimit, grouppquota.DateLimit))
+                for (group, grouppquota) in self.getPrinterGroupsAndQuotas(entry, names=[gname or "*"]) :
+                    result.append((group.Name, entry.Name, grouppquota.ident, group.ident, entry.ident, grouppquota.LifePageCounter, grouppquota.PageCounter, grouppquota.SoftLimit, grouppquota.HardLimit, grouppquota.DateLimit))
             return result
         
     def extractUmembers(self, extractonly={}) :
