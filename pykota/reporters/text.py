@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.3  2003/07/05 07:46:50  jalet
 # The previous bug fix was incomplete.
 #
@@ -31,8 +34,6 @@
 #
 #
 #
-
-import sys
 
 from mx import DateTime
 

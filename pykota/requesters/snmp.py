@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.10  2003/05/22 12:56:06  jalet
 # Uses SNMP version 1 instead of version 2c by default, which is probably
 # a safer bet.
@@ -65,7 +68,7 @@ from pykota.requester import PyKotaRequesterError
 
 class Requester :
     """A class to send queries to printers via SNMP."""
-    def __init__(self, config, printername, arguments) :
+    def __init__(self, printername, arguments) :
         """Sets instance vars depending on the current printer."""
         self.printername = printername
         args = [x.strip() for x in arguments.split(',')]

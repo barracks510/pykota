@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.5  2003/07/07 08:33:19  jalet
 # Bug fix due to a typo in LDAP code
 #
@@ -125,6 +128,8 @@ class Storage :
             result = self.database.query(query)
         except pg.error, msg :    
             raise PyKotaStorageError, msg
+        else :    
+            return result
             
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
@@ -328,10 +333,10 @@ class Storage :
 
     def addUserToGroup(self, user, group) :    
         """Adds an user to a group."""
-        result = self.doModify("SELECT COUNT(*) AS mexists FROM groupsmembers WHERE groupid=%s AND userid=%s" % (self.doQuote(group.ident), self.doQuote(user.ident)))
+        result = self.doSearch("SELECT COUNT(*) AS mexists FROM groupsmembers WHERE groupid=%s AND userid=%s" % (self.doQuote(group.ident), self.doQuote(user.ident)))
         try :
-            mexists = self.doParseResult(result)[0]["mexists"]
-        except TypeError :    
+            mexists = int(result[0].get("mexists"))
+        except (IndexError, TypeError) :    
             mexists = 0
         if not mexists :    
             self.doModify("INSERT INTO groupsmembers (groupid, userid) VALUES (%s, %s)" % (self.doQuote(group.ident), self.doQuote(user.ident)))

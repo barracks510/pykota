@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.4  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -69,12 +72,10 @@ class Accounter(AccounterBase) :
         # get last job information for this printer
         if not printer.LastJob.Exists :
             # The printer hasn't been used yet, from PyKota's point of view
-            lastjob = None
             lastuser = user
             lastpagecounter = counterbeforejob
         else :    
             # get last values from Quota Storage
-            lastjob = printer.LastJob
             lastuser = printer.LastJob.User
             lastpagecounter = printer.LastJob.PrinterPageCounter
             

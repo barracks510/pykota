@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.7  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -48,8 +51,6 @@
 #
 #
 #
-
-import sys
 
 class PyKotaLoggingError(Exception):
     """An exception for logging related stuff."""

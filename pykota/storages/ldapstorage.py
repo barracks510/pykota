@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.14  2003/07/07 08:33:18  jalet
 # Bug fix due to a typo in LDAP code
 #
@@ -424,7 +427,7 @@ class Storage :
         if result :
             for (groupquotaid, fields) in result :
                 group = self.getGroup(fields.get("pykotaGroupName")[0])
-                if (names is None) or self.tool.matchString(user.Name, names) :
+                if (names is None) or self.tool.matchString(group.Name, names) :
                     grouppquota = self.getGroupPQuota(group, printer)
                     groupsandquotas.append((group, grouppquota))
         groupsandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            

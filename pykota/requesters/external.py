@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.7  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -52,7 +55,7 @@ from pykota.requester import PyKotaRequesterError
 
 class Requester :
     """A class to send queries to printers via external commands."""
-    def __init__(self, config, printername, arguments) :
+    def __init__(self, printername, arguments) :
         """Sets instance vars depending on the current printer."""
         self.printername = printername
         self.commandline = arguments.strip()

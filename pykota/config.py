@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.30  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -141,7 +144,6 @@
 #
 #
 
-import sys
 import os
 import ConfigParser
 

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.7  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -67,4 +70,4 @@ def openRequester(config, printername) :
     except ImportError :
         raise PyKotaRequesterError, _("Unsupported requester backend %s") % backend
     else :    
-        return getattr(requesterbackend, "Requester")(config, printername, args)
+        return getattr(requesterbackend, "Requester")(printername, args)

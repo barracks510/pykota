@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.4  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -87,9 +90,18 @@ class Accounter(AccounterBase) :
             infile = open(self.filter.inputfile, "rb")
             
         # launches external accounter
-        infilename = tempfile.mktemp()
-        outfilename = tempfile.mktemp()
-        errfilename = tempfile.mktemp()
+        try :
+            infilename = tempfile.mkstemp()     # Python 2.3
+        except AttributeError :    
+            infilename = tempfile.mktemp()
+        try :
+            outfilename = tempfile.mkstemp()    # Python 2.3
+        except AttributeError :    
+            outfilename = tempfile.mktemp()
+        try :
+            errfilename = tempfile.mkstemp()    # Python 2.3
+        except AttributeError :    
+            errfilename = tempfile.mktemp()
         
         try :
             # feed it with our data

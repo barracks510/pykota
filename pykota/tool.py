@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2003/07/07 11:49:24  jalet
+# Lots of small fixes with the help of PyChecker
+#
 # Revision 1.43  2003/07/04 09:06:32  jalet
 # Small bug fix wrt undefined "LimitBy" field.
 #
@@ -180,7 +183,6 @@
 #
 
 import sys
-import os
 import fnmatch
 import getopt
 import smtplib
@@ -457,7 +459,7 @@ class PyKotaTool :
         admin = self.config.getAdmin(printer.Name)
         adminmail = self.config.getAdminMail(printer.Name)
         mailto = self.config.getMailTo(printer.Name)
-        action = self.checkGroupPQuota(grouppquota, printer)
+        action = self.checkGroupPQuota(grouppquota)
         if action.startswith("POLICY_") :
             action = action[7:]
         if action == "DENY" :
