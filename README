@@ -91,8 +91,8 @@ PyKota features :
         - Page quota and account balance can be set/reset
           independantly.
           
-        - Limiting factor, page quota or account balance,  
-          can be set on a per user or per group basis.
+        - Page quotas and account balances can be set on 
+          a per user or per group basis.
           
         - Price per page and per job can be set differently  
           on any printer.
