@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.08alpha7 :
+    
+        - Very latest LDAP schema.
+        - Code enhancement wrt easy pluggability of PyKota attributes
+          and object classes into an existing LDAP directory.
+        
     - 1.08alpha6 : 
     
         - Minor bug corrections
