@@ -182,10 +182,8 @@ PyKota's FAQ :
     
   * What does the --prototype command line option to edpykota do ?
   
-    This option currently (v1.20) only copies the soft and hard
-    page limits from a template user to other users. This option
-    needs to be updated to new PyKota functionnalities, because it
-    currently lacks.
+    This option allows you to use an existing user or group
+    as a template when creating or modifying other accounts.
     
   * How can I share print quota between some printers only (not all) ?   
   
