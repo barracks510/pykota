@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: PyKota v1.20\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-11-25 10:16+0100\n"
-"PO-Revision-Date: 2004-07-21 15:55:00+0100\n"
+"PO-Revision-Date: 2005-02-22 19:21:00+0100\n"
 "Last-Translator: Jerome Alet <alet@librelogiciel.com>\n"
 "Language-Team: French <alet@librelogiciel.com>\n"
 "MIME-Version: 1.0\n"
@@ -144,6 +144,7 @@ msgstr "Option %s non trouvée dans la section %s de %s"
 #, python-format
 msgid "Option ldaptls is set, but certificate %s is not readable."
 msgstr ""
+"Option ldaptls positionnée, mais le certificat %s n'est pas disponible."
 
 #, python-format
 msgid "Option logger only supports values in %s"
@@ -187,7 +188,7 @@ msgstr "L'option mailto dans la section %s supporte seulement les valeurs %s"
 
 #, python-format
 msgid "Invalid maximal deny banners counter %s"
-msgstr ""
+msgstr "Compteur maximal de bannières refusées %s invalide"
 
 #, python-format
 msgid "Invalid grace delay %s"
@@ -230,46 +231,46 @@ msgstr ""
 
 #, python-format
 msgid "Option trustjobsize for printer %s is incorrect"
-msgstr ""
+msgstr "L'option trustjobsize pour l'imprimante %s est incorrecte"
 
 msgid "Users"
-msgstr ""
+msgstr "Utilisateurs"
 
 msgid "Groups"
-msgstr ""
+msgstr "Groupes"
 
 msgid "Printers"
-msgstr ""
+msgstr "Imprimantes"
 
 msgid "Users Print Quotas"
-msgstr ""
+msgstr "Quotas d'Impression Utilisateurs"
 
 msgid "Users Groups Print Quotas"
-msgstr ""
+msgstr "Quotas d'Impression de Groupes d'Utilisateurs"
 
 msgid "History of Payments"
-msgstr ""
+msgstr "Historique des Paiements"
 
 msgid "Printers Groups Membership"
-msgstr ""
+msgstr "Membres des Groupes d'Imprimantes"
 
 msgid "Users Groups Membership"
-msgstr ""
+msgstr "Membres des Groupes d'Utilisateurs"
 
 msgid "Comma Separated Values"
-msgstr ""
+msgstr "Valeurs séparées par des virgules"
 
 msgid "Semicolon Separated Values"
-msgstr ""
+msgstr "Valeurs séparées par des points virgules"
 
 msgid "Tabulation Separated Values"
-msgstr ""
+msgstr "Valeurs séparées par des tabulations"
 
 msgid "eXtensible Markup Language"
-msgstr ""
+msgstr "eXtensible Markup Language"
 
 msgid "CUPS' page_log"
-msgstr ""
+msgstr "page_log de CUPS"
 
 msgid "You're not allowed to use this command."
 msgstr "Vous n'êtes pas autorisé(e) à utiliser cette commande."
@@ -277,6 +278,8 @@ msgstr "Vous n'êtes pas autorisé(e) à utiliser cette commande."
 #, python-format
 msgid "Invalid value [%s] for --filter command line option, see help."
 msgstr ""
+"Valeur [%s] invalide pour l'option de ligne de commande --filter, voir "
+"l'aide."
 
 #, python-format
 msgid "Invalid modifier [%s] for --data command line option, see help."
@@ -316,11 +319,13 @@ msgstr "Prix par job: %.3f"
 msgid "Price per page: %.3f"
 msgstr "Prix par page: %.3f"
 
+# TODO
 msgid ""
 "Group          overcharge   used    soft    hard    balance grace         "
 "total       paid warn"
 msgstr ""
 
+# TODO
 msgid ""
 "User           overcharge   used    soft    hard    balance grace         "
 "total       paid warn"
@@ -338,7 +343,7 @@ msgid "Total : %9i"
 msgstr "Total : %9i"
 
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #, python-format
 msgid "Unsupported reporter backend %s"
@@ -350,28 +355,29 @@ msgstr "Backend de stockage de quota %s non supporté"
 
 #, python-format
 msgid "Strange problem with uid(%s) : %s"
-msgstr ""
+msgstr "Problème étrange avec uid(%s) : %s"
 
 #, python-format
 msgid "Running as user '%s'."
-msgstr ""
+msgstr "Fonctionne en tant qu'utilisateur '%s'."
 
 msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr ""
+msgstr "Aucun utilisateur appelé 'pykota'. Pas de restriction des privilèges."
 
 #, python-format
 msgid "Impossible to drop priviledges : %s"
-msgstr ""
+msgstr "Impossible de restreindre les privilèges : %s"
 
 msgid "Priviledges dropped. Now running as user 'pykota'."
 msgstr ""
+"Privilèges restreints. Fonctionne maintenant en tant qu'utilisateur 'pykota'."
 
 #, python-format
 msgid "Impossible to regain priviledges : %s"
-msgstr ""
+msgstr "Impossible de récupérer les privilèges : %s"
 
 msgid "Regained priviledges. Now running as root."
-msgstr ""
+msgstr "Privilèges récupérés. Fonctionne maintenant en tant que root."
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"
@@ -411,7 +417,7 @@ msgstr ""
 
 #, python-format
 msgid "User %s will not be charged for printing."
-msgstr ""
+msgstr "L'utilisateur %s ne paiera pas ses impressions."
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
@@ -553,7 +559,7 @@ msgstr "Problème rencontré durant les requêtes SNMP sur l'imprimante %s : %s"
 
 #, python-format
 msgid "Waiting for printer %s to be printing..."
-msgstr ""
+msgstr "En attente que l'imprimante %s soit en train d'imprimer..."
 
 #, python-format
 msgid "Waiting for printer %s's idle status to stabilize..."
@@ -795,17 +801,19 @@ msgstr ""
 
 #, python-format
 msgid "Banner generator %s exit code is %s"
-msgstr ""
+msgstr "Le code de sortie du générateur de bannières %s est %s"
 
 msgid "Job contains no data. Printing is denied."
 msgstr ""
 "Le travail d'impression ne contient aucune donnée. L'impression est rejetée."
 
 msgid "Job is a duplicate. Printing is denied."
-msgstr ""
+msgstr "Le travail d'impression est un doublon. Impression interdite."
 
 msgid "Banner won't be printed : maximum number of deny banners reached."
 msgstr ""
+"La bannière ne sera pas imprimée : compteur maximum de bannières rejetées "
+"atteint."
 
 msgid "Job accounting begins."
 msgstr "Début du décompte pour le travail d'impression"
@@ -820,21 +828,29 @@ msgstr ""
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
 msgstr ""
+"Attention : taille calculée du travail d'impression (%s) != taille "
+"précalculée du travail d'impression (%s)"
 
 msgid ""
 "The job size will be trusted anyway according to the 'trustjobsize' directive"
 msgstr ""
+"La taille du travail d'impression sera utilisée quand même, en accord avec "
+"la directive 'trustjobsize'"
 
 #, python-format
 msgid ""
 "The job size will be trusted because it is inferior to the 'trustjobsize' "
 "directive's limit %s"
 msgstr ""
+"La taille du travail d'impression sera utilisée car elle est inférieure à la "
+"limite %s de la directive 'trustjobsize'"
 
 #, python-format
 msgid ""
 "The job size will be modified according to the 'trustjobsize' directive : %s"
 msgstr ""
+"La taille du travail d'impression sera modifiée en accord avec la directive "
+"'trustjobsize' : %s"
 
 #, python-format
 msgid "Job size : %i"
@@ -860,6 +876,12 @@ msgstr "SIGTERM a été envoyé au vrai backend %s (pid: %s)"
 msgid "CUPS backend %s died abnormally."
 msgstr "Le backend CUPS %s est sorti anormalement."
 
+# TODO
+# TODO
+# TODO
+# TODO
+# TODO
+# TODO
 #, python-format
 msgid ""
 "dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
