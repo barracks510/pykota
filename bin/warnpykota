@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/09 12:56:53  jalet
+# Internationalization begins...
+#
 # Revision 1.5  2003/02/07 23:24:38  jalet
 # Empty line deleted
 #
@@ -99,7 +102,7 @@ class WarnPyKota(PyKotaTool) :
         """Warn users or groups over print quota."""
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
-            raise PyKotaToolError, "There's no printer matching %s" % options["printer"]
+            raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
         for printer in printernames :
             if options["users"] :
                 for name in self.storage.getPrinterUsers(printer) :
@@ -136,11 +139,11 @@ if __name__ == "__main__" :
         elif options["version"] :
             sender.display_version_and_quit()
         elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, "warnpykota: options --users and --groups are incompatible."
+            raise PyKotaToolError, _("warnpykota: options --users and --groups are incompatible.")
         elif options["groups"] :    
-            raise PyKotaToolError, "warnpykota: options --groups is currently not implemented."
+            raise PyKotaToolError, _("warnpykota: options --groups is currently not implemented.")
         elif args :    
-            raise PyKotaToolError, "warnpykota: unused arguments [%s]. Aborting." % ", ".join(args)
+            raise PyKotaToolError, _("warnpykota: unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
             sys.exit(sender.main(options))
     except PyKotaToolError, msg :            

@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/09 12:56:53  jalet
+# Internationalization begins...
+#
 # Revision 1.7  2003/02/07 10:23:48  jalet
 # Avoid a possible future name clash
 #
@@ -74,10 +77,10 @@ class PyKotaFilter(PyKotaTool) :
             mustclose = 1
         else :    
             infile = sys.stdin
-        data = infile.read(65536)    
+        data = infile.read(256*1024)    
         while data :
             sys.stdout.write(data)
-            data = infile.read(65536)
+            data = infile.read(256*1024)
         if mustclose :    
             infile.close()
             
@@ -111,7 +114,7 @@ def main() :
     if pgc is None :
         # The printer is unknown from the Quota Storage perspective
         # we let the job pass through, but log a warning message
-        kotafilter.logger.log_message("Printer %s not registered in the PyKota system" % kotafilter.printername, "warn")
+        kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "warn")
     else :    
         (lastpagecounter, lastusername) = (pgc["pagecounter"], pgc["lastusername"])
         
@@ -134,7 +137,7 @@ def main() :
             kotafilter.storage.updateUserPQuota(lastusername, kotafilter.printername, jobsize)
             kotafilter.warnUserPQuota(lastusername)
         else :    
-            kotafilter.logger.log_message("Error in page count value %i for user %s on printer %s" % (jobsize, kotafilter.printername, lastusername), "error")
+            kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, kotafilter.printername, lastusername), "error")
         
     # pass the job untouched to the underlying layer
     kotafilter.filterInput(inputfile)      

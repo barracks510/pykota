@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/09 12:56:53  jalet
+# Internationalization begins...
+#
 # Revision 1.7  2003/02/08 23:17:20  jalet
 # repykota now outputs life time page counters and the total pages printed by
 # all users/groups on each printer.
@@ -101,19 +104,19 @@ class RePyKota(PyKotaTool) :
         """Print Quota reports generator."""
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
-            raise PyKotaToolError, "There's no printer matching %s" % options["printer"]
+            raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
         for printer in printernames :
-            print "*** Report for %s quota on printer %s" % ((options["users"] and "user") or "group", printer)
-            print "Pages grace time: %idays" % self.config.getGraceDelay()
+            print _("*** Report for %s quota on printer %s") % ((options["users"] and "user") or "group", printer)
+            print _("Pages grace time: %idays") % self.config.getGraceDelay()
             total = 0
             if options["users"] :
-                print "User             used     soft     hard   grace        total"
+                print _("User             used     soft     hard   grace        total")
                 print "------------------------------------------------------------"
                 for name in self.storage.getPrinterUsers(printer) :
                     quota = self.storage.getUserPQuota(name, printer)
                     total += self.printQuota(name, quota)
             else :
-                print "Group            used     soft     hard   grace        total"
+                print _("Group            used     soft     hard   grace        total")
                 print "------------------------------------------------------------"
                 for name in self.storage.getPrinterGroups(printer) :
                     quota = self.storage.getGroupPQuota(name, printer) 
@@ -170,11 +173,11 @@ if __name__ == "__main__" :
         elif options["version"] :
             reporter.display_version_and_quit()
         elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, "repykota: options --users and --groups are incompatible."
+            raise PyKotaToolError, _("repykota: options --users and --groups are incompatible.")
         elif options["groups"] :    
-            raise PyKotaToolError, "repykota: options --groups is currently not implemented."
+            raise PyKotaToolError, _("repykota: options --groups is currently not implemented.")
         elif args :    
-            raise PyKotaToolError, "repykota: unused arguments [%s]. Aborting." % ", ".join(args)
+            raise PyKotaToolError, _("repykota: unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
             sys.exit(reporter.main(options))
     except PyKotaToolError, msg :            

@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/02/09 12:56:53  jalet
+# Internationalization begins...
+#
 # Revision 1.17  2003/02/08 22:47:23  jalet
 # Option --reset can now be used without having to use soft and hard limits
 # on the command line.
@@ -172,23 +175,23 @@ class EdPyKota(PyKotaTool) :
                     self.storage.addPrinter(pname)
                     printernames = [ pname ]
                 else :    
-                    raise PyKotaToolError, "Invalid printer name %s" % pname
+                    raise PyKotaToolError, _("Invalid printer name %s") % pname
             else :
-                raise PyKotaToolError, "There's no printer matching %s" % pname
+                raise PyKotaToolError, _("There's no printer matching %s") % pname
         softlimit = hardlimit = None    
         if options["softlimit"] :
             try :
                 softlimit = int(options["softlimit"].strip())
             except ValueError :    
-                raise PyKotaToolError, "Invalid softlimit value %s." % options["softlimit"]
+                raise PyKotaToolError, _("Invalid softlimit value %s.") % options["softlimit"]
         if options["hardlimit"] :
             try :
                 hardlimit = int(options["hardlimit"].strip())
             except ValueError :    
-                raise PyKotaToolError, "Invalid hardlimit value %s." % options["hardlimit"]
+                raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
         if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
             # error, exchange them
-            self.logger.log_message("Hard limit %i is less than soft limit %i, values will be exchanged." % (hardlimit, softlimit), "warn")
+            self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit), "warn")
             (softlimit, hardlimit) = (hardlimit, softlimit)
         for printer in printernames :
             if options["prototype"] :
@@ -197,18 +200,18 @@ class EdPyKota(PyKotaTool) :
                 else :     
                     prototype = self.storage.getGroupPQuota(options["prototype"], printer)
                 if prototype is None :
-                    self.logger.log_message("Prototype %s not found in Quota Storage for printer %s." % (options["prototype"], printer))
+                    self.logger.log_message(_("Prototype %s not found in Quota Storage for printer %s.") % (options["prototype"], printer))
                     continue    # skip this printer
                 else :    
                     (softlimit, hardlimit) = (prototype["softlimit"], prototype["hardlimit"])
             if hardlimit is None :    
                 hardlimit = softlimit
-                self.logger.log_message("Undefined hard limit set to soft limit (%s) on printer %s." % (str(hardlimit), printer))
+                self.logger.log_message(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer))
             if softlimit is None :    
                 softlimit = hardlimit
-                self.logger.log_message("Undefined soft limit set to hard limit (%s) on printer %s." % (str(softlimit), printer))
+                self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
             if (not options["reset"]) and ((hardlimit is None) or (softlimit is None)) :        
-                raise PyKotaToolError, "Both hard and soft limits must be set ! Aborting."
+                raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
             for name in names :
                 if options["users"] :
                     quota = self.storage.getUserPQuota(name, printer)
@@ -226,15 +229,15 @@ class EdPyKota(PyKotaTool) :
                                 self.storage.addUserPQuota(name, printer)
                                 quota = self.storage.getUserPQuota(name, printer)
                             else :    
-                                self.logger.log_message("Invalid user name %s" % name)
+                                self.logger.log_message(_("Invalid user name %s") % name)
                         else :
                             if self.isValidName(name) :
                                 self.storage.addGroupPQuota(name, printer)
                                 quota = self.storage.getGroupPQuota(name, printer)
                             else :    
-                                self.logger.log_message("Invalid group name %s" % name)
+                                self.logger.log_message(_("Invalid group name %s") % name)
                 if quota is None :     
-                    self.logger.log_message("Quota not found for object %s on printer %s." % (name, printer))
+                    self.logger.log_message(_("Quota not found for object %s on printer %s.") % (name, printer))
                 else :    
                     if options["users"] :
                         if (softlimit is not None) and (hardlimit is not None) :
@@ -280,11 +283,11 @@ if __name__ == "__main__" :
         elif options["version"] :
             editor.display_version_and_quit()
         elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, "edpykota: options --users and --groups are incompatible."
+            raise PyKotaToolError, _("edpykota: options --users and --groups are incompatible.")
         elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
-            raise PyKotaToolError, "edpykota: options --softlimit or --hardlimit and --prototype are incompatible."
+            raise PyKotaToolError, _("edpykota: options --softlimit or --hardlimit and --prototype are incompatible.")
         elif options["groups"] :    
-            raise PyKotaToolError, "edpykota: options --groups is currently not implemented."
+            raise PyKotaToolError, _("edpykota: options --groups is currently not implemented.")
         else :
             sys.exit(editor.main(args, options))
     except PyKotaToolError, msg :            

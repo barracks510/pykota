@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/02/09 12:56:53  jalet
+# Internationalization begins...
+#
 # Revision 1.15  2003/02/08 22:09:52  jalet
 # Name check method moved here
 #
@@ -69,6 +72,8 @@ import sys
 import os
 import getopt
 import smtplib
+import gettext
+from locale import setlocale, LC_ALL
 
 from mx import DateTime
 
@@ -87,6 +92,11 @@ class PyKotaTool :
     """Base class for all PyKota command line tools."""
     def __init__(self, isfilter=0, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
+        # locale stuff
+        setlocale(LC_ALL, "")
+        gettext.install("pykota")
+    
+        # pykota specific stuff
         self.documentation = doc
         self.config = config.PyKotaConfig(os.environ.get("CUPS_SERVERROOT", "/etc/cups"))
         self.logger = logger.openLogger(self.config)
