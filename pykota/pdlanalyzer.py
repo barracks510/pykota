@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2004/08/27 09:02:34  jalet
+# Forgot to remove some special debugging code...
+#
 # Revision 1.32  2004/08/27 08:58:50  jalet
 # Relax checks for PCL5 header to accomodate strange printer drivers
 #
@@ -639,8 +642,6 @@ class PDLAnalyzer :
             self.mustclose = 1
             return
             
-        debugfile = open("/tmp/jerome_debugs_pykota.prn", "w")
-        
         # Use a temporary file, always seekable contrary to standard input.
         self.infile = tempfile.TemporaryFile(mode="w+b")
         while 1 :
@@ -648,12 +649,8 @@ class PDLAnalyzer :
             if not data :
                 break
             self.infile.write(data)
-            debugfile.write(data)
         self.infile.flush()    
         self.infile.seek(0)
-        
-        debugfile.flush()
-        debugfile.close()
             
     def closeFile(self) :        
         """Closes the job's data stream if we can close it."""
