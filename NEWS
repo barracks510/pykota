@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha1 :
+    
+        - Ensures that the LDAP connection is really closed at end.
+        
+        - More complete error messages in case of LDAP operation failure.
+        
     - 1.15 :
      
         - Documentation improved.

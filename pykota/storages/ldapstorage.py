@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2003/10/24 08:37:55  jalet
+# More complete messages in case of LDAP failure.
+# LDAP database connection is now unbound on exit too.
+#
 # Revision 1.33  2003/10/08 07:01:20  jalet
 # Job history can be disabled.
 # Some typos in README.
@@ -175,7 +179,7 @@ class Storage(BaseStorage) :
     def close(self) :    
         """Closes the database connection."""
         if not self.closed :
-            del self.database
+            self.database.unbind_s()
             self.closed = 1
             self.tool.logdebug("Database closed.")
         
@@ -204,8 +208,8 @@ class Storage(BaseStorage) :
             base = base or self.basedn
             self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
             result = self.database.search_s(base or self.basedn, scope, key, fields)
-        except ldap.LDAPError :    
-            raise PyKotaStorageError, _("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)
+        except ldap.LDAPError, msg :    
+            raise PyKotaStorageError, (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
         else :     
             self.tool.logdebug("QUERY : Result : %s" % result)
             return result
@@ -215,8 +219,8 @@ class Storage(BaseStorage) :
         try :
             self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
             self.database.add_s(dn, modlist.addModlist(fields))
-        except ldap.LDAPError :
-            raise PyKotaStorageError, _("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))
+        except ldap.LDAPError, msg :
+            raise PyKotaStorageError, (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
         else :
             return dn
             
@@ -225,8 +229,8 @@ class Storage(BaseStorage) :
         try :
             self.tool.logdebug("QUERY : Delete(%s)" % dn)
             self.database.delete_s(dn)
-        except ldap.LDAPError :
-            raise PyKotaStorageError, _("Problem deleting LDAP entry (%s)") % dn
+        except ldap.LDAPError, msg :
+            raise PyKotaStorageError, (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % str(msg)
             
     def doModify(self, dn, fields, ignoreold=1) :
         """Modifies an entry in the LDAP directory."""
@@ -234,8 +238,8 @@ class Storage(BaseStorage) :
             oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
             self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields))
             self.database.modify_s(dn, modlist.modifyModlist(oldentry[0][1], fields, ignore_oldexistent=ignoreold))
-        except ldap.LDAPError :
-            raise PyKotaStorageError, _("Problem modifying LDAP entry (%s, %s)") % (dn, fields)
+        except ldap.LDAPError, msg :
+            raise PyKotaStorageError, (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % str(msg)
         else :
             return dn
             
