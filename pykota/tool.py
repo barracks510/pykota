@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.122  2004/09/28 21:38:56  jalet
+# Now computes the job's datas MD5 checksum to later forbid duplicate print jobs.
+# The checksum is not yet saved into the database.
+#
 # Revision 1.121  2004/09/15 18:47:58  jalet
 # Re-Extends the list of invalid characters in names to prevent
 # people from adding user "*" for example, or to prevent
@@ -455,6 +459,7 @@ import locale
 import signal
 import socket
 import tempfile
+import md5
 import ConfigParser
 
 from mx import DateTime
@@ -963,6 +968,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             raise
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
+        self.checksum = self.computeChecksum()
         os.environ["PYKOTAJOBSIZEBYTES"] = str(self.jobSizeBytes)
         self.logdebug("Job size is %s bytes" % self.jobSizeBytes)
         self.logdebug("Capturing SIGTERM events.")
@@ -972,6 +978,21 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         """Sends an informational message to CUPS via back channel stream (stderr)."""
         sys.stderr.write("%s: PyKota (PID %s) : %s\n" % (level.upper(), os.getpid(), message.strip()))
         sys.stderr.flush()
+        
+    def computeChecksum(self) :    
+        """Computes the MD5 checksum of the job's datas, to be able to detect and forbid duplicate jobs."""
+        self.logdebug("Computing MD5 checksum for job %s" % self.jobid)
+        MEGABYTE = 1024*1024
+        checksum = md5.new()
+        while 1 :
+            data = self.jobdatastream.read(MEGABYTE) 
+            if not data :
+                break
+            checksum.update(data)    
+        self.jobdatastream.seek(0)
+        digest = checksum.hexdigest()
+        self.logdebug("MD5 checksum for job %s is %s" % (self.jobid, digest))
+        return digest
         
     def openJobDataStream(self) :    
         """Opens the file which contains the job's datas."""
