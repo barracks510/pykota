@@ -3,7 +3,7 @@
 #
 # PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003 Jerome Alet <alet@librelogiciel.com>
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2004/01/08 14:10:32  jalet
+# Copyright year changed.
+#
 # Revision 1.41  2003/11/29 20:06:20  jalet
 # Added 'utolower' configuration option to convert all usernames to
 # lowercase when printing. All database accesses are still and will

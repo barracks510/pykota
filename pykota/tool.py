@@ -3,7 +3,7 @@
 
 # PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003 Jerome Alet <alet@librelogiciel.com>
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.70  2004/01/08 14:10:32  jalet
+# Copyright year changed.
+#
 # Revision 1.69  2004/01/05 16:02:18  jalet
 # Dots in user, groups and printer names should be allowed.
 #
@@ -289,7 +292,7 @@ class PyKotaToolError(Exception):
     
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, lang=None, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, lang=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
         try :
