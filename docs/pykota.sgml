@@ -18,6 +18,7 @@
     <subtitle>A full featured Print Quota Solution for CUPS and LPRng</subtitle>
     <copyright>
       <year>2003</year>
+      <year>2004</year>
       <holder>Jerome Alet</holder>
     </copyright>
 
@@ -117,6 +118,9 @@
 <!--
 
 $Log$
+Revision 1.10  2004/01/12 23:16:42  jalet
+Copyright year.
+
 Revision 1.9  2003/11/18 08:39:49  jalet
 Documentation's licensed changed from GNU FDL to GNU GPL, to please Debian.
 
