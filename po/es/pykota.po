@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/11/19 21:00:14  jalet
+# Typo + missing compiled spanish messages.
+#
 # Revision 1.1  2003/11/19 20:57:57  jalet
 # Spanish translation by Dennis Romero L. added.
 #
@@ -70,7 +73,7 @@ msgid "Undefined hard limit set to soft limit (%s) on printer %s."
 msgstr "Límite duro indefinido, seteado a límite suave (%s) en la impresora %s."
 
 msgid "incompatible options, see help."
-msgstr "opciones incompatibles, ver ayuda.
+msgstr "opciones incompatibles, ver ayuda."
 
 msgid "Invalid hardlimit value %s."
 msgstr "Valor incorrecto de límite duro %s."
