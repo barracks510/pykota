@@ -344,7 +344,7 @@ You may need to be logged in with sufficient privileges (e.g. root)
 
 Create a system user for PyKota :
 
-    adduser --system --group --gecos PyKota pykota
+    adduser --system --group --home /etc/pykota --gecos PyKota pykota
     
 Put the user your printing system is run as in the pykota system group :
 
@@ -363,6 +363,9 @@ Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample
 sample configuration files to /etc/pykota/pykota.conf and 
 /etc/pykota/pykotadmin.conf  
 The installation script usually copies these files into /usr/share/pykota
+
+NB : You can move PyKota's configuration files elsewhere, they will
+be searched first in user pykota's home directory.
 
 You need to adapt these files to your own needs. Especially you may 
 have to create sections named after your own printers, and change 
@@ -392,7 +395,7 @@ The rest of the installation depends on your printing system :
           
         or :    
       
-          $ /etc/rc.d/init.d/cupsysrestart
+          $ /etc/rc.d/init.d/cupsys restart
           
         or any similar command depending on your operating system.  
           
@@ -435,7 +438,7 @@ The rest of the installation depends on your printing system :
     
         If you had already installed a version of PyKota earlier 
         than 1.16alpha7, then remove the *cupsFilter lines in your 
-        PPD files for each printer already managed printers. Each 
+        PPD files for each already managed printer. Each 
         line to remove is of the form :
         
           *cupsFilter: "application/vnd.cups-postscript 0 /usr/share/pykota/pykota"
@@ -572,6 +575,22 @@ look, especially quota violations will appear in different colors.
 For different security concerns, please give a look at the SECURITY
 file which is part of this software.
            
+============================================================
+
+Additionnal tools :
+-------------------
+
+Some people have developped tools around PyKota, and make
+them available under the GNU General Public License :
+
+  - Kanakorn Horsiritham developped phpPykotaAdmin which is 
+    a web based administrative GUI :
+  
+      http://opensource.psu.ac.th/~kanakorn/mambo/
+  
+Additionnal software will be listed here when they will be  
+ready.
+
 ============================================================
 
 Mailing list :
