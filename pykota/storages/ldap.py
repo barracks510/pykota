@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/05/03 07:27:14  jalet
+# Should be able to list a group's members
+#
 # Revision 1.4  2003/05/01 21:08:44  jalet
 # More work on LDAP
 #
@@ -129,7 +132,10 @@ class Storage :
         
     def getGroupMembersNames(self, groupname) :        
         """Returns the list of user's names which are member of this group."""
-        pass
+        result = self.doSearch("cn=%s" % groupname, ["memberUid"], base="cn=%s,ou=Group" % groupname)
+        if result is not None :
+            (groupid, fields) = result[0]
+            return fields["memberUid"]
         
     def getUserGroupsNames(self, userid) :        
         """Returns the list of groups' names the user is a member of."""
