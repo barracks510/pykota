@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/04/29 18:37:54  jalet
+# Pluggable accounting methods (actually doesn't support external scripts)
+#
 # Revision 1.28  2003/04/26 08:41:24  jalet
 # Small code reorganisation (UNTESTED) to allow pluggable accounting
 # methods in the future.
@@ -132,18 +135,58 @@ import os
 import time
 
 from pykota.tool import PyKotaTool, PyKotaToolError
-from pykota.requester import openRequester, PyKotaRequesterError
-
-MAXTRIES = 6     # maximum number of tries to get the printer's internal page counter
-TIMETOSLEEP = 10 # number of seconds to sleep between two tries to get the printer's internal page counter
+from pykota.storage import PyKotaStorageError
+from pykota.accounter import openAccounter, PyKotaAccounterError
 
 class PyKotaFilter(PyKotaTool) :    
     """Class for the PyKota filter."""
     def __init__(self) :
         PyKotaTool.__init__(self)
         (self.printingsystem, self.printerhostname, self.printername, self.username, self.jobid, self.inputfile) = self.extractInfoFromCupsOrLprng()
-        self.requester = openRequester(self.config, self.printername)
+        self.accounter = openAccounter(self)
     
+    def extractInfoFromCupsOrLprng(self) :    
+        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename) depending on the printing system in use (as seen by the print filter).
+        
+           Returns (None, None, None, None, None, None) if no printing system is recognized.
+        """
+        # Try to detect CUPS
+        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
+            if len(sys.argv) == 7 :
+                inputfile = sys.argv[6]
+            else :    
+                inputfile = None
+                
+            device_uri = os.environ.get("DEVICE_URI", "")
+            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
+            try :
+                (backend, destination) = device_uri.split(":", 1) 
+            except ValueError :    
+                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
+            while destination.startswith("/") :
+                destination = destination[1:]
+            printerhostname = destination.split("/")[0].split(":")[0]
+            return ("CUPS", printerhostname, os.environ.get("PRINTER"), sys.argv[2].strip(), sys.argv[1].strip(), inputfile)
+        else :    
+            # Try to detect LPRng
+            jseen = Jseen = Pseen = nseen = rseen = None
+            for arg in sys.argv :
+                if arg.startswith("-j") :
+                    jseen = arg[2:].strip()
+                elif arg.startswith("-J") :    
+                    Jseen = arg[2:].strip()
+                    if Jseen == "(STDIN)" :
+                        Jseen = None
+                elif arg.startswith("-n") :     
+                    nseen = arg[2:].strip()
+                elif arg.startswith("-P") :    
+                    Pseen = arg[2:].strip()
+                elif arg.startswith("-r") :    
+                    rseen = arg[2:].strip()
+            if jseen and Pseen and nseen and rseen :        
+                return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen)
+        return (None, None, None, None, None, None)   # Unknown printing system          
+        
     def filterInput(self, inputfile) :
         """Transparent filter."""
         mustclose = 0    
@@ -181,8 +224,6 @@ class PyKotaFilter(PyKotaTool) :
             
 def main() :    
     """Do it, and do it right !"""
-    global MAXTRIES, TIMETOSLEEP
-    
     # Initializes the current tool
     kotafilter = PyKotaFilter()    
     
@@ -215,84 +256,8 @@ def main() :
             if action == "POLICY_DENY" :
                 return kotafilter.removeJob()
         else :
-            # Get the page counter directly from the printer itself
-            # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
-            # This was seen with my Apple LaserWriter 16/600 PS which doesn't answer before having warmed up.
-            for i in range(MAXTRIES) :
-                try :
-                    counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname)
-                except PyKotaRequesterError, msg :
-                    # can't get actual page counter, assume printer is off or warming up
-                    # log the message anyway.
-                    kotafilter.logger.log_message("%s" % msg, "warn")
-                    counterbeforejob = None
-                    printerIsOff = 1
-                else :    
-                    # printer answered, it is on so we can exit the loop
-                    printerIsOff = 0
-                    break
-                time.sleep(TIMETOSLEEP)    
-        
-            # get last job information for this printer
-            pgc = kotafilter.storage.getPrinterPageCounter(printerid)    
-            if pgc is None :
-                # The printer hasn't been used yet, from PyKota's point of view
-                lasthistoryid = None
-                lastjobid = kotafilter.jobid
-                lastuserid = userid
-                lastusername = kotafilter.username
-                lastpagecounter = counterbeforejob
-            else :    
-                # get last values from Quota Storage
-                (lasthistoryid, lastjobid, lastuserid, lastusername, lastpagecounter) = (pgc["id"], pgc["jobid"], pgc["userid"], pgc["username"], pgc["pagecounter"])
-                
-            # if printer is off then we assume the correct counter value is the last one
-            if printerIsOff :
-                counterbeforejob = lastpagecounter
-                
-            # if the internal lifetime page counter for this printer is 0    
-            # then this may be a printer with a volatile counter (never
-            # saved to NVRAM) which has just been switched off and then on
-            # so we use the last page counter from the Quota Storage instead
-            # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
-            if counterbeforejob == 0 :
-                counterbeforejob = lastpagecounter
-                
-            # Computes the last job size as the difference between internal page
-            # counter in the printer and last page counter taken from the Quota
-            # Storage database for this particular printer
-            try :
-                jobsize = (counterbeforejob - lastpagecounter)    
-            except TypeError :    
-                # never used, and internal page counter not accessible
-                jobsize = 0
-                
-            if jobsize < 0 :
-                # Probably an HP printer which was switched off and back on, 
-                # its primary counter is only saved in a 10 increment, so
-                # it may be lower than the last page counter saved in the
-                # Quota Storage. 
-                # We unconditionnally set the last job's size to 
-                # abs(int((10 - abs(lastcounter(snmp) - lastcounter(storage)) / 2))
-                # For more accurate accounting, don't switch off your HP printers !
-                # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
-                kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastusername, kotafilter.printername), "error")
-                jobsize = abs(int((10 - abs(jobsize)) / 2))     # Workaround for HP printers' feature !
-                
-            # update the quota for the previous user on this printer 
-            kotafilter.storage.updateUserPQuota(lastuserid, printerid, jobsize)
-            
-            # update the last job size in the history
-            kotafilter.storage.updateJobSizeInHistory(lasthistoryid, jobsize)
-            
-            # warns the last user if he is over quota
-            kotafilter.warnUserPQuota(lastusername, kotafilter.printername)
-                
-            # Is the current user allowed to print at all ?
-            action = kotafilter.warnUserPQuota(kotafilter.username, kotafilter.printername)
-            
-            # adds the current job to history    
-            kotafilter.storage.addJobToHistory(kotafilter.jobid, kotafilter.storage.getUserId(kotafilter.username), printerid, counterbeforejob, action)
+            # Now does the accounting and act depending on the result
+            action = kotafilter.accounter.doAccounting(printerid, userid)
             
             # if not allowed to print then die, else proceed.
             if action == "DENY" :
@@ -305,4 +270,11 @@ def main() :
     return kotafilter.acceptJob()
 
 if __name__ == "__main__" :    
-    sys.exit(main())
+    try :
+        retcode = main()
+    except (PyKotaToolError, PyKotaStorageError, PyKotaAccounterError), msg :
+        sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
+        sys.stderr.flush()
+        retcode = -1
+    sys.exit(retcode)    
+    

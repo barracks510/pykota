@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.05alpha2 :
+    
+        - Pluggable accounting methods.
+        
     - 1.05alpha1 :
     
         - SECURITY file added to help improve PyKota's security.

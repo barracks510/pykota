@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/04/29 18:37:54  jalet
+# Pluggable accounting methods (actually doesn't support external scripts)
+#
 # Revision 1.23  2003/04/24 11:53:48  jalet
 # Default policy for unknown users/groups is to DENY printing instead
 # of the previous default to ALLOW printing. This is to solve an accuracy
@@ -138,16 +141,6 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Configuration file %s not found.") % self.filename
         self.config = ConfigParser.ConfigParser()
         self.config.read([self.filename])
-        self.checkConfiguration()
-        
-    def checkConfiguration(self) :
-        """Checks if configuration is correct.
-        
-           raises PyKotaConfigError in case a problem is detected
-        """
-        validmethods = [ "lazy" ] # TODO add more methods            
-        if self.config.get("global", "method", raw=1).lower() not in validmethods :             
-            raise PyKotaConfigError, _("Option method only supports values in %s") % str(validmethods)
                         
     def getPrinterNames(self) :    
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
@@ -197,21 +190,43 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
         return logger    
         
+    def getAccounterBackend(self, printer) :    
+        """Returns the accounter backend to use for a given printer.
+        
+           if it is not set, it defaults to 'querying' which means ask printer
+           for its internal lifetime page counter.
+        """   
+        validaccounters = [ "querying" ]     
+        try :
+            accounter = self.getPrinterOption(printer, "accounter").lower()
+        except PyKotaConfigError :    
+            accounter = "querying"
+        if accounter not in validaccounters :
+            raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printer, str(validaccounters))
+        return accounter
+        
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
-        fullrequester = self.getPrinterOption(printer, "requester")
         try :
-            (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
-        except ValueError :    
-            raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
-        if args.endswith(')') :
-            args = args[:-1]
-        if not args :
-            raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
-        validrequesters = [ "snmp", "external" ] # TODO : add more requesters
-        if requester not in validrequesters :
-            raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
-        return (requester, args)
+            fullrequester = self.getPrinterOption(printer, "requester")
+        except PyKotaConfigError :    
+            # No requester defined, maybe it is not needed if accounting method
+            # is not set to 'querying', but if we are called, then the accounting
+            # method really IS 'querying', and so there's a big problem.
+            raise PyKotaConfigError, _("Option requester for printer %s was not set") % printer
+        else :    
+            try :
+                (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
+            except ValueError :    
+                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
+            if args.endswith(')') :
+                args = args[:-1]
+            if not args :
+                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
+            validrequesters = [ "snmp", "external" ] # TODO : add more requesters
+            if requester not in validrequesters :
+                raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
+            return (requester, args)
         
     def getPrinterPolicy(self, printer) :    
         """Returns the default policy for the current printer."""

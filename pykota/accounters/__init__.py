@@ -19,10 +19,3 @@
 #
 # $Id$
 #
-
-__version__ = "1.05alpha2-unofficial"
-
-__doc__ = """PyKota : a complete Printing Quota Solution for CUPS and LPRng."""
-
-__author__ = """Jerome Alet - alet@librelogiciel.com"""
-

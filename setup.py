@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/04/29 18:37:54  jalet
+# Pluggable accounting methods (actually doesn't support external scripts)
+#
 # Revision 1.12  2003/04/23 22:13:56  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -72,6 +75,7 @@ import glob
 import os
 import shutil
 from distutils.core import setup
+import ConfigParser
 
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
@@ -154,6 +158,24 @@ if "install" in sys.argv :
                     sys.stdout.write("Configuration file /etc/pykota.conf installed.\nDon't forget to adapt /etc/pykota.conf to your needs.\n")
             else :        
                 sys.stderr.write("WARNING : PyKota won't run without a configuration file !\n")
+    else :            
+        # Configuration file already exists. Check if this is an old version or not
+        # if the 'method: lazy' line is present, then the configuration file
+        # has to be updated.
+        oldconf = ConfigParser.ConfigParser()
+        oldconf.read(["/etc/pykota.conf"])
+        try :
+            if oldconf.get("global", "method", raw=1).lower().strip() == "lazy" :
+                sys.stdout.write("You have got an OLD PyKota configuration file !\n")
+                sys.stdout.write("The 'method' statement IS NOT SUPPORTED ANYMORE\nand was replaced with the 'accounter' statement.\n") 
+                sys.stdout.write("You have to manually set an 'accounter' statement,\neither globally or for each printer.\n")
+                sys.stdout.write("Please read the sample configuration file conf/pykota.conf.sample\n")
+                sys.stdout.write("to learn how to MANUALLY apply the modifications needed,\nafter the installation is done.\n")
+                sys.stdout.write("If you don't do this, then PyKota will stop working !\n")
+                answer = raw_input("Please, press ENTER when you'll have read the above paragraph.")
+        except ConfigParser.NoOptionError :
+            # New configuration file, OK
+            pass
     
     # checks if some needed Python modules are there or not.
     modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
@@ -188,7 +210,7 @@ setup(name = "pykota", version = __version__,
       author = "Jerome Alet",
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
-      packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers" ],
+      packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters" ],
       scripts = [ "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota" ],
       data_files = data_files)
 

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/04/29 18:37:54  jalet
+# Pluggable accounting methods (actually doesn't support external scripts)
+#
 # Revision 1.20  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -341,3 +344,12 @@ msgstr "Prix par page: %.3f"
 
 msgid "Group %s not found in the PyKota Storage."
 msgstr "Groupe %s non trouvé dans le Quota Storage."
+
+msgid "Unsupported accounter backend %s"
+msgstr "Backend accounter %s non supporté"
+
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "L'option accounter pour l'imprimante %s supporte seulement les valeurs %s"
+
+msgid "Option requester for printer %s was not set"
+msgstr "L'option requester pour l'imprimante %s n'a pas été définie"

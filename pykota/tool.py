@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2003/04/29 18:37:54  jalet
+# Pluggable accounting methods (actually doesn't support external scripts)
+#
 # Revision 1.38  2003/04/24 11:53:48  jalet
 # Default policy for unknown users/groups is to DENY printing instead
 # of the previous default to ALLOW printing. This is to solve an accuracy
@@ -199,48 +202,6 @@ class PyKotaTool :
         self.logger = logger.openLogger(self.config)
         self.storage = storage.openConnection(self.config, asadmin=asadmin)
         self.smtpserver = self.config.getSMTPServer()
-        
-    def extractInfoFromCupsOrLprng(self) :    
-        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename) depending on the printing system in use (as seen by the print filter).
-        
-           Returns (None, None, None, None, None, None) if no printing system is recognized.
-        """
-        # Try to detect CUPS
-        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
-            if len(sys.argv) == 7 :
-                inputfile = sys.argv[6]
-            else :    
-                inputfile = None
-                
-            device_uri = os.environ.get("DEVICE_URI", "")
-            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
-            try :
-                (backend, destination) = device_uri.split(":", 1) 
-            except ValueError :    
-                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
-            while destination.startswith("/") :
-                destination = destination[1:]
-            printerhostname = destination.split("/")[0].split(":")[0]
-            return ("CUPS", printerhostname, os.environ.get("PRINTER"), sys.argv[2].strip(), sys.argv[1].strip(), inputfile)
-        else :    
-            # Try to detect LPRng
-            jseen = Jseen = Pseen = nseen = rseen = None
-            for arg in sys.argv :
-                if arg.startswith("-j") :
-                    jseen = arg[2:].strip()
-                elif arg.startswith("-J") :    
-                    Jseen = arg[2:].strip()
-                    if Jseen == "(STDIN)" :
-                        Jseen = None
-                elif arg.startswith("-n") :     
-                    nseen = arg[2:].strip()
-                elif arg.startswith("-P") :    
-                    Pseen = arg[2:].strip()
-                elif arg.startswith("-r") :    
-                    rseen = arg[2:].strip()
-            if jseen and Pseen and nseen and rseen :        
-                return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen)
-        return (None, None, None, None, None, None)   # Unknown printing system          
         
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
