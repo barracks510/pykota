@@ -155,6 +155,10 @@ PyKota features :
             - Tab separated values ;
             
             - XML.
+            
+            - CUPS' page_log format, to easily interface in
+              real time with third party apps like phpPrintAnalyzer
+              and similar tools.
           
     User Interface :          
     
@@ -164,9 +168,16 @@ PyKota features :
           
         - Completely internationalized. Actually supports the  
           English, French, Spanish, Portuguese, Brasilian, Swedish,
-          Thai, Greek, German, Italian, Norwegian (Bokmål) and 
-          Turkish languages. 
+          Thai, Greek, German, Italian, Norwegian (Bokmål), Turkish 
+          and traditional Chinese languages. 
           More to come.
+          
+        - Web based print quota monitor and data dumper are included.  
+        
+        - an On Screen Display X-Window print quota monitor is included.
+        
+        - a cross-platform print quota monitor will soon be available 
+          as an purchaseable add-on.
 
 ====================================================================
         
