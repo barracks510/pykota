@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.75  2004/11/01 15:45:25  jalet
+# Added many debug messages.
+# Added some code to prevent short writes.
+#
 # Revision 1.74  2004/10/13 20:51:27  jalet
 # Made debugging levels be the same in cupspykota and lprngpykota.
 # Now outputs more information in informational messages : user, printer, jobid
@@ -530,6 +534,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         outdata = ""
         endinput = endoutput = 0
         inputclosed = outputclosed = 0
+        totaltochild = totalfromcups = 0
+        totalfromchild = totaltocups = 0
         
         if self.preserveinputfile is None :
             # this is not a real file, we read the job's data
@@ -581,11 +587,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                             if fd == tocfno :
                                 if indata :
                                     try :
-                                        os.write(fd, indata)    
+                                        nbwritten = os.write(fd, indata)    
                                     except (OSError, IOError), msg :    
                                         self.logdebug("Error while writing to real backend's stdin %s : %s" % (fd, msg))
                                     else :    
-                                        indata = ""
+                                        if len(indata) != nbwritten :
+                                            self.logdebug("Short write to real backend's input !")
+                                        totaltochild += nbwritten    
+                                        self.logdebug("%s bytes sent to real backend so far..." % totaltochild)
+                                        indata = indata[nbwritten:]
                                 else :        
                                     self.logdebug("No data to send to real backend yet, sleeping a bit...")
                                     time.sleep(0.01)
@@ -598,11 +608,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                             elif fd == stderrfno :
                                 if outdata :
                                     try :
-                                        os.write(fd, outdata)
+                                        nbwritten = os.write(fd, outdata)
                                     except (OSError, IOError), msg :    
                                         self.logdebug("Error while writing to CUPS back channel (stderr) %s : %s" % (fd, msg))
                                     else :
-                                        outdata = ""
+                                        if len(outdata) != nbwritten :
+                                            self.logdebug("Short write to stderr (CUPS) !")
+                                        totaltocups += nbwritten    
+                                        self.logdebug("%s bytes sent back to CUPS so far..." % totaltocups)
+                                        outdata = outdata[nbwritten:]
                                 else :        
                                     # self.logdebug("No data to send back to CUPS yet, sleeping a bit...") # Uncommenting this fills your logs
                                     time.sleep(0.01) # Give some time to the system, stderr is ALWAYS writeable it seems.
@@ -628,12 +642,16 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                         endinput = 1 # this happens with real files.
                                     else :    
                                         indata += data
+                                        totalfromcups += len(data)
+                                        self.logdebug("%s bytes read from CUPS so far..." % totalfromcups)
                                 elif fd == fromcfno :
                                     if not data :
                                         self.logdebug("No back channel data to read from real backend yet, sleeping a bit...")
                                         time.sleep(0.01)
                                     else :
                                         outdata += data
+                                        totalfromchild += len(data)
+                                        self.logdebug("%s bytes read from real backend so far..." % totalfromchild)
                                 else :    
                                     self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
                                     time.sleep(0.01)
@@ -668,6 +686,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             os.close(tocfno)
         
         self.logdebug("Exiting streams polling loop...")
+        
+        self.logdebug("input data's final length : %s" % len(indata))
+        self.logdebug("back-channel data's final length : %s" % len(outdata))
+        
+        self.logdebug("Total bytes read from CUPS (job's datas) : %s" % totalfromcups)
+        self.logdebug("Total bytes sent to real backend (job's datas) : %s" % totaltochild)
+        
+        self.logdebug("Total bytes read from real backend (back-channel datas) : %s" % totalfromchild)
+        self.logdebug("Total bytes sent back to CUPS (back-channel datas) : %s" % totaltocups)
         
         # Check exit code of original CUPS backend.    
         if status == -1 :
