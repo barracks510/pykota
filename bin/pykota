@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/07 10:23:48  jalet
+# Avoid a possible future name clash
+#
 # Revision 1.6  2003/02/06 22:54:33  jalet
 # warnpykota should be ok
 #
@@ -98,26 +101,26 @@ def main() :
     username = sys.argv[2].strip()    
     
     # Initializes the current tool
-    tool = PyKotaFilter(username)    
+    kotafilter = PyKotaFilter(username)    
     
     # Get the page counter directly from the printer itself
-    counterbeforejob = tool.requester.getPrinterPageCounter(tool.printerhostname) # TODO use printername instead, make them match from CUPS' config files
+    counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname) # TODO use printername instead, make them match from CUPS' config files
     
     # Get the last page counter and last username from the Quota Storage backend
-    pgc = tool.storage.getPrinterPageCounter(tool.printername)    
+    pgc = kotafilter.storage.getPrinterPageCounter(kotafilter.printername)    
     if pgc is None :
         # The printer is unknown from the Quota Storage perspective
         # we let the job pass through, but log a warning message
-        tool.logger.log_message("Printer %s not registered in the PyKota system" % tool.printername, "warn")
+        kotafilter.logger.log_message("Printer %s not registered in the PyKota system" % kotafilter.printername, "warn")
     else :    
         (lastpagecounter, lastusername) = (pgc["pagecounter"], pgc["lastusername"])
         
         # Update the last page counter and last username in the Quota Storage backend
         # set them to current user and 
-        tool.storage.updatePrinterPageCounter(tool.printername, username, counterbeforejob) # TODO : allow or deny users not in quota system, and die cleanly if needed
+        kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob) # TODO : allow or deny users not in quota system, and die cleanly if needed
         
         # Is the current user allowed to print at all ?
-        action = tool.warnUserPQuota(username)
+        action = kotafilter.warnUserPQuota(username)
         if action == "DENY" :
             # No, just die cleanly
             return 1
@@ -128,13 +131,13 @@ def main() :
             lastpagecounter = counterbeforejob
         jobsize = (counterbeforejob - lastpagecounter)    
         if jobsize >= 0:
-            tool.storage.updateUserPQuota(lastusername, tool.printername, jobsize)
-            tool.warnUserPQuota(lastusername)
+            kotafilter.storage.updateUserPQuota(lastusername, kotafilter.printername, jobsize)
+            kotafilter.warnUserPQuota(lastusername)
         else :    
-            tool.logger.log_message("Error in page count value %i for user %s on printer %s" % (jobsize, tool.printername, lastusername), "error")
+            kotafilter.logger.log_message("Error in page count value %i for user %s on printer %s" % (jobsize, kotafilter.printername, lastusername), "error")
         
     # pass the job untouched to the underlying layer
-    tool.filterInput(inputfile)      
+    kotafilter.filterInput(inputfile)      
     
     return 0
 
