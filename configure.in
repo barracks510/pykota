@@ -1,0 +1,43 @@
+AC_INIT(pykota/tool.py)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(pykota, 1.18alpha14_unofficial)
+
+AM_MAINTAINER_MODE
+
+
+dnl check for python
+dnl AM_PATH_PYTHON(2.2)
+AM_PATH_PYTHON
+
+
+GETTEXT_PACKAGE=pykota
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [The gettext package])
+AM_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION(0.12.1)
+AM_PO_SUBDIRS(po)
+
+AC_OUTPUT([
+intl/Makefile 
+Makefile
+pykota/Makefile
+pykota/accounters/Makefile
+pykota/loggers/Makefile
+pykota/reporters/Makefile
+pykota/requesters/Makefile
+pykota/storages/Makefile
+bin/Makefile
+untested/Makefile
+untested/netatalk/Makefile
+untested/parallel/Makefile
+untested/pjl/Makefile
+untested/postscript/Makefile
+conf/Makefile
+man/Makefile
+openoffice/Makefile
+initscripts/Makefile
+initscripts/ldap/Makefile
+initscripts/postgresql/Makefile
+po/Makefile.in
+])
