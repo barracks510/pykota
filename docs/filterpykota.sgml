@@ -31,7 +31,7 @@
   <para>
     The <application>pstops</application> filter described above is also in charge of doing basic page
     accounting, but <application>PyKota</application> currently doesn't use this facility since it may
-    prove to be unreliable depending on the drivers used or if a paper jam occur for example.
+    prove to be unreliable depending on the drivers used or if a paper jam occurs for example.
   </para>
   
   <para>
@@ -78,7 +78,7 @@
     page counter for this printer when the previous job was launched, computes the difference, and report it as the 
     previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
     warn him if he is over quota or if his account balance is below 0. Finally it checks if the user who launched the 
-    current job is below or above his print quota, and either allow or deny the job's datas to pass to the underlying 
+    current job is below or above his print quota, and either allows or denies the job's datas to pass to the underlying 
     layer (the printer itself).
   </para>
   
@@ -95,7 +95,7 @@
   
   <para>
     If a problem occurs, it is logged either to the filter's standard output or to the system logger, depending on
-    your preferences in <application>PyKota</application>'s configuration file. Also if a print quota is reached
+    your preferences in <application>PyKota</application>'s configuration files. Also if a print quota is reached
     you may choose if the administrator, the user, both or no-one will receive an email message explaining
     the situation and proposing a solution.
   </para>
@@ -105,6 +105,10 @@
 <!--
 
 $Log$
+Revision 1.7  2003/10/14 20:26:53  jalet
+Better documentation.
+1.15 is out !
+
 Revision 1.6  2003/07/25 13:10:58  jalet
 Improved documentation
 

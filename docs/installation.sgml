@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.14_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.14_official
-jerome@nordine:~/pykota-1.14_official$
+jerome@nordine:~$ tar -zxf pykota-1.15_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.15_official
+jerome@nordine:~/pykota-1.15_official$
     </screen>
   </para>
   
@@ -44,7 +44,8 @@ jerome@nordine:~/pykota-1.14_official$
     documentation in the <ulink url="http://www.docbook.org">DocBook</ulink> format.
     You have to compile these files into readable documentation like the <acronym>HTML</acronym>
     or <acronym>PDF</acronym> formats, or buy an official <application>PyKota</application> package
-    which already contains these compiled forms of the documentation.
+    which already contains these compiled forms of the documentation. Of course you already
+    know this because that's what you are currently reading !
   </para>
   
   <para>
@@ -99,7 +100,9 @@ jerome@nordine:~/pykota-1.14_official$
         You also have to make sure that <application>PostgreSQL</application> accepts <acronym>TCP/IP</acronym> connections.
         To do so you either have to launch it with the <option>-i</option> option or
         modify the <filename>/etc/postgresql/postgresql.conf</filename> file, which is
-        self documented and easy to modify too.
+        self documented and easy to modify too. Allowing <acronym>TCP/IP</acronym> connections
+        is not necessary though if your Quota Storage Server and your Print Server are
+        the very same host.
         <tip>
           <title>Tip</title>
           <para>
@@ -135,7 +138,7 @@ jerome@nordine:~/pykota-1.14_official$
         is the <application>PostgreSQL</application>'s user used to manage the Quota database.
         The Quota DataBase Administrator is not present in the Quota Database
         itself, he is only defined in <application>PostgreSQL</application> and don't
-        have to exist on any system, nor in the Quota DataBase. His default names
+        have to exist on any system, nor in the Quota DataBase. His default name
         is <literal>pykotaadmin</literal>. 
         A Quota Storage read-only user is also created under the name of <literal>pykotauser</literal>.
         This read-only user is used by <application>PyKota</application> to connect to the 
@@ -161,8 +164,8 @@ jerome@nordine:~/pykota-1.14_official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.14_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.14_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.15_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.15_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -193,7 +196,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.14_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.15_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -231,7 +234,7 @@ jerome@nordine:~/pykota-1.14_official/initscripts/postgresql$
           <title>Tip</title>
           <para>
             If an error occured, maybe your PostgreSQL version is too old, or
-            an unexpected problem (like a bug) happened. Please send me an email so that I
+            an unexpected problem (like a bug) happened. Please contact us via email so that we
             can try to solve the problem. Thanks in advance.
           </para>
         </tip>  
@@ -240,11 +243,17 @@ jerome@nordine:~/pykota-1.14_official/initscripts/postgresql$
     </sect2>  
     
     <sect2>
-      <title>LDAP</title>
+      <title>OpenLDAP</title>
       
       <para>
         From version 1.09 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
         It is possible that other LDAP servers can be used, but this is currently untested.
+      </para>
+      
+      <para>
+        <application>OpenLDAP</application> is a Lightweight Directory Access Protocol server
+        implementation published as Free Software.
+        You can download it from <ulink url="http://www.openldap.org">http://www.openldap.org</ulink>.
       </para>
       
       <para>
@@ -269,6 +278,23 @@ include         /etc/ldap/schema/inetorgperson.schema
 include         /etc/ldap/schema/pykota.schema
         </screen>        
       </para>
+      
+      <para>
+        While this is not mandatory, it is recommended that you setup
+        some indexes for some often accessed PyKota attributes.
+        Actually, the <acronym>LDAP</acronym> schema included with
+        PyKota doesn't allow indexes of another type than <literal>eq</literal>,
+        but this will change in a next release. Here are the minimal indexes
+        lines you may want to put in <filename>slapd.conf</filename> :
+        <screen>
+# Indexes for PyKota
+index pykotaUserName eq
+index pykotaGroupName eq
+index pykotaPrinterName eq
+index pykotaLastJobIdent eq
+        </screen>
+      </para>
+      
       <para>
         Finally, restart the <application>OpenLDAP</application> server :    
         <screen>    
@@ -277,9 +303,36 @@ $ /etc/init.d/slapd restart
       </para>
       
       <para>
-        Then you have to modify PyKota's configuration files <filename>/etc/pykota/pykota.conf</filename>
+        With an <acronym>LDAP</acronym> backend, PyKota will need some branches
+        in your <acronym>LDAP</acronym> directory to put its own datas.
+        You can configure PyKota to either attach its datas to your existing
+        users and groups, or to put them in their own <literal>ou</literal>.
+        But some <literal>ou</literal>s dedicated to PyKota are needed in any case,
+        so the best bet may be to put all PyKota's datas below an <literal>ou=PyKota</literal>
+        branch. While this will separate these datas from your existing users and groups
+        entries, this may ease the maintainance.
+      </para>
+      
+      <para>
+        PyKota needs at least an <literal>ou</literal> for printers, for users quotas, for
+        groups quotas, for print jobs, and for pointers to the last job of each printer.
+        In the future, this last <literal>ou</literal> may disappear as its content
+        will probably be attached to each printer.
+      </para>
+      
+      <para>
+        Actually PyKota doesn't create these <literal>ou</literal>s for you, because it's
+        difficult to guess what is the best configuration for you. So you have to
+        create them by yourself, either directly with a text editor and the
+        <application>ldapadd</application> command, or with some specialized tool
+        like <application>gq</application>.
+      </para>
+      
+      <para>
+        Once you have chosen and created your directory structure, you have to modify PyKota's configuration files <filename>/etc/pykota/pykota.conf</filename>
         and <filename>/etc/pykota/pykotadmin.conf</filename>
-        to include LDAP specific options. You may want to give a look at 
+        to set some LDAP specific options and binding <literal>dn</literal>s. The easiest is
+        probably to give a look at 
         <filename>pykota/conf/pykota.conf.sample</filename> to see all the options that are
         needed. Adapt the values to your own configuration, and finally initialize your 
         Quota Storage with the help of the <application>edpykota</application> command.
@@ -313,10 +366,10 @@ $ /etc/init.d/slapd restart
     <para>
       For each Print Server on which you plan to implement the print quota
       mechanism, you have, of course, to have an already working printing environment. 
-      Currently <application>PyKota</application> works with either the
+      Currently <application>PyKota</application> works with either 
       <ulink url="http://www.cups.org"><application>CUPS</application></ulink>
-      or the <ulink url="http://lprng.sourceforge.net"><application>LPRng</application></ulink>,
-      but more may be added in the future.
+      or <ulink url="http://lprng.sourceforge.net"><application>LPRng</application></ulink>,
+      but more printing systems may be added in the future.
     </para>
     
     <para>
@@ -355,9 +408,11 @@ $ /etc/init.d/slapd restart
                     <listitem>
                       <para>
                         The <application>PygreSQL</application> python module. 
-                        It must match the 
-                        <application>PostgreSQL</application> client libraries'
-                        version, as well as Python's version.
+                        It must have been compiled against the same
+                        <application>PostgreSQL</application> client libraries.
+                        <application>PygreSQL</application> is normally included in
+                        <application>PostgreSQL</application>, but you may want to
+                        download it from <ulink url="http://www.pygresql.org">http://www.pygresql.org</ulink>
                       </para>
                     </listitem>  
                   </itemizedlist>  
@@ -365,7 +420,23 @@ $ /etc/init.d/slapd restart
               </listitem>  
               <listitem>
                 <para>
-                  LDAP backend : TODO
+                  OpenLDAP backend : 
+                  <itemizedlist>
+                    <listitem>
+                      <para>
+                        <application>OpenLDAP</application> client libraries. They must match
+                        the <application>OpenLDAP</application> version used on your Quota Storage Server.
+                      </para>
+                    </listitem>  
+                    <listitem>
+                      <para>
+                        The <application>Python-LDAP</application> python module.
+                        It must have been compiled against the same
+                        <application>OpenLDAP</application> client libraries.
+                        You may download this module from <ulink url="http://python-ldap.sourceforge.net">http://python-ldap.sourceforge.net</ulink>
+                      </para>
+                    </listitem>  
+                  </itemizedlist>
                 </para>
               </listitem>
               <listitem>
@@ -385,7 +456,7 @@ $ /etc/init.d/slapd restart
           <para>
             <application>ucd-snmp</application> or <application>net-snmp</application> tools, version 4.2.5 or above. You only need
             the <application>snmpget</application> command.
-            You can download them from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>.
+            You can download this software from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>.
             You only need this if you plan to query your printers for their internal page counter via SNMP.
           </para>
         </listitem>  
@@ -393,7 +464,7 @@ $ /etc/init.d/slapd restart
           <para>
             <application>netatalk</application> version 1.6.1 or above. You only need
             the <application>pap</application> command.
-            You can download them from <ulink url="http://netatalk.sourceforge.net/">http://netatalk.sourceforge.net/</ulink>.
+            You can download this software from <ulink url="http://netatalk.sourceforge.net/">http://netatalk.sourceforge.net/</ulink>.
             You only need this if you plan to query your printers for their internal page counter via AppleTalk.
           </para>
         </listitem>  
@@ -405,12 +476,214 @@ $ /etc/init.d/slapd restart
         </listitem>  
       </itemizedlist>  
     </para>
+    
+    <para>
+      Instead of downloading all these programs' sources and compiling them, which really
+      is a boring task considering that many software are needed, you may prefer to look
+      into the packages included with your GNU/Linux distribution of choice (if you use
+      this operating system of course). Most, if not all, GNU/Linux distributions include
+      all the software mentionned above, in the form of packages which are easier to
+      install than sources tarballs. This is probably the same for the many *BSD
+      distributions.
+    </para>
+    
+    <para>
+      Once all these software are installed, installing PyKota itself is a breeze.
+      PyKota being written entirely in the Python language, which is interpreted, 
+      there's no need to compile anything. You just have to execute the installation
+      script :
+      <screen>      
+$ python setup.py install      
+      </screen>
+    </para>
+    
+    <para>
+      The installation script will try to do a safe upgrade if needed. 
+      Also it will check if some needed software is missing or unavailable 
+      and will tell you so. This may be the case for example if you 
+      installed several versions of the Python language, and some Python 
+      modules are only available for one of them which is not the one you 
+      are actually running. 
+    </para>
+    
+    <para>
+      On your first installation, the setup script will automatically create
+      the <filename>/etc/pykota</filename> directory and put the sample 
+      configuration files <filename>conf/pykota.conf.sample</filename> and
+      <filename>conf/pykotadmin.conf.sample</filename> there, after having
+      renamed them respectively <filename>pykota.conf</filename> and 
+      <filename>pykotadmin.conf</filename>. Once copied there, you just
+      have to modify these files to adapt them to your own setup.
+      These files are heavily commented, so you should have no problem.
+      Also their format is quite common, because it's the one used by
+      <application>Samba</application> for example, or by <literal>.ini</literal>
+      files under <application>MS-Windows</application>, so you may already
+      be familiar with this syntax.
+      In a future release, this documentation will include the complete
+      reference for all configuration fields available. Keep in mind that
+      PyKota can be really heavily customized, and can delegate some work
+      to any external command of your choice.
+    </para>
+    
+    <para>
+      On later installations, the setup script won't modify any of your
+      configuration files. However it will try to explain what have changed
+      and encourages you to manually do the modifications which are needed.
+      Please create a backup of the <filename>/etc/pykota</filename>
+      directory before modifying anything.
+      Under some circumstances, the setup PyKota may refuse to install PyKota
+      until you have modified your configuration. Just do it and restart
+      the installation script as described above.
+    </para>
+    
+    <para>
+      PyKota features some interesting possibilities which allow you to
+      define options either globally so that they apply to all printers,
+      or on a per printer basis. Please see the sample configuration files
+      to see what I mean. In the simplest form, only a global section is
+      needed. In more complex configurations, you will have to create 
+      one section per printer. Each section in the configuration files
+      begins with a name between square brackets <literal>[]</literal>.
+      The name to use to define a particular printer section is the name
+      of the print queue on which you want to set quotas.
+    </para>
+    
+    <para>
+      After you have modified PyKota's configuration files, you have to
+      double check their permissions, otherwise your installation may be
+      insecure or may not work at all.
+      The main configuration file <filename>/etc/pykota/pykota.conf</filename>
+      doesn't contain much sensitive information, so it can be made
+      readable by anyone. If normal users read this file, at best they
+      will learn the username and optional password of the read-only
+      database user, so they won't be allowed to do any harm.
+      On the other hand, the <filename>/etc/pykota/pykotadmin.conf</filename>
+      file contains the read-write user's identity and password. You must then
+      ensure that no normal user can read this file. It should only be readable
+      by the <literal>root</literal> user, which is always the case, by
+      the user your printing system is running as, and optionally by the print administrators,
+      who are usually members of the <literal>lpadmin</literal> group. Under my Debian GNU/Linux system,
+      with CUPS, here's how to do to give the correct permissions :
+      <screen>
+$ chown root.root /etc/pykota/pykota.conf      
+$ chmod 644 /etc/pykota/pykota.conf      
+$ chown lp.lpadmin /etc/pykota/pykotadmin.conf      
+$ chmod 640 /etc/pykota/pykotadmin.conf      
+      </screen>
+    </para>
+    
+    <para>
+      Now depending on your printing system, the configuration to do is particular.
+      We will now see how to plug PyKota into your printing system.
+    </para>
+    
+    <sect2>
+      <title>With CUPS</title>
+      
+      <para>
+        The easiest way to configure PyKota to be used for a particular <application>CUPS</application> print queue, 
+        is to modify the <literal>PPD</literal> file associated with this print queue.
+        Say you want to set quotas on the <literal>HPLaser</literal> print queue. You
+        then just have to modify the file <filename>/etc/cups/ppd/HPLaser.ppd</filename>.
+        You will have to add the following lines somewhere near the beginning of this file :
+        <screen>
+*% Print Quota System
+*cupsFilter: "application/vnd.cups-postscript    0    /usr/bin/pykota"
+        </screen>
+      </para>  
+      
+      <para>
+        The first line is a comment. The second one tells <application>CUPS</application>
+        to launch PyKota's accounting filter just before sending the print job to 
+        the printer's hardware.
+      </para>
+      
+      <para>
+        You have to restart <application>CUPS</application> for this modification to
+        take effect : 
+        <screen>
+$ /etc/init.d/cupsys restart        
+        </screen>
+      </para>
+      
+      <para>
+        Repeat the above procedure for each print queue on which you want to use
+        PyKota. That's all !
+      </para>
+      
+      <sect3>
+        <title>Troubleshooting</title>
+        <para>
+          NB : the above procedure only works with <literal>PPD</literal> files which
+          don't already contain an <literal>*cupsFilter</literal> line. PostScript
+          printers usually don't need this line, but other types of printers may need
+          it. A different procedure exists for such printers, but it is not actually
+          documented. Search the mailing list archives at
+          <ulink url="http://cgi.librelogiciel.com/mailman/listinfo/pykota">
+            http://cgi.librelogiciel.com/mailman/listinfo/pykota
+          </ulink> to learn how to do.
+        </para>
+        
+        <para>
+          In case of problem, the simplest way to solve it is currently
+          to ask on PyKota's mailing list, describing the symptoms, as
+          well as the hardware and software you use.
+          In a future release of this document, a section dedicated to 
+          Frequently Asked Questions will be included.
+        </para>
+      </sect3>  
+      
+    </sect2>
+    
+    <sect2>
+      <title>With LPRng</title>
+      <para>
+        To plug PyKota into your <application>LPRng</application> setup, 
+        you have to modify the <filename>/etc/printcap</filename>.
+        You just have to add the following lines to each queue on 
+        which you want to use PyKota :
+        <screen>
+  :achk=true
+  :as=|/usr/bin/pykota
+        </screen>
+      </para>
+      
+      <para>
+        You have to restart <application>LPRng</application> for this modification to
+        take effect : 
+        <screen>
+$ /etc/init.d/lprng restart        
+        </screen>
+      </para>
+      
+      <para>
+        Repeat the above procedure for each print queue on which you want to use
+        PyKota. That's all !
+      </para>
+      
+      <sect3>
+        <title>Troubleshooting</title>
+        <para>
+          In case of problem, the simplest way to solve it is currently
+          to ask on PyKota's mailing list, describing the symptoms, as
+          well as the hardware and software you use.
+          In a future release of this document, a section dedicated to 
+          Frequently Asked Questions will be included.
+        </para>
+      </sect3>  
+      
+    </sect2>
+    
   </sect1>  
 </chapter>
 
 <!--
 
 $Log$
+Revision 1.21  2003/10/14 20:26:53  jalet
+Better documentation.
+1.15 is out !
+
 Revision 1.20  2003/07/25 13:20:32  jalet
 Typo which wasn't
 
