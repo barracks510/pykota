@@ -40,7 +40,8 @@ install: build
 	
 	install -m 644 conf/pykota.conf.sample $(CURDIR)/debian/tmp/etc/pykota/pykota.conf
 	install -m 640 conf/pykotadmin.conf.sample $(CURDIR)/debian/tmp/etc/pykota/pykotadmin.conf
-	install -m 644 debian/printquota-default $(CURDIR)/debian/tmp/etc/default/printquota
+	install -m 644 debian/etc/default/printquota $(CURDIR)/debian/tmp/etc/default/printquota
+	install -m 755 debian/etc/pykota.cron.daily $(CURDIR)/debian/tmp/etc/cron.daily/pykota
 	
 	install -m 755 -g www-data -o www-data cgi-bin/printquota.cgi $(CURDIR)/debian/tmp/usr/lib/cgi-bin/printquota.cgi
 	install -m 644 stylesheets/pykota.css $(CURDIR)/debian/tmp/var/www/pykota.css
