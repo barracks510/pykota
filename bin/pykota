@@ -22,6 +22,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/04/12 16:58:28  jalet
+# The workaround for HP printers was not correct, and there's probably no
+# correct way to workaround the problem because we can't save the internal
+# page counter in real time. The last job's size is unconditionnally set to
+# 5 pages in this case.
+#
 # Revision 1.19  2003/04/11 08:56:49  jalet
 # Comment
 #
@@ -212,11 +218,12 @@ def main() :
                 # Probably an HP printer which was switched off and back on, 
                 # its primary counter is only saved in a 10 increment, so
                 # it may be lower than the last page counter saved in the
-                # Quota Storage, we take the absolute value of the difference
-                # this should take care of the "missing" pages.
+                # Quota Storage. We unconditionnally set 5 (five) pages
+                # as the last job's size. This is a mean. For more accurate
+                # accounting, don't switch off your HP printers !
                 # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
                 kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastusername, kotafilter.printername), "error")
-                jobsize = abs(jobsize)
+                jobsize = 5     # Workaround for HP printers' feature !
                 
             # update the quota for the previous user on this printer 
             kotafilter.storage.updateUserPQuota(lastuserid, printerid, jobsize)

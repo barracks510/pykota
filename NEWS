@@ -47,12 +47,18 @@ PyKota NEWS :
           if you switch them off and then on, the reported page counter
           may be lower than the real number of pages printed.
           See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
+          We unconditionnally set the last job's page count to five in this
+          case. 
+          For a more accurate accounting, never switch your HP printers
+          off.
           
         - A fix is provided for printers which only have a volatile  
           page counter (reset to 0 every time you switch the printer on)
-          This should allow PyKota to work fine with HP Laserjet
-          4L/5L/6L.
+          This should allow PyKota to work reasonably fine with HP Laserjet
+          4L/5L/6L, not perfect, but better than nothing.
           See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
+          For a more accurate accounting, never switch your HP printers
+          off.
           
         - A bug was fixed when edpykota --add was used with users who already
           had a quota on the specified printer.
