@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.10  2003/06/16 21:55:15  jalet
 # More work on LDAP, again. Problem detected.
 #
@@ -65,9 +68,9 @@
 
 import time
 import md5
-import fnmatch
 
 from pykota.storage import PyKotaStorageError
+from pykota.storage import StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 try :
     import ldap
@@ -113,12 +116,27 @@ class Storage :
         """
         return md5.md5("%s" % time.time()).hexdigest()
         
+    def beginTransaction(self) :    
+        """Starts a transaction."""
+        if self.debug :
+            self.tool.logger.log_message("Transaction begins... WARNING : No transactions in LDAP !", "debug")
+        
+    def commitTransaction(self) :    
+        """Commits a transaction."""
+        if self.debug :
+            self.tool.logger.log_message("Transaction committed. WARNING : No transactions in LDAP !", "debug")
+        
+    def rollbackTransaction(self) :     
+        """Rollbacks a transaction."""
+        if self.debug :
+            self.tool.logger.log_message("Transaction aborted. WARNING : No transaction in LDAP !", "debug")
+        
     def doSearch(self, key, fields=None, base="", scope=ldap.SCOPE_SUBTREE) :
         """Does an LDAP search query."""
         try :
             base = base or self.basedn
             if self.debug :
-                self.tool.logger.log_message("QUERY : BaseDN : %s, Scope : %s, Filter : %s, Attributes : %s" % (base, scope, key, fields), "debug")
+                self.tool.logger.log_message("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields), "debug")
             result = self.database.search_s(base or self.basedn, scope, key, fields)
         except ldap.LDAPError :    
             raise PyKotaStorageError, _("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)
@@ -138,395 +156,417 @@ class Storage :
         else :
             return dn
             
-    def doModify(self, dn, fields) :
+    def doDelete(self, dn) :
+        """Deletes an entry from the LDAP directory."""
+        try :
+            if self.debug :
+                self.tool.logger.log_message("QUERY : Delete(%s)" % dn, "debug")
+            self.database.delete_s(dn)
+        except ldap.LDAPError :
+            raise PyKotaStorageError, _("Problem deleting LDAP entry (%s)") % dn
+            
+    def doModify(self, dn, fields, ignoreold=1) :
         """Modifies an entry in the LDAP directory."""
         try :
             oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
             if self.debug :
                 self.tool.logger.log_message("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields), "debug")
-            self.database.modify_s(dn, modlist.modifyModlist(oldentry[0][1], fields, ignore_oldexistent=1))
+            self.database.modify_s(dn, modlist.modifyModlist(oldentry[0][1], fields, ignore_oldexistent=ignoreold))
         except ldap.LDAPError :
             raise PyKotaStorageError, _("Problem modifying LDAP entry (%s, %s)") % (dn, fields)
         else :
             return dn
+            
+    def getUser(self, username) :    
+        """Extracts user information given its name."""
+        user = StorageUser(self, username)
+        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaLimitBy"], base=self.info["userbase"])
+        if result :
+            fields = result[0][1]
+            user.ident = result[0][0]
+            user.LimitBy = fields.get("pykotaLimitBy")[0]
+            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid"], base=self.info["balancebase"])
+            if result :
+                fields = result[0][1]
+                user.idbalance = result[0][0]
+                user.AccountBalance = fields.get("pykotaBalance")
+                if user.AccountBalance is not None :
+                    if user.AccountBalance[0].upper() == "NONE" :
+                        user.AccountBalance = None
+                    else :    
+                        user.AccountBalance = float(user.AccountBalance[0])
+                user.AccountBalance = user.AccountBalance or 0.0        
+                user.LifeTimePaid = fields.get("pykotaLifeTimePaid")
+                if user.LifeTimePaid is not None :
+                    if user.LifeTimePaid[0].upper() == "NONE" :
+                        user.LifeTimePaid = None
+                    else :    
+                        user.LifeTimePaid = float(user.LifeTimePaid[0])
+                user.LifeTimePaid = user.LifeTimePaid or 0.0        
+            user.Exists = 1
+        return user
+       
+    def getGroup(self, groupname) :    
+        """Extracts group information given its name."""
+        group = StorageGroup(self, groupname)
+        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaLimitBy"], base=self.info["groupbase"])
+        if result :
+            fields = result[0][1]
+            group.ident = result[0][0]
+            group.LimitBy = fields.get("pykotaLimitBy")[0]
+            group.AccountBalance = 0.0
+            group.LifeTimePaid = 0.0
+            group.Members = self.getGroupMembers(group)
+            for member in group.Members :
+                group.AccountBalance += member.AccountBalance
+                group.LifeTimePaid += member.LifeTimePaid
+            group.Exists = 1
+        return group
+       
+    def getPrinter(self, printername) :        
+        """Extracts printer information given its name."""
+        printer = StoragePrinter(self, printername)
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
+        if result :
+            fields = result[0][1]
+            printer.ident = result[0][0]
+            printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
+            printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
+            printer.LastJob = self.getPrinterLastJob(printer)
+            printer.Exists = 1
+        return printer    
+            
+    def getUserGroups(self, user) :        
+        """Returns the user's groups list."""
+        groups = []
+        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"]], base=self.info["groupbase"])
+        if result :
+            for (groupid, fields) in result :
+                groups.append(self.getGroup(fields.get(self.info["grouprdn"])[0]))
+        return groups        
+        
+    def getGroupMembers(self, group) :        
+        """Returns the group's members list."""
+        groupmembers = []
+        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (group.Name, self.info["grouprdn"], group.Name), [self.info["groupmembers"]], base=self.info["groupbase"])
+        if result :
+            for username in result[0][1].get(self.info["groupmembers"], []) :
+                groupmembers.append(self.getUser(username))
+        return groupmembers        
+        
+    def getUserPQuota(self, user, printer) :        
+        """Extracts a user print quota."""
+        userpquota = StorageUserPQuota(self, user, printer)
+        if user.Exists :
+            result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
+            if result :
+                fields = result[0][1]
+                userpquota.ident = result[0][0]
+                userpquota.PageCounter = int(fields.get("pykotaPageCounter")[0] or 0)
+                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter")[0] or 0)
+                userpquota.SoftLimit = fields.get("pykotaSoftLimit")
+                if userpquota.SoftLimit is not None :
+                    if userpquota.SoftLimit[0].upper() == "NONE" :
+                        userpquota.SoftLimit = None
+                    else :    
+                        userpquota.SoftLimit = int(userpquota.SoftLimit[0])
+                userpquota.HardLimit = fields.get("pykotaHardLimit")
+                if userpquota.HardLimit is not None :
+                    if userpquota.HardLimit[0].upper() == "NONE" :
+                        userpquota.HardLimit = None
+                    elif userpquota.HardLimit is not None :    
+                        userpquota.HardLimit = int(userpquota.HardLimit[0])
+                userpquota.DateLimit = fields.get("pykotaDateLimit")
+                if userpquota.DateLimit is not None :
+                    if userpquota.DateLimit[0].upper() == "NONE" : 
+                        userpquota.DateLimit = None
+                    else :    
+                        userpquota.DateLimit = userpquota.DateLimit[0]
+                userpquota.Exists = 1
+        return userpquota
+        
+    def getGroupPQuota(self, group, printer) :        
+        """Extracts a group print quota."""
+        grouppquota = StorageGroupPQuota(self, group, printer)
+        if group.Exists :
+            result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["groupquotabase"])
+            if result :
+                fields = result[0][1]
+                grouppquota.ident = result[0][0]
+                grouppquota.SoftLimit = fields.get("pykotaSoftLimit")
+                if grouppquota.SoftLimit is not None :
+                    if grouppquota.SoftLimit[0].upper() == "NONE" :
+                        grouppquota.SoftLimit = None
+                    else :    
+                        grouppquota.SoftLimit = int(grouppquota.SoftLimit[0])
+                grouppquota.HardLimit = fields.get("pykotaHardLimit")
+                if grouppquota.HardLimit is not None :
+                    if grouppquota.HardLimit[0].upper() == "NONE" :
+                        grouppquota.HardLimit = None
+                    else :    
+                        grouppquota.HardLimit = int(grouppquota.HardLimit[0])
+                grouppquota.DateLimit = fields.get("pykotaDateLimit")
+                if grouppquota.DateLimit is not None :
+                    if grouppquota.DateLimit[0].upper() == "NONE" : 
+                        grouppquota.DateLimit = None
+                    else :    
+                        grouppquota.DateLimit = grouppquota.DateLimit[0]
+                grouppquota.PageCounter = 0
+                grouppquota.LifePageCounter = 0
+                if (not hasattr(group, "Members")) or (group.Members is None) :
+                    group.Members = self.getGroupMembers(group)
+                usernamesfilter = "".join(["(pykotaUserName=%s)" % member.Name for member in group.Members])
+                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
+                if result :
+                    for userpquota in result :    
+                        grouppquota.PageCounter += int(userpquota[1].get("pykotaPageCounter")[0] or 0)
+                        grouppquota.LifePageCounter += int(userpquota[1].get("pykotaLifePageCounter")[0] or 0)
+                grouppquota.Exists = 1
+        return grouppquota
+        
+    def getPrinterLastJob(self, printer) :        
+        """Extracts a printer's last job information."""
+        lastjob = StorageLastJob(self, printer)
+        result = self.doSearch("(&(objectClass=pykotaLastjob)(|(pykotaPrinterName=%s)(%s=%s)))" % (printer.Name, self.info["printerrdn"], printer.Name), ["pykotaLastJobIdent"], base=self.info["lastjobbase"])
+        if result :
+            lastjob.lastjobident = result[0][0]
+            lastjobident = result[0][1]["pykotaLastJobIdent"][0]
+            result = self.doSearch("objectClass=pykotaJob", ["pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+            if result :
+                fields = result[0][1]
+                lastjob.ident = result[0][0]
+                lastjob.JobId = fields.get("pykotaJobId")[0]
+                lastjob.User = self.getUser(fields.get("pykotaUserName")[0])
+                lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter")[0] or 0)
+                lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
+                lastjob.JobAction = fields.get("pykotaAction")[0]
+                date = fields.get("createTimestamp")[0]
+                year = int(date[:4])
+                month = int(date[4:6])
+                day = int(date[6:8])
+                hour = int(date[8:10])
+                minute = int(date[10:12])
+                second = int(date[12:14])
+                lastjob.JobDate = "%04i-%02i-%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
+                lastjob.Exists = 1
+        return lastjob
         
     def getMatchingPrinters(self, printerpattern) :
-        """Returns the list of all printers as tuples (id, name) for printer names which match a certain pattern."""
-        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName"], base=self.info["printerbase"])
+        """Returns the list of all printers for which name matches a certain pattern."""
+        printers = []
+        # see comment at the same place in pgstorage.py
+        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
         if result :
-            return [(printerid, printer["pykotaPrinterName"][0]) for (printerid, printer) in result if fnmatch.fnmatchcase(printer["pykotaPrinterName"][0], printerpattern)]
-            
-    def getPrinterId(self, printername) :        
-        """Returns a printerid given a printername."""
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPrinterName"], base=self.info["printerbase"])
-        if result :
-            return result[0][0]
-            
-    def getPrinterName(self, printerid) :        
-        """Returns a printerid given a printer id."""
-        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName"], base=printerid, scope=ldap.SCOPE_BASE)
-        if result :
-            return result[0][1]["pykotaPrinterName"][0]
-            
-    def getPrinterPrices(self, printerid) :        
-        """Returns a printer prices per page and per job given a printerid."""
-        result = self.doSearch("(|(pykotaPrinterName=*)(%s=*))" % self.info["printerrdn"], ["pykotaPricePerPage", "pykotaPricePerJob"], base=printerid, scope=ldap.SCOPE_BASE)
-        if result :
-            return (float(result[0][1]["pykotaPricePerPage"][0]), float(result[0][1]["pykotaPricePerJob"][0]))
-            
-    def setPrinterPrices(self, printerid, perpage, perjob) :
-        """Sets prices per job and per page for a given printer."""
-        fields = { 
-                   "pykotaPricePerPage" : str(perpage),
-                   "pykotaPricePerJob" : str(perjob),
-                 } 
-        return self.doModify(printerid, fields)
-    
-    def getUserId(self, username) :
-        """Returns a userid given a username."""
-        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), [self.info["userrdn"]], base=self.info["userbase"])
-        if result :
-            return result[0][0]
-            
-    def getUserName(self, userid) :
-        """Returns a username given a userid."""
-        result = self.doSearch("objectClass=pykotaAccount", ["pykotaUserName"], base=userid, scope=ldap.SCOPE_BASE)
-        if result :
-            return result[0][1]["pykotaUserName"][0]
-            
-    def getGroupId(self, groupname) :
-        """Returns a groupid given a grupname."""
-        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), [self.info["grouprdn"]], base=self.info["groupbase"])
-        if result is not None :
-            (groupid, dummy) = result[0]
-            return groupid
-            
-    def getJobHistoryId(self, jobid, userid, printerid) :        
-        """Returns the history line's id given a (jobid, userid, printerid).
+            for (printerid, fields) in result :
+                printername = fields["pykotaPrinterName"][0]
+                if self.tool.matchString(printername, [ printerpattern ]) :
+                    printer = StoragePrinter(self, printername)
+                    printer.ident = printerid
+                    printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
+                    printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
+                    printer.LastJob = self.getPrinterLastJob(printer)
+                    printer.Exists = 1
+                    printers.append(printer)
+        return printers        
         
-           TODO : delete because shouldn't be needed by the LDAP backend
-        """
-        raise PyKotaStorageError, "Not implemented !"
-            
-    def getPrinterUsers(self, printerid) :        
-        """Returns the list of userids and usernames which uses a given printer."""
-        # first get the printer's name from the id
-        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName", self.info["printerrdn"]], base=printerid, scope=ldap.SCOPE_BASE)
+    def getPrinterUsersAndQuotas(self, printer, names=None) :        
+        """Returns the list of users who uses a given printer, along with their quotas."""
+        usersandquotas = []
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s))" % printer.Name, ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
         if result :
-            fields = result[0][1]
-            printername = (fields.get("pykotaPrinterName") or fields.get(self.info["printerrdn"]))[0]
-            result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s))" % printername, ["pykotaUserName"], base=self.info["userquotabase"]) 
-            if result :
-                return [(pquotauserid, fields["pykotaUserName"][0]) for (pquotauserid, fields) in result]
-        
-    def getPrinterGroups(self, printerid) :        
-        """Returns the list of groups which uses a given printer."""
-        # first get the printer's name from the id
-        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName", self.info["printerrdn"]], base=printerid, scope=ldap.SCOPE_BASE)
+            for (userquotaid, fields) in result :
+                user = self.getUser(fields["pykotaUserName"][0])
+                if (names is None) or self.tool.matchString(user.Name, names) :
+                    userpquota = StorageUserPQuota(self, user, printer)
+                    userpquota.ident = userquotaid
+                    userpquota.PageCounter = int(fields.get("pykotaPageCounter")[0] or 0)
+                    userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter")[0] or 0)
+                    userpquota.SoftLimit = fields.get("pykotaSoftLimit")
+                    if userpquota.SoftLimit is not None :
+                        if userpquota.SoftLimit[0].upper() == "NONE" :
+                            userpquota.SoftLimit = None
+                        else :    
+                            userpquota.SoftLimit = int(userpquota.SoftLimit[0])
+                    userpquota.HardLimit = fields.get("pykotaHardLimit")
+                    if userpquota.HardLimit is not None :
+                        if userpquota.HardLimit[0].upper() == "NONE" :
+                            userpquota.HardLimit = None
+                        elif userpquota.HardLimit is not None :    
+                            userpquota.HardLimit = int(userpquota.HardLimit[0])
+                    userpquota.DateLimit = fields.get("pykotaDateLimit")
+                    if userpquota.DateLimit is not None :
+                        if userpquota.DateLimit[0].upper() == "NONE" : 
+                            userpquota.DateLimit = None
+                        else :    
+                            userpquota.DateLimit = userpquota.DateLimit[0]
+                    userpquota.Exists = 1
+                    usersandquotas.append((user, userpquota))
+        return usersandquotas
+                
+    def getPrinterGroupsAndQuotas(self, printer, names=None) :        
+        """Returns the list of groups which uses a given printer, along with their quotas."""
+        groupsandquotas = []
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s))" % printer.Name, ["pykotaGroupName"], base=self.info["groupquotabase"])
         if result :
-            fields = result[0][1]
-            printername = (fields.get("pykotaPrinterName") or fields.get(self.info["printerrdn"]))[0]
-            result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s))" % printername, ["pykotaGroupName"], base=self.info["groupquotabase"]) 
-            if result :
-                return [(pquotagroupid, fields["pykotaGroupName"][0]) for (pquotagroupid, fields) in result]
-        
-    def getGroupMembersNames(self, groupname) :        
-        """Returns the list of user's names which are member of this group."""
-        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), [self.info["groupmembers"]])
-        if result :
-            fields = result[0][1]
-            return fields.get(self.info["groupmembers"])
-        
-    def getUserGroupsNames(self, userid) :        
-        """Returns the list of groups' names the user is a member of."""
-        username = self.getUserName(userid)
-        if username :
-            result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], username), [self.info["grouprdn"]], base=self.info["groupbase"])
-            if result :
-                return [v[self.info["grouprdn"]][0] for (k, v) in result]
-        return []        
+            for (groupquotaid, fields) in result :
+                group = self.getGroup(fields.get("pykotaGroupName")[0])
+                if (names is None) or self.tool.matchString(user.Name, names) :
+                    grouppquota = self.getGroupPQuota(group, printer)
+                    groupsandquotas.append((group, grouppquota))
+        return groupsandquotas
         
     def addPrinter(self, printername) :        
-        """Adds a printer to the quota storage, returns its id."""
+        """Adds a printer to the quota storage, returns it."""
         fields = { self.info["printerrdn"] : printername,
                    "objectClass" : ["pykotaObject", "pykotaPrinter"],
+                   "cn" : printername,
                    "pykotaPrinterName" : printername,
                    "pykotaPricePerPage" : "0.0",
                    "pykotaPricePerJob" : "0.0",
                  } 
         dn = "%s=%s,%s" % (self.info["printerrdn"], printername, self.info["printerbase"])
-        return self.doAdd(dn, fields)
+        self.doAdd(dn, fields)
+        return self.getPrinter(printername)
         
-    def addUser(self, username) :        
-        """Adds a user to the quota storage, returns its id."""
-        fields = { self.info["userrdn"] : username,
-                   "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
-                   "pykotaUserName" : username,
-                   "pykotaLimitBy" : "quota",
-                   "pykotaBalance" : "0.0",
-                   "pykotaLifeTimePaid" : "0.0",
+    def addUser(self, user) :        
+        """Adds a user to the quota storage, returns it."""
+        fields = { self.info["userrdn"] : user.Name,
+                   "objectClass" : ["pykotaObject", "pykotaAccount"],
+                   "cn" : user.Name,
+                   "pykotaUserName" : user.Name,
+                   "pykotaLimitBY" : (user.LimitBy or "quota"),
                  } 
-        dn = "%s=%s,%s" % (self.info["userrdn"], username, self.info["userbase"])
-        return self.doAdd(dn, fields)
+        dn = "%s=%s,%s" % (self.info["userrdn"], user.Name, self.info["userbase"])
+        self.doAdd(dn, fields)
+        fields = { 
+                   "objectClass" : ["pykotaObject", "pykotaAccountBalance"],
+                   "cn" : user.Name,
+                   "pykotaUserName" : user.Name,
+                   "pykotaBalance" : str(user.AccountBalance or 0.0),
+                   "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),
+                 } 
+        dn = "cn=%s,%s" % (user.Name, self.info["balancebase"])
+        self.doAdd(dn, fields)
+        return self.getUser(user.Name)
         
-    def addGroup(self, groupname) :        
-        """Adds a group to the quota storage, returns its id."""
-        fields = { self.info["grouprdn"] : groupname,
+    def addGroup(self, group) :        
+        """Adds a group to the quota storage, returns it."""
+        fields = { self.info["grouprdn"] : group.Name,
                    "objectClass" : ["pykotaObject", "pykotaGroup"],
-                   "pykotaGroupName" : groupname,
-                   "pykotaLimitBy" : "quota",
+                   "cn" : group.Name,
+                   "pykotaGroupName" : group.Name,
+                   "pykotaLimitBY" : (group.LimitBy or "quota"),
                  } 
-        dn = "%s=%s,%s" % (self.info["grouprdn"], groupname, self.info["groupbase"])
-        return self.doAdd(dn, fields)
+        dn = "%s=%s,%s" % (self.info["grouprdn"], group.Name, self.info["groupbase"])
+        self.doAdd(dn, fields)
+        return self.getGroup(group.Name)
         
-    def addUserPQuota(self, username, printerid) :
-        """Initializes a user print quota on a printer, adds the user to the quota storage if needed."""
+    def addUserToGroup(self, user, group) :    
+        """Adds an user to a group."""
+        if user.Name not in [u.Name for u in group.Members] :
+            result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)    
+            if result :
+                fields = result[0][1]
+                fields[self.info["groupmembers"]].append(user.Name)
+                self.doModify(group.ident, fields)
+                group.Members.append(user)
+                
+    def addUserPQuota(self, user, printer) :
+        """Initializes a user print quota on a printer."""
         uuid = self.genUUID()
-        fields = { "objectClass" : ["pykotaObject", "pykotaUserPQuota"],
-                   "cn" : uuid,
-                   "pykotaUserName" : username,
-                   "pykotaPrinterName" : self.getPrinterName(printerid), 
+        fields = { "cn" : uuid,
+                   "objectClass" : ["pykotaObject", "pykotaUserPQuota"],
+                   "pykotaUserName" : user.Name,
+                   "pykotaPrinterName" : printer.Name,
+                   "pykotaDateLimit" : "None",
                    "pykotaPageCounter" : "0",
                    "pykotaLifePageCounter" : "0",
-                   "pykotaSoftLimit" : "0",
-                   "pykotaHardLimit" : "0",
-                   "pykotaDateLimit" : "None",
                  } 
         dn = "cn=%s,%s" % (uuid, self.info["userquotabase"])
         self.doAdd(dn, fields)
-        return (dn, printerid)
+        return self.getUserPQuota(user, printer)
         
-    def addGroupPQuota(self, groupname, printerid) :
-        """Initializes a group print quota on a printer, adds the group to the quota storage if needed."""
+    def addGroupPQuota(self, group, printer) :
+        """Initializes a group print quota on a printer."""
         uuid = self.genUUID()
-        fields = { "objectClass" : ["pykotaObject", "pykotaGroupPQuota"],
-                   "cn" : uuid,
-                   "pykotaGroupName" : groupname,
-                   "pykotaPrinterName" : self.getPrinterName(printerid), 
-                   "pykotaSoftLimit" : "0",
-                   "pykotaHardLimit" : "0",
+        fields = { "cn" : uuid,
+                   "objectClass" : ["pykotaObject", "pykotaGroupPQuota"],
+                   "pykotaGroupName" : group.Name,
+                   "pykotaPrinterName" : printer.Name,
                    "pykotaDateLimit" : "None",
                  } 
         dn = "cn=%s,%s" % (uuid, self.info["groupquotabase"])
         self.doAdd(dn, fields)
-        return (dn, printerid)
+        return self.getGroupPQuota(group, printer)
         
-    def increaseUserBalance(self, userquotaid, amount) :    
-        """Increases (or decreases) an user's account balance by a given amount."""
-        balance = self.getUserBalance(userquotaid)
-        if balance :
-            (newbal, newpaid) = [(float(v) + float(amount)) for v in balance]
-            result = self.doSearch("objectClass=pykotaUserPQuota", ["pykotaUserName"], base=userquotaid, scope=ldap.SCOPE_BASE)
-            if result :
-                username = result[0][1]["pykotaUserName"][0]
-                if username :
-                    result = self.doSearch("(&(objectClass=pykotaAccountBalance)(pykotaUserName=%s))" % username , [ "pykotaBalance", "pykotaLifeTimePaid"])
-                    fields = {
-                               "pykotaBalance" : str(newbal),
-                               "pykotaLifeTimePaid" : str(newpaid),
-                             }
-                    return self.doModify(result[0][0], fields)         
-        
-    def getUserBalance(self, userquotaid) :    
-        """Returns the current account balance for a given user quota identifier."""
-        # first get the user's name from the user quota id
-        result = self.doSearch("objectClass=pykotaUserPQuota", ["pykotaUserName"], base=userquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            username = result[0][1]["pykotaUserName"][0]
-            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaBalance", "pykotaLifeTimePaid"])
-            if result :
-                fields = result[0][1]
-                return (float(fields["pykotaBalance"][0]), float(fields["pykotaLifeTimePaid"][0]))
-        
-    def getUserBalanceFromUserId(self, userid) :    
-        """Returns the current account balance for a given user id."""
-        # first get the user's name from the user id
-        result = self.doSearch("objectClass=pykotaAccount", ["pykotaUserName", self.info["userrdn"]], base=userid, scope=ldap.SCOPE_BASE)
-        if result :
-            fields = result[0][1]
-            username = (fields.get("pykotaUserName") or fields.get(self.info["userrdn"]))[0]
-            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaBalance", "pykotaLifeTimePaid"])
-            if result :
-                fields = result[0][1]
-                return (float(fields["pykotaBalance"][0]), float(fields["pykotaLifeTimePaid"][0]))
-        
-    def getGroupBalance(self, groupquotaid) :    
-        """Returns the current account balance for a given group, as the sum of each of its users' account balance."""
-        # first get the group's name from the group quota id
-        result = self.doSearch("objectClass=pykotaGroupPQuota", ["pykotaGroupName"], base=groupquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            groupname = result[0][1]["pykotaGroupName"][0]
-            members = self.getGroupMembersNames(groupname) or []
-            balance = lifetimepaid = 0.0
-            for member in members :
-                userid = self.getUserId(member)
-                if userid :
-                    userbal = self.getUserBalanceFromUserId(userid)
-                    if userbal :
-                        (bal, paid) = userbal
-                        balance += bal
-                        lifetimepaid += paid
-            return (balance, lifetimepaid)            
-        
-    def getUserLimitBy(self, userquotaid) :    
-        """Returns the way in which user printing is limited."""
-        result = self.doSearch("objectClass=pykotaUserPQuota", ["pykotaUserName"], base=userquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            username = result[0][1]["pykotaUserName"][0]
-            result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaLimitBy"])
-            if result :
-                return result[0][1]["pykotaLimitBy"][0]
-        
-    def getGroupLimitBy(self, groupquotaid) :    
-        """Returns the way in which group printing is limited."""
-        # first get the group's name from the group quota id
-        result = self.doSearch("objectClass=pykotaGroupPQuota", ["pykotaGroupName"], base=groupquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            groupname = result[0][1]["pykotaGroupName"][0]
-            result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaLimitBy"])
-            if result :
-                return result[0][1]["pykotaLimitBy"][0]
-        
-    def setUserBalance(self, userquotaid, balance) :    
-        """Sets the account balance for a given user to a fixed value."""
-        oldbalance = self.getUserBalance(userquotaid)
-        if oldbalance :
-            (oldbal, oldpaid) = oldbalance
-            difference = balance - oldbal
-            return self.increaseUserBalance(userquotaid, difference)
-        
-    def limitUserBy(self, userquotaid, limitby) :    
-        """Limits a given user based either on print quota or on account balance."""
-        result = self.doSearch("objectClass=pykotaUserPQuota", ["pykotaUserName"], base=userquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            username = result[0][1]["pykotaUserName"][0]
-            fields = {
-                       "pykotaLimitBy" : limitby,
-                     }
-            self.doModify(self.getUserId(username), fields)
-        
-    def limitGroupBy(self, groupquotaid, limitby) :    
-        """Limits a given group based either on print quota or on sum of its users' account balances."""
-        result = self.doSearch("objectClass=pykotaGroupPQuota", ["pykotaGroupName"], base=groupquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            groupname = result[0][1]["pykotaGroupName"][0]
-            fields = {
-                       "pykotaLimitBy" : limitby,
-                     }
-            self.doModify(self.getGroupId(groupname), fields)
-        
-    def setUserPQuota(self, userquotaid, printerid, softlimit, hardlimit) :
-        """Sets soft and hard limits for a user quota on a specific printer given (userid, printerid)."""
-        fields = { 
-                   "pykotaSoftLimit" : str(softlimit),
-                   "pykotaHardLimit" : str(hardlimit),
-                   "pykotaDateLimit" : "None",
-                 } 
-        return self.doModify(userquotaid, fields)
-        
-    def setGroupPQuota(self, groupquotaid, printerid, softlimit, hardlimit) :
-        """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
-        fields = { 
-                   "pykotaSoftLimit" : str(softlimit),
-                   "pykotaHardLimit" : str(hardlimit),
-                   "pykotaDateLimit" : "None",
-                 } 
-        return self.doModify(groupquotaid, fields)
-        
-    def resetUserPQuota(self, userquotaid, printerid) :    
-        """Resets the page counter to zero for a user on a printer. Life time page counter is kept unchanged."""
+    def writePrinterPrices(self, printer) :    
+        """Write the printer's prices back into the storage."""
         fields = {
-                   "pykotaPageCounter" : "0",
-                   "pykotaDateLimit" : "None",
+                   "pykotaPricePerPage" : str(printer.PricePerPage),
+                   "pykotaPricePerJob" : str(printer.PricePerJob),
                  }
-        return self.doModify(userquotaid, fields)      
+        self.doModify(printer.ident, fields)
         
-    def resetGroupPQuota(self, groupquotaid, printerid) :    
-        """Resets the page counter to zero for a group on a printer. Life time page counter is kept unchanged."""
+    def writeUserLimitBy(self, user, limitby) :    
+        """Sets the user's limiting factor."""
         fields = {
-                   "pykotaPageCounter" : "0",
-                   "pykotaDateLimit" : "None",
+                   "pykotaLimitBy" : limitby,
                  }
-        return self.doModify(groupquotaid, fields)      
+        self.doModify(user.ident, fields)         
         
-    def updateUserPQuota(self, userquotaid, printerid, pagecount) :
-        """Updates the used user Quota information given (userid, printerid) and a job size in pages."""
-        jobprice = self.computePrinterJobPrice(printerid, pagecount)
-        result = self.doSearch("objectClass=pykotaUserPQuota", ["pykotaPageCounter", "pykotaLifePageCounter"], base=userquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            oldfields = result[0][1]
-            fields = {
-                       "pykotaPageCounter" : str(pagecount + int(oldfields["pykotaPageCounter"][0])),
-                       "pykotaLifePageCounter" : str(pagecount + int(oldfields["pykotaLifePageCounter"][0])),
-                     }  
-            return self.doModify(userquotaid, fields)         
+    def writeGroupLimitBy(self, group, limitby) :    
+        """Sets the group's limiting factor."""
+        fields = {
+                   "pykotaLimitBy" : limitby,
+                 }
+        self.doModify(group.ident, fields)         
         
-    def getUserPQuota(self, userquotaid, printerid) :
-        """Returns the Print Quota information for a given (userquotaid, printerid)."""
-        # first get the user's name from the id
-        result = self.doSearch("objectClass=pykotaUserPQuota", ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=userquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            fields = result[0][1]
-            datelimit = fields["pykotaDateLimit"][0].strip()
-            if (not datelimit) or (datelimit.upper() == "NONE") : 
-                datelimit = None
-            return { "lifepagecounter" : int(fields["pykotaLifePageCounter"][0]), 
-                     "pagecounter" : int(fields["pykotaPageCounter"][0]),
-                     "softlimit" : int(fields["pykotaSoftLimit"][0]),
-                     "hardlimit" : int(fields["pykotaHardLimit"][0]),
-                     "datelimit" : datelimit
-                   }
-        
-    def getGroupPQuota(self, grouppquotaid, printerid) :
-        """Returns the Print Quota information for a given (grouppquotaid, printerid)."""
-        result = self.doSearch("objectClass=pykotaGroupPQuota", ["pykotaGroupName", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=grouppquotaid, scope=ldap.SCOPE_BASE)
-        if result :
-            fields = result[0][1]
-            groupname = fields["pykotaGroupName"][0]
-            datelimit = fields["pykotaDateLimit"][0].strip()
-            if (not datelimit) or (datelimit.upper() == "NONE") : 
-                datelimit = None
-            quota = {
-                      "softlimit" : int(fields["pykotaSoftLimit"][0]),
-                      "hardlimit" : int(fields["pykotaHardLimit"][0]),
-                      "datelimit" : datelimit
-                    }
-            members = self.getGroupMembersNames(groupname) or []
-            pagecounter = lifepagecounter = 0
-            printerusers = self.getPrinterUsers(printerid)
-            if printerusers :
-                for (userid, username) in printerusers :
-                    if username in members :
-                        userpquota = self.getUserPQuota(userid, printerid)
-                        if userpquota :
-                            pagecounter += userpquota["pagecounter"]
-                            lifepagecounter += userpquota["lifepagecounter"]
-            quota.update({"pagecounter": pagecounter, "lifepagecounter": lifepagecounter})                
-            return quota
-        
-    def setUserDateLimit(self, userquotaid, printerid, datelimit) :
-        """Sets the limit date for a soft limit to become an hard one given (userid, printerid)."""
+    def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
+        """Sets the date limit permanently for a user print quota."""
         fields = {
                    "pykotaDateLimit" : "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second),
                  }
-        return self.doModify(userquotaid, fields)
-        
-    def setGroupDateLimit(self, groupquotaid, printerid, datelimit) :
-        """Sets the limit date for a soft limit to become an hard one given (groupid, printerid)."""
+        return self.doModify(userpquota.ident, fields)
+            
+    def writeGroupPQuotaDateLimit(self, grouppquota, datelimit) :    
+        """Sets the date limit permanently for a group print quota."""
         fields = {
                    "pykotaDateLimit" : "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second),
                  }
-        return self.doModify(groupquotaid, fields)
+        return self.doModify(grouppquota.ident, fields)
         
-    def addJobToHistory(self, jobid, userid, printerid, pagecounter, action, jobsize=None) :
-        """Adds a job to the history: (jobid, userid, printerid, last page counter taken from requester)."""
+    def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
+        """Sets the new page counters permanently for a user print quota."""
+        fields = {
+                   "pykotaPageCounter" : str(newpagecounter),
+                   "pykotaLifePageCounter" : str(newlifepagecounter),
+                 }  
+        return self.doModify(userpquota.ident, fields)         
+       
+    def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
+        """Sets the new account balance and eventually new lifetime paid."""
+        fields = {
+                   "pykotaBalance" : str(newbalance),
+                 }
+        if newlifetimepaid is not None :
+            fields.update({ "pykotaLifeTimePaid" : str(newlifetimepaid) })
+        return self.doModify(user.idbalance, fields)         
+            
+    def writeLastJobSize(self, lastjob, jobsize) :        
+        """Sets the last job's size permanently."""
+        fields = {
+                   "pykotaJobSize" : str(jobsize),
+                 }
+        self.doModify(lastjob.ident, fields)         
+        
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None) :    
+        """Adds a job in a printer's history."""
         uuid = self.genUUID()
-        printername = self.getPrinterName(printerid)
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,
-                   "pykotaUserName" : self.getUserName(userid),
-                   "pykotaPrinterName" : printername,
+                   "pykotaUserName" : user.Name,
+                   "pykotaPrinterName" : printer.Name,
                    "pykotaJobId" : jobid,
                    "pykotaPrinterPageCounter" : str(pagecounter),
                    "pykotaAction" : action,
@@ -535,71 +575,97 @@ class Storage :
             fields.update({ "pykotaJobSize" : str(jobsize) })
         dn = "cn=%s,%s" % (uuid, self.info["jobbase"])
         self.doAdd(dn, fields)
-        result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaPrinterName=%s))" % printername, None, base=self.info["lastjobbase"])
-        if result :
-            lastjdn = result[0][0] 
+        if printer.LastJob.Exists :
             fields = {
                        "pykotaLastJobIdent" : uuid,
                      }
-            self.doModify(lastjdn, fields)         
+            self.doModify(printer.LastJob.lastjobident, fields)         
         else :    
             lastjuuid = self.genUUID()
             lastjdn = "cn=%s,%s" % (lasjuuid, self.info["lastjobbase"])
             fields = {
                        "objectClass" : ["pykotaObject", "pykotaLastJob"],
                        "cn" : lastjuuid,
-                       "pykotaPrinterName" : printername,
+                       "pykotaPrinterName" : printer.Name,
                        "pykotaLastJobIdent" : uuid,
                      }  
             self.doAdd(lastjdn, fields)          
-    
-    def updateJobSizeInHistory(self, historyid, jobsize) :
-        """Updates a job size in the history given the history line's id."""
-        result = self.doSearch("(&(objectClass=pykotaJob)(cn=%s))" % historyid, ["cn"], base=self.info["jobbase"])
-        if result :
-            fields = {
-                       "pykotaJobSize" : str(jobsize),
-                     }
-            self.doModify(result[0][0], fields)         
-    
-    def getPrinterPageCounter(self, printerid) :
-        """Returns the last page counter value for a printer given its id, also returns last username, last jobid and history line id."""
-        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName", self.info["printerrdn"]], base=printerid, scope=ldap.SCOPE_BASE)
+            
+    def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
+        """Sets soft and hard limits for a user quota."""
+        fields = { 
+                   "pykotaSoftLimit" : str(softlimit),
+                   "pykotaHardLimit" : str(hardlimit),
+                 }
+        self.doModify(userpquota.ident, fields)
+        
+    def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
+        """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
+        fields = { 
+                   "pykotaSoftLimit" : str(softlimit),
+                   "pykotaHardLimit" : str(hardlimit),
+                 }
+        self.doModify(grouppquota.ident, fields)
+            
+    def deleteUser(self, user) :    
+        """Completely deletes an user from the Quota Storage."""
+        # TODO : What should we do if we delete the last person who used a given printer ?
+        # TODO : we can't reassign the last job to the previous one, because next user would be
+        # TODO : incorrectly charged (overcharged).
+        result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaUserName=%s))" % user.Name, base=self.info["lastjobbase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("(&(objectClass=pykotaJob)(pykotaUserName=%s))" % user.Name, base=self.info["jobbase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s))" % user.Name, ["pykotaUserName"], base=self.info["userquotabase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("objectClass=pykotaAccount", None, base=user.ident, scope=ldap.SCOPE_BASE)    
         if result :
             fields = result[0][1]
-            printername = (fields.get("pykotaPrinterName") or fields.get(self.info["printerrdn"]))[0]
-            result = self.doSearch("(&(objectClass=pykotaLastjob)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaLastJobIdent"], base=self.info["lastjobbase"])
-            if result :
-                lastjobident = result[0][1]["pykotaLastJobIdent"][0]
-                result = self.doSearch("(&(objectClass=pykotaJob)(cn=%s))" % lastjobident, ["pykotaUserName", "pykotaPrinterName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "createTimestamp"], base=self.info["jobbase"])
-                if result :
-                    fields = result[0][1]
-                    return { "id": lastjobident, 
-                             "jobid" : fields.get("pykotaJobId")[0],
-                             "userid" : self.getUserId(fields.get("pykotaUserName")[0]),
-                             "username" : fields.get("pykotaUserName")[0], 
-                             "pagecounter" : int(fields.get("pykotaPrinterPageCounter")[0]),
-                             "jobsize" : int(fields.get("pykotaJobSize")[0]),
-                           }
+            for k in fields.keys() :
+                if k.startswith("pykota") :
+                    del fields[k]
+                elif k.lower() == "objectclass" :    
+                    todelete = []
+                    for i in range(len(fields[k])) :
+                        if fields[k][i].startswith("pykota") : 
+                            todelete.append(i)
+                    todelete.sort()        
+                    todelete.reverse()
+                    for i in todelete :
+                        del fields[k][i]
+            if fields.get("objectclass") :            
+                self.doModify(user.ident, fields, ignoreold=0)        
+            else :    
+                self.doDelete(user.ident)
+        result = self.doSearch("(&(objectClass=pykotaAccountBalance)(pykotaUserName=%s))" % user.Name, ["pykotaUserName"], base=self.info["balancebase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
         
-    def addUserToGroup(self, userid, groupid) :    
-        """Adds an user to a group."""
-        raise PyKotaStorageError, "Not implemented !"
-        
-    def deleteUser(self, userid) :    
-        """Completely deletes an user from the Quota Storage."""
-        raise PyKotaStorageError, "Not implemented !"
-        
-    def deleteGroup(self, groupid) :    
-        """Completely deletes an user from the Quota Storage."""
-        raise PyKotaStorageError, "Not implemented !"
-        
-    def computePrinterJobPrice(self, printerid, jobsize) :    
-        """Returns the price for a job on a given printer."""
-        # TODO : create a base class with things like this
-        prices = self.getPrinterPrices(printerid)
-        if prices is None :
-            perpage = perjob = 0.0
-        else :    
-            (perpage, perjob) = prices
-        return perjob + (perpage * jobsize)
+    def deleteGroup(self, group) :    
+        """Completely deletes a group from the Quota Storage."""
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s))" % group.Name, ["pykotaGroupName"], base=self.info["groupquotabase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)    
+        if result :
+            fields = result[0][1]
+            for k in fields.keys() :
+                if k.startswith("pykota") :
+                    del fields[k]
+                elif k.lower() == "objectclass" :    
+                    todelete = []
+                    for i in range(len(fields[k])) :
+                        if fields[k][i].startswith("pykota") : 
+                            todelete.append(i)
+                    todelete.sort()        
+                    todelete.reverse()
+                    for i in todelete :
+                        del fields[k][i]
+            if fields.get("objectclass") :            
+                self.doModify(group.ident, fields, ignoreold=0)        
+            else :    
+                self.doDelete(group.ident)
+            

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.29  2003/06/14 22:44:21  jalet
 # More work on LDAP storage backend.
 #
@@ -200,6 +203,7 @@ class PyKotaConfig :
         """Returns some hints for the LDAP backend."""        
         ldapinfo = {}
         for option in [ "userbase", "userrdn", \
+                        "balancebase", "balancerdn", \
                         "groupbase", "grouprdn", "groupmembers", \
                         "printerbase", "printerrdn", \
                         "userquotabase", "groupquotabase", \

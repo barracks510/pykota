@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.3  2003/05/27 23:00:21  jalet
 # Big rewrite of external accounting methods.
 # Should work well now.
@@ -40,7 +43,7 @@ import tempfile
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 class Accounter(AccounterBase) :
-    def doAccounting(self, printerid, userid) :
+    def doAccounting(self, printer, user) :
         """Deletgates the computation of the job size to an external command.
         
            The command must print the job size on its standard output and exit successfully.
@@ -49,27 +52,27 @@ class Accounter(AccounterBase) :
         jobsize = self.getJobSize() * self.filter.copies
             
         # get last job information for this printer
-        pgc = self.filter.storage.getPrinterPageCounter(printerid)    
-        if pgc is None :
+        if not printer.LastJob.Exists :
             # The printer hasn't been used yet, from PyKota's point of view
             counterbeforejob = 0
         else :    
             # get last job size and page counter from Quota Storage
             # Last lifetime page counter before actual job is 
             # last page counter + last job size
-            counterbeforejob = (pgc["pagecounter"] or 0) + (pgc["jobsize"] or 0)
+            counterbeforejob = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
             
         # Is the current user allowed to print at all ?
-        action = self.filter.warnUserPQuota(self.filter.username, self.filter.printername)
+        userpquota = self.filter.storage.getUserPQuota(user, printer)
+        action = self.filter.warnUserPQuota(userpquota)
         
         # update the quota for the current user on this printer, if allowed to print
         if action == "DENY" :
             jobsize = 0
         else :    
-            self.filter.storage.updateUserPQuota(userid, printerid, jobsize)
+            userpquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        self.filter.storage.addJobToHistory(self.filter.jobid, self.filter.storage.getUserId(self.filter.username), printerid, counterbeforejob, action, jobsize)
+        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, jobsize)
             
         return action
         
@@ -101,9 +104,6 @@ class Accounter(AccounterBase) :
         
             # launches child process
             command = "%s <%s >%s 2>%s" % (self.arguments, infilename, outfilename, errfilename)
-            o = open("/tmp/comm", "w")
-            o.write("%s\n" % command)
-            o.close()
             retcode = os.system(command)
             
             # check exit status

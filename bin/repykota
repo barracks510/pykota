@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.38  2003/06/15 22:26:52  jalet
 # More work on LDAP
 #
@@ -146,6 +149,9 @@
 #
 
 import sys
+import os
+import pwd
+import grp
 
 from mx import DateTime
 
@@ -186,6 +192,16 @@ examples :
   $ repykota 
   
   This will print the quota status for all users on all printers.
+  
+  $ repykota --printer "laser*" jerome "jo*"
+  
+  This will print the quota status for user jerome and all users
+  whose name begins with "jo" on all printers which name begin
+  with "laser"
+  
+  If launched by a non-root user, additionnal arguments representing
+  users or groups names are ignored, and only the current user/group
+  is reported.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -205,51 +221,53 @@ Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
 class RePyKota(PyKotaTool) :        
     """A class for repykota."""
-    def main(self, options) :
+    def main(self, ugnames, options) :
         """Print Quota reports generator."""
+        uid = os.geteuid()
+        if not uid :
+            # root user
+            if not ugnames :
+                # no username, means all usernames
+                ugnames = [ "*" ]
+        else :        
+            # not the root user
+            # reports only the current user
+            if options["groups"] :
+                ugnames = [ grp.getgrgid(pwd.getpwuid(uid)[3])[0] ]
+            else :
+                ugnames = [ pwd.getpwuid(uid)[0] ]
+        
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-        for (printerid, printer) in printers :
-            print _("*** Report for %s quota on printer %s") % ((options["groups"] and "group") or "user", printer)
-            print _("Pages grace time: %i days") % self.config.getGraceDelay(printer)
-            prices = self.storage.getPrinterPrices(printerid)
-            if prices is None :
-                (perpage, perjob) = (None, None)
-            else :    
-                (perpage, perjob) = prices
-            if perjob is not None :
-                print _("Price per job: %.3f") % perjob
-            if perpage is not None :    
-                print _("Price per page: %.3f") % perpage
+        for printer in printers :
+            print _("*** Report for %s quota on printer %s") % ((options["groups"] and "group") or "user", printer.Name)
+            print _("Pages grace time: %i days") % self.config.getGraceDelay(printer.Name)
+            if printer.PricePerJob is not None :
+                print _("Price per job: %.3f") % printer.PricePerJob
+            if printer.PricePerPage is not None :    
+                print _("Price per page: %.3f") % printer.PricePerPage
             total = 0
             totalmoney = 0.0
             if options["groups"] :
                 print _("Group           used    soft    hard    balance grace         total       paid") 
                 print "------------------------------------------------------------------------------"
-                for (ident, name) in (self.storage.getPrinterGroups(printerid) or []) :
-                    quota = self.storage.getGroupPQuota(ident, printerid) 
-                    balance = self.storage.getGroupBalance(ident)
-                    limitby = self.storage.getGroupLimitBy(ident)
-                    (pages, money) = self.printQuota(name, quota, balance, limitby)
+                for (group, grouppquota) in self.storage.getPrinterGroupsAndQuotas(printer, ugnames) :
+                    (pages, money) = self.printQuota(group, grouppquota)
                     total += pages
                     totalmoney += money
             else :
                 # default is user quota report
                 print _("User            used    soft    hard    balance grace         total       paid") 
                 print "------------------------------------------------------------------------------"
-                for (ident, name) in (self.storage.getPrinterUsers(printerid) or []) :
-                    quota = self.storage.getUserPQuota(ident, printerid)
-                    balance = self.storage.getUserBalance(ident)
-                    limitby = self.storage.getUserLimitBy(ident)
-                    (pages, money) = self.printQuota(name, quota, balance, limitby)
+                for (user, userpquota) in self.storage.getPrinterUsersAndQuotas(printer, ugnames) :
+                    (pages, money) = self.printQuota(user, userpquota)
                     total += pages
                     totalmoney += money
             if total or totalmoney :        
                 print (" " * 50) + (_("Total : %9i") % total) + ("%11s" % ("%7.2f" % totalmoney)[:11])
-            printerpagecounter = self.storage.getPrinterPageCounter(printerid)
             try :
-                msg = "%9i" % printerpagecounter["pagecounter"]
+                msg = "%9i" % printer.LastJob.PrinterPageCounter
             except TypeError :     
                 msg = _("unknown")
             print (" " * 51) + (_("Real : %s") % msg)
@@ -257,38 +275,34 @@ class RePyKota(PyKotaTool) :
         if options["groups"] :    
             print _("Totals may be inaccurate if some users are members of several groups.")
                         
-    def printQuota(self, name, quota, balance, limitby) :
+    def printQuota(self, entry, quota) :
         """Prints the quota information."""
-        if quota is not None :
-            lifepagecounter = quota["lifepagecounter"] or 0
-            pagecounter = quota["pagecounter"] or 0
-            softlimit = quota["softlimit"]
-            hardlimit = quota["hardlimit"]
-            datelimit = quota["datelimit"]
-            if balance is not None :
-                (balance, lifetimepaid) = balance
-            else :    
-                (balance, lifetimepaid) = (0.0, 0.0)
-            if datelimit is not None :
-                now = DateTime.now()
-                datelimit = DateTime.ISO.ParseDateTime(datelimit)
-                if now >= datelimit :
-                    datelimit = "DENY"
-            else :    
-                datelimit = ""
-            if limitby == "balance" :    
-                reached = (((balance <= 0) and "+") or "-") + "B"
-            else :
-                reached = (((softlimit is not None) and (pagecounter >= softlimit) and "+") or "-") + "Q"
-            balance = balance or 0.0    
-            lifetimepaid = lifetimepaid or 0.0
-            strbalance = ("%5.2f" % balance)[:10]
-            strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
-            print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, str(softlimit), str(hardlimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
-            return (lifepagecounter, lifetimepaid)
-        else :    
-            return (0, 0)
+        lifepagecounter = int(quota.LifePageCounter or 0)
+        pagecounter = int(quota.PageCounter or 0)
+        balance = float(entry.AccountBalance or 0.0)
+        lifetimepaid = float(entry.LifeTimePaid or 0.0)
         
+        if quota.DateLimit is not None :
+            now = DateTime.now()
+            datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
+            if now >= datelimit :
+                datelimit = "DENY"
+        elif (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
+            datelimit = "DENY"
+        elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
+            datelimit = "DENY"
+        else :    
+            datelimit = ""
+            
+        if entry.LimitBy.lower() == "balance" :    
+            reached = (((balance <= 0) and "+") or "-") + "B"
+        else :
+            reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
+            
+        strbalance = ("%5.2f" % balance)[:10]
+        strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
+        print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (entry.Name, reached, pagecounter, str(quota.SoftLimit), str(quota.HardLimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
+        return (lifepagecounter, lifetimepaid)
                     
 if __name__ == "__main__" : 
     try :
@@ -317,10 +331,8 @@ if __name__ == "__main__" :
             reporter.display_version_and_quit()
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif args :    
-            raise PyKotaToolError, _("unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
-            sys.exit(reporter.main(options))
+            sys.exit(reporter.main(args, options))
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()

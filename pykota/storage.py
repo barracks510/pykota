@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.13  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -83,6 +86,192 @@ class PyKotaStorageError(Exception):
         return self.message
     __str__ = __repr__
         
+class StorageObject :
+    """Object present in the Quota Storage."""
+    def __init__(self, parent) :
+        "Initialize minimal data."""
+        self.parent = parent
+        self.ident = None
+        self.Exists = 0
+        
+class StorageUser(StorageObject) :        
+    """User class."""
+    def __init__(self, parent, name) :
+        StorageObject.__init__(self, parent)
+        self.Name = name
+        self.LimitBy = None
+        self.AccountBalance = None
+        self.LifeTimePaid = None
+        
+    def consumeAccountBalance(self, amount) :     
+        """Consumes an amount of money from the user's account balance."""
+        newbalance = float(self.AccountBalance or 0.0) - amount
+        self.parent.writeUserAccountBalance(self, newbalance)
+        self.AccountBalance = newbalance
+        
+    def setAccountBalance(self, balance, lifetimepaid) :    
+        """Sets the user's account balance in case he pays more money."""
+        
+    def setLimitBy(self, limitby) :    
+        """Sets the user's limiting factor."""
+        limitby = limitby.lower()
+        if limitby in ["quota", "balance"] :
+            self.parent.writeUserLimitBy(self, limitby)
+            self.LimitBy = limitby
+        
+    def delete(self) :    
+        """Deletes an user from the Quota Storage."""
+        self.parent.beginTransaction()
+        try :
+            self.parent.deleteUser(self)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+        
+class StorageGroup(StorageObject) :        
+    """User class."""
+    def __init__(self, parent, name) :
+        StorageObject.__init__(self, parent)
+        self.Name = name
+        self.LimitBy = None
+        self.AccountBalance = None
+        self.LifeTimePaid = None
+        
+    def setLimitBy(self, limitby) :    
+        """Sets the user's limiting factor."""
+        limitby = limitby.lower()
+        if limitby in ["quota", "balance"] :
+            self.parent.writeGroupLimitBy(self, limitby)
+            self.LimitBy = limitby
+        
+    def delete(self) :    
+        """Deletes a group from the Quota Storage."""
+        self.parent.beginTransaction()
+        try :
+            self.parent.deleteGroup(self)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+        
+class StoragePrinter(StorageObject) :
+    """Printer class."""
+    def __init__(self, parent, name) :
+        StorageObject.__init__(self, parent)
+        self.Name = name
+        self.PricePerPage = None
+        self.PricePerJob = None
+        self.LastJob = None
+        
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None) :    
+        """Adds a job to the printer's history."""
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize)
+        # TODO : update LastJob object ? Probably not needed.
+        
+    def setPrices(self, priceperpage = None, priceperjob = None) :    
+        """Sets the printer's prices."""
+        if priceperpage is None :
+            priceperpage = self.PricePerPage
+        else :    
+            self.PricePerPage = float(priceperpage)
+        if priceperjob is None :    
+            priceperjob = self.PricePerJob
+        else :    
+            self.PricePerJob = float(priceperjob)
+        self.parent.writePrinterPrices(self)
+        
+class StorageUserPQuota(StorageObject) :
+    """User Print Quota class."""
+    def __init__(self, parent, user, printer) :
+        StorageObject.__init__(self, parent)
+        self.User = user
+        self.Printer = printer
+        self.PageCounter = None
+        self.LifePageCounter = None
+        self.SoftLimit = None
+        self.HardLimit = None
+        self.DateLimit = None
+        
+    def setDateLimit(self, datelimit) :    
+        """Sets the date limit for this quota."""
+        date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)
+        self.parent.writeUserPQuotaDateLimit(self, date)
+        self.DateLimit = date
+        
+    def setLimits(self, softlimit, hardlimit) :    
+        """Sets the soft and hard limit for this quota."""
+        self.parent.writeUserPQuotaLimits(self, softlimit, hardlimit)
+        self.SoftLimit = softlimit
+        self.HardLimit = hardlimit
+        
+    def reset(self) :    
+        """Resets page counter to 0."""
+        self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))
+        self.PageCounter = 0
+        
+    def increasePagesUsage(self, nbpages) :
+        """Increase the value of used pages and money."""
+        if nbpages :
+            jobprice = (float(self.Printer.PricePerPage or 0.0) * nbpages) + float(self.Printer.PricePerJob or 0.0)
+            newpagecounter = int(self.PageCounter or 0) + nbpages
+            newlifepagecounter = int(self.LifePageCounter or 0) + nbpages
+            self.parent.beginTransaction()
+            try :
+                if jobprice : # optimization : don't access the database if unneeded.
+                    self.User.consumeAccountBalance(jobprice)
+                self.parent.writeUserPQuotaPagesCounters(self, newpagecounter, newlifepagecounter)
+            except PyKotaStorageError, msg :    
+                self.parent.rollbackTransaction()
+                raise PyKotaStorageError, msg
+            else :    
+                self.parent.commitTransaction()
+                self.PageCounter = newpagecounter
+                self.LifePageCounter = newlifepagecounter
+        
+class StorageGroupPQuota(StorageObject) :
+    """Group Print Quota class."""
+    def __init__(self, parent, group, printer) :
+        StorageObject.__init__(self, parent)
+        self.Group = group
+        self.Printer = printer
+        self.PageCounter = None
+        self.LifePageCounter = None
+        self.SoftLimit = None
+        self.HardLimit = None
+        self.DateLimit = None
+        
+    def setDateLimit(self, datelimit) :    
+        """Sets the date limit for this quota."""
+        date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)
+        self.parent.writeGroupPQuotaDateLimit(self, date)
+        self.DateLimit = date
+        
+    def setLimits(self, softlimit, hardlimit) :    
+        """Sets the soft and hard limit for this quota."""
+        self.parent.writeGroupPQuotaLimits(self, softlimit, hardlimit)
+        self.SoftLimit = softlimit
+        self.HardLimit = hardlimit
+        
+class StorageLastJob(StorageObject) :
+    """Printer's Last Job class."""
+    def __init__(self, parent, printer) :
+        StorageObject.__init__(self, parent)
+        self.Printer = printer
+        self.JobId = None
+        self.User = None
+        self.PrinterPageCounter = None
+        self.JobSize = None
+        self.JobAction = None
+        self.JobDate = None
+        
+    def setSize(self, jobsize) :
+        """Sets the last job's size."""
+        self.parent.writeLastJobSize(self, jobsize)
+        self.JobSize = jobsize
+    
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
     backendinfo = pykotatool.config.getStorageBackend()

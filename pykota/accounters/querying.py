@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.3  2003/05/06 14:55:47  jalet
 # Missing import !
 #
@@ -37,11 +40,11 @@ import time
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.requester import openRequester, PyKotaRequesterError
 
-MAXTRIES = 6     # maximum number of tries to get the printer's internal page counter
+MAXTRIES = 12    # maximum number of tries to get the printer's internal page counter
 TIMETOSLEEP = 10 # number of seconds to sleep between two tries to get the printer's internal page counter
 
 class Accounter(AccounterBase) :
-    def doAccounting(self, printerid, userid) :
+    def doAccounting(self, printer, user) :
         """Does print accounting and returns if the job status is ALLOW or DENY."""
         # Get the page counter directly from the printer itself
         # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
@@ -64,17 +67,16 @@ class Accounter(AccounterBase) :
             time.sleep(TIMETOSLEEP)    
         
         # get last job information for this printer
-        pgc = self.filter.storage.getPrinterPageCounter(printerid)    
-        if pgc is None :
+        if not printer.LastJob.Exists :
             # The printer hasn't been used yet, from PyKota's point of view
-            lasthistoryid = None
-            lastjobid = self.filter.jobid
-            lastuserid = userid
-            lastusername = self.filter.username
+            lastjob = None
+            lastuser = user
             lastpagecounter = counterbeforejob
         else :    
             # get last values from Quota Storage
-            (lasthistoryid, lastjobid, lastuserid, lastusername, lastpagecounter) = (pgc["id"], pgc["jobid"], pgc["userid"], pgc["username"], pgc["pagecounter"])
+            lastjob = printer.LastJob
+            lastuser = printer.LastJob.User
+            lastpagecounter = printer.LastJob.PrinterPageCounter
             
         # if printer is off then we assume the correct counter value is the last one
         if printerIsOff :
@@ -106,23 +108,27 @@ class Accounter(AccounterBase) :
             # abs(int((10 - abs(lastcounter(snmp) - lastcounter(storage)) / 2))
             # For more accurate accounting, don't switch off your HP printers !
             # explanation at : http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
-            self.filter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastusername, self.filter.printername), "error")
+            self.filter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastuser.Name, self.filter.printername), "error")
             jobsize = abs(int((10 - abs(jobsize)) / 2))     # Workaround for HP printers' feature !
             
         # update the quota for the previous user on this printer 
-        self.filter.storage.updateUserPQuota(lastuserid, printerid, jobsize)
+        lastuserquota = self.filter.storage.getUserPQuota(lastuser, printer)
+        if lastuserquota.Exists :
+            lastuserquota.increasePagesUsage(jobsize)
         
         # update the last job size in the history
-        self.filter.storage.updateJobSizeInHistory(lasthistoryid, jobsize)
+        if printer.LastJob.Exists :
+            printer.LastJob.setSize(jobsize)
         
         # warns the last user if he is over quota
-        self.filter.warnUserPQuota(lastusername, self.filter.printername)
+        if lastuserquota.Exists :
+            self.filter.warnUserPQuota(lastuserquota)
             
         # Is the current user allowed to print at all ?
-        action = self.filter.warnUserPQuota(self.filter.username, self.filter.printername)
+        action = self.filter.warnUserPQuota(self.filter.storage.getUserPQuota(user, printer))
         
         # adds the current job to history    
-        self.filter.storage.addJobToHistory(self.filter.jobid, self.filter.storage.getUserId(self.filter.username), printerid, counterbeforejob, action)
+        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action)
             
         return action
             

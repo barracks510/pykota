@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.40  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -304,7 +307,11 @@ class PyKotaTool :
         if "@" not in touser :
             touser = "%s@%s" % (touser, self.smtpserver)
         server = smtplib.SMTP(self.smtpserver)
-        server.sendmail(adminmail, [touser], fullmessage)
+        try :
+            server.sendmail(adminmail, [touser], fullmessage)
+        except smtplib.SMTPRecipientsRefused, answer :    
+            for (k, v) in answer.recipients.items() :
+                self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
         server.quit()
         
     def sendMessageToUser(self, admin, adminmail, username, subject, message) :
@@ -316,131 +323,108 @@ class PyKotaTool :
         """Sends an email message to the Print Quota administrator."""
         self.sendMessage(adminmail, adminmail, "Subject: %s\n\n%s" % (subject, message))
         
-    def checkGroupPQuota(self, groupname, printername) :    
+    def checkGroupPQuota(self, grouppquota) :    
         """Checks the group quota on a printer and deny or accept the job."""
-        printerid = self.storage.getPrinterId(printername)
-        policy = self.config.getPrinterPolicy(printername)
-        groupid = self.storage.getGroupId(groupname)
-        limitby = self.storage.getGroupLimitBy(groupid)
-        if limitby == "balance" : 
-            balance = self.storage.getGroupBalance(groupid)
-            if balance is None :
-                if policy == "ALLOW" :
-                    action = "POLICY_ALLOW"
-                else :    
-                    action = "POLICY_DENY"
-                self.logger.log_message(_("Unable to find group %s's account balance, applying default policy (%s) for printer %s") % (groupname, action, printername))
+        group = grouppquota.Group
+        printer = grouppquota.Printer
+        if group.LimitBy.lower() == "balance" : 
+            # TODO : there's no warning (no account balance soft limit)
+            if float(group.AccountBalance) <= 0.0 :
+                action = "DENY"
             else :    
-                # TODO : there's no warning (no account balance soft limit)
-                (balance, lifetimepaid) = balance
-                if balance <= 0.0 :
-                    action = "DENY"
-                else :    
-                    action = "ALLOW"
+                action = "ALLOW"
         else :
-            quota = self.storage.getGroupPQuota(groupid, printerid)
-            if quota is None :
-                # Unknown group or printer or combination
-                if policy == "ALLOW" :
-                    action = "POLICY_ALLOW"
+            if grouppquota.SoftLimit is not None :
+                softlimit = int(grouppquota.SoftLimit)
+                if grouppquota.PageCounter < softlimit :
+                    action = "ALLOW"
                 else :    
-                    action = "POLICY_DENY"
-                self.logger.log_message(_("Unable to match group %s on printer %s, applying default policy (%s)") % (groupname, printername, action))
-            else :    
-                pagecounter = quota["pagecounter"]
-                softlimit = quota["softlimit"]
-                hardlimit = quota["hardlimit"]
-                datelimit = quota["datelimit"]
-                if softlimit is not None :
-                    if pagecounter < softlimit :
-                        action = "ALLOW"
+                    if grouppquota.HardLimit is None :
+                        # only a soft limit, this is equivalent to having only a hard limit
+                        action = "DENY"
                     else :    
-                        if hardlimit is None :
-                            # only a soft limit, this is equivalent to having only a hard limit
-                            action = "DENY"
-                        else :    
-                            if softlimit <= pagecounter < hardlimit :    
-                                now = DateTime.now()
-                                if datelimit is not None :
-                                    datelimit = DateTime.ISO.ParseDateTime(datelimit)
-                                else :
-                                    datelimit = now + self.config.getGraceDelay(printername)
-                                    self.storage.setGroupDateLimit(groupid, printerid, datelimit)
-                                if now < datelimit :
-                                    action = "WARN"
-                                else :    
-                                    action = "DENY"
-                            else :         
+                        hardlimit = int(grouppquota.HardLimit)
+                        if softlimit <= grouppquota.PageCounter < hardlimit :    
+                            now = DateTime.now()
+                            if grouppquota.DateLimit is not None :
+                                datelimit = DateTime.ISO.ParseDateTime(grouppquota.DateLimit)
+                            else :
+                                datelimit = now + self.config.getGraceDelay(printer.Name)
+                                grouppquota.setDateLimit(datelimit)
+                            if now < datelimit :
+                                action = "WARN"
+                            else :    
                                 action = "DENY"
-                else :        
-                    if hardlimit is not None :
-                        # no soft limit, only a hard one.
-                        if pagecounter < hardlimit :
-                            action = "ALLOW"
-                        else :      
+                        else :         
                             action = "DENY"
-                    else :
-                        # Both are unset, no quota, i.e. accounting only
+            else :        
+                if grouppquota.HardLimit is not None :
+                    # no soft limit, only a hard one.
+                    hardlimit = int(grouppquota.HardLimit)
+                    if grouppquota.PageCounter < hardlimit :
                         action = "ALLOW"
+                    else :      
+                        action = "DENY"
+                else :
+                    # Both are unset, no quota, i.e. accounting only
+                    action = "ALLOW"
         return action
     
-    def checkUserPQuota(self, username, printername) :
+    def checkUserPQuota(self, userpquota) :
         """Checks the user quota on a printer and deny or accept the job."""
+        user = userpquota.User
+        printer = userpquota.Printer
+        
         # first we check any group the user is a member of
-        userid = self.storage.getUserId(username)
-        for groupname in self.storage.getUserGroupsNames(userid) :
-            action = self.checkGroupPQuota(groupname, printername)
-            if action in ("DENY", "POLICY_DENY") :
-                return action
+        for group in self.storage.getUserGroups(user) :
+            grouppquota = self.storage.getGroupPQuota(group, printer)
+            if grouppquota.Exists :
+                action = self.checkGroupPQuota(grouppquota)
+                if action == "DENY" :
+                    return action
                 
         # then we check the user's own quota
-        printerid = self.storage.getPrinterId(printername)
-        policy = self.config.getPrinterPolicy(printername)
-        limitby = self.storage.getUserLimitBy(userid)
-        if limitby == "balance" : 
-            balance = self.storage.getUserBalance(userid)
-            if balance is None :
+        policy = self.config.getPrinterPolicy(printer.Name)
+        if user.LimitBy.lower() == "balance" : 
+            if user.AccountBalance is None :
                 if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
-                self.logger.log_message(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (username, action, printername))
+                self.logger.log_message(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (user.Name, action, printer.Name))
             else :    
                 # TODO : there's no warning (no account balance soft limit)
-                (balance, lifetimepaid) = balance
-                if balance <= 0.0 :
+                if float(user.AccountBalance or 0.0) <= 0.0 :
                     action = "DENY"
                 else :    
                     action = "ALLOW"
         else :
-            quota = self.storage.getUserPQuota(userid, printerid)
-            if quota is None :
-                # Unknown user or printer or combination
+            if not userpquota.Exists :
+                # Unknown userquota 
                 if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
-                self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action))
+                self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (user.Name, printer.Name, action))
             else :    
-                pagecounter = quota["pagecounter"]
-                softlimit = quota["softlimit"]
-                hardlimit = quota["hardlimit"]
-                datelimit = quota["datelimit"]
-                if softlimit is not None :
+                pagecounter = int(userpquota.PageCounter or 0)
+                if userpquota.SoftLimit is not None :
+                    softlimit = int(userpquota.SoftLimit)
                     if pagecounter < softlimit :
                         action = "ALLOW"
                     else :    
-                        if hardlimit is None :
+                        if userpquota.HardLimit is None :
                             # only a soft limit, this is equivalent to having only a hard limit
                             action = "DENY"
                         else :    
+                            hardlimit = int(userpquota.HardLimit)
                             if softlimit <= pagecounter < hardlimit :    
                                 now = DateTime.now()
-                                if datelimit is not None :
-                                    datelimit = DateTime.ISO.ParseDateTime(datelimit)
+                                if userpquota.DateLimit is not None :
+                                    datelimit = DateTime.ISO.ParseDateTime(userpquota.DateLimit)
                                 else :
-                                    datelimit = now + self.config.getGraceDelay(printername)
-                                    self.storage.setUserDateLimit(userid, printerid, datelimit)
+                                    datelimit = now + self.config.getGraceDelay(printer.Name)
+                                    userpquota.setDateLimit(datelimit)
                                 if now < datelimit :
                                     action = "WARN"
                                 else :    
@@ -448,8 +432,9 @@ class PyKotaTool :
                             else :         
                                 action = "DENY"
                 else :        
-                    if hardlimit is not None :
+                    if userpquota.HardLimit is not None :
                         # no soft limit, only a hard one.
+                        hardlimit = int(userpquota.HardLimit)
                         if pagecounter < hardlimit :
                             action = "ALLOW"
                         else :      
@@ -459,53 +444,56 @@ class PyKotaTool :
                         action = "ALLOW"
         return action
     
-    def warnGroupPQuota(self, groupname, printername) :
+    def warnGroupPQuota(self, grouppquota) :
         """Checks a group quota and send messages if quota is exceeded on current printer."""
-        admin = self.config.getAdmin(printername)
-        adminmail = self.config.getAdminMail(printername)
-        mailto = self.config.getMailTo(printername)
-        action = self.checkGroupPQuota(groupname, printername)
-        groupmembers = self.storage.getGroupMembersNames(groupname)
+        group = grouppquota.Group
+        printer = grouppquota.Printer
+        admin = self.config.getAdmin(printer.Name)
+        adminmail = self.config.getAdminMail(printer.Name)
+        mailto = self.config.getMailTo(printer.Name)
+        action = self.checkGroupPQuota(grouppquota, printer)
         if action.startswith("POLICY_") :
             action = action[7:]
         if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for group %s on printer %s") % (groupname, printername)
+            adminmessage = _("Print Quota exceeded for group %s on printer %s") % (group.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-            for username in groupmembers :
+            for user in self.storage.getGroupMembers(group) :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour group Print Quota is exceeded on printer %s.") % printername)
+                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour group Print Quota is exceeded on printer %s.") % printer.Name)
         elif action == "WARN" :    
-            adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (groupname, printername)
+            adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (group.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-            for username in groupmembers :
+            for user in self.storage.getGroupMembers(group) :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour group Print Quota is almost reached on printer %s.") % printername)
+                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour group Print Quota is almost reached on printer %s.") % printer.Name)
         return action        
         
-    def warnUserPQuota(self, username, printername) :
+    def warnUserPQuota(self, userpquota) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
-        admin = self.config.getAdmin(printername)
-        adminmail = self.config.getAdminMail(printername)
-        mailto = self.config.getMailTo(printername)
-        action = self.checkUserPQuota(username, printername)
+        user = userpquota.User
+        printer = userpquota.Printer
+        admin = self.config.getAdmin(printer.Name)
+        adminmail = self.config.getAdminMail(printer.Name)
+        mailto = self.config.getMailTo(printer.Name)
+        action = self.checkUserPQuota(userpquota)
         if action.startswith("POLICY_") :
             action = action[7:]
         if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, printername)
+            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printername)
+                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printer.Name)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
-            adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, printername)
+            adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (user.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printername)
+                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printer.Name)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        

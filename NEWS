@@ -21,6 +21,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.09alpha2 :
+    
+        - LDAP schema modified a bit. Please upgrade.
+        
+        - LDAP backend works !
+        
+        - repykota and warnpykota allow the root user to pass
+          users or groups names on the command line. Users 
+          and groups names may contain wildcards.
+          
+        - repykota and warnpykota only reports or warns the
+          current user when launched by non-root users.
+          
+        - Minor bug fixes.  
+    
     - 1.09alpha1 :
     
         - More work on LDAP storage backend. Many options

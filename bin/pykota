@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.34  2003/06/13 18:54:17  jalet
 # Bug with remote jobs and LPRng fixed.
 #
@@ -238,14 +241,14 @@ def main() :
             return kotafilter.removeJob()
     
     # Get the last page counter and last username from the Quota Storage backend
-    printerid = kotafilter.storage.getPrinterId(kotafilter.printername)
-    if printerid is None :
+    printer = kotafilter.storage.getPrinter(kotafilter.printername)
+    if not printer.Exists :
         # The printer is unknown from the Quota Storage perspective
         # we let the job pass through, but log a warning message
         kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "warn")
     else :    
-        userid = kotafilter.storage.getUserId(kotafilter.username)
-        if userid is None :
+        user = kotafilter.storage.getUser(kotafilter.username)
+        if not user.Exists :
             # The user is unknown from the Quota Storage perspective
             # Depending on the default policy for this printer, we
             # either let the job pass through or reject it, but we
@@ -260,7 +263,7 @@ def main() :
                 return kotafilter.removeJob()
         else :
             # Now does the accounting and act depending on the result
-            action = kotafilter.accounter.doAccounting(printerid, userid)
+            action = kotafilter.accounter.doAccounting(printer, user)
             
             # if not allowed to print then die, else proceed.
             if action == "DENY" :

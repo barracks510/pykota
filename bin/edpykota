@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2003/06/25 14:10:01  jalet
+# Hey, it may work (edpykota --reset excepted) !
+#
 # Revision 1.46  2003/06/16 11:59:09  jalet
 # More work on LDAP
 #
@@ -329,42 +332,26 @@ class EdPyKota(PyKotaTool) :
     """A class for edpykota."""
     def main(self, names, options) :
         """Edit user or group quotas."""
-        printeradded = 0
-        printers = self.storage.getMatchingPrinters(options["printer"])
-        if not printers :
-            pname = options["printer"]
-            if options["add"] and pname :
-                if self.isValidName(pname) :
-                    printerid = self.storage.addPrinter(pname)
-                    printers = [ (printerid, pname) ]
-                    printeradded = 1
-                else :    
-                    raise PyKotaToolError, _("Invalid printer name %s") % pname
-            else :
-                raise PyKotaToolError, _("There's no printer matching %s") % pname
-                
+        
+        suffix = (options["groups"] and "Group") or "User"        
+        
         softlimit = hardlimit = None    
-        if options["softlimit"] :
-            try :
-                softlimit = int(options["softlimit"].strip())
-            except ValueError :    
-                raise PyKotaToolError, _("Invalid softlimit value %s.") % options["softlimit"]
-        if options["hardlimit"] :
-            try :
-                hardlimit = int(options["hardlimit"].strip())
-            except ValueError :    
-                raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
-        if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
-            # error, exchange them
-            self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
-            (softlimit, hardlimit) = (hardlimit, softlimit)
+        if not options["noquota"] :
+            if options["softlimit"] :
+                try :
+                    softlimit = int(options["softlimit"].strip())
+                except ValueError :    
+                    raise PyKotaToolError, _("Invalid softlimit value %s.") % options["softlimit"]
+            if options["hardlimit"] :
+                try :
+                    hardlimit = int(options["hardlimit"].strip())
+                except ValueError :    
+                    raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
+            if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
+                # error, exchange them
+                self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
+                (softlimit, hardlimit) = (hardlimit, softlimit)
             
-        if not names :    
-            if options["add"] and not printeradded :
-                raise PyKotaToolError, _("You have to pass user or group names on the command line")
-            else :    
-                names = [ "*" ] # all users
-                
         balance = options["balance"]
         if balance :
             balance = balance.strip()
@@ -393,118 +380,118 @@ class EdPyKota(PyKotaTool) :
         else :    
             groupnames = []
             
-        uwaschanged = {}         # tracks changed made at the user level
-        gwaschanged = {}         # tracks changed made at the group level
-        for (printerid, printer) in printers :
+        if options["prototype"] :    
+            protoentry = getattr(self.storage, "get%s" % suffix)(options["prototype"])
+            
+        printeradded = 0
+        printers = self.storage.getMatchingPrinters(options["printer"])
+        if not printers :
+            pname = options["printer"]
+            if options["add"] and pname :
+                if self.isValidName(pname) :
+                    printers = [ self.storage.addPrinter(pname) ]
+                    if printers[0].Exists :
+                        printeradded = 1
+                    else :    
+                        raise PyKotaToolError, _("Impossible to add printer %s") % pname
+                else :    
+                    raise PyKotaToolError, _("Invalid printer name %s") % pname
+            else :
+                raise PyKotaToolError, _("There's no printer matching %s") % pname
+        if not names :    
+            if options["add"] and not printeradded :
+                raise PyKotaToolError, _("You have to pass user or group names on the command line")
+            else :    
+                names = [ "*" ] # all users
+                
+        changed = {} # tracks changes made at the user/group level
+        for printer in printers :
             if options["charge"] :
                 (perpage, perjob) = charges
-                if perjob is None :
-                    # we don't want to change this one, get the old value
-                    (dummy, perjob) = self.storage.getPrinterPrices(printerid)
-                self.storage.setPrinterPrices(printerid, perpage, perjob)    
+                printer.setPrices(perpage, perjob)    
+                
             if options["prototype"] :
-                if options["groups"] :
-                    prototype = self.storage.getGroupPQuota(self.storage.getGroupId(options["prototype"]), printerid)
-                else :     
-                    # default is user quota edition
-                    prototype = self.storage.getUserPQuota(self.storage.getUserId(options["prototype"]), printerid)
-                if prototype is None :
-                    self.logger.log_message(_("Prototype %s not found in Quota Storage for printer %s.") % (options["prototype"], printer))
-                    continue    # skip this printer
-                else :    
-                    (softlimit, hardlimit) = (prototype["softlimit"], prototype["hardlimit"])
-            if hardlimit is None :    
-                hardlimit = softlimit
-                if hardlimit is not None :
-                    self.logger.log_message(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer))
-            if softlimit is None :    
-                softlimit = hardlimit
-                if softlimit is not None :
-                    self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
-            if (not options["ingroups"] and not options["reset"] and not options["noquota"] and not options["prototype"] and not options["limitby"] and not options["balance"] and not options["delete"] and not options["charge"]) and ((hardlimit is None) or (softlimit is None)) :
-                raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
+                if protoentry.Exists :
+                    protoquota = getattr(self.storage, "get%PQuota" % suffix)(protoentry, printer)
+                    if not protoquota.Exists :
+                        self.logger.log_message(_("Prototype %s not found in Quota Storage for printer %s.") % (protoentry.Name, printer.Name))
+                        continue    # skip this printer
+                    else :    
+                        (softlimit, hardlimit) = (protoquota.SoftLimit, protoquota.HardLimit)
+                else :        
+                    self.logger.log_message(_("Prototype object %s not found in Quota Storage.") % protoentry.Name)
+            if not options["noquota"] :    
+                if hardlimit is None :    
+                    hardlimit = softlimit
+                    if hardlimit is not None :
+                        self.logger.log_message(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer.Name))
+                if softlimit is None :    
+                    softlimit = hardlimit
+                    if softlimit is not None :
+                        self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer.Name))
+                        
             if options["add"] :    
-                if options["groups"] :    
-                    allidnames = [(self.storage.getGroupId(n), n) for n in names]
-                else :
-                    allidnames = [(self.storage.getUserId(n), n) for n in names]
+                allentries = []    
+                for name in names :
+                    entry = getattr(self.storage, "get%s" % suffix)(name)
+                    entrypquota = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                    allentries.append((entry, entrypquota))
             else :   
-                if options["groups"] :    
-                    allidnames = self.storage.getPrinterGroups(printerid) or []
-                else :    
-                    allidnames = self.storage.getPrinterUsers(printerid) or []
-            for (ident, name) in [(i, n) for (i, n) in allidnames if self.matchString(n, names)]:
-                if options["groups"] :
-                    if not gwaschanged.has_key(name) :
-                        gwaschanged[name] = {}
-                    quota = self.storage.getGroupPQuota(ident, printerid)
-                else :
-                    if not uwaschanged.has_key(name) :
-                        uwaschanged[name] = {"ingroups": []}
-                    quota = self.storage.getUserPQuota(ident, printerid)
-                if quota is None :
+                allentries = getattr(self.storage, "getPrinter%ssAndQuotas" % suffix)(printer)
+                
+            for (entry, entrypquota) in [(e, q) for (e, q) in allentries if self.matchString(e.Name, names)] :
+                if not changed.has_key(entry.Name) :
+                    changed[entry.Name] = {}
+                if not entrypquota.Exists :
                     # not found
                     if options["add"] :
                         # In case we want to add something, it is crucial
                         # that we DON'T check with the system accounts files
                         # like /etc/passwd because users may be defined 
                         # only remotely
-                        if options["groups"] :
-                            if self.isValidName(name) :
-                                (ident, printerid) = self.storage.addGroupPQuota(name, printerid)
-                                quota = self.storage.getGroupPQuota(ident, printerid)
+                        if self.isValidName(entry.Name) :
+                            if not entry.Exists :
+                                entry = getattr(self.storage, "add%s" % suffix)(entry)
+                            entrypquota = getattr(self.storage, "add%sPQuota" % suffix)(entry, printer)
+                        else :    
+                            if options["groups"] :
+                                self.logger.log_message(_("Invalid group name %s") % entry.Name)
                             else :    
-                                self.logger.log_message(_("Invalid group name %s") % name)
-                        else :
-                            if self.isValidName(name) :
-                                (ident, printerid) = self.storage.addUserPQuota(name, printerid)
-                                quota = self.storage.getUserPQuota(ident, printerid)
-                            else :    
-                                self.logger.log_message(_("Invalid user name %s") % name)
-                if quota is None :     
-                    self.logger.log_message(_("Quota not found for object %s on printer %s.") % (name, printer))
+                                self.logger.log_message(_("Invalid user name %s") % entry.Name)
+                if not entrypquota.Exists :     
+                    self.logger.log_message(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
                 else :    
                     if options["delete"] :
-                        if options["groups"] :
-                            self.storage.deleteGroup(ident)
-                        else :
-                            self.storage.deleteUser(ident)
+                        entry.delete()
                     else :
-                        if options["groups"] :
-                            if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
-                                self.storage.setGroupPQuota(ident, printerid, softlimit, hardlimit)
+                        if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
+                            entrypquota.setLimits(softlimit, hardlimit)
+                        if limitby :
+                            if changed[entry.Name].get("limitby") is None :
+                                entry.setLimitBy(limitby)
+                                changed[entry.Name]["limitby"] = limitby
+                        
+                        if not options["groups"] :
                             if options["reset"] :
-                                self.storage.resetGroupPQuota(ident, printerid)
-                            if limitby :
-                                if gwaschanged[name].get("limitby") is None :
-                                    self.storage.limitGroupBy(ident, limitby)
-                                    gwaschanged[name]["limitby"] = limitby
-                            self.warnGroupPQuota(name, printer)    
-                        else :
-                            if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
-                                self.storage.setUserPQuota(ident, printerid, softlimit, hardlimit)
-                            if options["reset"] :
-                                self.storage.resetUserPQuota(ident, printerid)
-                            if limitby :
-                                if uwaschanged[name].get("limitby") is None :
-                                    self.storage.limitUserBy(ident, limitby)
-                                    uwaschanged[name]["limitby"] = limitby
+                                entrypquota.reset()
+                                
                             if balance :
-                                if uwaschanged[name].get("balance") is None :
+                                if changed[entry.Name].get("balance") is None :
                                     if balance.startswith("+") or balance.startswith("-") :
-                                        self.storage.increaseUserBalance(ident, balancevalue)
+                                        entry.consumeAccountBalance(-balancevalue)
                                     else :
-                                        self.storage.setUserBalance(ident, balancevalue)
-                                    uwaschanged[name]["balance"] = balance
+                                        entry.consumeAccountBalance(float(entry.AccountBalance or 0.0) - balancevalue)
+                                    changed[entry.Name]["balance"] = balance
                             for groupname in groupnames :        
-                                if groupname not in uwaschanged[name]["ingroups"] :
-                                    groupid = self.storage.getGroupId(groupname)
-                                    if groupid is not None :
-                                        self.storage.addUserToGroup(ident, groupid)
-                                        uwaschanged[name]["ingroups"].append(groupname)
+                                if groupname not in changed[name]["ingroups"] :
+                                    group = self.storage.getGroup(groupname)
+                                    if group.Exists :
+                                        self.storage.addUserToGroup(entry, group)
+                                        changed[entry.Name]["ingroups"].append(groupname)
                                     else :
                                         self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
-                            self.warnUserPQuota(name, printer)    
+                                        
+                        getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
                      
 if __name__ == "__main__" : 
     try :

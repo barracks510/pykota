@@ -54,14 +54,14 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.5 NAME 'pykotaPricePerJob'
 # pykotaSoftLimit
 attributetype ( 1.3.6.1.4.1.16868.1.1.6 NAME 'pykotaSoftLimit'
         DESC 'Soft limit in maximal number of pages'
-        EQUALITY integerMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 # pykotaHardLimit        
 attributetype ( 1.3.6.1.4.1.16868.1.1.7 NAME 'pykotaHardLimit'
         DESC 'Hard limit in maximal number of pages'
-        EQUALITY integerMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
 # pykotaDateLimit
 attributetype ( 1.3.6.1.4.1.16868.1.1.8 NAME 'pykotaDateLimit'
@@ -96,8 +96,8 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.12 NAME 'pykotaPrinterPageCounter'
 # pykotaJobSize
 attributetype ( 1.3.6.1.4.1.16868.1.1.13 NAME 'pykotaJobSize'
         DESC 'Current job size in number of pages in the history'
-        EQUALITY integerMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
 # pykotaAction
 attributetype ( 1.3.6.1.4.1.16868.1.1.14 NAME 'pykotaAction'
