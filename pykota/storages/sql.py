@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/10/12 08:58:53  jalet
+# Now warnpykota only warns users who have already printed, to not confuse
+# users who have just opened their account.
+#
 # Revision 1.57  2004/10/10 10:12:21  jalet
 # Improved SQL queries for groups. Same work has to be done for groups print quotas.
 #
@@ -183,6 +187,13 @@ class SQLStorage :
         if result :
             groupnames = [record["groupname"] for record in result]
         return groupnames
+        
+    def getUserNbJobsFromHistory(self, user) :
+        """Returns the number of jobs the user has in history."""
+        result = self.doSearch("SELECT COUNT(*) FROM jobhistory WHERE userid=%s" % self.doQuote(user.ident))
+        if result :
+            return result[0]["count"]
+        return 0
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""

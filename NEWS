@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha24 :
+    
+        - Now warnpykota only warns users who have ever printed,
+          to not cause confusion to users who have just opened
+          their account.
+        
+        - Prepared help messages for translations.
+        
     - 1.20alpha23 :
     
         - Add workaround for locale problem.

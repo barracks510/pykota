@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2004/10/12 08:58:53  jalet
+# Now warnpykota only warns users who have already printed, to not confuse
+# users who have just opened their account.
+#
 # Revision 1.32  2004/10/11 22:53:05  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -233,7 +237,12 @@ class WarnPyKota(PyKotaTool) :
                     self.warnGroupPQuota(grouppquota)
             else :
                 for (user, userpquota) in self.storage.getPrinterUsersAndQuotas(printer, ugnames) :
-                    self.warnUserPQuota(userpquota)
+                    # we only want to warn users who have ever printed something
+                    # and don't want to warn users who have never printed
+                    if (user.AccountBalance and (user.AccountBalance != user.LifeTimePaid)) or \
+                       userpquota.PageCounter or userpquota.LifePageCounter or \
+                       self.storage.getUserNbJobsFromHistory(user) :
+                        self.warnUserPQuota(userpquota)
                      
 if __name__ == "__main__" : 
     retcode = 0

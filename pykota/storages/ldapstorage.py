@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.84  2004/10/12 08:58:53  jalet
+# Now warnpykota only warns users who have already printed, to not confuse
+# users who have just opened their account.
+#
 # Revision 1.83  2004/10/07 21:14:28  jalet
 # Hopefully final fix for data encoding to and from the database
 #
@@ -521,6 +525,11 @@ class Storage(BaseStorage) :
         if result :
             groupnames = [record[1]["pykotaGroupName"][0] for record in result]
         return groupnames
+        
+    def getUserNbJobsFromHistory(self, user) :
+        """Returns the number of jobs the user has in history."""
+        result = self.doSearch("(&(pykotaUserName=%s)(objectClass=pykotaJob))" % user.Name, None, base=self.info["jobbase"])
+        return len(result)
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
