@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2005/01/12 14:44:27  jalet
+# Fixed a fuckingly strange exception by cleverly ignoring it entirely :-)
+#
 # Revision 1.50  2005/01/07 15:53:58  jalet
 # Another fix for PCL3/4/5
 #
@@ -1100,10 +1103,10 @@ class PDLAnalyzer :
         firstblock = self.infile.read(4 * KILOBYTE)
         try :
             self.infile.seek(-LASTBLOCKSIZE, 2)
+            lastblock = self.infile.read(LASTBLOCKSIZE)
         except IOError :    
             lastblock = ""
-        else :    
-            lastblock = self.infile.read(LASTBLOCKSIZE)
+            
         self.infile.seek(0)
         if self.isPostScript(firstblock, lastblock) :
             return PostScriptAnalyzer
