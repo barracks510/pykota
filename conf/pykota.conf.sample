@@ -61,14 +61,19 @@ smtpserver: localhost
 #                 command. This method is the method used by
 #                 default in PyKota since its beginning.
 #
+#    - external : delegates the job's size computation to any 
+#                 external command of your choice. A stupid and 
+#                 completely unreliable example, but which
+#                 shows what this command may be is :
+#
+#                   accounter: external(/bin/grep -c showpage)
+# 
 #    - stupid : counts the occurences of the 'showpage' postscript
 #               statement in the document to be printed, only at
 #               the beginning of each line which makes the postscript
 #               file. THIS IS NOT RELIABLE. This is just to serve as
 #               an example on how to implement your own accounting
 #               method.
-#
-#    - more to be added in the future
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
@@ -105,7 +110,9 @@ gracedelay: 7
 # are defined globally
 [lp]
 
-# How to query the lp printer for its page counter, if needed
+# How to query the lp printer for its page counter.
+# THIS IS ONLY USED IF YOU HAVE SET 'accounter' TO 'querying'
+# JUST COMMENT IT OUT IF YOU USE ANY OTHER ACCOUNTING METHOD.
 # Only snmp(community, oid) and external(command) are supported
 #
 # Example : 

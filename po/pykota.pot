@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/04/30 19:53:58  jalet
+# 1.05
+#
 # Revision 1.23  2003/04/30 13:36:40  jalet
 # Stupid accounting method was added.
 #
@@ -341,4 +344,10 @@ msgid "Option requester for printer %s was not set"
 msgstr ""
 
 msgid "Using the 'stupid' accounting method is unreliable."
+msgstr ""
+
+msgid "Invalid external accounter %s for printer %s"
+msgstr ""
+
+msgid "Unable to compute job size with external accounter %s"
 msgstr ""

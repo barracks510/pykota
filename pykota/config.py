@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/04/30 19:53:58  jalet
+# 1.05
+#
 # Revision 1.25  2003/04/30 13:36:40  jalet
 # Stupid accounting method was added.
 #
@@ -199,14 +202,25 @@ class PyKotaConfig :
            if it is not set, it defaults to 'querying' which means ask printer
            for its internal lifetime page counter.
         """   
-        validaccounters = [ "querying", "stupid" ]     
+        validaccounters = [ "querying", "stupid", "external" ]     
         try :
-            accounter = self.getPrinterOption(printer, "accounter").lower()
+            fullaccounter = self.getPrinterOption(printer, "accounter").strip().lower()
         except PyKotaConfigError :    
-            accounter = "querying"
-        if accounter not in validaccounters :
+            fullaccounter = "querying"
+        if fullaccounter.startswith("external") :    
+            try :
+                (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
+            except ValueError :    
+                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printer)
+            if args.endswith(')') :
+                args = args[:-1]
+            if not args :
+                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printer)
+            return (accounter, args)    
+        elif fullaccounter not in validaccounters :
             raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printer, str(validaccounters))
-        return accounter
+        else :    
+            return (fullaccounter, None)
         
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""

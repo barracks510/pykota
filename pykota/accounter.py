@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/04/30 19:53:58  jalet
+# 1.05
+#
 # Revision 1.2  2003/04/30 13:36:40  jalet
 # Stupid accounting method was added.
 #
@@ -42,9 +45,10 @@ class PyKotaAccounterError(Exception):
     
 class AccounterBase :    
     """A class to account print usage by querying printers."""
-    def __init__(self, kotafilter) :
+    def __init__(self, kotafilter, arguments) :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
+        self.arguments = arguments
         
     def filterInput(self, inputfile) :
         """Transparent filter."""
@@ -70,7 +74,7 @@ class AccounterBase :
         
 def openAccounter(kotafilter) :
     """Returns a connection handle to the appropriate accounter."""
-    backend = kotafilter.config.getAccounterBackend(kotafilter.printername)
+    (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.printername)
     try :
         if not backend.isalpha() :
             # don't trust user input
@@ -79,4 +83,4 @@ def openAccounter(kotafilter) :
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
     else :    
-        return getattr(accounterbackend, "Accounter")(kotafilter)
+        return getattr(accounterbackend, "Accounter")(kotafilter, args)

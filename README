@@ -61,6 +61,11 @@ Actual working features :
           reading the result. See the example scripts in the
           "untested" directory and try to adapt them to your
           configuration.
+          
+        - External accounting methods : you can use your own accounting
+          method to compute each job's size. Just create a shell script
+          which prints the job's (read from its standard input) size on 
+          its standard output, and you're done !
         
         - Special scripts included for a seamless integration of
           PyKota on Debian machines.
@@ -86,43 +91,34 @@ which prints all the available options and show usage examples.
         
 Planned features are described in the TODO file.
 
-Actually only the lazy quota method is implemented. What do I call
-lazy method ?
+Actually three (or an infinity of) page accounting methods are
+implemented :
 
-  The lazy method consists in querying the printer (actually via SNMP 
-  or Netatalk) for its total pages counter, just before the beginning 
-  of a job, and use this to modify the *preceding* user's quota. So 
-  you're always late of one print job, but this is generally ok, 
-  especially because a check is also done to see if the current user 
-  is allowed or not to print. 
-  
-  Problem may theorically arise in batches of successive print jobs by 
-  different users when there's no sleep time between two jobs : the 
-  used pages may theorically be attributed to an incorrect user in the 
-  case that the printer is asked for its page counter at the beginning 
-  of a new job and before the end of the previous job. This depends on 
-  the printer speed and time between jobs, but so far I've not seen 
-  any problem with moderately used printers. This also depends on the
-  printing system's internal behavior : if it doesn't begin to send a 
-  job to a printer before the previous one is completely printed, then 
-  there's no problem. 
-  
-  Other querying methods which won't suffer from this possible 
-  problem, but probably from other ones ;-) will be implemented in the 
-  future. 
+  - The 'querying' method consists in querying the printer (via SNMP
+    or Netatalk) for its total pages counter, just before the beginning 
+    of a job, and use this to modify the *preceding* user's quota. So 
+    you're always late of one print job, but this is generally ok, 
+    especially because a check is also done to see if the current user 
+    is allowed or not to print. You're not limited to SNMP or Netatalk,
+    because you can also use any external command instead if you want.
+    
+  - The 'external' method consists in delegating the computation of the
+    job's size in number of pages to any external command of your choice.
+    The command can read the job's data from its standard input and MUST
+    output the job's size on its standard output.
+    
+  - The 'stupid' method consists in counting the 'showpage' PostSript  
+    statements in the job. THIS IS UNRELIABLE, but can serve as an
+    example if you plan to write your own accounting method for
+    integration into PyKota.
   
 PyKota is known to work fine with HP Laserjet 2100 and 2200, and 
-Apple LaserWriter 16/600 PS. 
+Apple LaserWriter 16/600 PS, both with CUPS and LPRng, under 
+Debian GNU/Linux (Sarge and Sid) operating systems.
 
-It should also work fine with any printer capable of outputing 
-its lifetime printed pages counter via either SNMP or AppleTalk. 
-
-If your printers don't support SNMP or AppleTalk, then making them 
-work with PyKota is up to you. Some sample scripts which can query 
-non-SNMP printers for their lifetime page counter are included in 
-the ./untested directory. You'll have to test and adapt them though, 
-and define them as external requesters in the PyKota configuration 
-file. See the sample configuration file to learn how to do that.
+I'm interested in receiving success or failure reports with other
+brands or models of printers, as well as with other operating 
+systems.
 
 ============================================================
 
@@ -260,22 +256,8 @@ or :
     which will print quota usage for all users on all printers,
     along with totals.
     
-SECURITY : You should ensure that only the print quota administrator
-           can run the warnpykota command, but this is actually not
-           enforced in the program. Any user able to launch warnpykota
-           could flood over-quota users' email boxes.
-           
-           You should ensure that only the print quota administrator
-           can run the edpykota command, but this is actually not
-           enforced in the program. Otherwise, any user could modify 
-           his/her or other people's print quota.
-          
-           launching : chmod 750 /usr/bin/warnpykota /usr/bin/edpykota
-           should make you reasonably safe.
-           
-           also please ensure that only the printing daemon user
-           can launch the pykota command. Again this is not enforced
-           in the program.
+For different security concerns, please give a look at the SECURITY
+file which is part of this software.
            
 ============================================================
 
