@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Pass-through mode for printers : history correctly filled (including
+          job size) but no impact on user's page counter or account
+          balance : this is meant to be a temporary situation for
+          a printer to be in pass-through mode, for example during
+          an exam where the faculty pays for the printouts and we
+          don't want our users to complain about their credits being
+          "eaten" for mandatory printouts.
+          
         - Maybe per user "denyduplicates" : my 5 years old daughter 
           just prints again when the printer is off...
           
