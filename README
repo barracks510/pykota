@@ -305,8 +305,10 @@ Prerequisite :
       IMPORTANT : version 3.4.3 (or 3.4.2) is REQUIRED. Versions 2.x or
       4.x won't work for now.
     - The Python-OSD module to use the graphical print quota reminder.
+      (http://repose.cx/pyosd/)
     - SNMP tools (specifically the snmpget command) if you prefer to
       use your own script to request query printers.
+      (http://www.net-snmp.org)
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
       (http://netatalk.sourceforge.net)
