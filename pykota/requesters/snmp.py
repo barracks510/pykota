@@ -1,4 +1,5 @@
 # PyKota
+# -*- coding: ISO-8859-15 -*-
 #
 # PyKota - Print Quotas for CUPS and LPRng
 #
@@ -20,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/10/07 09:07:29  jalet
+# Character encoding added to please latest version of Python
+#
 # Revision 1.11  2003/07/07 11:49:24  jalet
 # Lots of small fixes with the help of PyChecker
 #

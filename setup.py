@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
 #
 # PyKota
 #
@@ -22,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/10/07 09:07:27  jalet
+# Character encoding added to please latest version of Python
+#
 # Revision 1.23  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #

@@ -1,4 +1,5 @@
 # PyKota
+# -*- coding: ISO-8859-15 -*-
 #
 # PyKota : Print Quotas for CUPS and LPRng
 #
@@ -20,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/10/07 09:07:30  jalet
+# Character encoding added to please latest version of Python
+#
 # Revision 1.30  2003/10/06 14:42:36  jalet
 # LDAP group access will be slower when cache is disabled, but at least code
 # is consistent with the rest of the caching mechanis, but at least code

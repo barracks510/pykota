@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 
 # PyKota - Print Quotas for CUPS and LPRng
 #
@@ -20,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2003/10/07 09:07:28  jalet
+# Character encoding added to please latest version of Python
+#
 # Revision 1.51  2003/10/06 14:21:41  jalet
 # Test reversed to not retrieve group members when no messages for them.
 #

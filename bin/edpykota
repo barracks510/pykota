@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
 
 # PyKota Print Quota Editor 
 #
@@ -22,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2003/10/07 09:07:27  jalet
+# Character encoding added to please latest version of Python
+#
 # Revision 1.58  2003/10/03 12:27:01  jalet
 # Several optimizations, especially with LDAP backend
 #
