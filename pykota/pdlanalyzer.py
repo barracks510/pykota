@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2004/12/13 20:49:53  jalet
+# Bad typo
+#
 # Revision 1.46  2004/12/13 20:48:33  jalet
 # Outputs debug info to stderr
 #
@@ -888,7 +891,7 @@ class PCLXLAnalyzer :
             copies = page["copies"]
             self.pagecount += (copies - 1)
             if self.debug :
-                sys.stdrr.write("%s*%s*%s*%s*%s\n" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"]))
+                sys.stderr.write("%s*%s*%s*%s*%s\n" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"]))
             
         return self.pagecount
         
