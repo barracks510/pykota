@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/07/20 22:47:38  jalet
+# Sanitizing
+#
 # Revision 1.1  2004/07/17 20:37:27  jalet
 # Missing file... Am I really stupid ?
 #
@@ -98,12 +101,9 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                 if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
                     self.softwareJobSize = self.precomputeJobSize()
                     self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
-                    self.sendBackChannelData("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
+                    self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
                 os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
                 os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
-                
-                # checks the user's quota
-                action = self.warnUserPQuota(userpquota)
                 
                 # if no data to pass to real backend, probably a filter
                 # higher in the chain failed because of a misconfiguration.
@@ -111,6 +111,9 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                 if not self.jobSizeBytes :
                     self.printInfo(_("Job contains no data. Printing is denied."), "warn")
                     action = "DENY"
+                else :    
+                    # checks the user's quota
+                    action = self.warnUserPQuota(userpquota)
                 
                 # exports some new environment variables
                 os.environ["PYKOTAACTION"] = action
@@ -118,27 +121,27 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                 # launches the pre hook
                 self.prehook(userpquota)
                 
-                self.sendBackChannelData("Job accounting begins.")
+                self.logdebug("Job accounting begins.")
                 self.accounter.beginJob(userpquota)
                 
                 jobsize = None
                 if self.accounter.isSoftware :
                     self.accounter.endJob(userpquota)
                     jobsize = self.accounter.getJobSize()
-                    self.sendBackChannelData("Job accounting ends.")
+                    self.logdebug("Job accounting ends.")
                     
                 if action == "DENY" :   
                     jobsize = 0
-                    self.sendBackChannelData("Job size forced to 0 because printing was denied.")
+                    self.logdebug("Job size forced to 0 because printing was denied.")
                     
                 if jobsize is not None :    
                     # update the quota for the current user on this printer 
-                    self.sendBackChannelData("Job size : %i" % jobsize)
-                    self.sendBackChannelData("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
+                    self.logdebug("Job size : %i" % jobsize)
+                    self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
                     jobprice = userpquota.increasePagesUsage(jobsize)
                     
                     printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
-                    self.sendBackChannelData("Job added to history.")
+                    self.logdebug("Job added to history.")
                     
                     # exports some new environment variables
                     os.environ["PYKOTAPHASE"] = "AFTER"
@@ -154,7 +157,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                     # here software accounting was completed.
                 else :
                     printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, filename=self.preserveinputfile, title=self.title, copies=self.copies, options=self.options, clienthost=clienthost, jobsizebytes=self.jobSizeBytes)
-                    self.sendBackChannelData("Job added to history during first pass : Job's size and price are still unknown.")
+                    self.logdebug("Job added to history during first pass : Job's size and price are still unknown.")
                     
                 if action == "DENY" :
                     return self.removeJob()
@@ -167,24 +170,24 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                     # Software accounting method was used, and we are
                     # in second pass, so all work is already done, 
                     # now we just have to exit successfully
-                    self.printInfo("Software accounting already done in first pass. Exiting.")
+                    self.printInfo(_("Software accounting already done in first pass. Exiting."))
                 else :    
                     # Now we have to check if accounting was completely finished :
                     # if it is, then a big problem occured because with hardware
                     # accounting, only the second pass can know the job's size.
                     if (printer.LastJob.JobSize is not None) :
-                        raise PyKotaToolError, "Hardware accounting already finished ! This should be impossible, please report this problem ASAP."
+                        raise PyKotaToolError, _("Hardware accounting already finished ! This should be impossible, please report this problem ASAP.")
                         
                     # indicate phase change
                     os.environ["PYKOTAPHASE"] = "AFTER"
                     
                     # stops accounting. 
                     self.accounter.endJob(userpquota)
-                    self.sendBackChannelData("Job accounting ends.")
+                    self.logdebug("Job accounting ends.")
                         
                     # retrieve the job size    
                     jobsize = self.accounter.getJobSize()
-                    self.sendBackChannelData("Job size : %i" % jobsize)
+                    self.logdebug("Job size : %i" % jobsize)
                     raise PyKotaToolError, "Not implemented !"
                 return self.acceptJob()
             
