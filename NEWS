@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha26 :
+    
+        - Fixed PCL5 parser according to the sources of rastertohp.
+        
     - 1.19alpha25 :
     
         - Added new "description" field to printers in both
