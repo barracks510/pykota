@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.97  2004/06/07 22:45:35  jalet
+# Now accepts a job when enforcement is STRICT and predicted account balance
+# is equal to 0.0 : since the job hasn't been printed yet, only its printing
+# will really render balance equal to 0.0, so we should be allowed to print.
+#
 # Revision 1.96  2004/06/05 22:18:04  jalet
 # Now catches some exceptions earlier.
 # storage.py and ldapstorage.py : removed old comments
@@ -633,6 +638,8 @@ class PyKotaTool :
                 action = "WARN"
             else :    
                 action = "ALLOW"
+            if (enforcement == "STRICT") and (val == 0.0) :
+                action = "WARN" # we can still print until account is 0
         else :
             val = grouppquota.PageCounter
             if enforcement == "STRICT" :
@@ -707,14 +714,18 @@ class PyKotaTool :
                 return action        
             else :    
                 val = float(user.AccountBalance or 0.0)
-                if self.config.getPrinterEnforcement(printer.Name) == "STRICT" : 
+                enforcement = self.config.getPrinterEnforcement(printer.Name)
+                if enforcement == "STRICT" : 
                     val -= self.softwareJobPrice # use precomputed size.
                 if val <= 0.0 :
-                    return "DENY"
+                    action = "DENY"
                 elif val <= self.config.getPoorMan() :    
-                    return "WARN"
-                else :    
-                    return "ALLOW"
+                    action = "WARN"
+                else :
+                    action = "ALLOW"
+                if (enforcement == "STRICT") and (val == 0.0) :
+                    action = "WARN" # we can still print until account is 0
+                return action    
         else :
             # Then check the user quota on current printer and all its parents.                
             policyallowed = 0
