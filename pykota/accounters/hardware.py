@@ -121,7 +121,7 @@ else :
             while 1:
                 self.retrieveSNMPValues()
                 statusAsString = printerStatusValues.get(self.printerStatus)
-                if statusAsString in ('printing',) :
+                if statusAsString in ('printing', 'warmup') :
                     break
                 self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.printername)    
                 time.sleep(ITERATIONDELAY)

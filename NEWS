@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.22alpha3 :
     
+        - Fixes some problem for printers which directly go from
+          "idle" to "warmup" and never to "printing" before
+          returning to "idle".
+          
         - Some permissions settings may have prevented cupspykota
           from parsing cupsd.conf, this is now fixed.
           
