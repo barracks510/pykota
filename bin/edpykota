@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/03/10 00:23:04  jalet
+# Bad english
+#
 # Revision 1.26  2003/03/10 00:11:27  jalet
 # Cleaner example.
 #
@@ -183,7 +186,7 @@ examples :
   This will tell PyKota to not limit jerome when printing on the 
   hpcolor printer. All his jobs will be allowed on this printer, but 
   accounting of the pages he prints will still be kept.
-  Print Quotas for jerome on other printers is unchanged.
+  Print Quotas for jerome on other printers are unchanged.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
