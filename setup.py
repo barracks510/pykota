@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/09/21 21:31:35  jalet
+# Installation script now checks for availability of Python-SNMP (http://pysnmp.sf.net)
+#
 # Revision 1.50  2004/09/14 22:29:12  jalet
 # First version of dumpykota. Works fine but only with PostgreSQL backend
 # for now.
@@ -416,10 +419,11 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.
-    modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend."),                                            
-                       ("mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work."), 
-                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend."),
+    modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend.\nSee http://www.pygresql.org"),                                            
+                       ("mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"), 
+                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.\nSee http://python-ldap.sf.net"),
                        ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
+                       ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
                      ]
     commandstocheck = [("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")]
     for (name, module, helper) in modulestocheck :
