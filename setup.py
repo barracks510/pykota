@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2004/11/21 21:50:02  jalet
+# Introduced the new pkmail command as a simple email gateway
+#
 # Revision 1.59  2004/11/15 19:59:34  jalet
 # PyKota banners now basically work !
 #
@@ -303,5 +306,5 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/pkbanner", "bin/autopykota", "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
+      scripts = [ "bin/pkmail", "bin/pkbanner", "bin/autopykota", "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
