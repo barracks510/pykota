@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2004/12/21 16:19:44  jalet
+# Fixed the problem with dumpykota's filtering of printers groups membership
+#
 # Revision 1.61  2004/12/21 15:49:59  jalet
 # The dumpykota command now supports extended filtering capabilities with
 # the PostgreSQL backend. LDAP doesn't yet support such possibilities.
@@ -206,6 +209,13 @@ class SQLStorage :
         
     def extractPmembers(self, extractonly={}) :
         """Extracts all printer groups members."""
+        for (k, v) in extractonly.items() :
+            if k == "pgroupname" :
+                del extractonly[k]
+                extractonly["p1.printername"] = v
+            elif k == "printername" :
+                del extractonly[k]
+                extractonly["p2.printername"] = v
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
