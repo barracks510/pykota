@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/06 22:54:33  jalet
+# warnpykota should be ok
+#
 # Revision 1.5  2003/02/05 22:45:25  jalet
 # Forgotten import
 #
@@ -114,7 +117,7 @@ def main() :
         tool.storage.updatePrinterPageCounter(tool.printername, username, counterbeforejob) # TODO : allow or deny users not in quota system, and die cleanly if needed
         
         # Is the current user allowed to print at all ?
-        action = tool.warnQuotaPrinter(username)
+        action = tool.warnUserPQuota(username)
         if action == "DENY" :
             # No, just die cleanly
             return 1
@@ -126,7 +129,7 @@ def main() :
         jobsize = (counterbeforejob - lastpagecounter)    
         if jobsize >= 0:
             tool.storage.updateUserPQuota(lastusername, tool.printername, jobsize)
-            tool.warnQuotaPrinter(lastusername)
+            tool.warnUserPQuota(lastusername)
         else :    
             tool.logger.log_message("Error in page count value %i for user %s on printer %s" % (jobsize, tool.printername, lastusername), "error")
         

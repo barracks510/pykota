@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# PyKota Print Quota Warner 
+# PyKota Print Quota Warning sender
 #
 # PyKota - Print Quotas for CUPS
 #
@@ -16,9 +16,122 @@
 # $Id$
 #
 # $Log$
-# Revision 1.1  2003/02/05 21:41:09  jalet
-# Skeletons added for all command line tools
+# Revision 1.2  2003/02/06 22:54:33  jalet
+# warnpykota should be ok
 #
 #
 #
+
+import sys
+
+from pykota import version
+from pykota.tool import PyKotaTool, PyKotaToolError
+
+__doc__ = """warnpykota v%s (C) 2003 C@LL - Conseil Internet & Logiciels Libres
+send mail to users over print quota
+
+command line usage :
+
+  warnpykota [options] user1 user2 ... userN
+  warnpykota [options] group1 group2 ... groupN
+
+options :
+
+  -v | --version       Prints warnpykota's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -u | --users         Send mail to users over print quota, this is 
+                       the default.
+  
+  -g | --groups        Send mail to group administrators instead of users.
+  
+  -P | --printer p     Verify quotas on this printer only. Actually p can
+                       use wildcards characters to select only
+                       some printers. The default value is *, meaning
+                       all printers.
+  
+examples :                              
+
+  $ warnpykota --printer lp
+  
+  This will warn all users of the lp printer who have exceeded their
+  print quota.
+
+  $ warnpykota 
+  
+  This will warn all users  who have exceeded their print quota on
+  any printer.
+
+  $ warnpykota --groups --printer "laserjet*"
+  
+  This will warn all group administrators of groups which have exceeded 
+  their print quota on any printer which name begins with "laserjet"
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+        
+class WarnPyKota(PyKotaTool) :        
+    """A class for warnpykota."""
+    def main(self, names, options) :
+        """Warn users or groups over print quota."""
+        printernames = self.storage.getMatchingPrinters(options["printer"])
+        if not printernames :
+            raise PyKotaToolError, "There's no printer matching %s" % options["printer"]
+        for printer in printernames :
+            for name in names :
+                if options["users"] :
+                    self.warnUserPQuota(name, printer)
+                else :
+                    self.warnGroupPQuota(name, printer)
+                     
+if __name__ == "__main__" : 
+    try :
+        defaults = { \
+                     "users"  : 1, \
+                     "groups" : 0, \
+                     "printer" : "*", \
+                   }
+        short_options = "vhugP:"
+        long_options = ["help", "version", "users", "groups", "printer="]
+        
+        # Initializes the command line tool
+        sender = WarnPyKota(doc=__doc__)
+        
+        # parse and checks the command line
+        (options, args) = sender.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["users"] = options["u"] or options["users"] or defaults["users"]
+        options["groups"] = options["g"] or options["groups"] or defaults["groups"]
+        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
+        
+        if options["help"] :
+            sender.display_usage_and_quit()
+        elif options["version"] :
+            sender.display_version_and_quit()
+        elif options["users"] and options["groups"] :    
+            raise PyKotaToolError, "warnpykota: options --users and --groups are incompatible."
+        elif options["groups"] :    
+            raise PyKotaToolError, "warnpykota: options --groups is currently not implemented."
+        else :
+            sys.exit(sender.main(args, options))
+    except PyKotaToolError, msg :            
+        sys.stderr.write("%s\n" % msg)
+        sys.stderr.flush()
+        sys.exit(-1)
 
