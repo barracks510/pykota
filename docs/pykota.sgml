@@ -1,11 +1,13 @@
 <!DOCTYPE Book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
 
   <!entity INSTALLATION system "installation.sgml">
+  <!entity FILTERPYKOTA system "filterpykota.sgml">
+  <!entity PKPRINTERS system "pkprinters.sgml">
   <!entity EDPYKOTA system "edpykota.sgml">
   <!entity REPYKOTA system "repykota.sgml">
   <!entity PYKOTME system "pykotme.sgml">
   <!entity WARNPYKOTA system "warnpykota.sgml">
-  <!entity FILTERPYKOTA system "filterpykota.sgml">
+  <!entity SCRIPTS system "scripts.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -100,8 +102,10 @@
   </bookinfo>
 
   &INSTALLATION;
-
+  
   &FILTERPYKOTA;
+  
+  &PKPRINTERS;
 
   &EDPYKOTA;
     
@@ -110,6 +114,8 @@
   &PYKOTME;  
   
   &WARNPYKOTA;
+  
+  &SCRIPTS;
     
   &GNUGPL;
 
@@ -118,6 +124,9 @@
 <!--
 
 $Log$
+Revision 1.11  2004/03/16 14:42:31  jalet
+Improved documentation
+
 Revision 1.10  2004/01/12 23:16:42  jalet
 Copyright year.
 

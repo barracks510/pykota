@@ -1,0 +1,43 @@
+<!-- $Id$ -->
+
+<chapter>
+  <title>Manage printers with pkprinters</title>
+  <para>Last modified on $Date$</para>
+  
+  <para>
+    <filename>pkprinters</filename> is now the preferred tool to manage printers in <application>PyKota</application>.  
+    It only manages printers, and do it well. With it you can add or delete printers or printer groups, or modify
+    existing printers or printers groups. This is also the tool to use to put printers into one or more printers groups.
+  </para>  
+  
+  <sect1>
+    <title>Reference</title>
+    <para>
+      <cmdsynopsis>
+        <command>pkprinters</command>
+        <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+        <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+        <group choice="opt"><arg>-a</arg><arg>--add</arg></group>
+        <group choice="opt"><arg>-d</arg><arg>--delete</arg></group>
+        <group choice="opt"><arg>-r</arg><arg>--remove</arg></group>
+        <group choice="opt">
+          <arg>-c <replaceable>p</replaceable>,<replaceable>j</replaceable></arg>
+          <arg>--charge <replaceable>p</replaceable>,<replaceable>j</replaceable></arg>
+        </group>  
+        <group choice="opt">
+          <arg>-g <replaceable>pgroup1</replaceable>,<replaceable>pgroup2</replaceable>,<replaceable>...</replaceable></arg>
+          <arg>--groups <replaceable>pgroup1</replaceable>,<replaceable>pgroup2</replaceable>,<replaceable>...</replaceable></arg>
+        </group>  
+      </cmdsynopsis>
+    </para>
+  </sect1>
+</chapter>
+
+<!--
+
+$Log$
+Revision 1.1  2004/03/16 14:42:31  jalet
+Improved documentation
+
+
+-->
