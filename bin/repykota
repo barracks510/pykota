@@ -16,6 +16,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/07 08:38:36  jalet
+# Missing conversion.
+# empty line between two printers
+#
 # Revision 1.4  2003/02/07 08:34:15  jalet
 # Test wrt date limit was wrong
 #
@@ -96,16 +100,17 @@ class RePyKota(PyKotaTool) :
             print "Page grace time: %idays" % self.config.getGraceDelay()
             if options["users"] :
                 print "User            used    soft    hard  grace"
-                print "------------------------------------------------"
+                print "-----------------------------------------------"
                 for name in self.storage.getPrinterUsers(printer) :
                     quota = self.storage.getUserPQuota(name, printer)
                     self.printQuota(name, quota)
             else :
                 print "Group           used    soft    hard  grace"
-                print "------------------------------------------------"
+                print "-----------------------------------------------"
                 for name in self.storage.getPrinterGroups(printer) :
                     quota = self.storage.getGroupPQuota(name, printer) 
                     self.printQuota(name, quota)
+            print        
                         
     def printQuota(self, name, quota) :
         """Prints the quota information."""
@@ -122,7 +127,7 @@ class RePyKota(PyKotaTool) :
             else :    
                 datelimit = ""
             reached = ((pagecounter >= softlimit) and "+") or "-"
-            print "%-10.10s %c %7i %7i %7i %s" % (name, reached, pagecounter, softlimit, hardlimit, datelimit[:10])
+            print "%-10.10s %c %7i %7i %7i %s" % (name, reached, pagecounter, softlimit, hardlimit, str(datelimit)[:10])
         
                     
 if __name__ == "__main__" : 
