@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.106  2004/06/22 09:31:18  jalet
+# Always send some debug info to CUPS' back channel stream (stderr) as
+# informationnal messages.
+#
 # Revision 1.105  2004/06/21 08:17:38  jalet
 # Added version number in subject message for directive crashrecipient.
 #
@@ -917,7 +921,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # Job comes from sys.stdin, but this is not
             # seekable and complexifies our task, so create
             # a temporary file and use it instead
-            self.logdebug("Duplicating data stream from stdin to temporary file")
+            self.sendBackChannelData("Duplicating data stream from stdin to temporary file")
+            dummy = 0
             MEGABYTE = 1024*1024
             self.jobSizeBytes = 0
             infile = tempfile.TemporaryFile()
@@ -926,19 +931,22 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                 if not data :
                     break
                 self.jobSizeBytes += len(data)    
+                if not (dummy % 10) :
+                    self.sendBackChannelData("%s bytes read..." % self.jobSizeBytes)
+                dummy += 1    
                 infile.write(data)
             infile.flush()    
             infile.seek(0)
             return infile
         else :    
             # real file, just open it
-            self.logdebug("Opening data stream %s" % self.preserveinputfile)
+            self.sendBackChannelData("Opening data stream %s" % self.preserveinputfile)
             self.jobSizeBytes = os.stat(self.preserveinputfile)[6]
             return open(self.preserveinputfile, "rb")
         
     def closeJobDataStream(self) :    
         """Closes the file which contains the job's datas."""
-        self.logdebug("Closing data stream.")
+        self.sendBackChannelData("Closing data stream.")
         try :
             self.jobdatastream.close()
         except :    
