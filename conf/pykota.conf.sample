@@ -210,7 +210,7 @@ utolower: No
 #
 # A script which seems to be accurate, copy it from the
 # untested/postscript directory to another place.
-# accounter: external(/usr/local/bin/pagecount.sh)
+# accounter: external(/usr/share/pykota/pagecount.sh)
 # WARNING : it may not work when multiple copies are asked.
 #           this breaks ghostscript, I don't know why yet.
 #
