@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2004/02/25 12:36:34  jalet
+# Avoids a database query even if caching was disabled.
+#
 # Revision 1.42  2004/02/23 22:53:21  jalet
 # Don't retrieve data when it's not needed, to avoid database queries
 #
@@ -427,8 +430,8 @@ class StorageLastJob(StorageJob) :
     """Printer's Last Job class."""
     def __init__(self, parent, printer) :
         StorageJob.__init__(self, parent)
+        self.PrinterName = printer.Name # not needed
         self.Printer = printer
-        self.UserName = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
@@ -438,9 +441,9 @@ class StorageLastJob(StorageJob) :
         else :    
             raise AttributeError, name
         
-    def setSize(self, jobsize) :
+    def setSize(self, userpquota, jobsize) :
         """Sets the last job's size."""
-        jobprice = self.parent.getUserPQuota(self.User, self.Printer).computeJobPrice(jobsize)
+        jobprice = userpquota.computeJobPrice(jobsize)
         self.parent.writeLastJobSize(self, jobsize, jobprice)
         self.JobSize = jobsize
         self.JobPrice = jobprice

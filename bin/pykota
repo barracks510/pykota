@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2004/02/25 12:36:34  jalet
+# Avoids a database query even if caching was disabled.
+#
 # Revision 1.52  2004/01/14 15:57:54  jalet
 # Missing return caused problems with LPRng
 #
@@ -298,7 +301,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                     self.accounter.counterafter = self.accounter.getPrinterInternalPageCounter() or 0
                     lastjobsize = self.accounter.getJobSize()
                     self.logdebug("Last Job size : %i" % lastjobsize)
-                    printer.LastJob.setSize(lastjobsize)
+                    printer.LastJob.setSize(lastuserpquota, lastjobsize)
                     self.logdebug("Updating user %s's quota on printer %s" % (lastuserpquota.User.Name, printer.Name))
                     lastuserpquota.increasePagesUsage(lastjobsize)
                     self.warnUserPQuota(lastuserpquota)
