@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/11/12 23:28:55  jalet
+# More work on new backend. This commit may be unstable.
+#
 # Revision 1.5  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -56,6 +59,13 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
+        
+    def getLastPageCounter(self) :    
+        """Returns last internal page counter value (possibly faked)."""
+        try :
+            return self.LastPageCounter
+        except :    
+            return 0
         
     def filterInput(self, inputfile) :
         """Transparent filter."""

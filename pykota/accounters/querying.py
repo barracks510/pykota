@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/11/12 23:29:24  jalet
+# More work on new backend. This commit may be unstable.
+#
 # Revision 1.6  2003/10/07 09:07:29  jalet
 # Character encoding added to please latest version of Python
 #
@@ -43,6 +46,7 @@
 #
 
 import sys
+import os
 import time
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.requester import openRequester, PyKotaRequesterError
@@ -51,27 +55,67 @@ MAXTRIES = 12    # maximum number of tries to get the printer's internal page co
 TIMETOSLEEP = 10 # number of seconds to sleep between two tries to get the printer's internal page counter
 
 class Accounter(AccounterBase) :
+    def __init__(self, kotabackend, arguments) :
+        """Initializes querying accounter."""
+        AccounterBase.__init__(self, kotabackend, arguments)
+        self.requester = openRequester(kotabackend.config, kotabackend.printername)
+        
+    def getPrinterInternalPageCounter(self) :    
+        """Returns the printer's internal page counter."""
+        global MAXTRIES, TIMETOSLEEP
+        for i in range(MAXTRIES) :
+            try :
+                counter = self.requester.getPrinterPageCounter(self.filter.printerhostname)
+            except PyKotaRequesterError, msg :
+                # can't get actual page counter, assume printer is off or warming up
+                # log the message anyway.
+                self.filter.logger.log_message("%s" % msg, "warn")
+                counter = None
+            else :    
+                # printer answered, it is on so we can exit the loop
+                break
+            time.sleep(TIMETOSLEEP)    
+        return counter    
+        
+    def beginJob(self, printer, user) :    
+        """Saves printer internal page counter at start of job."""
+        # save page counter before job
+        self.LastPageCounter = self.counterbefore = self.getPrinterInternalPageCounter()
+        
+    def endJob(self, printer, user) :    
+        """Saves printer internal page counter at end of job."""
+        # save page counter after job
+        self.LastPageCounter = self.counterafter = self.getPrinterInternalPageCounter()
+        
+    def getJobSize(self) :    
+        """Returns the actual job size."""
+        try :
+            jobsize = (self.counterafter - self.counterbefore)    
+            if jobsize < 0 :
+                # Try to take care of HP printers 
+                # Their internal page counter is saved to NVRAM
+                # only every 10 pages. If the printer was switched
+                # off then back on during the job, and that the
+                # counters difference is negative, we know 
+                # the formula (we can't know if more than eleven
+                # pages were printed though) :
+                if jobsize > -10 :
+                    jobsize += 10
+                else :    
+                    # here we may have got a printer being replaced
+                    # DURING the job. This is HIGHLY improbable !
+                    jobsize = 0
+        except :    
+            # takes care of the case where one counter (or both) was never set.
+            jobsize = 0
+        return jobsize
+        
     def doAccounting(self, printer, user) :
         """Does print accounting and returns if the job status is ALLOW or DENY."""
         # Get the page counter directly from the printer itself
         # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
         # This was seen with my Apple LaserWriter 16/600 PS which doesn't answer before having warmed up.
-        global MAXTRIES, TIMETOSLEEP
-        requester = openRequester(self.filter.config, self.filter.printername)
-        for i in range(MAXTRIES) :
-            try :
-                counterbeforejob = requester.getPrinterPageCounter(self.filter.printerhostname)
-            except PyKotaRequesterError, msg :
-                # can't get actual page counter, assume printer is off or warming up
-                # log the message anyway.
-                self.filter.logger.log_message("%s" % msg, "warn")
-                counterbeforejob = None
-                printerIsOff = 1
-            else :    
-                # printer answered, it is on so we can exit the loop
-                printerIsOff = 0
-                break
-            time.sleep(TIMETOSLEEP)    
+        counterbeforejob = self.getPrinterInternalPageCounter()
         
         # get last job information for this printer
         if not printer.LastJob.Exists :
@@ -84,7 +128,7 @@ class Accounter(AccounterBase) :
             lastpagecounter = printer.LastJob.PrinterPageCounter
             
         # if printer is off then we assume the correct counter value is the last one
-        if printerIsOff :
+        if counterbeforejob is None :
             counterbeforejob = lastpagecounter
             
         # if the internal lifetime page counter for this printer is 0    

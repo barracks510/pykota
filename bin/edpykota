@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2003/11/12 23:28:38  jalet
+# More work on new backend. This commit may be unstable.
+#
 # Revision 1.61  2003/11/12 13:06:35  jalet
 # Bug fix wrt no user/group name command line argument to edpykota
 #
@@ -515,7 +518,7 @@ class EdPyKota(PyKotaTool) :
                             else :    
                                 self.logger.log_message(_("Invalid user name %s") % entry.Name)
                                 
-                if not entrypquota.Exists :
+                if entry.Exists and (not entrypquota.Exists) :
                     # not found
                     if options["add"] :
                         entrypquota = getattr(self.storage, "add%sPQuota" % suffix)(entry, printer)

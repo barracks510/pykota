@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/11/12 23:29:24  jalet
+# More work on new backend. This commit may be unstable.
+#
 # Revision 1.5  2003/10/07 09:07:29  jalet
 # Character encoding added to please latest version of Python
 #
@@ -45,6 +48,31 @@ import tempfile
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 class Accounter(AccounterBase) :
+    def beginJob(self) :    
+        """Saves the computed job size."""
+        self.JobSize = self.computeJobSize()
+        
+        # get last job information for this printer
+        if not printer.LastJob.Exists :
+            # The printer hasn't been used yet, from PyKota's point of view
+            self.LastPageCounter = 0
+        else :    
+            # get last job size and page counter from Quota Storage
+            # Last lifetime page counter before actual job is 
+            # last page counter + last job size
+            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
+        
+    def endJob(self) :    
+        """Do nothing."""
+        pass
+        
+    def getJobSize(self) :    
+        """Returns the actual job size."""
+        try :
+            return self.JobSize
+        except AttributeError :    
+            return 0
+        
     def doAccounting(self, printer, user) :
         """Does print accounting by stupidly counting the 'showpage' postscript instructions in the document.
         
@@ -54,7 +82,7 @@ class Accounter(AccounterBase) :
         self.filter.logger.log_message(_("Using the 'stupid' accounting method is unreliable."), "warn")
         
         # get the job size    
-        jobsize = self.getJobSize() * self.filter.copies
+        jobsize = self.computeJobSize() * self.filter.copies
             
         # get last job information for this printer
         if not printer.LastJob.Exists :
@@ -81,7 +109,7 @@ class Accounter(AccounterBase) :
             
         return action
         
-    def getJobSize(self) :    
+    def computeJobSize(self) :    
         """Computes the job size and return its value.
         
            THIS METHOD IS COMPLETELY UNRELIABLE BUT SERVES AS AN EXAMPLE.
