@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 22:10:29  jalet
+# Typos
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -42,7 +45,7 @@ class PyKotaTool :
     def __init__(self, isfilter=0) :
         """Initializes the command line tool."""
         self.config = config.PyKotaConfig(os.environ.get("CUPS_SERVERROOT", "/etc/cups"))
-        self.logger = logger.Logger(self.config)
+        self.logger = logger.openLogger(self.config)
         self.storage = storage.openConnection(self.config, asadmin=(not isfilter))
         self.printername = os.environ.get("PRINTER", None)
         self.printerhostname = self.getPrinterHostname()

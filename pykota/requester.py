@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/05 22:10:29  jalet
+# Typos
+#
 # Revision 1.2  2003/02/05 22:02:22  jalet
 # __import__ statement didn't work as expected
 #
@@ -36,7 +39,7 @@ def openRequester(config, printername) :
     """Returns a connection handle to the appropriate requester."""
     backend = config.getRequesterBackend(printername)
     try :
-        if not isalpha(backend) :
+        if not backend.isalpha() :
             # don't trust user input
             raise ImportError
         exec "from pykota.requesters import %s as requesterbackend" % backend.lower()    

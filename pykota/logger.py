@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/05 22:10:29  jalet
+# Typos
+#
 # Revision 1.2  2003/02/05 22:02:22  jalet
 # __import__ statement didn't work as expected
 #
@@ -38,7 +41,7 @@ def openLogger(config) :
     """Returns the appropriate logger subsystem object."""
     backend = config.getLoggingBackend()
     try :
-        if not isalpha(backend) :
+        if not backend.isalpha() :
             # don't trust user input
             raise ImportError
         exec "from pykota.loggers import %s as loggingbackend" % backend.lower()    
