@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/11/18 23:43:11  jalet
+# Mailto can be any external command now, as usual.
+#
 # Revision 1.35  2003/10/08 21:41:38  jalet
 # External policies for printers works !
 # We can now auto-add users on first print, and do other useful things if needed.
@@ -440,5 +443,8 @@ msgid "External policy %s for printer %s produced an error. Job rejected. Please
 msgstr ""
 
 msgid "External policy %s for printer %s couldn't add user %s. Job rejected."
+msgstr ""
+
+msgid "Invalid option mailto %s for printer %s"
 msgstr ""
 

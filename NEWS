@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha9 :
+    
+        - mailto can be set to external(...) to warn users above
+          quota with any command of your choice (e.g. linpopup).
+          Several parameters are available, see sample configuration
+          file for details.
+          
     - 1.16alpha8 :
     
         - Now cupspykota transmits SIGTERMS to the original  

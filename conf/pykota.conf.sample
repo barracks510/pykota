@@ -184,13 +184,30 @@ adminmail: root@localhost
 
 #
 # Who should we send an email to in case a quota is reached ?
-# possible values are : DevNull, User, Admin, Both
+# possible values are : DevNull, User, Admin, Both, External(some command)
 # The Both value means that the User and the Admin will receive 
 # an email message.
 # The DevNull value means no email message will be sent.
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
 # If the value is not set, then the default BOTH applies.
+#
+#   For mailto: external(/usr/bin/mycommand)
+#
+#   You can use :
+#
+#       '%(action)s'            will contain either WARN or DENY
+#       '%(username)s'          will contain the user's name
+#       '%(printername)s'       will contain the printer's name
+#       '%(email)s'             will contain the user's email address
+#       '%(message)s'           will contain the message if you want 
+#                               use it.
+#
+#   On your command line, to pass arguments to your command.
+#   Example :
+#
+#       mailto: external(/usr/bin/callpager %(username)s "Quota problem on %(printername)s")
+#
 mailto: both
 
 #

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2003/11/18 23:43:12  jalet
+# Mailto can be any external command now, as usual.
+#
 # Revision 1.39  2003/10/08 21:41:38  jalet
 # External policies for printers works !
 # We can now auto-add users on first print, and do other useful things if needed.
@@ -208,16 +211,16 @@ class PyKotaConfig :
             else :
                 raise PyKotaConfigError, _("Option %s not found in section global of %s") % (option, self.filename)
                 
-    def getPrinterOption(self, printer, option) :    
+    def getPrinterOption(self, printername, option) :    
         """Returns an option from the printer section, or the global section, or raises a PyKotaConfigError."""
         globaloption = self.getGlobalOption(option, ignore=1)
         try :
-            return self.config.get(printer, option, raw=1)
+            return self.config.get(printername, option, raw=1)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
             if globaloption is not None :
                 return globaloption
             else :
-                raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
+                raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printername, self.filename)
         
     def getStorageBackend(self) :    
         """Returns the storage backend information as a Python mapping."""        
@@ -271,7 +274,7 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
         return logger    
         
-    def getAccounterBackend(self, printer) :    
+    def getAccounterBackend(self, printername) :    
         """Returns the accounter backend to use for a given printer.
         
            if it is not set, it defaults to 'querying' which means ask printer
@@ -279,60 +282,60 @@ class PyKotaConfig :
         """   
         validaccounters = [ "querying", "stupid", "external" ]     
         try :
-            fullaccounter = self.getPrinterOption(printer, "accounter").strip()
+            fullaccounter = self.getPrinterOption(printername, "accounter").strip()
         except PyKotaConfigError :    
             fullaccounter = "querying"
         if fullaccounter.lower().startswith("external") :    
             try :
                 (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
             except ValueError :    
-                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printer)
+                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printername)
             if args.endswith(')') :
                 args = args[:-1]
             if not args :
-                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printer)
+                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printername)
             return (accounter.lower(), args)    
         elif fullaccounter.lower() not in validaccounters :
-            raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printer, str(validaccounters))
+            raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printername, str(validaccounters))
         else :    
             return (fullaccounter.lower(), None)
         
-    def getRequesterBackend(self, printer) :    
+    def getRequesterBackend(self, printername) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
         try :
-            fullrequester = self.getPrinterOption(printer, "requester")
+            fullrequester = self.getPrinterOption(printername, "requester")
         except PyKotaConfigError :    
             # No requester defined, maybe it is not needed if accounting method
             # is not set to 'querying', but if we are called, then the accounting
             # method really IS 'querying', and so there's a big problem.
-            raise PyKotaConfigError, _("Option requester for printer %s was not set") % printer
+            raise PyKotaConfigError, _("Option requester for printer %s was not set") % printername
         else :    
             try :
                 (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
             except ValueError :    
-                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
+                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printername)
             if args.endswith(')') :
                 args = args[:-1]
             if not args :
-                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
+                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printername)
             validrequesters = [ "snmp", "external" ] # TODO : add more requesters
             requester = requester.lower()
             if requester not in validrequesters :
-                raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
+                raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printername, str(validrequesters))
             return (requester, args)
         
-    def getPrinterPolicy(self, printer) :    
+    def getPrinterPolicy(self, printername) :    
         """Returns the default policy for the current printer."""
         validpolicies = [ "ALLOW", "DENY", "EXTERNAL" ]     
         try :
-            fullpolicy = self.getPrinterOption(printer, "policy")
+            fullpolicy = self.getPrinterOption(printername, "policy")
         except PyKotaConfigError :    
             return ("DENY", None)
         else :    
             try :
                 policy = [x.strip() for x in fullpolicy.split('(', 1)]
             except ValueError :    
-                raise PyKotaConfigError, _("Invalid policy %s for printer %s") % (fullpolicy, printer)
+                raise PyKotaConfigError, _("Invalid policy %s for printer %s") % (fullpolicy, printername)
             if len(policy) == 1 :    
                 policy.append("")
             (policy, args) = policy    
@@ -340,9 +343,9 @@ class PyKotaConfig :
                 args = args[:-1]
             policy = policy.upper()    
             if (policy == "EXTERNAL") and not args :
-                raise PyKotaConfigError, _("Invalid policy %s for printer %s") % (fullpolicy, printer)
+                raise PyKotaConfigError, _("Invalid policy %s for printer %s") % (fullpolicy, printername)
             if policy not in validpolicies :
-                raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
+                raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printername, str(validpolicies))
             return (policy, args)
         
     def getSMTPServer(self) :    
@@ -352,35 +355,48 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return "localhost"
         
-    def getAdminMail(self, printer) :    
+    def getAdminMail(self, printername) :    
         """Returns the Email address of the Print Quota Administrator."""
         try :
-            return self.getPrinterOption(printer, "adminmail")
+            return self.getPrinterOption(printername, "adminmail")
         except PyKotaConfigError :    
             return "root@localhost"
         
-    def getAdmin(self, printer) :    
+    def getAdmin(self, printername) :    
         """Returns the full name of the Print Quota Administrator."""
         try :
-            return self.getPrinterOption(printer, "admin")
+            return self.getPrinterOption(printername, "admin")
         except PyKotaConfigError :    
             return "root"
         
-    def getMailTo(self, printer) :    
+    def getMailTo(self, printername) :    
         """Returns the recipient of email messages."""
-        validmailtos = [ "NOBODY", "NONE", "NOONE", "BITBUCKET", "DEVNULL", "BOTH", "USER", "ADMIN" ]
+        validmailtos = [ "EXTERNAL", "NOBODY", "NONE", "NOONE", "BITBUCKET", "DEVNULL", "BOTH", "USER", "ADMIN" ]
         try :
-            mailto = self.getPrinterOption(printer, "mailto").upper()
+            fullmailto = self.getPrinterOption(printername, "mailto")
         except PyKotaConfigError :    
-            mailto = "BOTH"
-        if mailto not in validmailtos :
-            raise PyKotaConfigError, _("Option mailto in section %s only supports values in %s") % (printer, str(validmailtos))
-        return mailto    
+            return ("BOTH", None)
+        else :    
+            try :
+                mailto = [x.strip() for x in fullmailto.split('(', 1)]
+            except ValueError :    
+                raise PyKotaConfigError, _("Invalid option mailto %s for printer %s") % (fullmailto, printername)
+            if len(mailto) == 1 :    
+                mailto.append("")
+            (mailto, args) = mailto    
+            if args.endswith(')') :
+                args = args[:-1]
+            mailto = mailto.upper()    
+            if (mailto == "EXTERNAL") and not args :
+                raise PyKotaConfigError, _("Invalid option mailto %s for printer %s") % (fullmailto, printername)
+            if mailto not in validmailtos :
+                raise PyKotaConfigError, _("Option mailto in section %s only supports values in %s") % (printername, str(validmailtos))
+            return (mailto, args)
         
-    def getGraceDelay(self, printer) :    
+    def getGraceDelay(self, printername) :    
         """Returns the grace delay in days."""
         try :
-            gd = self.getPrinterOption(printer, "gracedelay")
+            gd = self.getPrinterOption(printername, "gracedelay")
         except PyKotaConfigError :    
             gd = 7
         try :
@@ -406,19 +422,19 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return _("Your Print Quota account balance is Low.\nSoon you'll not be allowed to print anymore.\nPlease contact the Print Quota Administrator to solve the problem.")
             
-    def getHardWarn(self, printer) :    
+    def getHardWarn(self, printername) :    
         """Returns the hard limit error message."""
         try :
-            return self.getPrinterOption(printer, "hardwarn")
+            return self.getPrinterOption(printername, "hardwarn")
         except PyKotaConfigError :    
-            return _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printer
+            return _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printername
             
-    def getSoftWarn(self, printer) :    
+    def getSoftWarn(self, printername) :    
         """Returns the soft limit error message."""
         try :
-            return self.getPrinterOption(printer, "softwarn")
+            return self.getPrinterOption(printername, "softwarn")
         except PyKotaConfigError :    
-            return _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printer
+            return _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printername
             
     def getDebug(self) :          
         """Returns 1 if debugging is activated, else 0."""
