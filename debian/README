@@ -1,0 +1,31 @@
+# $Id$
+
+PyKota - Print Quota for CUPS
+
+(c) 2003 Jerome Alet <alet@librelogiciel.com>
+You're welcome to redistribute this software under the
+terms of the GNU General Public Licence version 2.0
+or, at your option, any higher version.
+
+You can read the complete GNU GPL in the file COPYING
+which should come along with this software, or visit
+the Free Software Foundation's WEB site http://www.fsf.org
+
+============================================================
+
+This directory contains scripts you may find interesting to
+use on a Debian GNU/Linux system.
+
+They try to mimic the disk quota tools configuration on
+Debian :
+
+        - /etc/default/printquota -- defines if the 
+          print quota warning sender is to be launched in
+          cron.daily
+          
+        - /etc/cron.daily/printquota -- warns users above  
+          their print quota, using /usr/bin/warnpykota
+          
+============================================================
+
+Please e-mail bugs to: alet@librelogiciel.com (Jerome Alet)
