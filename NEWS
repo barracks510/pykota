@@ -23,7 +23,7 @@ PyKota NEWS :
 
     - 1.21alpha9 :
     
-        - Now searches the configuration files in system user pykota's
+        - Now searches the configuration files in 'pykota' system user's
           home directory. The 'pykota' system user and group have
           to be created by the system administrator, and given 
           sufficient permissions to PyKota's configuration files.
