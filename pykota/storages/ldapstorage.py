@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2004/01/29 22:35:45  jalet
+# Small fix from Matt.
+#
 # Revision 1.48  2004/01/12 14:35:02  jalet
 # Printing history added to CGI script.
 #
@@ -263,7 +266,7 @@ class Storage(BaseStorage) :
         try :
             base = base or self.basedn
             self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
-            result = self.database.search_s(base or self.basedn, scope, key, fields)
+            result = self.database.search_s(base, scope, key, fields)
         except ldap.LDAPError, msg :    
             raise PyKotaStorageError, (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
         else :     
