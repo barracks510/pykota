@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/05/01 21:08:44  jalet
+# More work on LDAP
+#
 # Revision 1.3  2003/04/30 17:40:02  jalet
 # I've got my assigned number for LDAP by the IANA.
 #
@@ -57,7 +60,7 @@ class Storage :
         try :
             self.database = ldap.initialize(host) 
             self.database.simple_bind_s(user, passwd)
-            # TODO : dbname will be the base dn
+            self.basedn = dbname
         except ldap.SERVER_DOWN :    
             raise PyKotaStorageError, "LDAP backend for PyKota seems to be down !" # TODO : translate
         else :    
@@ -69,17 +72,18 @@ class Storage :
             del self.database
             self.closed = 1
         
-    def doQuery(self, query) :
-        """Does a query."""
-        pass
-        
-    def doQuote(self, field) :
-        """Quotes a field for use as a string in LDAP queries."""
-        pass
-        
-    def doParseResult(self, result) :
-        """Returns the result as a list of Python mappings."""
-        pass
+    def doSearch(self, key, fields, base="") :
+        """Does an LDAP search query."""
+        try :
+            # prepends something more restrictive at the beginning of the base dn
+            newbase = ",".join([base, self.basedn])
+            if newbase.startswith(",") :
+                newbase = newbase[1:]
+            result = self.database.search_s(newbase, ldap.SCOPE_SUBTREE, key, fields)
+        except ldap.NO_SUCH_OBJECT :    
+            return
+        else :     
+            return result
         
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers as tuples (id, name) for printer names which match a certain pattern."""
@@ -99,11 +103,17 @@ class Storage :
     
     def getUserId(self, username) :
         """Returns a userid given a username."""
-        pass
+        result = self.doSearch("uid=%s" % username, ["uid"], base="ou=People")
+        if result is not None :
+            (userid, dummy) = result[0]
+            return userid
             
     def getGroupId(self, groupname) :
         """Returns a groupid given a grupname."""
-        pass
+        result = self.doSearch("cn=%s" % groupname, ["cn"], base="ou=Group")
+        if result is not None :
+            (groupid, dummy) = result[0]
+            return groupid
             
     def getJobHistoryId(self, jobid, userid, printerid) :        
         """Returns the history line's id given a (jobid, userid, printerid)."""
