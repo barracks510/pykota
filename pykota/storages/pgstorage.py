@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2004/09/14 22:29:12  jalet
+# First version of dumpykota. Works fine but only with PostgreSQL backend
+# for now.
+#
 # Revision 1.36  2004/06/03 23:14:11  jalet
 # Now stores the job's size in bytes in the database.
 # Preliminary work on payments storage : database schemas are OK now,
@@ -195,8 +199,8 @@ class Storage(BaseStorage, SQLStorage) :
         self.database.query("ROLLBACK;")
         self.tool.logdebug("Transaction aborted.")
         
-    def doSearch(self, query) :
-        """Does a search query."""
+    def doRawSearch(self, query) :
+        """Does a raw search query."""
         query = query.strip()    
         if not query.endswith(';') :    
             query += ';'
@@ -206,9 +210,14 @@ class Storage(BaseStorage, SQLStorage) :
         except pg.error, msg :    
             raise PyKotaStorageError, msg
         else :    
-            if (result is not None) and (result.ntuples() > 0) : 
-                return result.dictresult()
+            return result
             
+    def doSearch(self, query) :        
+        """Does a search query."""
+        result = self.doRawSearch(query)
+        if (result is not None) and (result.ntuples() > 0) : 
+            return result.dictresult()
+        
     def doModify(self, query) :
         """Does a (possibly multiple) modify query."""
         query = query.strip()    

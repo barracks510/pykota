@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/09/14 22:29:13  jalet
+# First version of dumpykota. Works fine but only with PostgreSQL backend
+# for now.
+#
 # Revision 1.44  2004/09/10 21:32:54  jalet
 # Small fixes for incomplete entry intialization
 #
@@ -64,6 +68,48 @@
 from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 class SQLStorage :
+    def prepareRawResult(self, result) :
+        """Prepares a raw result by including the headers."""
+        if result.ntuples() > 0 :
+            entries = [result.listfields()]
+            entries.extend(result.getresult())
+            return entries
+        
+    def extractPrinters(self) :
+        """Extracts all printer records."""
+        result = self.doRawSearch("SELECT * FROM printers")
+        return self.prepareRawResult(result)
+        
+    def extractUsers(self) :
+        """Extracts all user records."""
+        result = self.doRawSearch("SELECT * FROM users")
+        return self.prepareRawResult(result)
+        
+    def extractGroups(self) :
+        """Extracts all group records."""
+        result = self.doRawSearch("SELECT * FROM groups")
+        return self.prepareRawResult(result)
+        
+    def extractPayments(self) :
+        """Extracts all payment records."""
+        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid")
+        return self.prepareRawResult(result)
+        
+    def extractUpquotas(self) :
+        """Extracts all userpquota records."""
+        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid")
+        return self.prepareRawResult(result)
+        
+    def extractGpquotas(self) :
+        """Extracts all grouppquota records."""
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.* FROM groups,printers,grouppquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid")
+        return self.prepareRawResult(result)
+        
+    def extractHistory(self) :
+        """Extracts all jobhistory records."""
+        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid")
+        return self.prepareRawResult(result)
+        
     def getAllUsersNames(self) :    
         """Extracts all user names."""
         usernames = []

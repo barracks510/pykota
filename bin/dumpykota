@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/09/14 22:29:12  jalet
+# First version of dumpykota. Works fine but only with PostgreSQL backend
+# for now.
+#
 # Revision 1.1  2004/07/01 19:22:37  jalet
 # First draft of dumpykota
 #
@@ -51,9 +55,7 @@ options :
   -v | --version       Prints repykota's version number then exits.
   -h | --help          Prints this message then exits.
   
-  -d | --data type     Dumps 'type' datas. When not specified, the
-                       default is to dump the jobs history data.
-                       Allowed types are :
+  -d | --data type     Dumps 'type' datas. Allowed types are :
                        
                          - history : dumps the jobs history.
                          - users : dumps users.
@@ -61,6 +63,10 @@ options :
                          - printers : dump printers.
                          - uquotas : dump user quotas.
                          - gquotas : dump user groups quotas.
+                         - payments : dumps user payments.
+                         
+                       NB : the -d | --data command line option   
+                       is MANDATORY.
   
   -f | --format fmt    Dumps datas in the 'fmt' format. When not specified,
                        the format is to dump datas in the csv format (comma
@@ -71,31 +77,6 @@ options :
                          - ssv : separate datas with semicolons
                          - tsv : separate datas with tabs
   
-  -p | --printer p     Only dumps datas concerning printer 'p'.
-                       Actually 'p' can use wildcards characters to select
-                       only some printers. The default value is *, meaning
-                       all printers.
-                       You can specify several names or wildcards, 
-                       by separating them with commas.
-                       
-  -u | --user u        Only dumps datas concerning user 'u'.
-                       Actually 'u' can use wildcards characters to select
-                       only some users. The default value is *, meaning
-                       all users.
-                       You can specify several names or wildcards, 
-                       by separating them with commas.
-                       
-  -g | --group g       Only dumps datas concerning group 'g'.
-                       Actually 'g' can use wildcards characters to select
-                       only some groups. The default value is *, meaning
-                       all groups.
-                       You can specify several names or wildcards, 
-                       by separating them with commas.
-  
-  If launched by a non-root user, additionnal arguments representing
-  users or groups names are ignored, and only the current user/group
-  is reported.
-
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
@@ -114,41 +95,55 @@ Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
 class DumPyKota(PyKotaTool) :        
     """A class for dumpykota."""
-    def main(self, ugnames, options) :
+    def main(self, arguments, options) :
         """Print Quota Data Dumper."""
-        uid = os.geteuid()
-        if not uid :
-            # root user
-            if not ugnames :
-                # no username, means all usernames
-                ugnames = [ "*" ]
-        else :        
-            # not the root user
-            # reports only the current user
-            username = pwd.getpwuid(uid)[0]
-            if options["data"] == "groups" :
-                user = self.storage.getUser(username)
-                if user.Exists :
-                    ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
-                else :    
-                    ugnames = [ ]
-            else :
-                ugnames = [ username ]
-        
-        printers = self.storage.getMatchingPrinters(options["printer"])
-        if not printers :
-            raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-            
-        # TODO : insert code here !    
-        raise PyKotaToolError, "Not implemented"
+        datatype = options["data"]
+        if datatype not in [ "history",
+                             "users",
+                             "groups",
+                             "printers",
+                             "upquotas",
+                             "gpquotas",
+                             "payments",
+                           ] :
+            raise PyKotaToolError, _("Invalid modifier [%s] for --data command line option, see help.") % datatype
                     
+        format = options["format"]
+        if format not in [ "csv",
+                           "ssv",
+                           "tsv",
+                         ] :
+            raise PyKotaToolError, _("Invalid modifier [%s] for --format command line option, see help.") % datatype
+            
+        entries = getattr(self.storage, "extract%s" % datatype.title())()    
+        getattr(self, "dump%s" % format.title())(entries)
+        return 0
+        
+    def dumpWithSeparator(self, separator, entries) :    
+        """Dumps datas with a separator."""
+        for entry in entries :
+            line = separator.join([ '"%s"' % field for field in entry ])
+            print line
+        
+    def dumpCsv(self, entries) :    
+        """Dumps datas with a comma as the separator."""
+        self.dumpWithSeparator(",", entries)
+                           
+    def dumpSsv(self, entries) :    
+        """Dumps datas with a comma as the separator."""
+        self.dumpWithSeparator(";", entries)
+                           
+    def dumpTsv(self, entries) :    
+        """Dumps datas with a comma as the separator."""
+        self.dumpWithSeparator("\t", entries)
+                           
 if __name__ == "__main__" : 
     try :
         defaults = { \
-                     "printer" : "*", \
+                     "format" : "csv", \
                    }
-        short_options = "vhd:f:p:u:g:"
-        long_options = ["help", "version", "data=", "format=", "printer=", "user=", "group="]
+        short_options = "vhd:f:"
+        long_options = ["help", "version", "data=", "format="]
         
         # Initializes the command line tool
         dumper = DumPyKota(doc=__doc__)
@@ -159,23 +154,24 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
-        options["users"] = options["u"] or options["users"]
-        options["groups"] = options["g"] or options["groups"]
-        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
+        options["data"] = options["d"] or options["data"]
+        options["format"] = options["f"] or options["format"] or defaults["format"]
         
         if options["help"] :
             dumper.display_usage_and_quit()
         elif options["version"] :
             dumper.display_version_and_quit()
-        elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, _("incompatible options, see help.")
+        elif options["data"] is None :    
+            raise PyKotaToolError, _("The -d | --data command line option is mandatory, see help.")
         else :
+            if args :
+                raise PyKotaToolError, _("Too many arguments, see help.")
             retcode = dumper.main(args, options)
     except SystemExit :        
         pass
     except :
         try :
-            dumper.crashed("repykota failed")
+            dumper.crashed("dumpykota failed")
         except :    
             pass
         retcode = -1
