@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.20alpha25 :
     
+        - pkprinters allows --list to normal users, but require user
+          to be a PyKota administrator when another command line 
+          option is used.
+          
         - pkhint doesn't use absolute path to search for helper commands
           anymore.
           

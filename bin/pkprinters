@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2004/10/13 21:40:10  jalet
+# Now mandates that the user be a PyKota administrator to allow dangerous
+# command line options. --list is still allowed to mere mortals though.
+#
 # Revision 1.16  2004/10/11 22:53:05  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -77,7 +81,9 @@
 #
 #
 
+import os
 import sys
+import pwd
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 
@@ -179,6 +185,9 @@ class PKPrinters(PyKotaTool) :
     """A class for edpykota."""
     def main(self, names, options) :
         """Manage printers."""
+        if (not self.config.isAdmin) and (not options["list"]) :
+            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
         if options["list"] and not names :
             names = ["*"]
             
