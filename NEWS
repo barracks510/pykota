@@ -25,6 +25,9 @@ PyKota NEWS :
     
         - More complete logging messages wrt accounters.
         
+        - Now catches early failures occuring when the configuration
+          files are parsed.
+        
     - 1.19alpha19 :
     
         - Fixed over-verbose exits when displaying help
