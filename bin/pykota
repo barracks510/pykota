@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/02/27 22:43:21  jalet
+# Missing import
+#
 # Revision 1.9  2003/02/27 22:40:26  jalet
 # Correctly handles cases where the printer is off.
 #
@@ -50,14 +53,14 @@ import sys
 import os
 
 from pykota.tool import PyKotaTool, PyKotaToolError
-from pykota import requester
+from pykota.requester import openRequester, PyKotaRequesterError
 
 class PyKotaFilter(PyKotaTool) :    
     """Class for the PyKota filter."""
     def __init__(self, username) :
         PyKotaTool.__init__(self, isfilter=1)
         self.username = username
-        self.requester = requester.openRequester(self.config, self.printername)
+        self.requester = openRequester(self.config, self.printername)
         self.printerhostname = self.getPrinterHostname()
     
     def getPrinterHostname(self) :
