@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/06 14:52:35  jalet
+# Forgotten import
+#
 # Revision 1.8  2003/02/06 14:49:04  jalet
 # edpykota should be ok now
 #
@@ -43,6 +46,8 @@
 #
 #
 #
+
+import fnmatch
 
 class SQLStorage :    
     def getMatchingPrinters(self, printerpattern) :
