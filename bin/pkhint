@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2005/02/22 17:18:18  jalet
+# Simplified pkhint's output to take care of the software() accounter
+# optimization and of the internal PJL accounter.
+#
 # Revision 1.22  2005/01/17 08:44:23  jalet
 # Modified copyright years
 #
@@ -284,12 +288,13 @@ class PKHint(PyKotaTool) :
                     else :    
                         netpjlcommand = self.accepts(NETPJLTESTS, hostname, port)
                         if netpjlcommand is not None :
-                            accounter = 'hardware(' + netpjlcommand + ')'
+                            #accounter = 'hardware(' + netpjlcommand + ')'
+                            accounter = 'hardware(pjl)'
                             configuration.append((printer, accounter))
                         else :    
-                            configuration.append((printer, "software(/usr/bin/pkpgcounter)"))
+                            configuration.append((printer, "software()"))
                 else :
-                    configuration.append((printer, "software(/usr/bin/pkpgcounter)"))
+                    configuration.append((printer, "software()"))
                     
         if not configuration :            
             print "\nSorry, pkhint can't help you for now. Please configure PyKota manually."
