@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/07 23:24:38  jalet
+# Empty line deleted
+#
 # Revision 1.4  2003/02/06 23:25:40  jalet
 # Cleaner docstring
 #
@@ -94,7 +97,6 @@ class WarnPyKota(PyKotaTool) :
     """A class for warnpykota."""
     def main(self, options) :
         """Warn users or groups over print quota."""
-        
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
             raise PyKotaToolError, "There's no printer matching %s" % options["printer"]
