@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/04/30 17:40:02  jalet
+# I've got my assigned number for LDAP by the IANA.
+#
 # Revision 1.2  2003/04/27 08:27:34  jalet
 # connection to LDAP backend
 #
@@ -27,6 +30,12 @@
 # LDAP storage backend's skeleton added. DOESN'T WORK.
 #
 #
+#
+
+#
+# My IANA assigned number, for 
+# "Conseil Internet & Logiciels Libres, Jérôme Alet" 
+# is 16868. Use this as a base to create the LDAP schema.
 #
 
 import fnmatch
