@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.8  2003/04/09 20:09:34  jalet
+-- New table to keep job history
+--
 -- Revision 1.7  2003/04/08 20:38:08  jalet
 -- The last job Id is saved now for each printer, this will probably
 -- allow other accounting methods in the future.
@@ -104,6 +107,16 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         datelimit TIMESTAMP);
                         
 --
+-- Create the job history table for u
+--
+CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
+                        jobid TEXT,
+                        userid INT4 REFERENCES users(id),
+                        printerid INT4 REFERENCES printers(id),
+                        jobsize INT4,
+                        jobdate TIMESTAMP DEFAULT now());
+                        
+--
 -- Create the print quota table for groups
 --
 CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
@@ -123,9 +136,9 @@ CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
 --                        
 -- Set some ACLs                        
 --
-REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers FROM public;                        
-GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers TO pykotaadmin;
-GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq TO pykotaadmin;
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory FROM public;                        
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotaadmin;
+GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq TO pykotaadmin;
 GRANT SELECT, UPDATE ON printers, userpquota, grouppquota TO pykotauser;
-GRANT SELECT ON users, groups, groupsmembers TO pykotauser;
+GRANT SELECT ON users, groups, groupsmembers, jobhistory TO pykotauser;
 
