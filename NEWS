@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.15alpha9 :
+    
+        - External policy can be used to auto-add unknown users 
+          and any other interesting things you may want to do. 
+          WARNING : You can't auto-add printers for now. 
+          They have to be created manually before.
+          Look at sample configuration file for examples.
+          
     - 1.15alpha8 :
     
         - Job history can be disabled if needed.

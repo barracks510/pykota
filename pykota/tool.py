@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2003/10/08 21:41:38  jalet
+# External policies for printers works !
+# We can now auto-add users on first print, and do other useful things if needed.
+#
 # Revision 1.52  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -434,7 +438,8 @@ class PyKotaTool :
                     return action
                 
         # then we check the user's own quota
-        policy = self.config.getPrinterPolicy(printer.Name)
+        # if we get there we are sure that policy is not EXTERNAL
+        (policy, dummy) = self.config.getPrinterPolicy(printer.Name)
         if user.LimitBy and (user.LimitBy.lower() == "balance") : 
             if user.AccountBalance is None :
                 if policy == "ALLOW" :

@@ -299,7 +299,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 requester: external(/usr/bin/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
-# either allow or deny
+# either allow or deny or external(some command here)
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
 # If the value is not set then the default policy DENY applies.
@@ -308,5 +308,19 @@ requester: external(/usr/bin/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 
 #     allowed to print causes accuracy problems : their jobs are
 #     charged to the next person who prints on the same printer.
 # There's no policy wrt inexistant groups, they are ignored.
+#
+# external policy can be used to launch any external command of your choice,
+# for example to automatically add the user to the quota storage 
+# if he is unknown. Example :
+# 
+#       policy: external(/usr/bin/edpykota --add --printer %(printer)s --softlimit 50 --hardlimit 60 %(user)s) 
+#
+#       NB : '%(user)s' and '%(printer)s' will be automatically replaced 
+#            by the user and printer names. 
+#
+# Of course you can launch any command of your choice with this, e.g. :
+#
+#       policy: external(/usr/local/bin/myadminscript.sh %(user)s)
+#
 policy: deny
 

@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2003/10/08 21:41:38  jalet
+# External policies for printers works !
+# We can now auto-add users on first print, and do other useful things if needed.
+#
 # Revision 1.33  2003/08/18 16:20:59  jalet
 # Improvement of the printing system detection code.
 #
@@ -441,4 +445,16 @@ msgstr "Nom d'hôte de l'imprimante indéfini, positionné à 'localhost'"
 
 msgid "Printing system unknown, args=%s"
 msgstr "Système d'impression inconnu, args=%s"
+
+msgid "Invalid policy %s for printer %s"
+msgstr "Option policy %s invalide pour l'imprimante %s"
+
+msgid "User %s not registered in the PyKota system, applying external policy (%s) for printer %s"
+msgstr "Utilisateur %s non enregistré dans le système PyKota, action externe (%s) appliquée sur l'imprimante %s"
+
+msgid "External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files."
+msgstr "L'action externe %s sur l'imprimante %s a produit une erreur. Job rejeté. Merci de vérifier les fichiers de configuration de PyKota."
+
+msgid "External policy %s for printer %s couldn't add user %s. Job rejected."
+msgstr "L'action externe %s sur l'imprimante %s n'a pas pu ajouter l'utilisateur %s. Job rejeté."
 

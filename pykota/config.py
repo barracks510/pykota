@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2003/10/08 21:41:38  jalet
+# External policies for printers works !
+# We can now auto-add users on first print, and do other useful things if needed.
+#
 # Revision 1.38  2003/10/07 22:06:05  jalet
 # Preliminary code to disable job history
 #
@@ -319,14 +323,27 @@ class PyKotaConfig :
         
     def getPrinterPolicy(self, printer) :    
         """Returns the default policy for the current printer."""
-        validpolicies = [ "ALLOW", "DENY" ]     
+        validpolicies = [ "ALLOW", "DENY", "EXTERNAL" ]     
         try :
-            policy = self.getPrinterOption(printer, "policy").upper()
+            fullpolicy = self.getPrinterOption(printer, "policy")
         except PyKotaConfigError :    
-            policy = "DENY"
-        if policy not in validpolicies :
-            raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
-        return policy
+            return ("DENY", None)
+        else :    
+            try :
+                policy = [x.strip() for x in fullpolicy.split('(', 1)]
+            except ValueError :    
+                raise PyKotaConfigError, _("Invalid policy %s for printer %s") % (fullpolicy, printer)
+            if len(policy) == 1 :    
+                policy.append("")
+            (policy, args) = policy    
+            if args.endswith(')') :
+                args = args[:-1]
+            policy = policy.upper()    
+            if (policy == "EXTERNAL") and not args :
+                raise PyKotaConfigError, _("Invalid policy %s for printer %s") % (fullpolicy, printer)
+            if policy not in validpolicies :
+                raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
+            return (policy, args)
         
     def getSMTPServer(self) :    
         """Returns the SMTP server to use to send messages to users."""

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2003/10/08 21:41:38  jalet
+# External policies for printers works !
+# We can now auto-add users on first print, and do other useful things if needed.
+#
 # Revision 1.41  2003/10/07 09:07:27  jalet
 # Character encoding added to please latest version of Python
 #
@@ -251,6 +255,15 @@ class PyKotaFilter(PyKotaTool) :
             # UNKNOWN
             return -1
             
+def format_commandline(prt, usr, cmdline) :            
+    """Passes printer and user names on the command line."""
+    printer = prt.Name
+    user = usr.Name
+    # we don't want the external command's standard 
+    # output to break the print job's data, but we
+    # want to keep its standard error
+    return "%s >/dev/null" % (cmdline % locals())
+
 def main(thefilter) :    
     """Do it, and do it right !"""
     #
@@ -267,28 +280,49 @@ def main(thefilter) :
         # we let the job pass through, but log a warning message
         thefilter.logger.log_message(_("Printer %s not registered in the PyKota system") % thefilter.printername, "warn")
     else :    
-        user = thefilter.storage.getUser(thefilter.username)
-        if not user.Exists :
-            # The user is unknown from the Quota Storage perspective
-            # Depending on the default policy for this printer, we
-            # either let the job pass through or reject it, but we
-            # log a message in any case.
-            policy = thefilter.config.getPrinterPolicy(thefilter.printername)
-            if policy == "ALLOW" :
-                action = "POLICY_ALLOW"
+        for compteur in range(2) :
+            user = thefilter.storage.getUser(thefilter.username)
+            if user.Exists :
+                break
             else :    
-                action = "POLICY_DENY"
-            thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (thefilter.username, action, thefilter.printername), "warn")
-            if action == "POLICY_DENY" :
-                return thefilter.removeJob()
-        else :
+                # The user is unknown from the Quota Storage perspective
+                # Depending on the default policy for this printer, we
+                # either let the job pass through or reject it, but we
+                # log a message in any case.
+                (policy, args) = thefilter.config.getPrinterPolicy(thefilter.printername)
+                if policy == "ALLOW" :
+                    action = "POLICY_ALLOW"
+                elif policy == "EXTERNAL" :    
+                    commandline = format_commandline(printer, user, args)
+                    thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (thefilter.username, commandline, thefilter.printername), "info")
+                    if os.system(commandline) :
+                        thefilter.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, thefilter.printername), "error")
+                        return thefilter.removeJob()
+                    else :    
+                        # here we try a second time, because the goal
+                        # of the external action was to add the user
+                        # in the database.
+                        continue 
+                else :    
+                    action = "POLICY_DENY"
+                thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (thefilter.username, action, thefilter.printername), "warn")
+                if action == "POLICY_DENY" :
+                    return thefilter.removeJob()
+                # when we get there, the printer policy allows the job to pass 
+                break    
+                    
+        # if user exists, do accounting
+        if user.Exists :
             # Now does the accounting and act depending on the result
             action = thefilter.accounter.doAccounting(printer, user)
-            
+        
             # if not allowed to print then die, else proceed.
             if action == "DENY" :
                 # No, just die cleanly
                 return thefilter.removeJob()
+        elif policy == "EXTERNAL" :                
+            thefilter.logger.log_message(_("External policy %s for printer %s couldn't add user %s. Job rejected.") % (commandline, thefilter.printername, thefilter.username), "error")
+            return thefilter.removeJob()
         
     # pass the job untouched to the underlying layer
     thefilter.accounter.filterInput(thefilter.inputfile)      
