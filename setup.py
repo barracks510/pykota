@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/04/03 20:03:37  jalet
+# Installation script now allows to install the sample configuration file.
+#
 # Revision 1.6  2003/03/29 13:45:26  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -52,6 +55,7 @@
 import sys
 import glob
 import os
+import shutil
 from distutils.core import setup
 
 sys.path.insert(0, "pykota")
@@ -105,9 +109,9 @@ if "install" in sys.argv :
     # checks if a configuration file is present in the old location
     if os.path.isfile("/etc/cups/pykota.conf") :
         if not os.path.isfile("/etc/pykota.conf") :
-            sys.stdout.write("From version 1.02 on, PyKota expects to find its configuration file in /etc instead of /etc/cups.\n")
-            sys.stdout.write("It seems that you've got a configuration file in the old location, so it will not be used anymore, and no configuration file in the new location.\n")
-            answer = raw_input("Do you want me to move your configuration file to the new location in /etc (y/N) ? ")
+            sys.stdout.write("From version 1.02 on, PyKota expects to find its configuration\nfile in /etc instead of /etc/cups.\n")
+            sys.stdout.write("It seems that you've got a configuration file in the old location,\nso it will not be used anymore,\nand there's no configuration file in the new location.\n")
+            answer = raw_input("Do you want to move /etc/cups/pykota.conf to /etc/pykota.conf (y/N) ? ")
             if answer[0:1].upper() == 'Y' :
                 try :
                     os.rename("/etc/cups/pykota.conf", "/etc/pykota.conf")
@@ -119,6 +123,19 @@ if "install" in sys.argv :
                 sys.stderr.write("PyKota installation will continue anyway, but the software won't run until you put a proper configuration file in /etc\n")
         else :        
             sys.stderr.write("WARNING : Configuration file /etc/cups/pykota.conf will not be used !\nThe file /etc/pykota.conf will be used instead.\n")
+    elif not os.path.isfile("/etc/pykota.conf") :        
+        # no configuration file, first installation it seems.
+        if os.path.isfile("conf/pykota.conf.sample") :
+            answer = raw_input("Do you want to install conf/pykota.conf.sample as /etc/pykota.conf (y/N) ? ")
+            if answer[0:1].upper() == 'Y' :
+                try :
+                    shutil.copy("conf/pykota.conf.sample", "/etc/pykota.conf")        
+                except IOError :    
+                    sys.stderr.write("WARNING : Problem while installing /etc/pykota.conf, please do it manually.\n")
+                else :    
+                    sys.stdout.write("Configuration file /etc/pykota.conf installed.\nDon't forget to adapt /etc/pykota.conf to your needs.\n")
+            else :        
+                sys.stderr.write("WARNING : PyKota won't run without a configuration file !\n")
     
     # checks if some needed Python modules are there or not.
     modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
