@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/01/08 16:33:27  jalet
+# Additionnal check to not create a circular printers group.
+#
 # Revision 1.29  2004/01/08 16:24:49  jalet
 # edpykota now supports adding printers to printer groups.
 #
@@ -509,7 +512,13 @@ class Storage(BaseStorage) :
 
     def writePrinterToGroup(self, pgroup, printer) :
         """Puts a printer into a printer group."""
-        self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s);" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
+        children = []
+        result = self.doSearch("SELECT printerid FROM printergroupsmembers WHERE groupid=%s;" % self.doQuote(pgroup.ident))
+        if result :
+            for record in result :
+                children.append(record.get("printerid")) # TODO : put this into the database integrity rules
+        if printer.ident not in children :        
+            self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s);" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/01/08 16:33:27  jalet
+# Additionnal check to not create a circular printers group.
+#
 # Revision 1.34  2004/01/08 16:24:49  jalet
 # edpykota now supports adding printers to printer groups.
 #
@@ -244,7 +247,7 @@ class StoragePrinter(StorageObject) :
         
     def addPrinterToGroup(self, printer) :    
         """Adds a printer to a printer group."""
-        if printer not in self.parent.getParentPrinters(self) :
+        if (printer not in self.parent.getParentPrinters(self)) and (printer.ident != self.ident) :
             self.parent.writePrinterToGroup(self, printer)
         
     def setPrices(self, priceperpage = None, priceperjob = None) :    
