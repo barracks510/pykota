@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.02-official.tar.gz    
-jerome@nordine:~$ cd pykota-1.02-official
-jerome@nordine:~/pykota-1.02-official$
+jerome@nordine:~$ tar -zxf pykota-1.03-official.tar.gz    
+jerome@nordine:~$ cd pykota-1.03-official
+jerome@nordine:~/pykota-1.03-official$
     </screen>
   </para>
   
@@ -159,8 +159,8 @@ jerome@nordine:~/pykota-1.02-official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.02-official/initscripts/
-jerome@nordine:~/pykota-1.02-official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.03-official/initscripts/
+jerome@nordine:~/pykota-1.03-official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -193,7 +193,7 @@ ALTER USER
 pykota=# ALTER USER pykotauser PASSWORD 'anotherpassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.02-official/initscripts$
+jerome@nordine:~/pykota-1.03-official/initscripts$
         </screen>
       </para>
       
@@ -357,6 +357,9 @@ jerome@nordine:~/pykota-1.02-official/initscripts$
 <!--
 
 $Log$
+Revision 1.12  2003/04/17 21:33:16  jalet
+Version 1.03 is out.
+
 Revision 1.11  2003/03/25 09:32:06  jalet
 Improved documentation.
 

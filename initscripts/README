@@ -33,13 +33,13 @@ Files :
     as a backend. You have to use it the first time you install PyKota
     if you want to use PostgreSQL as the Quota Storage Backend.
     
-  * pykota-upgrade-postgresql.sql :
+  * VERYOLDpykota-upgrade-postgresql.sql :
   
     This file upgrades the PostgreSQL Quota Storage Database schema
     from versions before 1.01 to version 1.01.
-    Don't use it if you already run a post-1.01 PyKota version.
+    DON'T USE IT IF YOU ALREADY RUN A POST-1.01 PyKota VERSION.
     
-  * upgrade-1.01-to-1.03.sh :
+  * upgrade-from-before-1.03.py :
   
     This shell script upgrades the PostgreSQL Quota Storage Database schema
     from versions 1.01 or 1.02 to version 1.03.
@@ -48,4 +48,10 @@ Files :
     (i.e. PostgreSQL's administrator), on the local machine (PyKota Storage 
     Server), without prompting for a password. Please read this script and 
     adapt it to your own configuration before running it. THIS IS IMPORTANT.
+    
+    THIS SCRIPT MAKES ANY REASONABLE CHECK TO ENSURE THAT YOUR DATAS WON'T 
+    BE LOST, AND ALSO DUMPS YOUR OLD DATABASE TO A TEXT FILE BEFORE DOING
+    ANYTHING. IT WAS TESTED SEVERAL TIMES AND SHOULDN'T PRODUCE ANY ERROR
+    EXCEPT ABOUT THE pykotaadmin and pykotauser POSTGRESQL USERS WHO 
+    ALREADY EXIST WHEN THE DATABASE SCHEMA IS UPGRADED. THIS IS NORMAL !
   

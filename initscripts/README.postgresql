@@ -68,14 +68,16 @@ Upgrade scripts :
           
         - Executes the pykota-upgrade-postgresql.sql script :  
         
-            pykota=# \i pykota-upgrade-postgresql.sql
+            pykota=# \i VERYOLDpykota-upgrade-postgresql.sql
             
         - Quit the psql frontend :    
         
             pykota=# \q
             
         - Your PostgreSQL PyKota storage is now ready
-          for use.
+          for use for the next step, i.e. upgrade the
+          database schema to version 1.03. PLEASE
+          TAKE ANY STEPS DESCRIBED IN THE NEXT SECTION.
   
   If you already run PyKota v1.01 or above, you don't need
   to run this upgrade script.
@@ -90,7 +92,7 @@ Upgrade scripts :
   fields are pagecounter and lifepagecounter, just forgot them.
   
 * If you are already running PyKota 1.01 or 1.02 and want to upgrade to 
-  1.03, YOU HAVE TO RUN the upgrade-1.01-to-1.03.sh shell script.
+  1.03, YOU HAVE TO RUN the upgrade-from-before-1.03.py shell script.
   NOT LAUNCHING THIS SCRIPT WILL CAUSE PYKOTA TO STOP WORKING !
-  Please don't run this script if your existing version of PyKota is 
-  already 1.03 or higher.
+  PLEASE NEVER RUN THIS SCRIPT IF YOUR EXISTING VERSION OF PYKOTA IS 
+  ALREADY 1.03 OD HIGHER.

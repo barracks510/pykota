@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.03 :
+    
+        - Upgrade script included for earlier versions.
+          Please look inside the initscripts subdirectory.
+          
     - 1.03beta2 :
     
         - repykota now reports account balances too.

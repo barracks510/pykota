@@ -130,7 +130,7 @@ INSTALLATION:
 WARNING :
 =========
 
-  If you run a PyKota version lower than 1.01, you definitely have to 
+  If you run a PyKota version lower than 1.03, you definitely have to 
   upgrade you Quota Storage Database. Please read the documentation 
   included in the initscripts subdirectory first ! 
   

@@ -19,8 +19,9 @@
 -- $Id$
 --
 -- $Log$
--- Revision 1.1  2003/03/29 13:58:58  jalet
--- PostgreSQL upgrade script included now
+-- Revision 1.1  2003/04/17 21:33:16  jalet
+-- Version 1.03 is out.
+--
 --
 --
 --
