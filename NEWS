@@ -25,6 +25,9 @@ PyKota NEWS :
     
         - Fixed PCL5 parser according to the sources of rastertohp.
         
+        - Fixed number of copies handling in PCL5 parser : the number
+          of copies could vary from page to page.
+        
     - 1.19alpha25 :
     
         - Added new "description" field to printers in both
