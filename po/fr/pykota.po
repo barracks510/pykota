@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/04/16 08:22:10  jalet
+# More strict error detection.
+# Minor code rewrite to avoid some repetitive tests.
+#
 # Revision 1.13  2003/04/16 08:01:54  jalet
 # edpykota --charge command line option works now.
 #
@@ -269,4 +273,10 @@ msgid "User %s not registered in the PyKota system"
 msgstr "Utilisateur %s non enregistré dans le système PyKota"
 
 msgid "Invalid charge amount value %s"
-msgstr "Montant à comptabiliser %s incorrect"
+msgstr "Montant à comptabiliser %s invalide"
+
+msgid "Invalid balance value %s"
+msgstr "Valeur %s du solde invalide"
+
+msgid "Invalid limitby value %s"
+msgstr "Valeur de l'option limitby %s invalide"
