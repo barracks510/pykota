@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2005/01/08 10:52:01  jalet
+# Now dumpykota can dump the history into CUPS' page_log format, allowing the
+# use of tools like PrintAnalyzer or phpPrintAnalyzer along with PyKota
+#
 # Revision 1.18  2005/01/07 12:40:53  jalet
 # Fixed field type's name in XML dumps.
 #
@@ -91,6 +95,7 @@
 import sys
 import os
 import pwd
+from mx import DateTime
 
 try :
     import jaxml
@@ -143,6 +148,8 @@ options :
                          - ssv : separate datas with semicolons
                          - tsv : separate datas with tabs
                          - xml : dump data as XML
+                         - cups : dump datas in CUPS' page_log format :
+                                  ONLY AVAILABLE WITH --data history
                          
   -o | --output fname  All datas will be dumped to the file instead of
                        to the standard output. The special '-' filename
@@ -235,12 +242,14 @@ class DumPyKota(PyKotaTool) :
             raise PyKotaToolError, _("Invalid modifier [%s] for --data command line option, see help.") % datatype
                     
         format = options["format"]
-        if format not in [ "csv",
+        if (format not in [ "csv",
                            "ssv",
                            "tsv",
                            "xml",
-                         ] :
-            raise PyKotaToolError, _("Invalid modifier [%s] for --format command line option, see help.") % datatype
+                           "cups",
+                         ]) \
+              or ((format == "cups") and (datatype != "history")) :
+            raise PyKotaToolError, _("Invalid modifier [%s] for --format command line option, see help.") % format
             
         if (format == "xml") and not hasJAXML :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
@@ -284,6 +293,25 @@ class DumPyKota(PyKotaTool) :
     def dumpTsv(self, entries, dummy) :    
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator("\t", entries)
+        
+    def dumpCups(self, entries, dummy) :    
+        """Dumps history datas as CUPS' page_log format."""
+        fieldnames = entries[0]
+        fields = {}
+        for i in range(len(fieldnames)) :
+            fields[fieldnames[i]] = i
+        sortindex = fields["jobdate"]    
+        entries = entries[1:]
+        entries.sort(lambda m,n : cmp(m[sortindex], n[sortindex]))
+        for entry in entries[1:] :    
+            printername = entry[fields["printername"]]
+            username = entry[fields["username"]]
+            jobid = entry[fields["jobid"]]
+            jobdate = DateTime.ISO.ParseDateTime(entry[fields["jobdate"]]).strftime("%d/%b/%Y:%H:%M:%S %z")
+            jobsize = entry[fields["jobsize"]]
+            copies = entry[fields["copies"]]
+            hostname = entry[fields["hostname"]]
+            self.outfile.write("%s %s %s [%s] %s %s - %s\n" % (printername, username, jobid, jobdate, jobsize, copies, hostname))
         
     def dumpXml(self, entries, datatype) :    
         """Dumps datas as XML."""
