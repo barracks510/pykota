@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/05/04 03:14:26  jalet
+# fixed copy&paste problem in pkpgcounter
+#
 # Revision 1.1  2004/04/08 17:07:42  jalet
 # pkpgcounter added
 #
@@ -63,6 +66,9 @@ def ispcl(data) :
          ((data.find("LANGUAGE=PCL") != -1) or \
           (data.find("LANGUAGE = PCL") != -1) or \
           (data.find("LANGUAGE = Pcl") != -1))) :
+        return 1
+    else :    
+        return 0
     
 def pcl(infile) :    
     """Count pages in a PostScript document."""
