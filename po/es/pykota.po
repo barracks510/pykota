@@ -2221,4 +2221,4 @@ msgid "Previous page"
 msgstr "Página anterior"
 
 msgid "Please click on the above button"
-msgstr ""
+msgstr "Pulse sobre el botón de arriba, por favor"
