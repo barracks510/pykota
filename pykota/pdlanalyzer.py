@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/05/19 19:09:36  jalet
+# Speed improvement
+#
 # Revision 1.1  2004/05/18 09:59:54  jalet
 # pkpgcounter is now just a wrapper around the PDLAnalyzer class
 #
@@ -54,6 +57,33 @@ class PCLAnalyzer :
         """Initialize PCL Analyzer."""
         self.infile = infile
         
+    def skip(self, nb) :    
+        """Reads a new datablock."""
+        newpos = self.pos + nb
+        if newpos >= self.len :
+            oldlen = self.len
+            self.data = self.infile.read(1024*1024)
+            self.len = len(self.data)
+            if not self.len :
+                return
+            self.pos = newpos - oldlen
+        else :    
+            self.pos = newpos
+        
+    def readone(self) :
+        """Reads a new byte."""
+        if self.pos < self.len :
+            char = self.data[self.pos]
+        else :    
+            self.data = self.infile.read(1024*1024)
+            self.len = len(self.data)
+            self.pos = 0
+            if not self.len :    
+                return
+            char = self.data[0]
+        self.pos += 1    
+        return char
+        
     def getJobSize(self) :     
         """Count pages in a PCL5 document."""
         #
@@ -83,11 +113,13 @@ class PCLAnalyzer :
                      ")s" : "W", 
                      "&p" : "X", 
                      "&l" : "X" } 
+        self.data = []             
+        self.pos = self.len = 0
         copies = 1
         pagecount = resets = 0
         tag = None
         while 1 :
-            char = self.infile.read(1)
+            char = self.readone()
             if not char :       # EOF ?
                 break   
             if char == "\014" :    
@@ -109,12 +141,12 @@ class PCLAnalyzer :
                 #     <ESC>&n###W -> Starts an alphanumeric string ID block
                 #     <ESC>&p###X -> Start of a non printable characters block
                 #
-                tagstart = self.infile.read(1)
+                tagstart = self.readone()
                 if tagstart in "E9=YZ" : # one byte PCL tag
                     if tagstart == "E" :
                         resets += 1
                     continue             # skip to next tag
-                tag = tagstart + self.infile.read(1)
+                tag = tagstart + self.readone()
                 try :
                     tagend = tagsends[tag]
                 except KeyError :    
@@ -123,7 +155,7 @@ class PCLAnalyzer :
                     # Now read the numeric argument
                     size = 0
                     while 1 :
-                        char = self.infile.read(1)
+                        char = self.readone()
                         if not char.isdigit() :
                             break
                         size = (size * 10) + int(char)    
@@ -138,7 +170,7 @@ class PCLAnalyzer :
                                 # we have to take care of the operation id byte
                                 # which is before the string itself
                                 size += 1
-                            self.infile.read(size) # skips block, while avoiding seek()
+                            self.skip(size)
                             
         # if pagecount is still 0, we will return the number
         # of resets instead of the number of form feed characters.
