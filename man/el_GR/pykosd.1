@@ -4,47 +4,48 @@
 pykosd \- manual page for pykosd 1.20beta_unofficial
 .SH DESCRIPTION
 pykosd v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
-An OSD quota monitor for PyKota.
+Παρακολούθηση του PyKota με απεικόνιση εντός οθόνης (OSD).
 .PP
-command line usage :
+χρήση γραμμής εντολών :
 .IP
-pykosd [options]
+pykosd [παράμετροι]
 .PP
-options :
+παράμετροι :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pykosd's version number then exits.
+Εμφανίζει την έκοδοση του pykosd και τερματίζει.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Εμφανίζει αυτό το μήνυμα και τερματίζει.
 .TP
-\fB\-c\fR | \fB\-\-color\fR #rrggbb Sets the color to use for display as an hexadecimal
-triplet, for example #FF0000 is 100% red.
-Defaults to 100% green (#00FF00).
+\fB\-c\fR | \fB\-\-color\fR #rrggbb Ορίζει το χρώμα της απεικόνισης σε μια τριάδα
+δεκαεξαδικών αριθμών, για παράδειγμα #FF0000 είναι
+100% κόκκινο.
+Προεπιλεγμένο χρώμα είναι το 100% πράσινο (#00FF00).
 .TP
 \fB\-d\fR | \fB\-\-duration\fR d
-Sets the duration of the display in seconds.
-Defaults to 3 seconds.
+Θέτει τη διάρκεια της απεικόνισης σε δευτερόλεπτα.
+Προεπιλεγμένος χρόνος είναι τα 3 δευτερόλεπτα.
 .TP
 \fB\-f\fR | \fB\-\-font\fR f
-Sets the font to use for display.
-Defaults to the Python OSD library's default.
+Ορίζει τη γραμματοσειρά για χρήση στην απεικόνιση
+Προεπιλογή είναι η ρύθμιση της βιβλιοθήκης OSD της Python.
 .TP
 \fB\-l\fR | \fB\-\-loop\fR n
-Sets the number of times the info will be displayed.
-Defaults to 0, which means loop forever.
+Ορίζει τον αριθμό των φορών που θα εμφανιστεί η πληροφορία.
+Προεπιλογή είναι το 0, που σημαίνει άπειρες φορές.
 .TP
 \fB\-s\fR | \fB\-\-sleep\fR s
-Sets the sleeping duration between two displays
-in seconds. Defaults to 180 seconds (3 minutes).
+Ορίζει το χρόνο αναμονής μεταξύ δύο απεικονίσεων
+σε δευτερόλεπτα. Προεπιλογή τα 180 δευτερόλεπτα (3 λεπτά).
 .PP
-examples :
+παραδείγματα :
 .IP
 \f(CW$ pykosd -s 60 --loop 5\fR
 .IP
-Will launch pykosd. Display will be refreshed every 60 seconds,
-and will last for 3 seconds (the default) each time. After five
-iterations, the program will exit.
+Εκτελεί το pykosd. Η απεικόνιση θα ενημερώνεται κάθε 60 δευτερόλεπτα,
+και θα διαρκεί για 3 δευτερόλεπτα (προεπιλογή) κάθε φορά. Μετά από
+πέντε επαναλήψεις, το πρόγραμμα θα τερματίσει.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,4 +61,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Για τυχόν προβλήματα στείλτε e-mail στο: Jerome Alet - alet@librelogiciel.com
