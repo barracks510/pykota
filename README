@@ -216,9 +216,9 @@ to create an empty PyKota Storage. Upgrade scripts may be
 provided as well.
 
 Copy the conf/pykota.conf.sample sample configuration file to
-/etc/pykota.conf. The installation script tries to do this for
+/etc/pykota/pykota.conf. The installation script tries to do this for
 you if needed and you agreed to this action.
-You need to adapt the /etc/pykota.conf file to your own needs.
+You need to adapt the /etc/pykota/pykota.conf file to your own needs.
 Especially you have to create sections named after your own
 printers, and change the administrator's email address.
 

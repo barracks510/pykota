@@ -19,7 +19,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ====================================================================
 
-This directory contains a sample configuration file for PyKota.
-You can copy it to /etc/pykota.conf and adapt it to your needs.
+This directory contains sample configuration files for PyKota.
+You can copy them to /etc/pykota/pykota.conf and
+/etc/pykota/pykotadmin.conf and adapt them to your needs.
+
+Don't forget to protect /etc/pykota/pykotadmin.conf from being
+readable by normal users since it contains sensitive informations
+which may allow people to modify their own quota information.
+
+Under Debian GNU/Linux with CUPS :
+        
+        $ chmod 644 /etc/pykota/pykota.conf
+        $ chmod 640 /etc/pykota/pykotadmin.conf
+        $ chown root.root /etc/pykota/pykota.conf
+        $ chown lp.lpadmin /etc/pykota/pykotadmin.conf
+
 
 ====================================================================
