@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/06/18 17:48:04  jalet
+# Added native fast PDF parsing method
+#
 # Revision 1.6  2004/06/18 14:00:16  jalet
 # Added PDF support in smart PDL analyzer (through GhostScript for now)
 #
@@ -80,9 +83,31 @@ class PDFAnalyzer :
     def __init__(self, infile) :
         """Initialize PDF Analyzer."""
         self.infile = infile
+        try :
+            if float(sys.version[:3]) >= 2.3 :
+                self.getJobSize = self.native_getJobSize
+            else :    
+                self.getJobSize = self.gs_getJobSize
+        except :
+            self.getJobSize = self.gs_getJobSize
+                
+    def native_getJobSize(self) :    
+        """Counts pages in a PDF document natively."""
+        pagecount = 0
+        content = []
+        while 1 :     
+            line = self.infile.readline()
+            if not line :
+                break
+            line = line.strip()
+            content.append(line)
+            if line.endswith("endobj") :
+                pagecount += " /".join([x.strip() for x in " ".join(content).split("/")]).count(" /Type /Page ")
+                content = []
+        return pagecount    
         
-    def getJobSize(self) :    
-        """Counts pages in a PDF document. TODO : don't use GhostScript in the future."""
+    def gs_getJobSize(self) :    
+        """Counts pages in a PDF document using GhostScript to convert PDF to PS."""
         MEGABYTE = 1024*1024
         child = popen2.Popen4("gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pswrite -sOutputFile=- -c save pop -f - 2>/dev/null")
         try :
@@ -420,26 +445,29 @@ class PDLAnalyzer :
         
     def openFile(self) :    
         """Opens the job's data stream for reading."""
-        self.mustclose = 1
+        self.mustclose = 0  # by default we don't want to close the file when finished
         if hasattr(self.filename, "read") and hasattr(self.filename, "seek") :
             # filename is in fact a file-like object 
-            self.infile = self.filename
-            self.mustclose = 0  # we don't want to close this file when finished
+            infile = self.filename
         elif self.filename == "-" :
             # we must read from stdin
-            # but since stdin is not seekable, we have to use a temporary
-            # file instead.
-            self.infile = tempfile.TemporaryFile()
-            while 1 :
-                data = sys.stdin.read(MEGABYTE) 
-                if not data :
-                    break
-                self.infile.write(data)
-            self.infile.flush()    
-            self.infile.seek(0)
+            infile = sys.stdin
         else :    
             # normal file
-            self.infile = open(self.filename, "rb")
+            self.infile = open(self.filename, "rbU") # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
+            self.mustclose = 1
+            return
+            
+        # Use a temporary file, always seekable contrary to standard input.
+        # This also has the benefit to let us use the "U" mode (new in Python 2.3)
+        self.infile = tempfile.TemporaryFile(mode="w+bU")   # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
+        while 1 :
+            data = infile.read(MEGABYTE) 
+            if not data :
+                break
+            self.infile.write(data)
+        self.infile.flush()    
+        self.infile.seek(0)
             
     def closeFile(self) :        
         """Closes the job's data stream if we can close it."""

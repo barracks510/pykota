@@ -26,7 +26,12 @@ PyKota NEWS :
         - Fixed waitprinter.sh wrt PowerSave mode and some
           printers. Thanks to Ryan Suarez.
         
-        - Smart PDL analyzer now recognizes PDF too.
+        - Smart PDL analyzer now recognizes PDF too : two
+          PDF parsing methods are used : a native one which
+          is very fast but requires Python 2.3 or above, and
+          a slower one which uses Ghostscript. PyKota detects
+          automatically which method to use depending on your
+          version of Python.
         
         - All tracebacks now include PyKota's version number.
           
