@@ -197,12 +197,17 @@ utolower: No
 #                 compliant Postscript files :
 #
 #                   accounter: external(/bin/grep -c "%%Page:")
+#
+#                 Finally the new smart external accounter which
+#                 can handle both PostScript and PCL documents :
+#
+#                   accounter: external(/usr/bin/pkpgcounter)
 # 
 #    - stupid : counts the occurences of the 'showpage' postscript
 #               statement in the document to be printed.
 #               THIS IS NOT RELIABLE. This is just to serve as
 #               an example on how to implement your own accounting
-#               method.
+#               method. Use pkpgcounter instead.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.

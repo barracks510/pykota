@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2004/04/08 17:07:41  jalet
+# pkpgcounter added
+#
 # Revision 1.38  2004/03/18 09:18:09  jalet
 # Installation now checks for old scripts
 #
@@ -412,7 +415,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/snmpprinterstatus", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
+      scripts = [ "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
 
 if ("install" in sys.argv) and not ("help" in sys.argv) :

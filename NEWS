@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha2 :
+    
+        - pkpgcounter is now included as a smart external
+          accounter which can handle both PostScript and PCL.
+          
     - 1.19alpha1 : 
     
         - PYKOTALIMITBY environment variable is now exported too.

@@ -1,0 +1,155 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# pkpgcounter, a smart software page counter
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2004/04/08 17:07:42  jalet
+# pkpgcounter added
+#
+#
+
+import sys
+import tempfile
+
+def ispostscript(data) :    
+    """Returns 1 if data is PostScript, else 0."""
+    if data.startswith("%!") or \
+       data.startswith("\004%!") or \
+       data.startswith("\033%-12345X%!PS") or \
+       ((data[:128].find("\033%-12345X") != -1) and \
+         ((data.find("LANGUAGE=POSTSCRIPT") != -1) or \
+          (data.find("LANGUAGE = POSTSCRIPT") != -1) or \
+          (data.find("LANGUAGE = Postscript") != -1))) :
+        return 1
+    else :    
+        return 0
+    
+def postscript(infile) :
+    """Count pages in a PostScript document."""
+    pagecount = 0
+    pagenum = None
+    while 1 :
+        line = infile.readline()
+        if not line :
+            break
+        if line.startswith("%%Page: ") :
+            pagecount += 1
+    return pagecount
+    
+def ispcl(data) :    
+    """Returns 1 if data is PCL, else 0."""
+    if data.startswith("\033E\033") or \
+       ((data[:128].find("\033%-12345X") != -1) and \
+         ((data.find("LANGUAGE=PCL") != -1) or \
+          (data.find("LANGUAGE = PCL") != -1) or \
+          (data.find("LANGUAGE = Pcl") != -1))) :
+    
+def pcl(infile) :    
+    """Count pages in a PostScript document."""
+    #
+    # Algorithm from pclcount
+    # (c) 2003, by Eduardo Gielamo Oliveira & Rodolfo Broco Manin 
+    # published under the terms of the GNU General Public Licence v2.
+    # 
+    # Backported from C to Python by Jerome Alet
+    # 
+    tagsends = { "*b" : "W", "(s" : "W", ")s" : "W", "&p" : "X", "&l" : "X" } 
+    copies = 1
+    pagecount = 0
+    tag = None
+    while 1 :
+        char = infile.read(1)   # TODO : speed this up if possible
+        if not char :
+            break
+        if char == "\014" :    
+            pagecount += 1
+        elif char == "\033" :    
+            #
+            #     <ESC>*b###W -> Start of a binary block
+            #     <ESC>(s###W -> Start of a characters description block
+            #     <ESC>)s###W -> Start of a fonts description block
+            #     <ESC>&p###X -> Start of a non printable characters block
+            #     <ESC>&l###X -> Number of copies
+            #
+            tag = infile.read(2)
+            try :
+                tagend = tagsends[tag]
+            except KeyError :    
+                pass    # Unsupported PCL tag
+            else :    
+                # Now read the numeric argument
+                size = 0
+                while 1 :
+                    char = infile.read(1)
+                    if not char.isdigit() :
+                        break
+                    size = (size * 10) + int(char)    
+                if char == tagend :    
+                    if tag == "&l" :
+                        copies = size
+                    else :    
+                        # doing a read will prevent the seek 
+                        # for unseekable streams. 
+                        # we just ignore the block anyway.
+                        infile.read(size) 
+    return copies * pagecount        
+
+def smartpagecounter(filename) :
+    """Autodetects file format and returns number of pages."""
+    if filename == "-" :
+        # we must read from stdin
+        # but since stdin is not seekable, we have to use a temporary
+        # file instead.
+        infile = tempfile.TemporaryFile()
+        while 1 :
+            data = sys.stdin.read(256 * 1024) 
+            if not data :
+                break
+            infile.write(data)
+        infile.flush()    
+        infile.seek(0)
+    else :    
+        # normal file
+        infile = open(filename, "rb")
+        
+    # Try to detect file type by reading first block of datas    
+    firstblock = infile.read(1024)
+    infile.seek(0)
+    if ispostscript(firstblock) :
+        size = postscript(infile)
+    elif ispcl(firstblock) :    
+        size = pcl(infile)
+    else :    
+        sys.stderr.write("ERROR : Unknown file format for %s\n" % filename)
+        size = 0
+    infile.close()    
+    return size
+    
+if __name__ == "__main__" :    
+    if len(sys.argv) < 2 :
+        sys.argv.append("-")
+        
+    totalsize = 0    
+    for arg in sys.argv[1:] :
+        totalsize += smartpagecounter(arg)
+    print "%s" % totalsize
