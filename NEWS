@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha1 :
+    
+        - added an IPP messages miniparser. This will allow PyKota
+          to extract informations from the CUPS request files directly
+          without needing to use the CUPS API. 
+        
     - 1.20 :
     
         - Version number changed.
