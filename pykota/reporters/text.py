@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/07/02 09:29:12  jalet
+# Bug fixed when wanting a report and an user/group was limited by account balance
+#
 # Revision 1.1  2003/06/30 12:46:15  jalet
 # Extracted reporting code.
 #
@@ -80,21 +83,25 @@ class Reporter(BaseReporter) :
         balance = float(entry.AccountBalance or 0.0)
         lifetimepaid = float(entry.LifeTimePaid or 0.0)
         
-        if quota.DateLimit is not None :
-            now = DateTime.now()
-            datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
-            if now >= datelimit :
-                datelimit = "DENY"
-        elif (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
-            datelimit = "DENY"
-        elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-            datelimit = "DENY"
-        else :    
-            datelimit = ""
-            
         if entry.LimitBy.lower() == "balance" :    
-            reached = (((balance <= 0) and "+") or "-") + "B"
+            if balance <= 0 :
+                datelimit = "DENY"
+                reached = "+B"
+            else :    
+                datelimit = ""
+                reached = "-B"
         else :
+            if quota.DateLimit is not None :
+                now = DateTime.now()
+                datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
+                if now >= datelimit :
+                    datelimit = "DENY"
+            elif (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
+                datelimit = "DENY"
+            elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
+                datelimit = "DENY"
+            else :    
+                datelimit = ""
             reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
             
         strbalance = ("%5.2f" % balance)[:10]
