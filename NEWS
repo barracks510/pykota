@@ -19,6 +19,8 @@ PyKota NEWS :
     
         - Correctly handle the case where the printer is switched off.
         
+        - Small bug wrt syslog fixed.
+        
     - 0.97 :
     
         - edpykota accepts wildcards on its command line for users/groups too
