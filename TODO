@@ -34,9 +34,6 @@ TODO, in no particular order :
         
         - Web enabled pykotme and dumpykota.
         
-        - Add a configuration directive to forbid user account
-          creation if the user doesn't exist on the system.
-        
         - Add an MD5 checksum of the job's datas to the
           history, to be able to discover duplicate print
           jobs. This is partially done : the checksum 
