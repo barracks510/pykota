@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Add pre and post job external hooks, per printer, and
+          export necessary environment variables.
+          
+        - Export PYKOTAPHASE environment variable, containing
+          either "BEFORE" or "AFTER" for the external requester.
+        
         - Ensures data are stored in a consistent way with Unicode.
         
         - Allow the --ingroups command line option to repykota, to
