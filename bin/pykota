@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2003/05/28 13:51:38  jalet
+# Better handling of errors
+#
 # Revision 1.32  2003/05/27 23:00:20  jalet
 # Big rewrite of external accounting methods.
 # Should work well now.
@@ -270,11 +273,11 @@ def main() :
     return kotafilter.acceptJob()
 
 if __name__ == "__main__" :    
+    retcode = -1
     try :
         retcode = main()
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError), msg :
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, IOError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
-        retcode = -1
     sys.exit(retcode)    
     
