@@ -44,6 +44,12 @@ Files :
 Old files, kept to allow people to upgrade from very old versions of PyKota :   
 =============================================================================
     
+  * upgrade-to-1.19.sql :  
+  
+    This file upgrades the PostgreSQL Quota Storage Database schema
+    from versions before 1.19alpha7 to version 1.19alpha7 and above.
+    NEVER USE IT IF YOU ALREADY RUN 1.19alpha7 OR ABOVE !
+    
   * upgrade-to-1.16.sql :  
   
     This file upgrades the PostgreSQL Quota Storage Database schema

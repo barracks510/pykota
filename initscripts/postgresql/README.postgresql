@@ -58,6 +58,17 @@ Upgrade scripts :
   of them or only some of them, depending on your 
   version of PyKota.
   
+  * An SQL script to upgrade a 1.18 PyKota Storage DataBase to
+    1.19 is included. Launch it this way on the Quota Storage Server :
+    
+        $ psql -U postgres pykota
+        pykota=# \i upgrade-to-1.19.sql
+        pykota=# \q
+        $
+        
+    This script adds a field to the print job history. The field that
+    is added is : hostname
+    
   * An SQL script to upgrade a pre-1.16 PyKota Storage DataBase to
     1.16 is included. Launch it this way on the Quota Storage Server :
     

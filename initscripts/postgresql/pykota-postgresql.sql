@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.9  2004/05/13 11:15:29  jalet
+-- Added hostname field in job history
+--
 -- Revision 1.8  2004/01/08 14:10:32  jalet
 -- Copyright year changed.
 --
@@ -117,6 +120,7 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         jobid TEXT,
                         userid INT4,
                         printerid INT4,
+                        hostname TEXT,
                         pagecounter INT4 DEFAULT 0,
                         jobsize INT4,
                         jobprice FLOAT,

@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha7 :
+     
+        - Database schema change (both LDAP and PostgreSQL) to
+          allow storage of the job-originating-hostname attribute.
+          An SQL upgrade script is present. The code is not yet
+          capable of setting/retrieving this attribute. Support
+          for this functionnality will be added in the future.
+          
     - 1.19alpha6 :
     
         - problems connecting to SMTP servers are now catched.
