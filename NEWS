@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha2 :
+    
+        - Typo fixed when using the --prototype option to edpykota
+        
     - 1.14alpha1 :
     
         - Poor man's treshold included : users with a low account

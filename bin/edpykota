@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2003/07/09 06:03:41  jalet
+# Fixed typo when using edpykota --prototype
+#
 # Revision 1.52  2003/07/07 12:11:13  jalet
 # Small fix
 #
@@ -429,7 +432,7 @@ class EdPyKota(PyKotaTool) :
                 
             if options["prototype"] :
                 if protoentry.Exists :
-                    protoquota = getattr(self.storage, "get%PQuota" % suffix)(protoentry, printer)
+                    protoquota = getattr(self.storage, "get%sPQuota" % suffix)(protoentry, printer)
                     if not protoquota.Exists :
                         self.logger.log_message(_("Prototype %s not found in Quota Storage for printer %s.") % (protoentry.Name, printer.Name))
                         continue    # skip this printer
