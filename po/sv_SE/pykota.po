@@ -35,6 +35,652 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "PyKota Data Dumper"
+msgstr ""
+
+msgid "Dump"
+msgstr ""
+
+msgid "Please click on the above button"
+msgstr ""
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Output Format"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "PyKota Reports"
+msgstr "PyKota rapporter"
+
+msgid "Report"
+msgstr "Rapport"
+
+msgid "Printer"
+msgstr "Skrivare"
+
+msgid "User / Group names mask"
+msgstr "Användar- / Gruppnamn maskering"
+
+msgid "Groups report"
+msgstr "Grupprapport"
+
+msgid "History"
+msgstr "Historia"
+
+msgid "Empty"
+msgstr "Tom"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Action"
+msgstr "Aktion"
+
+msgid "User"
+msgstr "Användare"
+
+msgid "Hostname"
+msgstr "Datornamn"
+
+msgid "JobId"
+msgstr "JobbId"
+
+msgid "JobSize"
+msgstr "JobbStorlek"
+
+msgid "JobPrice"
+msgstr "JobbPris"
+
+msgid "Copies"
+msgstr "Kopior"
+
+msgid "JobBytes"
+msgstr "JobBytes"
+
+msgid "PageCounter"
+msgstr "SidRäknare"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Filename"
+msgstr "Filnamn"
+
+msgid "Options"
+msgstr "Optioner"
+
+msgid "MD5Sum"
+msgstr ""
+
+msgid "BillingCode"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Previous page"
+msgstr "Föregående sida"
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "Ej understödd redovisningsmetod %s"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "Konfigurationsfil %s hittades inte."
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "Variabeln %s hittades inte i sektion 'global' i %s"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "Variabeln %s hittades inte i sektion '%s' i %s"
+
+#, python-format
+msgid "Option ldaptls is set, but certificate %s is not readable."
+msgstr ""
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "Variabeln 'logger' stödjer bara värden i %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "Ogiltig redovisningsmetod %s för printern %s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "Variabeln 'accounter' i sektion '%s' stödjer bara värden i %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "Tillämpad option i sektion %s stödjer bara värden i %s"
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "Ogiltig policy %s för skrivare %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "Variabeln 'policy' i sektion '%s' stödjer bara värden i %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "Ogiltig variabel 'mailto' %s för skrivare %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "Variabeln 'mailto' i sektion '%s' stödjer bara värden i %s"
+
+#, python-format
+msgid "Invalid maximal deny banners counter %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "Ogiltigt uppskovsvärde (grace delay) %s"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "Ogiltigt fattigmansvärde (poor man's threshold) %s"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"Saldot på ditt utskriftskonto är lågt.\n"
+"Snart kommer du inte kunna skriva ut längre.\n"
+"Vänligen kontakta din systemadministratör för att lösa problemet."
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"Du får inte längre skriva ut eftersom\n"
+"din utskriftkvot på skrivare %s är nådd."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"Du kommer snart inte få skriva ut eftersom\n"
+"din utskriftskvot nästan är nådd på skrivare %s."
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Option trustjobsize for printer %s is incorrect"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Printers"
+msgstr ""
+
+msgid "Users Print Quotas"
+msgstr ""
+
+msgid "Users Groups Print Quotas"
+msgstr ""
+
+msgid "History of Payments"
+msgstr ""
+
+msgid "Printers Groups Membership"
+msgstr ""
+
+msgid "Users Groups Membership"
+msgstr ""
+
+msgid "Comma Separated Values"
+msgstr ""
+
+msgid "Semicolon Separated Values"
+msgstr ""
+
+msgid "Tabulation Separated Values"
+msgstr ""
+
+msgid "eXtensible Markup Language"
+msgstr ""
+
+msgid "CUPS' page_log"
+msgstr ""
+
+msgid "You're not allowed to use this command."
+msgstr ""
+
+#, python-format
+msgid "Invalid value [%s] for --filter command line option, see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr ""
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr ""
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr ""
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "Ej understött loggningssystem %s"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "Rapport för %s utskriftssaldo på skrivare %s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "Uppskov för utskrifter: %i days"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "Pris per utskrift: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "Pris per sida: %.3f"
+
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid "unknown"
+msgstr "okänd/okänt"
+
+#, python-format
+msgid "Real : %s"
+msgstr "Riktigt : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "Summa : %9i"
+
+msgid "N/A"
+msgstr ""
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "Ej understödd rapportmetod %s"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "Ej understödd metod %s för att lagra data"
+
+#, python-format
+msgid "Strange problem with uid(%s) : %s"
+msgstr ""
+
+#, python-format
+msgid "Running as user '%s'."
+msgstr ""
+
+msgid "No user named 'pykota'. Not dropping priviledges."
+msgstr ""
+
+#, python-format
+msgid "Impossible to drop priviledges : %s"
+msgstr ""
+
+msgid "Priviledges dropped. Now running as user 'pykota'."
+msgstr ""
+
+#, python-format
+msgid "Impossible to regain priviledges : %s"
+msgstr ""
+
+msgid "Regained priviledges. Now running as root."
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "Kunde ej få kontakt med SMTP server : %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Kunde inte sända epost till %s, felmeddelande %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"Vänligen kontakta din systemadministratör :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"Kunde inte matcha användare %s på skrivare %s, tillämpar standardpolicyn (%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+"Kunde inte hitta utskriftssaldo för användare %s, tillämpar standardpolicyn "
+"(%s) för skrivare %s"
+
+#, python-format
+msgid "User %s will not be charged for printing."
+msgstr ""
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Utskriftssaldot är övertrasserad för grupp %s på printer %s"
+
+msgid "Print Quota"
+msgstr "Utskriftssaldo"
+
+msgid "Print Quota Exceeded"
+msgstr "Utskriftssaldo övertrasserad"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Utskriftssaldot är lågt för grupp %s på printer %s"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "Utskriftssaldot är övertrasserad för användare %s på skrivare %s"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Utskriftssaldot är lågt användare %s på skrivare %s"
+
+msgid "Print Quota Low"
+msgstr "Utskriftssaldo lågt"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Utskriftssystem %s, args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "Kunde ej förberäkna jobbets storlek med standard PDL analys : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "Mottog SIGTERM, utskrift %s avbröts."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Skrivarens värdnamn ej definerat, sätts till 'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "Utskriftsystem okänt, args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"Skrivare %s inte registrerad i PyKotasystemet, tillämpar extern policy (%s) "
+"för skrivare %s"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"Användare %s inte registrerad i Pykotasystemet, tillämpar extern policy (%s) "
+"för skrivare %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, "
+"tillämparextern policy (%s) för skrivare %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"Extern policy %s för skrivare %s lämnade ett felmeddelande. Utskrift "
+"avbruten. Vänligen kontrollera PyKotas konfigurationsfiler."
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"Skrivare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy (%"
+"s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"Användare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy "
+"(%s) för skrivare %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, "
+"tillämpar standardpolicy (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr ""
+"Skrivare %s fortfarande inte registrerad i PyKotasystemet, utskriften avbryts"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"Användare %s fortfarande inte registrerad i PyKotasystemet, utskriften på "
+"skrivare %s avbryts"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"Användare %s har fortfarande inget utskriftssaldo på skrivare %s i "
+"PyKotasystemet,utskriften avbryts"
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s to be printing..."
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr ""
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr ""
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr ""
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr ""
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr ""
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr ""
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr ""
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr ""
+
+msgid ""
+"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
+"download it from http://pysnmp.sourceforge.net"
+msgstr ""
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Okänd skrivaradress i HARDWARE(%s) för skrivare %s"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "Startar HÅRDVARA(%s)..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "SIGTERM skickad till hårdvarumetod %s (pid: %s)"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr ""
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr ""
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Kunde inte hämta information från skrivare %s via HARDWARE(%s)"
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "Startar MJUKVARA(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr "Problem vid inväntan för mjukvarumetod pid %s att avslutas : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "Mjukvarumetod %s avslutningskod är %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr ""
+"Summor kan vara felaktiga om vissa användare är medlemmar i flera grupper."
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"Sökbasen %s existerar inte. Möjlig felkonfiguration. Var god kontrollera /"
+"etc/pykota/pykota.conf : %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "Sökning efter %s(%s) från %s(scope=%s) gav inget svar."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Problem med att lägga till LDAP post (%s, %s)"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Problem med att ta bort LDAP post (%s)"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Problem med att modifiera LDAP post (%s, %s)"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr ""
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"Kunde ej hitta en existerande 'objectClass' %s med posten %s=%s för att "
+"binda pykotaAccount objectClass"
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+"Kunde ej hitta existerande post för att binda pykotaGroup objectclass %s"
+
 #, python-format
 msgid ""
 "autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
@@ -76,8 +722,15 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
+#, python-format
+msgid "Banner generator %s exit code is %s"
+msgstr ""
+
 msgid "Job contains no data. Printing is denied."
 msgstr "Jobb innehåller ingen data. Utskrift nekad"
+
+msgid "Job is a duplicate. Printing is denied."
+msgstr ""
 
 msgid "Banner won't be printed : maximum number of deny banners reached."
 msgstr ""
@@ -93,6 +746,21 @@ msgstr "Jobbstorlek satt till 0 för att utskriften nekades."
 
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
+msgstr ""
+
+msgid ""
+"The job size will be trusted anyway according to the 'trustjobsize' directive"
+msgstr ""
+
+#, python-format
+msgid ""
+"The job size will be trusted because it is inferior to the 'trustjobsize' "
+"directive's limit %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"The job size will be modified according to the 'trustjobsize' directive : %s"
 msgstr ""
 
 #, python-format
@@ -438,9 +1106,6 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
-msgid "You're not allowed to use this command."
-msgstr ""
-
 #, python-format
 msgid "Invalid used value %s."
 msgstr ""
@@ -490,12 +1155,12 @@ msgid "You have to pass user or group names on the command line"
 msgstr "Du måste skicka med användare- eller gruppnamn på kommandoraden"
 
 #, python-format
-msgid "Prototype %s not found in Quota Storage for printer %s."
-msgstr "Prototypen %s hittas inte i PyKotasystemet för skrivaren %s."
-
-#, python-format
 msgid "Prototype object %s not found in Quota Storage."
 msgstr "Prototypen för objektet %s hittas inte i PyKotasystemet"
+
+#, python-format
+msgid "Prototype %s not found in Quota Storage for printer %s."
+msgstr "Prototypen %s hittas inte i PyKotasystemet för skrivaren %s."
 
 #, python-format
 msgid "Undefined hard limit set to soft limit (%s) on printer %s."
@@ -679,163 +1344,6 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"An OSD quota monitor for PyKota.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  pykosd [options]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints pykosd's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -c | --color #rrggbb Sets the color to use for display as an hexadecimal\n"
-"                       triplet, for example #FF0000 is 100%% red.\n"
-"                       Defaults to 100%% green (#00FF00).\n"
-"                       \n"
-"  -d | --duration d    Sets the duration of the display in seconds. \n"
-"                       Defaults to 3 seconds.\n"
-"                       \n"
-"  -f | --font f        Sets the font to use for "
-"display.                      \n"
-"                       Defaults to the Python OSD library's default.\n"
-"  \n"
-"  -l | --loop n        Sets the number of times the info will be displayed.\n"
-"                       Defaults to 0, which means loop forever.\n"
-"                       \n"
-"  -s | --sleep s       Sets the sleeping duration between two displays \n"
-"                       in seconds. Defaults to 180 seconds (3 minutes).\n"
-"                       \n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ pykosd -s 60 --loop 5\n"
-"  \n"
-"  Will launch pykosd. Display will be refreshed every 60 seconds,\n"
-"  and will last for 3 seconds (the default) each time. After five\n"
-"  iterations, the program will exit.\n"
-"  \n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid duration option %s"
-msgstr "Felaktig val för 'duration' %s"
-
-#, python-format
-msgid "Invalid loop option %s"
-msgstr "Felaktig val för 'loop' %s"
-
-#, python-format
-msgid "Invalid sleep option %s"
-msgstr "Felaktig val för 'sleep %s"
-
-#, python-format
-msgid "Invalid color option %s"
-msgstr "Felaktig val för 'color' %s"
-
-#, python-format
-msgid "User %s doesn't exist in PyKota's database"
-msgstr "Användare %s existerar inte i PyKotas databas"
-
-#, python-format
-msgid "Pages used on %s : %s"
-msgstr "Sidor använda på %s : %s"
-
-#, python-format
-msgid "PyKota Units left : %.2f"
-msgstr "PyKota enheter kvar : %.2f"
-
-#, python-format
-msgid ""
-"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"\n"
-"Gives print quotes to users.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  pykotme  [options]  [files]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints pykotme's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -P | --printer p     Gives a quote for this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ pykotme --printer apple file1.ps file2.ps\n"
-"  \n"
-"  This will give a print quote to the current user. The quote will show\n"
-"  the price and size of a job consisting in file1.ps and file2.ps \n"
-"  which would be sent to the apple printer.\n"
-"  \n"
-"  $ pykotme --printer apple,hplaser <file1.ps\n"
-"  \n"
-"  This will give a print quote to the current user. The quote will show\n"
-"  the price and size of a job consisting in file1.ps as read from\n"
-"  standard input, which would be sent to the apple or hplaser\n"
-"  printer.\n"
-"\n"
-"  $ pykotme \n"
-"  \n"
-"  This will give a quote for a job consisting of what is on standard \n"
-"  input. The quote will list the job size, and the price the job\n"
-"  would cost on each printer.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid "Your account balance : %.2f"
-msgstr "Ditt utskriftssaldo : %.2f"
-
-#, python-format
-msgid "Job size : %i pages"
-msgstr "Utskriftsstorlek : %i sidor"
-
-#, python-format
-msgid "Cost on printer %s : %.2f"
-msgstr "Kostnad på skrivare %s : %.2f"
-
-#, python-format
-msgid ""
 "pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
 "Libres\n"
 "\n"
@@ -908,9 +1416,6 @@ msgstr ""
 msgid "Job"
 msgstr ""
 
-msgid "Date"
-msgstr "Datum"
-
 msgid "Allowed"
 msgstr ""
 
@@ -922,12 +1427,6 @@ msgstr ""
 
 msgid "Result"
 msgstr ""
-
-msgid "Title"
-msgstr "Titel"
-
-msgid "Filename"
-msgstr "Filnamn"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -1209,638 +1708,161 @@ msgid "You have to pass printer names on the command line"
 msgstr "Du måste skicka med skrivarnamn på kommandoraden"
 
 #, python-format
-msgid "Unsupported accounter backend %s"
-msgstr "Ej understödd redovisningsmetod %s"
-
-#, python-format
-msgid "Configuration file %s not found."
-msgstr "Konfigurationsfil %s hittades inte."
-
-#, python-format
-msgid "Option %s not found in section global of %s"
-msgstr "Variabeln %s hittades inte i sektion 'global' i %s"
-
-#, python-format
-msgid "Option %s not found in section %s of %s"
-msgstr "Variabeln %s hittades inte i sektion '%s' i %s"
-
-#, python-format
-msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr ""
-
-#, python-format
-msgid "Option logger only supports values in %s"
-msgstr "Variabeln 'logger' stödjer bara värden i %s"
-
-#, python-format
-msgid "Invalid accounter %s for printer %s"
-msgstr "Ogiltig redovisningsmetod %s för printern %s"
-
-#, python-format
-msgid "Option accounter in section %s only supports values in %s"
-msgstr "Variabeln 'accounter' i sektion '%s' stödjer bara värden i %s"
-
-#, python-format
-msgid "Option enforcement in section %s only supports values in %s"
-msgstr "Tillämpad option i sektion %s stödjer bara värden i %s"
-
-#, python-format
-msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid policy %s for printer %s"
-msgstr "Ogiltig policy %s för skrivare %s"
-
-#, python-format
-msgid "Option policy in section %s only supports values in %s"
-msgstr "Variabeln 'policy' i sektion '%s' stödjer bara värden i %s"
-
-#, python-format
-msgid "Invalid option mailto %s for printer %s"
-msgstr "Ogiltig variabel 'mailto' %s för skrivare %s"
-
-#, python-format
-msgid "Option mailto in section %s only supports values in %s"
-msgstr "Variabeln 'mailto' i sektion '%s' stödjer bara värden i %s"
-
-#, python-format
-msgid "Invalid maximal deny banners counter %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid grace delay %s"
-msgstr "Ogiltigt uppskovsvärde (grace delay) %s"
-
-#, python-format
-msgid "Invalid poor man's threshold %s"
-msgstr "Ogiltigt fattigmansvärde (poor man's threshold) %s"
-
 msgid ""
-"Your Print Quota account balance is Low.\n"
-"Soon you'll not be allowed to print anymore.\n"
-"Please contact the Print Quota Administrator to solve the problem."
-msgstr ""
-"Saldot på ditt utskriftskonto är lågt.\n"
-"Snart kommer du inte kunna skriva ut längre.\n"
-"Vänligen kontakta din systemadministratör för att lösa problemet."
-
-#, python-format
-msgid ""
-"You are not allowed to print anymore because\n"
-"your Print Quota is exceeded on printer %s."
-msgstr ""
-"Du får inte längre skriva ut eftersom\n"
-"din utskriftkvot på skrivare %s är nådd."
-
-#, python-format
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your Print Quota is almost reached on printer %s."
-msgstr ""
-"Du kommer snart inte få skriva ut eftersom\n"
-"din utskriftskvot nästan är nådd på skrivare %s."
-
-#, python-format
-msgid "Option accountbanner in section %s only supports values in %s"
-msgstr ""
-
-msgid "History"
-msgstr "Historia"
-
-msgid "Users"
-msgstr ""
-
-msgid "Groups"
-msgstr ""
-
-msgid "Printers"
-msgstr ""
-
-msgid "Users Print Quotas"
-msgstr ""
-
-msgid "Users Groups Print Quotas"
-msgstr ""
-
-msgid "History of Payments"
-msgstr ""
-
-msgid "Printers Groups Membership"
-msgstr ""
-
-msgid "Users Groups Membership"
-msgstr ""
-
-msgid "Comma Separated Values"
-msgstr ""
-
-msgid "Semicolon Separated Values"
-msgstr ""
-
-msgid "Tabulation Separated Values"
-msgstr ""
-
-msgid "eXtensible Markup Language"
-msgstr ""
-
-msgid "CUPS' page_log"
-msgstr ""
-
-#, python-format
-msgid "Invalid value [%s] for --filter command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr ""
-
-msgid "XML output is disabled because the jaxml module is not available."
-msgstr ""
-
-msgid "PyKota data dumper failed : I/O error"
-msgstr ""
-
-#, python-format
-msgid "Unsupported logging subsystem %s"
-msgstr "Ej understött loggningssystem %s"
-
-#, python-format
-msgid "Report for %s quota on printer %s"
-msgstr "Rapport för %s utskriftssaldo på skrivare %s"
-
-#, python-format
-msgid "Pages grace time: %i days"
-msgstr "Uppskov för utskrifter: %i days"
-
-#, python-format
-msgid "Price per job: %.3f"
-msgstr "Pris per utskrift: %.3f"
-
-#, python-format
-msgid "Price per page: %.3f"
-msgstr "Pris per sida: %.3f"
-
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid "unknown"
-msgstr "okänd/okänt"
-
-#, python-format
-msgid "Real : %s"
-msgstr "Riktigt : %s"
-
-#, python-format
-msgid "Total : %9i"
-msgstr "Summa : %9i"
-
-msgid "N/A"
-msgstr ""
-
-#, python-format
-msgid "Unsupported reporter backend %s"
-msgstr "Ej understödd rapportmetod %s"
-
-#, python-format
-msgid "Unsupported quota storage backend %s"
-msgstr "Ej understödd metod %s för att lagra data"
-
-#, python-format
-msgid "Strange problem with uid(%s) : %s"
-msgstr ""
-
-#, python-format
-msgid "Running as user '%s'."
-msgstr ""
-
-msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr ""
-
-#, python-format
-msgid "Impossible to drop priviledges : %s"
-msgstr ""
-
-msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr ""
-
-#, python-format
-msgid "Impossible to regain priviledges : %s"
-msgstr ""
-
-msgid "Regained priviledges. Now running as root."
-msgstr ""
-
-#, python-format
-msgid "Impossible to connect to SMTP server : %s"
-msgstr "Kunde ej få kontakt med SMTP server : %s"
-
-#, python-format
-msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "Kunde inte sända epost till %s, felmeddelande %s : %s"
-
-#, python-format
-msgid ""
+"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"An OSD quota monitor for PyKota.\n"
 "\n"
+"command line usage :\n"
 "\n"
-"Please contact your system administrator :\n"
+"  pykosd [options]\n"
 "\n"
-"\t%s - <%s>\n"
-msgstr ""
+"options :\n"
 "\n"
+"  -v | --version       Prints pykosd's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -c | --color #rrggbb Sets the color to use for display as an hexadecimal\n"
+"                       triplet, for example #FF0000 is 100%% red.\n"
+"                       Defaults to 100%% green (#00FF00).\n"
+"                       \n"
+"  -d | --duration d    Sets the duration of the display in seconds. \n"
+"                       Defaults to 3 seconds.\n"
+"                       \n"
+"  -f | --font f        Sets the font to use for "
+"display.                      \n"
+"                       Defaults to the Python OSD library's default.\n"
+"  \n"
+"  -l | --loop n        Sets the number of times the info will be displayed.\n"
+"                       Defaults to 0, which means loop forever.\n"
+"                       \n"
+"  -s | --sleep s       Sets the sleeping duration between two displays \n"
+"                       in seconds. Defaults to 180 seconds (3 minutes).\n"
+"                       \n"
+"  \n"
+"examples :                              \n"
 "\n"
-"Vänligen kontakta din systemadministratör :\n"
+"  $ pykosd -s 60 --loop 5\n"
+"  \n"
+"  Will launch pykosd. Display will be refreshed every 60 seconds,\n"
+"  and will last for 3 seconds (the default) each time. After five\n"
+"  iterations, the program will exit.\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
 "\n"
-"\t%s - <%s>\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
 
 #, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr ""
-"Kunde inte matcha användare %s på skrivare %s, tillämpar standardpolicyn (%s)"
+msgid "Invalid duration option %s"
+msgstr "Felaktig val för 'duration' %s"
+
+#, python-format
+msgid "Invalid loop option %s"
+msgstr "Felaktig val för 'loop' %s"
+
+#, python-format
+msgid "Invalid sleep option %s"
+msgstr "Felaktig val för 'sleep %s"
+
+#, python-format
+msgid "Invalid color option %s"
+msgstr "Felaktig val för 'color' %s"
+
+#, python-format
+msgid "User %s doesn't exist in PyKota's database"
+msgstr "Användare %s existerar inte i PyKotas databas"
+
+#, python-format
+msgid "Pages used on %s : %s"
+msgstr "Sidor använda på %s : %s"
+
+#, python-format
+msgid "PyKota Units left : %.2f"
+msgstr "PyKota enheter kvar : %.2f"
 
 #, python-format
 msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr ""
-"Kunde inte hitta utskriftssaldo för användare %s, tillämpar standardpolicyn "
-"(%s) för skrivare %s"
-
-#, python-format
-msgid "User %s will not be charged for printing."
-msgstr ""
-
-#, python-format
-msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "Utskriftssaldot är övertrasserad för grupp %s på printer %s"
-
-msgid "Print Quota"
-msgstr "Utskriftssaldo"
-
-msgid "Print Quota Exceeded"
-msgstr "Utskriftssaldo övertrasserad"
-
-#, python-format
-msgid "Print Quota low for group %s on printer %s"
-msgstr "Utskriftssaldot är lågt för grupp %s på printer %s"
-
-#, python-format
-msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "Utskriftssaldot är övertrasserad för användare %s på skrivare %s"
-
-#, python-format
-msgid "Print Quota low for user %s on printer %s"
-msgstr "Utskriftssaldot är lågt användare %s på skrivare %s"
-
-msgid "Print Quota Low"
-msgstr "Utskriftssaldo lågt"
-
-#, python-format
-msgid "Printing system %s, args=%s"
-msgstr "Utskriftssystem %s, args=%s"
-
-#, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "Kunde ej förberäkna jobbets storlek med standard PDL analys : %s"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "Mottog SIGTERM, utskrift %s avbröts."
-
-#, python-format
-msgid "Banner generator %s exit code is %s"
-msgstr ""
-
-msgid "Printer hostname undefined, set to 'localhost'"
-msgstr "Skrivarens värdnamn ej definerat, sätts till 'localhost'"
-
-#, python-format
-msgid "Printing system unknown, args=%s"
-msgstr "Utskriftsystem okänt, args=%s"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
-msgstr ""
-"Skrivare %s inte registrerad i PyKotasystemet, tillämpar extern policy (%s) "
-"för skrivare %s"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr ""
-"Användare %s inte registrerad i Pykotasystemet, tillämpar extern policy (%s) "
-"för skrivare %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr ""
-"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, "
-"tillämparextern policy (%s) för skrivare %s"
-
-#, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr ""
-"Extern policy %s för skrivare %s lämnade ett felmeddelande. Utskrift "
-"avbruten. Vänligen kontrollera PyKotas konfigurationsfiler."
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
-"Skrivare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy (%"
-"s)"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr ""
-"Användare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy "
-"(%s) för skrivare %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr ""
-"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, "
-"tillämpar standardpolicy (%s)"
-
-#, python-format
-msgid ""
-"Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr ""
-"Skrivare %s fortfarande inte registrerad i PyKotasystemet, utskriften avbryts"
-
-#, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr ""
-"Användare %s fortfarande inte registrerad i PyKotasystemet, utskriften på "
-"skrivare %s avbryts"
-
-#, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr ""
-"Användare %s har fortfarande inget utskriftssaldo på skrivare %s i "
-"PyKotasystemet,utskriften avbryts"
-
-#, python-format
-msgid "Network error while doing SNMP queries on printer %s : %s"
+"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Gives print quotes to users.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pykotme  [options]  [files]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pykotme's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -P | --printer p     Gives a quote for this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pykotme --printer apple file1.ps file2.ps\n"
+"  \n"
+"  This will give a print quote to the current user. The quote will show\n"
+"  the price and size of a job consisting in file1.ps and file2.ps \n"
+"  which would be sent to the apple printer.\n"
+"  \n"
+"  $ pykotme --printer apple,hplaser <file1.ps\n"
+"  \n"
+"  This will give a print quote to the current user. The quote will show\n"
+"  the price and size of a job consisting in file1.ps as read from\n"
+"  standard input, which would be sent to the apple or hplaser\n"
+"  printer.\n"
+"\n"
+"  $ pykotme \n"
+"  \n"
+"  This will give a quote for a job consisting of what is on standard \n"
+"  input. The quote will list the job size, and the price the job\n"
+"  would cost on each printer.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
 msgstr ""
 
 #, python-format
-msgid "SNMP message decoding error for printer %s : %s"
-msgstr ""
+msgid "Your account balance : %.2f"
+msgstr "Ditt utskriftssaldo : %.2f"
 
 #, python-format
-msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr ""
+msgid "Job size : %i pages"
+msgstr "Utskriftsstorlek : %i sidor"
 
 #, python-format
-msgid "Waiting for printer %s to be printing..."
-msgstr ""
-
-#, python-format
-msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr ""
-
-#, python-format
-msgid "Problem during connection to %s:%s : %s"
-msgstr ""
-
-#, python-format
-msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr ""
-
-#, python-format
-msgid "A problem occured while reading printer %s's internal page counter."
-msgstr ""
-
-#, python-format
-msgid "Retrieving printer %s's page counter from database instead."
-msgstr ""
-
-#, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr ""
-
-#, python-format
-msgid "Job's size forced to 1 page for printer %s."
-msgstr ""
-
-#, python-format
-msgid "No previous job in database for printer %s."
-msgstr ""
-
-#, python-format
-msgid "Inconsistent values for printer %s's internal page counter."
-msgstr ""
-
-msgid ""
-"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
-"download it from http://pysnmp.sourceforge.net"
-msgstr ""
-
-#, python-format
-msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "Okänd skrivaradress i HARDWARE(%s) för skrivare %s"
-
-#, python-format
-msgid "Launching HARDWARE(%s)..."
-msgstr "Startar HÅRDVARA(%s)..."
-
-#, python-format
-msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "SIGTERM skickad till hårdvarumetod %s (pid: %s)"
-
-#, python-format
-msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr ""
-
-#, python-format
-msgid "Hardware accounter %s exit code is %s"
-msgstr ""
-
-#, python-format
-msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "Kunde inte hämta information från skrivare %s via HARDWARE(%s)"
-
-#, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-
-#, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-
-#, python-format
-msgid "Launching SOFTWARE(%s)..."
-msgstr "Startar MJUKVARA(%s)..."
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
-
-#, python-format
-msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "Problem vid inväntan för mjukvarumetod pid %s att avslutas : %s"
-
-#, python-format
-msgid "Software accounter %s exit code is %s"
-msgstr "Mjukvarumetod %s avslutningskod är %s"
-
-msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr ""
-"Summor kan vara felaktiga om vissa användare är medlemmar i flera grupper."
-
-#, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-"Sökbasen %s existerar inte. Möjlig felkonfiguration. Var god kontrollera /"
-"etc/pykota/pykota.conf : %s"
-
-#, python-format
-msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "Sökning efter %s(%s) från %s(scope=%s) gav inget svar."
-
-#, python-format
-msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "Problem med att lägga till LDAP post (%s, %s)"
-
-#, python-format
-msgid "Problem deleting LDAP entry (%s)"
-msgstr "Problem med att ta bort LDAP post (%s)"
-
-#, python-format
-msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "Problem med att modifiera LDAP post (%s, %s)"
-
-#, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
-msgstr ""
-
-#, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-"Kunde ej hitta en existerande 'objectClass' %s med posten %s=%s för att "
-"binda pykotaAccount objectClass"
-
-#, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr ""
-"Kunde ej hitta existerande post för att binda pykotaGroup objectclass %s"
-
-msgid "PyKota Reports"
-msgstr "PyKota rapporter"
-
-msgid "Report"
-msgstr "Rapport"
-
-msgid "Printer"
-msgstr "Skrivare"
-
-msgid "User / Group names mask"
-msgstr "Användar- / Gruppnamn maskering"
-
-msgid "Groups report"
-msgstr "Grupprapport"
-
-msgid "Please click on the above button"
-msgstr ""
-
-msgid "Empty"
-msgstr "Tom"
-
-msgid "Action"
-msgstr "Aktion"
-
-msgid "User"
-msgstr "Användare"
-
-msgid "Hostname"
-msgstr "Datornamn"
-
-msgid "JobId"
-msgstr "JobbId"
-
-msgid "JobSize"
-msgstr "JobbStorlek"
-
-msgid "JobPrice"
-msgstr "JobbPris"
-
-msgid "Copies"
-msgstr "Kopior"
-
-msgid "JobBytes"
-msgstr "JobBytes"
-
-msgid "PageCounter"
-msgstr "SidRäknare"
-
-msgid "Options"
-msgstr "Optioner"
-
-msgid "MD5Sum"
-msgstr ""
-
-msgid "BillingCode"
-msgstr ""
-
-msgid "Pages"
-msgstr ""
-
-msgid "Previous page"
-msgstr "Föregående sida"
-
-msgid "PyKota Data Dumper"
-msgstr ""
-
-msgid "Dump"
-msgstr ""
-
-msgid "Data Type"
-msgstr ""
-
-msgid "Output Format"
-msgstr ""
-
-msgid "Filter"
-msgstr ""
+msgid "Cost on printer %s : %.2f"
+msgstr "Kostnad på skrivare %s : %.2f"
 
 #~ msgid ""
 #~ "Group           used    soft    hard    balance grace         total       "

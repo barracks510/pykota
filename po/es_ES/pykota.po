@@ -35,6 +35,683 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.3.1\n"
 
+msgid "PyKota Data Dumper"
+msgstr ""
+
+msgid "Dump"
+msgstr ""
+
+msgid "Please click on the above button"
+msgstr "Pulse sobre el botón de arriba, por favor"
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Output Format"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "PyKota Reports"
+msgstr "Informes de PyKota"
+
+msgid "Report"
+msgstr "Informe"
+
+msgid "Printer"
+msgstr "Impresora"
+
+msgid "User / Group names mask"
+msgstr "Máscara para el nombre de Usuario / Grupo"
+
+msgid "Groups report"
+msgstr "Informes de los grupos"
+
+msgid "History"
+msgstr "Historial"
+
+msgid "Empty"
+msgstr "Vacío"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Action"
+msgstr "Acción"
+
+msgid "User"
+msgstr "Usuario"
+
+msgid "Hostname"
+msgstr "Hostname"
+
+msgid "JobId"
+msgstr "IdTrabajo"
+
+msgid "JobSize"
+msgstr "TamañoTrabajo"
+
+msgid "JobPrice"
+msgstr "PrecioTrabajo"
+
+msgid "Copies"
+msgstr "Copias"
+
+msgid "JobBytes"
+msgstr "BytesTrabajo"
+
+msgid "PageCounter"
+msgstr "ContadorPáginas"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Filename"
+msgstr "Nombre del archivo"
+
+msgid "Options"
+msgstr "Opciones"
+
+msgid "MD5Sum"
+msgstr ""
+
+msgid "BillingCode"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Previous page"
+msgstr "Página anterior"
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "Backend de contabilidad %s no soportado"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "Archivo de configuración %s no encontrado."
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "Opción %s no encontrada en la sección global de %s"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "Opción %s no encontrada en la sección %s de %s"
+
+#, python-format
+msgid "Option ldaptls is set, but certificate %s is not readable."
+msgstr ""
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "La opción «logger» sólo soporta los valores %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "Contador de páginas %s inválido para la impresora %s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "La opción «accounter», en la sección %s, sólo soporta los valores %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "La opción «enforcement», en la sección %s, sólo soporta los valores %s"
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr ""
+"La opción «onaccountererror», en la sección %s, sólo soporta los valores %s"
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "Política %s inválida para la impresora %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "La opción «policy», en la sección  %s, sólo soporta los valores %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "Opción «mailto %s» inválida para la impresora %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "La opción «mailto», en la sección %s, sólo soporta los valores %s"
+
+#, python-format
+msgid "Invalid maximal deny banners counter %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "Tiempo de gracia %s inválido"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "Umbral %s para la opción «poor man» inválido"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"El saldo de la cuota de impresión de su cuenta es bajo.\n"
+"En breve no podrá volver a imprimir.\n"
+"Por favor, contacte con el Administrador de Cuotas de Impresión para "
+"resolver el problema."
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"No puede imprimir porque su cuota de impresión\n"
+"se ha excedido en la impresora %s."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"Pronto le será prohibida la impresión, debido a que\n"
+"su cuota de acerca al límite en la impresora %s."
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Option trustjobsize for printer %s is incorrect"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Printers"
+msgstr ""
+
+msgid "Users Print Quotas"
+msgstr ""
+
+msgid "Users Groups Print Quotas"
+msgstr ""
+
+msgid "History of Payments"
+msgstr ""
+
+msgid "Printers Groups Membership"
+msgstr ""
+
+msgid "Users Groups Membership"
+msgstr ""
+
+msgid "Comma Separated Values"
+msgstr ""
+
+msgid "Semicolon Separated Values"
+msgstr ""
+
+msgid "Tabulation Separated Values"
+msgstr ""
+
+msgid "eXtensible Markup Language"
+msgstr ""
+
+msgid "CUPS' page_log"
+msgstr ""
+
+msgid "You're not allowed to use this command."
+msgstr "No tiene permiso para utilizar esta orden."
+
+#, python-format
+msgid "Invalid value [%s] for --filter command line option, see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr "Modificador [%s] inválido para la opción --data, vea la ayuda."
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr "Modificador [%s] inválido para la opción --format, vea la ayuda."
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr ""
+"La salida XML está deshabilitada debido a que el módulo jaxml no está "
+"disponible."
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr "El volcado de datos de PyKota ha fallado : I/O error"
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "Subsistema de registro de logs %s no soportado"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "Informe para la cuota %s en la impresora %s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "Tiempo de gracia para páginas: %i día(s) "
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "Precio por trabajo: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "Precio por página: %.3f"
+
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid "unknown"
+msgstr "Desconocido"
+
+#, python-format
+msgid "Real : %s"
+msgstr "Real : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "Total : %9i"
+
+msgid "N/A"
+msgstr ""
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "«Reporter backend» %s no soportado"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "Backend %s de almacenamiento de cuota no soportado"
+
+#, python-format
+msgid "Strange problem with uid(%s) : %s"
+msgstr ""
+
+#, python-format
+msgid "Running as user '%s'."
+msgstr ""
+
+msgid "No user named 'pykota'. Not dropping priviledges."
+msgstr ""
+
+#, python-format
+msgid "Impossible to drop priviledges : %s"
+msgstr ""
+
+msgid "Priviledges dropped. Now running as user 'pykota'."
+msgstr ""
+
+#, python-format
+msgid "Impossible to regain priviledges : %s"
+msgstr ""
+
+msgid "Regained priviledges. Now running as root."
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "Imposible conectar con el servidor SMTP: %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Imposible enviar un correo electrónico a %s, error %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"Entre en contacto con su administrador de sistema, por favor :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"Imposible encontrar al usuario %s en la impresora %s, se aplica la política "
+"por defecto (%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+"No se ha encontrado el saldo del usuario %s, aplicando la política por "
+"defecto (%s) para la impresora %s"
+
+#, python-format
+msgid "User %s will not be charged for printing."
+msgstr ""
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Cuota de impresión excedida para el grupo %s en la impresora %s"
+
+msgid "Print Quota"
+msgstr "Cuota de impresión"
+
+msgid "Print Quota Exceeded"
+msgstr "Cuota de Impresión Excedida"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Cuota de impresión baja para el grupo %s en la impresora %s"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "Cuota de impresión excedida para el usuario %s en la impresora %s"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Cuota de impresión baja para el usuario %s en la impresora %s"
+
+msgid "Print Quota Low"
+msgstr "Cuota de Impresión Baja"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Sistema de impresión %s, args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr ""
+"No se ha podido calcular el tamaño del trabajo con el analizador PDL "
+"genérico : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "Señal SIGTERM recibida, trabajo %s cancelado."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Hostname de la impresora no definido, ajustándolo a «localhost»"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "Sistema de impresión desconocido, args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"Impresora %s no registrada en el sistema PyKota, aplicando la política "
+"externa (%s) para la impresora %s"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"Usuario %s no registrado en el sistema PyKota, aplicando la política externa "
+"(%s) para la impresora %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"El usuario %s no posee cuota en la impresora %s bajo el sistema PyKota, "
+"aplicando la política externa (%s) para la impresora %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"La política externa %s para la impresora %s ha producido un error. Trabajo "
+"rechazado. Por favor, revise los archivos de configuración de PyKota."
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"Impresora %s no registrada en el sistema PyKota, aplicando la política por "
+"defecto (%s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"Usuario %s no registrado en el sistema PyKota, aplicando la política por "
+"defecto (%s) para la impresora %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"el usuario %s no posee cuota en la impresora %s bajo el sistema PyKota, "
+"aplicando la política por defecto (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr ""
+"La impresora %s no se ha registrado todavía en el sistema PyKota, se va a "
+"rechazar el trabajo"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"El usuario %s no se ha registrado todavía en el sistema PyKota, el trabajo "
+"se va a rechazar en la impresora %s"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"El usuario %s no tiene todavía cuota en la impresora %s bajo el sistema "
+"PyKota, se va a rechazar el trabajo"
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr "Errores de red mientras se hacían peticiones en la impresora %s : %s"
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr ""
+"Se han encontrado problemas mientras se hacían peticiones SNMP en la "
+"impresora %s : %s"
+
+#, python-format
+msgid "Waiting for printer %s to be printing..."
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr "Esperando al estado inactivo de la impresora %s para estabilizar..."
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr "Problema durante la conexión a %s:%s : %s"
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr "Problema mientras se enviaba la petición PJL a %s:%s : %s"
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr ""
+"Ha ocurrido un problema mientras se estaba leyendo el contador de páginas "
+"interno de la impresora %s."
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr ""
+"Recuperando el contador de páginas de la impresora %s desde la base de datos "
+"en su lugar."
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr ""
+"No se ha podido recuperar el contador de páginas interno de la impresora %s "
+"bien antes bien después de imprimir."
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr "Tamaño del trabajo forzado a 1 página para la impresora %s."
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr "No hay trabajos previos en la base de datos para la impresora %s."
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr ""
+"Valor inconsistente para el contador de páginas interno de la impresora %s."
+
+msgid ""
+"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
+"download it from http://pysnmp.sourceforge.net"
+msgstr ""
+"Se ha preguntado al contador SNMP interno, pero Python-SNMP no está "
+"disponible. Descárguelo desde http://pysnmp.sourceforge.net"
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Dirección desconocida en HARDWARE(%s) para la impresora %s"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "Arrancando HARDWARE(%s)..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr ""
+"Se ha enviado la señal SIGTERM al contador de páginas hardware %s (pid: %s)"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr "Línea [%s] saltada en la salida del contador. Intentándolo de nuevo..."
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr "Contador por hardware %s cuyo código de salida es %s"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Imposible consultar la impresora %s vía HARDWARE(%s)"
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+"Etapa de petición SNMP interrumpida. Utilizando el último valor visto en el "
+"contador interno de páginas (%s) en la impresora %s."
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+"Etapa de petición PJL interrumpida. Utilizando el último valor visto en el "
+"contador interno de páginas (%s) en la impresora %s."
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "Arrancando SOFTWARE(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "Imposible calcular el tamaño del trabajo con el contador %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr ""
+"Ha ocurrido un problema mientras se estaba esperado a que terminase el "
+"contador software con pid %s: %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "Código de salida %s para el contador por software %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr ""
+"Los totales pueden ser erróneos si algunos usuarios son miembros de varios "
+"grupos."
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"La base de búsqueda %s parece no existir. Probablemente se deba a una mala "
+"configuración. Por favor, verifique el archivo /etc/pykota/pykota.conf : %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr ""
+"La búsqueda por %s(%s) desde %s(scope=%s) no ha devuelto ninguna respuesta."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Problema al añadir la entrada LDAP (%s, %s)"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Problema al borrar la entrada LDAP (%s)"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Problema al modificar la entrada LDAP (%s, %s)"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr ""
+"No se ha encontrado el objeto pykotaAccountBalance para el usuario %s. ¿Ha "
+"creado las entradas LDAP manualmente?"
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"No se ha podido encontrar una entrada objectClass %s existente con %s=%s "
+"para anexionar el objectClass pykotaAccount"
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+"No se ha podido encontrar una entrada existente para anexionar el "
+"objectClass pykotaGroup %s"
+
 #, python-format
 msgid ""
 "autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
@@ -117,8 +794,15 @@ msgstr ""
 "\n"
 "Por favor, envíe los errores por correo electrónico a: %s"
 
+#, python-format
+msgid "Banner generator %s exit code is %s"
+msgstr ""
+
 msgid "Job contains no data. Printing is denied."
 msgstr "El trabajo no contiene una fecha. Se deniega la impresión."
+
+msgid "Job is a duplicate. Printing is denied."
+msgstr ""
 
 msgid "Banner won't be printed : maximum number of deny banners reached."
 msgstr ""
@@ -136,6 +820,21 @@ msgstr ""
 
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
+msgstr ""
+
+msgid ""
+"The job size will be trusted anyway according to the 'trustjobsize' directive"
+msgstr ""
+
+#, python-format
+msgid ""
+"The job size will be trusted because it is inferior to the 'trustjobsize' "
+"directive's limit %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"The job size will be modified according to the 'trustjobsize' directive : %s"
 msgstr ""
 
 #, python-format
@@ -482,9 +1181,6 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
-msgid "You're not allowed to use this command."
-msgstr "No tiene permiso para utilizar esta orden."
-
 #, python-format
 msgid "Invalid used value %s."
 msgstr ""
@@ -536,14 +1232,14 @@ msgstr ""
 "Ha de proporcionar nombres de usuarios o grupos en la línea de comandos"
 
 #, python-format
+msgid "Prototype object %s not found in Quota Storage."
+msgstr "El objeto Prototipo %s no se ha encontrado en el Almacén de Cuotas."
+
+#, python-format
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr ""
 "El prototipo %s no se ha encontrado en el Almacén de Cuotas para la "
 "impresora %s."
-
-#, python-format
-msgid "Prototype object %s not found in Quota Storage."
-msgstr "El objeto Prototipo %s no se ha encontrado en el Almacén de Cuotas."
 
 #, python-format
 msgid "Undefined hard limit set to soft limit (%s) on printer %s."
@@ -866,279 +1562,6 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"An OSD quota monitor for PyKota.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  pykosd [options]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints pykosd's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -c | --color #rrggbb Sets the color to use for display as an hexadecimal\n"
-"                       triplet, for example #FF0000 is 100%% red.\n"
-"                       Defaults to 100%% green (#00FF00).\n"
-"                       \n"
-"  -d | --duration d    Sets the duration of the display in seconds. \n"
-"                       Defaults to 3 seconds.\n"
-"                       \n"
-"  -f | --font f        Sets the font to use for "
-"display.                      \n"
-"                       Defaults to the Python OSD library's default.\n"
-"  \n"
-"  -l | --loop n        Sets the number of times the info will be displayed.\n"
-"                       Defaults to 0, which means loop forever.\n"
-"                       \n"
-"  -s | --sleep s       Sets the sleeping duration between two displays \n"
-"                       in seconds. Defaults to 180 seconds (3 minutes).\n"
-"                       \n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ pykosd -s 60 --loop 5\n"
-"  \n"
-"  Will launch pykosd. Display will be refreshed every 60 seconds,\n"
-"  and will last for 3 seconds (the default) each time. After five\n"
-"  iterations, the program will exit.\n"
-"  \n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"Un monitor de cuotas OSD para PyKota.\n"
-"\n"
-"uso desde la línea de comandos:\n"
-"\n"
-"  pykosd [opciones]\n"
-"\n"
-"opciones:\n"
-"\n"
-"  -v | --version       Muestra el número de versión de pykosd y\n"
-"                       luego sale.\n"
-"  -h | --help          Muestra este mensaje y luego sale.\n"
-"\n"
-"  -c | --color #rrggbb Establece el color que se utilizará en el\n"
-"                       visualizador como un triplete hexadecimal, por\n"
-"                       ejemplo #FF0000 es un rojo 100%%.\n"
-"                       El valor por defecto es 100%% verde (#00FF00).\n"
-"\n"
-"  -d | --duration d    Establece la duración del visualizador en segundos.\n"
-"                       Por defecto son 3 segundos.\n"
-"\n"
-"  -f | --font f        Establece el tipo de letra que se utilizará en\n"
-"                       el visualizador.\n"
-"                       Por defecto se utilizará la opción por defecto\n"
-"                       de la librería Python OSD.\n"
-"\n"
-"  -l | --loop n        Establece el número de veces que la información\n"
-"                       se mostrará.\n"
-"                       El valor por defecto es 0, que significa un\n"
-"                       bucle sin fin.\n"
-"\n"
-"  -s | --sleep s       Establece el tiempo de espera entre dos mensajes\n"
-"                       en segundos. El valor por defecto son 180 segundos\n"
-"                       (3 minutos).\n"
-"\n"
-"\n"
-"ejemplos:\n"
-"\n"
-"  $ pykosd -s 60 --loop 5\n"
-"\n"
-"  Ejecutará pykosd. El visualizador se actualizará cada 60 segundos,\n"
-"  y se mostrará 3 segundos (valor por defecto) cada vez. Después de\n"
-"  cinco iteraciones, el programa finalizará.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Por favor, envíe los errores por correo electrónico a: %s"
-
-#, python-format
-msgid "Invalid duration option %s"
-msgstr "Opción de duración %s inválida"
-
-#, python-format
-msgid "Invalid loop option %s"
-msgstr "Opción de bucle %s inválida"
-
-#, python-format
-msgid "Invalid sleep option %s"
-msgstr "Opción «sleep» %s inválida"
-
-#, python-format
-msgid "Invalid color option %s"
-msgstr "Opción de color %s inválida"
-
-#, python-format
-msgid "User %s doesn't exist in PyKota's database"
-msgstr "El usuario %s no existe en la base de datos de PyKota"
-
-#, python-format
-msgid "Pages used on %s : %s"
-msgstr "Páginas utilizadas en %s : %s"
-
-#, python-format
-msgid "PyKota Units left : %.2f"
-msgstr "Unidades restantes de PyKota : %.2f"
-
-#, python-format
-msgid ""
-"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"\n"
-"Gives print quotes to users.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  pykotme  [options]  [files]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints pykotme's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -P | --printer p     Gives a quote for this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ pykotme --printer apple file1.ps file2.ps\n"
-"  \n"
-"  This will give a print quote to the current user. The quote will show\n"
-"  the price and size of a job consisting in file1.ps and file2.ps \n"
-"  which would be sent to the apple printer.\n"
-"  \n"
-"  $ pykotme --printer apple,hplaser <file1.ps\n"
-"  \n"
-"  This will give a print quote to the current user. The quote will show\n"
-"  the price and size of a job consisting in file1.ps as read from\n"
-"  standard input, which would be sent to the apple or hplaser\n"
-"  printer.\n"
-"\n"
-"  $ pykotme \n"
-"  \n"
-"  This will give a quote for a job consisting of what is on standard \n"
-"  input. The quote will list the job size, and the price the job\n"
-"  would cost on each printer.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"\n"
-"Muestra las cuotas de impresión a los usuarios.\n"
-"\n"
-"uso desde la línea de comandos:\n"
-"\n"
-"  pykotme  [opciones]  [archivos]\n"
-"\n"
-"opciones:\n"
-"\n"
-"  -v | --version       Muestra el número de versión pykotme y\n"
-"                       luego sale.\n"
-"  -h | --help          Muestra este mensaje y luego sale.\n"
-"\n"
-"  -P | --printer p     Muestra la cuota para esta impresora únicamente.\n"
-"                       Actualmente «p» puede utilizar caracteres comodín\n"
-"                       para seleccionar sólo algunas impresoras. El valor\n"
-"                       por defecto es *, que significa toas las impresoras.\n"
-"                       Puede especificar varios nombres o comodines,\n"
-"                       separándolos por comas.\n"
-"\n"
-"ejemplos\n"
-"\n"
-"  $ pykotme --printer apple file1.ps file2.ps\n"
-"\n"
-"  Esto mostrará una cuota de impresión para el usuario actual. La cuota\n"
-"  mostrará el precio y el tamaño del trabajo consistente en «file1.ps»\n"
-"  y «file2.ps» que se enviarán a la impresora «apple».\n"
-"\n"
-"  $ pykotme --printer apple,hplaser <file1.ps\n"
-"\n"
-"  Esto mostrará una cuota de impresión para el usuario actual. La cuota\n"
-"  mostrará el precio y el tamaño del trabajo consistente en «file1.ps»\n"
-"  leído desde la entrada estándar, que será enviado a la impresora\n"
-"  «apple» o «hplaser».\n"
-"\n"
-"  $ pykotme \n"
-"\n"
-"  Esto mostrará una cuota para el trabajo consistente en los datos de\n"
-"  la entrada estándar. La cuota listará el tamaño del trabajo y el\n"
-"  coste de impresión del trabajo en cada impresora.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Por favor, envíe los errores por correo electrónico a: %s"
-
-#, python-format
-msgid "Your account balance : %.2f"
-msgstr "Su saldo : %.2f"
-
-#, python-format
-msgid "Job size : %i pages"
-msgstr "Tamaño del trabajo : %i página(s)"
-
-#, python-format
-msgid "Cost on printer %s : %.2f"
-msgstr "Coste en la impresora %s : %.2f"
-
-#, python-format
-msgid ""
 "pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
 "Libres\n"
 "\n"
@@ -1211,9 +1634,6 @@ msgstr ""
 msgid "Job"
 msgstr ""
 
-msgid "Date"
-msgstr "Fecha"
-
 msgid "Allowed"
 msgstr ""
 
@@ -1225,12 +1645,6 @@ msgstr ""
 
 msgid "Result"
 msgstr ""
-
-msgid "Title"
-msgstr "Título"
-
-msgid "Filename"
-msgstr "Nombre del archivo"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -1668,669 +2082,277 @@ msgid "You have to pass printer names on the command line"
 msgstr "Ha de proporcionar nombres de impresoras en la línea de comandos"
 
 #, python-format
-msgid "Unsupported accounter backend %s"
-msgstr "Backend de contabilidad %s no soportado"
-
-#, python-format
-msgid "Configuration file %s not found."
-msgstr "Archivo de configuración %s no encontrado."
-
-#, python-format
-msgid "Option %s not found in section global of %s"
-msgstr "Opción %s no encontrada en la sección global de %s"
-
-#, python-format
-msgid "Option %s not found in section %s of %s"
-msgstr "Opción %s no encontrada en la sección %s de %s"
-
-#, python-format
-msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr ""
-
-#, python-format
-msgid "Option logger only supports values in %s"
-msgstr "La opción «logger» sólo soporta los valores %s"
-
-#, python-format
-msgid "Invalid accounter %s for printer %s"
-msgstr "Contador de páginas %s inválido para la impresora %s"
-
-#, python-format
-msgid "Option accounter in section %s only supports values in %s"
-msgstr "La opción «accounter», en la sección %s, sólo soporta los valores %s"
-
-#, python-format
-msgid "Option enforcement in section %s only supports values in %s"
-msgstr "La opción «enforcement», en la sección %s, sólo soporta los valores %s"
-
-#, python-format
-msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr ""
-"La opción «onaccountererror», en la sección %s, sólo soporta los valores %s"
-
-#, python-format
-msgid "Invalid policy %s for printer %s"
-msgstr "Política %s inválida para la impresora %s"
-
-#, python-format
-msgid "Option policy in section %s only supports values in %s"
-msgstr "La opción «policy», en la sección  %s, sólo soporta los valores %s"
-
-#, python-format
-msgid "Invalid option mailto %s for printer %s"
-msgstr "Opción «mailto %s» inválida para la impresora %s"
-
-#, python-format
-msgid "Option mailto in section %s only supports values in %s"
-msgstr "La opción «mailto», en la sección %s, sólo soporta los valores %s"
-
-#, python-format
-msgid "Invalid maximal deny banners counter %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid grace delay %s"
-msgstr "Tiempo de gracia %s inválido"
-
-#, python-format
-msgid "Invalid poor man's threshold %s"
-msgstr "Umbral %s para la opción «poor man» inválido"
-
 msgid ""
-"Your Print Quota account balance is Low.\n"
-"Soon you'll not be allowed to print anymore.\n"
-"Please contact the Print Quota Administrator to solve the problem."
+"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"An OSD quota monitor for PyKota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pykosd [options]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pykosd's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -c | --color #rrggbb Sets the color to use for display as an hexadecimal\n"
+"                       triplet, for example #FF0000 is 100%% red.\n"
+"                       Defaults to 100%% green (#00FF00).\n"
+"                       \n"
+"  -d | --duration d    Sets the duration of the display in seconds. \n"
+"                       Defaults to 3 seconds.\n"
+"                       \n"
+"  -f | --font f        Sets the font to use for "
+"display.                      \n"
+"                       Defaults to the Python OSD library's default.\n"
+"  \n"
+"  -l | --loop n        Sets the number of times the info will be displayed.\n"
+"                       Defaults to 0, which means loop forever.\n"
+"                       \n"
+"  -s | --sleep s       Sets the sleeping duration between two displays \n"
+"                       in seconds. Defaults to 180 seconds (3 minutes).\n"
+"                       \n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pykosd -s 60 --loop 5\n"
+"  \n"
+"  Will launch pykosd. Display will be refreshed every 60 seconds,\n"
+"  and will last for 3 seconds (the default) each time. After five\n"
+"  iterations, the program will exit.\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
 msgstr ""
-"El saldo de la cuota de impresión de su cuenta es bajo.\n"
-"En breve no podrá volver a imprimir.\n"
-"Por favor, contacte con el Administrador de Cuotas de Impresión para "
-"resolver el problema."
-
-#, python-format
-msgid ""
-"You are not allowed to print anymore because\n"
-"your Print Quota is exceeded on printer %s."
-msgstr ""
-"No puede imprimir porque su cuota de impresión\n"
-"se ha excedido en la impresora %s."
-
-#, python-format
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your Print Quota is almost reached on printer %s."
-msgstr ""
-"Pronto le será prohibida la impresión, debido a que\n"
-"su cuota de acerca al límite en la impresora %s."
-
-#, python-format
-msgid "Option accountbanner in section %s only supports values in %s"
-msgstr ""
-
-msgid "History"
-msgstr "Historial"
-
-msgid "Users"
-msgstr ""
-
-msgid "Groups"
-msgstr ""
-
-msgid "Printers"
-msgstr ""
-
-msgid "Users Print Quotas"
-msgstr ""
-
-msgid "Users Groups Print Quotas"
-msgstr ""
-
-msgid "History of Payments"
-msgstr ""
-
-msgid "Printers Groups Membership"
-msgstr ""
-
-msgid "Users Groups Membership"
-msgstr ""
-
-msgid "Comma Separated Values"
-msgstr ""
-
-msgid "Semicolon Separated Values"
-msgstr ""
-
-msgid "Tabulation Separated Values"
-msgstr ""
-
-msgid "eXtensible Markup Language"
-msgstr ""
-
-msgid "CUPS' page_log"
-msgstr ""
-
-#, python-format
-msgid "Invalid value [%s] for --filter command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr "Modificador [%s] inválido para la opción --data, vea la ayuda."
-
-#, python-format
-msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr "Modificador [%s] inválido para la opción --format, vea la ayuda."
-
-msgid "XML output is disabled because the jaxml module is not available."
-msgstr ""
-"La salida XML está deshabilitada debido a que el módulo jaxml no está "
-"disponible."
-
-msgid "PyKota data dumper failed : I/O error"
-msgstr "El volcado de datos de PyKota ha fallado : I/O error"
-
-#, python-format
-msgid "Unsupported logging subsystem %s"
-msgstr "Subsistema de registro de logs %s no soportado"
-
-#, python-format
-msgid "Report for %s quota on printer %s"
-msgstr "Informe para la cuota %s en la impresora %s"
-
-#, python-format
-msgid "Pages grace time: %i days"
-msgstr "Tiempo de gracia para páginas: %i día(s) "
-
-#, python-format
-msgid "Price per job: %.3f"
-msgstr "Precio por trabajo: %.3f"
-
-#, python-format
-msgid "Price per page: %.3f"
-msgstr "Precio por página: %.3f"
-
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid "unknown"
-msgstr "Desconocido"
-
-#, python-format
-msgid "Real : %s"
-msgstr "Real : %s"
-
-#, python-format
-msgid "Total : %9i"
-msgstr "Total : %9i"
-
-msgid "N/A"
-msgstr ""
-
-#, python-format
-msgid "Unsupported reporter backend %s"
-msgstr "«Reporter backend» %s no soportado"
-
-#, python-format
-msgid "Unsupported quota storage backend %s"
-msgstr "Backend %s de almacenamiento de cuota no soportado"
-
-#, python-format
-msgid "Strange problem with uid(%s) : %s"
-msgstr ""
-
-#, python-format
-msgid "Running as user '%s'."
-msgstr ""
-
-msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr ""
-
-#, python-format
-msgid "Impossible to drop priviledges : %s"
-msgstr ""
-
-msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr ""
-
-#, python-format
-msgid "Impossible to regain priviledges : %s"
-msgstr ""
-
-msgid "Regained priviledges. Now running as root."
-msgstr ""
-
-#, python-format
-msgid "Impossible to connect to SMTP server : %s"
-msgstr "Imposible conectar con el servidor SMTP: %s"
-
-#, python-format
-msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "Imposible enviar un correo electrónico a %s, error %s : %s"
-
-#, python-format
-msgid ""
+"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"Un monitor de cuotas OSD para PyKota.\n"
+"\n"
+"uso desde la línea de comandos:\n"
+"\n"
+"  pykosd [opciones]\n"
+"\n"
+"opciones:\n"
+"\n"
+"  -v | --version       Muestra el número de versión de pykosd y\n"
+"                       luego sale.\n"
+"  -h | --help          Muestra este mensaje y luego sale.\n"
+"\n"
+"  -c | --color #rrggbb Establece el color que se utilizará en el\n"
+"                       visualizador como un triplete hexadecimal, por\n"
+"                       ejemplo #FF0000 es un rojo 100%%.\n"
+"                       El valor por defecto es 100%% verde (#00FF00).\n"
+"\n"
+"  -d | --duration d    Establece la duración del visualizador en segundos.\n"
+"                       Por defecto son 3 segundos.\n"
+"\n"
+"  -f | --font f        Establece el tipo de letra que se utilizará en\n"
+"                       el visualizador.\n"
+"                       Por defecto se utilizará la opción por defecto\n"
+"                       de la librería Python OSD.\n"
+"\n"
+"  -l | --loop n        Establece el número de veces que la información\n"
+"                       se mostrará.\n"
+"                       El valor por defecto es 0, que significa un\n"
+"                       bucle sin fin.\n"
+"\n"
+"  -s | --sleep s       Establece el tiempo de espera entre dos mensajes\n"
+"                       en segundos. El valor por defecto son 180 segundos\n"
+"                       (3 minutos).\n"
 "\n"
 "\n"
-"Please contact your system administrator :\n"
+"ejemplos:\n"
 "\n"
-"\t%s - <%s>\n"
-msgstr ""
+"  $ pykosd -s 60 --loop 5\n"
 "\n"
+"  Ejecutará pykosd. El visualizador se actualizará cada 60 segundos,\n"
+"  y se mostrará 3 segundos (valor por defecto) cada vez. Después de\n"
+"  cinco iteraciones, el programa finalizará.\n"
 "\n"
-"Entre en contacto con su administrador de sistema, por favor :\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
 "\n"
-"\t%s - <%s>\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Por favor, envíe los errores por correo electrónico a: %s"
 
 #, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr ""
-"Imposible encontrar al usuario %s en la impresora %s, se aplica la política "
-"por defecto (%s)"
+msgid "Invalid duration option %s"
+msgstr "Opción de duración %s inválida"
 
 #, python-format
-msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr ""
-"No se ha encontrado el saldo del usuario %s, aplicando la política por "
-"defecto (%s) para la impresora %s"
+msgid "Invalid loop option %s"
+msgstr "Opción de bucle %s inválida"
 
 #, python-format
-msgid "User %s will not be charged for printing."
-msgstr ""
+msgid "Invalid sleep option %s"
+msgstr "Opción «sleep» %s inválida"
 
 #, python-format
-msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "Cuota de impresión excedida para el grupo %s en la impresora %s"
-
-msgid "Print Quota"
-msgstr "Cuota de impresión"
-
-msgid "Print Quota Exceeded"
-msgstr "Cuota de Impresión Excedida"
+msgid "Invalid color option %s"
+msgstr "Opción de color %s inválida"
 
 #, python-format
-msgid "Print Quota low for group %s on printer %s"
-msgstr "Cuota de impresión baja para el grupo %s en la impresora %s"
+msgid "User %s doesn't exist in PyKota's database"
+msgstr "El usuario %s no existe en la base de datos de PyKota"
 
 #, python-format
-msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "Cuota de impresión excedida para el usuario %s en la impresora %s"
+msgid "Pages used on %s : %s"
+msgstr "Páginas utilizadas en %s : %s"
 
 #, python-format
-msgid "Print Quota low for user %s on printer %s"
-msgstr "Cuota de impresión baja para el usuario %s en la impresora %s"
-
-msgid "Print Quota Low"
-msgstr "Cuota de Impresión Baja"
-
-#, python-format
-msgid "Printing system %s, args=%s"
-msgstr "Sistema de impresión %s, args=%s"
-
-#, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr ""
-"No se ha podido calcular el tamaño del trabajo con el analizador PDL "
-"genérico : %s"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "Señal SIGTERM recibida, trabajo %s cancelado."
-
-#, python-format
-msgid "Banner generator %s exit code is %s"
-msgstr ""
-
-msgid "Printer hostname undefined, set to 'localhost'"
-msgstr "Hostname de la impresora no definido, ajustándolo a «localhost»"
-
-#, python-format
-msgid "Printing system unknown, args=%s"
-msgstr "Sistema de impresión desconocido, args=%s"
+msgid "PyKota Units left : %.2f"
+msgstr "Unidades restantes de PyKota : %.2f"
 
 #, python-format
 msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
+"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Gives print quotes to users.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pykotme  [options]  [files]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pykotme's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -P | --printer p     Gives a quote for this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pykotme --printer apple file1.ps file2.ps\n"
+"  \n"
+"  This will give a print quote to the current user. The quote will show\n"
+"  the price and size of a job consisting in file1.ps and file2.ps \n"
+"  which would be sent to the apple printer.\n"
+"  \n"
+"  $ pykotme --printer apple,hplaser <file1.ps\n"
+"  \n"
+"  This will give a print quote to the current user. The quote will show\n"
+"  the price and size of a job consisting in file1.ps as read from\n"
+"  standard input, which would be sent to the apple or hplaser\n"
+"  printer.\n"
+"\n"
+"  $ pykotme \n"
+"  \n"
+"  This will give a quote for a job consisting of what is on standard \n"
+"  input. The quote will list the job size, and the price the job\n"
+"  would cost on each printer.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
 msgstr ""
-"Impresora %s no registrada en el sistema PyKota, aplicando la política "
-"externa (%s) para la impresora %s"
+"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Muestra las cuotas de impresión a los usuarios.\n"
+"\n"
+"uso desde la línea de comandos:\n"
+"\n"
+"  pykotme  [opciones]  [archivos]\n"
+"\n"
+"opciones:\n"
+"\n"
+"  -v | --version       Muestra el número de versión pykotme y\n"
+"                       luego sale.\n"
+"  -h | --help          Muestra este mensaje y luego sale.\n"
+"\n"
+"  -P | --printer p     Muestra la cuota para esta impresora únicamente.\n"
+"                       Actualmente «p» puede utilizar caracteres comodín\n"
+"                       para seleccionar sólo algunas impresoras. El valor\n"
+"                       por defecto es *, que significa toas las impresoras.\n"
+"                       Puede especificar varios nombres o comodines,\n"
+"                       separándolos por comas.\n"
+"\n"
+"ejemplos\n"
+"\n"
+"  $ pykotme --printer apple file1.ps file2.ps\n"
+"\n"
+"  Esto mostrará una cuota de impresión para el usuario actual. La cuota\n"
+"  mostrará el precio y el tamaño del trabajo consistente en «file1.ps»\n"
+"  y «file2.ps» que se enviarán a la impresora «apple».\n"
+"\n"
+"  $ pykotme --printer apple,hplaser <file1.ps\n"
+"\n"
+"  Esto mostrará una cuota de impresión para el usuario actual. La cuota\n"
+"  mostrará el precio y el tamaño del trabajo consistente en «file1.ps»\n"
+"  leído desde la entrada estándar, que será enviado a la impresora\n"
+"  «apple» o «hplaser».\n"
+"\n"
+"  $ pykotme \n"
+"\n"
+"  Esto mostrará una cuota para el trabajo consistente en los datos de\n"
+"  la entrada estándar. La cuota listará el tamaño del trabajo y el\n"
+"  coste de impresión del trabajo en cada impresora.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Por favor, envíe los errores por correo electrónico a: %s"
 
 #, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr ""
-"Usuario %s no registrado en el sistema PyKota, aplicando la política externa "
-"(%s) para la impresora %s"
+msgid "Your account balance : %.2f"
+msgstr "Su saldo : %.2f"
 
 #, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr ""
-"El usuario %s no posee cuota en la impresora %s bajo el sistema PyKota, "
-"aplicando la política externa (%s) para la impresora %s"
+msgid "Job size : %i pages"
+msgstr "Tamaño del trabajo : %i página(s)"
 
 #, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr ""
-"La política externa %s para la impresora %s ha producido un error. Trabajo "
-"rechazado. Por favor, revise los archivos de configuración de PyKota."
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
-"Impresora %s no registrada en el sistema PyKota, aplicando la política por "
-"defecto (%s)"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr ""
-"Usuario %s no registrado en el sistema PyKota, aplicando la política por "
-"defecto (%s) para la impresora %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr ""
-"el usuario %s no posee cuota en la impresora %s bajo el sistema PyKota, "
-"aplicando la política por defecto (%s)"
-
-#, python-format
-msgid ""
-"Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr ""
-"La impresora %s no se ha registrado todavía en el sistema PyKota, se va a "
-"rechazar el trabajo"
-
-#, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr ""
-"El usuario %s no se ha registrado todavía en el sistema PyKota, el trabajo "
-"se va a rechazar en la impresora %s"
-
-#, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr ""
-"El usuario %s no tiene todavía cuota en la impresora %s bajo el sistema "
-"PyKota, se va a rechazar el trabajo"
-
-#, python-format
-msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr "Errores de red mientras se hacían peticiones en la impresora %s : %s"
-
-#, python-format
-msgid "SNMP message decoding error for printer %s : %s"
-msgstr ""
-
-#, python-format
-msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr ""
-"Se han encontrado problemas mientras se hacían peticiones SNMP en la "
-"impresora %s : %s"
-
-#, python-format
-msgid "Waiting for printer %s to be printing..."
-msgstr ""
-
-#, python-format
-msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr "Esperando al estado inactivo de la impresora %s para estabilizar..."
-
-#, python-format
-msgid "Problem during connection to %s:%s : %s"
-msgstr "Problema durante la conexión a %s:%s : %s"
-
-#, python-format
-msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr "Problema mientras se enviaba la petición PJL a %s:%s : %s"
-
-#, python-format
-msgid "A problem occured while reading printer %s's internal page counter."
-msgstr ""
-"Ha ocurrido un problema mientras se estaba leyendo el contador de páginas "
-"interno de la impresora %s."
-
-#, python-format
-msgid "Retrieving printer %s's page counter from database instead."
-msgstr ""
-"Recuperando el contador de páginas de la impresora %s desde la base de datos "
-"en su lugar."
-
-#, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr ""
-"No se ha podido recuperar el contador de páginas interno de la impresora %s "
-"bien antes bien después de imprimir."
-
-#, python-format
-msgid "Job's size forced to 1 page for printer %s."
-msgstr "Tamaño del trabajo forzado a 1 página para la impresora %s."
-
-#, python-format
-msgid "No previous job in database for printer %s."
-msgstr "No hay trabajos previos en la base de datos para la impresora %s."
-
-#, python-format
-msgid "Inconsistent values for printer %s's internal page counter."
-msgstr ""
-"Valor inconsistente para el contador de páginas interno de la impresora %s."
-
-msgid ""
-"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
-"download it from http://pysnmp.sourceforge.net"
-msgstr ""
-"Se ha preguntado al contador SNMP interno, pero Python-SNMP no está "
-"disponible. Descárguelo desde http://pysnmp.sourceforge.net"
-
-#, python-format
-msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "Dirección desconocida en HARDWARE(%s) para la impresora %s"
-
-#, python-format
-msgid "Launching HARDWARE(%s)..."
-msgstr "Arrancando HARDWARE(%s)..."
-
-#, python-format
-msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr ""
-"Se ha enviado la señal SIGTERM al contador de páginas hardware %s (pid: %s)"
-
-#, python-format
-msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr "Línea [%s] saltada en la salida del contador. Intentándolo de nuevo..."
-
-#, python-format
-msgid "Hardware accounter %s exit code is %s"
-msgstr "Contador por hardware %s cuyo código de salida es %s"
-
-#, python-format
-msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "Imposible consultar la impresora %s vía HARDWARE(%s)"
-
-#, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-"Etapa de petición SNMP interrumpida. Utilizando el último valor visto en el "
-"contador interno de páginas (%s) en la impresora %s."
-
-#, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-"Etapa de petición PJL interrumpida. Utilizando el último valor visto en el "
-"contador interno de páginas (%s) en la impresora %s."
-
-#, python-format
-msgid "Launching SOFTWARE(%s)..."
-msgstr "Arrancando SOFTWARE(%s)..."
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "Imposible calcular el tamaño del trabajo con el contador %s"
-
-#, python-format
-msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr ""
-"Ha ocurrido un problema mientras se estaba esperado a que terminase el "
-"contador software con pid %s: %s"
-
-#, python-format
-msgid "Software accounter %s exit code is %s"
-msgstr "Código de salida %s para el contador por software %s"
-
-msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr ""
-"Los totales pueden ser erróneos si algunos usuarios son miembros de varios "
-"grupos."
-
-#, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-"La base de búsqueda %s parece no existir. Probablemente se deba a una mala "
-"configuración. Por favor, verifique el archivo /etc/pykota/pykota.conf : %s"
-
-#, python-format
-msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr ""
-"La búsqueda por %s(%s) desde %s(scope=%s) no ha devuelto ninguna respuesta."
-
-#, python-format
-msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "Problema al añadir la entrada LDAP (%s, %s)"
-
-#, python-format
-msgid "Problem deleting LDAP entry (%s)"
-msgstr "Problema al borrar la entrada LDAP (%s)"
-
-#, python-format
-msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "Problema al modificar la entrada LDAP (%s, %s)"
-
-#, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
-msgstr ""
-"No se ha encontrado el objeto pykotaAccountBalance para el usuario %s. ¿Ha "
-"creado las entradas LDAP manualmente?"
-
-#, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-"No se ha podido encontrar una entrada objectClass %s existente con %s=%s "
-"para anexionar el objectClass pykotaAccount"
-
-#, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr ""
-"No se ha podido encontrar una entrada existente para anexionar el "
-"objectClass pykotaGroup %s"
-
-msgid "PyKota Reports"
-msgstr "Informes de PyKota"
-
-msgid "Report"
-msgstr "Informe"
-
-msgid "Printer"
-msgstr "Impresora"
-
-msgid "User / Group names mask"
-msgstr "Máscara para el nombre de Usuario / Grupo"
-
-msgid "Groups report"
-msgstr "Informes de los grupos"
-
-msgid "Please click on the above button"
-msgstr "Pulse sobre el botón de arriba, por favor"
-
-msgid "Empty"
-msgstr "Vacío"
-
-msgid "Action"
-msgstr "Acción"
-
-msgid "User"
-msgstr "Usuario"
-
-msgid "Hostname"
-msgstr "Hostname"
-
-msgid "JobId"
-msgstr "IdTrabajo"
-
-msgid "JobSize"
-msgstr "TamañoTrabajo"
-
-msgid "JobPrice"
-msgstr "PrecioTrabajo"
-
-msgid "Copies"
-msgstr "Copias"
-
-msgid "JobBytes"
-msgstr "BytesTrabajo"
-
-msgid "PageCounter"
-msgstr "ContadorPáginas"
-
-msgid "Options"
-msgstr "Opciones"
-
-msgid "MD5Sum"
-msgstr ""
-
-msgid "BillingCode"
-msgstr ""
-
-msgid "Pages"
-msgstr ""
-
-msgid "Previous page"
-msgstr "Página anterior"
-
-msgid "PyKota Data Dumper"
-msgstr ""
-
-msgid "Dump"
-msgstr ""
-
-msgid "Data Type"
-msgstr ""
-
-msgid "Output Format"
-msgstr ""
-
-msgid "Filter"
-msgstr ""
+msgid "Cost on printer %s : %.2f"
+msgstr "Coste en la impresora %s : %.2f"
 
 #~ msgid ""
 #~ "dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
