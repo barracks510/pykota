@@ -75,7 +75,7 @@ Contributors :
     - Michael Stuebiger : Non-postscript printers support documentation
     - Oleg Biteryakov - University of Michigan : Bug fix in SQL code
     - Charl W. Möller - University of Stellenbosch : LDAP testing
-    - Dennis Romero L. : Spanish translation
+    - Dennis Romero L. : Spanish translation and installation guide.
     - Daniel Mikkelsen : Sample configuration file fix
     - Carlos Fernandes : Portugues translation
     - René Lund Jensen : Contributed the pagecount.pl script
