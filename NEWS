@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha6 :
       
+        - Small fix for old versions of LPRng.
+        
         - Now exports PYKOTAPRINTERHOSTNAME for network printers'
           hostname or IP address. Set to 'localhost' when not
           meaningful.

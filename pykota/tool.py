@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.120  2004/09/02 13:26:29  jalet
+# Small fix for old versions of LPRng
+#
 # Revision 1.119  2004/09/02 13:09:58  jalet
 # Now exports PYKOTAPRINTERHOSTNAME
 #
@@ -1140,19 +1143,27 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             if (rseen is None) and jseen and Pseen and nseen :    
                 self.printInfo(_("Printer hostname undefined, set to 'localhost'"), "warn")
                 rseen = "localhost"
+                
+            spooldir = os.environ.get("SPOOL_DIR", ".")    
             try :    
                 df_name = [line[8:] for line in os.environ.get("HF", "").split() if line.startswith("df_name=")][0]
             except IndexError :
                 try :
                     cftransfername = [line[15:] for line in os.environ.get("HF", "").split() if line.startswith("cftransfername=")][0]
                 except IndexError :    
-                    inputfile = None
+                    try :
+                        df_name = [line[1:] for line in os.environ.get("CONTROL", "").split() if line.startswith("fdf") or line.startswith("Udf")][0]
+                    except IndexError :    
+                        inputfile = None
+                    else :    
+                        inputfile = os.path.join(spooldir, df_name)
                 else :    
-                    inputfile = os.path.join(os.environ.get("SPOOL_DIR", "."), "d" + cftransfername[1:])
+                    inputfile = os.path.join(spooldir, "d" + cftransfername[1:])
             else :    
-                inputfile = os.path.join(os.environ.get("SPOOL_DIR", "."), df_name)
+                inputfile = os.path.join(spooldir, df_name)
+                
             if jseen and Pseen and nseen and rseen :        
-                options = os.environ.get("HF", "")
+                options = os.environ.get("HF", "") or os.environ.get("CONTROL", "")
                 return ("LPRNG", rseen, Pseen, nseen, jseen, inputfile, Kseen, Jseen, options, None)
         self.printInfo(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
         return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system
