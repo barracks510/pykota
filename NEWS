@@ -40,6 +40,9 @@ PyKota NEWS :
         
         - Better general error handling.
         
+        - Upgrade script for pre 1.01 PostgreSQL database schema is now
+          included as well.
+        
     - 1.01 :
     
         - The configuration file now accepts an option   
