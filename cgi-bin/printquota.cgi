@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2004/01/09 07:58:53  jalet
+# Changed URL to PyKota's logo
+#
 # Revision 1.21  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -111,7 +114,7 @@ header = """Content-type: text/html
         <tr>
           <td>
             <p>
-              <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/calllogo" alt="PyKota's Logo" /></a>
+              <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/pykota.png" alt="PyKota's Logo" /></a>
               <br />
               <a href="http://www.librelogiciel.com/software/">PyKota version %s</a>
             </p>
