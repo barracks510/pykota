@@ -54,6 +54,8 @@ PyKota features :
           page counter.
           
         - Supports any other printer via GhostScript.
+          Depending on the printer some configuration may
+          be needed.
         
         - Can ask printers for their internal page counter
           via SNMP, Netatalk, or any other mean of your
