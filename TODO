@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Add a description field to users/groups.
+        
         - Allow the admin to choose an action to take when the database
           is unavailable (server is down or something like that) :
           introduce two directives :
@@ -43,13 +45,6 @@ TODO, in no particular order :
                       frontbanner: -somepath
           to allow/deny accounting of the banner itself
           (not sure because may be VERY DIFFICULT !)
-          
-        - Add full setting support of the printer's description  
-          attribute in pkprinters.
-        
-        - Add support for binary PostScript in generic PDL parser, 
-          using the BBox method described by Helge Blischke in CUPS'
-          developpment mailing list.
           
         - Improve waitprinter.sh
         
