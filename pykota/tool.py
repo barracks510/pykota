@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.72  2004/01/14 15:51:19  jalet
+# Docstring added.
+#
 # Revision 1.71  2004/01/11 23:22:42  jalet
 # Major code refactoring, it's way cleaner, and now allows automated addition
 # of printers on first print.
@@ -657,6 +660,7 @@ class PyKotaTool :
 class PyKotaFilterOrBackend(PyKotaTool) :    
     """Class for the PyKota filter or backend."""
     def __init__(self) :
+        """Initialize local datas from current environment."""
         PyKotaTool.__init__(self)
         (self.printingsystem, \
          self.printerhostname, \
