@@ -21,6 +21,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Rewrite support for LPRng.
+        
+        - Think about some possible client <=> PyKota dialog
+          possibilities, like embedding a small web server in
+          PyKota for example.
+        
+        - Log something when --add is used with existing entries.
+          Maybe add a new command line option to force/not force
+          modification of existing entries.
+          
+        - Maintain a list of payments.
+        
+        - Extract and store the job-originating-hostname information. 
+        
         - Finish implementation of quota-then-balance and 
           balance-then-quota.
           
