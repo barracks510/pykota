@@ -13,13 +13,17 @@
 #
 # $Id$
 #
-for dir in *_* ; do 
-    echo -n $dir ;
-    cd $dir ;
-    chmod 644 *.?o ;
-    msgmerge --no-location --no-fuzzy-matching --output-file=pykota.po.new pykota.po ../pykota.pot ;
-    mv pykota.po.new pykota.po ;
-    rm pykota.mo ;
-    msgfmt -o pykota.mo pykota.po ;
-    cd .. ;
+for dir in * ; do 
+    if [ -d $dir ] ; then
+        if [ -e $dir/pykota.po ] ; then
+            echo -n $dir ;
+            cd $dir ;
+            chmod 644 *.?o ;
+            msgmerge --no-location --no-fuzzy-matching --output-file=pykota.po.new pykota.po ../pykota.pot ;
+            mv pykota.po.new pykota.po ;
+            rm pykota.mo ;
+            msgfmt -o pykota.mo pykota.po ;
+            cd .. ;
+        fi ;    
+    fi ;     
 done
