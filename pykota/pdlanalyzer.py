@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2004/12/16 15:11:00  jalet
+# Added some debugging code to PCL3/4/5 parser
+#
 # Revision 1.47  2004/12/13 20:49:53  jalet
 # Bad typo
 #
@@ -558,6 +561,15 @@ class PCLAnalyzer :
         # 1 more, we finally substract 3, and will test several
         # PCL files with this. If resets < 2, then the file is
         # probably not a valid PCL file, so we use 0
+        
+        if self.debug :
+            sys.stderr.write("pagecount : %s\n" % pagecount)
+            sys.stderr.write("resets : %s\n" % resets)
+            sys.stderr.write("ejects : %s\n" % ejects)
+            sys.stderr.write("backsides : %s\n" % backsides)
+            sys.stderr.write("startgfx : %s\n" % startgfx)
+            sys.stderr.write("endgfx : %s\n" % endgfx)
+        
         if not pagecount :
             pagecount = (pagecount or ((resets - 3) * (resets > 2)))
         else :    
