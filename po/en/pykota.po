@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/03/09 23:38:43  jalet
+# Simplified translations.
+#
 # Revision 1.8  2003/02/27 09:08:39  jalet
 # Updated translations.
 #
@@ -63,16 +66,7 @@ msgstr ""
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
 msgstr ""
 
-msgid "warnpykota: option --group is currently not implemented."
-msgstr ""
-
-msgid "edpykota: option --group is currently not implemented."
-msgstr ""
-
 msgid "Pages grace time: %idays"
-msgstr ""
-
-msgid "repykota: unused arguments [%s]. Aborting."
 msgstr ""
 
 msgid "Invalid softlimit value %s."
@@ -81,19 +75,13 @@ msgstr ""
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr ""
 
-msgid "edpykota: options --softlimit or --hardlimit and --prototype are incompatible."
-msgstr ""
-
 msgid "Printer %s not registered in the PyKota system"
 msgstr ""
 
-msgid "repykota: option --group is currently not implemented."
+msgid "option --groups is currently not implemented."
 msgstr ""
 
 msgid "Quota not found for object %s on printer %s."
-msgstr ""
-
-msgid "repykota: options --users and --groups are incompatible."
 msgstr ""
 
 msgid "Invalid user name %s"
@@ -102,16 +90,13 @@ msgstr ""
 msgid "Both hard and soft limits must be set ! Aborting."
 msgstr ""
 
-msgid "warnpykota: options --users and --groups are incompatible."
-msgstr ""
-
 msgid "Undefined hard limit set to soft limit (%s) on printer %s."
 msgstr ""
 
-msgid "edpykota: options --users and --groups are incompatible."
+msgid "incompatible options, see help."
 msgstr ""
 
-msgid "warnpykota: unused arguments [%s]. Aborting."
+msgid "unused arguments [%s]. Aborting."
 msgstr ""
 
 msgid "Invalid hardlimit value %s."

@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/03/09 23:39:14  jalet
+# Simplified translations.
+#
 # Revision 1.14  2003/02/27 09:04:02  jalet
 # Missing translation
 #
@@ -198,11 +201,11 @@ if __name__ == "__main__" :
         elif options["version"] :
             reporter.display_version_and_quit()
         elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, _("repykota: options --users and --groups are incompatible.")
+            raise PyKotaToolError, _("incompatible options, see help.")
         elif options["groups"] :    
-            raise PyKotaToolError, _("repykota: option --groups is currently not implemented.")
+            raise PyKotaToolError, _("option --groups is currently not implemented.")
         elif args :    
-            raise PyKotaToolError, _("repykota: unused arguments [%s]. Aborting.") % ", ".join(args)
+            raise PyKotaToolError, _("unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
             sys.exit(reporter.main(options))
     except PyKotaToolError, msg :            

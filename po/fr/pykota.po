@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/03/09 23:38:43  jalet
+# Simplified translations.
+#
 # Revision 1.6  2003/02/27 09:08:39  jalet
 # Updated translations.
 #
@@ -64,17 +67,14 @@ msgstr "Limite souple indéfinie, positionnée à la limite dure (%s) sur l'imprima
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
 msgstr "Limite dure %i est inférieure à la limite souple %i, les valeurs seront échangées. "
 
-msgid "warnpykota: option --groups is currently not implemented."
-msgstr "warnpykota: l'option --groups n'est pas encore implémentée."
-
-msgid "edpykota: option --groups is currently not implemented."
-msgstr "edpykota: l'option --groups n'est pas encore implémentée."
+msgid "option --groups is currently not implemented."
+msgstr "l'option --groups n'est pas encore implémentée."
 
 msgid "Pages grace time: %idays"
 msgstr "Délai de grâce: %ijours"
 
-msgid "repykota: unused arguments [%s]. Aborting."
-msgstr "repykota: arguments [%s] inutilisés. Abandon."
+msgid "unused arguments [%s]. Aborting."
+msgstr "arguments [%s] inutilisés. Abandon."
 
 msgid "Invalid softlimit value %s."
 msgstr "Valeur %s invalide pour la limite souple."
@@ -82,20 +82,14 @@ msgstr "Valeur %s invalide pour la limite souple."
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr "Prototype %s non trouvé dans le Quota Storage pour l'imprimante %s."
 
-msgid "edpykota: options --softlimit or --hardlimit and --prototype are incompatible."
-msgstr "edpykota: les options --softlimit ou --hardlimit et --prototype sont incompatibles."
+msgid "incompatible options, see help."
+msgstr "options incompatibles, voir l'aide."
 
 msgid "Printer %s not registered in the PyKota system"
 msgstr "Imprimante %s non enregistrée dans le système PyKota"
 
-msgid "repykota: option --groups is currently not implemented."
-msgstr "repykota: l'option --groups n'est pas encore implémentée."
-
 msgid "Quota not found for object %s on printer %s."
 msgstr "Quota non trouvé pour l'objet %s sur l'imprimante %s."
-
-msgid "repykota: options --users and --groups are incompatible."
-msgstr "repykota: les options --users et --groups sont incompatibles."
 
 msgid "Invalid user name %s"
 msgstr "Nom d'utilisateur %s invalide"
@@ -103,17 +97,8 @@ msgstr "Nom d'utilisateur %s invalide"
 msgid "Both hard and soft limits must be set ! Aborting."
 msgstr "Les limites dures et souples doivent être positionnées ! Abandon."
 
-msgid "warnpykota: options --users and --groups are incompatible."
-msgstr "warnpykota: les options --users et --groups sont incompatibles."
-
 msgid "Undefined hard limit set to soft limit (%s) on printer %s."
 msgstr "Limite dure indéfinie, positionnée à la limite souple (%s) sur l'imprimante %s."
-
-msgid "edpykota: options --users and --groups are incompatible."
-msgstr "edykota: les options --users et --groups sont incompatibles."
-
-msgid "warnpykota: unused arguments [%s]. Aborting."
-msgstr "warnkota: arguments [%s] inutilisés. Abandon."
 
 msgid "Invalid hardlimit value %s."
 msgstr "Valeur %s invalide pour la limite dure."
