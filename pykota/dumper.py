@@ -149,7 +149,8 @@ class DumPyKota(PyKotaTool) :
             jobsize = entry[fields["jobsize"]] or 0
             copies = entry[fields["copies"]] or 1
             hostname = entry[fields["hostname"]] or ""
-            self.outfile.write("%s %s %s [%s] %s %s - %s\n" % (printername, username, jobid, jobdate, jobsize, copies, hostname))
+            for pagenum in range(1, jobsize+1) :
+                self.outfile.write("%s %s %s [%s] %s %s - %s\n" % (printername, username, jobid, jobdate, pagenum, copies, hostname))
         
     def dumpXml(self, entries, datatype) :    
         """Dumps datas as XML."""
