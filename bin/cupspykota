@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.70  2004/07/26 09:20:27  jalet
+# Unneeded module
+#
 # Revision 1.69  2004/07/22 22:41:47  jalet
 # Hardware accounting for LPRng should be OK now. UNTESTED.
 #
@@ -262,7 +265,6 @@
 
 import sys
 import os
-import fcntl
 import popen2
 import cStringIO
 import shlex
