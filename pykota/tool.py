@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.107  2004/06/23 13:03:28  jalet
+# Catches accounter configuration errors earlier
+#
 # Revision 1.106  2004/06/22 09:31:18  jalet
 # Always send some debug info to CUPS' back channel stream (stderr) as
 # informationnal messages.
@@ -905,7 +908,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.preserveinputfile = self.inputfile 
         try :
             self.accounter = accounter.openAccounter(self)
-        except accounter.PyKotaAccounterError, msg :    
+        except (config.PyKotaConfigError, accounter.PyKotaAccounterError), msg :    
             self.crashed(msg)
             raise
         self.exportJobInfo()
