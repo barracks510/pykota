@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/08/22 14:04:47  jalet
+# Tries to fix problem with subprocesses outputting more datas than needed
+#
 # Revision 1.7  2004/08/06 13:45:51  jalet
 # Fixed french translation problem.
 # Fixed problem with group quotas and strict enforcement.
@@ -72,12 +75,20 @@ class Accounter(AccounterBase) :
         
         pagecount = 0
         try :
-            pagecount = int(child.fromchild.readline().strip())
-        except (AttributeError, ValueError) :
-            self.filter.printInfo(_("Unable to compute job size with accounter %s") % self.arguments)
+            answer = child.fromchild.read()
         except (IOError, OSError), msg :    
             msg = "%s : %s" % (self.arguments, msg) 
             self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
+        else :    
+            lines = [l.strip() for l in answer.split("\n")]
+            for i in range(len(lines)) : 
+                try :
+                    pagecount = int(lines[i])
+                except (AttributeError, ValueError) :
+                    self.filter.printInfo(_("Unable to compute job size with accounter %s") % self.arguments)
+                    self.filter.printInfo(_("Line skipped in accounter's output. Trying again..."))
+                else :    
+                    break
         child.fromchild.close()
         
         try :

@@ -23,6 +23,13 @@ PyKota NEWS :
 
     - 1.20alpha2 :
     
+        - Now software accounting method reads accounter's
+          answer until a line with a single integer is 
+          obtained or until all of its output has been read.
+          This should fix the problem some people have
+          when strange locale related messages are sent
+          when running subprocesses (Solaris only ?).
+          
         - First version of ESC/P2 analyzer. Seems to work
           ok at least with 'epson', 'epsonc', 'eps9mid' 
           and 'esp9high' ghostscript devices. Needs more
