@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2005/01/08 19:13:11  jalet
+# dumpykota.cgi was added to allow the use of dumpykota through the web.
+# This makes real time interfacing with the third party software phpPrintAnalyzer
+# a breeze !
+#
 # Revision 1.60  2004/11/21 21:50:02  jalet
 # Introduced the new pkmail command as a simple email gateway
 #
@@ -289,7 +294,7 @@ data_files.append((directory, ["checkdeps.py", "bin/cupspykota", "bin/lprngpykot
 
 data_files.append((os.sep.join([directory, "conf"]), ["conf/README", "conf/pykota.conf.sample", "conf/pykotadmin.conf.sample"]))
 
-data_files.append((os.sep.join([directory, "cgi-bin"]), ["cgi-bin/README", "cgi-bin/printquota.cgi"]))
+data_files.append((os.sep.join([directory, "cgi-bin"]), ["cgi-bin/README", "cgi-bin/printquota.cgi", "cgi-bin/dumpykota.cgi"]))
 
 data_files.append((os.sep.join([directory, "logos"]), glob.glob(os.sep.join(["logos", "*.jpeg"])) + glob.glob(os.sep.join(["logos", "*.png"])) + glob.glob(os.sep.join(["logos", "*.xcf"]))))
 

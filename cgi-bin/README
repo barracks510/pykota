@@ -23,11 +23,28 @@ This directory contains CGI scripts which you may find useful to
 put on a web server along with PyKota command line tools.
 
 Be sure to restrict access to these CGI scripts as necessary.
+
 If you protect access to printquota.cgi with user+password
 authentication, the REMOTE_USER CGI environment variable
 is honored, so an user can only see his own quota report, but
 not other users' quota.
 
+To make dumpykota.cgi work, you have to ensure that your web server 
+runs it as a PyKota administrator. This means that dumpykota.cgi 
+when run must be able to read the pykotadmin.conf file. There are 
+several ways to do so, one of them is to put the user your web 
+server normally runs as into the pykota group (which must be allowed 
+to read pykotadmin.conf), then restart your web server :
+            
+            $ adduser www-data pykota
+            $ /etc/init.d/apache restart
+            
+This is probably not the safest way though, so you may want to            
+restrict access further with an username and password, or use
+Apache's suExec mechanism to directly run this particular 
+script as the pykota system user. Please refer to your web
+server's documentation for details.
+        
 The web server doesn't need to be a print server nor a PyKota 
 Storage Backend server, but it must contain a correctly configured 
 PyKota installation. 
