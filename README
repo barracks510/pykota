@@ -197,9 +197,11 @@ INSTALLATION:
 NB :
 ====
 
-  Users of MacOS-X may find the following tutorial useful :
-
-      http://ell-tech.com/pages/pykota.php
+  You may learn more about PyKota, if it fits your own organization,
+  its internal working, and some potential performance drawbacks and
+  how to avoid them, in a WiKi administered by Ryan Suarez at :
+  
+    http://webcrossing.macosxlabs.org/webx?14@30.QAu3a5k0c4z.7@.26bf4661
 
 Prerequisite : 
 --------------
