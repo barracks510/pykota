@@ -482,3 +482,6 @@ msgstr "Problema al borrar entrada LDAP (%s)"
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problema al modificar entrada LDAP (%s, %s)"
 
+#, python-format
+msgid "in"
+msgstr "en"

@@ -441,3 +441,7 @@ msgstr ""
 #, python-format
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr ""
+
+#, python-format
+msgid "in"
+msgstr ""

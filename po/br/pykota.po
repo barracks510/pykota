@@ -478,3 +478,6 @@ msgstr "Problema apagando entrada LDAP (%s)"
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problema modificando entrada LDAP (%s, %s)"
 
+#, python-format
+msgid "in"
+msgstr "em"

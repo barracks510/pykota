@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/04/16 16:47:57  jalet
+# pkprinters now accept the --list command line option
+#
 # Revision 1.3  2004/02/04 13:24:41  jalet
 # pkprinters can now remove printers from printers groups.
 #
@@ -79,6 +82,9 @@ options :
                        default action is to add printers to the specified
                        printer groups.
                        
+  -l | --list          List informations about the printer(s) and the
+                       printers groups it is a member of.
+                       
   -r | --remove        In combination with the --groups option above,                       
                        remove printers from the specified printers groups.
   
@@ -129,6 +135,9 @@ class PKPrinters(PyKotaTool) :
     """A class for edpykota."""
     def main(self, names, options) :
         """Manage printers."""
+        if options["list"] and not names :
+            names = ["*"]
+            
         if options["groups"] :        
             printersgroups = self.storage.getMatchingPrinters(options["groups"])
             if not printersgroups :
@@ -166,6 +175,13 @@ class PKPrinters(PyKotaTool) :
         for printer in printers :        
             if options["delete"] :
                 printer.delete()
+            elif options["list"] :    
+                parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
+                if parents : 
+                    parents = "%s %s" % (_("in"), parents)
+                print "%s (%s + %s) %s" % \
+                      (printer.Name, printer.PricePerJob, \
+                       printer.PricePerPage, parents)
             else :    
                 if options["charge"] :
                     printer.setPrices(perpage, perjob)    
@@ -179,8 +195,8 @@ class PKPrinters(PyKotaTool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvac:dg:r"
-        long_options = ["help", "version", "add", "charge=", "delete", "groups=", "remove"]
+        short_options = "hvac:dg:lr"
+        long_options = ["help", "version", "add", "charge=", "delete", "groups=", "list", "remove"]
         
         # Initializes the command line tool
         manager = PKPrinters(doc=__doc__)
@@ -195,17 +211,19 @@ if __name__ == "__main__" :
         options["charge"] = options["c"] or options["charge"]
         options["delete"] = options["d"] or options["delete"] 
         options["groups"] = options["g"] or options["groups"]
+        options["list"] = options["l"] or options["list"]
         options["remove"] = options["r"] or options["remove"]
         
         if options["help"] :
             manager.display_usage_and_quit()
         elif options["version"] :
             manager.display_version_and_quit()
-        elif options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"]) :    
+        elif (options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"])) \
+           or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"])) :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["remove"] and not options["groups"] :    
             raise PyKotaToolError, _("You have to pass printer groups names on the command line")
-        elif not args :    
+        elif (not args) and (not options["list"]) :    
             raise PyKotaToolError, _("You have to pass printer names on the command line")
         else :
             retcode = manager.main(args, options)

@@ -478,3 +478,6 @@ msgstr "Problème durant la suppression de l'entrée LDAP (%s)"
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problème durant la modification de l'entrée LDAP (%s, %s)"
 
+#, python-format
+msgid "in"
+msgstr "dans"
