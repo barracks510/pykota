@@ -51,8 +51,6 @@ storagename: pykota
 storageuser: pykotauser
 # storageuserpw: Comment out if unused, or set to Quota Storage user password
 
-# NB : storageuser and storageuserpw are not used anymore
-
 # LDAP example, uncomment and adapt it to your own configuration :
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.librelogiciel.com:389
