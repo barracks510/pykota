@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/02/09 13:07:06  jalet
+# Should now be able to handle network + pjl printers
+#
 # Revision 1.4  2004/02/09 12:35:19  jalet
 # De-uglyfication.
 # Now works with older CUPS (1.14) which don't detect the cupspykota backend but accept it anyway.
@@ -92,6 +95,11 @@ SNMPTESTS = [ \
               '/usr/bin/snmpwalk -v 1 -Cc -c public %(printer)s 2>/dev/null | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4', \
               '/usr/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s 2>/dev/null | grep Counter32 | tail -2 | head -1 | cut -d " " -f2', \
             ]
+            
+NETPJLTESTS = [ \
+                '/usr/bin/pagecount.pl %(printer)s %(port)s 2>/dev/null', \
+                '/bin/nc -w 2 %(printer)s %(port)s </usr/share/pykota/pagecount.pjl 2>/dev/null | /usr/bin/tail -2', \
+              ]
 
 class PKHint(PyKotaTool) :
     """A class to autodetect the best accounting method for printers."""
@@ -165,7 +173,7 @@ class PKHint(PyKotaTool) :
             destination = checkauth[1]
         return destination.split("/")[0]
         
-    def accepts(self, printer, commands) :    
+    def accepts(self, commands, printer, port=None) :    
         """Tries to get the printer's internal page counter via SNMP."""
         for command in commands :
             inp = os.popen(command % locals())
@@ -184,10 +192,10 @@ class PKHint(PyKotaTool) :
         printers = self.extractPrintersInformation()
         devicestypes = self.extractDevices() # TODO : IT'S CUPS ONLY FOR NOW
         configuration = []
-        for (printer, device) in printers.items() :
+        for (printer, deviceuri) in printers.items() :
             if self.matchString(printer, args) :
-                devicetype = self.searchDeviceType(devicestypes, device)
-                device = self.extractDeviceFromURI(device)
+                devicetype = self.searchDeviceType(devicestypes, deviceuri)
+                device = self.extractDeviceFromURI(deviceuri)
                 if devicetype is None :
                     sys.stderr.write("Unknown device %s for printer %s\n" % (device, printer))
                 elif devicetype == "network" :
@@ -195,11 +203,19 @@ class PKHint(PyKotaTool) :
                         hostname, port = device.split(':')
                     except ValueError :    
                         hostname = device
-                    snmpcommand = self.accepts(hostname, SNMPTESTS)
+                        port = 9100             # TODO : may cause problems with other protocols.
+                        
+                    snmpcommand = self.accepts(SNMPTESTS, hostname)
                     if snmpcommand is not None :
                         accounter = "querying"
                         requester = 'external(/usr/bin/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
                         configuration.append((printer, accounter, requester))
+                    else :    
+                        netpjlcommand = self.accepts(NETPJLTESTS, hostname, port)
+                        if netpjlcommand is not None :
+                            accounter = "querying"
+                            requester = 'external(' + netpjlcommand + ')'
+                            configuration.append((printer, accounter, requester))
                 elif devicetype == "direct" : 
                     sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
                 elif devicetype == "serial" : 
