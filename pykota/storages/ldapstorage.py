@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.70  2004/06/10 20:50:25  jalet
+# Better log message
+#
 # Revision 1.69  2004/06/05 22:18:04  jalet
 # Now catches some exceptions earlier.
 # storage.py and ldapstorage.py : removed old comments
@@ -794,7 +797,7 @@ class Storage(BaseStorage) :
                 self.doModify(dn, fields)
                 mustadd = 0
             else :
-                message = _("Unable to find an existing entry to attach pykotaAccount objectclass %s") % user.Name
+                message = _("Unable to find an existing objectClass %s entry with %s=%s to attach pykotaAccount objectClass") % (where, self.info["userrdn"], user.Name)
                 if action.lower() == "warn" :    
                     self.tool.logger.log_message("%s. A new entry will be created instead." % message, "warn")
                 else : # 'fail' or incorrect setting
