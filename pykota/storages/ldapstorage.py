@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/10/06 14:42:36  jalet
+# LDAP group access will be slower when cache is disabled, but at least code
+# is consistent with the rest of the caching mechanis, but at least code
+# is consistent with the rest of the caching mechanism
+#
 # Revision 1.29  2003/10/06 13:12:28  jalet
 # More work on caching
 #
@@ -347,7 +352,7 @@ class Storage(BaseStorage) :
                         grouppquota.DateLimit = grouppquota.DateLimit[0]
                 grouppquota.PageCounter = 0
                 grouppquota.LifePageCounter = 0
-                usernamesfilter = "".join(["(pykotaUserName=%s)" % member.Name for member in group.Members])
+                usernamesfilter = "".join(["(pykotaUserName=%s)" % member.Name for member in self.getGroupMembers(group)])
                 result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
                 if result :
                     for userpquota in result :    
@@ -535,7 +540,7 @@ class Storage(BaseStorage) :
         
     def addUserToGroup(self, user, group) :    
         """Adds an user to a group."""
-        if user.Name not in [u.Name for u in group.Members] :
+        if user.Name not in [u.Name for u in self.getGroupMembers(group)] :
             result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)    
             if result :
                 fields = result[0][1]
