@@ -25,8 +25,7 @@ PyKota NEWS :
     
         - Small bugfix wrt Python v2.1
         
-        - CUPS Test Page are now printed as user 'root' if username
-          received is empty.
+        - If username is an empty string, user root is assumed.
           
     - 1.16alpha12 :
     
