@@ -249,7 +249,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # in the untested/pjl directory, which is sent to a JetDirect print
 # server on port 9100 :
 #
-# requester: external(/usr/bin/nc -w 2 %(printer)s 9100 <pagecount.pjl | /usr/bin/tail -2)
+# requester: external(/bin/nc -w 2 %(printer)s 9100 <pagecount.pjl | /usr/bin/tail -2)
 #
 #
 # WARNING : In any case, when using an external requester, please test the command line outside
