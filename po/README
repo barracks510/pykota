@@ -13,7 +13,9 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 ====================================================================
 
-For each PyKota command line tool, this directory contains a
-manual page that you can install on our system.
+This directory contains the different translations available
+for PyKota tools.
+
+Please send me your own translations in other languages.
 
 ====================================================================

@@ -13,7 +13,15 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 ====================================================================
 
-For each PyKota command line tool, this directory contains a
-manual page that you can install on our system.
+This directory contains PyKota documentation in DocBook format.
+
+Unless you've purchased an official PyKota package, you're on your 
+own to compile the DocBook source files to output formats like HTML 
+or PDF. 
+
+WARNING : PyKota documentation is currently at an early stage so 
+purchased PyKota packages don't actually contain output formats, but 
+purchasers will be sent the documentation in HTML, PS, and PDF as 
+soon as it is finished. 
 
 ====================================================================

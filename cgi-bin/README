@@ -13,7 +13,13 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 ====================================================================
 
-For each PyKota command line tool, this directory contains a
-manual page that you can install on our system.
+This directory contains CGI scripts which you may find useful to
+put on a web server along with PyKota command line tools.
+
+Be sure to restrict access to these CGI scripts as necessary.
+
+The web server doesn't need to be a print server nor a PyKota 
+Storage Backend server, but it must contain a correctly configured 
+PyKota installation. 
 
 ====================================================================
