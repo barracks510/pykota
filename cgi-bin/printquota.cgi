@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/06/30 13:47:26  jalet
+# Allows multiple user / group names masks in the input field
+#
 # Revision 1.8  2003/06/30 13:32:01  jalet
 # Much more powerful CGI script for quota reports
 #
@@ -161,7 +164,7 @@ class PyKotaReportGUI(PyKotaTool) :
         self.body += "<br />"
         self.body += self.htmlGroupsCheckbox(isgroup)
         if printers and ugmask :
-            self.reportingtool = openReporter(admin, "text", printers, [ ugmask ], isgroup)
+            self.reportingtool = openReporter(admin, "text", printers, ugmask.split(), isgroup)
             self.body += "<pre>%s</pre>" % self.reportingtool.generateReport()
     
 if __name__ == "__main__" :
