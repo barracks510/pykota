@@ -23,82 +23,126 @@ READ SPECIAL LICENSING AND REDISTRIBUTION TERMS IN THE FILE 'LICENSE'
 
 ====================================================================
 
-PyKota is a complete Print Quota system for the Common Unix Printing
-System (aka CUPS) or LPR Next Generation (LPRng), which works by directly 
-querying the printers for the number of pages they have printed.
+PyKota features :
+-----------------
 
-Actual working features :
+    Operating systems :
+    
+        - Any Unix-like system as print server.
+            
+        - Any operating system as client.
+            
+    Printing systems :
+    
+        - Supports CUPS as the printing system.
+        
+        - Supports LPRng as the printing system.
+            
+    Databases :
+    
+        - Supports PostgreSQL as the Quota Storage backend.
+          Complete database creation SQL script is included.
+        
+        - Supports OpenLDAP as the Quota Storage backend.
+          Complete LDAP schema and sample tree are included.
+            
+    Printers :        
+    
+        - Supports any printer which can report its internal
+          page counter.
+          
+        - Supports any other printer via GhostScript.
+        
+        - Can ask printers for their internal page counter
+          via SNMP, Netatalk, or any other mean of your
+          choice. This is completely configurable.
+          
+        - External accounting methods are configurable  
+            
+    Quota systems :        
+    
+        - Supports user and groups quotas.
+        
+        - Supports page quotas.
+          Page quotas can be set differently on a per printer
+          and per user/group basis.
+        
+        - Supports account balance quotas in any currency.
+          Account balance quotas can be set on a per user 
+          basis. The account balance is shared amongst
+          all printers.
+          
+        - Experimental support for printer groups, so that
+          you can share quota between printers of the same
+          type but in different locations.
+          
+        - Page quota and account balance can be set/reset
+          independantly.
+          
+        - Limiting factor, page quota or account balance,  
+          can be set on a per user or per group basis.
+          
+        - Price per page and per job can be set differently  
+          on any printer.
+        
+        - Low level of page quota or account balance are
+          configurable.
+          
+        - Both soft and hard limit with configurable grace delay  
+          can be set for page quota.
+          
+        - Possibility to disable quota enforcement for any user
+          or group, while still keeping page accounting.
+              
+    Administration :        
+    
+        - Powerful administration tools can be used to
+          automate setting or resetting of quotas or
+          account balances at specific intervals.
+          
+        - Administration tools can modify several users,  
+          groups, or printers at once.
+          
+        - Account balances can be set, incremented, or  
+          decremented.
+          
+        - Users can be automatically added on first print  
+          in a completely configurable way.
+          
+        - Quota report generator available either from the  
+          command line or in any web browser.
+          The web-based quota report generator can be 
+          user/password protected.
+          
+        - Print quote generator can tell users how much  
+          a print job will cost them in advance.
+          
+        - Policy with regard to unregistered users can   
+          be configured for each printer to either deny
+          printing, allow printing, or delegate the
+          decision to any external tool.
+          
+        - Warning and error messages can be automatically  
+          sent via email to the administrator, the user,
+          both, or none.
+          
+        - Warning and error messages' content is completely 
+          configurable.
+          
+        - Configuration can be changed without needing to  
+          restart the printing system.
+        
+        - Complete print job history is kept. This can be
+          disabled if needed.
+          
+        - Automated low quota or balance remainder can be 
+          scheduled regularly or launched manually.
+          
+        - All the command line tools accept the -h | --help 
+          command line option which prints all the available 
+          options and show usage examples.
 
-        - Supports both CUPS and LPRng backends.
-        
-        - Can store quota information either with PostgreSQL or with 
-          OpenLDAP.
-        
-        - Per printer user and group quotas.
-        
-        - Automated email warning of users above quota to the
-          user himself and to the print quota administrator.
-        
-        - Filter for quota accounting : pykota
-        
-        - Command line print quota editor : edpykota
-        
-        - Command line print quota report generator : repykota
-        
-        - Command line print quota automated warning sender : warnpykota
-        
-        - Command line print quote maker, to learn how much a print job 
-          will cost in advance : pykotme
-        
-        - Command line tools mimic the disk quota utilities for
-          easier mastering.
-        
-        - Centralized storage of quotas : you can manage quotas for
-          different printers on different print servers and store them all
-          on the same quota storage server. 
-                    
-        - SNMP querying of any networked SNMP-enabled printer. 
-        
-        - Netatalk querying of any networked AppleTalk-enabled printer. 
-        
-        - External command querying of any printer : you can use
-          you own querying command, e.g. to query a printer via
-          the serial port, sending it a special PJL job and 
-          reading the result. See the example scripts in the
-          "untested" directory and try to adapt them to your
-          configuration.
-          
-        - External accounting methods : you can use your own accounting
-          method to compute each job's size. Just create a shell script
-          which reads the job's data from its standard input and prints 
-          the job's size on its standard output, and you're done !
-        
-        - Special scripts included for a seamless integration of
-          PyKota on Debian machines.
-          
-        - Complete job history is saved. This will allow more
-          complex reports in the future. This can be disabled
-          if preserving the history is of no interest or
-          makes the database grow out of control.
-          
-        - Price per page and price per job can be defined for  
-          every printer. A job's price is the sum of the
-          price per job for this printer plus the number of
-          pages multiplied by the price per page for this
-          printer.
-          
-        - User's account balance and lifetime paid money are now
-          stored in the Quota Storage, and account balance can be
-          used to limit the user printing instead of a print quota.
-          Actually you can limit either by account balance OR by
-          print quota. Account balance is shared between printers
-          for an user, while quotas are define separately for
-          each printer the user prints on.
-          
-        - Unknown users can be automatically added on first print.
-          
-All the command line tools accept the -h | --help command line option
-which prints all the available options and show usage examples.
+====================================================================
         
 Planned features are described in the TODO file.
 
