@@ -14,7 +14,7 @@
 # $Id$
 #
 
-until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -vi printing >/dev/null ; do 
+until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i idle >/dev/null ; do 
    sleep 1 ; 
 done
 
