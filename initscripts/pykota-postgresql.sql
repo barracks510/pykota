@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.11  2003/04/14 19:58:59  jalet
+-- New database schema for users' account balance
+--
 -- Revision 1.10  2003/04/10 21:47:20  jalet
 -- Job history added. Upgrade script neutralized for now !
 --
@@ -83,7 +86,10 @@ CREATE USER pykotaadmin;
 -- Create the users table
 --
 CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
-                   username TEXT UNIQUE NOT NULL);
+                   username TEXT UNIQUE NOT NULL,
+                   balance FLOAT DEFAULT 0.0,
+                   lieftimepaid FLOAT DEFAULT 0.0,
+                   limitby TEXT DEFAULT 'quota');
                    
 --
 -- Create the groups table
@@ -95,7 +101,9 @@ CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
 -- Create the printers table
 --
 CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
-                      printername TEXT UNIQUE NOT NULL);
+                      printername TEXT UNIQUE NOT NULL,
+                      priceperpage FLOAT DEFAULT 0.0,
+                      priceperjob FLOAT DEFAULT 0.0);
                     
 --
 -- Create the print quota table for users

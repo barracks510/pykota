@@ -28,6 +28,10 @@ PyKota NEWS :
           The upgrade script will be finalized ASAP, be patient,
           or drop your old quota database to start anew.
           
+        - The new database schema allows to keep an history of all
+          jobs as well as charge users per page and/or per job, 
+          and track users' account balance.
+          
         - The installation script now allows to install the sample
           configuration file during first installation.
           
