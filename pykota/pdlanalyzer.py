@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2004/06/28 22:38:41  jalet
+# Increased speed by a factor of 2 in PCLXL parser
+#
 # Revision 1.19  2004/06/28 21:20:30  jalet
 # PCLXL support now works !
 #
@@ -331,14 +334,14 @@ class PCLXLAnalyzer :
         
     def handleArray(self, itemsize) :        
         """Handles arrays."""
-        datatype = self.minfile[self.pos]
-        self.pos += 1
+        pos = self.pos
+        datatype = self.minfile[pos]
+        pos += 1
         length = self.tags[ord(datatype)]
-        if length is None :
-            raise PDLAnalyzerError, "Error on array length at %s" % self.pos
-        elif callable(length) :
+        if callable(length) :
+            self.pos = pos
             length = length()
-        pos = self.pos    
+            pos = self.pos
         posl = pos + length
         sarraysize = self.minfile[pos:posl]
         self.pos = posl
@@ -371,8 +374,9 @@ class PCLXLAnalyzer :
         
     def embeddedDataSmall(self) :
         """Handle small amounts of data."""
-        length = ord(self.minfile[self.pos])
-        self.pos += 1
+        pos = self.pos
+        length = ord(self.minfile[pos])
+        self.pos = pos + 1
         return length
         
     def embeddedData(self) :
@@ -400,19 +404,22 @@ class PCLXLAnalyzer :
     def getJobSize(self) :
         """Counts pages in a PCLXL (PCL6) document."""
         infileno = self.infile.fileno()
-        self.minfile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
+        self.minfile = minfile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
+        tags = self.tags
         self.pagecount = 0
-        self.pos = self.infile.tell()
+        self.pos = pos = self.infile.tell()
         try :
             while 1 :
-                char = self.minfile[self.pos]
-                self.pos += 1
-                length = self.tags[ord(char)]
-                if not length :    
+                char = minfile[pos]
+                pos += 1
+                length = tags[ord(char)]
+                if not length :
                     continue
                 if callable(length) :    
+                    self.pos = pos
                     length = length()
-                self.pos += length    
+                    pos = self.pos
+                pos += length    
         except IndexError : # EOF ?
             self.minfile.close() # reached EOF
         return self.pagecount
