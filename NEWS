@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha14 :
     
+        - Heavy CPU usage is now completely fixed it seems, by 
+          introducing some 0.01 second sleeping when nothing to do.
+          
         - Pre-computation of the job's size is now only
           done when enforcement is "STRICT", this saves
           CPU for people who don't want to use this new

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/05/25 08:31:16  jalet
+# Heavy CPU usage seems to be fixed at least !
+#
 # Revision 1.50  2004/05/25 05:17:50  jalet
 # Now precomputes the job's size only if current printer's enforcement
 # is "STRICT"
@@ -413,7 +416,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     killed = 1
             
             # In any case, deal with any remaining I/O
-            availablefds = pollster.poll(5000)
+            try :
+                availablefds = pollster.poll(5000)
+            except select.error, msg :    
+                self.logdebug("Interrupted poll : %s" % msg)
+                availablefds = []
             if not availablefds :
                 self.logdebug("Nothing to do, sleeping a bit...")
                 time.sleep(0.01) # give some time to the system
@@ -431,6 +438,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                         self.logdebug("Error while writing to real backend's stdin %s : %s" % (fd, msg))
                                     else :    
                                         indata = ""
+                                else :        
+                                    self.logdebug("No data to send to real backend yet, sleeping a bit...")
+                                    time.sleep(0.01)
+                                    
                                 if endinput :    
                                     self.unregisterFileNo(pollster, tocfno)        
                                     self.logdebug("Closing real backend's stdin.")
@@ -444,9 +455,17 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                         self.logdebug("Error while writing to CUPS back channel (stderr) %s : %s" % (fd, msg))
                                     else :
                                         outdata = ""
+                                else :        
+                                    # self.logdebug("No data to send back to CUPS yet, sleeping a bit...") # Uncommenting this fills your logs
+                                    time.sleep(0.01) # Give some time to the system, stderr is ALWAYS writeable it seems.
+                                    
                                 if endoutput :    
                                     self.unregisterFileNo(pollster, stderrfno)        
                                     outputclosed = 1
+                            else :    
+                                self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
+                                time.sleep(0.01)
+                                
                         if mask & (select.POLLIN | select.POLLPRI) :     
                             # We have something to read
                             try :
@@ -455,13 +474,22 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 self.logdebug("Error while reading file %s : %s" % (fd, msg))
                             else :
                                 if fd == infno :
-                                    indata += data
                                     if not data :    # If yes, then no more input data
                                         self.unregisterFileNo(pollster, infno)
                                         self.logdebug("Input data ends.")
                                         endinput = 1 # this happens with real files.
+                                    else :    
+                                        indata += data
                                 elif fd == fromcfno :
-                                    outdata += data
+                                    if not data :
+                                        self.logdebug("No back channel data to read from real backend yet, sleeping a bit...")
+                                        time.sleep(0.01)
+                                    else :
+                                        outdata += data
+                                else :    
+                                    self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
+                                    time.sleep(0.01)
+                                    
                         if mask & (select.POLLHUP | select.POLLERR) :
                             # Treat POLLERR as an EOF.
                             # Some standard I/O stream has no more datas
@@ -476,6 +504,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 self.logdebug("Closing real backend's stdout+stderr.")
                                 os.close(fromcfno)
                                 endoutput = 1
+                            else :    
+                                self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
+                                time.sleep(0.01)
                                 
                         if mask & select.POLLNVAL :        
                             self.logdebug("File %s was closed. Unregistering from polling object." % fd)
