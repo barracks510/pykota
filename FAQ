@@ -77,6 +77,13 @@ PyKota's FAQ :
     to automatically add them to the Print Quota database.
     The sample configuration file contains examples to do this.
     
+  * What does the --prototype command line option to edpykota do ?
+  
+    This option currently (v1.17) only copies the soft and hard
+    page limits from a template user to other users. This option
+    needs to be updated to new PyKota functionnalities, because it
+    currently lacks.
+    
   * How can I diagnose the problem when something goes wrong ?
   
     Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
