@@ -10,7 +10,7 @@
   </para>
   
   <para>
-    Here's a list of features :
+    Here's an incomplete list of features :
     
     <itemizedlist>
       <listitem>
@@ -36,7 +36,7 @@
       </listitem>
       <listitem>
         <para>
-          Set price per page and price per job for printers ;
+          Set price per page and price per job for printers (it's preferable to use the <command>pkprinters</command> command for this though) ;
         </para>
       </listitem>
       <listitem>
@@ -57,6 +57,11 @@
       <listitem>
         <para>
           Reset page counters.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Etc...
         </para>
       </listitem>
     </itemizedlist>
