@@ -16,6 +16,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/02/08 22:47:23  jalet
+# Option --reset can now be used without having to use soft and hard limits
+# on the command line.
+#
 # Revision 1.16  2003/02/08 22:39:46  jalet
 # --reset command line option added
 #
@@ -134,6 +138,11 @@ examples :
   
   This will set print quota soft limit to 500 pages and hard limit
   to 550 pages for groups financial and support on all printers.
+  
+  $ edpykota --reset jerome 
+  
+  This will reset jerome's page counter to zero on all printers. 
+  His life time page counter on each printer will be kept unchanged.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -198,7 +207,7 @@ class EdPyKota(PyKotaTool) :
             if softlimit is None :    
                 softlimit = hardlimit
                 self.logger.log_message("Undefined soft limit set to hard limit (%s) on printer %s." % (str(softlimit), printer))
-            if (hardlimit is None) or (softlimit is None) :        
+            if (not options["reset"]) and ((hardlimit is None) or (softlimit is None)) :        
                 raise PyKotaToolError, "Both hard and soft limits must be set ! Aborting."
             for name in names :
                 if options["users"] :
@@ -228,11 +237,13 @@ class EdPyKota(PyKotaTool) :
                     self.logger.log_message("Quota not found for object %s on printer %s." % (name, printer))
                 else :    
                     if options["users"] :
-                        self.storage.setUserPQuota(name, printer, softlimit, hardlimit)
+                        if (softlimit is not None) and (hardlimit is not None) :
+                            self.storage.setUserPQuota(name, printer, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetUserPQuota(name, printer)
                     else :
-                        self.storage.setGroupPQuota(name, printer, softlimit, hardlimit)
+                        if (softlimit is not None) and (hardlimit is not None) :
+                            self.storage.setGroupPQuota(name, printer, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetGroupPQuota(name, printer)
                      
