@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2004/08/09 18:14:22  jalet
+# Added workaround for number of copies and some PostScript drivers
+#
 # Revision 1.26  2004/07/22 13:49:51  jalet
 # Added support for binary PostScript through GhostScript if native DSC
 # compliant PostScript analyzer doesn't find any page. This is much
@@ -130,6 +133,7 @@ class PostScriptAnalyzer :
     def __init__(self, infile) :
         """Initialize PostScript Analyzer."""
         self.infile = infile
+        self.copies = 1
        
     def throughGhostScript(self) :
         """Get the count through GhostScript, useful for non-DSC compliant PS files."""
@@ -157,7 +161,7 @@ class PostScriptAnalyzer :
             retcode = child.wait()
         except OSError, msg :    
             raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
-        return pagecount
+        return pagecount * self.copies
         
     def natively(self) :
         """Count pages in a DSC compliant PostScript document."""
@@ -166,7 +170,25 @@ class PostScriptAnalyzer :
         for line in self.infile.xreadlines() : 
             if line.startswith("%%Page: ") :
                 pagecount += 1
-        return pagecount
+            elif line.startswith("%%BeginNonPPDFeature: NumCopies ") :
+                # handle # of copies set by some Windows printer driver
+                try :
+                    number = int(line.strip().split()[2])
+                except :     
+                    pass
+                else :    
+                    if number > 1 :
+                        self.copies = number
+            elif line.startswith("1 dict dup /NumCopies ") :
+                # handle # of copies set by mozilla/kprinter
+                try :
+                    number = int(line.strip().split()[4])
+                except :     
+                    pass
+                else :    
+                    if number > 1 :
+                        self.copies = number
+        return pagecount * self.copies
         
     def getJobSize(self) :    
         """Count pages in PostScript document."""

@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.20alpha1 : 
     
+        - Added workaround for number of copies directly set in
+          PostScript code.
+          
         - Added german translation.
         
         - Fixed problem on first print for user group quota when
