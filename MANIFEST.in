@@ -4,6 +4,6 @@ recursive-include man README *.1
 recursive-include docs README *.sgml *.png *.pdf *.html
 recursive-include cgi-bin README *.cgi
 recursive-include conf README *.sample
-recursive-include initscripts README README.* pykota-*.sql
+recursive-include initscripts README README.* pykota-*.sql *.py
 recursive-include debian README printquota
 recursive-include untested README *.sh *.ps
