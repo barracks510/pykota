@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/07/07 12:51:07  jalet
+# Small fix
+#
 # Revision 1.16  2003/07/07 12:11:13  jalet
 # Small fix
 #
@@ -237,8 +240,9 @@ class Storage :
             group.LifeTimePaid = 0.0
             group.Members = self.getGroupMembers(group)
             for member in group.Members :
-                group.AccountBalance += member.AccountBalance
-                group.LifeTimePaid += member.LifeTimePaid
+                if member.Exists :
+                    group.AccountBalance += member.AccountBalance
+                    group.LifeTimePaid += member.LifeTimePaid
             group.Exists = 1
         return group
        
