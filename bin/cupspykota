@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/03/05 12:31:35  jalet
+# Now should output full traceback when crashing
+#
 # Revision 1.31  2004/03/01 14:35:56  jalet
 # PYKOTAPHASE wasn't set soon enough at the start of the job
 #
@@ -484,7 +487,8 @@ if __name__ == "__main__" :
             kotabackend = PyKotaBackend()    
             retcode = kotabackend.mainWork()
         except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, PyKotaRequesterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
-            sys.stderr.write("ERROR : cupspykota backend failed (%s)\n" % msg)
+            import traceback
+            sys.stderr.write("ERROR : cupspykota backend failed (%s) => %s\n" % (msg, traceback.format_stack()))
             sys.stderr.flush()
             retcode = 1
         
