@@ -29,6 +29,10 @@ PyKota NEWS :
           You need the http://pysnmp.sf.net Python module
           for this to work (tested with v3.4.2)
           
+        - Increased delay between two loops iterations  
+          to 2 seconds in waitprinter.sh to diminish
+          CPU load.
+          
     - 1.20alpha12 :
     
         - waitprinter.sh rewritten from scratch to wait

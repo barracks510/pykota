@@ -26,7 +26,7 @@ PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/opt/bin
 LOG_FILE=/var/log/pykota-waitprinter-snmpread.log
 LOG_DO_FLAG=""  #set different from null for file logging
 IDLE_WAIT_NUM=3 #number of snmp reads to consider the printer _really_ idle
-SNMP_DELAY=1    #seconds between snmp reads
+SNMP_DELAY=2    #seconds between snmp reads
 #--------------------------------------------------------------------------
 # END OF CONF
 #--------------------------------------------------------------------------
