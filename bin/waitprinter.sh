@@ -21,7 +21,7 @@
 # we have to wait for the printer being in printing mode before checking
 # if it is idle, otherwise we could have problems with slow printers.
 #--------------------------------------------------------------------------
-PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/opt/bin
+PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin
 #--------------------------------------------------------------------------
 LOG_FILE=/var/log/pykota-waitprinter-snmpread.log
 LOG_DO_FLAG=""  #set different from null for file logging

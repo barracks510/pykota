@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha25 :
+    
+        - pkhint doesn't use absolute path to search for helper commands
+          anymore.
+          
+        - Spanish translation ready for 1.20.   
+        
     - 1.20alpha24 :
     
         - Now warnpykota only warns users limited by balance once.

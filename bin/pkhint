@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2004/10/13 08:09:19  jalet
+# More complete PATH.
+# pkhint doesn't use absolute path to search for helper commands anymore.
+#
 # Revision 1.19  2004/10/11 22:53:05  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -142,15 +146,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 Please e-mail bugs to: %s""")
         
 SNMPTESTS = [ \
-              '/usr/bin/npadmin --pagecount %(printer)s 2>/dev/null', \
-              '/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 2>/dev/null | cut -f 2,2 -d " "', \
-              '/usr/bin/snmpwalk -v 1 -Cc -c public %(printer)s 2>/dev/null | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4', \
-              '/usr/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s 2>/dev/null | grep Counter32 | tail -2 | head -1 | cut -d " " -f2', \
+              'npadmin --pagecount %(printer)s 2>/dev/null', \
+              'snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 2>/dev/null | cut -f 2,2 -d " "', \
+              'snmpwalk -v 1 -Cc -c public %(printer)s 2>/dev/null | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4', \
+              'snmpwalk -v 1 -Cc -c public -Ov %(printer)s 2>/dev/null | grep Counter32 | tail -2 | head -1 | cut -d " " -f2', \
             ]
             
 NETPJLTESTS = [ \
                 '/usr/share/pykota/pagecount.pl %(printer)s %(port)s 2>/dev/null', \
-                '/bin/nc -w 2 %(printer)s %(port)s </usr/share/pykota/pagecount.pjl 2>/dev/null | /usr/bin/tail -2', \
+                'nc -w 2 %(printer)s %(port)s </usr/share/pykota/pagecount.pjl 2>/dev/null | tail -2', \
               ]
               
 class PKHint(PyKotaTool) :
@@ -187,7 +191,7 @@ class PKHint(PyKotaTool) :
            
            WARNING : CUPS ONLY FOR NOW
         """   
-        inp = os.popen("/usr/sbin/lpinfo -v 2>/dev/null")
+        inp = os.popen("lpinfo -v 2>/dev/null")
         deviceslist = [l.strip() for l in inp.readlines()]
         inp.close()
         devicestypes = {}
@@ -243,6 +247,7 @@ class PKHint(PyKotaTool) :
         
     def main(self, args, options) :
         """Main work is done here."""
+        os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
         sys.stderr.write("BEWARE : This tool doesn't support LPRng's printcap files yet.\n")
         print _("\nPlease wait while pkhint analyzes your printing system's configuration...")
         printers = self.extractPrintersInformation()
@@ -260,7 +265,6 @@ class PKHint(PyKotaTool) :
                     except ValueError :    
                         hostname = device
                         port = 9100             # TODO : may cause problems with other protocols.
-                        
                         
                     snmpcommand = self.accepts(SNMPTESTS, hostname)
                     if snmpcommand is not None :
