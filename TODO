@@ -21,9 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
-        - Use Stefan Wold's code to allow people to store user quota
-          information directly below the user in LDAP (as child nodes).
-          
         - Improve the SECURITY document to include good PostgreSQL 
           and OpenLDAP default settings.
           
