@@ -21,6 +21,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha11 :
+    
+        - Some preliminary modifications to the database structure for 
+          PostgreSQL and OpenLDAP. A script to upgrade a PostgreSQL
+          database is now provided. LDAP attributes now support
+          eq, pres and sub indexes. 
+          
+        - Job history now contains additional informations :  
+          number of copies, filename, title and print options.
+          
     - 1.16alpha10 :
         
         - Some modifications done to external policy handling.

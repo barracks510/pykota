@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/11/21 14:28:43  jalet
+# More complete job history.
+#
 # Revision 1.11  2003/11/19 23:19:35  jalet
 # Code refactoring work.
 # Explicit redirection to /dev/null has to be set in external policy now, just
@@ -359,7 +362,7 @@ def main(thebackend) :
                 userquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize)
+        printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize, thebackend.preserveinputfile, thebackend.title, thebackend.copies, thebackend.options)
     
     return retcode # return (retcode or gotSigTerm) shouldn't be needed
 

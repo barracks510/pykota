@@ -55,16 +55,10 @@ pykota.schema :
         
       But we recommend that you add these :  
       
-        index pykotaUserName eq
-        index pykotaGroupName eq
-        index pykotaPrinterName eq
+        index pykotaUserName pres,eq,sub
+        index pykotaGroupName pres,eq,sub
+        index pykotaPrinterName pres,eq,sub
         index pykotaLastJobIdent eq
-        
-      NB : PyKota's schema doesn't currently allow substring
-           matches, but they would probably be very helpful
-           for the pykotaUserName, pykotaGroupName and pykotaPrinterName
-           attributes. This problem will be solved in a future
-           release.
         
     Finally, restart the OpenLDAP server :    
     
@@ -72,9 +66,12 @@ pykota.schema :
 
 pykota-sample.ldif :
 
-    This file represents a sample LDAP directory tree dump with
-    PyKota functionnalities. 
-    DON'T USE THIS FILE. IT IS JUST THERE TO SERVE AS AN EXAMPLE.
+    You can use this file to initialize an LDAP tree for PyKota, if
+    you want.
+    
+    The structure used in this file is NOT mandatory !
+    Provided you put correct parameters into /etc/pykota/pykota.conf,
+    you can structure your LDAP directory the way you want.
     
 To use an LDAP directory as the Quota Storage, just modify  
 /etc/pykota/pykota.conf to make it contain lines similar to the LDAP

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/11/21 14:28:46  jalet
+# More complete job history.
+#
 # Revision 1.6  2003/11/12 23:29:24  jalet
 # More work on new backend. This commit may be unstable.
 #
@@ -105,7 +108,7 @@ class Accounter(AccounterBase) :
             userpquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    
-        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, jobsize)
+        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, jobsize, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
             
         return action
         

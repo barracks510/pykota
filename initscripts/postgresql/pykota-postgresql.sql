@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.5  2003/11/21 14:28:45  jalet
+-- More complete job history.
+--
 -- Revision 1.4  2003/07/16 21:53:07  jalet
 -- Really big modifications wrt new configuration file's location and content.
 --
@@ -96,6 +99,7 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         softlimit INT4,
                         hardlimit INT4,
                         datelimit TIMESTAMP);
+CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
                         
 --
 -- Create the job history table
@@ -107,7 +111,13 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         pagecounter INT4 DEFAULT 0,
                         jobsize INT4,
                         action TEXT,
+                        filename TEXT,
+                        title TEXT,
+                        copies INT4,
+                        options TEXT,
                         jobdate TIMESTAMP DEFAULT now());
+CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
+CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
                         
 --
 -- Create the print quota table for groups
@@ -118,6 +128,7 @@ CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
                          softlimit INT4,
                          hardlimit INT4,
                          datelimit TIMESTAMP);
+CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
                         
 --                         
 -- Create the groups/members relationship

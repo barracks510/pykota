@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2003/11/21 14:28:45  jalet
+# More complete job history.
+#
 # Revision 1.57  2003/11/19 23:19:38  jalet
 # Code refactoring work.
 # Explicit redirection to /dev/null has to be set in external policy now, just
@@ -623,6 +626,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.title, \
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
+        self.preserveinputfile = self.inputfile 
         self.accounter = openAccounter(self)
     
     def extractInfoFromCupsOrLprng(self) :    
@@ -668,6 +672,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     backend)
         else :    
             # Try to detect LPRng
+            # TODO : try to extract filename, job's title, and options if available
             jseen = Pseen = nseen = rseen = Kseen = None
             for arg in sys.argv :
                 if arg.startswith("-j") :

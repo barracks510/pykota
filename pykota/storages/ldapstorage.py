@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/11/21 14:28:46  jalet
+# More complete job history.
+#
 # Revision 1.35  2003/11/12 13:06:37  jalet
 # Bug fix wrt no user/group name command line argument to edpykota
 #
@@ -689,7 +692,7 @@ class Storage(BaseStorage) :
                  }
         self.doModify(lastjob.ident, fields)         
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None) :    
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, filename=None, title=None, copies=None, options=None) :    
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
@@ -705,6 +708,10 @@ class Storage(BaseStorage) :
                    "pykotaJobId" : jobid,
                    "pykotaPrinterPageCounter" : str(pagecounter),
                    "pykotaAction" : action,
+                   "pykotaFileName" : str(filename), 
+                   "pykotaTitle" : str(title), 
+                   "pykotaCopies" : str(copies), 
+                   "pykotaOptions" : str(options), 
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         

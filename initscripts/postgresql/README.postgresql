@@ -50,12 +50,30 @@ and read the next one.
 
 Upgrade scripts :
 
+  DON'T DO ANYTHING IF THIS IS YOUR FIRST INSTALLATION
+  OF PYKOTA.
+
   Some scripts to upgrade old PyKota databases to the new
   database schema are included. You may have to run all
   of them or only some of them, depending on your 
   version of PyKota.
   
+  * An SQL script to upgrade a pre-1.16 PyKota Storage DataBase to
+    1.16 is included. Launch it this way on the Quota Storage Server :
+    
+        $ psql -U postgres pykota
+        pykota=# \i upgrade-to-1.16.sql
+        pykota=# \q
+        $
+        
+    This script adds some fields to the print job history, so that
+    more complete information will be known. The fields that
+    are added are : filename, title, copies and print command options.
+    Also some indexes are created to speed things up.
   
+What is below is for historical reasons only, real people don't use  
+such old beasts, and YOU SHOULDN'T EITHER !
+
   * An SQL script to upgrade a pre-1.14 PyKota Storage DataBase to
     1.14 is included. Launch it this way on the Quota Storage Server :
     
@@ -68,9 +86,6 @@ Upgrade scripts :
     NULL, is used as the email address of the user when sending warning
     messages in case he is over quota.
     
-What is below is for historical reasons only, real people don't use  
-such old beasts, and YOU SHOULDN'T EITHER !
-
   * An sql script to upgrade a pre-1.01 PyKota Quota Storage DataBase to 
     1.01 is still included for historical reasons. PLEASE DON'T USE IT ! 
   

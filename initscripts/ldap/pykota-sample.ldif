@@ -1,7 +1,10 @@
 #
 # PyKota sample LDAP directory tree
 #
-# DON'T USE THIS. THIS IS AN EXAMPLE.
+# YOU CAN USE IT TO CREATE AN INITIAL LDAP TREE WITH PYKOTA SUPPORT.
+# 
+# ITS STRUCTURE IS AN EXAMPLE : YOU CAN USE WHATEVER STRUCTURE YOU WANT,
+# PROVIDED YOU PUT CORRECT CONFIGURATION PARAMETERS IN /etc/pykota/pykota.conf
 # 
 # $Id$
 #
@@ -38,84 +41,3 @@ dn: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
 ou: LastJobs
 objectClass: organizationalUnit
 
-dn: uid=jerome,ou=People,dc=librelogiciel,dc=com
-uid: jerome
-cn:: SmVyb21lIEFsZXQ=
-objectClass: account
-objectClass: posixAccount
-objectClass: top
-objectClass: shadowAccount
-objectClass: pykotaAccount
-objectClass: pykotaAccountBalance
-userPassword: {crypt}PvuIT4Mz8.lCM
-shadowLastChange: 12093
-shadowMax: 99999
-shadowWarning: 7
-loginShell: /bin/bash
-uidNumber: 500
-gidNumber: 500
-homeDirectory: /home/jerome
-gecos: Jerome Alet,,,
-pykotaUserName: jerome
-pykotaLimitBy: quota
-pykotaBalance: 9.25
-pykotaLifeTimePaid: 10
-
-dn: cn=devel,ou=Groups,dc=librelogiciel,dc=com
-objectClass: posixGroup
-objectClass: top
-objectClass: pykotaGroup
-cn: devel
-userPassword: {crypt}x
-gidNumber: 500
-memberUid: jerome
-pykotaGroupName: devel
-pykotaLimitBy: quota
-
-dn: cn=apple,ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaObject
-objectClass: pykotaPrinter
-cn: apple
-pykotaPrinterName: apple
-pykotaPricePerPage: 0.1
-pykotaPricePerJob: 0.25
-
-dn: cn=uniqueidentifier01,ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaObject
-objectClass: pykotaUserPQuota
-cn: uniqueidentifier01
-pykotaUserName: jerome
-pykotaPrinterName: apple
-pykotaPageCounter: 5
-pykotaLifePageCounter: 5
-pykotaSoftLimit: 100
-pykotaHardLimit: 110
-pykotaDateLimit: None
-
-dn: cn=uniqueidentifier02,ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaObject
-objectClass: pykotaGroupPQuota
-cn: uniqueidentifier02
-pykotaGroupName: devel
-pykotaPrinterName: apple
-pykotaSoftLimit: 400
-pykotaHardLimit: 450
-pykotaDateLimit: None
-
-dn: cn=uniqueidentifier03,ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaObject
-objectClass: pykotaJob
-cn: uniqueidentifier03
-pykotaUserName: jerome
-pykotaPrinterName: apple
-pykotaJobId: 15
-pykotaPrinterPageCounter: 1533
-pykotaJobSize: 5
-pykotaAction: ALLOW
-
-dn: cn=uniqueidentifier04,ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaObject
-objectClass: pykotaLastJob
-cn: uniqueidentifier04
-pykotaPrinterName: apple
-pykotaLastJobIdent: uniqueidentifier03

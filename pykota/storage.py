@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/11/21 14:28:45  jalet
+# More complete job history.
+#
 # Revision 1.25  2003/10/08 21:12:27  jalet
 # Do not cache anymore entries which don't exist.
 #
@@ -210,9 +213,9 @@ class StoragePrinter(StorageObject) :
         self.PricePerJob = None
         self.LastJob = None
         
-    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None) :    
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, filename=None, title=None, copies=None, options=None) :    
         """Adds a job to the printer's history."""
-        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize)
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, filename, title, copies, options)
         # TODO : update LastJob object ? Probably not needed.
         
     def setPrices(self, priceperpage = None, priceperjob = None) :    

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/11/21 14:28:46  jalet
+# More complete job history.
+#
 # Revision 1.7  2003/11/12 23:29:24  jalet
 # More work on new backend. This commit may be unstable.
 #
@@ -177,7 +180,7 @@ class Accounter(AccounterBase) :
         action = self.filter.warnUserPQuota(self.filter.storage.getUserPQuota(user, printer))
         
         # adds the current job to history    
-        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action)
+        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, filename=self.filter.preserveinputfile, title=self.filter.title, copies=self.filter.copies, options=self.filter.options)
             
         return action
             

@@ -99,8 +99,8 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.12 NAME 'pykotaPrinterPageCounter'
 # pykotaJobSize
 attributetype ( 1.3.6.1.4.1.16868.1.1.13 NAME 'pykotaJobSize'
         DESC 'Current job size in number of pages in the history'
-        EQUALITY caseIgnoreIA5Match
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
 
 # pykotaAction
 attributetype ( 1.3.6.1.4.1.16868.1.1.14 NAME 'pykotaAction'
@@ -111,25 +111,55 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.14 NAME 'pykotaAction'
 # pykotaPrinterName        
 attributetype ( 1.3.6.1.4.1.16868.1.1.15 NAME 'pykotaPrinterName'
         DESC 'PyKota printer name as received from the printing subsystem'
-        EQUALITY caseIgnoreIA5Match
+        EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 # pykotaUserName        
 attributetype ( 1.3.6.1.4.1.16868.1.1.16 NAME 'pykotaUserName'
         DESC 'PyKota user name'
         EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 # pykotaGroupName        
 attributetype ( 1.3.6.1.4.1.16868.1.1.17 NAME 'pykotaGroupName'
         DESC 'PyKota group name'
         EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 # pykotaLastJobIdent        
 attributetype ( 1.3.6.1.4.1.16868.1.1.18 NAME 'pykotaLastJobIdent'
         DESC 'Identifies the last job in the history'
         EQUALITY caseExactIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+# pykotaFileName        
+attributetype ( 1.3.6.1.4.1.16868.1.1.19 NAME 'pykotaFileName'
+        DESC 'Print job filename'
+        EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+# pykotaTitle        
+attributetype ( 1.3.6.1.4.1.16868.1.1.20 NAME 'pykotaTitle'
+        DESC 'Print job title'
+        EQUALITY caseIgnoreIA5Match
+        SUBSTR caseIgnoreIA5SubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+# pykotaCopies
+attributetype ( 1.3.6.1.4.1.16868.1.1.21 NAME 'pykotaCopies'
+        DESC 'Number of copies of the current print job'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+        
+# pykotaOptions        
+attributetype ( 1.3.6.1.4.1.16868.1.1.22 NAME 'pykotaOptions'
+        DESC 'Print job options'
+        EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 #        
@@ -170,7 +200,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
         DESC 'An entry in the job history for a printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName $ pykotaJobId )
-        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction ) )
+        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions ) )
         
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY

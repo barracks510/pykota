@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/11/21 14:28:46  jalet
+# More complete job history.
+#
 # Revision 1.21  2003/11/12 13:06:38  jalet
 # Bug fix wrt no user/group name command line argument to edpykota
 #
@@ -446,13 +449,13 @@ class Storage(BaseStorage) :
         """Sets the last job's size permanently."""
         self.doModify("UPDATE jobhistory SET jobsize=%s WHERE id=%s" % (self.doQuote(jobsize), self.doQuote(lastjob.ident)))
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None) :    
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, filename=None, title=None, copies=None, options=None) :    
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
             else :    
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
         else :        
             # here we explicitly want to reset jobsize to NULL if needed
             self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobdate=now() WHERE id=%s;" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(printer.LastJob.ident)))
