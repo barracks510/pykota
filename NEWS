@@ -27,8 +27,10 @@ PyKota NEWS :
           filter as well.
           
         - The pykota filter doesn't check last user's quota
-          anymore : this will be done anyway the next time
-          the last user will print again. 
+          anymore when delayed hardware accounting is used : 
+          this will be done anyway the next time the last 
+          user will print again. This saves some database
+          queries which are unneeded.
         
     - 1.18alpha12 :
     
