@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/02/27 09:37:02  jalet
+# Wildcards seem to work now
+#
 # Revision 1.21  2003/02/27 09:04:46  jalet
 # user and group names can be passed as wildcards if the --add option
 # is not set. The default is to act on all users or groups.
@@ -231,10 +234,13 @@ class EdPyKota(PyKotaTool) :
                 self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
             if (not options["reset"]) and ((hardlimit is None) or (softlimit is None)) :        
                 raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
-            if options["users"] :    
-                allnames = self.storage.getPrinterUsers(printer)
-            else :    
-                allnames = self.storage.getPrinterGroups(printer)
+            if options["add"] :    
+                allnames = names
+            else :   
+                if options["users"] :    
+                    allnames = self.storage.getPrinterUsers(printer)
+                else :    
+                    allnames = self.storage.getPrinterGroups(printer)
             for name in [n for n in allnames if self.matchString(n, names)]:
                 if options["users"] :
                     quota = self.storage.getUserPQuota(name, printer)
