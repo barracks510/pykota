@@ -1,3 +1,15 @@
+pykota (1.19alpha29) unstable; urgency=low
+
+  * Update from CVS 
+
+ -- Sergio Gonz'alez Gonz'alez <sergio@hispalinux.es>  Mon,  5 Jul 2004 15:59:03 +0100
+
+pykota (1.19alpha20.cvs.20040611-1) unstable; urgency=low
+
+  * Update from CVS
+
+ -- Sergio Gonz'alez Gonz'alez <sergio.gonzalez@hispalinux.es>  Fri, 11 Jun 2004 17:10:04 +0100
+
 pykota (1.16.cvs.20040119-1) unstable; urgency=low
 
   * Initial Release.

@@ -4,12 +4,12 @@ all: build
 
 build: build-stamp
 build-stamp:
-       docbook2html pykota.sgml
-       touch build-stamp
+	docbook2html pykota.sgml
+	touch build-stamp
 
 install: build
-       mkdir -p $(DESTDIR)/usr/share/doc/pykota/html/
-       cp *.html $(DESTDIR)/usr/share/doc/pykota/html/
+	mkdir -p $(DESTDIR)/usr/share/doc/pykota/html/
+	cp *.html $(DESTDIR)/usr/share/doc/pykota/html/
 
 clean:
-       rm -f *.html build-stamp
+	rm -f *.html build-stamp

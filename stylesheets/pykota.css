@@ -19,6 +19,10 @@
 
 /* $Id$ */
 
+body {
+        background-color: #FFFFFF;
+     }
+
 .even {
         background-color: #DEDEDE;
       }

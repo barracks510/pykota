@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/07/06 09:37:01  jalet
+# Integrated most of the Debian packaging work made by Sergio González González
+#
 # Revision 1.44  2004/06/05 22:03:49  jalet
 # Payments history is now stored in database
 #
@@ -195,6 +198,9 @@ from pykota.version import __version__, __doc__
 ACTION_CONTINUE = 0
 ACTION_ABORT = 1
 
+#ETC_DIR = "./debian/tmp/etc/pykota/"
+ETC_DIR = "/etc/pykota/"
+
 def checkOldModule(path) :
     """Checks if an old PyKota module is still in the destination (in case of upgrade)."""
     fname = os.path.join(sysconfig.get_python_lib(), "pykota", path)
@@ -255,12 +261,12 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
         sys.exit(-1)
         
     # checks if a configuration file is present in the new location
-    if not os.path.isfile("/etc/pykota/pykota.conf") :
-        if not os.path.isdir("/etc/pykota") :
+    if not os.path.isfile(os.path.join(ETC_DIR,"pykota.conf")) :
+        if not os.path.isdir(ETC_DIR) :
             try :
-                os.mkdir("/etc/pykota")
+                os.mkdir(ETC_DIR)
             except OSError, msg :    
-                sys.stderr.write("An error occured while creating the /etc/pykota directory.\n%s\n" % msg)
+                sys.stderr.write("An error occured while creating the etc/pykota directory.\n%s\n" % msg)
                 sys.exit(-1)
                 
         if os.path.isfile("/etc/pykota.conf") :
@@ -270,7 +276,7 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
             answer = raw_input("Do you want to move /etc/pykota.conf to /etc/pykota/pykota.conf (y/N) ? ")
             if answer[0:1].upper() == 'Y' :
                 try :
-                    os.rename("/etc/pykota.conf", "/etc/pykota/pykota.conf")
+                    os.rename("/etc/pykota.conf", os.path.join(ETC_DIR,"pykota.conf"))
                 except OSError :    
                     sys.stderr.write("ERROR : An error occured while moving /etc/pykota.conf to /etc/pykota/pykota.conf\nAborted !\n")
                     sys.exit(-1)
@@ -286,8 +292,8 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
                 answer = raw_input("Do you want to install\n\tconf/pykota.conf.sample as /etc/pykota/pykota.conf (y/N) ? ")
                 if answer[0:1].upper() == 'Y' :
                     try :
-                        shutil.copy("conf/pykota.conf.sample", "/etc/pykota/pykota.conf")        
-                        shutil.copy("conf/pykotadmin.conf.sample", "/etc/pykota/pykotadmin.conf")        
+                        shutil.copy("conf/pykota.conf.sample", os.path.join(ETC_DIR,"pykota.conf"))        
+                        shutil.copy("conf/pykotadmin.conf.sample", os.path.join(ETC_DIR,"pykotadmin.conf"))        
                     except IOError, msg :    
                         sys.stderr.write("WARNING : Problem while installing sample configuration files in /etc/pykota/, please do it manually.\n%s\n" % msg)
                     else :    
@@ -316,7 +322,7 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     # Second stage, we will fail if onfiguration is incorrect for security reasons
     from pykota.config import PyKotaConfig,PyKotaConfigError
     try :
-        conf = PyKotaConfig("/etc/pykota/")
+        conf = PyKotaConfig(ETC_DIR)
     except PyKotaConfigError, msg :    
         sys.stedrr.write("%s\nINSTALLATION ABORTED !\nPlease restart installation.\n" % msg)
         sys.exit(-1)
@@ -374,8 +380,8 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
         sys.stdout.write("\n")
             
     # change files permissions    
-    os.chmod("/etc/pykota/pykota.conf", 0644)
-    os.chmod("/etc/pykota/pykotadmin.conf", 0640)
+    os.chmod(os.path.join(ETC_DIR,"pykota.conf"), 0644)
+    os.chmod(os.path.join(ETC_DIR,"pykotadmin.conf"), 0640)
     
     # WARNING MESSAGE    
     sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha17 TO 1.19alpha17 OR ABOVE\n")
@@ -419,7 +425,7 @@ for mofile in mofiles :
     directory = os.sep.join(["share", "locale", lang, "LC_MESSAGES"])
     data_files.append((directory, [ mofile ]))
     
-docdir = "/usr/share/doc/pykota"    
+docdir = "share/doc/pykota"    
 docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO", "NEWS"]
 data_files.append((docdir, docfiles))
 

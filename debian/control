@@ -2,12 +2,18 @@ Source: pykota
 Section: text
 Priority: extra
 Maintainer: Peter Hawkins <peterh@debian.org>
-Build-Depends-Indep: debhelper (>= 4.0.0), python, docbook-utils
+Build-Depends-Indep: debhelper (>= 4.0.0), python, docbook-utils, python-dev
 Standards-Version: 3.6.1
 
 Package: pykota
 Architecture: all
-Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys | lprng, python-pygresql | python-ldap
+Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys | lprng, python-pygresql | python-ldap, libapache-mod-python
 Recommends: snmp, netatalk
 Description: Print Quota/Accounting system for CUPS and LPRng
- FIXME: Description
+ PyKota is a complete GPLed Print Quota and Accounting Software Solution
+ for the Common UNIX Printing System (aka CUPS) and LPR Next Generation
+ (aka LPRng) on GNU/Linux and Unix-like operating systems, which offers
+ a great flexibility with regard to the page accounting methods it
+ supports. By default it works by directly querying the printers for the
+ number of pages they have printed, but you can easily plug your own
+ page accounting methods if you prefer.

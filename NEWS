@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha30 :
+    
+        - Integrated most of the Debian work from Sergio 
+          González González
+          
     - 1.19alpha29 : 
     
         - PCLXL parser should now correctly handle number of
