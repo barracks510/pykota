@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.136  2004/10/24 09:06:46  jalet
+# Added debug messages for LPRng support possible problem ???
+#
 # Revision 1.135  2004/10/20 14:29:30  jalet
 # Now logs something when locale settings are incorrect.
 #
@@ -588,6 +591,8 @@ class PyKotaTool :
         if defaultToCLocale :
             self.printInfo("Incorrect locale settings. PyKota falls back to the 'C' locale.", "warn")
         self.logdebug("Charset in use : %s" % self.charset)
+        arguments = " ".join(['"%s"' % arg for arg in sys.argv])
+        self.logdebug("Command line arguments : %s" % arguments)
         
     def getCharset(self) :    
         """Returns the charset in use."""
