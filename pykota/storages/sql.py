@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2004/10/05 10:05:04  jalet
+# UnicodeEncodeError isn't defined in Python2.1
+#
 # Revision 1.53  2004/10/05 09:59:20  jalet
 # Restore compatibility with Python 2.1
 #
@@ -109,7 +112,7 @@ class SQLStorage :
                     if type(field) == StringType :
                         try :
                             fields[j] = unicode(field, "UTF-8").encode(self.tool.getCharset()) 
-                        except UnicodeEncodeError : # takes care of old jobs in history not stored as UTF-8    
+                        except UnicodeError : # takes care of old jobs in history not stored as UTF-8    
                             pass
                 entries[i] = tuple(fields)    
             return entries
