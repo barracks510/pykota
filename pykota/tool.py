@@ -14,13 +14,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/02/17 23:01:56  jalet
+# Typos
+#
 # Revision 1.20  2003/02/17 22:55:01  jalet
 # More options can now be set per printer or globally :
 #
-# 	admin
-# 	adminmail
-# 	gracedelay
-# 	requester
+#       admin
+#       adminmail
+#       gracedelay
+#       requester
 #
 # the printer option has priority when both are defined.
 #
@@ -252,7 +255,7 @@ class PyKotaTool :
                     if softlimit <= pagecounter < hardlimit :    
                         now = DateTime.now()
                         if datelimit is None :
-                            datelimit = now + self.config.getGraceDelay()
+                            datelimit = now + self.config.getGraceDelay(printername)
                             self.storage.setDateLimit(username, printername, datelimit)
                         if now < datelimit :
                             action = "WARN"

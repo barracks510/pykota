@@ -14,13 +14,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/02/17 23:01:56  jalet
+# Typos
+#
 # Revision 1.15  2003/02/17 22:55:01  jalet
 # More options can now be set per printer or globally :
 #
-# 	admin
-# 	adminmail
-# 	gracedelay
-# 	requester
+#       admin
+#       adminmail
+#       gracedelay
+#       requester
 #
 # the printer option has priority when both are defined.
 #
@@ -136,7 +139,7 @@ class PyKotaConfig :
                         "storagename", "storageadmin", \
                         "storageuser", \
                       ] :
-            backendinfo[option] = self.getGlobalOption((option)
+            backendinfo[option] = self.getGlobalOption(option)
         for option in [ "storageadminpw", "storageuserpw" ] :    
             backendinfo[option] = self.getGlobalOption(option, ignore=1)
         return backendinfo
@@ -185,7 +188,7 @@ class PyKotaConfig :
         """Returns the full name of the Print Quota Administrator."""
         return self.getPrinterOption(printer, "admin")
         
-    def getGraceDelay(self) :    
+    def getGraceDelay(self, printer) :    
         """Returns the grace delay in days."""
         gd = self.getPrinterOption(printer, "gracedelay")
         try :
