@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2004/10/10 10:12:21  jalet
+# Improved SQL queries for groups. Same work has to be done for groups print quotas.
+#
 # Revision 1.56  2004/10/07 21:14:28  jalet
 # Hopefully final fix for data encoding to and from the database
 #
@@ -132,7 +135,7 @@ class SQLStorage :
         
     def extractGroups(self) :
         """Extracts all group records."""
-        result = self.doRawSearch("SELECT groups.*,sum(balance) AS balance, sum(lifetimepaid) as lifetimepaid FROM groups,users WHERE users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby ORDER BY groups.id ASC")
+        result = self.doRawSearch("SELECT groups.*,COALESCE(SUM(balance), 0) AS balance, COALESCE(SUM(lifetimepaid), 0) as lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby ORDER BY groups.id ASC")
         return self.prepareRawResult(result)
         
     def extractPayments(self) :
@@ -147,7 +150,7 @@ class SQLStorage :
         
     def extractGpquotas(self) :
         """Extracts all grouppquota records."""
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,sum(pagecounter) AS pagecounter,sum(lifepagecounter) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY grouppquota.id")
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY grouppquota.id")
         return self.prepareRawResult(result)
         
     def extractUmembers(self) :
@@ -199,17 +202,14 @@ class SQLStorage :
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
-        result = self.doSearch("SELECT * FROM groups WHERE groupname=%s LIMIT 1" % self.doQuote(groupname))
+        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby LIMIT 1" % self.doQuote(groupname))
         if result :
             fields = result[0]
             group.ident = fields.get("id")
             group.Name = fields.get("groupname", groupname)
             group.LimitBy = fields.get("limitby")
-            result = self.doSearch("SELECT SUM(balance) AS balance, SUM(lifetimepaid) AS lifetimepaid FROM users WHERE id IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(group.ident))
-            if result :
-                fields = result[0]
-                group.AccountBalance = fields.get("balance") or 0.0
-                group.LifeTimePaid = fields.get("lifetimepaid") or 0.0
+            group.AccountBalance = fields.get("balance")
+            group.LifeTimePaid = fields.get("lifetimepaid")
             group.Exists = 1
         return group
        
