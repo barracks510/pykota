@@ -631,7 +631,7 @@ policy: deny
 # NB : CUPS ONLY FOR NOW !
 # 
 # In any case, the banner content which will be sent to the printer
-# MUST be in a format your printer will accept !!!
+# MUST be in a format your printer will accept !!! 
 #
 # The pkbanner command included in PyKota can automatically generate
 # starting and ending banners in the PostScript format. You can use
@@ -641,6 +641,7 @@ policy: deny
 #
 # startingbanner: /home/joe/mystaticbanner.ps
 # startingbanner: /usr/bin/pkbanner --pagesize=A4 --logo="/home/joe/mylogo.jpeg" --url="http://tech.example.com"
+# startingbanner: /usr/bin/pkbanner | gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sOutputFile=- -sDEVICE=lj5mono -
 # startingbanner: /usr/bin/pkbanner
 
 # EndingBanner : if defined will print a banner before the rest of the job 
@@ -661,6 +662,7 @@ policy: deny
 #
 # endingbanner: /home/joe/mystaticbanner.ps
 # endingbanner: /usr/bin/pkbanner --pagesize=A4 --logo="/home/joe/mylogo.jpeg" --url="http://tech.example.com"
+# endingbanner: /usr/bin/pkbanner | gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sOutputFile=- -sDEVICE=lj5mono -
 # endingbanner: /usr/bin/pkbanner
 
 # How should enforcement be done for this printer ?
