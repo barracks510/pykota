@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.3  2003/07/09 20:17:07  jalet
+-- Email field added to PostgreSQL schema
+--
 -- Revision 1.2  2003/06/10 16:37:54  jalet
 -- Deletion of the second user which is not needed anymore.
 -- Added a debug configuration field in /etc/pykota.conf
@@ -58,6 +61,7 @@ CREATE USER pykotaadmin;
 --
 CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
                    username TEXT UNIQUE NOT NULL,
+                   email TEXT, 
                    balance FLOAT DEFAULT 0.0,
                    lifetimepaid FLOAT DEFAULT 0.0,
                    limitby TEXT DEFAULT 'quota');

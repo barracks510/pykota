@@ -55,11 +55,27 @@ Upgrade scripts :
   of them or only some of them, depending on your 
   version of PyKota.
   
-* An sql script to upgrade a pre-1.01 PyKota Quota Storage DataBase to 
-  1.01 is still included for historical reasons. PLEASE DON'T USE IT ! 
   
-* If you are already running an old version of PyKota (<1.03) and 
-  want to upgrade to 1.03, YOU HAVE TO RUN the 
-  upgrade-from-before-1.03.py shell script. NOT LAUNCHING THIS SCRIPT 
-  WILL CAUSE PYKOTA TO STOP WORKING ! PLEASE NEVER RUN THIS SCRIPT IF 
-  YOUR EXISTING VERSION OF PYKOTA IS ALREADY 1.03 OR HIGHER. 
+  * An SQL script to upgrade a pre-1.14 PyKota Storage DataBase to
+    1.14 is included. Launch it this way on the Quota Storage Server :
+    
+        $ psql -U postgres pykota
+        pykota=# \i upgrade-to-1.14.sql
+        pykota=# \q
+        $
+        
+    This script adds an "email" field for each user. This field, if not    
+    NULL, is used as the email address of the user when sending warning
+    messages in case he is over quota.
+    
+What is below is for historical reasons only, real people don't use  
+such old beasts, and YOU SHOULDN'T EITHER !
+
+  * An sql script to upgrade a pre-1.01 PyKota Quota Storage DataBase to 
+    1.01 is still included for historical reasons. PLEASE DON'T USE IT ! 
+  
+  * If you are already running an old version of PyKota (<1.03) and 
+    want to upgrade to 1.03, YOU HAVE TO RUN the 
+    upgrade-from-before-1.03.py shell script. NOT LAUNCHING THIS SCRIPT 
+    WILL CAUSE PYKOTA TO STOP WORKING ! PLEASE NEVER RUN THIS SCRIPT IF 
+    YOUR EXISTING VERSION OF PYKOTA IS ALREADY 1.03 OR HIGHER. 

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2003/07/09 20:17:07  jalet
+# Email field added to PostgreSQL schema
+#
 # Revision 1.45  2003/07/08 19:43:51  jalet
 # Configurable warning messages.
 # Poor man's treshold value added.
@@ -326,10 +329,10 @@ class PyKotaTool :
                 self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
         server.quit()
         
-    def sendMessageToUser(self, admin, adminmail, username, subject, message) :
+    def sendMessageToUser(self, admin, adminmail, user, subject, message) :
         """Sends an email message to a user."""
         message += _("\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n") % (admin, adminmail)
-        self.sendMessage(adminmail, username, "Subject: %s\n\n%s" % (subject, message))
+        self.sendMessage(adminmail, user.Email or user.Name, "Subject: %s\n\n%s" % (subject, message))
         
     def sendMessageToAdmin(self, adminmail, subject, message) :
         """Sends an email message to the Print Quota administrator."""
@@ -476,7 +479,7 @@ class PyKotaTool :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             for user in self.storage.getGroupMembers(group) :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
+                    self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
         elif action == "WARN" :    
             adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (group.Name, printer.Name)
             self.logger.log_message(adminmessage)
@@ -488,7 +491,7 @@ class PyKotaTool :
                 message = self.config.getSoftWarn(printer.Name)
             for user in self.storage.getGroupMembers(group) :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), message)
+                    self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
         return action        
         
     def warnUserPQuota(self, userpquota) :
@@ -505,7 +508,7 @@ class PyKotaTool :
             adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
+                self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
@@ -516,7 +519,7 @@ class PyKotaTool :
                     message = self.config.getPoorWarn()
                 else :     
                     message = self.config.getSoftWarn(printer.Name)
-                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Low"), message)
+                self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        

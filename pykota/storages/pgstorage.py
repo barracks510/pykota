@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/07/09 20:17:07  jalet
+# Email field added to PostgreSQL schema
+#
 # Revision 1.6  2003/07/07 11:49:24  jalet
 # Lots of small fixes with the help of PyChecker
 #
@@ -282,7 +285,7 @@ class Storage :
     def getPrinterUsersAndQuotas(self, printer, names=None) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
-        result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,email,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
                 user = StorageUser(self, record.get("username"))
@@ -291,7 +294,7 @@ class Storage :
                     user.LimitBy = record.get("limitby")
                     user.AccountBalance = record.get("balance")
                     user.LifeTimePaid = record.get("lifetimepaid")
-                    user.Email = record.get("email")    # TODO : Always None here
+                    user.Email = record.get("email") 
                     user.Exists = 1
                     userpquota = StorageUserPQuota(self, user, printer)
                     userpquota.ident = record.get("id")
