@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2004/02/04 13:24:41  jalet
+# pkprinters can now remove printers from printers groups.
+#
 # Revision 1.39  2004/02/04 11:16:59  jalet
 # pkprinters command line tool added.
 #
@@ -261,6 +264,12 @@ class StoragePrinter(StorageObject) :
         """Adds a printer to a printer group."""
         if (printer not in self.parent.getParentPrinters(self)) and (printer.ident != self.ident) :
             self.parent.writePrinterToGroup(self, printer)
+            # TODO : reset cached value for printer parents, or add new parent to cached value
+            
+    def delPrinterFromGroup(self, printer) :    
+        """Deletes a printer from a printer group."""
+        if (printer in self.parent.getParentPrinters(self)) and (printer.ident != self.ident) :
+            self.parent.removePrinterFromGroup(self, printer)
             # TODO : reset cached value for printer parents, or add new parent to cached value
         
     def setPrices(self, priceperpage = None, priceperjob = None) :    

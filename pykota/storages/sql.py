@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/02/04 13:24:41  jalet
+# pkprinters can now remove printers from printers groups.
+#
 # Revision 1.35  2004/02/04 11:17:00  jalet
 # pkprinters command line tool added.
 #
@@ -351,6 +354,10 @@ class SQLStorage :
                 children.append(record.get("printerid")) # TODO : put this into the database integrity rules
         if printer.ident not in children :        
             self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
+        
+    def removePrinterFromGroup(self, pgroup, printer) :
+        """Removes a printer from a printer group."""
+        self.doModify("DELETE FROM printergroupsmembers WHERE groupid=%s AND printerid=%s" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
     def retrieveHistory(self, user=None, printer=None, datelimit=None, limit=100) :    
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""

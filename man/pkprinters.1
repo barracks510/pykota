@@ -31,8 +31,8 @@ Job price is optional.
 If both are to be set, separate them with a comma.
 Floating point and negative values are allowed.
 .TP
-\fB\-g\fR | \fB\-\-groups\fR pg1[,pg2...] Adds the printer(s) to the printer groups
-pg1, pg2, etc... which must already exist.
+\fB\-g\fR | \fB\-\-groups\fR pg1[,pg2...] Adds or Remove the printer(s) to the printer
+groups pg1, pg2, etc... which must already exist.
 A printer group is just like a normal printer,
 only that it is usually unknown from the printing
 system. Create printer groups exactly the same
@@ -42,6 +42,13 @@ Accounting is done on a printer and on all
 the printer groups it belongs to, quota checking
 is done on a printer and on all the printer groups
 it belongs to.
+If the \fB\-\-remove\fR option below is not used, the
+default action is to add printers to the specified
+printer groups.
+.TP
+\fB\-r\fR | \fB\-\-remove\fR
+In combination with the \fB\-\-groups\fR option above,
+remove printers from the specified printers groups.
 .IP
 printer1 through printerN can contain wildcards if the \fB\-\-add\fR option
 is not set.
@@ -65,6 +72,10 @@ as well as their job history. USE WITH CARE !
 .IP
 This will put all printers which name matches "hp*" into printers groups
 Laser and HP, which MUST already exist.
+.IP
+\f(CW$ pkprinters --groups LexMark --remove hp2200\fR
+.IP
+This will remove the hp2200 printer from the LexMark printer group.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

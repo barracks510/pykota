@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/02/04 13:24:41  jalet
+# pkprinters can now remove printers from printers groups.
+#
 # Revision 1.50  2004/02/04 11:17:00  jalet
 # pkprinters command line tool added.
 #
@@ -870,6 +873,18 @@ class Storage(BaseStorage) :
                      }  
             self.doModify(pgroup.ident, fields)         
             
+    def removePrinterFromGroup(self, pgroup, printer) :
+        """Removes a printer from a printer group."""
+        try :
+            pgroup.uniqueMember.remove(printer.ident)
+        except ValueError :    
+            pass
+        else :    
+            fields = {
+                       "uniqueMember" : pgroup.uniqueMember,
+                     }  
+            self.doModify(pgroup.ident, fields)         
+            
     def retrieveHistory(self, user=None, printer=None, datelimit=None, limit=100) :    
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
         precond = "(objectClass=pykotaJob)"
@@ -992,9 +1007,13 @@ class Storage(BaseStorage) :
         for (ident, fields) in result :
             self.doDelete(ident)
         for parent in self.getParentPrinters(printer) :  
-            parent.uniqueMember.remove(printer.ident)
-            fields = {
-                       "uniqueMember" : parent.uniqueMember,
-                     }  
-            self.doModify(parent.ident, fields)         
+            try :
+                parent.uniqueMember.remove(printer.ident)
+            except ValueError :    
+                pass
+            else :    
+                fields = {
+                           "uniqueMember" : parent.uniqueMember,
+                         }  
+                self.doModify(parent.ident, fields)         
         self.doDelete(printer.ident)    
