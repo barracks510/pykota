@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19 :
+    
+        - Updated existing translations.    
+        
+        - Added final Thai and Greek translations.
+        
+        - Minor last minute bug fixes.
+        
     - 1.19beta :
     
         - LPRng support for both software and hardware accounting seems

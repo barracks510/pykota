@@ -65,7 +65,6 @@ TODO, in no particular order :
           if the job is a banner (embed a postscript comment
           in the banner).
           
-          
         - Introduce the pkusers command.
           pkusers --nogroup
           pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
