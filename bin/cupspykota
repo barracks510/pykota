@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2004/05/10 10:07:30  jalet
+# Catches OSError while reading
+#
 # Revision 1.40  2004/05/10 09:29:48  jalet
 # Should be more robust if we receive a SIGTERM during an I/O operation
 #
@@ -412,17 +415,21 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 errclosed = 1
                     if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
                         # We have something to read
-                        data = os.read(fd, 256 * 1024)
-                        if fd == infno :
-                            indata += data
-                            if not data :    # If yes, then no more input data
-                                self.unregisterFileNo(pollster, infno)
-                                self.logdebug("Input data ends.")
-                                endinput = 1 # this happens with real files.
-                        elif fd == fromcfno :
-                            outdata += data
-                        elif fd == cerrfno :    
-                            errdata += data
+                        try :
+                            data = os.read(fd, 256 * 1024)
+                        except OSError, msg :    
+                            self.logdebug("Error while reading file %s : %s" % (fd, msg)
+                        else :
+                            if fd == infno :
+                                indata += data
+                                if not data :    # If yes, then no more input data
+                                    self.unregisterFileNo(pollster, infno)
+                                    self.logdebug("Input data ends.")
+                                    endinput = 1 # this happens with real files.
+                            elif fd == fromcfno :
+                                outdata += data
+                            elif fd == cerrfno :    
+                                errdata += data
                     if (mask & select.POLLHUP) or (mask & select.POLLERR) :
                         # I've never seen POLLERR myself, but this probably
                         # can't hurt to treat an error condition just like 
