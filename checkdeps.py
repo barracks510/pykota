@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/11/15 21:08:01  jalet
+# Now checks for the presence of ReportLab and PIL
+#
 # Revision 1.1  2004/11/10 22:17:12  jalet
 # Installation script is now non-interactive again, and doesn't install
 # the sample configuration files into /etc/pykota anymore.
@@ -81,6 +84,8 @@ if __name__ == "__main__" :
                        ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
                        ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
                        ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
+                       ("Python-ReportLab", "reportlab.pdfgen.canvas", "Python-ReportLab is required if you plan to have PyKota generate banners.\nSee http://www.reportlab.org/"),
+                       ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners.\nSee http://www.pythonware.com/downloads/"),
                      ]
     commandstocheck = [ ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), 
                         ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")
