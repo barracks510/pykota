@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/11/19 11:57:51  jalet
+# Modified the SNMP fix as hinted by pysnmp's maintainer
+#
 # Revision 1.33  2004/11/19 10:35:37  jalet
 # Catches TypeMismatchError in SNMP answer handling code
 #
@@ -181,31 +184,36 @@ else :
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
-            except (TypeMismatchError, SnmpOverUdpError), msg :    
+            except SnmpOverUdpError, msg :    
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
             tsp.close()
     
         def handleAnswer(self, wholeMsg, notusedhere, req):
             """Decodes and handles the SNMP answer."""
+            self.parent.filter.logdebug("SNMP message : '%s'" % repr(wholeMsg))
             ver = alpha.protoVersions[alpha.protoVersionId1]
             rsp = ver.Message()
-            rsp.berDecode(wholeMsg)
-            if req.apiAlphaMatch(rsp):
-                errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
-                if errorStatus:
-                    self.parent.filter.printInfo(_("Problem encountered while doing SNMP queries on printer %s : %s") % (self.printerHostname, errorStatus), "warn")
-                else:
-                    self.values = []
-                    for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
-                        self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
-                    try :    
-                        # keep maximum value seen for printer's internal page counter
-                        self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
-                        self.printerStatus = self.values[1]
-                    except IndexError :    
-                        pass
-                    else :    
-                        return 1
+            try :
+                rsp.berDecode(wholeMsg)
+            except TypeMismatchError, msg :    
+                self.parent.filter.printInfo(_("SNMP message decoding error for printer %s : %s") % (self.printerHostname, msg), "warn")
+            else :
+                if req.apiAlphaMatch(rsp):
+                    errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
+                    if errorStatus:
+                        self.parent.filter.printInfo(_("Problem encountered while doing SNMP queries on printer %s : %s") % (self.printerHostname, errorStatus), "warn")
+                    else:
+                        self.values = []
+                        for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
+                            self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
+                        try :    
+                            # keep maximum value seen for printer's internal page counter
+                            self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
+                            self.printerStatus = self.values[1]
+                        except IndexError :    
+                            pass
+                        else :    
+                            return 1
                         
         def waitPrinting(self) :
             """Waits for printer status being 'printing'."""
