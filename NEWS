@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha25 :
+    
+        - Email address can be set at user creation time,
+          using the following syntax : 
+          
+            $ edpykota --add username/email@yourdomain.com
+        
     - 1.16alpha24 :
     
         - CGI script now can show the printing history.

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.66  2004/01/12 21:54:36  jalet
+# User's email address can now be set at user's creation time.
+#
 # Revision 1.65  2004/01/08 16:24:49  jalet
 # edpykota now supports adding printers to printer groups.
 #
@@ -324,10 +327,12 @@ options :
   
 examples :                              
 
-  $ edpykota -p jerome john paul george ringo
+  $ edpykota --add -p jerome john paul george ringo/ringo@yourdomain.com
   
-  This will set print quotas for the users john, paul, george and ringo
-  to the same values than user jerome. User jerome must exist.
+  This will add users john, paul, george and ringo to the quota
+  database, and set their print quotas to the same values than user 
+  jerome. User jerome must already exist.
+  User ringo's email address will also be set to 'ringo@yourdomain.com'
   
   $ edpykota --printer lp -S 50 -H 60 jerome
   
@@ -521,7 +526,18 @@ class EdPyKota(PyKotaTool) :
             if options["add"] :    
                 allentries = []    
                 for name in names :
+                    email = ""
+                    if not options["groups"] :
+                        splitname = name.split('/', 1)     # username/email
+                        if len(splitname) == 1 :
+                            splitname.append("")
+                        (name, email) = splitname
+                        if email and (email.count('@') != 1) :
+                            self.logger.log_message(_("Invalid email address %s") % email)
+                            email = ""
                     entry = getattr(self.storage, "get%s" % suffix)(name)
+                    if email and not options["groups"] :
+                        entry.Email = email
                     entrypquota = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
                     allentries.append((entry, entrypquota))
             else :   
