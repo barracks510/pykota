@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.103  2005/02/25 14:47:27  jalet
+# Improved robustness for manually modified LDAP trees
+#
 # Revision 1.102  2005/02/25 14:31:07  jalet
 # Improved robustness
 #
@@ -618,6 +621,20 @@ class Storage(BaseStorage) :
                 return dn
         raise PyKotaStorageError, message
             
+    def filterNames(self, records, attribute) :        
+        """Returns a list of 'attribute' from a list of records.
+        
+           Logs any missing attribute.
+        """   
+        result = []
+        for record in records :
+            attrval = record[1].get(attribute, [None])[0]
+            if attrval is None :
+                self.tool.printInfo("Object %s has no %s attribute !" % (record[0], attribute), "error")
+            else :    
+                result.append(attrval)
+        return result        
+                
     def getAllPrintersNames(self, printername=None) :    
         """Extracts all printer names or only the printers' names matching the optional parameter."""
         printernames = []
@@ -626,7 +643,7 @@ class Storage(BaseStorage) :
             ldapfilter = "(&(%s)(pykotaPrinterName=%s))" % (ldapfilter, printername)
         result = self.doSearch(ldapfilter, ["pykotaPrinterName"], base=self.info["printerbase"])
         if result :
-            printernames = [record[1]["pykotaPrinterName"][0] for record in result]
+            printernames = self.filterNames(result, "pykotaPrinterName")
         return printernames
         
     def getAllUsersNames(self, username=None) :    
@@ -637,7 +654,7 @@ class Storage(BaseStorage) :
             ldapfilter = "(&(%s)(pykotaUserName=%s))" % (ldapfilter, username)
         result = self.doSearch(ldapfilter, ["pykotaUserName"], base=self.info["userbase"])
         if result :
-            usernames = filter(None, [record[1].get("pykotaUserName", [None])[0] for record in result])
+            usernames = self.filterNames(result, "pykotaUserName")
         return usernames
         
     def getAllGroupsNames(self, groupname=None) :    
@@ -648,7 +665,7 @@ class Storage(BaseStorage) :
             ldapfilter = "(&(%s)(pykotaGroupName=%s))" % (ldapfilter, groupname)
         result = self.doSearch(ldapfilter, ["pykotaGroupName"], base=self.info["groupbase"])
         if result :
-            groupnames = [record[1]["pykotaGroupName"][0] for record in result]
+            groupnames = self.filterNames(result, "pykotaGroupName")
         return groupnames
         
     def getUserNbJobsFromHistory(self, user) :
