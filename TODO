@@ -25,9 +25,6 @@ TODO, in no particular order :
           history, to be able to discover duplicate print
           jobs.
           
-        - Add --hardreset command line option to
-          edpykota to also reset lifetime page counters to 0.
-          
         - Maybe put "gracedelay" in the database.
         
         - Allow admin to specify a prefix to delete from

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.77  2004/09/28 17:45:31  jalet
+# Added the --hardreset command line option to edpykota
+#
 # Revision 1.76  2004/07/01 19:56:40  jalet
 # Better dispatching of error messages
 #
@@ -333,9 +336,13 @@ options :
                        
   -n | --noquota       Doesn't set a quota but only does accounting.
   
-  -r | --reset         Resets the printed page counter for the user
-                       or group to zero. The life time page counter 
-                       is kept unchanged.
+  -r | --reset         Resets the actual page counter for the user
+                       or group to zero on the specified printers. 
+                       The life time page counter is kept unchanged.
+                       
+  -R | --hardreset     Resets the actual and life time page counters
+                       for the user or group to zero on the specified 
+                       printers. 
                        
   -l | --limitby l     Choose if the user/group is limited in printing                     
                        by its account balance or by its page quota.
@@ -393,6 +400,8 @@ examples :
   This will reset jerome's page counter to zero on all printers, as
   well as every user whose name begins with 'jo'.
   Their life time page counter on each printer will be kept unchanged.
+  You can also reset the life time page counters by using the
+  --hardreset | -R command line option.
   
   $ edpykota --printer hpcolor --noquota jerome
   
@@ -621,6 +630,8 @@ class EdPyKota(PyKotaTool) :
                     if not options["groups"] :
                         if options["reset"] :
                             entrypquota.reset()
+                        elif options["hardreset"] :    
+                            entrypquota.hardreset()
                             
                         if balance :
                             if changed[entry.Name].get("balance") is None :
@@ -659,8 +670,8 @@ if __name__ == "__main__" :
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhdc:l:b:i:naugrp:P:S:H:G:"
-        long_options = ["help", "version", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups="]
+        short_options = "vhdc:l:b:i:naugrp:P:S:H:G:R"
+        long_options = ["help", "version", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "hardreset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -686,6 +697,7 @@ if __name__ == "__main__" :
         options["ingroups"] = options["i"] or options["ingroups"]
         options["charge"] = options["c"] or options["charge"]
         options["pgroups"] = options["G"] or options["pgroups"]
+        options["hardreset"] = options["R"] or options["hardreset"] 
         
         if options["help"] :
             editor.display_usage_and_quit()

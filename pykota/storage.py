@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2004/09/28 17:45:31  jalet
+# Added the --hardreset command line option to edpykota
+#
 # Revision 1.61  2004/09/24 21:19:48  jalet
 # Did a pass of PyChecker
 #
@@ -429,6 +432,11 @@ class StorageUserPQuota(StorageObject) :
         """Resets page counter to 0."""
         self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))
         self.PageCounter = 0
+        
+    def hardreset(self) :    
+        """Resets actual and life time page counters to 0."""
+        self.parent.writeUserPQuotaPagesCounters(self, 0, 0)
+        self.PageCounter = self.LifePageCounter = 0
         
     def computeJobPrice(self, jobsize) :    
         """Computes the job price as the sum of all parent printers' prices + current printer's ones."""

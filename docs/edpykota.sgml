@@ -15,7 +15,7 @@
     <itemizedlist>
       <listitem>
         <para>
-          Add printers ;
+          Add printers (it's preferable to use the <application>pkprinters</application> command for this though) ;
         </para>
       </listitem>
       <listitem>
@@ -51,7 +51,12 @@
       </listitem>
       <listitem>
         <para>
-          Choose the way you will limit printing : either by page quota or by account balance value.
+          Choose the way you will limit printing : either by page quota or by account balance value ;
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Reset page counters.
         </para>
       </listitem>
     </itemizedlist>
@@ -62,6 +67,9 @@
 <!--
 
 $Log$
+Revision 1.5  2004/09/28 17:45:31  jalet
+Added the --hardreset command line option to edpykota
+
 Revision 1.4  2003/10/14 20:26:53  jalet
 Better documentation.
 1.15 is out !

@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha17 :
     
+        - Added --hardreset command line option to edpykota.
+        
         - Fixed problem with accented chars in title, filename
           or options and LDAP backend.
           
