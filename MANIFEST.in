@@ -7,3 +7,4 @@ recursive-include conf README *.sample
 recursive-include initscripts README README.* pykota-*.sql *.py
 recursive-include debian README printquota
 recursive-include untested README *.sh *.ps
+recursive-include logos README *.png *.xcf
