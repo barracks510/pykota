@@ -26,7 +26,7 @@ if [ x$PYKOTAACTION != "xDENY" ] && [ x$PYKOTAPHASE = "xAFTER" ] ; then
 fi
 
 # In any case, wait until the printer is idle again.
-until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i "idle" >/dev/null ; do 
+until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i idle >/dev/null ; do 
   sleep 1 ;
 done
 
