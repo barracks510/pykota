@@ -1,0 +1,114 @@
+<!DOCTYPE Book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+  <!entity INSTALLATION system "installation.sgml">
+  <!entity EDPYKOTA system "edpykota.sgml">
+  <!entity WARNPYKOTA system "warnpykota.sgml">
+  <!entity REPYKOTA system "repykota.sgml">
+  <!entity FILTERPYKOTA system "filterpykota.sgml">
+  <!entity GNUFDL system "gnufdl.sgml">
+
+]>
+
+<!-- $Id$ -->
+
+<book lang="en">
+  <bookinfo>
+    <title>PyKota Documentation</title>
+    <subtitle>A full featured Print Quota Solution for CUPS</subtitle>
+    <copyright>
+      <year>2003</year>
+      <holder>Jerome Alet</holder>
+    </copyright>
+
+    <date>$Date$</date>
+
+    <authorgroup>
+      <author>
+        <firstname>Jérôme</firstname>
+        <surname>Alet</surname>
+        <affiliation>
+          <orgname>C@LL - Conseil Internet &amp; Logiciels Libres</orgname>
+          <address>
+            <street>48 Avenue Vincent Arnaud</street>
+            <city>06300 Nice</city>
+            <para>Email : <email><ulink url="mailto:alet@librelogiciel.com">alet@librelogiciel.com</ulink></email>
+            <para>Tel : <phone>(+33) 4 93 27 12 98</phone></para>
+          </address>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <abstract>
+      <title>Abstract</title>
+      <para>
+        This document will describe the setup of the PyKota Print Quota system
+        for the Common UNIX Printing Environment, and its day-to-day use.
+      </para>
+    </abstract>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+
+      <para>
+        Permission is granted to copy, distribute and/or modify this document
+        under the terms of the GNU Free Documentation License, Version 1.1
+        or any later version published by the Free Software Foundation;
+        with no Invariant Sections, with no
+        Front-Cover Texts, and with no Back-Cover Texts.
+        A copy of the license is included in the section entitled "GNU
+        Free Documentation License".
+      </para>
+
+      <para>
+        In case you encounter any problem, please contact
+        <ulink url="mailto:info@librelogiciel.com">
+          Jérôme Alet
+        </ulink>
+        , author of this document.
+      </para>
+
+      <para>
+        $Date$
+        $Revision$
+      </para>
+
+    </legalnotice>
+
+  </bookinfo>
+
+  <part id="installation">
+    <title id="installation-title">Installation</title>
+
+    <toc></toc>
+
+    &INSTALLATION;
+
+  </part>
+
+  <part id="commandline">
+    <title id="commandline-title">Command Line tools</title>
+
+    <toc></toc>
+
+    &EDPYKOTA;
+    
+    &REPYKOTA;
+    
+    &WARNPYKOTA;
+    
+    &FILTERPYKOTA;
+
+  </part>
+
+  &GNUFDL;
+
+</book>
+
+<!--
+
+$Log$
+Revision 1.1  2003/02/08 00:03:35  jalet
+Documentation skeleton added
+
+
+-->
