@@ -24,7 +24,7 @@ PyKota NEWS :
     - 1.21alpha12 :
     
         - Now logs as errors the differences between precomputed and 
-          computed job sizes.
+          computed job sizes. **CUPS only for now**
           
     - 1.21alpha11 :
     
