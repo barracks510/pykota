@@ -60,6 +60,17 @@ pykota.schema :
         index pykotaPrinterName pres,eq,sub
         index pykotaLastJobIdent eq
         
+    Now you must ensure that the DN you use to bind to    
+    your OpenLDAP server don't have search queries size limits,
+    which gives for example (OpenLDAP 2.1.x or above) :
+    
+        limits dn="cn=RWadmin,dc=your,dc=domain" size.soft=-1 size.hard=soft
+        limits dn="cn=ROadmin,dc=your,dc=domain" size.soft=-1 size.hard=soft
+    
+    Where RWadmin and ROadmin are the usernames used to bind to your
+    OpenLDAP server within PyKota, respectively in ReadWrite mode 
+    (as set in pykotadmin.conf) and in ReadOnly mode (pykota.conf).
+    
     Finally, restart the OpenLDAP server :    
     
         $ /etc/init.d/slapd restart
