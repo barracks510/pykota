@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/04/27 08:27:34  jalet
+# connection to LDAP backend
+#
 # Revision 1.1  2003/04/27 08:04:15  jalet
 # LDAP storage backend's skeleton added. DOESN'T WORK.
 #
@@ -41,10 +44,21 @@ class Storage :
     def __init__(self, host, dbname, user, passwd) :
         """Opens the LDAP connection."""
         raise PyKotaStorageError, "Sorry, the LDAP backend for PyKota is not yet implemented !"
+        self.closed = 1
+        try :
+            self.database = ldap.initialize(host) 
+            self.database.simple_bind_s(user, passwd)
+            # TODO : dbname will be the base dn
+        except ldap.SERVER_DOWN :    
+            raise PyKotaStorageError, "LDAP backend for PyKota seems to be down !" # TODO : translate
+        else :    
+            self.closed = 0
             
     def __del__(self) :        
         """Closes the database connection."""
-        pass
+        if not self.closed :
+            del self.database
+            self.closed = 1
         
     def doQuery(self, query) :
         """Does a query."""
