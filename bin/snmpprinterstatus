@@ -1,0 +1,53 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+#
+# PyKota
+#
+# PyKota : Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+#
+
+import sys
+import os
+import time
+
+OIDS = ["hrPrinterDetectedErrorState", "hrPrinterStatus", "hrDeviceStatus"]
+SNMPCOMMAND = "snmpget -v1 -c public -Ov %(printer)s HOST-RESOURCES-MIB::%(oid)s.1" 
+
+def main() :
+    if len(sys.argv) != 2 :
+        sys.stderr.write("usage : snmpprinterstatus yourprinter.example.com\n")
+    else :    
+        printer = sys.argv[1]
+        while 1 :
+            try :
+                for oid in OIDS :    
+                    command = SNMPCOMMAND % locals()
+                    output = os.popen(command)
+                    result = output.read().strip()
+                    status = output.close()
+                    print oid, "===>", result
+            except KeyboardInterrupt :        
+                break
+            time.sleep(0.5)
+
+if __name__ == "__main__" :
+    sys.exit(main())
+
