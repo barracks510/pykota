@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/11/25 13:25:45  jalet
+# Boolean problem with old Python, replaced with 0
+#
 # Revision 1.13  2003/11/23 19:01:35  jalet
 # Job price added to history
 #
@@ -91,7 +94,7 @@ class PyKotaPopen3(popen2.Popen3) :
        Their first argument is different from their path so using
        native popen2.Popen3 would not be feasible.
     """
-    def __init__(self, cmd, capturestderr=False, bufsize=-1, arg0=None) :
+    def __init__(self, cmd, capturestderr=0, bufsize=-1, arg0=None) :
         self.arg0 = arg0
         popen2.Popen3.__init__(self, cmd, capturestderr, bufsize)
         
