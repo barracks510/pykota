@@ -664,20 +664,3 @@ msgstr "Kostnad på skrivare %s : %.2f"
 #, python-format
 msgid "Previous page"
 msgstr ""
-
-#~ msgid "Printer %s not registered in the PyKota system"
-#~ msgstr "Skrivaren %s är inte registrerad i PyKotasystemet"
-
-#~ msgid "Printer %s was never used"
-#~ msgstr "Skrivare %s aldrig använd"
-
-#~ msgid "Using the 'stupid' accounting method is unreliable."
-#~ msgstr ""
-#~ "Användande av metoden 'puckad' ('stupid') för utskriftsberäkning är inte "
-#~ "tillförlitligt"
-
-#~ msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
-#~ msgstr "Okänd skrivaradress i SNMP(%s, %s) för skrivare %s"
-
-#~ msgid "Unable to query printer %s via SNMP(%s, %s)"
-#~ msgstr "Kunde inte hämta information från skrivare %s via SNMP(%s, %s)"

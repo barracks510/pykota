@@ -666,19 +666,3 @@ msgstr "Costo en la impresora %s : %.2f"
 #, python-format
 msgid "Previous page"
 msgstr ""
-
-#~ msgid "Printer %s not registered in the PyKota system"
-#~ msgstr "Impresora %s no registrada en el sistema PyKota"
-
-#~ msgid "Printer %s was never used"
-#~ msgstr "La impresora %s nunca fue utilizada"
-
-#~ msgid "Using the 'stupid' accounting method is unreliable."
-#~ msgstr "Usar el método de cuenta 'stupid' no es confiable."
-
-#~ msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
-#~ msgstr ""
-#~ "Dirección de impresora desconocida en SNMP(%s, %s) para la impresora %s"
-
-#~ msgid "Unable to query printer %s via SNMP(%s, %s)"
-#~ msgstr "Imposible consultar impresora %s vía SNMP(%s, %s)"
