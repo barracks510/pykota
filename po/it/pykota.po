@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: PyKota v1.19\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-07-21 15:35:00+0100\n"
-"PO-Revision-Date: 2004-01-15 12:00+0100\n"
+"PO-Revision-Date: 2004-07-27 12:00+0100\n"
 "Last-Translator: Michele Baldessari <michele@pupazzo.org>\n"
 "Language-Team: Italian <michele@pupazzo.org>\n"
 "MIME-Version: 1.0\n"
@@ -67,6 +67,7 @@ msgstr ""
 #, python-format
 msgid "Option enforcement in section %s only supports values in %s"
 msgstr ""
+"Imposizione dell'opzione nella sezione %s supporta solamente i valori in %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -175,7 +176,7 @@ msgstr "Storage delle quote non supportato %s"
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"
-msgstr ""
+msgstr "Impossibile connettersi al server SMTP : %s"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
@@ -236,11 +237,13 @@ msgstr "Quota di stampa in esaurimento"
 
 #, python-format
 msgid "Printing system %s, args=%s"
-msgstr ""
+msgstr "Sistema di stampa %s, args=%s"
 
 #, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
 msgstr ""
+"Impossibile precalcolare la dimensione della stampa con il modulo PDL "
+"generico: %s"
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
@@ -342,15 +345,15 @@ msgstr "Indirizzo stampante sconosciuto per HARDWARE(%s) per la stampante %s"
 
 #, python-format
 msgid "Launching HARDWARE(%s)..."
-msgstr ""
+msgstr "Avvio HARDWARE(%s)..."
 
 #, python-format
 msgid "Incorrect answer : %s"
-msgstr ""
+msgstr "Risposta errata : %s"
 
 #, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr ""
+msgstr "SIGTERM inviato al contatore hardware %s (pid: %s)"
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
@@ -358,7 +361,7 @@ msgstr "Impossibile ottenere informazioni dalla stampante %s via HARDWARE(%s)"
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
-msgstr ""
+msgstr "Avvio SOFTWARE(%s)..."
 
 #, python-format
 msgid "Unable to compute job size with accounter %s"
@@ -367,16 +370,20 @@ msgstr "Impossibile calcolare la dimensione della stampa con il metodo %s"
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
 msgstr ""
+"Errore durante l'attesa della terminzaione del contatore software con pid %"
+"s: %s"
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
-msgstr ""
+msgstr "Contatore software %s terminato con codice %s"
 
 #, python-format
 msgid ""
 "Search base %s doesn't seem to exist. Probable misconfiguration. Please "
 "double check /etc/pykota/pykota.conf : %s"
 msgstr ""
+"La base di ricerca %s non sembra esistere. Possibile errore di "
+"configurazione.Si verifichi il file /etc/pykota/pykota.conf : %s"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
@@ -399,97 +406,101 @@ msgid ""
 "Unable to find an existing objectClass %s entry with %s=%s to attach "
 "pykotaAccount objectClass"
 msgstr ""
+"Impossibile trovare un una entry con objectClass %s esistente con %s=%s a "
+"cui aggiungere pykotaAccount objectClass"
 
 #, python-format
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
+"Impossibile trovare una entry esistente a cui aggiungere objectclass "
+"pykotaGroup %s"
 
 msgid "PyKota Reports"
-msgstr ""
+msgstr "Report di PyKota"
 
 msgid "Report"
-msgstr ""
+msgstr "Report"
 
 msgid "User / Group names mask"
-msgstr ""
+msgstr "Mask nomi utenti / gruppi"
 
 msgid "Groups report"
-msgstr ""
+msgstr "Report gruppi"
 
 msgid "History"
-msgstr ""
+msgstr "Cronologia"
 
 msgid "Empty"
-msgstr ""
+msgstr "Vuoto"
 
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 msgid "Action"
-msgstr ""
+msgstr "Azione"
 
 msgid "User"
-msgstr ""
+msgstr "Utente"
 
 msgid "Printer"
-msgstr ""
+msgstr "Stampante"
 
 msgid "Hostname"
-msgstr ""
+msgstr "Nome host"
 
 msgid "JobId"
-msgstr ""
+msgstr "Id stampa"
 
 msgid "JobSize"
-msgstr ""
+msgstr "Dimensione stampa"
 
 msgid "JobPrice"
-msgstr ""
+msgstr "Prezzo stampa"
 
 msgid "Copies"
-msgstr ""
+msgstr "Copie"
 
 msgid "JobBytes"
-msgstr ""
+msgstr "Stampa in byte"
 
 msgid "PageCounter"
-msgstr ""
+msgstr "Contatore pagine"
 
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 msgid "Filename"
-msgstr ""
+msgstr "Nome file"
 
 msgid "Options"
-msgstr ""
+msgstr "Opzioni"
 
 msgid "Job contains no data. Printing is denied."
-msgstr ""
+msgstr "Stampa non contiene dati. Stampa rifiutata."
 
 msgid "Job accounting begins."
-msgstr ""
+msgstr "Inizio accounting stampa."
 
 msgid "Job accounting ends."
-msgstr ""
+msgstr "Fine accounting stampa."
 
 msgid "Job size forced to 0 because printing is denied."
-msgstr ""
+msgstr "Dimensione stampa forzato a 0 perchè la stampa non è permessa."
 
 #, python-format
 msgid "Job size : %i"
-msgstr ""
+msgstr "Dimensione stampa: %i"
 
 #, python-format
 msgid "Updating user %s's quota on printer %s"
-msgstr ""
+msgstr "Aggiornamento quota per l'utente %s sulla stampante %s"
 
 msgid "Job added to history."
-msgstr ""
+msgstr "Stampa aggiunta in cronologia."
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
-msgstr ""
+msgstr "Numero file %s rimosso due volte dall'oggetto polling, ignorato."
 
 #, python-format
 msgid "SIGTERM was sent to real backend %s (pid: %s)"
@@ -583,81 +594,91 @@ msgstr "opzioni non compatibili, vedere la guida."
 
 #, python-format
 msgid "Printer %s already exists, skipping."
-msgstr ""
+msgstr "Stampante %s già esistente, omessa."
 
 #, python-format
 msgid "Printer %s already exists, will be modified."
-msgstr ""
+msgstr "Stampante %s già esistente, verrà modificata."
 
 msgid "in"
-msgstr ""
+msgstr "in"
 
 msgid "You have to pass printer groups names on the command line"
 msgstr ""
+"Bisogna specificare i nomi di gruppo delle stampanti sulla riga di comando"
 
 msgid "You have to pass printer names on the command line"
 msgstr "Bisogna specificare i nomi delle stampanti sulla riga di comando"
 
 msgid "Software accounting already done in first pass. Ignoring."
-msgstr ""
+msgstr "Conteggio software già effettuato nel primo passaggio. Ignorato."
 
 msgid "Hardware accounting already done in first pass. Ignoring."
-msgstr ""
+msgstr "Conteggio hardware già effettuato nel primo passaggio. Ignorato."
 
 #, python-format
 msgid "Invalid DeviceURI : %s"
-msgstr ""
+msgstr "DeviceURI non valido: %s"
 
 msgid ""
 "\n"
 "Please wait while pkhint analyzes your printing system's configuration..."
 msgstr ""
+"\n"
+"Prego attendere fino a che pkhint termini di analizzare la configurazione di "
+"stampa del sistema..."
 
 #, python-format
 msgid "Unknown device %s for printer %s"
-msgstr ""
+msgstr "Periferica %s sconosciuta per la stampante %s"
 
 msgid ""
 "\n"
 "Put the following lines into your /etc/pykota/pykota.conf file :\n"
 msgstr ""
+"\n"
+"Si inseriscano le seguenti righe nel file /etc/pykota/pykota.conf : \n"
 
 msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
 msgstr ""
+"# ATTENZIONE: se è stato suggerito conteggio software, ciò non significa"
 
 msgid "# that hardware accounting wouldn't work, this only means that PyKota"
 msgstr ""
+"# che il conteggio hardware non sia funzionante, ma solamente che PyKota"
 
 msgid "# wasn't able to autodetect which hardware accounting method to use."
 msgstr ""
+"# non è stato in grado di riconoscere automaticamente quale metodo di "
+"conteggio utilizzare"
 
 #, python-format
 msgid "Invalid duration option %s"
-msgstr ""
+msgstr "Opzione duration %s non valida"
 
 #, python-format
 msgid "Invalid loop option %s"
-msgstr ""
+msgstr "Opzione loop %s non valida"
 
 #, python-format
 msgid "Invalid sleep option %s"
-msgstr ""
+msgstr "Opzione sleep %s non valida"
 
 #, python-format
 msgid "Invalid color option %s"
-msgstr ""
+msgstr "Opzione colore %s non valida"
 
 #, python-format
 msgid "User %s doesn't exist in PyKota's database"
-msgstr ""
+msgstr "Utente %s non esiste nel database di PyKota"
 
 #, python-format
 msgid "Pages used on %s : %s"
-msgstr ""
+msgstr "Pagine utilizzate su %s : %s"
 
 #, python-format
 msgid "PyKota Units left : %.2f"
-msgstr ""
+msgstr "Unità PyKota rimaste : %.2f"
 
 #, python-format
 msgid "Your account balance : %.2f"
@@ -673,4 +694,4 @@ msgstr "Costo sulla stampante %s : %.2f"
 
 #, python-format
 msgid "Previous page"
-msgstr ""
+msgstr "Pagina precedente"
