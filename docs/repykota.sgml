@@ -17,7 +17,42 @@
       PyKota features a quota report generator, named <application>repykota</application>,
       with which you can print the current state of the quota database.
     </para>
+    
+    <para>
+      <application>repykota</application> behaves differently when it is launched by the 
+      <literal>root</literal> user, compared to when it is launched by a normal user.
+    </para>  
+    
+    <para>
+      In the first case, the print quota report will contain current account balance, 
+      soft and hard limits, number of pages printed since last reset, total number
+      of pages printed, total paid, for possibly all users or all groups, depending
+      on command line options.
+    </para>
+    
+    <para>
+      In the second case, i.e. when <application>repykota</application> is launched by
+      a normal user, the user will only be allowed to see informations about himself or 
+      the groups he his a member of.
+    </para>
   
+    <para>
+      Any user can limit the report to only one or more printers, by specifying the
+      <literal>-P</literal> or <literal>--printer</literal> command line option, 
+      followed by one or more printer name or wildcard. If more than one printer name
+      or wildcard is used, they must be separated by commas.
+    </para>
+    
+    <para>
+      Launching <application>repykota</application> with no arguments will generate
+      a complete print quota report, depending on what you are allowed to see.
+    </para>
+    
+    <para>
+      Use the <literal>--help</literal> command line argument to learn what are
+      the different command line options available.
+    </para>
+    
     <sect2>
       <title>Reference</title>
       <para>
@@ -47,7 +82,7 @@
     
     <para>
       <application>PyKota</application> also features a CGI script to remotely access
-      to print quota reports with a web browser, it is called <application>printquota.cgi</application>
+      to print quota reports with a web browser, it is called <filename>printquota.cgi</filename>
       and you can put it in your web server's <filename>cgi-bin</filename> directory if a web server is installed on
       any machine on which <application>PyKota</application> is also installed and configured
       correctly.
@@ -71,12 +106,47 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
         </para>
       </note>  
     </para>
+    
+    <para>
+      If you install the CGI script as described above, any user will be allowed to view the complete print
+      quota report, for all users, groups and printers. This is then a different behavior compared to when
+      a normal user wants a print quota report from the command line through <application>repykota</application>.
+      If you find this disturbing, then the best is to ask for user authentication whenever the <application>printquota.cgi</application>
+      CGI script is accessed. This CGI script will then automatically behave as expected, showing in the print quota
+      report only what the authenticated user is allowed to see, just like when he launches <application>repykota</application>
+      from the command line. As a special case, if the user authenticates using the <literal>root</literal> username,
+      then there's no restriction on what may appear on the print quota report.
+    </para>
+    
+    <para>
+      To automatically ask for an authentication dialog whenever the CGI script is accessed, you have to configure
+      your web server to do so. If your webserver is <ulink url="http://httpd.apache.org"><application>Apache</application></ulink>, then it's relatively easy. First you have to put 
+      <application>printquota.cgi</application> in its own subdirectory below your web server's <filename>cgi-bin</filename>
+      directory, for example in <filename>cgi-bin/PyKota/</filename>. Then use the <application>htpasswd</application>
+      command line tool to create a file which contains usernames and passwords for all your users allowed to see
+      the print quota report from a web browser, and put this file outside of the directories served by <application>Apache</application>
+      so that nobody could retrieve it. Finally create a file named <filename>.htaccess</filename> in
+      <filename>cgi-bin/PyKota/</filename> with appropriate content in it. This file should tell <application>Apache</application> to automatically ask
+      for an authentication whenever something from this directory is accessed, and to use the password file previously
+      created to match usernames and passwords.
+      You may also have to tweak <application>Apache</application>'s default configuration to allow the
+      authentication mechanism.
+    </para>
+    
+    <para>
+      The detailed procedure to do all this is out of the scope of the present document, please refer to
+      <application>Apache</application>'s <ulink url="http://httpd.apache.org/docs-project/">documentation</ulink> 
+      for all the gory details.
+    </para>
   </sect1>
 </chapter>
 
 <!--
 
 $Log$
+Revision 1.6  2003/10/12 20:47:51  jalet
+Doc enhanced.
+
 Revision 1.5  2003/07/25 13:10:58  jalet
 Improved documentation
 
