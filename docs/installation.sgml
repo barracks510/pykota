@@ -22,7 +22,33 @@
   </para>
   
   <para>
-    Now we will see what has to be done on these servers.
+    Finally you have to download <application>PyKota</application>'s latest version
+    or buy an official package, from 
+    <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
+    If you've just bought an official package, then as soon as you've receive it you
+    have to decompress and visit its archive, to do so just type the following commands :
+    <screen>
+jerome@nordine:~$ tar -zxf pykota-1.02-official.tar.gz    
+jerome@nordine:~$ cd pykota-1.02-official
+jerome@nordine:~/pykota-1.02-official$
+    </screen>
+  </para>
+  
+  <para>
+    You can see many files in this directory, the first ones to read are <filename>README</filename>,
+    then <filename>COPYING</filename> and <filename>LICENSE</filename>. They will give you
+    basic installation instructions and explain the licensing terms under which 
+    <application>PyKota</application> is distributed. Of course they are also mostly
+    boring to read ! Detailed installation and operating instructions are defined
+    in the <filename>./docs</filename> directory, in the form of <acronym>SGML</acronym>
+    documentation in the <ulink url="http://www.docbook.org">DocBook</ulink> format.
+    You have to compile these files into readable documentation like the <acronym>HTML</acronym>
+    or <acronym>PDF</acronym> formats, or buy an official <application>PyKota</application> package
+    which already contains these compiled forms of the documentation.
+  </para>
+  
+  <para>
+    Now we will see what has to be done on each of the servers we are planning to use.
     <note>
       <title>Note</title>
       <para>
@@ -199,6 +225,9 @@ template1=# \q
 <!--
 
 $Log$
+Revision 1.7  2003/03/22 14:26:45  jalet
+Download instructions added.
+
 Revision 1.6  2003/03/22 14:06:02  jalet
 Quota Storage Server installation is OK for PostgreSQL.
 
