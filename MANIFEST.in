@@ -1,4 +1,4 @@
-include COPYING TODO NEWS CREDITS SECURITY MANIFEST.in clean.sh bin/cupspykota bin/pykota bin/edpykota bin/warnpykota bin/repykota bin/pykotme bin/waitprinter.sh bin/README 
+include COPYING TODO NEWS CREDITS SECURITY MANIFEST.in clean.sh bin/cupspykota bin/pykota bin/edpykota bin/warnpykota bin/repykota bin/pykotme bin/waitprinter.sh bin/papwaitprinter.sh bin/README 
 recursive-include po README *.po *.mo *.pot
 recursive-include man README *.1
 recursive-include docs README *.sgml *.png *.pdf *.html

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/11/28 08:31:28  jalet
+# Shell script to wait for AppleTalk enabled printers being idle was added.
+#
 # Revision 1.26  2003/11/08 16:05:31  jalet
 # CUPS backend added for people to experiment.
 #
@@ -334,6 +337,6 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh" ],
+      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh", "bin/papwaitprinter.sh" ],
       data_files = data_files)
 
