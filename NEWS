@@ -15,6 +15,19 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 PyKota NEWS :
 
+    - 1.00 :
+    
+        - edpykota now accepts a --noquota option. This
+          disable quota checking while still doing page
+          accounting. This is really useful for people
+          who don't want to limit their users but want
+          to know how much pages they print.
+          
+        - Some untested scripts were added to retrieve
+          the life time page counter of non-SNMP printers.
+          
+        - Every directory now has a specific README file.  
+        
     - 0.99 :
     
         - Under some circumstances while the user wasn't allowed
