@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/08/27 22:49:04  jalet
+# No answer from subprocess now is really a fatal error. Waiting for some
+# time to make this configurable...
+#
 # Revision 1.9  2004/08/25 22:34:39  jalet
 # Now both software and hardware accounting raise an exception when no valid
 # result can be extracted from the subprocess' output.
@@ -71,13 +75,7 @@ class Accounter(AccounterBase) :
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
         self.filter.logdebug("Reading printer's internal page counter...")
-        try :
-            counter = self.askPrinterPageCounter(self.filter.printerhostname)
-        except PyKotaAccounterError, msg :
-            # can't get actual page counter, assume printer is off or warming up
-            # log the message anyway.
-            self.filter.printInfo("%s" % msg, "warn")
-            counter = None
+        counter = self.askPrinterPageCounter(self.filter.printerhostname)
         self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
         return counter    
         
