@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.09_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.09_official
-jerome@nordine:~/pykota-1.09_official$
+jerome@nordine:~$ tar -zxf pykota-1.14_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.14_official
+jerome@nordine:~/pykota-1.14_official$
     </screen>
   </para>
   
@@ -161,8 +161,8 @@ jerome@nordine:~/pykota-1.09_official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.09_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.09_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.14_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.14_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -193,7 +193,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.09_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.14_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -243,7 +243,7 @@ jerome@nordine:~/pykota-1.09_official/initscripts/postgresql$
       <title>LDAP</title>
       
       <para>
-        From version 1.09 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
+        From version 1.14 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
         It is possible that other LDAP servers can be used, but this is currently untested.
       </para>
       
@@ -411,6 +411,9 @@ $ /etc/init.d/slapd restart
 <!--
 
 $Log$
+Revision 1.19  2003/07/25 13:18:44  jalet
+Typos
+
 Revision 1.18  2003/07/25 10:41:29  jalet
 Better documentation.
 pykotme now displays the current user's account balance.
