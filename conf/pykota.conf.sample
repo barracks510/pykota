@@ -185,18 +185,36 @@ maildomain: example.com
 # This is a global option only.
 # Some people reported that WinXP sends mixed case usernames
 # setting 'utolower: Yes' solves the problem.
-# Of course you have to user lowercase only when adding
+# Of course you have to use lowercase only when adding
 # users with edpykota, because ALL database accesses are
 # still case sensitive.
 #
 # If utolower is Yes, the usernames received from the printing
 # system is converted to lowercase at the start of the cupspykota
-# backend or of the pykota filter.
+# backend or of the lprngpykota filter.
 #
 # If utolower is No, which is the default, strict case checking
 # is done, this means that users 'Jerome' and 'jerome' are
 # different. Printer and groups names are ALWAYS case sensitive.
 utolower: No
+
+# Should we split usernames on a specific separator when printing ?
+# Default is No, i.e. if the value is unset.
+# This is a global option only.
+# This option adds support for Samba's Winbind utility, which
+# prefixes usernames with domain name and separator character.
+# Of course if you set this then you have to use NO separator when 
+# adding users with edpykota.
+#
+# If winbind_separator is set, the usernames received from the printing
+# system are split on the separator's value, and only the last part
+# (real username) is used.
+#
+# If winbind_separator is not set, which is the default, strict 
+# username equality checking will be done (modulo the setting
+# of the 'utolower' directive), this means that users 'DOMAIN1/jerome',
+# 'Domain2/jerome' and 'jerome' are different. 
+# winbind_separator: /
 
 # What is the accounting backend to use
 # 

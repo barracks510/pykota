@@ -27,14 +27,6 @@ TODO, in no particular order :
           
         - Maybe put "gracedelay" in the database.
         
-        - Allow admin to specify a prefix to delete from
-          usernames when printing, just like what is done
-          for the "utolower" directive.
-          Better : allow the admin to set the Samba's
-          winbind separator value (or do this automatically)
-          and split the domain from the username automagically
-          (but only if the admin asks so).
-          
         - Price multiplier/divisor which can be set on a per
           user or per user group basis.
 

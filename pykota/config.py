@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2004/09/29 20:20:52  jalet
+# Added the winbind_separator directive to pykota.conf to allow the admin to
+# strip out the Samba/Winbind domain name when users print.
+#
 # Revision 1.51  2004/08/31 23:29:53  jalet
 # Introduction of the new 'onaccountererror' configuration directive.
 # Small fix for software accounter's return code which can't be None anymore.
@@ -529,3 +533,7 @@ class PyKotaConfig :
     def getUserNameToLower(self) :          
         """Returns 1 if we want to convert usernames to lowercase when printing, else 0."""
         return self.isTrue(self.getGlobalOption("utolower", ignore=1))
+        
+    def getWinbindSeparator(self) :          
+        """Returns the winbind separator's value if it is set, else None."""
+        return self.getGlobalOption("winbind_separator", ignore=1)

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.123  2004/09/29 20:20:52  jalet
+# Added the winbind_separator directive to pykota.conf to allow the admin to
+# strip out the Samba/Winbind domain name when users print.
+#
 # Revision 1.122  2004/09/28 21:38:56  jalet
 # Now computes the job's datas MD5 checksum to later forbid duplicate print jobs.
 # The checksum is not yet saved into the database.
@@ -958,8 +962,16 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.logdebug(_("Printing system %s, args=%s") % (str(self.printingsystem), " ".join(sys.argv)))
         
         self.username = self.username or 'root' # when printing test page from CUPS web interface, username is empty
+        
+        # do we want to strip out the Samba/Winbind domain name ?
+        separator = self.config.getWinbindSeparator()
+        if separator is not None :
+            self.username = self.username.split(separator)[-1]
+            
+        # do we want to lowercase usernames ?    
         if self.config.getUserNameToLower() :
             self.username = self.username.lower()
+            
         self.preserveinputfile = self.inputfile 
         try :
             self.accounter = accounter.openAccounter(self)
