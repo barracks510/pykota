@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 22:02:22  jalet
+# __import__ statement didn't work as expected
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -33,8 +36,11 @@ def openRequester(config, printername) :
     """Returns a connection handle to the appropriate requester."""
     backend = config.getRequesterBackend(printername)
     try :
-        module = __import__("pykota.requesters." + backend.lower())
+        if not isalpha(backend) :
+            # don't trust user input
+            raise ImportError
+        exec "from pykota.requesters import %s as requesterbackend" % backend.lower()    
     except ImportError :
         raise PyKotaRequesterError, "Unsupported requester backend %s" % backend
     else :    
-        return getattr(module, "Requester")(config, printername)
+        return getattr(requesterbackend, "Requester")(config, printername)
