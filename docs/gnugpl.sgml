@@ -8,7 +8,7 @@
 -->
 
 <appendix id="gpl">
-  <docinfo>
+  <appendixinfo>
     <releaseinfo>
       Version 2, June 1991
     </releaseinfo>
@@ -30,7 +30,7 @@
 	of this license document, but changing it is not allowed.
       </para>
     </legalnotice>
-  </docinfo>
+  </appendixinfo>
   <title>GNU General Public License</title>
 
   <sect1 id="gpl-preamble">
