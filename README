@@ -88,7 +88,7 @@ PyKota features :
           all printers. The history of payments (positive
           or negative credits to an user account) is kept.
           
-        - Page quota and account balance can be set/reset
+        - Page quotas and account balance can be set/reset
           independantly.
           
         - Page quotas and account balances can be set on 
