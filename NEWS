@@ -21,6 +21,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.05alpha3 :
+    
+        - A 'stupid' and unreliable accounting method was
+          implemented to serve as an example on how to
+          do this sort of things. This method only counts
+          the 'showpage' statements in the input data.
+          See sample configuration file for details.
+          Pluggable accounting methods work, but I advise
+          you TO NOT USE THIS ONE WHICH IS JUST AN EXAMPLE.
+          It is not reliable enough to be used.
+          
     - 1.05alpha2 :
     
         - Pluggable accounting methods.

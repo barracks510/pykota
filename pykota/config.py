@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/04/30 13:36:40  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.24  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
@@ -196,7 +199,7 @@ class PyKotaConfig :
            if it is not set, it defaults to 'querying' which means ask printer
            for its internal lifetime page counter.
         """   
-        validaccounters = [ "querying" ]     
+        validaccounters = [ "querying", "stupid" ]     
         try :
             accounter = self.getPrinterOption(printer, "accounter").lower()
         except PyKotaConfigError :    

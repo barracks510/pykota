@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/04/30 13:36:39  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.30  2003/04/29 22:03:38  jalet
 # Better error handling.
 #
@@ -191,21 +194,6 @@ class PyKotaFilter(PyKotaTool) :
                 return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen)
         return (None, None, None, None, None, None)   # Unknown printing system          
         
-    def filterInput(self, inputfile) :
-        """Transparent filter."""
-        mustclose = 0    
-        if inputfile is not None :    
-            infile = open(inputfile, "rb")
-            mustclose = 1
-        else :    
-            infile = sys.stdin
-        data = infile.read(256*1024)    
-        while data :
-            sys.stdout.write(data)
-            data = infile.read(256*1024)
-        if mustclose :    
-            infile.close()
-            
     def acceptJob(self) :        
         """Returns the exit code needed by the printing backend to accept the job and print it."""
         if self.printingsystem == "CUPS" :
@@ -269,7 +257,7 @@ def main() :
                 return kotafilter.removeJob()
         
     # pass the job untouched to the underlying layer
-    kotafilter.filterInput(kotafilter.inputfile)      
+    kotafilter.accounter.filterInput(kotafilter.inputfile)      
     
     return kotafilter.acceptJob()
 

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/04/30 13:36:40  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.9  2003/04/27 08:04:15  jalet
 # LDAP storage backend's skeleton added. DOESN'T WORK.
 #
@@ -110,7 +113,7 @@ class Storage(sql.SQLStorage) :
         
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
-        if type(field) == type(0) : # TODO : do something safer
+        if type(field) in (type(0), type(0.0)) : # TODO : do something safer
             typ = "decimal"
         else :    
             typ = "text"

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/04/30 13:36:40  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.22  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
@@ -335,4 +338,7 @@ msgid "Option accounter in section %s only supports values in %s"
 msgstr ""
 
 msgid "Option requester for printer %s was not set"
+msgstr ""
+
+msgid "Using the 'stupid' accounting method is unreliable."
 msgstr ""

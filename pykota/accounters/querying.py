@@ -20,12 +20,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/04/30 13:36:40  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.1  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
 #
 #
 
+import sys
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.requester import openRequester, PyKotaRequesterError
 
@@ -117,3 +121,4 @@ class Accounter(AccounterBase) :
         self.filter.storage.addJobToHistory(self.filter.jobid, self.filter.storage.getUserId(self.filter.username), printerid, counterbeforejob, action)
             
         return action
+            

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/04/30 13:36:40  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.30  2003/04/27 08:04:15  jalet
 # LDAP storage backend's skeleton added. DOESN'T WORK.
 #
@@ -367,9 +370,9 @@ class SQLStorage :
         """Sets the limit date for a soft limit to become an hard one given (groupid, printerid)."""
         self.doQuery("UPDATE grouppquota SET datelimit=%s::TIMESTAMP WHERE groupid=%s AND printerid=%s" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(groupid), self.doQuote(printerid)))
         
-    def addJobToHistory(self, jobid, userid, printerid, pagecounter, action) :
+    def addJobToHistory(self, jobid, userid, printerid, pagecounter, action, jobsize=None) :
         """Adds a job to the history: (jobid, userid, printerid, last page counter taken from requester)."""
-        self.doQuery("INSERT INTO jobhistory (jobid, userid, printerid, pagecounter, action) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(jobid), self.doQuote(userid), self.doQuote(printerid), self.doQuote(pagecounter), self.doQuote(action)))
+        self.doQuery("INSERT INTO jobhistory (jobid, userid, printerid, pagecounter, action, jobsize) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(jobid), self.doQuote(userid), self.doQuote(printerid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize)))
         return self.getJobHistoryId(jobid, userid, printerid) # in case jobid is not sufficient
     
     def updateJobSizeInHistory(self, historyid, jobsize) :
@@ -378,7 +381,7 @@ class SQLStorage :
     
     def getPrinterPageCounter(self, printerid) :
         """Returns the last page counter value for a printer given its id, also returns last username, last jobid and history line id."""
-        result = self.doQuery("SELECT jobhistory.id, jobid, userid, username, pagecounter FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printerid))
+        result = self.doQuery("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printerid))
         try :
             return self.doParseResult(result)[0]
         except TypeError :      # Not found

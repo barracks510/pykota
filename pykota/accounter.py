@@ -20,11 +20,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/04/30 13:36:40  jalet
+# Stupid accounting method was added.
+#
 # Revision 1.1  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
 #
 #
+
+import sys
 
 class PyKotaAccounterError(Exception):
     """An exception for Accounter related stuff."""
@@ -41,6 +46,24 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         
+    def filterInput(self, inputfile) :
+        """Transparent filter."""
+        mustclose = 0    
+        if inputfile is not None :    
+            if hasattr(inputfile, "read") :
+                infile = inputfile
+            else :    
+                infile = open(inputfile, "rb")
+            mustclose = 1
+        else :    
+            infile = sys.stdin
+        data = infile.read(256*1024)    
+        while data :
+            sys.stdout.write(data)
+            data = infile.read(256*1024)
+        if mustclose :    
+            infile.close()
+            
     def doAccounting(self, printerid, userid) :    
         """Does the real accounting."""
         raise PyKotaAccounterError, "Accounter not implemented !"

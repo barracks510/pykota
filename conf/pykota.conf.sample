@@ -57,10 +57,22 @@ smtpserver: localhost
 # supported values :
 #
 #    - querying : asks the printer for its lifetime page counter
+#                 via either SNMP, AppleTalk, or any external
+#                 command. This method is the method used by
+#                 default in PyKota since its beginning.
+#
+#    - stupid : counts the occurences of the 'showpage' postscript
+#               statement in the document to be printed, only at
+#               the beginning of each line which makes the postscript
+#               file. THIS IS NOT RELIABLE. This is just to serve as
+#               an example on how to implement your own accounting
+#               method.
+#
 #    - more to be added in the future
 #
 # This value can be set either globally or on a per printer basis
-# if not set it defaults to 'querying'
+# If both are defined, the printer option has priority.
+# if not set it defaults to 'querying'.
 accounter: querying
 
 # Print Quota administrator
