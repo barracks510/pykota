@@ -30,7 +30,7 @@ storageuser: pykotauser
 # storageuserpw: NOT YET SUPPORTED
 
 # Where to log ?
-# supported values : stderr, syslog
+# supported values : stderr, system (system means syslog, but don't use 'syslog' here)
 logger: stderr
 
 # Print Quota administrator

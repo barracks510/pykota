@@ -14,8 +14,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.1  2003/02/05 21:28:17  jalet
-# Initial import into CVS
+# Revision 1.1  2003/02/05 23:09:20  jalet
+# Name conflict
 #
 #
 #

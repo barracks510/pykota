@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 23:09:20  jalet
+# Name conflict
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -56,7 +59,7 @@ class PyKotaConfig :
                 raise PyKotaConfigError, "Option %s not found in section global of %s" % (option, self.filename)
                 
         # more precise checks        
-        validloggers = [ "stderr", "syslog" ] 
+        validloggers = [ "stderr", "system" ] 
         if self.config.get("global", "logger").lower() not in validloggers :             
             raise PyKotaConfigError, "Option logger only supports values in %s" % str(validloggers)
             
