@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2003/11/19 07:40:20  jalet
+# Missing import statement.
+# Better documentation for mailto: external(...)
+#
 # Revision 1.55  2003/11/18 23:43:12  jalet
 # Mailto can be any external command now, as usual.
 #
@@ -219,6 +223,7 @@
 #
 
 import sys
+import os
 import fnmatch
 import getopt
 import smtplib

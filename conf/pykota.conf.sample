@@ -192,7 +192,7 @@ adminmail: root@localhost
 # If both are defined, the printer option has priority.
 # If the value is not set, then the default BOTH applies.
 #
-#   For mailto: external(/usr/bin/mycommand)
+#   For mailto: external(/usr/bin/mycommand >/dev/null)
 #
 #   You can use :
 #
@@ -206,7 +206,11 @@ adminmail: root@localhost
 #   On your command line, to pass arguments to your command.
 #   Example :
 #
-#       mailto: external(/usr/bin/callpager %(username)s "Quota problem on %(printername)s")
+#       mailto: external(/usr/bin/callpager %(username)s "Quota problem on %(printername)s" >/dev/null)
+#
+#   NB : Don't forget to redirect your command's standard output somewhere 
+#        (e.g. >/dev/null) so that there's no perturbation to the underlying
+#        layer (filter or backend)
 #
 mailto: both
 
