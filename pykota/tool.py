@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.151  2005/02/22 17:56:58  jalet
+# Now logs the type of user running the command : mere mortal vs PyKota Admin
+#
 # Revision 1.150  2005/02/14 22:53:44  jalet
 # Now always precomputes the job's size with the internal PDL parser, and not
 # only when 'enforcement: strict' was set in pykota.conf
@@ -827,6 +830,11 @@ class PyKotaTool(Tool) :
         except storage.PyKotaStorageError, msg :
             self.crashed(msg)
             raise
+        else :    
+            if self.config.isAdmin : # TODO : We don't know this before, fix this !
+                self.logdebug("Beware : running as a PyKota administrator !")
+            else :    
+                self.logdebug("Don't Panic : running as a mere mortal !")
         
     def clean(self) :    
         """Ensures that the database is closed."""
