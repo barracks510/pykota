@@ -64,8 +64,8 @@ Actual working features :
           
         - External accounting methods : you can use your own accounting
           method to compute each job's size. Just create a shell script
-          which prints the job's (read from its standard input) size on 
-          its standard output, and you're done !
+          which reads the job's data from its standard input and prints 
+          the job's size on its standard output, and you're done !
         
         - Special scripts included for a seamless integration of
           PyKota on Debian machines.
