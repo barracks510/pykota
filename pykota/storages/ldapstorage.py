@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.96  2005/01/24 15:38:51  jalet
+# Fixed some ldap filters
+#
 # Revision 1.95  2005/01/18 19:47:50  jalet
 # Big bug fix wrt the datelimit attribute
 #
@@ -598,7 +601,7 @@ class Storage(BaseStorage) :
         printernames = []
         ldapfilter = "objectClass=pykotaPrinter"
         if printername :
-            ldapfilter = "&(%s)(pykotaPrinterName=%s)" % (ldapfilter, printername)
+            ldapfilter = "(&(%s)(pykotaPrinterName=%s))" % (ldapfilter, printername)
         result = self.doSearch(ldapfilter, ["pykotaPrinterName"], base=self.info["printerbase"])
         if result :
             printernames = [record[1]["pykotaPrinterName"][0] for record in result]
@@ -609,7 +612,7 @@ class Storage(BaseStorage) :
         usernames = []
         ldapfilter = "objectClass=pykotaAccount"
         if username :
-            ldapfilter = "&(%s)(pykotaUserName=%s)" % (ldapfilter, username)
+            ldapfilter = "(&(%s)(pykotaUserName=%s))" % (ldapfilter, username)
         result = self.doSearch(ldapfilter, ["pykotaUserName"], base=self.info["userbase"])
         if result :
             usernames = [record[1]["pykotaUserName"][0] for record in result]
@@ -620,7 +623,7 @@ class Storage(BaseStorage) :
         groupnames = []
         ldapfilter = "objectClass=pykotaGroup"
         if groupname :
-            ldapfilter = "&(%s)(pykotaGroupName=%s)" % (ldapfilter, groupname)
+            ldapfilter = "(&(%s)(pykotaGroupName=%s))" % (ldapfilter, groupname)
         result = self.doSearch(ldapfilter, ["pykotaGroupName"], base=self.info["groupbase"])
         if result :
             groupnames = [record[1]["pykotaGroupName"][0] for record in result]
