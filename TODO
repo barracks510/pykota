@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Now that the job size is ALWAYS precomputed, add a 
+          MaxJobSize attribute to users and groups (printers as
+          well, maybe ?) to limit each job's size if needed.
+          
         - Add precomputed job size (and price) to the history for
           controlling purpose.
           
