@@ -140,7 +140,16 @@ PyKota features :
           scheduled regularly or launched manually.
           
         - Powerful data dumper to export datas to other
-          software (spreadsheets for example).
+          software (spreadsheets for example). Actually
+          supported formats are :
+          
+            - Comma separated values ;
+            
+            - Semicolon separated values ;
+            
+            - Tab separated values ;
+            
+            - XML.
           
     User Interface :          
     
