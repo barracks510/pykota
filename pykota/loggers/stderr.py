@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/05/07 14:43:44  jalet
+# Now logs the PID too
+#
 # Revision 1.5  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -42,10 +45,11 @@
 #
 
 import sys
+import os
 
 class Logger :
     """A logger class which logs to stderr."""
     def log_message(self, message, level="info") :
         """Sends the message to the appropriate logging subsystem."""
-        sys.stderr.write("%s: PyKota : %s\n" % (level.upper(), message.strip()))
+        sys.stderr.write("%s: PyKota (PID %s) : %s\n" % (level.upper(), os.getpid(), message.strip()))
         sys.stderr.flush()

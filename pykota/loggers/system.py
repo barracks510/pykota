@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/05/07 14:43:46  jalet
+# Now logs the PID too
+#
 # Revision 1.9  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -53,6 +56,7 @@
 #
 #
 
+import os
 import syslog
 
 class Logger :
@@ -69,4 +73,4 @@ class Logger :
     def log_message(self, message, level="info") :
         """Sends the message to syslog."""
         priority = getattr(syslog, "LOG_%s" % self.levels.get(level.lower(), "DEBUG").upper(), syslog.LOG_DEBUG)
-        syslog.syslog(priority, message)
+        syslog.syslog(priority, "(PID %s) : %s" % (os.getpid(), message.strip()))
