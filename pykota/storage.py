@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2004/03/09 08:05:27  jalet
+# Small fix : only keeps existing quota entries when searching parents
+#
 # Revision 1.49  2004/03/01 15:06:51  jalet
 # Pre and Post hooks should now work in the pykota filter too.
 # The pykota filter doesn't check the last user's quota anymore
@@ -616,14 +619,18 @@ class BaseStorage :
         """Returns all user print quota on the printer and all its parents recursively."""
         upquotas = [ ]
         for printer in self.getParentPrinters(userpquota.Printer) :
-            upquotas.append(self.getUserPQuota(userpquota.User, printer))
+            upq = self.getUserPQuota(userpquota.User, printer)
+            if upq.Exists :
+                upquotas.append(upq)
         return upquotas        
         
     def getParentPrintersGroupPQuota(self, grouppquota) :     
         """Returns all group print quota on the printer and all its parents recursively."""
         gpquotas = [ ]
         for printer in self.getParentPrinters(grouppquota.Printer) :
-            gpquotas.append(self.getGroupPQuota(grouppquota.Group, printer))
+            gpq = self.getGroupPQuota(grouppquota.Group, printer)
+            if gpq.Exists :
+                gpquotas.append(gpq)
         return gpquotas        
         
 def openConnection(pykotatool) :
