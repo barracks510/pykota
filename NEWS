@@ -52,6 +52,7 @@ PyKota NEWS :
     
         - Upgrade script included for earlier versions.
           Please look inside the initscripts subdirectory.
+          THE DATABASE SCHEMA HAS CHANGED, PLEASE UPGRADE.
           
         - repykota now reports account balances too.
         
@@ -62,13 +63,6 @@ PyKota NEWS :
         
         - Group quotas seem to work now !
         
-        - IMPORTANT : DataBase schema has changed.
-          DON'T TRY TO UPGRADE AN EXISTING PYKOTA INSTALLATION !
-          The upgrade script will be finalized ASAP, be patient,
-          or drop your old quota database to start anew.
-          Upgrade script will be provided when 1.03final will
-          be out.
-          
         - The new database schema allows to keep an history of all
           jobs as well as charge users per page and/or per job, 
           and track users' account balance.
