@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.135  2004/10/20 14:29:30  jalet
+# Now logs something when locale settings are incorrect.
+#
 # Revision 1.134  2004/10/20 08:12:27  jalet
 # Another fix for charset detection and Python2.3
 #
@@ -534,25 +537,32 @@ class PyKotaTool :
     def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
+        defaultToCLocale = 0
         try :
             locale.setlocale(locale.LC_ALL, lang)
             gettext.install("pykota")
         except (locale.Error, IOError) :
+            locale.setlocale(locale.LC_ALL, "C")
+            defaultToCLocale = 1
             gettext.NullTranslations().install()
             
         # We can force the charset.    
         # The CHARSET environment variable is set by CUPS when printing.
         # Else we use the current locale's one.
         # If nothing is set, we use ISO-8859-15 widely used in western Europe.
+        localecharset = None
         try :
-            # preferred method with Python 2.3 and up
-            localecharset = locale.getpreferredencoding()
-        except AttributeError :    
-            localecharset = locale.getlocale()[1]
             try :
-                localecharset = localecharset or locale.getdefaultlocale()[1]
-            except ValueError :    
-                pass        # Unknown locale, strange...
+                # preferred method with Python 2.3 and up
+                localecharset = locale.getpreferredencoding()
+            except AttributeError :    
+                localecharset = locale.getlocale()[1]
+                try :
+                    localecharset = localecharset or locale.getdefaultlocale()[1]
+                except ValueError :    
+                    pass        # Unknown locale, strange...
+        except locale.Error :            
+            pass
         self.charset = charset or os.environ.get("CHARSET") or localecharset or "ISO-8859-15"
     
         # pykota specific stuff
@@ -575,6 +585,8 @@ class PyKotaTool :
             raise
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
+        if defaultToCLocale :
+            self.printInfo("Incorrect locale settings. PyKota falls back to the 'C' locale.", "warn")
         self.logdebug("Charset in use : %s" % self.charset)
         
     def getCharset(self) :    
