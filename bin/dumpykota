@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/09/15 07:26:19  jalet
+# Data dumps are now ordered by entry creation date if applicable.
+# Now dumpykota exits with a message when there's a broken pipe like
+# in dumpykota --data history | head -3
+#
 # Revision 1.3  2004/09/15 06:58:25  jalet
 # User groups membership and printer groups membership can now be dumped too
 #
@@ -124,26 +129,31 @@ class DumPyKota(PyKotaTool) :
             
         entries = getattr(self.storage, "extract%s" % datatype.title())()    
         if entries is not None :
-            getattr(self, "dump%s" % format.title())(entries)
+            return getattr(self, "dump%s" % format.title())(entries)
         return 0
         
     def dumpWithSeparator(self, separator, entries) :    
         """Dumps datas with a separator."""
         for entry in entries :
             line = separator.join([ '"%s"' % field for field in entry ])
-            print line
+            try :
+                print line
+            except IOError, msg :    
+                sys.stderr.write("%s : %s\n" % (_("PyKota data dumper failed : I/O error"), msg))
+                return -1
+        return 0        
         
     def dumpCsv(self, entries) :    
         """Dumps datas with a comma as the separator."""
-        self.dumpWithSeparator(",", entries)
+        return self.dumpWithSeparator(",", entries)
                            
     def dumpSsv(self, entries) :    
         """Dumps datas with a comma as the separator."""
-        self.dumpWithSeparator(";", entries)
+        return self.dumpWithSeparator(";", entries)
                            
     def dumpTsv(self, entries) :    
         """Dumps datas with a comma as the separator."""
-        self.dumpWithSeparator("\t", entries)
+        return self.dumpWithSeparator("\t", entries)
                            
 if __name__ == "__main__" : 
     try :

@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2004/09/15 07:26:20  jalet
+# Data dumps are now ordered by entry creation date if applicable.
+# Now dumpykota exits with a message when there's a broken pipe like
+# in dumpykota --data history | head -3
+#
 # Revision 1.46  2004/09/15 06:58:25  jalet
 # User groups membership and printer groups membership can now be dumped too
 #
@@ -80,47 +85,47 @@ class SQLStorage :
         
     def extractPrinters(self) :
         """Extracts all printer records."""
-        result = self.doRawSearch("SELECT * FROM printers")
+        result = self.doRawSearch("SELECT * FROM printers ORDER BY id ASC")
         return self.prepareRawResult(result)
         
     def extractUsers(self) :
         """Extracts all user records."""
-        result = self.doRawSearch("SELECT * FROM users")
+        result = self.doRawSearch("SELECT * FROM users ORDER BY id ASC")
         return self.prepareRawResult(result)
         
     def extractGroups(self) :
         """Extracts all group records."""
-        result = self.doRawSearch("SELECT * FROM groups")
+        result = self.doRawSearch("SELECT * FROM groups ORDER BY id ASC")
         return self.prepareRawResult(result)
         
     def extractPayments(self) :
         """Extracts all payment records."""
-        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid")
+        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid ORDER BY payments.id ASC")
         return self.prepareRawResult(result)
         
     def extractUpquotas(self) :
         """Extracts all userpquota records."""
-        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid")
+        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid ORDER BY userpquota.id ASC")
         return self.prepareRawResult(result)
         
     def extractGpquotas(self) :
         """Extracts all grouppquota records."""
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.* FROM groups,printers,grouppquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid")
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.* FROM groups,printers,grouppquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid ORDER BY grouppquota.id ASC")
         return self.prepareRawResult(result)
         
     def extractUmembers(self) :
         """Extracts all user groups members."""
-        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid")
+        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid ORDER BY groupsmembers.groupid, groupsmembers.userid ASC")
         return self.prepareRawResult(result)
         
     def extractPmembers(self) :
         """Extracts all printer groups members."""
-        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid")
+        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid ORDER BY printergroupsmembers.groupid, printergroupsmembers.printerid ASC")
         return self.prepareRawResult(result)
         
     def extractHistory(self) :
         """Extracts all jobhistory records."""
-        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid")
+        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid ORDER BY jobhistory.id ASC")
         return self.prepareRawResult(result)
         
     def getAllUsersNames(self) :    
