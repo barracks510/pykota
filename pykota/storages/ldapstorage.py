@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.75  2004/09/24 20:21:50  jalet
+# Fixed pykotaAccountBalance object location during creation
+#
 # Revision 1.74  2004/09/02 10:09:30  jalet
 # Fixed bug in LDAP user deletion code which didn't correctly delete the user's
 # pykotaLastJob entries.
@@ -500,7 +503,9 @@ class Storage(BaseStorage) :
             if user.LimitBy is not None :
                 user.LimitBy = user.LimitBy[0]
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], base=self.info["balancebase"])
-            if result :
+            if not result :
+                raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
+            else :
                 fields = result[0][1]
                 user.idbalance = result[0][0]
                 user.AccountBalance = fields.get("pykotaBalance")
@@ -802,10 +807,9 @@ class Storage(BaseStorage) :
         """Adds a user to the quota storage, returns it."""
         newfields = {
                        "pykotaUserName" : user.Name,
-                       "pykotaLimitBY" : (user.LimitBy or "quota"),
-                       "pykotaBalance" : str(user.AccountBalance or 0.0),
-                       "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),
+                       "pykotaLimitBy" : (user.LimitBy or "quota"),
                     }   
+                       
         if user.Email :
             newfields.update({self.info["usermail"]: user.Email})
         mustadd = 1
@@ -819,6 +823,8 @@ class Storage(BaseStorage) :
                 (dn, fields) = result[0]
                 fields["objectClass"].extend(["pykotaAccount", "pykotaAccountBalance"])
                 fields.update(newfields)
+                fields.update({ "pykotaBalance" : str(user.AccountBalance or 0.0),
+                                "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), })   
                 self.doModify(dn, fields)
                 mustadd = 0
             else :
@@ -829,13 +835,31 @@ class Storage(BaseStorage) :
                     raise PyKotaStorageError, "%s. Action aborted. Please check your configuration." % message
                 
         if mustadd :
-            fields = { self.info["userrdn"] : user.Name,
-                       "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
-                       "cn" : user.Name,
-                     } 
+            if self.info["userbase"] == self.info["balancebase"] :            
+                fields = { self.info["userrdn"] : user.Name,
+                           "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
+                           "cn" : user.Name,
+                           "pykotaBalance" : str(user.AccountBalance or 0.0),
+                           "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), 
+                         } 
+            else :             
+                fields = { self.info["userrdn"] : user.Name,
+                           "objectClass" : ["pykotaObject", "pykotaAccount"],
+                           "cn" : user.Name,
+                         } 
             fields.update(newfields)         
             dn = "%s=%s,%s" % (self.info["userrdn"], user.Name, self.info["userbase"])
             self.doAdd(dn, fields)
+            if self.info["userbase"] != self.info["balancebase"] :            
+                fields = { self.info["balancerdn"] : user.Name,
+                           "objectClass" : ["pykotaObject", "pykotaAccountBalance"],
+                           "cn" : user.Name,
+                           "pykotaBalance" : str(user.AccountBalance or 0.0),
+                           "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),  
+                         } 
+                dn = "%s=%s,%s" % (self.info["balancerdn"], user.Name, self.info["balancebase"])
+                self.doAdd(dn, fields)
+            
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        

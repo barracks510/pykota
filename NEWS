@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha15 :
+    
+        - LDAP pykotaAccountBalance objects were always created
+          attached to the pykotaUser objects. This is now
+          fixed and the value of balancebase in pykota.conf
+          is now correctly used.
+          
     - 1.20alpha14 :
     
         - Belgian translations added (copy of the french ones).
