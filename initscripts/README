@@ -37,7 +37,8 @@ Files :
   * ldap/pykota.schema :  
   
     This file adds the necessary classes and attributes to an existing
-    LDAP directory for use with PyKota. Read this file for details.
+    LDAP directory for use with PyKota. Read this file and the 
+    associated ldap/README.ldap files for details.
     
     
 Old files, kept to allow people to upgrade from very old versions of PyKota :   
