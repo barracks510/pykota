@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.17alpha1 :
+    
+        - User/Group deletion code in edpykota rewritten.
+        
     - 1.16 :
     
         - Preliminary documentation on how to use OpenOffice.org

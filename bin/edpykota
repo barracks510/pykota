@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.68  2004/01/28 10:05:22  jalet
+# New user/group deletion code
+#
 # Revision 1.67  2004/01/15 11:19:07  jalet
 # Typos in messages wrt gettext.
 #
@@ -496,6 +499,7 @@ class EdPyKota(PyKotaTool) :
         if options["pgroups"] :        
             printersgroups = self.storage.getMatchingPrinters(options["pgroups"])
             
+        todelete = {}    
         changed = {} # tracks changes made at the user/group level
         for printer in printers :
             for pgroup in printersgroups :
@@ -576,7 +580,7 @@ class EdPyKota(PyKotaTool) :
                     self.logger.log_message(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
                 else :    
                     if options["delete"] :
-                        entry.delete()
+                        todelete[entry.Name] = entry # will be done for each printer, we don't care.
                     else :
                         if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
                             entrypquota.setLimits(softlimit, hardlimit)
@@ -615,6 +619,10 @@ class EdPyKota(PyKotaTool) :
                         # messages if quota is reached at creation/modification time.
                         # The check will be done at print time anyway.
                         # getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
+                        
+        # Now delete what has to be deleted                
+        for (name, entry) in todelete.items() :                
+            entry.delete()
                      
 if __name__ == "__main__" : 
     retcode = 0
