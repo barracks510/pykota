@@ -15,6 +15,14 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 PyKota NEWS :
 
+    - 0.96 :
+
+        - Options requester, admin, adminmail and gracedelay can now
+	  be set either globally or per printer. The printer option has
+	  priority if both are defined.
+
+	- More powerful configuration parser.
+
     - 0.95 :
 
         - External requesters for printers finally added.
