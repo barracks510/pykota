@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/11/24 16:52:53  jalet
+# Line width in spanish translation
+#
 # Revision 1.2  2003/11/19 21:00:14  jalet
 # Typo + missing compiled spanish messages.
 #
@@ -79,7 +82,7 @@ msgid "Invalid hardlimit value %s."
 msgstr "Valor incorrecto de límite duro %s."
 
 msgid  "Group           used    soft    hard    balance grace         total       paid"
-msgstr "Grupo           usado   suave   duro    balance gracia        total       pagado"
+msgstr "Grupo           usado   suave   duro    balance gracia        total     pagado"
 
 msgid "There's no printer matching %s"
 msgstr "Impresora %s no encontrada"
@@ -94,7 +97,7 @@ msgid "Invalid group name %s"
 msgstr "Nombre de grupo %s inválido"
 
 msgid  "User            used    soft    hard    balance grace         total       paid"
-msgstr "Usuario         usado   suave   duro    balance gracia        total       pagado"
+msgstr "Usuario         usado   suave   duro    balance gracia        total     pagado"
 
 msgid "Invalid printer name %s"
 msgstr "Nombre de impresora %s inválido"
