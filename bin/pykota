@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2003/09/04 08:38:56  jalet
+# Added an exception catch to ensure clean close of database even in
+# case of TypeError too.
+#
 # Revision 1.39  2003/08/18 16:35:28  jalet
 # New pychecker pass, on the tools this time.
 #
@@ -293,7 +297,7 @@ if __name__ == "__main__" :
         # Initializes the current tool
         kotafilter = PyKotaFilter()    
         retcode = main(kotafilter)
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, IOError), msg :
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
         retcode = -1
