@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/06/10 10:45:32  jalet
+# Not implemented methods now raise an exception when called.
+#
 # Revision 1.3  2003/06/06 20:49:15  jalet
 # Very latest schema. UNTESTED.
 #
@@ -100,7 +103,7 @@ class Storage :
             
     def setPrinterPrices(self, printerid, perpage, perjob) :
         """Sets prices per job and per page for a given printer."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
     
     def getUserId(self, username) :
         """Returns a userid given a username."""
@@ -117,7 +120,7 @@ class Storage :
             
     def getJobHistoryId(self, jobid, userid, printerid) :        
         """Returns the history line's id given a (jobid, userid, printerid)."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
             
     def getPrinterUsers(self, printerid) :        
         """Returns the list of userids and usernames which uses a given printer."""
@@ -150,31 +153,31 @@ class Storage :
         
     def getUserGroupsNames(self, userid) :        
         """Returns the list of groups' names the user is a member of."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns its id."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def addUser(self, username) :        
         """Adds a user to the quota storage, returns its id."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def addGroup(self, groupname) :        
         """Adds a group to the quota storage, returns its id."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def addUserPQuota(self, username, printerid) :
         """Initializes a user print quota on a printer, adds the user to the quota storage if needed."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def addGroupPQuota(self, groupname, printerid) :
         """Initializes a group print quota on a printer, adds the group to the quota storage if needed."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def increaseUserBalance(self, userid, amount) :    
         """Increases (or decreases) an user's account balance by a given amount."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def getUserBalance(self, userquotaid) :    
         """Returns the current account balance for a given user quota identifier."""
@@ -235,35 +238,35 @@ class Storage :
         
     def setUserBalance(self, userid, balance) :    
         """Sets the account balance for a given user to a fixed value."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def limitUserBy(self, userid, limitby) :    
         """Limits a given user based either on print quota or on account balance."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def limitGroupBy(self, groupid, limitby) :    
         """Limits a given group based either on print quota or on sum of its users' account balances."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def setUserPQuota(self, userid, printerid, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota on a specific printer given (userid, printerid)."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def setGroupPQuota(self, groupid, printerid, softlimit, hardlimit) :
         """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def resetUserPQuota(self, userid, printerid) :    
         """Resets the page counter to zero for a user on a printer. Life time page counter is kept unchanged."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def resetGroupPQuota(self, groupid, printerid) :    
         """Resets the page counter to zero for a group on a printer. Life time page counter is kept unchanged."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def updateUserPQuota(self, userid, printerid, pagecount) :
         """Updates the used user Quota information given (userid, printerid) and a job size in pages."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def getUserPQuota(self, userquotaid, printerid) :
         """Returns the Print Quota information for a given (userquotaid, printerid)."""
@@ -310,19 +313,19 @@ class Storage :
         
     def setUserDateLimit(self, userid, printerid, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (userid, printerid)."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def setGroupDateLimit(self, groupid, printerid, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (groupid, printerid)."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def addJobToHistory(self, jobid, userid, printerid, pagecounter, action) :
         """Adds a job to the history: (jobid, userid, printerid, last page counter taken from requester)."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
     
     def updateJobSizeInHistory(self, historyid, jobsize) :
         """Updates a job size in the history given the history line's id."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
     
     def getPrinterPageCounter(self, printerid) :
         """Returns the last page counter value for a printer given its id, also returns last username, last jobid and history line id."""
@@ -333,15 +336,15 @@ class Storage :
         
     def addUserToGroup(self, userid, groupid) :    
         """Adds an user to a group."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def deleteUser(self, userid) :    
         """Completely deletes an user from the Quota Storage."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def deleteGroup(self, groupid) :    
         """Completely deletes an user from the Quota Storage."""
-        pass
+        raise PyKotaStorageError, "Not implemented !"
         
     def computePrinterJobPrice(self, printerid, jobsize) :    
         """Returns the price for a job on a given printer."""
