@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2004/10/11 12:49:06  jalet
+# Renders help translatable
+#
 # Revision 1.17  2004/09/23 19:29:36  jalet
 # If SNMP accounting is possible, pkhint now suggests to use the internal
 # SNMP handling instead of the external one. No real test is done for now,
@@ -87,7 +90,7 @@ import sys
 import os
 
 from pykota import version
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 try :
@@ -97,7 +100,7 @@ except ImportError :
 else :    
     hasSNMP = 1
 
-__doc__ = """pkhint v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+__doc__ = N_("""pkhint v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 A tool to give hints on what accounting method is best for each printer.
 
 command line usage :
@@ -134,7 +137,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+Please e-mail bugs to: %s""") % (version.__version__, version.__author__)
         
 SNMPTESTS = [ \
               '/usr/bin/npadmin --pagecount %(printer)s 2>/dev/null', \
