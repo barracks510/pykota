@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/06/18 13:34:48  jalet
+# Now all tracebacks include PyKota's version number
+#
 # Revision 1.10  2004/06/07 18:43:40  jalet
 # Fixed over-verbose exits when displaying help or version number
 #
@@ -64,7 +67,7 @@ import sys
 import os
 
 from pykota import version
-from pykota.tool import PyKotaTool,PyKotaToolError
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 
@@ -279,7 +282,7 @@ if __name__ == "__main__" :
         try :
             manager.crashed("pkhint failed")
         except :    
-            pass
+            crashed("pkhint failed")
         retcode = -1
 
     try :

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.64  2004/06/18 13:34:46  jalet
+# Now all tracebacks include PyKota's version number
+#
 # Revision 1.63  2004/06/17 13:26:50  jalet
 # Better exception handling code
 #
@@ -251,7 +254,7 @@ import select
 import signal
 import time
 
-from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError
+from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError, crashed
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
@@ -644,16 +647,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             retcode = self.removeJob()
         return retcode    
     
-def crashed(message) :    
-    """Minimal crash method."""
-    import traceback
-    lines = []
-    for line in traceback.format_exception(*sys.exc_info()) :
-        lines.extend([l for l in line.split("\n") if l])
-    msg = "ERROR: ".join(["%s\n" % l for l in ([message] + lines)])
-    sys.stderr.write(msg)
-    sys.stderr.flush()
-
 if __name__ == "__main__" :    
     # This is a CUPS backend, we should act and die like a CUPS backend
     retcode = 0

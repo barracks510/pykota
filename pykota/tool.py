@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.104  2004/06/18 13:34:49  jalet
+# Now all tracebacks include PyKota's version number
+#
 # Revision 1.103  2004/06/18 13:17:26  jalet
 # Now includes PyKota's version number in messages sent by the crashrecipient
 # directive.
@@ -410,6 +413,17 @@ class PyKotaToolError(Exception):
         return self.message
     __str__ = __repr__
     
+def crashed(message) :    
+    """Minimal crash method."""
+    import traceback
+    lines = []
+    for line in traceback.format_exception(*sys.exc_info()) :
+        lines.extend([l for l in line.split("\n") if l])
+    msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % version.__version__, message] + lines)])
+    sys.stderr.write(msg)
+    sys.stderr.flush()
+    return msg
+
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
     def __init__(self, lang=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
@@ -469,23 +483,19 @@ class PyKotaTool :
         
     def crashed(self, message) :    
         """Outputs a crash message, and optionally sends it to software author."""
-        import traceback
-        lines = []
-        for line in traceback.format_exception(*sys.exc_info()) :
-            lines.extend([l for l in line.split("\n") if l])
-        msg = "ERROR: ".join(["%s\n" % l for l in ([message] + lines)])
-        sys.stderr.write(msg)
-        sys.stderr.flush()
+        msg = crashed(message)
         try :
             crashrecipient = self.config.getCrashRecipient()
             if crashrecipient :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
-                fullmessage = "========== Traceback for PyKota v%s :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
-                                (version.__version__, msg, \
+                fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
+                                (msg, \
                                  "\n".join(["    %s" % repr(a) for a in sys.argv]), \
                                  "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
                 server = smtplib.SMTP(self.smtpserver)
-                server.sendmail(admin, [admin, crashrecipient], "From: %s\nTo: %s\nCc: %s\nSubject: PyKota crash traceback !\n\n%s" % (admin, crashrecipient, admin, fullmessage))
+                server.sendmail(admin, [admin, crashrecipient], \
+                                       "From: %s\nTo: %s\nCc: %s\nSubject: PyKota crash traceback !\n\n%s" % \
+                                       (admin, crashrecipient, admin, fullmessage))
                 server.quit()
         except :
             pass

@@ -23,8 +23,7 @@ PyKota NEWS :
 
     - 1.19alpha23 :
     
-        - Messages sent by the crashrecipient directive now include
-          PyKota's version number.
+        - All tracebacks now include PyKota's version number.
           
     - 1.19alpha22 :
     

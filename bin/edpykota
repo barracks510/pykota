@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.75  2004/06/18 13:34:47  jalet
+# Now all tracebacks include PyKota's version number
+#
 # Revision 1.74  2004/06/07 18:43:40  jalet
 # Fixed over-verbose exits when displaying help or version number
 #
@@ -266,7 +269,7 @@
 import sys
 
 from pykota import version
-from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 
@@ -703,7 +706,7 @@ if __name__ == "__main__" :
         try :
             editor.crashed("edpykota failed")
         except :    
-            pass
+            crashed("edpykota failed")
         retcode = -1
 
     try :
