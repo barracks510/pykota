@@ -18,10 +18,14 @@ PyKota NEWS :
     - 0.96 :
 
         - Options requester, admin, adminmail and gracedelay can now
-	  be set either globally or per printer. The printer option has
-	  priority if both are defined.
+          be set either globally or per printer. The printer option has
+          priority if both are defined.
 
-	- More powerful configuration parser.
+        - More powerful configuration parser.
+        
+        - If all options are defined globally, there's no need to 
+          define a section for each printer in the configuration
+          file anymore. Just define a [global] section and it's ok.
 
     - 0.95 :
 

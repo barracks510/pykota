@@ -17,8 +17,6 @@ TODO, in order of importance :
 
         - Finalize the implementation of group quotas.
         
-        - Per printer quota administrator name and email.
-        
         - Group administrators (think quotagrpdmins for disk quotas).
         
         - Documentation...
