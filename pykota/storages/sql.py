@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2004/10/04 22:23:54  jalet
+# Charset conversions for dumps from the PostgreSQL backend
+#
 # Revision 1.51  2004/10/04 16:11:38  jalet
 # Now outputs page counters when dumping user groups quotas
 #
@@ -95,17 +98,17 @@ class SQLStorage :
         if result.ntuples() > 0 :
             entries = [result.listfields()]
             entries.extend(result.getresult())
-            #nbfields = len(entries[0])
-            #for i in range(1, len(entries)) :
-            #    fields = list(entries[i])
-            #    for j in range(nbfields) :
-            #        field = fields[j]
-            #        if type(field) == StringType :
-            #            try :
-            #                fields[j] = field.decode("UTF-8").encode(self.tool.getCharset()) 
-            #            except UnicodeEncodeError : # takes care of old jobs in history not stored as UTF-8    
-            #                pass
-            #    entries[i] = tuple(fields)    
+            nbfields = len(entries[0])
+            for i in range(1, len(entries)) :
+                fields = list(entries[i])
+                for j in range(nbfields) :
+                    field = fields[j]
+                    if type(field) == StringType :
+                        try :
+                            fields[j] = field.decode("UTF-8").encode(self.tool.getCharset()) 
+                        except UnicodeEncodeError : # takes care of old jobs in history not stored as UTF-8    
+                            pass
+                entries[i] = tuple(fields)    
             return entries
         
     def extractPrinters(self) :
