@@ -1,0 +1,333 @@
+# PyKota
+#
+# PyKota : Print Quotas for CUPS and LPRng
+#
+# (c) 2003 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2003/11/19 20:57:57  jalet
+# Spanish translation by Dennis Romero L. added.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PyKota v0.9-unofficial\n"
+"POT-Creation-Date: Sun Feb  9 13:50:50 2003\n"
+"PO-Revision-Date: 2003-11-19 21:38+1\n"
+"Last-Translator: Jerome Alet <alet@librelogiciel.com>\n"
+"Language-Team: Spanish <alet@librelogiciel.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.3\n"
+
+msgid "Undefined soft limit set to hard limit (%s) on printer %s."
+msgstr "Límite suave indefinido, seteado a límite duro (%s) en la impresora %s."
+
+msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
+msgstr "Límite duro %i es menor que el límite suave %i, los valores serán cambiados."
+
+msgid "Pages grace time: %i days"
+msgstr "Tiempo de gracia para páginas: %i días "
+
+msgid "Invalid softlimit value %s."
+msgstr "Valor incorrecto de límite suave %s."
+
+msgid "Prototype %s not found in Quota Storage for printer %s."
+msgstr "Prototipo %s no encontrado en el Almacén de Cuotas para la impresora %s "
+
+msgid "Printer %s not registered in the PyKota system"
+msgstr "Impresora %s no registrada en el sistema PyKota"
+
+msgid "option --groups is currently not implemented."
+msgstr "opción --grupos no están actualmente implementados.."
+
+msgid "Quota not found for object %s on printer %s."
+msgstr "Cuota no encontrada por el objeto %s en la impresora %s."
+
+msgid "Invalid user name %s"
+msgstr "Nombre de usuario %s inválido"
+
+msgid "Both hard and soft limits must be set ! Aborting."
+msgstr "Los límites duro y suave deben ser ingresados ! Cancelando.."
+
+msgid "Undefined hard limit set to soft limit (%s) on printer %s."
+msgstr "Límite duro indefinido, seteado a límite suave (%s) en la impresora %s."
+
+msgid "incompatible options, see help."
+msgstr "opciones incompatibles, ver ayuda.
+
+msgid "Invalid hardlimit value %s."
+msgstr "Valor incorrecto de límite duro %s."
+
+msgid  "Group           used    soft    hard    balance grace         total       paid"
+msgstr "Grupo           usado   suave   duro    balance gracia        total       pagado"
+
+msgid "There's no printer matching %s"
+msgstr "Impresora %s no encontrada"
+
+msgid "*** Report for %s quota on printer %s"
+msgstr "*** Reporte para la cuota %s en la impresora  %s"
+
+msgid "Error in page count value %i for user %s on printer %s"
+msgstr "Error en el valor de conteo de páginas %i  para el usuario %s en la impresora %s"
+
+msgid "Invalid group name %s"
+msgstr "Nombre de grupo %s inválido"
+
+msgid  "User            used    soft    hard    balance grace         total       paid"
+msgstr "Usuario         usado   suave   duro    balance gracia        total       pagado"
+
+msgid "Invalid printer name %s"
+msgstr "Nombre de impresora %s inválido"
+
+msgid "Option requester for printer %s only supports values in %s"
+msgstr "La opción requester para la impresora %s solo soporta valores en %s"
+
+msgid "Print Quota Exceeded"
+msgstr "Cuota de Impresión Excedida"
+
+msgid "Print Quota"
+msgstr "Cuota de impresión "
+
+msgid "Requester not implemented yet."
+msgstr "Requester no implementado aún."
+
+msgid "Option %s not found in section %s of %s"
+msgstr "Opción %s no encontrada en la sección %s de %s"
+
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"Pronto usted será restringido de imprimir porque\n"
+"su cuota de impresión se acerca al límite, en la impresora %s."
+
+msgid ""
+"\n"
+"\n"
+"Por favor contacte a su administrador del sistema:\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+
+msgid "Invalid grace delay %s"
+msgstr "Tiempo de gracia %s inválido"
+
+msgid "Option logger only supports values in %s"
+msgstr "La opción logger solo soporta valores en %s"
+
+msgid "Option %s not found in section global of %s"
+msgstr "Opción %s no encontrada en la sección global de %s"
+
+msgid "Option method only supports values in %s"
+msgstr "La opción method solo soporta valores en %s"
+
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr "Imposible encontrar el usuario %s en la impresora %s, acción por default (%s)"
+
+msgid "Group quotas are currently not implemented."
+msgstr "Las cuotas de grupo no están actualmente implementadas."
+
+msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
+msgstr "Dirección de impresora desconocida en SNMP(%s, %s) para la impresora %s"
+
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Baja cuota de impresión para el usuario %s en la impresora %s"
+
+msgid "Unsupported logging subsystem %s"
+msgstr "Sistema de logging %s no soportado"
+
+msgid "Unable to query printer %s via SNMP(%s, %s)"
+msgstr "Imposible consultar impresora %s vía SNMP(%s, %s)"
+
+msgid "Unsupported requester backend %s"
+msgstr "Requester backend %s no soportado " 
+
+msgid "Option policy in section %s only supports values in %s"
+msgstr "La opción policy en la sección  %s solo soporta valores en %s"
+
+msgid "Unsupported quota storage backend %s"
+msgstr "Backend de almacenamiento de cuota no soportada %s"
+
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"Usted no tiene permitido imprimir más porque\n"
+"su cuota de impresión se ha excedido, en la impresora %s."
+
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "Cuota de impresión excedida para el usuario %s en la impresora %s"
+
+msgid "Invalid requester %s for printer %s"
+msgstr "Requester inválido %s para la impresora %s"
+
+msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
+msgstr "Dirección desconocida en EXTERNAL(%s) para la impresora %s"
+
+msgid "Unable to query printer %s via EXTERNAL(%s)"
+msgstr "Imposible consultar la impresora %s vía EXTERNAL(%s)"
+
+msgid "Total : %9i"
+msgstr "Total : %9i"
+
+msgid "Real : %s"
+msgstr "Real : %s"
+
+msgid "You have to pass user or group names on the command line"
+msgstr "Usted tiene que pasar nombres de usuarios o grupos en la línea de comandos"
+
+msgid "unknown"
+msgstr "Desconocido"
+
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "La opción mailto en la sección %s solo soporta valores en %s"
+
+msgid "Configuration file %s not found."
+msgstr "Archivo de configuración %s no encontrado."
+
+msgid "User %s not registered in the PyKota system, applying default policy (%s) for printer %s"
+msgstr "Usuario %s no registrado en el sistema PyKota, acción por default (%s) para al impresora %s"
+
+msgid "Invalid charge amount value %s"
+msgstr "Valor de cantidad de carga %s inválido"
+
+msgid "Invalid balance value %s"
+msgstr "Valor de balance %s inválido"
+
+msgid "Invalid limitby value %s"
+msgstr "Valor de limitby %s inválido"
+
+msgid "Unable to find user %s's account balance, applying default policy (%s) for printer %s"
+msgstr "Imposible encontrar la cuenta de balance del usuario %s, acción por default (%s) para la impresora %s"
+
+msgid "Unable to find group %s's account balance, applying default policy (%s) for printer %s"
+msgstr "Imposible encontrar la cuenta de balance del grupo %s, acción por default (%s) para impresora %s"
+
+msgid "Unable to match group %s on printer %s, applying default policy (%s)"
+msgstr "Imposible encontrar el grupo %s en la impresora %s, acción por default (%s)"
+
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Cuota de impresión excedida para el grupo %s en la impresora %s"
+
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Baja cuota de impresión para el grupo %s en la impresora %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr "Los totales pueden ser inexactos si los usuarios son miembros de varios grupos."
+
+msgid "Price per job: %.3f"
+msgstr "Precio por trabajo: %.3f"
+
+msgid "Price per page: %.3f"
+msgstr "Precio por página: %.3f"
+
+msgid "Group %s not found in the PyKota Storage."
+msgstr "Grupo %s no encontrado en el almacén de cuotas."
+
+msgid "Unsupported accounter backend %s"
+msgstr "Accounter Backend %s no soportado"
+
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "La opción accounter en la sección %s solo soporta valores en %s"
+
+msgid "Option requester for printer %s was not set"
+msgstr "La opción requester para la impresora %s no ha sido establecida "
+
+msgid "Using the 'stupid' accounting method is unreliable."
+msgstr "Usar el método de cuenta 'stupid' no es confiable."
+
+msgid "Invalid external accounter %s for printer %s"
+msgstr "Contador de páginas externo %s inválido, para la impresora %s"
+
+msgid "Unable to compute job size with external accounter %s"
+msgstr "Imposible calcular el tamaño del trabajo con el contador externo %s"
+
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "Buscar por %s(%s) de %s(scope=%s) ninguna respuesta retornada."
+
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Problema al añadir entrada LDAP (%s, %s)"
+
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Problema al modificar entrada LDAP (%s, %s)"
+
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Problema al borrar entrada LDAP (%s)"
+
+msgid "Impossible to add printer %s"
+msgstr "Imposible añadir impresora %s"
+
+msgid "Prototype object %s not found in Quota Storage."
+msgstr "Objeto Prototipo %s no encontrado en el almacén de cuotas."
+
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Imposible enviar correo a %s, error %s : %s"
+
+msgid "Unsupported reporter backend %s"
+msgstr "Reporter backend %s no soportado"
+
+msgid "Unable to compute size of %s in number of pages.\n"
+msgstr "Imposible calcular el tamaño %s en número de páginas.\n"
+
+msgid "Job size : %i pages"    
+msgstr "Tamaño del trabajo : %i páginas"
+
+msgid "Cost on printer %s : %.2f"
+msgstr "Costo en la impresora %s : %.2f"
+
+msgid "Invalid poor man's treshold %s"
+msgstr "Valor 'poor man' %s inválido"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"El balance de su cuenta de cuota de impresión es bajo.\n"
+"Pronto usted no tendrá permitido imprimir más.\n"
+"Por favor contacte al Administrador de Cuota de Impresión para resolver el problema."
+
+msgid "Print Quota Low"
+msgstr "Cuota de impresión baja"
+
+msgid "Your account balance : %.2f"
+msgstr "Su balance de cuenta : %.2f"
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Nombre de host de la impresora no-definido, seteado a 'localhost'"
+
+msgid "Printing system unknown, args=%s"
+msgstr "Sistema de impresión desconocido, args=%s"
+
+msgid "Invalid policy %s for printer %s"
+msgstr "Política inválida %s para la impresora %s"
+
+msgid "User %s not registered in the PyKota system, applying external policy (%s) for printer %s"
+msgstr "Usuario %s no registrado en el sistema PyKota, aplicando política externa (%s) para la impresora %s"
+
+msgid "External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files."
+msgstr "Política externa %s para la impresora %s produjo un error. Trabajo reiniciado. Por favor revise los archivos de configuración de PyKota."
+
+msgid "External policy %s for printer %s couldn't add user %s. Job rejected."
+msgstr "Política externa %s para la impresora %s no se puede añadir usuario %s. Trabajo reiniciado."
+
+msgid "Invalid option mailto %s for printer %s"
+msgstr "Opción mailto %s inválida,  para la impresora %s"
+
