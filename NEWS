@@ -30,6 +30,8 @@ PyKota NEWS :
           
         - The installation script now allows to install the sample
           configuration file during first installation.
+          
+        - More group quota code works, but still not finished.  
         
     - 1.02 :
     
