@@ -35,7 +35,7 @@ logger: stderr
 
 # Print Quota administrator
 admin: Jerome Alet
-adminmail: alet@unice.fr
+adminmail: alet@librelogiciel.com
 #
 # Mail server to use to warn users
 smtpserver: localhost
