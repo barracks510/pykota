@@ -322,11 +322,11 @@ The rest of the installation depends on your printing system :
         on the type of printer you use. For example, if your
         printer is waiting on :
         
-            socket://myprinter.domain.com:9100
+            socket://myprinter.example.com:9100
             
         Then choose :    
         
-            cupspykota:socket://myprinter.domain.com:9100
+            cupspykota:socket://myprinter.example.com:9100
             
         Configure your printer as usual.    
         
@@ -357,15 +357,15 @@ The rest of the installation depends on your printing system :
         'cupspykota:' in front of what is already on these lines. 
         For example, replace :
     
-            DeviceURI socket://myprinter.domain.com:9100
+            DeviceURI socket://myprinter.example.com:9100
         
         with :    
     
-            DeviceURI cupspykota:socket://myprinter.domain.com:9100
+            DeviceURI cupspykota:socket://myprinter.example.com:9100
             
         or :    
         
-            DeviceURI cupspykota://socket://myprinter.domain.com:9100
+            DeviceURI cupspykota://socket://myprinter.example.com:9100
         
         Save the file and restart CUPS.
 

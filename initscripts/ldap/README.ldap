@@ -64,8 +64,8 @@ pykota.schema :
     your OpenLDAP server don't have search queries size limits,
     which gives for example (OpenLDAP 2.1.x or above) :
     
-        limits dn="cn=RWadmin,dc=your,dc=domain" size.soft=-1 size.hard=soft
-        limits dn="cn=ROadmin,dc=your,dc=domain" size.soft=-1 size.hard=soft
+        limits dn="cn=RWadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+        limits dn="cn=ROadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
     
     Where RWadmin and ROadmin are the usernames used to bind to your
     OpenLDAP server within PyKota, respectively in ReadWrite mode 

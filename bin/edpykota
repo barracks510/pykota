@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.69  2004/02/19 15:05:56  jalet
+# domain names changed to example.com in the doc, according to RFC2606
+#
 # Revision 1.68  2004/01/28 10:05:22  jalet
 # New user/group deletion code
 #
@@ -333,12 +336,12 @@ options :
   
 examples :                              
 
-  $ edpykota --add -p jerome john paul george ringo/ringo@yourdomain.com
+  $ edpykota --add -p jerome john paul george ringo/ringo@example.com
   
   This will add users john, paul, george and ringo to the quota
   database, and set their print quotas to the same values than user 
   jerome. User jerome must already exist.
-  User ringo's email address will also be set to 'ringo@yourdomain.com'
+  User ringo's email address will also be set to 'ringo@example.com'
   
   $ edpykota --printer lp -S 50 -H 60 jerome
   
