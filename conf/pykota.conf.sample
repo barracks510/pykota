@@ -194,6 +194,20 @@ gracedelay: 7
 #      for details. Also you may have to specify -v2c or -v3 depending on your 
 #      printer's support for different versions of the SNMP specification.
 #
+#
+# Some examples and comments provided by Bob Martel from csuohio.edu
+#
+# For several printers I could not get the page count using snmpget.  I
+# resorted to snmpwalk:
+# 
+# requester: external(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public %(printer)s | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4)
+#
+# The last example is still more ugly, some of the printers only provided
+# their counters without names, but at least always on the same line:
+#
+# requester: external(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2)
+#
+#
 # WARNING : In any case, when using an external requester, please test the command line outside
 #           of PyKota before. This will save you some headaches in case it doesn't work as expected.
 requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
