@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2004/07/03 08:21:59  jalet
+# Testsuite for PDL Analyzer added
+#
 # Revision 1.22  2004/06/29 14:21:41  jalet
 # Smallish optimization
 #
@@ -413,7 +416,7 @@ class PCLXLAnalyzer :
         pos = self.pos
         pos4 = pos + 4
         self.pos = pos4
-        return unpack(self.indianness + "I", self.minfile[pos:pos4])[0]
+        return unpack(self.endianness + "I", self.minfile[pos:pos4])[0]
         
     def littleEndian(self) :        
         """Toggles to little endianness."""

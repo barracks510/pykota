@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.19alpha29 : 
     
+        - Added testsuite for generic PDL analyzer.
+        
+        - Typo fixed in PCLXL parser.
+        
         - Correctly dispatches error messages depending on the
           situation : tools which can be run interactively will
           ALWAYS output their logs to stderr, excepted for
