@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2003/11/19 23:19:38  jalet
+# Code refactoring work.
+# Explicit redirection to /dev/null has to be set in external policy now, just
+# like in external mailto.
+#
 # Revision 1.56  2003/11/19 07:40:20  jalet
 # Missing import statement.
 # Better documentation for mailto: external(...)
@@ -233,6 +238,7 @@ import locale
 from mx import DateTime
 
 from pykota import version, config, storage, logger
+from pykota.accounter import openAccounter
 
 class PyKotaToolError(Exception):
     """An exception for PyKota config related stuff."""
@@ -513,14 +519,21 @@ class PyKotaTool :
                         action = "ALLOW"
         return action
     
-    def externalMailTo(self, cmd, action, user, printername, message) :
+    def externalMailTo(self, cmd, action, user, printer, message) :
         """Warns the user with an external command."""
         username = user.Name
+        printername = printer.Name
         email = user.Email or user.Name
         if "@" not in email :
             email = "%s@%s" % (email, self.smtpserver)
         os.system(cmd % locals())
     
+    def formatCommandLine(self, cmd, user, printer) :
+        """Executes an external command."""
+        username = user.Name
+        printername = printer.Name
+        return cmd % locals()
+        
     def warnGroupPQuota(self, grouppquota) :
         """Checks a group quota and send messages if quota is exceeded on current printer."""
         group = grouppquota.Group
@@ -541,7 +554,7 @@ class PyKotaTool :
                     if mailto != "EXTERNAL" :
                         self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
                     else :    
-                        self.externalMailTo(arguments, action, user, printer.Name, message)
+                        self.externalMailTo(arguments, action, user, printer, message)
         elif action == "WARN" :    
             adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
             self.logger.log_message(adminmessage)
@@ -556,7 +569,7 @@ class PyKotaTool :
                     if mailto != "EXTERNAL" :
                         self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
                     else :    
-                        self.externalMailTo(arguments, action, user, printer.Name, message)
+                        self.externalMailTo(arguments, action, user, printer, message)
         return action        
         
     def warnUserPQuota(self, userpquota) :
@@ -577,7 +590,7 @@ class PyKotaTool :
                 if mailto != "EXTERNAL" :
                     self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
                 else :    
-                    self.externalMailTo(arguments, action, user, printer.Name, message)
+                    self.externalMailTo(arguments, action, user, printer, message)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
@@ -591,7 +604,89 @@ class PyKotaTool :
                 if mailto != "EXTERNAL" :    
                     self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
                 else :    
-                    self.externalMailTo(arguments, action, user, printer.Name, message)
+                    self.externalMailTo(arguments, action, user, printer, message)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        
+        
+class PyKotaFilterOrBackend(PyKotaTool) :    
+    """Class for the PyKota filter or backend."""
+    def __init__(self) :
+        PyKotaTool.__init__(self)
+        (self.printingsystem, \
+         self.printerhostname, \
+         self.printername, \
+         self.username, \
+         self.jobid, \
+         self.inputfile, \
+         self.copies, \
+         self.title, \
+         self.options, \
+         self.originalbackend) = self.extractInfoFromCupsOrLprng()
+        self.accounter = openAccounter(self)
+    
+    def extractInfoFromCupsOrLprng(self) :    
+        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
+        
+           Returns (None, None, None, None, None, None, None, None, None, None) if no printing system is recognized.
+        """
+        # Try to detect CUPS
+        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
+            if len(sys.argv) == 7 :
+                inputfile = sys.argv[6]
+            else :    
+                inputfile = None
+                
+            # check that the DEVICE_URI environment variable's value is 
+            # prefixed with "cupspykota:" otherwise don't touch it.
+            # If this is the case, we have to remove the prefix from 
+            # the environment before launching the real backend in cupspykota
+            device_uri = os.environ.get("DEVICE_URI", "")
+            if device_uri.startswith("cupspykota:") :
+                fulldevice_uri = device_uri[:]
+                device_uri = fulldevice_uri[len("cupspykota:"):]
+                if device_uri.startswith("//") :    # lpd (at least)
+                    device_uri = device_uri[2:]
+                os.environ["DEVICE_URI"] = device_uri   # TODO : side effect !
+            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
+            try :
+                (backend, destination) = device_uri.split(":", 1) 
+            except ValueError :    
+                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
+            while destination.startswith("/") :
+                destination = destination[1:]
+            printerhostname = destination.split("/")[0].split(":")[0]
+            return ("CUPS", \
+                    printerhostname, \
+                    os.environ.get("PRINTER"), \
+                    sys.argv[2].strip(), \
+                    sys.argv[1].strip(), \
+                    inputfile, \
+                    int(sys.argv[4].strip()), \
+                    sys.argv[3], \
+                    sys.argv[5], \
+                    backend)
+        else :    
+            # Try to detect LPRng
+            jseen = Pseen = nseen = rseen = Kseen = None
+            for arg in sys.argv :
+                if arg.startswith("-j") :
+                    jseen = arg[2:].strip()
+                elif arg.startswith("-n") :     
+                    nseen = arg[2:].strip()
+                elif arg.startswith("-P") :    
+                    Pseen = arg[2:].strip()
+                elif arg.startswith("-r") :    
+                    rseen = arg[2:].strip()
+                elif arg.startswith("-K") or arg.startswith("-#") :    
+                    Kseen = int(arg[2:].strip())
+            if Kseen is None :        
+                Kseen = 1       # we assume the user wants at least one copy...
+            if (rseen is None) and jseen and Pseen and nseen :    
+                self.logger.log_message(_("Printer hostname undefined, set to 'localhost'"), "warn")
+                rseen = "localhost"
+            if jseen and Pseen and nseen and rseen :        
+                # job is always in stdin (None)
+                return ("LPRNG", rseen, Pseen, nseen, jseen, None, Kseen, None, None, None)
+        self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
+        return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system

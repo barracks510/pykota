@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/11/19 23:19:35  jalet
+# Code refactoring work.
+# Explicit redirection to /dev/null has to be set in external policy now, just
+# like in external mailto.
+#
 # Revision 1.10  2003/11/18 17:54:24  jalet
 # SIGTERMs are now transmitted to original backends.
 #
@@ -68,11 +73,11 @@ import shlex
 import select
 import signal
 
-from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
-from pykota.accounter import openAccounter, PyKotaAccounterError
-from pykota.requester import openRequester, PyKotaRequesterError
+from pykota.accounter import PyKotaAccounterError
+from pykota.requester import PyKotaRequesterError
 
 class PyKotaPopen3(popen2.Popen3) :
     """Our own class to execute real backends.
@@ -95,74 +100,6 @@ class PyKotaPopen3(popen2.Popen3) :
         finally:
             os._exit(1)
     
-class PyKotaBackend(PyKotaTool) :    
-    """Class for the PyKota backend."""
-    def __init__(self) :
-        PyKotaTool.__init__(self)
-        (self.printingsystem, \
-         self.printerhostname, \
-         self.printername, \
-         self.username, \
-         self.jobid, \
-         self.inputfile, \
-         self.copies, \
-         self.title, \
-         self.options, \
-         self.originalbackend) = self.extractCUPSInfo()
-        self.accounter = openAccounter(self)
-    
-    def extractCUPSInfo(self) :    
-        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
-        
-           Returns (None, None, None, None, None, None, None, None, None, None) if no printing system is recognized.
-        """
-        # Try to detect CUPS
-        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
-            if len(sys.argv) == 7 :
-                inputfile = sys.argv[6]
-            else :    
-                inputfile = None
-                
-            # the DEVICE_URI environment variable's value is 
-            # prefixed with "cupspykota:" otherwise we wouldn't
-            # be called. We have to remove this from the environment 
-            # before launching the real backend.
-            fulldevice_uri = os.environ.get("DEVICE_URI", "")
-            device_uri = fulldevice_uri[len("cupspykota:"):]
-            if device_uri.startswith("//") :    # lpd (at least)
-                device_uri = device_uri[2:]
-            os.environ["DEVICE_URI"] = device_uri
-            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
-            try :
-                (backend, destination) = device_uri.split(":", 1) 
-            except ValueError :    
-                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
-            while destination.startswith("/") :
-                destination = destination[1:]
-            printerhostname = destination.split("/")[0].split(":")[0]
-            return ("CUPS", \
-                    printerhostname, \
-                    os.environ.get("PRINTER"), \
-                    sys.argv[2].strip(), \
-                    sys.argv[1].strip(), \
-                    inputfile, \
-                    int(sys.argv[4].strip()), \
-                    sys.argv[3], \
-                    sys.argv[5], \
-                    backend)
-        else :    
-            self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
-            return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system          
-        
-def format_commandline(prt, usr, cmdline) :            
-    """Passes printer and user names on the command line."""
-    printer = prt.Name
-    user = usr.Name
-    # we don't want the external command's standard 
-    # output to break the print job's data, but we
-    # want to keep its standard error
-    return "%s >/dev/null" % (cmdline % locals())
-
 gotSigTerm = 0
 def sigterm_handler(signum, frame) :
     """Sets a global variable whenever SIGTERM is received."""
@@ -207,7 +144,7 @@ def main(thebackend) :
                 if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 elif policy == "EXTERNAL" :    
-                    commandline = format_commandline(printer, user, args)
+                    commandline = thebackend.formatCommandLine(args, user, printer)
                     thebackend.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (thebackend.username, commandline, thebackend.printername), "info")
                     if os.system(commandline) :
                         # if an error occured, we die without error,
@@ -471,9 +408,9 @@ if __name__ == "__main__" :
     else :    
         try :
             # Initializes the backend
-            kotabackend = PyKotaBackend()    
+            kotabackend = PyKotaFilterOrBackend()    
             retcode = main(kotabackend)
-        except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
+        except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, PyKotaRequesterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
             sys.stderr.write("ERROR : cupspykota backend failed (%s)\n" % msg)
             sys.stderr.flush()
             retcode = 1

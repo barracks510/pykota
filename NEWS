@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 PyKota NEWS :
 
     - 1.16alpha10 :
+        
+        - Some modifications done to external policy handling.
+          See sample configuration file for details.
     
         - Spanish translation added.
         

@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2003/11/19 23:19:37  jalet
+# Code refactoring work.
+# Explicit redirection to /dev/null has to be set in external policy now, just
+# like in external mailto.
+#
 # Revision 1.44  2003/11/08 16:05:31  jalet
 # CUPS backend added for people to experiment.
 #
@@ -185,62 +190,11 @@ import os
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
-from pykota.accounter import openAccounter, PyKotaAccounterError
+from pykota.accounter import PyKotaAccounterError
+from pykota.requester import PyKotaRequesterError
 
-class PyKotaFilter(PyKotaTool) :    
-    """Class for the PyKota filter."""
-    def __init__(self) :
-        PyKotaTool.__init__(self)
-        (self.printingsystem, self.printerhostname, self.printername, self.username, self.jobid, self.inputfile, self.copies) = self.extractInfoFromCupsOrLprng()
-        self.accounter = openAccounter(self)
-    
-    def extractInfoFromCupsOrLprng(self) :    
-        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename) depending on the printing system in use (as seen by the print filter).
-        
-           Returns (None, None, None, None, None, None, None) if no printing system is recognized.
-        """
-        # Try to detect CUPS
-        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
-            if len(sys.argv) == 7 :
-                inputfile = sys.argv[6]
-            else :    
-                inputfile = None
-                
-            device_uri = os.environ.get("DEVICE_URI", "")
-            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
-            try :
-                (backend, destination) = device_uri.split(":", 1) 
-            except ValueError :    
-                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
-            while destination.startswith("/") :
-                destination = destination[1:]
-            printerhostname = destination.split("/")[0].split(":")[0]
-            return ("CUPS", printerhostname, os.environ.get("PRINTER"), sys.argv[2].strip(), sys.argv[1].strip(), inputfile, int(sys.argv[4].strip()))
-        else :    
-            # Try to detect LPRng
-            jseen = Pseen = nseen = rseen = Kseen = None
-            for arg in sys.argv :
-                if arg.startswith("-j") :
-                    jseen = arg[2:].strip()
-                elif arg.startswith("-n") :     
-                    nseen = arg[2:].strip()
-                elif arg.startswith("-P") :    
-                    Pseen = arg[2:].strip()
-                elif arg.startswith("-r") :    
-                    rseen = arg[2:].strip()
-                elif arg.startswith("-K") or arg.startswith("-#") :    
-                    Kseen = int(arg[2:].strip())
-            if Kseen is None :        
-                Kseen = 1       # we assume the user wants at least one copy...
-            if (rseen is None) and jseen and Pseen and nseen :    
-                self.logger.log_message(_("Printer hostname undefined, set to 'localhost'"), "warn")
-                rseen = "localhost"
-            if jseen and Pseen and nseen and rseen :        
-                # job is always in stdin (None)
-                return ("LPRNG", rseen, Pseen, nseen, jseen, None, Kseen)
-        self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
-        return (None, None, None, None, None, None, None)   # Unknown printing system          
-        
+class PyKotaFilter(PyKotaFilterOrBackend) :        
+    """A class for the pykota filter."""
     def acceptJob(self) :        
         """Returns the exit code needed by the printing backend to accept the job and print it."""
         if self.printingsystem == "CUPS" :
@@ -261,15 +215,6 @@ class PyKotaFilter(PyKotaTool) :
             # UNKNOWN
             return -1
             
-def format_commandline(prt, usr, cmdline) :            
-    """Passes printer and user names on the command line."""
-    printer = prt.Name
-    user = usr.Name
-    # we don't want the external command's standard 
-    # output to break the print job's data, but we
-    # want to keep its standard error
-    return "%s >/dev/null" % (cmdline % locals())
-
 def main(thefilter) :    
     """Do it, and do it right !"""
     #
@@ -299,7 +244,7 @@ def main(thefilter) :
                 if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 elif policy == "EXTERNAL" :    
-                    commandline = format_commandline(printer, user, args)
+                    commandline = thefilter.formatCommandLine(args, user, printer)
                     thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (thefilter.username, commandline, thefilter.printername), "info")
                     if os.system(commandline) :
                         thefilter.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, thefilter.printername), "error")
@@ -341,7 +286,7 @@ if __name__ == "__main__" :
         # Initializes the current tool
         kotafilter = PyKotaFilter()    
         retcode = main(kotafilter)
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, PyKotaRequesterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
         try :

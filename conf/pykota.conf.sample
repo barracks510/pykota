@@ -339,14 +339,26 @@ requester: external(/usr/bin/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 
 # for example to automatically add the user to the quota storage 
 # if he is unknown. Example :
 # 
-#       policy: external(/usr/bin/edpykota --add --printer %(printer)s --softlimit 50 --hardlimit 60 %(user)s) 
-#
-#       NB : '%(user)s' and '%(printer)s' will be automatically replaced 
-#            by the user and printer names. 
+#       policy: external(/usr/bin/edpykota --add --printer %(printer)s --softlimit 50 --hardlimit 60 %(user)s >/dev/null) 
 #
 # Of course you can launch any command of your choice with this, e.g. :
 #
-#       policy: external(/usr/local/bin/myadminscript.sh %(user)s)
+#       policy: external(/usr/local/bin/myadminscript.sh %(user)s >/dev/null)
+
+# You can use :
+#
+#       '%(username)s'          will contain the user's name
+#       '%(printername)s'       will contain the printer's name
+#
+#   On your command line, to pass arguments to your command.
+#
+#   NB : Don't forget to redirect your command's standard output somewhere 
+#        (e.g. >/dev/null) so that there's no perturbation to the underlying
+#        layer (filter or backend)
+#
+# If the user still doesn't exist after external policy command was 
+# launched (the external command didn't add it), or if an error occured
+# during the execution of the external policy command, the job is rejected.
 #
 policy: deny
 
