@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/10 11:47:39  jalet
+# Moved some code down into the requesters
+#
 # Revision 1.4  2003/02/10 10:36:33  jalet
 # Small problem wrt external requester
 #
@@ -38,7 +41,7 @@ class Requester :
     def __init__(self, config, printername, arguments) :
         """Sets instance vars depending on the current printer."""
         self.printername = printername
-        self.commandline = arguments[0]
+        self.commandline = arguments.strip()
         
     def getPrinterPageCounter(self, printer) :
         """Returns the page counter from the printer via an external command.

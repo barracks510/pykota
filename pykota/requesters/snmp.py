@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/10 11:47:39  jalet
+# Moved some code down into the requesters
+#
 # Revision 1.5  2003/02/10 00:42:17  jalet
 # External requester should be ok (untested)
 # New syntax for configuration file wrt requesters
@@ -42,8 +45,9 @@ class Requester :
     def __init__(self, config, printername, arguments) :
         """Sets instance vars depending on the current printer."""
         self.printername = printername
-        self.community = arguments[0]
-        self.oid = arguments[1]
+        args = [x.strip() for x in arguments.split(',')]
+        self.community = args[0]
+        self.oid = args[1]
         
     def getPrinterPageCounter(self, hostname) :
         """Returns the page counter from the hostname printer via SNMP.

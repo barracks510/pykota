@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/02/10 11:47:39  jalet
+# Moved some code down into the requesters
+#
 # Revision 1.12  2003/02/10 10:36:33  jalet
 # Small problem wrt external requester
 #
@@ -150,7 +153,6 @@ class PyKotaConfig :
         (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
         if args.endswith(')') :
             args = args[:-1]
-        args = [x.strip() for x in args.split(',')]
         if not args :
             raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
         return (requester, args)
