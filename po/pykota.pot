@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/06/24 14:53:04  jalet
+# More translations
+#
 # Revision 1.25  2003/06/15 22:26:52  jalet
 # More work on LDAP
 #
@@ -362,4 +365,10 @@ msgid "Problem adding LDAP entry (%s, %s)"
 msgstr ""
 
 msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr ""
+
+msgid "Impossible to add printer %s"
+msgstr ""
+
+msgid "Prototype object %s not found in Quota Storage."
 msgstr ""
