@@ -12,6 +12,7 @@ PyKota's FAQ :
     /etc/cups/printers.conf manually as explained in
     PyKota's toplevel README file. Finally restart CUPS,
     and your printers should be managed by PyKota.
+    Another solution is to install a newer CUPS release.
     
   * Is print accounting ever exact ?
   
