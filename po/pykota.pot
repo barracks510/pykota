@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/10 12:12:08  jalet
+# Translation added for total number of pages for printer in repykota
+#
 # Revision 1.6  2003/02/10 11:49:06  jalet
 # Added Content-Transfert-Encoding
 #
@@ -214,4 +217,10 @@ msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
 msgstr ""
 
 msgid "Unable to query printer %s via EXTERNAL(%s)"
+msgstr ""
+
+msgid "Total : %9i"
+msgstr ""
+
+msgid "Real : %9i"
 msgstr ""
