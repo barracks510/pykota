@@ -86,6 +86,9 @@ storageuser: pykotauser
 # a possible value:  newuser: attach(posixAccount)
 newuser : below
 newgroup : below
+#
+# LDAP attribute which stores the user's email address
+usermail : mail
 
 # 
 # Choose what attribute contains the list of group members

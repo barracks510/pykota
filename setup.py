@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/07/29 09:54:03  jalet
+# Added configurable LDAP mail attribute support
+#
 # Revision 1.21  2003/07/28 09:11:12  jalet
 # PyKota now tries to add its attributes intelligently in existing LDAP
 # directories.
@@ -247,11 +250,12 @@ if "install" in sys.argv :
             
         # warns for new LDAP fields    
         if sb.get("storagebackend") == "ldapstorage" :    
+            usermail = conf.getGlobalOption("usermail", ignore=1)
             newuser = conf.getGlobalOption("newuser", ignore=1)
             newgroup = conf.getGlobalOption("newgroup", ignore=1)
-            if not (newuser and newgroup) :
-                sys.stderr.write("From version 1.14 on, PyKota LDAP Support needs two additional configuration fields.\n")
-                sys.stderr.write("Please put the 'newuser' and 'newgroup' configuration fields in a [global] section in /etc/pykota/pykota.conf\n")
+            if not (usermail and newuser and newgroup) :
+                sys.stderr.write("From version 1.14 on, PyKota LDAP Support needs three additional configuration fields.\n")
+                sys.stderr.write("Please put the 'usermail', 'newuser' and 'newgroup' configuration fields in a\n[global] section in /etc/pykota/pykota.conf\n")
                 sys.stderr.write("You can look at the conf/pykota.conf.sample file for examples.\n")
                 sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
                 sys.stderr.write("INSTALLATION ABORTED BECAUSE CONFIGURATION INCOMPLETE.\n")

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2003/07/29 09:54:03  jalet
+# Added configurable LDAP mail attribute support
+#
 # Revision 1.34  2003/07/28 09:11:12  jalet
 # PyKota now tries to add its attributes intelligently in existing LDAP
 # directories.
@@ -235,6 +238,7 @@ class PyKotaConfig :
                         "userquotabase", "groupquotabase", \
                         "jobbase", "lastjobbase", \
                         "newuser", "newgroup", \
+                        "usermail", \
                       ] :
             ldapinfo[option] = self.getGlobalOption(option).strip()
         for field in ["newuser", "newgroup"] :

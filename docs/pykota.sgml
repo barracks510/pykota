@@ -1,6 +1,4 @@
-<!DOCTYPE Book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
-
-  <!entity INSTALLATION system "installation.sgml">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
   <!entity EDPYKOTA system "edpykota.sgml">
   <!entity REPYKOTA system "repykota.sgml">
   <!entity PYKOTME system "pykotme.sgml">
@@ -97,6 +95,9 @@
 <!--
 
 $Log$
+Revision 1.7  2003/07/29 09:54:03  jalet
+Added configurable LDAP mail attribute support
+
 Revision 1.6  2003/07/25 13:10:58  jalet
 Improved documentation
 

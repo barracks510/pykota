@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/07/29 09:54:03  jalet
+# Added configurable LDAP mail attribute support
+#
 # Revision 1.21  2003/07/28 09:11:12  jalet
 # PyKota now tries to add its attributes intelligently in existing LDAP
 # directories.
@@ -218,6 +221,9 @@ class Storage :
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
+            user.Email = fields.get(self.info["usermail"])
+            if user.Email is not None :
+                user.Email = user.Email[0]
             user.LimitBy = fields.get("pykotaLimitBy")
             if user.LimitBy is not None :
                 user.LimitBy = user.LimitBy[0]
