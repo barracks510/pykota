@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2003/11/12 13:06:35  jalet
+# Bug fix wrt no user/group name command line argument to edpykota
+#
 # Revision 1.60  2003/10/09 21:25:24  jalet
 # Multiple printer names or wildcards can be passed on the command line
 # separated with commas.
@@ -447,8 +450,11 @@ class EdPyKota(PyKotaTool) :
             else :
                 raise PyKotaToolError, _("There's no printer matching %s") % pname
         if not names :    
-            if options["add"] and not printeradded :
-                raise PyKotaToolError, _("You have to pass user or group names on the command line")
+            if options["add"] :
+                if not printeradded :
+                    raise PyKotaToolError, _("You have to pass user or group names on the command line")
+                else :    
+                    names = getattr(self.storage, "getAll%ssNames" % suffix)()
             else :    
                 names = [ "*" ] # all users
                 

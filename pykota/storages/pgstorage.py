@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/11/12 13:06:38  jalet
+# Bug fix wrt no user/group name command line argument to edpykota
+#
 # Revision 1.20  2003/10/09 21:25:26  jalet
 # Multiple printer names or wildcards can be passed on the command line
 # separated with commas.
@@ -177,6 +180,22 @@ class Storage(BaseStorage) :
         else :    
             typ = "text"
         return pg._quote(field, typ)
+        
+    def getAllUsersNames(self) :    
+        """Extracts all user names."""
+        usernames = []
+        result = self.doSearch("SELECT username FROM users;")
+        if result :
+            usernames = [record["username"] for record in result]
+        return usernames
+        
+    def getAllGroupsNames(self) :    
+        """Extracts all group names."""
+        groupnames = []
+        result = self.doSearch("SELECT groupname FROM groups;")
+        if result :
+            groupnames = [record["groupname"] for record in result]
+        return groupnames
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""

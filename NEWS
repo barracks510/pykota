@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha6 :
+    
+        - Bug fixed : when edpykota was used to add a printer
+          with no user or group name, a bad user/group name "*" was
+          added to the database.
+          
     - 1.16alpha5 :
     
         - New CUPS backend supports device enumeration !

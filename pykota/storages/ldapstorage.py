@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2003/11/12 13:06:37  jalet
+# Bug fix wrt no user/group name command line argument to edpykota
+#
 # Revision 1.34  2003/10/24 08:37:55  jalet
 # More complete messages in case of LDAP failure.
 # LDAP database connection is now unbound on exit too.
@@ -243,6 +246,22 @@ class Storage(BaseStorage) :
         else :
             return dn
             
+    def getAllUsersNames(self) :    
+        """Extracts all user names."""
+        usernames = []
+        result = self.doSearch("objectClass=pykotaAccount", ["pykotaUserName"], base=self.info["userbase"])
+        if result :
+            usernames = [record[1]["pykotaUserName"][0] for record in result]
+        return usernames
+        
+    def getAllGroupsNames(self) :    
+        """Extracts all group names."""
+        groupnames = []
+        result = self.doSearch("objectClass=pykotaGroup", ["pykotaGroupName"], base=self.info["groupbase"])
+        if result :
+            groupnames = [record[1]["pykotaGroupName"][0] for record in result]
+        return groupnames
+        
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
