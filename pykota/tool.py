@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.143  2004/11/18 05:54:15  jalet
+# Fix problem with spaces at the end of filenames in LPRng
+#
 # Revision 1.142  2004/11/16 23:15:05  jalet
 # Fix for LPRng job's file detection code
 #
@@ -1377,6 +1380,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     inputfile = os.path.join(spooldir, df_name)
             else :    
                 inputfile = os.path.join(spooldir, df_name)
+            inputfile = inputfile.strip()    
                 
             if jseen and Pseen and nseen and rseen :        
                 options = os.environ.get("HF", "") or os.environ.get("CONTROL", "")

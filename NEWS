@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.21alpha6 :
     
+        - Fix for LPRng filenames.
+        
         - Added Turkish translation thanks to Baris Cicek.
         
     - 1.21alpha5 :
