@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/02/27 23:48:41  jalet
+# Correctly maps PyKota's log levels to syslog log levels
+#
 # Revision 1.11  2003/02/27 22:55:20  jalet
 # WARN log priority doesn't exist.
 #
@@ -120,7 +123,7 @@ def main() :
         counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname) # TODO use printername instead, make them match from CUPS' config files
     except PyKotaRequesterError, msg :
         # can't get actual page counter, assume printer is off, but warns in log
-        kotafilter.logger.log_message(msg, "err")
+        kotafilter.logger.log_message(msg, "warn")
         printerIsOff = 1
     else :    
         printerIsOff = 0
@@ -130,7 +133,7 @@ def main() :
     if pgc is None :
         # The printer is unknown from the Quota Storage perspective
         # we let the job pass through, but log a warning message
-        kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "info")
+        kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername)
     else :    
         # get last values from Quota Storage
         (lastpagecounter, lastusername) = (pgc["pagecounter"], pgc["lastusername"])

@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/02/27 23:48:41  jalet
+# Correctly maps PyKota's log levels to syslog log levels
+#
 # Revision 1.23  2003/02/27 22:55:20  jalet
 # WARN log priority doesn't exist.
 #
@@ -253,7 +256,7 @@ class PyKotaTool :
                 action = "ALLOW"
             else :    
                 action = "DENY"
-            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action), "info")
+            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action))
             return (action, None, None)
         else :    
             pagecounter = quota["pagecounter"]

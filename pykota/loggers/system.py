@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/27 23:48:41  jalet
+# Correctly maps PyKota's log levels to syslog log levels
+#
 # Revision 1.3  2003/02/27 22:55:20  jalet
 # WARN log priority doesn't exist.
 #
@@ -31,6 +34,7 @@ import syslog
 
 class Logger :
     """A logger class which logs to syslog."""
+    levels = { "error" : "ERR", "warn": "WARNING", "info": "INFO", "debug": "DEBUG" }
     def __init__(self) :
         """Opens the logging subsystem."""
         syslog.openlog("PyKota", 0, syslog.LOG_LPR)
@@ -41,5 +45,5 @@ class Logger :
         
     def log_message(self, message, level="info") :
         """Sends the message to syslog."""
-        priority = getattr(syslog, "LOG_%s" % level.upper(), syslog.LOG_DEBUG)
+        priority = getattr(syslog, "LOG_%s" % self.levels.get(level.lower(), "DEBUG").upper(), syslog.LOG_DEBUG)
         syslog.syslog(priority, message)

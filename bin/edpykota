@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/02/27 23:48:41  jalet
+# Correctly maps PyKota's log levels to syslog log levels
+#
 # Revision 1.23  2003/02/27 22:55:20  jalet
 # WARN log priority doesn't exist.
 #
@@ -211,7 +214,7 @@ class EdPyKota(PyKotaTool) :
                 raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
         if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
             # error, exchange them
-            self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit), "info")
+            self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
             (softlimit, hardlimit) = (hardlimit, softlimit)
         if not names :    
             if options["add"] :
