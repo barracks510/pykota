@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/12/03 12:34:28  jalet
+# Fixed the default value for the --savetoner command line option
+#
 # Revision 1.10  2004/11/17 13:28:19  jalet
 # Fixed some typo in the help
 #
@@ -315,7 +318,7 @@ if __name__ == "__main__" :
     retcode = 0
     try :
         defaults = { \
-                     "savetoner" : "100", \
+                     "savetoner" : "0", \
                      "pagesize" : "a4", \
                      "logo" : "/usr/share/pykota/logos/pykota.jpeg",
                      "url" : "http://www.librelogiciel.com/software/",
