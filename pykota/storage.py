@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/17 22:05:50  jalet
+# Storage backend now supports admin and user passwords (untested)
+#
 # Revision 1.7  2003/02/10 12:07:31  jalet
 # Now repykota should output the recorded total page number for each printer too.
 #
@@ -108,6 +111,8 @@ class BaseStorage :
 def openConnection(config, asadmin=0) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
     (backend, host, database, admin, user) = config.getStorageBackend()
+    backendinfo = config.getStorageBackend()
+    backend = backendinfo["storagebackend"]
     try :
         if not backend.isalpha() :
             # don't trust user input
@@ -116,5 +121,14 @@ def openConnection(config, asadmin=0) :
     except ImportError :
         raise PyKotaStorageError, _("Unsupported quota storage backend %s") % backend
     else :    
-        return getattr(storagebackend, "Storage")(host, database, (asadmin and admin) or user)
+        host = backendinfo["storageserver"]
+        database = backendinfo["storagename"]
+        admin = backendinfo["storageadmin"]
+        user = backendinfo["storageuser"]
+        adminpw = backendinfo["storageadminpw"]
+        userpw = backendinfo["storageuserpw"]
+        if asadmin :
+            return getattr(storagebackend, "Storage")(host, database, admin, adminpw)
+        else :    
+            return getattr(storagebackend, "Storage")(host, database, user, userpw)
 

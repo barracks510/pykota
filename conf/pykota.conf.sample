@@ -26,8 +26,8 @@ storageserver: localhost
 storagename: pykota
 storageadmin: pykotaadmin
 storageuser: pykotauser
-# storageadminpw: NOT YET SUPPORTED
-# storageuserpw: NOT YET SUPPORTED
+# storageadminpw: Comment out if unused
+# storageuserpw: Comment out if unused
 
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)

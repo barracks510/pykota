@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/02/17 22:05:50  jalet
+# Storage backend now supports admin and user passwords (untested)
+#
 # Revision 1.13  2003/02/10 11:47:39  jalet
 # Moved some code down into the requesters
 #
@@ -89,7 +92,7 @@ class PyKotaConfig :
         """
         for option in [ "storagebackend", "storageserver", \
                         "storagename", "storageadmin", \
-                        "storageuser", # TODO : "storageadminpw", "storageusepw", \
+                        "storageuser", 
                         "logger", "admin", "adminmail",
                         "smtpserver", "method", "gracedelay" ] :
             if not self.config.has_option("global", option) :            
@@ -129,19 +132,19 @@ class PyKotaConfig :
         return [pname for pname in self.config.sections() if pname != "global"]
         
     def getStorageBackend(self) :    
-        """Returns the storage backend information as a tuple.
-        
-           The tuple has the form :
-           
-             (backend, host, database, admin, user)
-        """        
-        backendinfo = []
+        """Returns the storage backend information as a Python mapping."""        
+        backendinfo = {}
         for option in [ "storagebackend", "storageserver", \
                         "storagename", "storageadmin", \
-                        "storageuser", # TODO : "storageadminpw", "storageusepw", \
+                        "storageuser", \
                       ] :
-            backendinfo.append(self.config.get("global", option, raw=1))
-        return tuple(backendinfo)    
+            backendinfo[option] = self.config.get("global", option, raw=1)
+        for option in [ "storageadminpw", "storageuserpw" ] :    
+            if self.config.has_option("global", option) :
+                backendinfo[option] = self.config.get("global", option, raw=1)
+            else :    
+                backendinfo[option] = None
+        return backendinfo
         
     def getLoggingBackend(self) :    
         """Returns the logging backend information."""

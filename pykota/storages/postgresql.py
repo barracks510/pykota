@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/17 22:05:50  jalet
+# Storage backend now supports admin and user passwords (untested)
+#
 # Revision 1.3  2003/02/06 14:49:04  jalet
 # edpykota should be ok now
 #
@@ -32,11 +35,11 @@ from pykota.storage import PyKotaStorageError
 from pykota.storages import sql
 
 class Storage(sql.SQLStorage) :
-    def __init__(self, host, dbname, user) :
+    def __init__(self, host, dbname, user, passwd) :
         """Opens the PostgreSQL database connection."""
         self.closed = 1
         try :
-            self.database = pg.connect(host=host, dbname=dbname, user=user)
+            self.database = pg.connect(host=host, dbname=dbname, user=user, passwd=passwd)
             self.closed = 0
         except pg.error, msg :
             raise PyKotaStorageError, msg
