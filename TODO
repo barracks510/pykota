@@ -28,11 +28,6 @@ TODO, in no particular order :
           (SambaEdu, SkoleLinux, K12LTSP, ...) to see how to
           better integrate PyKota with these.
           
-        - Write an IPP message parser, and extract the IPP
-          billing code, job originating hostname and ipp username
-          from job's control files : this would even solve the
-          actual page_log parsing problem.
-        
         - Allow soft and hard limits to be increased/decreased.
         
         - Better --prototype option in edpykota
@@ -71,22 +66,7 @@ TODO, in no particular order :
           data : use this to tell CUPS what action has been taken
           for current job.
           
-        - Add frontbanner and rearbanner directives to pykota.conf
-          This directives will allow the launch (if executable)
-          or the use of the banner path passed as a parameter.
-          If executable, the banner content will be taken from
-          the command's output, else from the banner file 
-          directly. 
-          
-          Maybe allow frontbanner: +somepath and 
-                      frontbanner: -somepath
-          to allow/deny accounting of the banner itself
-          (not sure because may be VERY DIFFICULT !)
-          
-          Matt Hyclak has sent a patch for cupspykota which seems
-          to be ok, but we have to find how to do the same with
-          lprngpykota...
-          Add a "printDenyBanner: once(/path/to/banner)" directive
+        - Add a "printDenyBanner: once(/path/to/banner)" directive
                 "printDenyBanner: always(/path/to/banner)"
                 "printDenyBanner: never"
           This requires a database schema change. 
@@ -101,10 +81,6 @@ TODO, in no particular order :
           
         - Finish implementation of quota-then-balance and 
           balance-then-quota.
-          
-        - Test and document a possible workaround for knowing
-          if the job is a banner (embed a postscript comment
-          in the banner).
           
         - Introduce the pkusers command.
           pkusers --nogroup
