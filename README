@@ -340,6 +340,17 @@ To install the software, just type :
 
 You may need to be logged in with sufficient privileges (e.g. root)
 
+Create a system user for PyKota :
+
+    adduser --system --group --gecos PyKota pykota
+    
+Put the user your printing system is run as in the pykota system group :
+
+    adduser lp pykota
+    
+    NB : on our system, the CUPS printing system runs as system user 'lp'.
+    Please adapt this to your own system.
+
 Go to the initscripts subdirectory of PyKota's sources, and choose
 the appropriate storage backend for your configuration. Read carefully
 the associated README file and execute the initialization script

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.145  2004/11/27 22:52:07  jalet
+# Now PyKota searches its configuration files first in system user pykota's
+# home directory
+#
 # Revision 1.144  2004/11/18 06:01:53  jalet
 # Fix for the fix
 #
@@ -521,6 +525,7 @@
 
 import sys
 import os
+import pwd
 import fnmatch
 import getopt
 import smtplib
@@ -599,8 +604,19 @@ class Tool :
     
         # pykota specific stuff
         self.documentation = doc
+        
+        # try to find the configuration files in user's 'pykota' home directory.
         try :
-            self.config = config.PyKotaConfig("/etc/pykota")
+            pykotauser = pwd.getpwnam("pykota")
+        except KeyError :    
+            confdir = "/etc/pykota"
+            missingUser = 1
+        else :    
+            confdir = pykotauser[5]
+            missingUser = 0
+            
+        try :
+            self.config = config.PyKotaConfig(confdir)
         except ConfigParser.ParsingError, msg :    
             sys.stderr.write("ERROR: Problem encountered while parsing configuration file : %s\n" % msg)
             sys.stderr.flush()
@@ -614,10 +630,16 @@ class Tool :
         except (config.PyKotaConfigError, logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
             self.crashed(msg)
             raise
+            
+        # We NEED this here, even when not in an accounting filter/backend    
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
+        
         if defaultToCLocale :
             self.printInfo("Incorrect locale settings. PyKota falls back to the 'C' locale.", "warn")
+        if missingUser :     
+            self.printInfo("The 'pykota' system account is missing. Configuration files were searched in /etc/pykota instead.", "warn")
+        
         self.logdebug("Charset in use : %s" % self.charset)
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug("Command line arguments : %s" % arguments)
