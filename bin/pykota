@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/05 22:45:25  jalet
+# Forgotten import
+#
 # Revision 1.4  2003/02/05 22:42:51  jalet
 # Typo
 #
@@ -32,6 +35,7 @@
 #
 
 import sys
+import os
 
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota import requester
