@@ -49,7 +49,7 @@ header = """Content-type: text/html
         <tr>
           <td>
             <p>
-              <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/pykota.png" alt="PyKota's Logo" /></a>
+              <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/pykota.png?version=%s" alt="PyKota's Logo" /></a>
               <br />
               <a href="http://www.librelogiciel.com/software/">PyKota v%s</a>
             </p>
@@ -82,7 +82,7 @@ class PyKotMeGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Reports"), version.__version__, _("PyKota Quotes"), _("Quote"))
+        print header % (self.getCharset(), _("PyKota Reports"), version.__version__, version.__version__, _("PyKota Quotes"), _("Quote"))
         print self.body
         print footer % _("Quote")
         
