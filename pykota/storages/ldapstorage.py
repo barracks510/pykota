@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2003/10/08 07:01:20  jalet
+# Job history can be disabled.
+# Some typos in README.
+# More messages in setup script.
+#
 # Revision 1.32  2003/10/07 14:23:25  jalet
 # More work on cache
 #
@@ -663,7 +668,12 @@ class Storage(BaseStorage) :
         
     def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None) :    
         """Adds a job in a printer's history."""
-        uuid = self.genUUID()
+        if (not self.disablehistory) or (not printer.LastJob.Exists) :
+            uuid = self.genUUID()
+            dn = "cn=%s,%s" % (uuid, self.info["jobbase"])
+        else :    
+            uuid = printer.LastJob.ident[3:].split(",")[0]
+            dn = printer.LastJob.ident
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,
@@ -673,10 +683,15 @@ class Storage(BaseStorage) :
                    "pykotaPrinterPageCounter" : str(pagecounter),
                    "pykotaAction" : action,
                  }
-        if jobsize is not None :         
+        if (not self.disablehistory) or (not printer.LastJob.Exists) :
+            if jobsize is not None :         
+                fields.update({ "pykotaJobSize" : str(jobsize) })
+            self.doAdd(dn, fields)
+        else :    
+            # here we explicitly want to reset jobsize to 'None' if needed
             fields.update({ "pykotaJobSize" : str(jobsize) })
-        dn = "cn=%s,%s" % (uuid, self.info["jobbase"])
-        self.doAdd(dn, fields)
+            self.doModify(dn, fields)
+            
         if printer.LastJob.Exists :
             fields = {
                        "pykotaLastJobIdent" : uuid,

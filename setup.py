@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/10/08 07:01:19  jalet
+# Job history can be disabled.
+# Some typos in README.
+# More messages in setup script.
+#
 # Revision 1.24  2003/10/07 09:07:27  jalet
 # Character encoding added to please latest version of Python
 #
@@ -162,7 +167,7 @@ def checkWithPrompt(prompt, module=None, command=None, helper=None) :
         else :
             return ACTION_ABORT
     
-if "install" in sys.argv :
+if ("install" in sys.argv) and not ("help" in sys.argv) :
     # checks if Python version is correct, we need >= 2.1
     if not (sys.version > "2.1") :
         sys.stderr.write("PyKota needs at least Python v2.1 !\nYour version seems to be older than that, please update.\nAborted !\n")
@@ -267,7 +272,15 @@ if "install" in sys.argv :
                 sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
                 sys.stderr.write("INSTALLATION ABORTED BECAUSE CONFIGURATION INCOMPLETE.\n")
                 sys.exit(-1)
-        
+                
+        # Say something about caching mechanism and disabling job history
+        sys.stdout.write("You can now activate the database caching mechanism\nwhich is disabled by default.\nIt is especially recommanded with the LDAP backend.\n")
+        sys.stdout.write("You can now disable the preservation of the complete\njob history which is enabled by default.\nIt is probably more useful with the LDAP backend.\n")
+        sys.stdout.write("PLEASE LOOK AT THE SAMPLE CONFIGURATION FILE conf/pykota.conf.sample\n")
+        sys.stdout.write("TO LEARN HOW TO DO\n")
+        dummy = raw_input("Please press ENTER when you have read the message above. ")
+        sys.stdout.write("\n")
+            
     # change files permissions    
     os.chmod("/etc/pykota/pykota.conf", 0644)
     os.chmod("/etc/pykota/pykotadmin.conf", 0640)
@@ -278,7 +291,7 @@ if "install" in sys.argv :
     sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.14.sql\n")
     sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
     sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION.\n\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.14 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.

@@ -60,6 +60,16 @@ storageuser: pykotauser
 #
 storagecaching: No
 
+# Should full job history be disabled ?
+# If unset or set to No, full job history is kept in the database.
+# This will be useful in the future when the report generator
+# will be written.
+# Disabling the job history can be useful with heavily loaded
+# LDAP servers, to not make the LDAP tree grow out of control.
+# Disabling the job history with the PostgreSQL backend works too
+# but it's probably less useful than with LDAP.
+disablehistory: No
+
 # LDAP example, uncomment and adapt it to your own configuration :
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.librelogiciel.com:389

@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/10/08 07:01:20  jalet
+# Job history can be disabled.
+# Some typos in README.
+# More messages in setup script.
+#
 # Revision 1.18  2003/10/07 09:07:30  jalet
 # Character encoding added to please latest version of Python
 #
@@ -419,10 +424,14 @@ class Storage(BaseStorage) :
         
     def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None) :    
         """Adds a job in a printer's history."""
-        if jobsize is not None :
-            self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize)))
-        else :    
-            self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action)))
+        if (not self.disablehistory) or (not printer.LastJob.Exists) :
+            if jobsize is not None :
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize)))
+            else :    
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action)))
+        else :        
+            # here we explicitly want to reset jobsize to NULL if needed
+            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobdate=now() WHERE id=%s;" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(printer.LastJob.ident)))
             
     def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota."""

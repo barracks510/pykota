@@ -77,7 +77,9 @@ Actual working features :
           PyKota on Debian machines.
           
         - Complete job history is saved. This will allow more
-          complex reports in the future.
+          complex reports in the future. This can be disabled
+          if preserving the history is of no interest or
+          makes the database grow out of control.
           
         - Price per page and price per job can be defined for  
           every printer. A job's price is the sum of the
@@ -297,7 +299,7 @@ Restart CUPS or LPRng, for example under Debian GNU/Linux systems :
 Your users now should be able to print but not exceed their 
 printing quota.
 
-To see printer command usage, you can use :
+To see printer quota usage, you can use :
 
     $ repykota --printer lp
     

@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.15alpha8 :
+    
+        - Job history can be disabled if needed.
+          This feature may be useful for people who use the LDAP
+          backend and don't want their LDAP tree to grow out of
+          control.
+        
     - 1.15alpha7 : 
     
         - More work done on caching wrt groups.
