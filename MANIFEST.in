@@ -2,5 +2,5 @@ include COPYING TODO NEWS CREDITS MANIFEST.in bin/pykota bin/edpykota bin/warnpy
 recursive-include po *.po *.mo *.pot
 recursive-include docs *.sgml *.png
 recursive-include conf README *.sample
-recursive-include initscripts README README.* pykota-*
+recursive-include initscripts README README.* pykota-*.sql
 recursive-include debian README printquota
