@@ -22,6 +22,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 PyKota NEWS :
 
 
+    - 1.19alpha18 :
+    
+        - History of payments is now stored in the database, and
+          updated each time an user's balance is modified with
+          edpykota --balance. This history represents each time
+          the user was given some positive or negative credit,
+          but doesn't reflect price paid for jobs, which appear
+          in the jobs history instead.
+          
     - 1.19alpha17 :
     
         - Mysterious bug (program exited unexpectedly without leaving

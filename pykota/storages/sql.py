@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2004/06/05 22:03:50  jalet
+# Payments history is now stored in database
+#
 # Revision 1.40  2004/06/03 23:14:11  jalet
 # Now stores the job's size in bytes in the database.
 # Preliminary work on payments storage : database schemas are OK now,
@@ -341,6 +344,10 @@ class SQLStorage :
         else :    
             self.doModify("UPDATE users SET balance=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(user.ident)))
             
+    def writeNewPayment(self, user, amount) :        
+        """Adds a new payment to the payments history."""
+        self.doModify("INSERT INTO payments (userid, amount) VALUES (%s, %s)" % (self.doQuote(user.ident), self.doQuote(amount)))
+        
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
         self.doModify("UPDATE jobhistory SET jobsize=%s, jobprice=%s WHERE id=%s" % (self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(lastjob.ident)))

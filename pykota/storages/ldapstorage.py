@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.68  2004/06/05 22:03:50  jalet
+# Payments history is now stored in database
+#
 # Revision 1.67  2004/06/03 23:14:10  jalet
 # Now stores the job's size in bytes in the database.
 # Preliminary work on payments storage : database schemas are OK now,
@@ -256,6 +259,7 @@
 import types
 import time
 import md5
+from mx import DateTime
 
 from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
@@ -476,7 +480,7 @@ class Storage(BaseStorage) :
             user.LimitBy = fields.get("pykotaLimitBy")
             if user.LimitBy is not None :
                 user.LimitBy = user.LimitBy[0]
-            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid"], base=self.info["balancebase"])
+            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], base=self.info["balancebase"])
             if result :
                 fields = result[0][1]
                 user.idbalance = result[0][0]
@@ -494,6 +498,10 @@ class Storage(BaseStorage) :
                     else :    
                         user.LifeTimePaid = float(user.LifeTimePaid[0])
                 user.LifeTimePaid = user.LifeTimePaid or 0.0        
+                user.Payments = []
+                for payment in fields.get("pykotaPayments", []) :
+                    (date, amount) = payment.split(" # ")
+                    user.Payments.append((date, amount))
             user.Exists = 1
         return user
        
@@ -943,6 +951,17 @@ class Storage(BaseStorage) :
             fields.update({ "pykotaLifeTimePaid" : str(newlifetimepaid) })
         return self.doModify(user.idbalance, fields)         
             
+    def writeNewPayment(self, user, amount) :        
+        """Adds a new payment to the payments history."""
+        payments = []
+        for payment in user.Payments :
+            payments.append("%s # %s" % (payment[0], str(payment[1])))
+        payments.append("%s # %s" % (str(DateTime.now()), str(amount)))
+        fields = {
+                   "pykotaPayments" : payments,
+                 }
+        return self.doModify(user.idbalance, fields)         
+        
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
         fields = {

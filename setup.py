@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2004/06/05 22:03:49  jalet
+# Payments history is now stored in database
+#
 # Revision 1.43  2004/05/25 09:49:41  jalet
 # The old pykota filter has been removed. LPRng support disabled for now.
 #
@@ -375,12 +378,12 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     os.chmod("/etc/pykota/pykotadmin.conf", 0640)
     
     # WARNING MESSAGE    
-    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha7 TO 1.19alpha7 OR ABOVE\n")
+    sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha17 TO 1.19alpha17 OR ABOVE\n")
     sys.stdout.write("AND USE THE POSTGRESQL BACKEND, THEN YOU HAVE TO MODIFY YOUR\n")
     sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.19.sql\n")
     sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
     sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha7 OR ABOVE.\n\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha17 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     sys.stdout.write("\n\nWARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha10 TO 1.19alpha10 OR ABOVE\n")

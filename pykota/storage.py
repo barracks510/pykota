@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2004/06/05 22:03:49  jalet
+# Payments history is now stored in database
+#
 # Revision 1.53  2004/06/03 23:14:10  jalet
 # Now stores the job's size in bytes in the database.
 # Preliminary work on payments storage : database schemas are OK now,
@@ -229,6 +232,7 @@ class StorageUser(StorageObject) :
         self.AccountBalance = None
         self.LifeTimePaid = None
         self.Email = None
+        self.Payments = [] # TODO : maybe handle this smartly for SQL, for now just don't retrieve them
         
     def consumeAccountBalance(self, amount) :     
         """Consumes an amount of money from the user's account balance."""
@@ -237,9 +241,18 @@ class StorageUser(StorageObject) :
         
     def setAccountBalance(self, balance, lifetimepaid) :    
         """Sets the user's account balance in case he pays more money."""
-        self.parent.writeUserAccountBalance(self, balance, lifetimepaid)
-        self.AccountBalance = balance
-        self.LifeTimePaid = lifetimepaid
+        diff = float(lifetimepaid or 0.0) - float(self.LifeTimePaid or 0.0)
+        self.parent.beginTransaction()
+        try :
+            self.parent.writeUserAccountBalance(self, balance, lifetimepaid)
+            self.parent.writeNewPayment(self, diff)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+            self.AccountBalance = balance
+            self.LifeTimePaid = lifetimepaid
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""
