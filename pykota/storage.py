@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/01/06 15:51:24  jalet
+# Fixed caching of printer groups
+#
 # Revision 1.30  2004/01/06 14:24:59  jalet
 # Printer groups should be cached now, if caching is enabled.
 #
@@ -349,7 +352,7 @@ class BaseStorage :
         self.disablehistory = pykotatool.config.getDisableHistory()
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
-            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }
+            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {}, "PARENTPRINTERS" : {} }
         
     def close(self) :    
         """Must be overriden in children classes."""
