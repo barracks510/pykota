@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/02/08 09:42:44  jalet
+# Better handle wrong or bad command line arguments
+#
 # Revision 1.10  2003/02/08 09:39:20  jalet
 # typos
 #
@@ -181,12 +184,12 @@ class EdPyKota(PyKotaTool) :
                     (softlimit, hardlimit) = (prototype["softlimit"], prototype["hardlimit"])
             if hardlimit is None :    
                 hardlimit = softlimit
-                self.logger.log_message("Undefined hard limit set to %i on printer %s." % (hardlimit, printer))
+                self.logger.log_message("Undefined hard limit set to soft limit (%s) on printer %s." % (str(hardlimit), printer))
             if softlimit is None :    
                 softlimit = hardlimit
-                self.logger.log_message("Undefined soft limit set to %i on printer %s." % (softlimit, printer))
+                self.logger.log_message("Undefined soft limit set to hard limit (%s) on printer %s." % (str(softlimit), printer))
             if (hardlimit is None) or (softlimit is None) :        
-                raise PyKotaToolError, "Both hard and soft limits must be set !  Aborting."
+                raise PyKotaToolError, "Both hard and soft limits must be set ! Aborting."
             for name in names :
                 if options["users"] :
                     quota = self.storage.getUserPQuota(name, printer)
