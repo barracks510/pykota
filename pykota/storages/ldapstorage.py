@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.92  2004/12/26 14:50:51  jalet
+# Normalized fields names in dumpykota's output so that an LDAP or PostgreSQL
+# dump is parseable the same way.
+#
 # Revision 1.91  2004/12/21 16:46:25  jalet
 # dumpykota's filtering capabilities are now supported within the LDAP
 # backend as well as within the PostgreSQL backend. Untested though since
@@ -1418,7 +1422,7 @@ class Storage(BaseStorage) :
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("dn", "pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerPage", "description") ]
+            result = [ ("dn", "printername", "priceperpage", "priceperjob", "description") ]
             for entry in entries :
                 result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description))
             return result 
@@ -1428,9 +1432,9 @@ class Storage(BaseStorage) :
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("dn", "pykotaUserName", self.info["usermail"], "pykotaBalance", "pykotaLifeTimePaid", "pykotaLimitBy") ]
+            result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email") ]
             for entry in entries :
-                result.append((entry.ident, entry.Name, entry.Email, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy))
+                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email))
             return result 
         
     def extractGroups(self, extractonly={}) :
@@ -1438,9 +1442,9 @@ class Storage(BaseStorage) :
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
         if entries :
-            result = [ ("dn", "pykotaGroupName", "pykotaBalance", "pykotaLifeTimePaid", "pykotaLimitBy") ]
+            result = [ ("dn", "groupname", "limitby", "balance", "lifetimepaid") ]
             for entry in entries :
-                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy))
+                result.append((entry.ident, entry.Name, entry.LimitBy, entry.AccountBalance, entry.LifeTimePaid))
             return result 
         
     def extractPayments(self, extractonly={}) :
@@ -1448,10 +1452,10 @@ class Storage(BaseStorage) :
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("pykotaUserName", "date", "amount") ]
+            result = [ ("username", "amount", "date") ]
             for entry in entries :
                 for (date, amount) in entry.Payments :
-                    result.append((entry.Name, date, amount))
+                    result.append((entry.Name, amount, date))
             return result        
         
     def extractUpquotas(self, extractonly={}) :
@@ -1459,7 +1463,7 @@ class Storage(BaseStorage) :
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("pykotaUserName", "pykotaPrinterName", "dn", "userdn", "printerdn", "pykotaLifePageCounter", "pykotaPageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit") ]
+            result = [ ("username", "printername", "dn", "userdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit") ]
             uname = extraconly.get("username")
             for entry in entries :
                 for (user, userpquota) in self.getPrinterUsersAndQuotas(entry) :
@@ -1472,7 +1476,7 @@ class Storage(BaseStorage) :
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("pykotaGroupName", "pykotaPrinterName", "dn", "groupdn", "printerdn", "pykotaLifePageCounter", "pykotaPageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit") ]
+            result = [ ("groupname", "printername", "dn", "groupdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit") ]
             gname = extractonly.get("groupname")
             for entry in entries :
                 for (group, grouppquota) in self.getPrinterGroupsAndQuotas(entry) :
@@ -1485,7 +1489,7 @@ class Storage(BaseStorage) :
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
         if entries :
-            result = [ ("pykotaGroupName", "pykotaUserName", "groupdn", "userdn") ]
+            result = [ ("groupname", "username", "groupdn", "userdn") ]
             uname = extractonly.get("username")
             for entry in entries :
                 for member in entry.Members :
@@ -1498,7 +1502,7 @@ class Storage(BaseStorage) :
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("pykotaPGroupName", "pykotaPrinterName", "pgroupdn", "printerdn") ]
+            result = [ ("pgroupname", "printername", "pgroupdn", "printerdn") ]
             pgname = extractonly.get("pgroupname")
             for entry in entries :
                 for parent in self.getParentPrinters(entry) :
@@ -1520,7 +1524,7 @@ class Storage(BaseStorage) :
             printer = None
         entries = self.retrieveHistory(user, printer, limit=None)
         if entries :
-            result = [ ("pykotaUserName", "pykotaPrinterName", "dn", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "createTimeStamp", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "pykotaJobPrice", "pykotaHostName", "pykotaJobSizeBytes") ] 
+            result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes") ] 
             for entry in entries :
                 result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes)) 
             return result    

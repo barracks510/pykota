@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.21alpha15 :
       
+        - Normalized field names between LDAP and PostgreSQL backends
+          in dumpykota's output.
+          
         - dumpykota filtering capabilities are now supported within
           the LDAP backend too.
           
