@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/09/04 07:57:18  jalet
+# Problem with Python 2.3 fixed : a bug of me.
+#
 # Revision 1.5  2003/07/07 11:49:24  jalet
 # Lots of small fixes with the help of PyChecker
 #
@@ -90,18 +93,10 @@ class Accounter(AccounterBase) :
             infile = open(self.filter.inputfile, "rb")
             
         # launches external accounter
-        try :
-            infilename = tempfile.mkstemp()     # Python 2.3
-        except AttributeError :    
-            infilename = tempfile.mktemp()
-        try :
-            outfilename = tempfile.mkstemp()    # Python 2.3
-        except AttributeError :    
-            outfilename = tempfile.mktemp()
-        try :
-            errfilename = tempfile.mkstemp()    # Python 2.3
-        except AttributeError :    
-            errfilename = tempfile.mktemp()
+        # TODO : USE tempfile.mkstemp() instead ! Needs some work !
+        infilename = tempfile.mktemp()
+        outfilename = tempfile.mktemp()
+        errfilename = tempfile.mktemp()
         
         try :
             # feed it with our data
