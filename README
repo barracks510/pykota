@@ -45,6 +45,9 @@ PyKota features :
     Printing systems :
     
         - Supports both CUPS and LPRng as the printing system.
+        
+          NB : LPRng support is currently being rewritten, so
+          LPRng is actually not supported in latest CVS versions.
             
     Databases :
     
@@ -63,15 +66,12 @@ PyKota features :
           
         - Supports any printer which can report its internal
           page counter. Can ask printers for their internal 
-          page counter via SNMP, Netatalk, or any other way.
+          page counter via SNMP, Netatalk, PJL, PS, or any 
+          other way.
           This is completely configurable.
           
-        - Supports PostScript and PCL5 printers natively,
-          more formats to come.
-          
-        - Supports any other printer via GhostScript.
-          Depending on the printer some configuration may
-          be needed.
+        - Supports PostScript, PDF and PCL5 printers natively
+          for software accounting methods. More formats to come.
             
     Quota systems :        
     
@@ -86,7 +86,8 @@ PyKota features :
         - Supports account balance quotas in any currency.
           Account balance quotas can be set on a per user 
           basis. The account balance is shared amongst
-          all printers.
+          all printers. The history of payments (positive
+          or negative credits to an user account) is kept.
           
         - Page quota and account balance can be set/reset
           independantly.
