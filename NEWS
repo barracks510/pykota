@@ -21,6 +21,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.08alpha4 :
+    
+        - LDAP schema included. 
+          THIS IS JUST FOR PEOPLE TO DISCUSS ABOUT THIS.
+          LDAP SUPPORT DOESN'T WORK YET, AND THE SCHEMA
+          MAY CHANGE IN THE FUTURE. PLEASE TELL US
+          WHAT YOU THINK ABOUT THIS SCHEMA ON THE 
+          MAILING LIST.
+          
     - 1.08alpha3 :
     
         - External accounting methods were partly rewritten :
