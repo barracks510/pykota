@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2004/05/10 09:29:48  jalet
+# Should be more robust if we receive a SIGTERM during an I/O operation
+#
 # Revision 1.39  2004/05/07 14:44:53  jalet
 # Fix for file handles unregistered twice from the polling object
 #
@@ -369,83 +372,86 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             availablefds = pollster.poll(5000)
             for (fd, mask) in availablefds :
                 # self.logdebug("file: %i    mask: %04x" % (fd, mask))
-                if mask & select.POLLOUT :
-                    # We can write
-                    if fd == tocfno :
-                        if indata :
-                            os.write(fd, indata)    
-                            try :
-                                os.fsync(fd)
-                            except OSError :
-                                pass
-                            indata = ""
-                        if endinput :    
-                            self.unregisterFileNo(pollster, tocfno)        
-                            self.logdebug("Closing real backend's stdin.")
-                            os.close(tocfno)
-                            inputclosed = 1
-                    elif fd == stdoutfno :
-                        if outdata :
-                            os.write(fd, outdata)
-                            try :
-                                os.fsync(fd)
-                            except OSError :    
-                                pass
-                            outdata = ""
-                        if endoutput :    
-                            self.unregisterFileNo(pollster, stdoutfno)        
-                            outputclosed = 1
-                    elif fd == stderrfno :
-                        if errdata :
-                            os.write(fd, errdata)
-                            try :
-                                os.fsync(fd)
-                            except OSError :    
-                                pass
-                            errdata = ""
-                        if enderr :    
-                            self.unregisterFileNo(pollster, stderrfno)        
-                            errclosed = 1
-                if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
-                    # We have something to read
-                    data = os.read(fd, 256 * 1024)
-                    if fd == infno :
-                        indata += data
-                        if not data :    # If yes, then no more input data
-                            self.unregisterFileNo(pollster, infno)
+                try :
+                    if mask & select.POLLOUT :
+                        # We can write
+                        if fd == tocfno :
+                            if indata :
+                                os.write(fd, indata)    
+                                try :
+                                    os.fsync(fd)
+                                except OSError :
+                                    pass
+                                indata = ""
+                            if endinput :    
+                                self.unregisterFileNo(pollster, tocfno)        
+                                self.logdebug("Closing real backend's stdin.")
+                                os.close(tocfno)
+                                inputclosed = 1
+                        elif fd == stdoutfno :
+                            if outdata :
+                                os.write(fd, outdata)
+                                try :
+                                    os.fsync(fd)
+                                except OSError :    
+                                    pass
+                                outdata = ""
+                            if endoutput :    
+                                self.unregisterFileNo(pollster, stdoutfno)        
+                                outputclosed = 1
+                        elif fd == stderrfno :
+                            if errdata :
+                                os.write(fd, errdata)
+                                try :
+                                    os.fsync(fd)
+                                except OSError :    
+                                    pass
+                                errdata = ""
+                            if enderr :    
+                                self.unregisterFileNo(pollster, stderrfno)        
+                                errclosed = 1
+                    if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
+                        # We have something to read
+                        data = os.read(fd, 256 * 1024)
+                        if fd == infno :
+                            indata += data
+                            if not data :    # If yes, then no more input data
+                                self.unregisterFileNo(pollster, infno)
+                                self.logdebug("Input data ends.")
+                                endinput = 1 # this happens with real files.
+                        elif fd == fromcfno :
+                            outdata += data
+                        elif fd == cerrfno :    
+                            errdata += data
+                    if (mask & select.POLLHUP) or (mask & select.POLLERR) :
+                        # I've never seen POLLERR myself, but this probably
+                        # can't hurt to treat an error condition just like 
+                        # an EOF.
+                        # 
+                        # Some standard I/O stream has no more datas
+                        self.unregisterFileNo(pollster, fd)
+                        if fd == infno :
+                            # Here we are in the case where the input file is stdin.
+                            # which has no more data to be read.
                             self.logdebug("Input data ends.")
-                            endinput = 1 # this happens with real files.
-                    elif fd == fromcfno :
-                        outdata += data
-                    elif fd == cerrfno :    
-                        errdata += data
-                if (mask & select.POLLHUP) or (mask & select.POLLERR) :
-                    # I've never seen POLLERR myself, but this probably
-                    # can't hurt to treat an error condition just like 
-                    # an EOF.
-                    # 
-                    # Some standard I/O stream has no more datas
-                    self.unregisterFileNo(pollster, fd)
-                    if fd == infno :
-                        # Here we are in the case where the input file is stdin.
-                        # which has no more data to be read.
-                        self.logdebug("Input data ends.")
-                        endinput = 1
-                    elif fd == fromcfno :    
-                        # This should never happen, since
-                        # CUPS backends don't send anything on their
-                        # standard output.
-                        # We are no more interested in this file descriptor        
-                        self.logdebug("Closing real backend's stdout.")
-                        os.close(fromcfno)
-                        endoutput = 1
-                    elif fd == cerrfno :    
-                        # Original CUPS backend has finished 
-                        # to write informations on its standard error.
-                        # We are no more interested in this file descriptor        .
-                        self.logdebug("Closing real backend's stderr.")
-                        os.close(cerrfno)
-                        enderr = 1
+                            endinput = 1
+                        elif fd == fromcfno :    
+                            # This should never happen, since
+                            # CUPS backends don't send anything on their
+                            # standard output.
+                            # We are no more interested in this file descriptor        
+                            self.logdebug("Closing real backend's stdout.")
+                            os.close(fromcfno)
+                            endoutput = 1
+                        elif fd == cerrfno :    
+                            # Original CUPS backend has finished 
+                            # to write informations on its standard error.
+                            # We are no more interested in this file descriptor        .
+                            self.logdebug("Closing real backend's stderr.")
+                            os.close(cerrfno)
+                            enderr = 1
+                except IOError :            
+                    pass # we got signalled during an I/O it seems
             if killed or (inputclosed and outputclosed and errclosed) :
                 break
                 
