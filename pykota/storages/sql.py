@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/02/08 22:12:09  jalet
+# Life time counter for users and groups added.
+#
 # Revision 1.14  2003/02/07 22:13:13  jalet
 # Perhaps edpykota is now able to add printers !!! Oh, stupid me !
 #
@@ -170,7 +173,7 @@ class SQLStorage :
         """Updates the used user Quota information given (username, printername) and a job size in pages."""
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
-            self.doQuery("UPDATE userpquota SET pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s;" % (self.doQuote(pagecount), self.doQuote(userid), self.doQuote(printerid)))
+            self.doQuery("UPDATE userpquota SET lifepagecounter=lifepagecounter+(%s), pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s;" % (self.doQuote(pagecount), self.doQuote(pagecount), self.doQuote(userid), self.doQuote(printerid)))
         
     def buyUserPQuota(self, username, printername, pagebought) :
         """Buys pages for a given (username, printername)."""

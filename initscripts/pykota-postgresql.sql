@@ -13,6 +13,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.2  2003/02/08 22:12:09  jalet
+-- Life time counter for users and groups added.
+--
 -- Revision 1.1  2003/02/05 21:28:17  jalet
 -- Initial import into CVS
 --
@@ -68,6 +71,7 @@ CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
 CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         userid INT4 REFERENCES users(id),
                         printerid INT4 REFERENCES printers(id),
+                        lifepagecounter INT4 DEFAULT 0,
                         pagecounter INT4 DEFAULT 0,
                         softlimit INT4,
                         hardlimit INT4,
@@ -79,6 +83,7 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
 CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
                          groupid INT4 REFERENCES groups(id),
                          printerid INT4 REFERENCES printers(id),
+                         lifepagecounter INT4 DEFAULT 0,
                          pagecounter INT4 DEFAULT 0,
                          softlimit INT4,
                          hardlimit INT4,
