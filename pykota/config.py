@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2003/10/07 22:06:05  jalet
+# Preliminary code to disable job history
+#
 # Revision 1.37  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -412,6 +415,14 @@ class PyKotaConfig :
         """Returns 1 if database caching is enabled, else 0."""
         caching = self.getGlobalOption("storagecaching", ignore=1)
         if (caching is not None) and (caching.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
+            return 1
+        else :    
+            return 0
+            
+    def getDisableHistory(self) :          
+        """Returns 1 if we want to disable history, else 0."""
+        disablehistory = self.getGlobalOption("disablehistory", ignore=1)
+        if (disablehistory is not None) and (disablehistory.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
             return 1
         else :    
             return 0

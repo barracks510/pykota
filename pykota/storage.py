@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/10/07 22:06:05  jalet
+# Preliminary code to disable job history
+#
 # Revision 1.23  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -317,6 +320,7 @@ class BaseStorage :
         self.closed = 1
         self.tool = pykotatool
         self.usecache = pykotatool.config.getCaching()
+        self.disablehistory = pykotatool.config.getDisableHistory()
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
             self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }
