@@ -152,18 +152,17 @@ PyKota's FAQ :
     
   * How can I create a printer group ?   
   
-    Just use edpykota, like for normal printers.
+    Just use pkprinters, like for normal printers, then create
+    quota entries for users or users groups on it using the
+    edpykota command
  
   * How can I put a printer into a printer group ?
   
-    Use the new -G|--pgroups command line option to edpykota
-    You can put sereval printers into several printers groups
-    in one command using the following syntax :
+    Use the pkprinters command to do this.
     
-      $ edpykota --pgroups pg1[,pg2,pg3,...] --printers p1[,p2,p3,...]
-        
-    What is between square brackets is optional.    
-    Both p1,p2 and pg1,pg2 can contain wildcards.
+      $ pkprinters --help
+      
+    Will print the complete help and tell you how to do.
     
   * How quota checking and update is done with printer groups ?   
   
