@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2004/09/23 19:18:12  jalet
+# Now loops when the external hardware accounter fails, until it returns a correct value
+#
 # Revision 1.22  2004/09/22 19:48:01  jalet
 # Logs the looping message as debug instead of as info
 #
@@ -178,7 +181,7 @@ else :
                 if statusAsString in ('idle', 'printing') :
                     break
                 # In reality, and if I'm not mistaken, we will NEVER get there.    
-                self.parent.filter.logdebug(_("Waiting for printer to be idle or printing..."))    
+                self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)    
                 time.sleep(SNMPDELAY)
             
         def waitIdle(self) :
@@ -197,7 +200,7 @@ else :
                         break
                 else :    
                     idle_num = 0
-                self.parent.filter.logdebug(_("Waiting for printer's idle status to stabilize..."))    
+                self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.printername)    
                 time.sleep(SNMPDELAY)
     
 class Accounter(AccounterBase) :
@@ -208,9 +211,9 @@ class Accounter(AccounterBase) :
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
-        self.filter.logdebug("Reading printer's internal page counter...")
+        self.filter.logdebug("Reading printer %s's internal page counter..." % self.filter.printername)
         counter = self.askPrinterPageCounter(self.filter.printerhostname)
-        self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
+        self.filter.logdebug("Printer %s's internal page counter value is : %s" % (self.filter.printername, str(counter)))
         return counter    
         
     def beginJob(self, printer) :    
@@ -288,46 +291,48 @@ class Accounter(AccounterBase) :
             
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
-        self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
-        pagecounter = None
-        child = popen2.Popen4(commandline)    
-        try :
-            answer = child.fromchild.read()
-        except IOError :    
-            # we were interrupted by a signal, certainely a SIGTERM
-            # caused by the user cancelling the current job
+        while 1 :    
+            self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
+            pagecounter = None
+            child = popen2.Popen4(commandline)    
             try :
-                os.kill(child.pid, signal.SIGTERM)
-            except :    
-                pass # already killed ?
-            self.filter.printInfo(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid))
-        else :    
-            lines = [l.strip() for l in answer.split("\n")]
-            for i in range(len(lines)) : 
+                answer = child.fromchild.read()
+            except IOError :    
+                # we were interrupted by a signal, certainely a SIGTERM
+                # caused by the user cancelling the current job
                 try :
-                    pagecounter = int(lines[i])
-                except (AttributeError, ValueError) :
-                    self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
-                else :    
-                    break
-        child.fromchild.close()    
-        child.tochild.close()
-        try :
-            status = child.wait()
-        except OSError, msg :    
-            self.filter.logdebug("Error while waiting for hardware accounter pid %s : %s" % (child.pid, msg))
-        else :    
-            if os.WIFEXITED(status) :
-                status = os.WEXITSTATUS(status)
-            self.filter.printInfo(_("Hardware accounter %s exit code is %s") % (self.arguments, str(status)))
-            
-        if pagecounter is None :
-            message = _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline)
-            if self.onerror == "CONTINUE" :
-                self.filter.printInfo(message, "error")
-            else :
-                raise PyKotaAccounterError, message 
-        return pagecounter        
+                    os.kill(child.pid, signal.SIGTERM)
+                except :    
+                    pass # already killed ?
+                self.filter.printInfo(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid))
+            else :    
+                lines = [l.strip() for l in answer.split("\n")]
+                for i in range(len(lines)) : 
+                    try :
+                        pagecounter = int(lines[i])
+                    except (AttributeError, ValueError) :
+                        self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
+                    else :    
+                        break
+            child.fromchild.close()    
+            child.tochild.close()
+            try :
+                status = child.wait()
+            except OSError, msg :    
+                self.filter.logdebug("Error while waiting for hardware accounter pid %s : %s" % (child.pid, msg))
+            else :    
+                if os.WIFEXITED(status) :
+                    status = os.WEXITSTATUS(status)
+                self.filter.printInfo(_("Hardware accounter %s exit code is %s") % (self.arguments, str(status)))
+                
+            if pagecounter is None :
+                message = _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline)
+                if self.onerror == "CONTINUE" :
+                    self.filter.printInfo(message, "error")
+                else :
+                    raise PyKotaAccounterError, message 
+            else :        
+                return pagecounter        
         
     def askWithSNMP(self, printer) :
         """Returns the page counter from the printer via internal SNMP handling."""
@@ -342,5 +347,5 @@ class Accounter(AccounterBase) :
             if acc.printerInternalPageCounter is None :
                 raise
             else :    
-                self.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s).") % acc.printerInternalPageCounter, "warn")
+                self.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (acc.printerInternalPageCounter, self.filter.printername), "warn")
         return acc.printerInternalPageCounter
