@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.20alpha6 :
       
+        - Fixed issue with how mod_auth_ldap Apache modules
+          fills the REMOTE_USER environment variable.
+          
         - Fixed a bug in LDAP user deletion code.
         
     - 1.20alpha5 :

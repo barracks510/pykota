@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/09/02 10:34:09  jalet
+# Fixed problem with mod_auth_ldap Apache module
+#
 # Revision 1.35  2004/07/24 20:10:10  jalet
 # Incorrect number of parameters in error method
 #
@@ -245,6 +248,13 @@ class PyKotaReportGUI(PyKotaTool) :
                 else :    
                     printers = self.storage.getMatchingPrinters("*")
                 remuser = os.environ.get("REMOTE_USER", "root")    
+                
+                # special hack to accomodate mod_auth_ldap Apache module
+                try :
+                    remuser = remuser.split("=")[1].split(",")[0]
+                except IndexError :    
+                    pass
+                
                 if remuser == "root" :
                     if self.form.has_key("ugmask") :     
                         ugmask = self.form["ugmask"].value
