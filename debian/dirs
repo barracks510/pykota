@@ -1,0 +1,5 @@
+usr/bin
+usr/share/pykota
+usr/lib/cups/backend
+etc/pykota
+etc/default

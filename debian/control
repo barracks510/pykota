@@ -1,0 +1,13 @@
+Source: pykota
+Section: text
+Priority: extra
+Maintainer: Peter Hawkins <peterh@debian.org>
+Build-Depends-Indep: debhelper (>= 4.0.0), python, docbook-utils
+Standards-Version: 3.6.1
+
+Package: pykota
+Architecture: all
+Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys | lprng, python-pygresql | python-ldap
+Recommends: snmp, netatalk
+Description: Print Quota/Accounting system for CUPS and LPRng
+ FIXME: Description
