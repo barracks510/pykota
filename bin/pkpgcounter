@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/05/07 23:08:21  jalet
+# Skeleton for PCLXL aka PCL6
+# Added the "potential" fix for rastertoprinter's output
+#
 # Revision 1.6  2004/05/06 21:19:27  jalet
 # Doesn't exit anymore on the first nul byte
 #
@@ -62,18 +66,6 @@ def ispostscript(data) :
     else :    
         return 0
     
-def postscript(infile) :
-    """Count pages in a PostScript document."""
-    pagecount = 0
-    pagenum = None
-    while 1 :
-        line = infile.readline()
-        if not line :
-            break
-        if line.startswith("%%Page: ") :
-            pagecount += 1
-    return pagecount
-    
 def ispcl(data) :    
     """Returns 1 if data is PCL, else 0."""
     if data.startswith("\033E\033") or \
@@ -85,8 +77,30 @@ def ispcl(data) :
     else :    
         return 0
     
+def ispclxl(data) :    
+    """Returns 1 if data is PCLXL aka PCL6, else 0."""
+    if ((data[:128].find("\033%-12345X") != -1) and \
+         (data.find(" HP-PCL XL;") != -1) and \
+         ((data.find("LANGUAGE=PCLXL") != -1) or \
+          (data.find("LANGUAGE = PCLXL") != -1))) :
+        return 1
+    else :    
+        return 0
+    
+def postscript(infile) :
+    """Count pages in a DSC compliant PostScript document."""
+    pagecount = 0
+    pagenum = None
+    while 1 :
+        line = infile.readline()
+        if not line :
+            break
+        if line.startswith("%%Page: ") :
+            pagecount += 1
+    return pagecount
+    
 def pcl(infile) :    
-    """Count pages in a PostScript document."""
+    """Count pages in a PCL5 document."""
     #
     # Algorithm from pclcount
     # (c) 2003, by Eduardo Gielamo Oliveira & Rodolfo Broco Manin 
@@ -117,7 +131,7 @@ def pcl(infile) :
                  "&p" : "X", 
                  "&l" : "X" } 
     copies = 1
-    pagecount = 0
+    pagecount = resets = 0
     tag = None
     position = 0
     while 1 :
@@ -148,6 +162,8 @@ def pcl(infile) :
             tagstart = infile[position]
             position += 1
             if tagstart in "E9=YZ" : # one byte PCL tag
+                if tagstart == "E" :
+                    resets += 1
                 continue             # skip to next tag
             tag = tagstart + infile[position]
             position += 1
@@ -176,8 +192,25 @@ def pcl(infile) :
                             # which is before the string itself
                             size += 1
                         position += size    
-    return copies * pagecount        
+                        
+    # if pagecount is still 0, we will return the number
+    # of resets instead of the number of form feed characters.
+    # but the number of resets is always at least 2 with a valid
+    # pcl file : one at the very start and one at the very end
+    # of the job's data. So we substract 2 from the number of
+    # resets. And since on our test data we needed to substract
+    # 1 more, we finally substract 3, and will test several
+    # PCL files with this. If resets < 2, then the file is
+    # probably not a valid PCL file, so we return 0
+    if not pagecount :
+        return copies * (resets - 3) * (resets > 2)
+    else :
+        return copies * pagecount
 
+def pclxl(infile) :     
+    """Count pages in a PCL6 aka PCLXL document."""
+    raise TypeError, "Sorry but PCL6, aka PCLXL, is not supported yet.\n"
+    
 def smartpagecounter(filename) :
     """Autodetects file format and returns number of pages."""
     if filename == "-" :
@@ -201,6 +234,8 @@ def smartpagecounter(filename) :
     infile.seek(0)
     if ispostscript(firstblock) :
         size = postscript(infile)
+    elif ispclxl(firstblock) :    
+        size = pclxl(infile)
     elif ispcl(firstblock) :    
         size = pcl(infile)
     else :    
