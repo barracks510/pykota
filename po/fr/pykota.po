@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/06/30 21:44:18  jalet
+# 1.09 is out !
+#
 # Revision 1.27  2003/06/25 10:39:18  jalet
 # Translations.
 #
@@ -398,3 +401,6 @@ msgstr "Objet prototype %s introuvable dans le Quota Storage."
 
 msgid "Impossible to send mail to %s, error %s : %s"
 msgstr "Impossible d'envoyer un message à %s, erreur %s : %s"
+
+msgid "Unsupported reporter backend %s"
+msgstr "backend reporter %s non supporté"

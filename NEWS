@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.09 :
+    
+        - Translations finalized.
+        
+        - Manpages updated.
+        
+        - Installation documentation improved wrt LDAP support.
+        
     - 1.09beta2 :
     
         - The CGI script for quota reports works again, and

@@ -239,10 +239,45 @@ jerome@nordine:~/pykota-1.09_official/initscripts/postgresql$
       <title>LDAP</title>
       
       <para>
-        An <application>LDAP</application> Storage Backend is currently under heavy work.
-        You can already give a look at the LDAP schema which was defined for PyKota.
-        Full support for LDAP in PyKota should be OK by the end of July 2003, if all
-        continues to go well.
+        From version 1.09 on, <application>OpenLDAP</application> can be used as a Quota Storage Backend.
+        It is possible that other LDAP servers can be used, but this is currently untested.
+      </para>
+      
+      <para>
+        To use <application>OpenLDAP</application> as your Quota Storage Backend, you have to copy the
+        <filename>pykota/initscripts/ldap/pykota.schema</filename> in <application>OpenLDAP</application>'s 
+        schemas directory.
+        Under Debian GNU/Linux, this is something like :
+        <screen>        
+$ cp pykota.schema /etc/ldap/schema
+        </screen>
+     </para>
+     <para>   
+       Then edit <filename>/etc/ldap/slapd.conf</filename> and add a line to    
+       include the PyKota schema. You should have something
+       like :
+       <screen>    
+# Schema and objectClass definitions
+include         /etc/ldap/schema/core.schema
+include         /etc/ldap/schema/cosine.schema
+include         /etc/ldap/schema/nis.schema
+include         /etc/ldap/schema/inetorgperson.schema
+include         /etc/ldap/schema/pykota.schema
+        </screen>        
+      </para>
+      <para>
+        Finally, restart the <application>OpenLDAP</application> server :    
+        <screen>    
+$ /etc/init.d/slapd restart
+        </screen>
+      </para>
+      
+      <para>
+        Then you have to modify PyKota's configuration file <filename>/etc/pykota.conf</filename>
+        to include LDAP specific options. You may want to give a look at 
+        <filename>pykota/conf/pykota.conf.sample</filename> to see all the options that are
+        needed. Adapt the values to your own configuration, and finally initialize your 
+        Quota Storage with the help of the <application>edpykota</application> command.
       </para>
     </sect2>  
     
@@ -371,6 +406,9 @@ jerome@nordine:~/pykota-1.09_official/initscripts/postgresql$
 <!--
 
 $Log$
+Revision 1.17  2003/06/30 21:44:18  jalet
+1.09 is out !
+
 Revision 1.16  2003/06/24 21:37:05  jalet
 Minor changes
 

@@ -90,8 +90,8 @@ How to improve PyKota's security :
   
   - Secure your database connection :
   
-    Depending on the database backend used (currently only PostgreSQL
-    is supported), you may have to take additionnal measures to render
+    Depending on the database backend used, either PostgreSQL or
+    OpenLDAP, you may have to take additionnal measures to render
     your database more secure. Please refer to your database system's
     documentation on configuration to learn how to do so. This is out
     of the scope of the present document.
