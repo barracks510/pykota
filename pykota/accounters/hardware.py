@@ -109,7 +109,9 @@ else :
                             # keep maximum value seen for printer's internal page counter
                             self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
                             self.printerStatus = self.values[1]
+                            self.parent.filter.logdebug("SNMP answer is decoded : PageCounter : %s     Status : %s" % (self.values[0], self.values[1]))
                         except IndexError :    
+                            self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass
                         else :    
                             return 1
