@@ -14,6 +14,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/02/17 22:55:01  jalet
+# More options can now be set per printer or globally :
+#
+# 	admin
+# 	adminmail
+# 	gracedelay
+# 	requester
+#
+# the printer option has priority when both are defined.
+#
 # Revision 1.14  2003/02/17 22:05:50  jalet
 # Storage backend now supports admin and user passwords (untested)
 #
@@ -90,46 +100,34 @@ class PyKotaConfig :
         
            raises PyKotaConfigError in case a problem is detected
         """
-        for option in [ "storagebackend", "storageserver", \
-                        "storagename", "storageadmin", \
-                        "storageuser", 
-                        "logger", "admin", "adminmail",
-                        "smtpserver", "method", "gracedelay" ] :
-            if not self.config.has_option("global", option) :            
-                raise PyKotaConfigError, _("Option %s not found in section global of %s") % (option, self.filename)
-                
-        # more precise checks        
-        validloggers = [ "stderr", "system" ] 
-        if self.config.get("global", "logger", raw=1).lower() not in validloggers :             
-            raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
-            
         validmethods = [ "lazy" ] # TODO add more methods            
         if self.config.get("global", "method", raw=1).lower() not in validmethods :             
             raise PyKotaConfigError, _("Option method only supports values in %s") % str(validmethods)
-            
-        # check all printers now 
-        for printer in self.getPrinterNames() :
-            for poption in [ "requester", "policy" ] : 
-                if not self.config.has_option(printer, poption) :
-                    raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
-                    
-            validpolicies = [ "ALLOW", "DENY" ]     
-            if self.config.get(printer, "policy", raw=1).upper() not in validpolicies :
-                raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
-            
-            validrequesters = [ "snmp", "external" ] # TODO : add more requesters
-            fullrequester = self.config.get(printer, "requester", raw=1)
-            try :
-                (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
-            except ValueError :    
-                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
-            else :
-                if requester not in validrequesters :
-                    raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
                         
     def getPrinterNames(self) :    
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
         return [pname for pname in self.config.sections() if pname != "global"]
+        
+    def getGlobalOption(self, option, ignore=0) :    
+        """Returns an option from the global section, or raises a PyKotaConfigError if ignore is not set, else returns None."""
+        try :
+            return self.config.get("global", option, raw=1)
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
+            if ignore :
+                return
+            else :
+                raise PyKotaConfigError, _("Option %s not found in section global of %s") % (option, self.filename)
+                
+    def getPrinterOption(self, printer, option) :    
+        """Returns an option from the printer section, or the global section, or raises a PyKotaConfigError."""
+        globaloption = self.getGlobalOption(option, ignore=1)
+        try :
+            return self.config.get(printer, option, raw=1)
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
+            if globaloption is not None :
+                return globaloption
+            else :
+                raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
         
     def getStorageBackend(self) :    
         """Returns the storage backend information as a Python mapping."""        
@@ -138,47 +136,58 @@ class PyKotaConfig :
                         "storagename", "storageadmin", \
                         "storageuser", \
                       ] :
-            backendinfo[option] = self.config.get("global", option, raw=1)
+            backendinfo[option] = self.getGlobalOption((option)
         for option in [ "storageadminpw", "storageuserpw" ] :    
-            if self.config.has_option("global", option) :
-                backendinfo[option] = self.config.get("global", option, raw=1)
-            else :    
-                backendinfo[option] = None
+            backendinfo[option] = self.getGlobalOption(option, ignore=1)
         return backendinfo
         
     def getLoggingBackend(self) :    
         """Returns the logging backend information."""
-        return self.config.get("global", "logger", raw=1).lower()
+        validloggers = [ "stderr", "system" ] 
+        logger = self.getGlobalOption("logger").lower()
+        if logger not in validloggers :             
+            raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
+        return logger    
         
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
-        fullrequester = self.config.get(printer, "requester", raw=1)
-        (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
+        fullrequester = self.getPrinterOption(printer, "requester")
+        try :
+            (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
+        except ValueError :    
+            raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
         if args.endswith(')') :
             args = args[:-1]
         if not args :
             raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
+        validrequesters = [ "snmp", "external" ] # TODO : add more requesters
+        if requester not in validrequesters :
+            raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
         return (requester, args)
         
     def getPrinterPolicy(self, printer) :    
         """Returns the default policy for the current printer."""
-        return self.config.get(printer, "policy", raw=1).upper()
+        validpolicies = [ "ALLOW", "DENY" ]     
+        policy = self.getPrinterOption(printer, "policy").upper()
+        if policy not in validpolicies :
+            raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
+        return policy
         
     def getSMTPServer(self) :    
         """Returns the SMTP server to use to send messages to users."""
-        return self.config.get("global", "smtpserver", raw=1)
+        return self.getGlobalOption("smtpserver")
         
-    def getAdminMail(self) :    
+    def getAdminMail(self, printer) :    
         """Returns the Email address of the Print Quota Administrator."""
-        return self.config.get("global", "adminmail", raw=1)
+        return self.getPrinterOption(printer, "adminmail")
         
-    def getAdmin(self) :    
+    def getAdmin(self, printer) :    
         """Returns the full name of the Print Quota Administrator."""
-        return self.config.get("global", "admin", raw=1)
+        return self.getPrinterOption(printer, "admin")
         
     def getGraceDelay(self) :    
         """Returns the grace delay in days."""
-        gd = self.config.get("global", "gracedelay", raw=1)
+        gd = self.getPrinterOption(printer, "gracedelay")
         try :
             return int(gd)
         except ValueError :    

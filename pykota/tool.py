@@ -14,6 +14,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/02/17 22:55:01  jalet
+# More options can now be set per printer or globally :
+#
+# 	admin
+# 	adminmail
+# 	gracedelay
+# 	requester
+#
+# the printer option has priority when both are defined.
+#
 # Revision 1.19  2003/02/10 11:28:45  jalet
 # Localization
 #
@@ -115,8 +125,6 @@ class PyKotaTool :
         self.storage = storage.openConnection(self.config, asadmin=(not isfilter))
         self.printername = os.environ.get("PRINTER", None)
         self.smtpserver = self.config.getSMTPServer()
-        self.admin = self.config.getAdmin()
-        self.adminmail = self.config.getAdminMail()
         
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
@@ -201,22 +209,22 @@ class PyKotaTool :
             return 1        
         return 0
         
-    def sendMessage(self, touser, fullmessage) :
+    def sendMessage(self, adminmail, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
         if "@" not in touser :
             touser = "%s@%s" % (touser, self.smtpserver)
         server = smtplib.SMTP(self.smtpserver)
-        server.sendmail(self.adminmail, [touser], fullmessage)
+        server.sendmail(adminmail, [touser], fullmessage)
         server.quit()
         
-    def sendMessageToUser(self, username, subject, message) :
+    def sendMessageToUser(self, admin, adminmail, username, subject, message) :
         """Sends an email message to a user."""
-        message += _("\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n") % (self.admin, self.adminmail)
-        self.sendMessage(username, "Subject: %s\n\n%s" % (subject, message))
+        message += _("\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n") % (admin, adminmail)
+        self.sendMessage(adminmail, username, "Subject: %s\n\n%s" % (subject, message))
         
-    def sendMessageToAdmin(self, subject, message) :
+    def sendMessageToAdmin(self, adminmail, subject, message) :
         """Sends an email message to the Print Quota administrator."""
-        self.sendMessage(self.adminmail, "Subject: %s\n\n%s" % (subject, message))
+        self.sendMessage(adminmail, adminmail, "Subject: %s\n\n%s" % (subject, message))
         
     def checkUserPQuota(self, username, printername) :
         """Checks the user quota on a printer and deny or accept the job."""
@@ -266,18 +274,20 @@ class PyKotaTool :
     def warnUserPQuota(self, username, printername=None) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
         pname = printername or self.printername
+        admin = self.config.getAdmin(pname)
+        adminmail = self.config.getAdminMail(pname)
         (action, grace, gracedate) = self.checkUserPQuota(username, pname)
         if action == "DENY" :
             if (grace is not None) and (gracedate is not None) :
                 # only when both user and printer are known
                 adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, pname)
                 self.logger.log_message(adminmessage)
-                self.sendMessageToUser(username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
-                self.sendMessageToAdmin("Print Quota", adminmessage)
+                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
             adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, pname)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % pname)
-            self.sendMessageToAdmin(_("Print Quota"), adminmessage)
+            self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % pname)
+            self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        
     

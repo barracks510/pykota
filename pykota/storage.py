@@ -14,6 +14,16 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/17 22:55:01  jalet
+# More options can now be set per printer or globally :
+#
+# 	admin
+# 	adminmail
+# 	gracedelay
+# 	requester
+#
+# the printer option has priority when both are defined.
+#
 # Revision 1.8  2003/02/17 22:05:50  jalet
 # Storage backend now supports admin and user passwords (untested)
 #
@@ -110,7 +120,6 @@ class BaseStorage :
         
 def openConnection(config, asadmin=0) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
-    (backend, host, database, admin, user) = config.getStorageBackend()
     backendinfo = config.getStorageBackend()
     backend = backendinfo["storagebackend"]
     try :
