@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2004/07/01 17:45:49  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.42  2004/06/08 17:44:43  jalet
 # Payment now gets deleted when the user is deleted
 #
@@ -114,8 +117,9 @@ class SQLStorage :
             fields = result[0]
             printer.ident = fields.get("id")
             printer.Name = fields.get("printername", printername)
-            printer.PricePerJob = fields.get("priceperjob")
-            printer.PricePerPage = fields.get("priceperpage")
+            printer.PricePerJob = fields.get("priceperjob") or 0.0
+            printer.PricePerPage = fields.get("priceperpage") or 0.0
+            printer.Description = fields.get("description") or ""
             printer.Exists = 1
         return printer    
         
@@ -227,8 +231,9 @@ class SQLStorage :
                 if self.tool.matchString(record["printername"], printerpattern.split(",")) :
                     printer = StoragePrinter(self, record["printername"])
                     printer.ident = record.get("id")
-                    printer.PricePerJob = record.get("priceperjob")
-                    printer.PricePerPage = record.get("priceperpage")
+                    printer.PricePerJob = record.get("priceperjob") or 0.0
+                    printer.PricePerPage = record.get("priceperpage") or 0.0
+                    printer.Description = record.get("description") or ""
                     printer.Exists = 1
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -311,6 +316,10 @@ class SQLStorage :
     def writePrinterPrices(self, printer) :    
         """Write the printer's prices back into the storage."""
         self.doModify("UPDATE printers SET priceperpage=%s, priceperjob=%s WHERE id=%s" % (self.doQuote(printer.PricePerPage), self.doQuote(printer.PricePerJob), self.doQuote(printer.ident)))
+        
+    def writePrinterDescription(self, printer) :    
+        """Write the printer's description back into the storage."""
+        self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(printer.Description), self.doQuote(printer.ident)))
         
     def writeUserLimitBy(self, user, limitby) :    
         """Sets the user's limiting factor."""

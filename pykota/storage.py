@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2004/07/01 17:45:49  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.55  2004/06/05 22:18:04  jalet
 # Now catches some exceptions earlier.
 # storage.py and ldapstorage.py : removed old comments
@@ -316,6 +319,7 @@ class StoragePrinter(StorageObject) :
         self.Name = name
         self.PricePerPage = None
         self.PricePerJob = None
+        self.Description = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
@@ -352,6 +356,14 @@ class StoragePrinter(StorageObject) :
         else :    
             self.PricePerJob = float(priceperjob)
         self.parent.writePrinterPrices(self)
+        
+    def setDescription(self, description = None) :    
+        """Sets the printer's prices."""
+        if description is None :
+            description = self.Description
+        else :    
+            self.Description = str(description)
+        self.parent.writePrinterDescription(self)
         
     def delete(self) :    
         """Deletes a printer from the Quota Storage."""

@@ -23,6 +23,11 @@ PyKota NEWS :
 
     - 1.19alpha28 :
     
+        - The description field for printers can now be set,
+          and is displayed in reports.
+          
+        - Fixed a small problem in SQL backend code.
+          
         - Improved pkhint
         
         - First working PCL6 (aka PCLXL) parser !

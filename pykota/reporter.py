@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/07/01 17:45:49  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.8  2004/03/24 15:15:24  jalet
 # Began integration of Henrik Janhagen's work on quota-then-balance
 # and balance-then-quota
@@ -69,7 +72,7 @@ class BaseReporter :
         self.isgroup = isgroup
         
     def getPrinterTitle(self, printer) :     
-        return _("Report for %s quota on printer %s") % ((self.isgroup and "group") or "user", printer.Name)
+        return (_("Report for %s quota on printer %s") % ((self.isgroup and "group") or "user", printer.Name)) + (" (%s)" % printer.Description)
         
     def getPrinterGraceDelay(self, printer) :    
         return _("Pages grace time: %i days") % self.tool.config.getGraceDelay(printer.Name)
@@ -99,7 +102,7 @@ class BaseReporter :
         pagecounter = int(quota.PageCounter or 0)
         balance = float(entry.AccountBalance or 0.0)
         lifetimepaid = float(entry.LifeTimePaid or 0.0)
-	
+        
         #balance
         if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
             if balance <= 0 :

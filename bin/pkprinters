@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/07/01 17:45:47  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.11  2004/06/18 13:34:48  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -86,6 +89,8 @@ options :
                        unless -s|--skipexisting is also used.
                        
   -d | --delete        Deletes printers from the quota storage.
+  
+  -D | --description   Adds a textual description to printers.
                        
   -c | --charge p[,j]  Sets the price per page and per job to charge.
                        Job price is optional.
@@ -121,14 +126,15 @@ options :
   
 examples :                              
 
-  $ pkprinters --add --charge 0.05,0.1 hp2100 hp2200 hp8000
+  $ pkprinters --add -D "HP Printer" --charge 0.05,0.1 hp2100 hp2200 hp8000
   
   Will create three printers named hp2100, hp2200 and hp8000.
   Their price per page will be set at 0.05 unit, and their price
   per job will be set at 0.1 unit. Units are in your own currency,
   or whatever you want them to mean.
-  If any of these printers already exists, it is not modified at
-  all.
+  All of their descriptions will be set to the string "HP Printer".
+  If any of these printers already exists, it will also be modified 
+  unless the -s|--skipexisting command line option is also used.
             
   $ pkprinters --delete "*"
   
@@ -190,9 +196,9 @@ class PKPrinters(PyKotaTool) :
                 printer = self.storage.getPrinter(pname)
                 if printer.Exists :
                     if options["skipexisting"] :
-                        self.logger.log_message(_("Printer %s already exists, skipping.") % printer.Name, "warn")
+                        self.printError(_("Printer %s already exists, skipping.") % printer.Name)
                     else :    
-                        self.logger.log_message(_("Printer %s already exists, will be modified.") % printer.Name, "warn")
+                        self.printError(_("Printer %s already exists, will be modified.") % printer.Name)
                         printers.append(printer)
                 else :
                     if self.isValidName(pname) :
@@ -215,12 +221,14 @@ class PKPrinters(PyKotaTool) :
                 parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
                 if parents : 
                     parents = "%s %s" % (_("in"), parents)
-                print "%s (%s + #*%s) %s" % \
-                      (printer.Name, printer.PricePerJob, \
+                print "%s [%s] (%s + #*%s) %s" % \
+                      (printer.Name, printer.Description, printer.PricePerJob, \
                        printer.PricePerPage, parents)
             else :    
                 if options["charge"] :
                     printer.setPrices(perpage, perjob)    
+                if options["description"] is not None :
+                    printer.setDescription(options["description"].strip())
                 if options["groups"] :    
                     for pgroup in printersgroups :
                         if options["remove"] :
@@ -231,8 +239,8 @@ class PKPrinters(PyKotaTool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvac:dg:lrs"
-        long_options = ["help", "version", "add", "charge=", "delete", "groups=", "list", "remove", "skipexisting"]
+        short_options = "hvac:D:dg:lrs"
+        long_options = ["help", "version", "add", "charge=", "description=", "delete", "groups=", "list", "remove", "skipexisting"]
         
         # Initializes the command line tool
         manager = PKPrinters(doc=__doc__)
@@ -245,6 +253,7 @@ if __name__ == "__main__" :
         options["version"] = options["v"] or options["version"]
         options["add"] = options["a"] or options["add"]
         options["charge"] = options["c"] or options["charge"]
+        options["description"] = options["D"] or options["description"]
         options["delete"] = options["d"] or options["delete"] 
         options["groups"] = options["g"] or options["groups"]
         options["list"] = options["l"] or options["list"]
@@ -255,9 +264,9 @@ if __name__ == "__main__" :
             manager.display_usage_and_quit()
         elif options["version"] :
             manager.display_version_and_quit()
-        elif (options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"])) \
+        elif (options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) \
            or (options["skipexisting"] and not options["add"]) \
-           or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"])) :
+           or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["remove"] and not options["groups"] :    
             raise PyKotaToolError, _("You have to pass printer groups names on the command line")

@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/07/01 17:45:48  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.29  2004/06/06 21:07:55  jalet
 # Improved CGI script to allow history on printers and hostnames.
 # Better (?) colors in stylesheet.
@@ -188,9 +191,9 @@ class PyKotaReportGUI(PyKotaTool) :
         message = '<table><tr><td valign="top">Printer :</td><td valign="top"><select name="printers" multiple="multiple">'
         for printer in printers :
             if printer.Name in selectednames :
-                message += '<option value="%s" selected="selected">%s</option>' % (printer.Name, printer.Name)
+                message += '<option value="%s" selected="selected">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
             else :
-                message += '<option value="%s">%s</option>' % (printer.Name, printer.Name)
+                message += '<option value="%s">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
         message += '</select></td></tr></table>'
         return message
         

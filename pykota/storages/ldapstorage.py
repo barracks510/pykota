@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.71  2004/07/01 17:45:49  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.70  2004/06/10 20:50:25  jalet
 # Better log message
 #
@@ -534,7 +537,7 @@ class Storage(BaseStorage) :
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name : returns first matching printer."""
         printer = StoragePrinter(self, printername)
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember", "description"], base=self.info["printerbase"])
         if result :
             fields = result[0][1]       # take only first matching printer, ignore the rest
             printer.ident = result[0][0]
@@ -542,6 +545,7 @@ class Storage(BaseStorage) :
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
             printer.uniqueMember = fields.get("uniqueMember", [])
+            printer.Description = fields.get("description", [""])[0]
             printer.Exists = 1
         return printer    
         
@@ -699,7 +703,7 @@ class Storage(BaseStorage) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
         # see comment at the same place in pgstorage.py
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember", "description"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
                 printername = fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0]
@@ -708,6 +712,7 @@ class Storage(BaseStorage) :
                 printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
                 printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
                 printer.uniqueMember = fields.get("uniqueMember", [])
+                printer.Description = fields.get("description", [""])[0]
                 printer.Exists = 1
                 printers.append(printer)
                 self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -894,6 +899,13 @@ class Storage(BaseStorage) :
         fields = {
                    "pykotaPricePerPage" : str(printer.PricePerPage),
                    "pykotaPricePerJob" : str(printer.PricePerJob),
+                 }
+        self.doModify(printer.ident, fields)
+        
+    def writePrinterDescription(self, printer) :    
+        """Write the printer's description back into the storage."""
+        fields = {
+                   "description" : str(printer.Description),
                  }
         self.doModify(printer.ident, fields)
         

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.109  2004/07/01 17:45:49  jalet
+# Added code to handle the description field for printers
+#
 # Revision 1.108  2004/06/24 23:09:30  jalet
 # Also prints read size on last block
 #
@@ -474,6 +477,11 @@ class PyKotaTool :
         """Logs something to debug output if debug is enabled."""
         if self.debug :
             self.logger.log_message(message, "debug")
+            
+    def printError(self, message) :        
+        """Sends a message to standard error."""
+        sys.stderr.write("%s\n" % message)
+        sys.stderr.flush()
         
     def clean(self) :    
         """Ensures that the database is closed."""
