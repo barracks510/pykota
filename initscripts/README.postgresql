@@ -92,5 +92,5 @@ Upgrade scripts :
 * If you are already running PyKota 1.01 or 1.02 and want to upgrade to 
   1.03, YOU HAVE TO RUN the upgrade-1.01-to-1.03.sh shell script.
   NOT LAUNCHING THIS SCRIPT WILL CAUSE PYKOTA TO STOP WORKING !
-  Please don't run this script if your version of PyKota is already
-  1.03 or higher.
+  Please don't run this script if your existing version of PyKota is 
+  already 1.03 or higher.

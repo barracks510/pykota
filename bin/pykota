@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/04/10 21:47:20  jalet
+# Job history added. Upgrade script neutralized for now !
+#
 # Revision 1.16  2003/04/08 20:38:08  jalet
 # The last job Id is saved now for each printer, this will probably
 # allow other accounting methods in the future.
@@ -150,48 +153,60 @@ def main() :
     except PyKotaRequesterError, msg :
         # can't get actual page counter, assume printer is off, but warns in log
         kotafilter.logger.log_message("%s" % msg, "warn")
+        counterbeforejob = None
         printerIsOff = 1
     else :    
         printerIsOff = 0
         
     # Get the last page counter and last username from the Quota Storage backend
-    pgc = kotafilter.storage.getPrinterPageCounter(kotafilter.printername)    
-    if pgc is None :
+    printerid = kotafilter.storage.getPrinterId(kotafilter.printername)
+    if printerid is None :
         # The printer is unknown from the Quota Storage perspective
         # we let the job pass through, but log a warning message
         kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "warn")
     else :    
-        # get last values from Quota Storage
-        (lastpagecounter, lastjobid, lastusername) = (pgc["pagecounter"], pgc["lastjobid"], pgc["lastusername"])
-        
-        # if printer is off then we assume the correct counter value is the last one
-        if printerIsOff :
-            counterbeforejob = lastpagecounter
+        userid = kotafilter.storage.getUserId(username)
+        if userid is None :
+            # The user is unknown from the Quota Storage perspective
+            # we let the job pass through, but log a warning message
+            kotafilter.logger.log_message(_("User %s not registered in the PyKota system") % username, "warn")
+        else :
+            pgc = kotafilter.storage.getPrinterPageCounter(printerid)    
+            if pgc is None :
+                # The printer hasn't been used yet, from PyKota's point of view
+                lasthistoryid = None
+                lastjobid = jobid
+                lastuserid = userid
+                lastusername = username
+                lastpagecounter = counterbeforejob
+            else :    
+                # get last values from Quota Storage
+                (lasthistoryid, lastjobid, lastuserid, lastusername, lastpagecounter) = (pgc["id"], pgc["jobid"], pgc["userid"], pgc["username"], pgc["pagecounter"])
+                
+            # if printer is off then we assume the correct counter value is the last one
+            if printerIsOff :
+                counterbeforejob = lastpagecounter
+                
+            # Update the quota for the previous user on this printer according 
+            # to the job size (difference between actual counter and latest one from storage)
+            jobsize = (counterbeforejob - lastpagecounter)    
+            if jobsize >= 0 :
+                kotafilter.storage.updateUserPQuota(lastuserid, printerid, jobsize)
+                kotafilter.storage.updateJobSizeInHistory(lasthistoryid, jobsize)
+                kotafilter.warnUserPQuota(lastusername)
+            else :    
+                kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, lastusername, kotafilter.printername), "error")
+                
+            # Is the current user allowed to print at all ?
+            action = kotafilter.warnUserPQuota(username)
             
-        # Update the last page counter and last username in the Quota Storage backend
-        # set them to current user and 
-        kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob, jobid)
-        
-        # Was the printer ever used ?
-        if (lastpagecounter is None) or (lastusername is None) :
-            lastusername = username
-            lastpagecounter = counterbeforejob
+            # adds the current job to history    
+            kotafilter.storage.addJobToHistory(jobid, kotafilter.storage.getUserId(username), printerid, counterbeforejob, action)
             
-        # Update the quota for the previous user on this printer according 
-        # to the job size (difference between actual counter and latest one from storage)
-        jobsize = (counterbeforejob - lastpagecounter)    
-        if jobsize >= 0 :
-            kotafilter.storage.updateUserPQuota(lastusername, kotafilter.printername, jobsize)
-            kotafilter.warnUserPQuota(lastusername)
-        else :    
-            kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, kotafilter.printername, lastusername), "error")
-            
-        # Is the current user allowed to print at all ?
-        # if no then die, else proceed.
-        action = kotafilter.warnUserPQuota(username)
-        if action == "DENY" :
-            # No, just die cleanly
-            return 1
+            # if not allowed to print then die, else proceed.
+            if action == "DENY" :
+                # No, just die cleanly
+                return 1
         
     # pass the job untouched to the underlying layer
     kotafilter.filterInput(inputfile)      

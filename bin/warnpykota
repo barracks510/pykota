@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/04/10 21:47:20  jalet
+# Job history added. Upgrade script neutralized for now !
+#
 # Revision 1.14  2003/04/08 21:31:39  jalet
 # (anything or 0) = anything !!! Go back to school Jerome !
 #
@@ -133,15 +136,15 @@ class WarnPyKota(PyKotaTool) :
     """A class for warnpykota."""
     def main(self, options) :
         """Warn users or groups over print quota."""
-        printernames = self.storage.getMatchingPrinters(options["printer"])
-        if not printernames :
+        printers = self.storage.getMatchingPrinters(options["printer"])
+        if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-        for (printer, printerpagecounter) in printernames :
+        for (printerid, printer) in printers :
             if options["groups"] :
-                for name in self.storage.getPrinterGroups(printer) :
+                for (ident, name) in self.storage.getPrinterGroups(printerid) :
                     self.warnGroupPQuota(name, printer)
             else :
-                for name in self.storage.getPrinterUsers(printer) :
+                for (ident, name) in self.storage.getPrinterUsers(printerid) :
                     self.warnUserPQuota(name, printer)
                      
 if __name__ == "__main__" : 

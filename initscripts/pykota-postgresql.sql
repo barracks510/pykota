@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.10  2003/04/10 21:47:20  jalet
+-- Job history added. Upgrade script neutralized for now !
+--
 -- Revision 1.9  2003/04/09 20:11:29  jalet
 -- Added a field to save the action taken for this job (Allow, Deny)
 --
@@ -92,10 +95,7 @@ CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
 -- Create the printers table
 --
 CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
-                      printername TEXT UNIQUE NOT NULL,
-                      lastjobid TEXT,
-                      lastusername TEXT,
-                      pagecounter INT4 DEFAULT 0);
+                      printername TEXT UNIQUE NOT NULL);
                     
 --
 -- Create the print quota table for users
@@ -110,14 +110,15 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         datelimit TIMESTAMP);
                         
 --
--- Create the job history table for u
+-- Create the job history table
 --
 CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         jobid TEXT,
                         userid INT4 REFERENCES users(id),
                         printerid INT4 REFERENCES printers(id),
-                        action TEXT,
+                        pagecounter INT4 DEFAULT 0,
                         jobsize INT4,
+                        action TEXT,
                         jobdate TIMESTAMP DEFAULT now());
                         
 --
@@ -144,5 +145,7 @@ REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, j
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotaadmin;
 GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq TO pykotaadmin;
 GRANT SELECT, UPDATE ON printers, userpquota, grouppquota TO pykotauser;
-GRANT SELECT ON users, groups, groupsmembers, jobhistory TO pykotauser;
+GRANT SELECT ON users, groups, groupsmembers TO pykotauser;
+GRANT SELECT, INSERT, UPDATE ON jobhistory TO pykotauser;
+GRANT SELECT, UPDATE ON jobhistory_id_seq TO pykotauser;
 

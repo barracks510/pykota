@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/04/10 21:47:20  jalet
+# Job history added. Upgrade script neutralized for now !
+#
 # Revision 1.29  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -275,7 +278,9 @@ class PyKotaTool :
         
     def checkUserPQuota(self, username, printername) :
         """Checks the user quota on a printer and deny or accept the job."""
-        quota = self.storage.getUserPQuota(username, printername)
+        printerid = self.storage.getPrinterId(printername)
+        userid = self.storage.getUserId(username)
+        quota = self.storage.getUserPQuota(userid, printerid)
         if quota is None :
             # Unknown user or printer or combination
             policy = self.config.getPrinterPolicy(printername)
@@ -303,7 +308,7 @@ class PyKotaTool :
                                 datelimit = DateTime.ISO.ParseDateTime(datelimit)
                             else :
                                 datelimit = now + self.config.getGraceDelay(printername)
-                                self.storage.setDateLimit(username, printername, datelimit)
+                                self.storage.setUserDateLimit(userid, printerid, datelimit)
                             if now < datelimit :
                                 action = "WARN"
                             else :    

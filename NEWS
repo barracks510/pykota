@@ -23,10 +23,10 @@ PyKota NEWS :
 
     - 1.03alpha :
     
-        - IMPORTANT : DataBase schema has changed, YOU HAVE TO
-          UPGRADE using the upgrade-1.01-to-1.03.sh script.
-          Please read initscripts/README first and then 
-          read initscripts/README.postgresql
+        - IMPORTANT : DataBase schema has changed.
+          DON'T TRY TO UPGRADE AN EXISTING PYKOTA INSTALLATION !
+          The upgrade script will be finalized ASAP, be patient,
+          or drop your old quota database to start anew.
           
         - The installation script now allows to install the sample
           configuration file during first installation.
@@ -37,7 +37,11 @@ PyKota NEWS :
         
         - The job history is now kept, this will allow per-period
           reports in the future.
-        
+          
+        - After having modified the quota for an user with edpykota,
+          a quota check is done to eventually warn the user/admin about
+          a quota which is too low to print.
+          
     - 1.02 :
     
         - The installation script now checks for software availability

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/04/10 21:47:20  jalet
+# Job history added. Upgrade script neutralized for now !
+#
 # Revision 1.10  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -70,64 +73,6 @@ class PyKotaStorageError(Exception):
     def __repr__(self):
         return self.message
     __str__ = __repr__
-    
-class BaseStorage :    
-    """Base class for all storages."""
-    def getMatchingPrinters(self, printerpattern) :
-        """Returns the list of all printers tuples (name, pagecounter) which match a certain pattern for the printer name."""
-        pass
-            
-    def addPrinter(self, printername) :        
-        """Adds a printer to the quota storage."""
-        pass
-        
-    def getPrinterUsers(self, printername) :        
-        """Returns the list of usernames which uses a given printer."""
-        pass
-        
-    def getPrinterGroups(self, printername) :        
-        """Returns the list of groups which uses a given printer."""
-        pass
-        
-    def getPrinterPageCounter(self, printername) :
-        """Returns the last page counter value for a printer given its name."""
-        pass
-        
-    def updatePrinterPageCounter(self, printername, username, pagecount) :
-        """Updates the last page counter information for a printer given its name, last username and pagecount."""
-        pass
-        
-    def addUserPQuota(self, username, printername) :
-        """Initializes a user print quota on a printer, adds the printer and the user to the quota storage if needed."""
-        pass
-        
-    def getUPIds(self, username, printername) :    
-        """Returns a tuple (userid, printerid) given a username and a printername."""
-        pass
-        
-    def getUserPQuota(self, username, printername) :
-        """Returns the Print Quota information for a given (username, printername)."""
-        pass
-        
-    def setUserPQuota(self, username, printername, softlimit, hardlimit) :
-        """Sets soft and hard limits for a user quota on a specific printer given (username, printername)."""
-        pass
-        
-    def resetUserPQuota(self, username, printername) :    
-        """Resets the page counter to zero. Life time page counter is kept unchanged."""
-        pass
-        
-    def setDateLimit(self, username, printername, datelimit) :
-        """Sets the limit date for a soft limit to become an hard one given (username, printername)."""
-        pass
-        
-    def updateUserPQuota(self, username, printername, pagecount) :
-        """Updates the used user Quota information given (username, printername) and a job size in pages."""
-        pass
-        
-    def buyUserPQuota(self, username, printername, pagebought) :
-        """Buys pages for a given (username, printername)."""
-        pass
         
 def openConnection(config, asadmin=0) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
