@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.134  2004/10/20 08:12:27  jalet
+# Another fix for charset detection and Python2.3
+#
 # Revision 1.133  2004/10/19 22:24:00  jalet
 # Should fix the printer's hostname or IP address detection code.
 #
@@ -541,11 +544,15 @@ class PyKotaTool :
         # The CHARSET environment variable is set by CUPS when printing.
         # Else we use the current locale's one.
         # If nothing is set, we use ISO-8859-15 widely used in western Europe.
-        localecharset = locale.getlocale()[1]
         try :
-            localecharset = localecharset or locale.getdefaultlocale()[1]
-        except ValueError :    
-            pass        # Unknown locale, strange...
+            # preferred method with Python 2.3 and up
+            localecharset = locale.getpreferredencoding()
+        except AttributeError :    
+            localecharset = locale.getlocale()[1]
+            try :
+                localecharset = localecharset or locale.getdefaultlocale()[1]
+            except ValueError :    
+                pass        # Unknown locale, strange...
         self.charset = charset or os.environ.get("CHARSET") or localecharset or "ISO-8859-15"
     
         # pykota specific stuff
