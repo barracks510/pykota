@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/06 14:49:04  jalet
+# edpykota should be ok now
+#
 # Revision 1.4  2003/02/06 14:28:59  jalet
 # edpykota should be ok, minus some typos
 #
@@ -184,10 +187,10 @@ if __name__ == "__main__" :
         long_options = ["help", "version", "add", "users", "groups", "prototype=", "printer=", "softlimit=", "hardlimit="]
         
         # Initializes the command line tool
-        tool = EdPyKota(doc=__doc__)
+        editor = EdPyKota(doc=__doc__)
         
         # parse and checks the command line
-        (options, args) = tool.parseCommandline(sys.argv[1:], short_options, long_options)
+        (options, args) = editor.parseCommandline(sys.argv[1:], short_options, long_options)
         
         # sets long options
         options["help"] = options["h"] or options["help"]
@@ -196,22 +199,22 @@ if __name__ == "__main__" :
         options["users"] = options["u"] or options["users"] or defaults["users"]
         options["groups"] = options["g"] or options["groups"] or defaults["groups"]
         options["prototype"] = options["p"] or options["prototype"]
-        options["printer"] = options["P"] or options["printer"]
+        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
         options["softlimit"] = options["S"] or options["softlimit"]
         options["hardlimit"] = options["H"] or options["hardlimit"] 
         
         if options["help"] :
-            tool.display_usage_and_quit()
+            editor.display_usage_and_quit()
         elif options["version"] :
-            tool.display_version_and_quit()
+            editor.display_version_and_quit()
         elif options["users"] and options["groups"] :    
-            raise PyKotaToolError, "edpykota: options --users and --groups are incompatible.\n"
-        elif (options["softlimit"] or options["hardlimit"]) and optiions["prototype"] :    
-            raise PyKotaToolError, "edpykota: options --softlimit or --hardlimit and --prototype are incompatible.\n"
+            raise PyKotaToolError, "edpykota: options --users and --groups are incompatible."
+        elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
+            raise PyKotaToolError, "edpykota: options --softlimit or --hardlimit and --prototype are incompatible."
         elif options["groups"] :    
-            raise PyKotaToolError, "edpykota: options --groups is currently not implemented.\n"
+            raise PyKotaToolError, "edpykota: options --groups is currently not implemented."
         else :
-            sys.exit(apply(tool.main, args, options))
+            sys.exit(editor.main(args, options))
     except PyKotaToolError, msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()

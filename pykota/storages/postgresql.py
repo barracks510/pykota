@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/06 14:49:04  jalet
+# edpykota should be ok now
+#
 # Revision 1.2  2003/02/05 22:28:38  jalet
 # More robust storage
 #
@@ -61,6 +64,6 @@ class Storage(sql.SQLStorage) :
         
     def doParseResult(self, result) :
         """Returns the result as a list of Python mappings."""
-        if result.ntuples() > 0 :
+        if (result is not None) and (result.ntuples() > 0) :
             return result.dictresult()
         

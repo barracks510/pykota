@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/06 14:49:04  jalet
+# edpykota should be ok now
+#
 # Revision 1.7  2003/02/06 14:28:59  jalet
 # edpykota should be ok, minus some typos
 #
@@ -49,7 +52,7 @@ class SQLStorage :
         # but we don't because other storages semantics may be different, so every
         # storage should use fnmatch to match patterns and be storage agnostic
         result = self.doQuery("SELECT printername FROM printers;")
-        result = self.doParseResult()
+        result = self.doParseResult(result)
         if result is not None :
             for printer in result :
                 if fnmatch.fnmatchcase(printer["printername"], printerpattern) :
