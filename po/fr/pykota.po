@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/04/23 09:58:17  jalet
+# Prices per page/job are now displayed
+#
 # Revision 1.18  2003/04/17 09:32:13  jalet
 # Translation
 #
@@ -118,8 +121,8 @@ msgstr "Limite dure %i est inférieure à la limite souple %i, les valeurs seront 
 msgid "option --groups is currently not implemented."
 msgstr "l'option --groups n'est pas encore implémentée."
 
-msgid "Pages grace time: %idays"
-msgstr "Délai de grâce: %ijours"
+msgid "Pages grace time: %i days"
+msgstr "Délai de grâce: %i jours"
 
 msgid "unused arguments [%s]. Aborting."
 msgstr "arguments [%s] inutilisés. Abandon."
@@ -326,3 +329,9 @@ msgstr ""
 
 msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr "Les totaux peuvent être faux si des utilisateurs sont dans plusieurs groupes."
+
+msgid "Price per job: %.3f"
+msgstr "Prix par job: %.3f"
+
+msgid "Price per page: %.3f"
+msgstr "Prix par page: %.3f"

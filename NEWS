@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.04pre1 :
+    
+        - repykota now displays prices per job and per page for each
+          printer, if they are defined.
+          
     - 1.04pre0 :
     
         - Minor display bug fixed in repykota.

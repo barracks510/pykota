@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/04/23 09:58:17  jalet
+# Prices per page/job are now displayed
+#
 # Revision 1.30  2003/04/18 08:34:51  jalet
 # Minor fix.
 #
@@ -186,7 +189,16 @@ class RePyKota(PyKotaTool) :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
         for (printerid, printer) in printers :
             print _("*** Report for %s quota on printer %s") % ((options["groups"] and "group") or "user", printer)
-            print _("Pages grace time: %idays") % self.config.getGraceDelay(printer)
+            print _("Pages grace time: %i days") % self.config.getGraceDelay(printer)
+            prices = self.storage.getPrinterPrices(printerid)
+            if prices is None :
+                (perpage, perjob) = None
+            else :    
+                (perpage, perjob) = prices
+                if perjob is not None :
+                    print _("Price per job: %.3f") % perjob
+                if perpage is not None :    
+                    print _("Price per page: %.3f") % perpage
             total = 0
             totalmoney = 0.0
             if options["groups"] :

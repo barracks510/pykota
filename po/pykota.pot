@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/04/23 09:58:17  jalet
+# Prices per page/job are now displayed
+#
 # Revision 1.19  2003/04/17 09:26:21  jalet
 # repykota now reports account balances too.
 #
@@ -111,7 +114,7 @@ msgstr ""
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
 msgstr ""
 
-msgid "Pages grace time: %idays"
+msgid "Pages grace time: %i days"
 msgstr ""
 
 msgid "Invalid softlimit value %s."
@@ -308,4 +311,10 @@ msgid ""
 msgstr ""
 
 msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr ""
+
+msgid "Price per job: %.3f"
+msgstr ""
+
+msgid "Price per page: %.3f"
 msgstr ""
