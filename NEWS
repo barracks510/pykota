@@ -21,18 +21,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.09alpha1 :
+    
+        - More work on LDAP storage backend. Many options
+          were added to /etc/pykota.conf to give some
+          hints to the LDAP storage backend.
+      
     - 1.08 :
     
         - Major bug fix wrt LPRng support for remote jobs.
+        
         - Major bug fix wrt increase/decrease account balances.
         
     - 1.08alpha8 :
     
         - Code refactoring.
+        
         - A single user/password pair is used to connect
           to the database backend. The storageuser configuration
           field, and its associated passwords storageuserpw, are 
           not used anymore.
+          
         - You can now set PyKota in debug mode, see sample configuration  
           file for details. 
           WARNING : only Quota Storage backend queries are logged in 
@@ -41,12 +50,14 @@ PyKota NEWS :
     - 1.08alpha7 :
     
         - Very latest LDAP schema.
+        
         - Code enhancement wrt easy pluggability of PyKota attributes
           and object classes into an existing LDAP directory.
         
     - 1.08alpha6 : 
     
         - Minor bug corrections
+        
         - More work on LDAP : new schema
         
     - 1.08alpha5 :

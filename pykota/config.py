@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/06/14 22:44:21  jalet
+# More work on LDAP storage backend.
+#
 # Revision 1.28  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -192,6 +195,18 @@ class PyKotaConfig :
             backendinfo[option] = self.getGlobalOption(option)
         backendinfo["storageadminpw"] = self.getGlobalOption("storageadminpw", ignore=1)
         return backendinfo
+        
+    def getLDAPInfo(self) :    
+        """Returns some hints for the LDAP backend."""        
+        ldapinfo = {}
+        for option in [ "userbase", "userrdn", \
+                        "groupbase", "grouprdn", "groupmembers", \
+                        "printerbase", "printerrdn", \
+                        "userquotabase", "groupquotabase", \
+                        "jobbase", "lastjobbase", \
+                      ] :
+            ldapinfo[option] = self.getGlobalOption(option)
+        return ldapinfo
         
     def getLoggingBackend(self) :    
         """Returns the logging backend information."""

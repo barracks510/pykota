@@ -54,16 +54,20 @@ storageadmin: pykotaadmin
 #
 # Here we define some helpers to know where 
 # to plug into an existing LDAP directory
-#usersou: ou=People,dc=librelogiciel,dc=com
+#userbase: ou=People,dc=librelogiciel,dc=com
 #userrdn: uid
-#groupsou: ou=Groups,dc=librelogiciel,dc=com
+#groupbase: ou=Groups,dc=librelogiciel,dc=com
 #grouprdn: cn
-#printersou: ou=Printers,dc=librelogiciel,dc=com
+#printerbase: ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
 #printerrdn: cn
-#jobsou: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
-#userquotasou: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
-#groupquotasou: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
-#lastjobsou: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+#jobbase: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
+#userquotabase: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#groupquotabase: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#lastjobbase: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+# 
+# Choose what attribute contains the list of group members
+# common values are : memberUid, uniqueMember, member
+#groupmembers: memberUid
 
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
