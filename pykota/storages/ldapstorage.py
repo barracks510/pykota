@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2004/03/05 13:19:53  jalet
+# Code safer wrt entries created in other tools
+#
 # Revision 1.60  2004/03/02 14:39:02  jalet
 # Final fix for printers searching
 #
@@ -494,8 +497,8 @@ class Storage(BaseStorage) :
         if result :
             fields = result[0][1]
             printer.ident = result[0][0]
-            printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
-            printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
+            printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
+            printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
             printer.uniqueMember = fields.get("uniqueMember", [])
             printer.Exists = 1
         return printer    
@@ -508,8 +511,8 @@ class Storage(BaseStorage) :
             if result :
                 fields = result[0][1]
                 userpquota.ident = result[0][0]
-                userpquota.PageCounter = int(fields.get("pykotaPageCounter")[0] or 0)
-                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter")[0] or 0)
+                userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0] or 0)
+                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter", [0])[0] or 0)
                 userpquota.SoftLimit = fields.get("pykotaSoftLimit")
                 if userpquota.SoftLimit is not None :
                     if userpquota.SoftLimit[0].upper() == "NONE" :
@@ -565,8 +568,8 @@ class Storage(BaseStorage) :
                 result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)%s)" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
                 if result :
                     for userpquota in result :    
-                        grouppquota.PageCounter += int(userpquota[1].get("pykotaPageCounter")[0] or 0)
-                        grouppquota.LifePageCounter += int(userpquota[1].get("pykotaLifePageCounter")[0] or 0)
+                        grouppquota.PageCounter += int(userpquota[1].get("pykotaPageCounter", [0])[0] or 0)
+                        grouppquota.LifePageCounter += int(userpquota[1].get("pykotaLifePageCounter", [0])[0] or 0)
                 grouppquota.Exists = 1
         return grouppquota
         
@@ -583,7 +586,7 @@ class Storage(BaseStorage) :
                 lastjob.ident = result[0][0]
                 lastjob.JobId = fields.get("pykotaJobId")[0]
                 lastjob.UserName = fields.get("pykotaUserName")[0]
-                lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter")[0] or 0)
+                lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
                 lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
                 lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 lastjob.JobAction = fields.get("pykotaAction")[0]
@@ -591,7 +594,7 @@ class Storage(BaseStorage) :
                 lastjob.JobTitle = fields.get("pykotaTitle", [""])[0]
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
                 lastjob.JobOptions = fields.get("pykotaOptions", [""])[0]
-                date = fields.get("createTimestamp")[0]
+                date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])
                 day = int(date[6:8])
@@ -658,8 +661,8 @@ class Storage(BaseStorage) :
                 printername = fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0]
                 printer = StoragePrinter(self, printername)
                 printer.ident = printerid
-                printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
-                printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
+                printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
+                printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
                 printer.uniqueMember = fields.get("uniqueMember", [])
                 printer.Exists = 1
                 printers.append(printer)
@@ -675,8 +678,8 @@ class Storage(BaseStorage) :
                 user = self.getUser(fields.get("pykotaUserName")[0])
                 userpquota = StorageUserPQuota(self, user, printer)
                 userpquota.ident = userquotaid
-                userpquota.PageCounter = int(fields.get("pykotaPageCounter")[0] or 0)
-                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter")[0] or 0)
+                userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0] or 0)
+                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter", [0])[0] or 0)
                 userpquota.SoftLimit = fields.get("pykotaSoftLimit")
                 if userpquota.SoftLimit is not None :
                     if userpquota.SoftLimit[0].upper() == "NONE" :
@@ -1002,15 +1005,15 @@ class Storage(BaseStorage) :
                 job = StorageJob(self)
                 job.ident = ident
                 job.JobId = fields.get("pykotaJobId")[0]
-                job.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter")[0] or 0)
+                job.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
                 job.JobSize = int(fields.get("pykotaJobSize", [0])[0])
                 job.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
-                job.JobAction = fields.get("pykotaAction")[0]
+                job.JobAction = fields.get("pykotaAction", [""])[0]
                 job.JobFileName = fields.get("pykotaFileName", [""])[0]
                 job.JobTitle = fields.get("pykotaTitle", [""])[0]
                 job.JobCopies = int(fields.get("pykotaCopies", [0])[0])
                 job.JobOptions = fields.get("pykotaOptions", [""])[0]
-                date = fields.get("createTimestamp")[0]
+                date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])
                 day = int(date[6:8])
