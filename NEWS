@@ -26,6 +26,10 @@ PyKota NEWS :
         - added new "description" field to printers in both
           PostgreSQL and LDAP. No code to handle this yet.
           
+        - reversed the fix for power save mode in printers :  
+          no paper or tray open would have caused people to
+          be undercharged.
+          
     - 1.19alpha24 :
     
         - Native PDF parsing code now works perfectly with
