@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/05/21 20:40:08  jalet
+# All the code for pkpgcounter is now in pdlanalyzer.py
+#
 # Revision 1.2  2004/05/19 19:09:36  jalet
 # Speed improvement
 #
@@ -31,9 +34,20 @@
 #
 
 import sys
-import os
 import struct
 import tempfile
+    
+KILOBYTE = 1024    
+MEGABYTE = 1024 * KILOBYTE    
+
+class PDLAnalyzerError(Exception):
+    """An exception for PDL Analyzer related stuff."""
+    def __init__(self, message = ""):
+        self.message = message
+        Exception.__init__(self, message)
+    def __repr__(self):
+        return self.message
+    __str__ = __repr__
     
 class PostScriptAnalyzer :
     def __init__(self, infile) :
@@ -43,7 +57,6 @@ class PostScriptAnalyzer :
     def getJobSize(self) :    
         """Count pages in a DSC compliant PostScript document."""
         pagecount = 0
-        pagenum = None
         while 1 :
             line = self.infile.readline()
             if not line :
@@ -62,7 +75,7 @@ class PCLAnalyzer :
         newpos = self.pos + nb
         if newpos >= self.len :
             oldlen = self.len
-            self.data = self.infile.read(1024*1024)
+            self.data = self.infile.read(MEGABYTE)
             self.len = len(self.data)
             if not self.len :
                 return
@@ -75,7 +88,7 @@ class PCLAnalyzer :
         if self.pos < self.len :
             char = self.data[self.pos]
         else :    
-            self.data = self.infile.read(1024*1024)
+            self.data = self.infile.read(MEGABYTE)
             self.len = len(self.data)
             self.pos = 0
             if not self.len :    
@@ -181,15 +194,12 @@ class PCLAnalyzer :
         # 1 more, we finally substract 3, and will test several
         # PCL files with this. If resets < 2, then the file is
         # probably not a valid PCL file, so we return 0
-        if not pagecount :
-            return copies * (resets - 3) * (resets > 2)
-        else :
-            return copies * pagecount
+        return copies * (pagecount or ((resets - 3) * (resets > 2)))
         
 class PCLXLAnalyzer :
     def __init__(self, infile) :
         """Initialize PCLXL Analyzer."""
-        raise TypeError, "PCLXL (aka PCL6) is not supported yet."
+        raise PDLAnalyzerError, "PCLXL (aka PCL6) is not supported yet."
         self.infile = infile
         self.islittleendian = None
         found = 0
@@ -204,20 +214,20 @@ class PCLXLAnalyzer :
                 elif line[0] == "(" :    
                     self.bigendian()
         if not found :
-            raise TypeError, "This file doesn't seem to be PCLXL (aka PCL6)"
+            raise PDLAnalyzerError, "This file doesn't seem to be PCLXL (aka PCL6)"
         else :    
-            self.tags = [None] * 256    
+            self.tags = [lambda: None] * 256    
             self.tags[0x28] = self.bigendian    # big endian
             self.tags[0x29] = self.littleendian # big endian
             self.tags[0x43] = self.beginPage    # BeginPage
             self.tags[0x44] = self.endPage      # EndPage
             
-            self.tags[0xc0] = 1 # ubyte
-            self.tags[0xc1] = 2 # uint16
-            self.tags[0xc2] = 4 # uint32
-            self.tags[0xc3] = 2 # sint16
-            self.tags[0xc4] = 4 # sint32
-            self.tags[0xc5] = 4 # real32
+            self.tags[0xc0] = lambda: 1 # ubyte
+            self.tags[0xc1] = lambda: 2 # uint16
+            self.tags[0xc2] = lambda: 4 # uint32
+            self.tags[0xc3] = lambda: 2 # sint16
+            self.tags[0xc4] = lambda: 4 # sint32
+            self.tags[0xc5] = lambda: 4 # real32
             
             self.tags[0xc8] = self.array_8  # ubyte_array
             self.tags[0xc9] = self.array_16 # uint16_array
@@ -226,22 +236,22 @@ class PCLXLAnalyzer :
             self.tags[0xcc] = self.array_32 # sint32_array
             self.tags[0xcd] = self.array_32 # real32_array
             
-            self.tags[0xd0] = 2 # ubyte_xy
-            self.tags[0xd1] = 4 # uint16_xy
-            self.tags[0xd2] = 8 # uint32_xy
-            self.tags[0xd3] = 4 # sint16_xy
-            self.tags[0xd4] = 8 # sint32_xy
-            self.tags[0xd5] = 8 # real32_xy
+            self.tags[0xd0] = lambda: 2 # ubyte_xy
+            self.tags[0xd1] = lambda: 4 # uint16_xy
+            self.tags[0xd2] = lambda: 8 # uint32_xy
+            self.tags[0xd3] = lambda: 4 # sint16_xy
+            self.tags[0xd4] = lambda: 8 # sint32_xy
+            self.tags[0xd5] = lambda: 8 # real32_xy
             
-            self.tags[0xd0] = 4  # ubyte_box
-            self.tags[0xd1] = 8  # uint16_box
-            self.tags[0xd2] = 16 # uint32_box
-            self.tags[0xd3] = 8  # sint16_box
-            self.tags[0xd4] = 16 # sint32_box
-            self.tags[0xd5] = 16 # real32_box
+            self.tags[0xd0] = lambda: 4  # ubyte_box
+            self.tags[0xd1] = lambda: 8  # uint16_box
+            self.tags[0xd2] = lambda: 16 # uint32_box
+            self.tags[0xd3] = lambda: 8  # sint16_box
+            self.tags[0xd4] = lambda: 16 # sint32_box
+            self.tags[0xd5] = lambda: 16 # real32_box
             
-            self.tags[0xf8] = 1 # attr_ubyte
-            self.tags[0xf9] = 2 # attr_uint16
+            self.tags[0xf8] = lambda: 1 # attr_ubyte
+            self.tags[0xf9] = lambda: 2 # attr_uint16
             
             self.tags[0xfa] = self.embeddedData      # dataLength
             self.tags[0xfb] = self.embeddedDataSmall # dataLengthByte
@@ -262,23 +272,28 @@ class PCLXLAnalyzer :
         
     def handleArray(self, itemsize) :        
         """Handles arrays."""
+        pos = self.infile.tell()
         datatype = self.infile.read(1)
-        length = self.tags[ord(datatype)]
-        sarraysize = self.infile.read(length)
-        if self.islittleendian :
-            fmt = "<"
+        length = self.tags[ord(datatype)]()
+        if length is None :
+            self.debug("Bogus array length at %s" % pos)
         else :    
-            fmt = ">"
-        if length == 1 :    
-            fmt += "B"
-        elif length == 2 :    
-            fmt += "H"
-        elif length == 4 :    
-            fmt += "I"
-        else :    
-            raise TypeError, "Error on array size at %s" % self.infile.tell()
-        arraysize = struct.unpack(fmt, sarraysize)[0]
-        return arraysize * itemsize
+            sarraysize = self.infile.read(length)
+            if self.islittleendian :
+                fmt = "<"
+            else :    
+                fmt = ">"
+            if length == 1 :    
+                fmt += "B"
+            elif length == 2 :    
+                fmt += "H"
+            elif length == 4 :    
+                fmt += "I"
+            else :    
+                raise PDLAnalyzerError, "Error on array size at %s" % self.infile.tell()
+            arraysize = struct.unpack(fmt, sarraysize)[0]
+            self.debug("Array at %s, itemsize %s, datatype 0x%02x, size %s" % (pos, itemsize, ord(datatype), arraysize))
+            return arraysize * itemsize
         
     def array_8(self) :    
         """Handles byte arrays."""
@@ -294,7 +309,10 @@ class PCLXLAnalyzer :
         
     def embeddedDataSmall(self) :
         """Handle small amounts of data."""
-        return ord(self.infile.read(1))
+        pos = self.infile.tell()
+        val = ord(self.infile.read(1))
+        self.debug("smalldatablock at %s (0x%02x)" % (pos, val))
+        return val
         
     def embeddedData(self) :
         """Handle normal amounts of data."""
@@ -302,7 +320,10 @@ class PCLXLAnalyzer :
             fmt = "<I"
         else :    
             fmt = ">I"
-        return struct.unpack(fmt, self.infile.read(4))[0]
+        pos = self.infile.tell()
+        val = struct.unpack(fmt, self.infile.read(4))[0]
+        self.debug("datablock at %s (0x%08x)" % (pos, val))
+        return val
         
     def littleendian(self) :        
         """Toggles to little endianness."""
@@ -316,50 +337,55 @@ class PCLXLAnalyzer :
         """Counts pages in a PCLXL (PCL6) document."""
         self.pagecount = 0
         while 1 :
-            pos = self.infile.tell()
             char = self.infile.read(1)
             if not char :
                 break
             index = ord(char)    
-            length = self.tags[index]
-            if length is not None :
-                if not length :
-                    self.debug("Unrecognized tag 0x%02x at %s\n" % (index, self.infile.tell()))
-                elif callable(length) :    
-                    length = length()
-                if length :    
-                    self.infile.read(length)    
+            length = self.tags[index]()
+            if length :    
+                self.infile.read(length)    
         return self.pagecount
-    
+        
 class PDLAnalyzer :    
     """Generic PDL Analyzer class."""
     def __init__(self, filename) :
-        """Initializes the PDL analyzer."""
+        """Initializes the PDL analyzer.
+        
+           filename is the name of the file or '-' for stdin.
+           filename can also be a file-like object which 
+           supports read() and seek().
+        """
         self.filename = filename
         
     def getJobSize(self) :    
         """Returns the job's size."""
         self.openFile()
-        pdlhandler = self.detectPDLHandler()
-        if pdlhandler is not None :
+        try :
+            pdlhandler = self.detectPDLHandler()
+        except PDLAnalyzerError, msg :    
+            self.closeFile()
+            raise PDLAnalyzerError, "ERROR : Unknown file format for %s (%s)" % (self.filename, msg)
+        else :
             try :
                 size = pdlhandler(self.infile).getJobSize()
             finally :    
                 self.closeFile()
             return size
-        else :        
-            self.closeFile()
-            raise TypeError, "ERROR : Unknown file format for %s" % self.filename
         
     def openFile(self) :    
         """Opens the job's data stream for reading."""
-        if self.filename == "-" :
+        self.mustclose = 1
+        if hasattr(self.filename, "read") and hasattr(self.filename, "seek") :
+            # filename is in fact a file-like object 
+            self.infile = self.filename
+            self.mustclose = 0  # we don't want to close this file when finished
+        elif self.filename == "-" :
             # we must read from stdin
             # but since stdin is not seekable, we have to use a temporary
             # file instead.
             self.infile = tempfile.TemporaryFile()
             while 1 :
-                data = sys.stdin.read(256 * 1024) 
+                data = sys.stdin.read(MEGABYTE) 
                 if not data :
                     break
                 self.infile.write(data)
@@ -370,8 +396,9 @@ class PDLAnalyzer :
             self.infile = open(self.filename, "rb")
             
     def closeFile(self) :        
-        """Closes the job's data stream."""
-        self.infile.close()    
+        """Closes the job's data stream if we can close it."""
+        if self.mustclose :
+            self.infile.close()    
         
     def isPostScript(self, data) :    
         """Returns 1 if data is PostScript, else 0."""
@@ -414,7 +441,7 @@ class PDLAnalyzer :
         """   
         # Try to detect file type by reading first block of datas    
         self.infile.seek(0)
-        firstblock = self.infile.read(1024)
+        firstblock = self.infile.read(KILOBYTE)
         self.infile.seek(0)
         if self.isPostScript(firstblock) :
             return PostScriptAnalyzer
@@ -422,3 +449,23 @@ class PDLAnalyzer :
             return PCLXLAnalyzer
         elif self.isPCL(firstblock) :    
             return PCLAnalyzer
+        else :    
+            raise PDLAnalyzerError, "Analysis of first data block failed."
+            
+def main() :    
+    """Entry point for PDL Analyzer."""
+    if (len(sys.argv) < 2) or ((not sys.stdin.isatty()) and ("-" not in sys.argv[1:])) :
+        sys.argv.append("-")
+        
+    totalsize = 0    
+    for arg in sys.argv[1:] :
+        try :
+            parser = PDLAnalyzer(arg)
+            totalsize += parser.getJobSize()
+        except PDLAnalyzerError, msg :    
+            sys.stderr.write("%s\n" % msg)
+            sys.stderr.flush()
+    print "%s" % totalsize
+    
+if __name__ == "__main__" :    
+    main()        

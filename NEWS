@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha10 :
     
+        - Improvements to generic PDL Analyzer.
+        
         - 25% Speedup in PCL parser. Getting more of the Python version
           will probably be difficult, since the completely table driven 
           parser I wrote is slower than the original algorithm. Then,

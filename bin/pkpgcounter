@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/05/21 20:40:07  jalet
+# All the code for pkpgcounter is now in pdlanalyzer.py
+#
 # Revision 1.10  2004/05/18 09:59:54  jalet
 # pkpgcounter is now just a wrapper around the PDLAnalyzer class
 #
@@ -57,19 +60,7 @@
 #
 #
 
-import sys
 from pykota import pdlanalyzer
     
 if __name__ == "__main__" :    
-    if (len(sys.argv) < 2) or ((not sys.stdin.isatty()) and ("-" not in sys.argv[1:])) :
-        sys.argv.append("-")
-        
-    totalsize = 0    
-    for arg in sys.argv[1:] :
-        try :
-            parser = pdlanalyzer.PDLAnalyzer(arg)
-            totalsize += parser.getJobSize()
-        except TypeError, msg :    
-            sys.stderr.write("%s\n" % msg)
-            sys.stderr.flush()
-    print "%s" % totalsize
+    pdlanalyzer.main()
