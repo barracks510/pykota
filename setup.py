@@ -16,6 +16,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/03/29 13:08:28  jalet
+# Configuration is now expected to be found in /etc/pykota.conf instead of
+# in /etc/cups/pykota.conf
+# Installation script can move old config files to the new location if needed.
+# Better error handling if configuration file is absent.
+#
 # Revision 1.4  2003/03/29 09:47:00  jalet
 # More powerful installation script.
 #
@@ -80,10 +86,30 @@ def checkWithPrompt(prompt, module=None, command=None) :
             return ACTION_ABORT
     
 if "install" in sys.argv :
+    # checks if Python version is correct, we need >= 2.1
     if not (sys.version > "2.1") :
         sys.stderr.write("PyKota needs at least Python v2.1 !\nYour version seems to be older than that, please update.\nAborted !\n")
         sys.exit(-1)
         
+    # checks if a configuration file is present in the old location
+    if os.path.isfile("/etc/cups/pykota.conf") :
+        if not os.path.isfile("/etc/pykota.conf") :
+            sys.stdout.write("From version 1.02 on, PyKota expects to find its configuration file in /etc instead of /etc/cups.\n")
+            sys.stdout.write("It seems that you've got a configuration file in the old location, so it will not be used anymore, and no configuration file in the new location.\n")
+            answer = raw_input("Do you want me to move your configuration file to the new location in /etc (y/N) ? ")
+            if answer[0:1].upper() == 'Y' :
+                try :
+                    os.rename("/etc/cups/pykota.conf", "/etc/pykota.conf")
+                except OSError :    
+                    sys.stderr.write("ERROR : An error occured while moving /etc/cups/pykota.conf to /etc/pykota.conf\nAborted !\n")
+                    sys.exit(-1)
+            else :
+                sys.stderr.write("WARNING : Configuration file /etc/cups/pykota.conf won't be used ! Move it to /etc instead.\n")
+                sys.stderr.write("PyKota installation will continue anyway, but the software won't run until you put a proper configuration file in /etc\n")
+        else :        
+            sys.stderr.write("WARNING : Configuration file /etc/cups/pykota.conf will not be used !\nThe file /etc/pykota.conf will be used instead.\n")
+    
+    # checks if some needed Python modules are there or not.
     modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
     commandstocheck = [("SNMP Tools", "snmpget")]
     for (name, module) in modulestocheck :
@@ -92,6 +118,7 @@ if "install" in sys.argv :
             sys.stderr.write("Aborted !\n")
             sys.exit(-1)
             
+    # checks if some software are there or not.
     for (name, command) in commandstocheck :
         action = checkWithPrompt(name, command=command)
         if action == ACTION_ABORT :

@@ -21,13 +21,18 @@ PyKota NEWS :
           and in case a software is missing asks the user if he
           wants to continue with the installation or abort it.
           
+        - The configuration file pykota.conf is now expected to be 
+          found in /etc instead of in /etc/cups
+          The installation script prompts the user to see if he
+          wants to move an old configuration file to the new location
+          if needed.
+          
         - Improved documentation.
         
         - You can now set the tcp/ip port on which the Quota Storage
           Server is listening, see sample configuration file for details.
         
-        - Better error handling if PygreSQL is not installed or not 
-          available.
+        - Better general error handling.
         
     - 1.01 :
     

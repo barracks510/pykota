@@ -14,6 +14,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/03/29 13:08:28  jalet
+# Configuration is now expected to be found in /etc/pykota.conf instead of
+# in /etc/cups/pykota.conf
+# Installation script can move old config files to the new location if needed.
+# Better error handling if configuration file is absent.
+#
 # Revision 1.8  2003/03/15 23:01:28  jalet
 # New mailto option in configuration file added.
 # No time to test this tonight (although it should work).
@@ -235,3 +241,6 @@ msgstr "inconnu"
 
 msgid "Option mailto in section %s only supports values in %s"
 msgstr "L'option mailto dans la section %s supporte seulement les valeurs %s"
+
+msgid "Configuration file %s not found."
+msgstr "Fichier de configuration %s non trouvé."

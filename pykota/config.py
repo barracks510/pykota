@@ -14,6 +14,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/03/29 13:08:28  jalet
+# Configuration is now expected to be found in /etc/pykota.conf instead of
+# in /etc/cups/pykota.conf
+# Installation script can move old config files to the new location if needed.
+# Better error handling if configuration file is absent.
+#
 # Revision 1.19  2003/03/16 09:56:52  jalet
 # Mailto option now accepts some additional values which all mean that
 # nobody will receive any email message.
@@ -107,6 +113,8 @@ class PyKotaConfig :
     def __init__(self, directory) :
         """Reads and checks the configuration file."""
         self.filename = os.path.join(directory, "pykota.conf")
+        if not os.path.isfile(self.filename) :
+            raise PyKotaConfigError, _("Configuration file %s not found.") % self.filename
         self.config = ConfigParser.ConfigParser()
         self.config.read([self.filename])
         self.checkConfiguration()

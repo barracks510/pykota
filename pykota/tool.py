@@ -14,6 +14,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/03/29 13:08:28  jalet
+# Configuration is now expected to be found in /etc/pykota.conf instead of
+# in /etc/cups/pykota.conf
+# Installation script can move old config files to the new location if needed.
+# Better error handling if configuration file is absent.
+#
 # Revision 1.27  2003/03/15 23:01:28  jalet
 # New mailto option in configuration file added.
 # No time to test this tonight (although it should work).
@@ -143,7 +149,7 @@ class PyKotaTool :
     
         # pykota specific stuff
         self.documentation = doc
-        self.config = config.PyKotaConfig(os.environ.get("CUPS_SERVERROOT", "/etc/cups"))
+        self.config = config.PyKotaConfig("/etc")
         self.logger = logger.openLogger(self.config)
         self.storage = storage.openConnection(self.config, asadmin=(not isfilter))
         self.printername = os.environ.get("PRINTER", None)
