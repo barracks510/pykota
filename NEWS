@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha23 :
     
+        - Fixed waitprinter.sh wrt PowerSave mode and some
+          printers. Thanks to Ryan Suarez.
+        
         - Smart PDL analyzer now recognizes PDF too.
         
         - All tracebacks now include PyKota's version number.
