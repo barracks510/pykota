@@ -10,6 +10,17 @@ PyKota's FAQ :
     The file installed by default is just an example, you
     have to modify it. See the rest of this document to
     learn how to really diagnose what went wrong.
+    
+  * How can I diagnose the problem when something goes wrong ?
+  
+    Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
+    Then put "logger: stderr", "debug: yes" and 
+    "crashrecipient: youremailaddress" in /etc/pykota/pykota.conf.
+    Finally restart CUPS.
+    CUPS' error_log file will now contain many informations which
+    will help diagnose your problem. You will receive failure
+    notices by email, and you can send all this to us for
+    diagnostic.
   
   * Why doesn't CUPS under Debian Woody automatically
     detects PyKota managed devices ?
@@ -47,11 +58,11 @@ PyKota's FAQ :
   * What is a 'dumb printer' ?
   
     In PyKota, the term 'dumb printer' defines a printer which doesn't 
-    understand PostScript AND doesn't have an internal page counter, AND 
-    for which you don't know how to compute a job's size in number of 
-    pages by analyzing its content. Any printer which is not a
-    'dumb printer' according to the above definition is supported 
-    with PyKota.
+    understand PostScript or PCL5 AND doesn't have an internal page 
+    counter, AND for which you don't know how to compute a job's size 
+    in number of pages by analyzing its content. Any printer which 
+    is not a 'dumb printer' according to the above definition is 
+    supported by PyKota.
 
   * How can I make PyKota work with my non-postscript printer under 
     CUPS ?  
@@ -84,20 +95,6 @@ PyKota's FAQ :
     page limits from a template user to other users. This option
     needs to be updated to new PyKota functionnalities, because it
     currently lacks.
-    
-  * How can I diagnose the problem when something goes wrong ?
-  
-    Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
-    Then put "logger: system" and "debug: yes" in 
-    /etc/pykota/pykota.conf.
-    Finally restart CUPS.
-    CUPS' error_log file will now contain many informations which
-    will help diagnose your problem. Also your syslog's output for 
-    the LPR facility (usually /var/log/lpr.log) will contain 
-    PyKota's debug messages, notably all database related queries
-    and their result, be your database PostgreSQL or OpenLDAP.
-    With these two files the problem can usually be diagnosed within
-    minutes. Send them to the mailing list and wait for an answer.
     
   * How can I share print quota between some printers only (not all) ?   
   

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.100  2004/06/11 08:16:03  jalet
+# More exceptions catched in case of very early failure.
+#
 # Revision 1.99  2004/06/11 07:07:38  jalet
 # Now detects and logs configuration syntax errors instead of failing without
 # any notice message.
@@ -872,7 +875,11 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         if self.config.getUserNameToLower() :
             self.username = self.username.lower()
         self.preserveinputfile = self.inputfile 
-        self.accounter = accounter.openAccounter(self)
+        try :
+            self.accounter = accounter.openAccounter(self)
+        except accounter.PyKotaAccounterError, msg :    
+            self.crashed(msg)
+            raise
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
         os.environ["PYKOTAJOBSIZEBYTES"] = str(self.jobSizeBytes)
