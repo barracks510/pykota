@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/02/04 12:52:37  jalet
+# pkprinters' help
+#
 # Revision 1.1  2004/02/04 11:16:59  jalet
 # pkprinters command line tool added.
 #
@@ -48,11 +51,10 @@ options :
   -v | --version       Prints pkprinters's version number then exits.
   -h | --help          Prints this message then exits.
   
-  -a | --add           Adds users and/or printers if they don't 
-                       exist on the Quota Storage Server.
+  -a | --add           Adds printers if they don't exist on the Quota 
+                       Storage Server.
                        
-  -d | --delete        Deletes users/groups from the quota storage.
-                       Printers are never deleted.
+  -d | --delete        Deletes printers from the quota storage.
                        
   -c | --charge p[,j]  Sets the price per page and per job to charge.
                        Job price is optional.
