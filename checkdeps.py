@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2005/02/14 23:37:58  jalet
+# Added a check for the presence of pythn-psyco
+#
 # Revision 1.4  2005/01/17 08:44:23  jalet
 # Modified copyright years
 #
@@ -92,6 +95,7 @@ if __name__ == "__main__" :
                        ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
                        ("Python-ReportLab", "reportlab.pdfgen.canvas", "Python-ReportLab is required if you plan to have PyKota generate banners.\nSee http://www.reportlab.org/"),
                        ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners.\nSee http://www.pythonware.com/downloads/"),
+                       ("Python-Psyco", "psyco", "Python-Psyco speedups parsing of print files, you should use it.\nSee http://psyco.sourceforge.net/"),
                      ]
     commandstocheck = [ ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), 
                         ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")
