@@ -201,14 +201,14 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.28 NAME 'pykotaWarnCount'
         
 # pykotaMD5Sum        
 attributetype ( 1.3.6.1.4.1.16868.1.1.29 NAME 'pykotaMD5Sum'
-        DESC 'MD5 Sum of the job's datas'
+        DESC 'MD5 Sum of the job datas'
         EQUALITY caseExactIA5Match
         SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 # pykotaPages        
 attributetype ( 1.3.6.1.4.1.16868.1.1.30 NAME 'pykotaPages'
-        DESC 'Descriptor for each page's settings in the history'
+        DESC 'Descriptor for each page settings in the history'
         EQUALITY caseExactIA5Match
         SUBSTR caseExactIA5SubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26)
