@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2004/05/13 14:17:32  jalet
+# Warning about changed accounter and requester directives
+#
 # Revision 1.40  2004/05/13 13:59:27  jalet
 # Code simplifications
 #
@@ -371,6 +374,13 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
     sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
     sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha7 OR ABOVE.\n\n")
+    dummy = raw_input("Please press ENTER when you have read the message above. ")
+    
+    sys.stdout.write("\n\nWARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha8 TO 1.19alpha8 OR ABOVE\n")
+    sys.stdout.write("YOU **MUST** MODIFY YOUR /etc/pykota/pykota.conf FILE BECAUSE accounter\n")
+    sys.stdout.write("AND requester DIRECTIVES SUPPORTED VALUES HAVE CHANGED.\n\n")
+    sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha8 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.
