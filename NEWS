@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha12 :
+    
+        - Now logs as errors the differences between precomputed and 
+          computed job sizes.
+          
     - 1.21alpha11 :
     
         - Now user and group print quota entries can be stored directly

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.81  2004/12/07 16:54:02  jalet
+# Now logs as errors differences between computed and precomputed job's sizes
+#
 # Revision 1.80  2004/11/15 22:12:46  jalet
 # Fix for the Fix !!!
 #
@@ -537,7 +540,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 jobsize = 0
                 self.printMoreInfo(user, printer, _("Job size forced to 0 because printing is denied."))
             else :    
-                jobsize = self.accounter.getJobSize(printer) + bannersize
+                jobsize = self.accounter.getJobSize(printer) 
+                if self.softwareJobSize and (jobsize != self.softwareJobSize) :
+                    self.printInfo(_("Beware : computed job size (%s) != precomputed job size (%s)") % (jobsize, self.softwareJobSize), "error")
+                jobsize += bannersize
             self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
             
             # update the quota for the current user on this printer 
