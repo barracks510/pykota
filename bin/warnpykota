@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/04/08 21:31:39  jalet
+# (anything or 0) = anything !!! Go back to school Jerome !
+#
 # Revision 1.13  2003/04/08 21:13:44  jalet
 # Prepare --groups option to work.
 #
@@ -144,8 +147,6 @@ class WarnPyKota(PyKotaTool) :
 if __name__ == "__main__" : 
     try :
         defaults = { \
-                     "users"  : 0, \
-                     "groups" : 0, \
                      "printer" : "*", \
                    }
         short_options = "vhugP:"
@@ -160,8 +161,8 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
-        options["users"] = options["u"] or options["users"] or defaults["users"]
-        options["groups"] = options["g"] or options["groups"] or defaults["groups"]
+        options["users"] = options["u"] or options["users"]
+        options["groups"] = options["g"] or options["groups"]
         options["printer"] = options["P"] or options["printer"] or defaults["printer"]
         
         if options["help"] :
