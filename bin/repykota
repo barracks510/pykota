@@ -16,6 +16,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/08 23:17:20  jalet
+# repykota now outputs life time page counters and the total pages printed by
+# all users/groups on each printer.
+#
 # Revision 1.6  2003/02/07 23:39:16  jalet
 # Typos
 #
@@ -101,23 +105,27 @@ class RePyKota(PyKotaTool) :
         for printer in printernames :
             print "*** Report for %s quota on printer %s" % ((options["users"] and "user") or "group", printer)
             print "Pages grace time: %idays" % self.config.getGraceDelay()
+            total = 0
             if options["users"] :
-                print "User            used    soft    hard  grace"
-                print "-----------------------------------------------"
+                print "User             used     soft     hard   grace        total"
+                print "------------------------------------------------------------"
                 for name in self.storage.getPrinterUsers(printer) :
                     quota = self.storage.getUserPQuota(name, printer)
-                    self.printQuota(name, quota)
+                    total += self.printQuota(name, quota)
             else :
-                print "Group           used    soft    hard  grace"
-                print "-----------------------------------------------"
+                print "Group            used     soft     hard   grace        total"
+                print "------------------------------------------------------------"
                 for name in self.storage.getPrinterGroups(printer) :
                     quota = self.storage.getGroupPQuota(name, printer) 
-                    self.printQuota(name, quota)
+                    total += self.printQuota(name, quota)
+            if total :        
+                print (" " * 43) + ("Total : %9i" % total)
             print        
                         
     def printQuota(self, name, quota) :
         """Prints the quota information."""
         if quota is not None :
+            lifepagecounter = quota["lifepagecounter"]
             pagecounter = quota["pagecounter"]
             softlimit = quota["softlimit"] or 0
             hardlimit = quota["hardlimit"] or 0
@@ -130,7 +138,8 @@ class RePyKota(PyKotaTool) :
             else :    
                 datelimit = ""
             reached = ((pagecounter >= softlimit) and "+") or "-"
-            print "%-10.10s %c %7i %7i %7i %s" % (name, reached, pagecounter, softlimit, hardlimit, str(datelimit)[:10])
+            print "%-10.10s %c %8i %8i %8i %10s %9i" % (name, reached, pagecounter, softlimit, hardlimit, str(datelimit)[:10], lifepagecounter)
+            return lifepagecounter
         
                     
 if __name__ == "__main__" : 
