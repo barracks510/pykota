@@ -81,7 +81,7 @@
     asks the printer for its internal page counter at the start and at the end of the print job, and
     computes the values' difference so accounting is done immediately. This way it doesn't let open a window for abuse in the case
     several printers are managed. That's why the use of <application>cupspykota</application>
-    instead of <application>pykota</application> is recommanded with CUPS.
+    instead of <application>pykota</application> is recommended with CUPS.
   </para>
   
   <para>
@@ -107,6 +107,9 @@
 <!--
 
 $Log$
+Revision 1.9  2004/03/03 19:35:36  jalet
+Spelling problem. Thanks to Jurandy Martins
+
 Revision 1.8  2003/11/15 14:59:53  jalet
 Documentation wrt the new CUPS backend.
 

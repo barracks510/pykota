@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ====================================================================
 
-  These recommandations are there because as of April 28th 2003 
+  These recommendations are there because as of April 28th 2003 
   PyKota doesn't enforce them. You may or may not follow them,
   depending on your user's IT knowledge, how much your trust them,
   etc...
@@ -89,7 +89,7 @@ How to improve PyKota's security :
     For the PostgreSQL backend, PyKota already defines a user with 
     read/write access and another user with read-only access to
     the Print Quota Database. PyKota doesn't set any passwords
-    for these users though, but doing it is recommanded, and 
+    for these users though, but doing it is recommended, and 
     explained elsewhere in PyKota's documentation.
     
     For the OpenLDAP backend, YOU have to ensure that no regular

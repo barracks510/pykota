@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2004/03/03 19:35:36  jalet
+# Spelling problem. Thanks to Jurandy Martins
+#
 # Revision 1.36  2004/02/25 15:10:38  jalet
 # Preliminary snmpprinterstatus command added.
 #
@@ -315,7 +318,7 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
                 sys.exit(-1)
                 
         # Say something about caching mechanism and disabling job history
-        sys.stdout.write("You can now activate the database caching mechanism\nwhich is disabled by default.\nIt is especially recommanded with the LDAP backend.\n")
+        sys.stdout.write("You can now activate the database caching mechanism\nwhich is disabled by default.\nIt is especially recommended with the LDAP backend.\n")
         sys.stdout.write("You can now disable the preservation of the complete\njob history which is enabled by default.\nIt is probably more useful with the LDAP backend.\n")
         sys.stdout.write("PLEASE LOOK AT THE SAMPLE CONFIGURATION FILE conf/pykota.conf.sample\n")
         sys.stdout.write("TO LEARN HOW TO DO\n")
