@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.65  2004/10/25 14:12:25  jalet
+# For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
+# to hide print jobs' title, filename, and options.
+#
 # Revision 1.64  2004/10/08 20:19:18  jalet
 # Added ugly workaround for strange locale problem
 #
@@ -549,6 +553,9 @@ class BaseStorage :
         self.tool = pykotatool
         self.usecache = pykotatool.config.getCaching()
         self.disablehistory = pykotatool.config.getDisableHistory()
+        self.privacy = pykotatool.config.getPrivacy()
+        if self.privacy :
+            pykotatool.logdebug("Jobs' title, filename and options will be hidden because of privacy concerns.")
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
             self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }

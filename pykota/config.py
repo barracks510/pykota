@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2004/10/25 14:12:25  jalet
+# For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
+# to hide print jobs' title, filename, and options.
+#
 # Revision 1.53  2004/10/06 10:05:47  jalet
 # Minor changes to allow any PyKota administrator to launch enhanced versions
 # of the commands, and not only the root user.
@@ -523,6 +527,10 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printername
             
+    def getPrivacy(self) :        
+        """Returns 1 if privacy is activated, else 0."""
+        return self.isTrue(self.getGlobalOption("privacy", ignore=1))
+        
     def getDebug(self) :          
         """Returns 1 if debugging is activated, else 0."""
         return self.isTrue(self.getGlobalOption("debug", ignore=1))

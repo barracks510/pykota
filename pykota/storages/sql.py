@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2004/10/25 14:12:25  jalet
+# For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
+# to hide print jobs' title, filename, and options.
+#
 # Revision 1.58  2004/10/12 08:58:53  jalet
 # Now warnpykota only warns users who have already printed, to not confuse
 # users who have just opened their account.
@@ -482,6 +486,9 @@ class SQLStorage :
         
     def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
         """Adds a job in a printer's history."""
+        if self.privacy :    
+            # For legal reasons, we want to hide the title, filename and options
+            title = filename = options = "Hidden because of privacy concerns"
         filename = self.userCharsetToDatabase(filename)
         title = self.userCharsetToDatabase(title)
         options = self.userCharsetToDatabase(options)

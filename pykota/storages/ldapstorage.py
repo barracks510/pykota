@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.86  2004/10/25 14:12:25  jalet
+# For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
+# to hide print jobs' title, filename, and options.
+#
 # Revision 1.85  2004/10/24 12:55:09  jalet
 # Missing spaces
 #
@@ -1086,6 +1090,9 @@ class Storage(BaseStorage) :
         else :    
             uuid = printer.LastJob.ident[3:].split(",")[0]
             dn = printer.LastJob.ident
+        if self.privacy :    
+            # For legal reasons, we want to hide the title, filename and options
+            title = filename = options = "Hidden because of privacy concerns"
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,

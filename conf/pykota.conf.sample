@@ -216,6 +216,16 @@ utolower: No
 # 'Domain2/jerome' and 'jerome' are different. 
 # winbind_separator: /
 
+# Do we want to hide jobs' title, filename and options for privacy
+# reasons ?
+# This may be required in some countries (Italy comes to mind).
+# Allowed values are YES and NO.
+# If unset, the default value is NO, meaning that jobs' title, filename
+# and options will be saved into the history.
+# This option can't be set on a per printer basis, only into the 
+# [global] section.
+privacy : no
+
 # What is the accounting backend to use
 # 
 # supported values :
