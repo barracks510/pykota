@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2004/01/07 16:16:32  jalet
+# Better debugging information
+#
 # Revision 1.17  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -229,7 +232,7 @@ def main(thebackend) :
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
         
         # And launch it
-        thebackend.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join([os.environ["DEVICE_URI"]] + sys.argv[1:])))
+        thebackend.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + sys.argv[1:])])))
         subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, bufsize=0, arg0=os.environ["DEVICE_URI"])
         
         # Save file descriptors, we will need them later.
