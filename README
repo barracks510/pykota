@@ -70,7 +70,7 @@ PyKota features :
           other way.
           This is completely configurable.
           
-        - Supports DSC compliant PostScript, PDF, PCL5 and 
+        - Supports DSC compliant PostScript, PDF, PCL5, and
           PCLXL (aka PCL6) printers natively for software 
           accounting methods. More formats to come.
             
@@ -238,13 +238,13 @@ Prerequisite :
   Other architectures may be supported as well in the future, check    
   on Psyco's website.
   
-  Installing Psyco is not mandatory, but it woud speedup PCL5 parsing
+  Installing Psyco is not mandatory, but it will speedup PCL5 parsing
   by almost 3 times. PostScript and PDF parsing can also benefit,
   but in an almost unnoticeable manner since this part of the code
   is already optimal. For PCL5 this is a completely different matter,
   and if you install Psyco you will never regret it !
   Same remark applies for PCL6 (aka PCLXL) but performance improvement
-  is yet to be tested (it is high anyway).
+  is yet to be fully tested (it is very high anyway).
   
   You may also benefit from having the following tools installed to
   deal with some printers :

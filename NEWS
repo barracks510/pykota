@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha28 :
     
+        - Improved pkhint
+        
         - First working PCL6 (aka PCLXL) parser !
           Doesn't handle copies yet.
         

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/06/29 07:53:11  jalet
+# Improved pkhint
+#
 # Revision 1.11  2004/06/18 13:34:48  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -121,7 +124,7 @@ NETPJLTESTS = [ \
                 '/usr/share/pykota/pagecount.pl %(printer)s %(port)s 2>/dev/null', \
                 '/bin/nc -w 2 %(printer)s %(port)s </usr/share/pykota/pagecount.pjl 2>/dev/null | /usr/bin/tail -2', \
               ]
-
+              
 class PKHint(PyKotaTool) :
     """A class to autodetect the best accounting method for printers."""
     def extractPrintersInformation(self) :    
@@ -235,17 +238,24 @@ class PKHint(PyKotaTool) :
                         if netpjlcommand is not None :
                             accounter = 'hardware(' + netpjlcommand + ')'
                             configuration.append((printer, accounter))
-                elif devicetype == "direct" : 
-                    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
-                elif devicetype == "serial" : 
-                    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                        else :    
+                            configuration.append((printer, "software(/usr/bin/pkpgcounter)"))
+                # elif devicetype == "direct" : 
+                #    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                #elif devicetype == "serial" : 
+                #    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                #else :
+                #    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
                 else :
-                    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
+                    configuration.append((printer, "software(/usr/bin/pkpgcounter)"))
                     
         if not configuration :            
             print "\nSorry, pkhint can't help you for now. Please configure PyKota manually."
         else :
             print "\nPut the following lines into your /etc/pykota/pykota.conf file :\n"
+            print "# BEWARE : if software accounting is suggested, this doesn't mean"
+            print "# that hardware accounting wouldn't work, this only means that PyKota"
+            print "# wasn't able to autodetect which hardware accounting method to use."
             for (printer, accounter) in configuration :
                 print "[%s]" % printer
                 print "accounter: %s" % accounter
@@ -253,7 +263,6 @@ class PKHint(PyKotaTool) :
         
 if __name__ == "__main__" : 
     sys.stderr.write("BEWARE : This tool doesn't support LPRng's printcap files yet.\n")
-    sys.stderr.write("This tool is currently highly experimental, so don't rely on it.\n")
     retcode = 0
     try :
         short_options = "hv"

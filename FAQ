@@ -58,11 +58,11 @@ PyKota's FAQ :
   * What is a 'dumb printer' ?
   
     In PyKota, the term 'dumb printer' defines a printer which doesn't 
-    understand PostScript or PCL5 AND doesn't have an internal page 
-    counter, AND for which you don't know how to compute a job's size 
-    in number of pages by analyzing its content. Any printer which 
-    is not a 'dumb printer' according to the above definition is 
-    supported by PyKota.
+    understand PostScript, PCL5, PCLXL (aka PCL6) or PDF AND doesn't 
+    have an internal page counter, AND for which you don't know how to 
+    compute a job's size in number of pages by analyzing its content. 
+    Any printer which is not a 'dumb printer' according to the above 
+    definition is supported by PyKota.
 
   * How can I make PyKota work with my non-postscript printer under 
     CUPS ?  
@@ -77,10 +77,9 @@ PyKota's FAQ :
     create a script which understands your printer's
     Page Description Language.
     
-    PyKota natively understands PostScript and PCL5,
-    but PCL6 support is in the works, and more PDLs
-    will be added in the future. However you can always
-    plug your own PDL analyzer in PyKota.
+    PyKota natively understands PostScript, PCL5, PCLXL (aka PCL6)
+    and PDF. More PDLs will be added in the future. However you can 
+    always plug your own PDL analyzer in PyKota.
           
   * I've got a great number of users. How can I automatically
     set an initial print quota for them on first print ?
