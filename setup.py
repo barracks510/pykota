@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/05/17 16:31:38  jalet
+# Dies gracefully if DistUtils is not present.
+#
 # Revision 1.13  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
@@ -74,8 +77,12 @@ import sys
 import glob
 import os
 import shutil
-from distutils.core import setup
 import ConfigParser
+try :
+    from distutils.core import setup
+except ImportError :    
+    sys.stderr.write("You need the DistUtils Python module.\nunder Debian, you may have to install the python-dev package.\nOf course, YMMV.\n")
+    sys.exit(-1)
 
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
