@@ -160,11 +160,19 @@ printing quota.
 WARNING : as of today, 2003-02-06, group quotas are not
 implemented.
 
-SECURITY : you should ensure that only the print quota administrator
+SECURITY : You should ensure that only the print quota administrator
            can run the warnpykota command, but this is actually not
            enforced in the program. Any user able to launch warnpykota
            could flood over-quota users' email boxes.
+           
+           You should ensure that only the print quota administrator
+           can run the edpykota command, but this is actually not
+           enforced in the program. Any user could modify his/her
+           or other people's print quota.
           
+           launching : chmod 750 /usr/bin/warnpykota /usr/bin/edpykota
+           should make you reasonably safe.
+           
 ============================================================
 
 Please e-mail bugs to: alet@librelogiciel.com (Jerome Alet)
