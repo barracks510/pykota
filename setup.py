@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.55  2004/10/16 10:20:32  jalet
+# Now installs translated manual pages
+#
 # Revision 1.54  2004/10/13 07:45:01  jalet
 # Modified installation script to please both me and the Debian packagers
 #
@@ -512,6 +515,12 @@ data_files.append((os.path.join(docdir, "openoffice"), docfiles))
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
 data_files.append((directory, manpages))
+
+modirs = [ os.path.split(os.path.split(mof)[0])[1] for mof in mofiles ]
+for dir in modirs :
+    directory = os.sep.join(["share", "man", dir, "man1"])
+    manpages = glob.glob(os.sep.join(["man", dir, "*.1"]))    
+    data_files.append((directory, manpages))
 
 directory = os.sep.join(["share", "pykota"])
 data_files.append((directory, ["bin/cupspykota", "bin/lprngpykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
