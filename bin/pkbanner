@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/11/15 22:20:27  jalet
+# Now outputs strings as-is, and not title-ized
+#
 # Revision 1.5  2004/11/15 22:01:34  jalet
 # Improved banner handling.
 # Fix for raw printing and banners.
@@ -169,7 +172,7 @@ class PyKotaBanner(Tool) :
         canvas.setFont("Helvetica-Bold", size)
         (r, g, b) =  (0, 0, 0)  # Black : TODO : darkness
         canvas.setFillColorRGB(r, g, b)
-        message = "%s :" % _(label).title()
+        message = "%s :" % _(label)
         canvas.drawRightString(x, y, message)
         canvas.setFont("Courier-Bold", size)
         (r, g, b) = (1, 0, 0)   # Red : TODO : darkness
@@ -250,7 +253,7 @@ class PyKotaBanner(Tool) :
         ypos -= 20
         
         # Now outputs the user's account balance or page counter
-        ypos -= self.printVar(c, xcenter, ypos, _("Pages printed on %s") % printername, self.getVar("PYKOTAPAGECOUNTER"), 14, darkness) 
+        ypos -= self.printVar(c, xcenter, ypos, _("Pages printed so far on %s") % printername, self.getVar("PYKOTAPAGECOUNTER"), 14, darkness) 
         limitby = self.getVar("PYKOTALIMITBY")
         if limitby == "balance" :  
             ypos -= self.printVar(c, xcenter, ypos, _("Account balance"), self.getVar("PYKOTABALANCE"), 14, darkness) 
