@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2004/06/06 21:07:55  jalet
+# Improved CGI script to allow history on printers and hostnames.
+# Better (?) colors in stylesheet.
+#
 # Revision 1.28  2004/06/05 22:42:41  jalet
 # Improved web history reports
 #
@@ -265,8 +269,12 @@ class PyKotaReportGUI(PyKotaTool) :
                 datelimit = self.form["datelimit"].value
             else :    
                 datelimit = None
+            if self.form.has_key("hostname") :    
+                hostname = self.form["hostname"].value
+            else :    
+                hostname = None
             self.report = ["<h2>History</h2>"]    
-            history = self.storage.retrieveHistory(user, printer, datelimit)
+            history = self.storage.retrieveHistory(user, printer, datelimit, hostname)
             if not history :
                 self.report.append("<h3>Empty</h3>")
             else :
@@ -284,8 +292,13 @@ class PyKotaReportGUI(PyKotaTool) :
                         oddevenclass = "deny"
                     elif job.JobAction == "WARN" :    
                         oddevenclass = "warn"
-                    username = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % (h or "&nbsp;") for h in (job.JobDate[:19], job.JobAction, username, job.PrinterName, job.JobHostName, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobSizeBytes, job.PrinterPageCounter, job.JobTitle, job.JobFileName, job.JobOptions)])))
+                    username_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
+                    printername_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "printername" : job.PrinterName}), job.PrinterName)
+                    if job.JobHostName :
+                        hostname_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "hostname" : job.JobHostName}), job.JobHostName)
+                    else :    
+                        hostname_url = None
+                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % (h or "&nbsp;") for h in (job.JobDate[:19], job.JobAction, username_url, printername_url, hostname_url, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobSizeBytes, job.PrinterPageCounter, job.JobTitle, job.JobFileName, job.JobOptions)])))
                 self.report.append('</table>')
                 dico = { "history" : 1,
                          "datelimit" : job.JobDate,
@@ -294,6 +307,8 @@ class PyKotaReportGUI(PyKotaTool) :
                     dico.update({ "username" : user.Name })
                 if printer and printer.Exists :
                     dico.update({ "printername" : printer.Name })
+                if hostname :    
+                    dico.update({ "hostname" : hostname })
                 prevurl = "%s?%s" % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(dico))
                 self.report.append('<a href="%s">Previous page</a>' % prevurl)
             self.body = "\n".join(self.report)    

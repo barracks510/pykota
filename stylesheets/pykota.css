@@ -38,3 +38,19 @@
 .pykotacolsheader {      
         background-color: #AAAAAA;
       }
+      
+a:link {      
+        color : blue;
+       }
+       
+a:visited {      
+        color : purple;
+       }
+       
+a:hover {      
+        color : green;
+       }
+       
+a:active {      
+        color : magenta;
+       }
