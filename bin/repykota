@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2003/05/28 13:56:24  jalet
+# Unneeded code.
+#
 # Revision 1.34  2003/04/29 22:03:38  jalet
 # Better error handling.
 #
@@ -189,10 +192,6 @@ Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
 class RePyKota(PyKotaTool) :        
     """A class for repykota."""
-    def __init__(self, doc) :
-        """Initializes the tool as a non-priviledged storage user."""
-        PyKotaTool.__init__(self, asadmin=0, doc=doc)
-        
     def main(self, options) :
         """Print Quota reports generator."""
         printers = self.storage.getMatchingPrinters(options["printer"])
@@ -285,7 +284,7 @@ if __name__ == "__main__" :
         long_options = ["help", "version", "users", "groups", "printer="]
         
         # Initializes the command line tool
-        reporter = RePyKota(doc=__doc__)
+        reporter = RePyKota(asadmin=0, doc=__doc__)
         
         # parse and checks the command line
         (options, args) = reporter.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
