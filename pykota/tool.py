@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/02/07 08:34:16  jalet
+# Test wrt date limit was wrong
+#
 # Revision 1.12  2003/02/06 23:20:02  jalet
 # warnpykota doesn't need any user/group name argument, mimicing the
 # warnquota disk quota tool.
@@ -176,7 +179,6 @@ class PyKotaTool :
         
     def checkUserPQuota(self, username, printername) :
         """Checks the user quota on a printer and deny or accept the job."""
-        now = DateTime.now()
         quota = self.storage.getUserPQuota(username, printername)
         if quota is None :
             # Unknown user or printer or combination
@@ -198,12 +200,12 @@ class PyKotaTool :
                 if pagecounter < softlimit :
                     action = "ALLOW"
                 elif hardlimit is not None :
-                     gracedelay = self.config.getGraceDelay()
                      if softlimit <= pagecounter < hardlimit :    
+                         now = DateTime.now()
                          if datelimit is None :
-                             datelimit = now + gracedelay
+                             datelimit = now + self.config.getGraceDelay()
                              self.storage.setDateLimit(username, printername, datelimit)
-                         if (now + gracedelay) < datelimit :
+                         if now < datelimit :
                              action = "WARN"
                          else :    
                              action = "DENY"
