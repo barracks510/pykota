@@ -36,14 +36,14 @@ lazy method ?
   but probably from other ones ;-) will be implemented in the 
   future.
   
-PyKota is know to work fine with HP Laserjet 2100 and 2200   
+PyKota is known to work fine with HP Laserjet 2100 and 2200   
 networked printers.
 
 Planned features are :
 
         - Easier installation.
         
-        - Per printer User and Group quotas. Currently Group
+        - Per printer Group quotas. Currently Group
           quotas are only at skeleton stage.
         
         - Configurable printer querying methods. Currently
