@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.83  2004/04/16 17:03:49  jalet
+# The list of printers groups the current printer is a member of is
+# now exported in the PYKOTAPGROUPS environment variable
+#
 # Revision 1.82  2004/04/13 09:38:03  jalet
 # More work on correct child processes handling
 #
@@ -804,6 +808,11 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         os.putenv("PYKOTASOFTLIMIT", str(userpquota.SoftLimit))
         os.putenv("PYKOTAHARDLIMIT", str(userpquota.HardLimit))
         os.putenv("PYKOTADATELIMIT", str(userpquota.DateLimit))
+        
+        # not really an user information, but anyway
+        # exports the list of printers groups the current
+        # printer is a member of
+        os.putenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(userpquota.Printer)]))
             
     def prehook(self, userpquota) :
         """Allows pluging of an external hook before the job gets printed."""

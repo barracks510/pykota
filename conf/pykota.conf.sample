@@ -463,6 +463,7 @@ policy: deny
 # PYKOTAACTION : ALLOW or DENY or WARN for current print job
 # PYKOTAUSERNAME : user's name
 # PYKOTAPRINTERNAME : printer's name
+# PYKOTAPGROUPS : list of printers groups the current printer is a member of
 # PYKOTAJOBID : job's id
 # PYKOTATITLE : job's title
 # PYKOTAFILENAME : job's filename
