@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/05/06 14:55:47  jalet
+# Missing import !
+#
 # Revision 1.2  2003/04/30 13:36:40  jalet
 # Stupid accounting method was added.
 #
@@ -30,6 +33,7 @@
 #
 
 import sys
+import time
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.requester import openRequester, PyKotaRequesterError
 
