@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/03/07 22:56:14  jalet
+# 0.99 is out with some bug fixes.
+#
 # Revision 1.24  2003/02/27 23:48:41  jalet
 # Correctly maps PyKota's log levels to syslog log levels
 #
@@ -253,38 +256,47 @@ class PyKotaTool :
             # Unknown user or printer or combination
             policy = self.config.getPrinterPolicy(printername)
             if policy in [None, "ALLOW"] :
-                action = "ALLOW"
+                action = "POLICY_ALLOW"
             else :    
-                action = "DENY"
+                action = "POLICY_DENY"
             self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action))
-            return (action, None, None)
         else :    
             pagecounter = quota["pagecounter"]
             softlimit = quota["softlimit"]
             hardlimit = quota["hardlimit"]
             datelimit = quota["datelimit"]
-            if datelimit is not None :
-                datelimit = DateTime.ISO.ParseDateTime(datelimit)
             if softlimit is not None :
                 if pagecounter < softlimit :
                     action = "ALLOW"
-                elif hardlimit is not None :
-                    if softlimit <= pagecounter < hardlimit :    
-                        now = DateTime.now()
-                        if datelimit is None :
-                            datelimit = now + self.config.getGraceDelay(printername)
-                            self.storage.setDateLimit(username, printername, datelimit)
-                        if now < datelimit :
-                            action = "WARN"
-                        else :    
-                            action = "DENY"
-                    else :         
+                else :    
+                    if hardlimit is None :
+                        # only a soft limit, this is equivalent to having only a hard limit
                         action = "DENY"
-                else :        
-                    action = "DENY"
+                    else :    
+                        if softlimit <= pagecounter < hardlimit :    
+                            now = DateTime.now()
+                            if datelimit is not None :
+                                datelimit = DateTime.ISO.ParseDateTime(datelimit)
+                            else :
+                                datelimit = now + self.config.getGraceDelay(printername)
+                                self.storage.setDateLimit(username, printername, datelimit)
+                            if now < datelimit :
+                                action = "WARN"
+                            else :    
+                                action = "DENY"
+                        else :         
+                            action = "DENY"
             else :        
-                action = "ALLOW"
-            return (action, (hardlimit - pagecounter), datelimit)
+                if hardlimit is not None :
+                    # no soft limit, only a hard one.
+                    if pagecounter < hardlimit :
+                        action = "ALLOW"
+                    else :      
+                        action = "DENY"
+                else :
+                    # Both are unset, no quota
+                    action = "ALLOW"
+        return action
     
     def warnGroupPQuota(self, username, printername=None) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
@@ -296,14 +308,14 @@ class PyKotaTool :
         pname = printername or self.printername
         admin = self.config.getAdmin(pname)
         adminmail = self.config.getAdminMail(pname)
-        (action, grace, gracedate) = self.checkUserPQuota(username, pname)
+        action = self.checkUserPQuota(username, pname)
+        if action.startswith("POLICY_") :
+            action = action[7:]
         if action == "DENY" :
-            if (grace is not None) and (gracedate is not None) :
-                # only when both user and printer are known
-                adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, pname)
-                self.logger.log_message(adminmessage)
-                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, pname)
+            self.logger.log_message(adminmessage)
+            self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
+            self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
             adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, pname)
             self.logger.log_message(adminmessage)
