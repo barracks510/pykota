@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.3  2003/02/05 22:10:29  jalet
 # Typos
 #
@@ -46,6 +49,6 @@ def openLogger(config) :
             raise ImportError
         exec "from pykota.loggers import %s as loggingbackend" % backend.lower()    
     except ImportError :
-        raise PyKotaLoggingError, "Unsupported logging subsystem %s" % backend
+        raise PyKotaLoggingError, _("Unsupported logging subsystem %s") % backend
     else :    
         return getattr(loggingbackend, "Logger")()

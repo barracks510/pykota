@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.1  2003/02/07 13:15:01  jalet
 # External requester skeleton added.
 #
@@ -28,12 +31,12 @@ class Requester :
     def __init__(self, config, printername) :
         """Sets instance vars depending on the current printer."""
         self.printername = printername
-        raise PyKotaRequesterError, "Requester not implemented yet."
+        raise PyKotaRequesterError, _("Requester not implemented yet.")
         
     def getPrinterPageCounter(self, hostname) :
         """Returns the page counter from the hostname printer via SNMP.
         
            Currently uses the snmpget external command. TODO : do it internally 
         """
-        raise PyKotaRequesterError, "Requester not implemented yet."
+        raise PyKotaRequesterError, _("Requester not implemented yet.")
         

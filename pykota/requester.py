@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.3  2003/02/05 22:10:29  jalet
 # Typos
 #
@@ -44,6 +47,6 @@ def openRequester(config, printername) :
             raise ImportError
         exec "from pykota.requesters import %s as requesterbackend" % backend.lower()    
     except ImportError :
-        raise PyKotaRequesterError, "Unsupported requester backend %s" % backend
+        raise PyKotaRequesterError, _("Unsupported requester backend %s") % backend
     else :    
         return getattr(requesterbackend, "Requester")(config, printername)

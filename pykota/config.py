@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.6  2003/02/07 22:00:09  jalet
 # Bad cut&paste
 #
@@ -70,35 +73,35 @@ class PyKotaConfig :
                         "logger", "admin", "adminmail",
                         "smtpserver", "method", "gracedelay" ] :
             if not self.config.has_option("global", option) :            
-                raise PyKotaConfigError, "Option %s not found in section global of %s" % (option, self.filename)
+                raise PyKotaConfigError, _("Option %s not found in section global of %s") % (option, self.filename)
                 
         # more precise checks        
         validloggers = [ "stderr", "system" ] 
         if self.config.get("global", "logger").lower() not in validloggers :             
-            raise PyKotaConfigError, "Option logger only supports values in %s" % str(validloggers)
+            raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
             
         validmethods = [ "lazy" ] # TODO add more methods            
         if self.config.get("global", "method").lower() not in validmethods :             
-            raise PyKotaConfigError, "Option method only supports values in %s" % str(validmethods)
+            raise PyKotaConfigError, _("Option method only supports values in %s") % str(validmethods)
             
         # check all printers now 
         for printer in self.getPrinterNames() :
             for poption in [ "requester", "policy" ] : 
                 if not self.config.has_option(printer, poption) :
-                    raise PyKotaConfigError, "Option %s not found in section %s of %s" % (option, printer, self.filename)
+                    raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
                     
             validpolicies = [ "ALLOW", "DENY" ]     
             if self.config.get(printer, "policy").upper() not in validpolicies :
-                raise PyKotaConfigError, "Option policy in section %s only supports values in %s" % (printer, str(validpolicies))
+                raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
             
             validrequesters = [ "snmp" ] # TODO : add more requesters
             requester = self.config.get(printer, "requester").lower()
             if requester not in validrequesters :
-                raise PyKotaConfigError, "Option requester in section %s only supports values in %s" % (printer, str(validrequesters))
+                raise PyKotaConfigError, _("Option requester in section %s only supports values in %s") % (printer, str(validrequesters))
             if requester == "snmp" :
                 for poption in [ "snmpcmnty", "snmpoid" ] : 
                     if not self.config.has_option(printer, poption) :
-                        raise PyKotaConfigError, "Option %s not found in section %s of %s" % (option, printer, self.filename)
+                        raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
                         
     def getPrinterNames(self) :    
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
@@ -149,4 +152,4 @@ class PyKotaConfig :
         try :
             return int(gd)
         except ValueError :    
-            raise PyKotaConfigError, "Invalid grace delay %s" % gd
+            raise PyKotaConfigError, _("Invalid grace delay %s") % gd

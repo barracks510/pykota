@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.16  2003/02/09 12:56:53  jalet
 # Internationalization begins...
 #
@@ -199,7 +202,7 @@ class PyKotaTool :
         
     def sendMessageToUser(self, username, subject, message) :
         """Sends an email message to a user."""
-        message += "\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n" % (self.admin, self.adminmail)
+        message += _("\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n") % (self.admin, self.adminmail)
         self.sendMessage(username, "Subject: %s\n\n%s" % (subject, message))
         
     def sendMessageToAdmin(self, subject, message) :
@@ -216,7 +219,7 @@ class PyKotaTool :
                 action = "ALLOW"
             else :    
                 action = "DENY"
-            self.logger.log_message("Unable to match user %s on printer %s, applying default policy (%s)" % (username, printername, action), "warn")
+            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action), "warn")
             return (action, None, None)
         else :    
             pagecounter = quota["pagecounter"]
@@ -249,7 +252,7 @@ class PyKotaTool :
     def warnGroupPQuota(self, username, printername=None) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
         pname = printername or self.printername
-        raise PyKotaToolError, "Group quotas are currently not implemented."
+        raise PyKotaToolError, _("Group quotas are currently not implemented.")
         
     def warnUserPQuota(self, username, printername=None) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
@@ -258,14 +261,14 @@ class PyKotaTool :
         if action == "DENY" :
             if (grace is not None) and (gracedate is not None) :
                 # only when both user and printer are known
-                adminmessage = "Print Quota exceeded for user %s on printer %s" % (username, pname)
+                adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, pname)
                 self.logger.log_message(adminmessage)
-                self.sendMessageToUser(username, "Print Quota Exceeded", "You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s." % pname)
+                self.sendMessageToUser(username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
                 self.sendMessageToAdmin("Print Quota", adminmessage)
         elif action == "WARN" :    
-            adminmessage = "Print Quota soft limit exceeded for user %s on printer %s" % (username, pname)
+            adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, pname)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(username, "Print Quota Exceeded", "You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s." % pname)
-            self.sendMessageToAdmin("Print Quota", adminmessage)
+            self.sendMessageToUser(username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % pname)
+            self.sendMessageToAdmin(_("Print Quota"), adminmessage)
         return action        
     

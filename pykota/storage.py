@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.5  2003/02/08 22:39:46  jalet
 # --reset command line option added
 #
@@ -108,7 +111,7 @@ def openConnection(config, asadmin=0) :
             raise ImportError
         exec "from pykota.storages import %s as storagebackend" % backend.lower()    
     except ImportError :
-        raise PyKotaStorageError, "Unsupported quota storage backend %s" % backend
+        raise PyKotaStorageError, _("Unsupported quota storage backend %s") % backend
     else :    
         return getattr(storagebackend, "Storage")(host, database, (asadmin and admin) or user)
 

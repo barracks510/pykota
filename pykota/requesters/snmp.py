@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/09 13:05:43  jalet
+# Internationalization continues...
+#
 # Revision 1.3  2003/02/07 13:12:41  jalet
 # Bad old comment
 #
@@ -44,12 +47,12 @@ class Requester :
            Currently uses the snmpget external command. TODO : do it internally 
         """
         if hostname is None :
-            raise PyKotaRequesterError, "Unknown printer address in SNMP(%s, %s) for printer %s" % (self.community, self.oid, self.printername)
+            raise PyKotaRequesterError, _("Unknown printer address in SNMP(%s, %s) for printer %s") % (self.community, self.oid, self.printername)
         answer = os.popen("snmpget -c %s -Ov %s %s" % (self.community, hostname, self.oid))
         try :
             pagecounter = int(answer.readline().split()[-1].strip())
         except IndexError :    
-            raise PyKotaRequesterError, "Unable to query printer %s via SNMP(%s, %s)" % (hostname, self.community, self.oid) 
+            raise PyKotaRequesterError, _("Unable to query printer %s via SNMP(%s, %s)") % (hostname, self.community, self.oid) 
         answer.close()
         return pagecounter
     
