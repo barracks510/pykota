@@ -127,10 +127,10 @@ else :
                 if self.printerInternalPageCounter is not None :    
                     if firstvalue is None :
                         # first time we retrieved a page counter, save it
-                        firstvalue = self.PrinterInternalPageCounter
+                        firstvalue = self.printerInternalPageCounter
                     else :     
                         # second time (or later)
-                        if firstvalue < self.PrinterInternalPageCounter :
+                        if firstvalue < self.printerInternalPageCounter :
                             # Here we have a printer which lies :
                             # it says it is not printing or warming up
                             # BUT the page counter increases !!!
