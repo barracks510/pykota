@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.125  2004/10/04 11:18:10  jalet
+# Now exports the MD5 sum of the job's datas as an hexadecimal digest
+#
 # Revision 1.124  2004/10/02 05:48:56  jalet
 # Should now correctly deal with charsets both when storing into databases and when
 # retrieving datas. Works with both PostgreSQL and LDAP.
@@ -1019,6 +1022,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.jobdatastream.seek(0)
         digest = checksum.hexdigest()
         self.logdebug("MD5 checksum for job %s is %s" % (self.jobid, digest))
+        os.environ["PYKOTAMD5SUM"] = digest
         return digest
         
     def openJobDataStream(self) :    
