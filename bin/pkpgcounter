@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/05/06 21:19:27  jalet
+# Doesn't exit anymore on the first nul byte
+#
 # Revision 1.5  2004/05/06 12:37:29  jalet
 # pkpgcounter : comments
 # pkprinters : when --add is used, existing printers are now skipped.
@@ -123,8 +126,6 @@ def pcl(infile) :
         except IndexError :     # EOF    
             break
         position += 1
-        if not char :
-            break
         if char == "\014" :    
             pagecount += 1
         elif char == "\033" :    

@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha5 :
     
+        - pkpgcounter enhancements.
+        
         - pkprinters --skipexisting now tells pkprinters to not
           modify existing printers when --add is used.
           pkprinters logs a warning message whenever --add is
