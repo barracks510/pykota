@@ -3,7 +3,7 @@
 # 
 # $Id$
 #
-# 
+ 
 dn: ou=People,dc=librelogiciel,dc=com
 ou: People
 objectClass: organizationalUnit
@@ -12,8 +12,28 @@ dn: ou=Groups,dc=librelogiciel,dc=com
 ou: Groups
 objectClass: organizationalUnit
 
-dn: ou=Printers,dc=librelogiciel,dc=com
+dn: ou=PyKota,dc=librelogiciel,dc=com
+ou: PyKota
+objectClass: organizationalUnit
+
+dn: ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
 ou: Printers
+objectClass: organizationalUnit
+
+dn: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
+ou: UQuotas
+objectClass: organizationalUnit
+
+dn: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+ou: GQuotas
+objectClass: organizationalUnit
+
+dn: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
+ou: Jobs
+objectClass: organizationalUnit
+
+dn: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+ou: LastJobs
 objectClass: organizationalUnit
 
 dn: uid=jerome,ou=People,dc=librelogiciel,dc=com
@@ -23,7 +43,8 @@ objectClass: account
 objectClass: posixAccount
 objectClass: top
 objectClass: shadowAccount
-objectClass: pykotaUser
+objectClass: pykotaAccount
+objectClass: pykotaAccountBalance
 userPassword: {crypt}PvuIT4Mz8.lCM
 shadowLastChange: 12093
 shadowMax: 99999
@@ -33,9 +54,10 @@ uidNumber: 500
 gidNumber: 500
 homeDirectory: /home/jerome
 gecos: Jerome Alet,,,
+pykotaUserName: jerome
 pykotaLimitBy: quota
-pykotaBalance: 0
-pykotaLifeTimePaid: 0
+pykotaBalance: 9.25
+pykotaLifeTimePaid: 10
 
 dn: cn=devel,ou=Groups,dc=librelogiciel,dc=com
 objectClass: posixGroup
@@ -45,48 +67,53 @@ cn: devel
 userPassword: {crypt}x
 gidNumber: 500
 memberUid: jerome
+pykotaGroupName: devel
 pykotaLimitBy: quota
 
-dn: pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
+dn: cn=apple,ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
+objectClass: pykotaNamed
 objectClass: pykotaPrinter
+cn: apple
 pykotaPrinterName: apple
 pykotaPricePerPage: 0.1
 pykotaPricePerJob: 0.25
 
-dn: ou=userPQuotas,pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
-ou: userPQuotas
-objectClass: organizationalUnit
-
-dn: ou=groupPQuotas,pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
-ou: groupPQuotas
-objectClass: organizationalUnit
-
-dn: ou=Jobs,pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
-ou: Jobs
-objectClass: organizationalUnit
-
-dn: uid=jerome,ou=userPQuotas,pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
+dn: cn=uniqueidentifier01,ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
+objectClass: pykotaNamed
 objectClass: pykotaUserPQuota
-uid: jerome
-pykotaPageCounter: 0
-pykotaLifePageCounter: 0
+cn: uniqueidentifier01
+pykotaUserName: jerome
+pykotaPrinterName: apple
+pykotaPageCounter: 5
+pykotaLifePageCounter: 5
 pykotaSoftLimit: 100
 pykotaHardLimit: 110
 pykotaDateLimit: None
 
-dn: cn=devel,ou=groupPQuotas,pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
+dn: cn=uniqueidentifier02,ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+objectClass: pykotaNamed
 objectClass: pykotaGroupPQuota
-cn: devel
+cn: uniqueidentifier02
+pykotaGroupName: devel
+pykotaPrinterName: apple
 pykotaSoftLimit: 400
 pykotaHardLimit: 450
 pykotaDateLimit: None
 
-dn: pykotaJobHistoryId=1,ou=Jobs,pykotaPrinterName=apple,ou=Printers,dc=librelogiciel,dc=com
-objectClass: pykotaPrinterJob
-pykotaJobHistoryId: 1
+dn: cn=uniqueidentifier03,ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
+objectClass: pykotaNamed
+objectClass: pykotaJob
+cn: uniqueidentifier03
+pykotaUserName: jerome
+pykotaPrinterName: apple
 pykotaJobId: 15
-uid: jerome
 pykotaPrinterPageCounter: 1533
 pykotaJobSize: 5
 pykotaAction: ALLOW
-pykotaJobDate: 2003-06-04 16:12
+
+dn: cn=uniqueidentifier04,ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+objectClass: pykotaNamed
+objectClass: pykotaLastJob
+cn: uniqueidentifier04
+pykotaPrinterName: apple
+pykotaLastJobUUID: uniqueidentifier03

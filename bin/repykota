@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/06/06 14:21:08  jalet
+# New LDAP schema.
+# Small bug fixes.
+#
 # Revision 1.35  2003/05/28 13:56:24  jalet
 # Unneeded code.
 #
@@ -255,7 +259,7 @@ class RePyKota(PyKotaTool) :
             if balance is not None :
                 (balance, lifetimepaid) = balance
             else :    
-                (balance, lifetimepaid) = 0.0
+                (balance, lifetimepaid) = (0.0, 0.0)
             if datelimit is not None :
                 now = DateTime.now()
                 datelimit = DateTime.ISO.ParseDateTime(datelimit)
@@ -273,6 +277,8 @@ class RePyKota(PyKotaTool) :
             strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
             print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, str(softlimit), str(hardlimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
             return (lifepagecounter, lifetimepaid)
+        else :    
+            return (0, 0)
         
                     
 if __name__ == "__main__" : 
