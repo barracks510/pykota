@@ -56,9 +56,10 @@ def restore_original_database() :
 def open_database(dbname="pykota") :
     """Returns the database object or None if we can't connect to it."""
     try :
-        pykotadb = pg.connect(dbname, user="postgres")
+        pykotadb = pg.connect(host="localhost", port=5432, dbname=dbname, user="postgres")
     except pg.error, msg :     
         sys.stderr.write("%s\n" % msg)
+        sys.stderr.write("Unable to connect to the local PostgreSQL server.\nPlease modify the open_database() method in %s\nto connect to the correct PostgreSQL server\nand relaunch the script.\n" % sys.argv[0])
         return 
     else :    
         return pykotadb

@@ -37,7 +37,9 @@ Files :
   
     This file upgrades the PostgreSQL Quota Storage Database schema
     from versions before 1.01 to version 1.01.
-    DON'T USE IT IF YOU ALREADY RUN A POST-1.01 PyKota VERSION.
+    
+    IT'S THERE FOR HISTORICAL REASONS ONLY : DON'T USE IT, USE
+    THE SCRIPT DESCRIBED BELOW INSTEAD !
     
   * upgrade-from-before-1.03.py :
   

@@ -56,43 +56,10 @@ Upgrade scripts :
   version of PyKota.
   
 * An sql script to upgrade a pre-1.01 PyKota Quota Storage DataBase to 
-  1.01 is included. If your PyKota version is equal or higher than 1.01 then
-  you can skip to the next section. Otherwise, if you want to keep your datas
-  from a pre-1.01 PyKota version, then please launch the following commands : 
+  1.01 is still included for historical reasons. PLEASE DON'T USE IT ! 
   
-        - Launch the psql frontend and connect to the
-          database pykota as a PostgreSQL administrator
-          (i.e. the postgres user) :
-          
-            $ psql -h localhost -U postgres pykota
-          
-        - Executes the pykota-upgrade-postgresql.sql script :  
-        
-            pykota=# \i VERYOLDpykota-upgrade-postgresql.sql
-            
-        - Quit the psql frontend :    
-        
-            pykota=# \q
-            
-        - Your PostgreSQL PyKota storage is now ready
-          for use for the next step, i.e. upgrade the
-          database schema to version 1.03. PLEASE
-          TAKE ANY STEPS DESCRIBED IN THE NEXT SECTION.
-  
-  If you already run PyKota v1.01 or above, you don't need
-  to run this upgrade script.
-  
-  WARNING :  
-
-  This script requires a recent version of PostgreSQL to run
-  successfully, because it requires the ALTER TABLE DROP COLUMN
-  syntax to be supported. However in case you've got an older
-  version, upgrading PostgreSQL is not mandatory, you will just 
-  have two unused fields in the grouppquota table, these
-  fields are pagecounter and lifepagecounter, just forgot them.
-  
-* If you are already running PyKota 1.01 or 1.02 and want to upgrade to 
-  1.03, YOU HAVE TO RUN the upgrade-from-before-1.03.py shell script.
-  NOT LAUNCHING THIS SCRIPT WILL CAUSE PYKOTA TO STOP WORKING !
-  PLEASE NEVER RUN THIS SCRIPT IF YOUR EXISTING VERSION OF PYKOTA IS 
-  ALREADY 1.03 OD HIGHER.
+* If you are already running an old version of PyKota (<1.03) and 
+  want to upgrade to 1.03, YOU HAVE TO RUN the 
+  upgrade-from-before-1.03.py shell script. NOT LAUNCHING THIS SCRIPT 
+  WILL CAUSE PYKOTA TO STOP WORKING ! PLEASE NEVER RUN THIS SCRIPT IF 
+  YOUR EXISTING VERSION OF PYKOTA IS ALREADY 1.03 OD HIGHER. 
