@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/11/29 22:02:14  jalet
+# Don't try to retrieve the user print quota information if current printer
+# doesn't exist.
+#
 # Revision 1.23  2003/11/23 19:01:37  jalet
 # Job price added to history
 #
@@ -249,7 +253,7 @@ class Storage(BaseStorage) :
     def getUserPQuotaFromBackend(self, user, printer) :        
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
-        if user.Exists :
+        if printer.Exists and user.Exists :
             result = self.doSearch("SELECT id, lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
             if result :
                 fields = result[0]

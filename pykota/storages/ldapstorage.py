@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2003/11/29 22:02:14  jalet
+# Don't try to retrieve the user print quota information if current printer
+# doesn't exist.
+#
 # Revision 1.39  2003/11/26 23:35:32  jalet
 # Added a bit of code to support the setting of the user's email address
 # which was ignored during writes for now.
@@ -344,7 +348,7 @@ class Storage(BaseStorage) :
     def getUserPQuotaFromBackend(self, user, printer) :        
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
-        if user.Exists :
+        if printer.Exists and user.Exists :
             result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
             if result :
                 fields = result[0][1]
