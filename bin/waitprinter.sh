@@ -14,7 +14,7 @@
 # $Id$
 #
 # Fix by Matt Hyclak :
-sleep 3 
+sleep 5
 #
 until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i idle >/dev/null ; do 
    sleep 1 ; 

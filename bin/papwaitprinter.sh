@@ -14,6 +14,7 @@
 # $Id$
 #
 
+sleep 5;
 until /usr/bin/papstatus -p "$1" | grep -i idle >/dev/null ; do 
    sleep 1 ; 
 done
