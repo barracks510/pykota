@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/06/25 10:39:18  jalet
+# Translations.
+#
 # Revision 1.26  2003/06/24 21:54:25  jalet
 # More translations.
 #
@@ -144,9 +147,6 @@ msgstr "l'option --groups n'est pas encore implémentée."
 
 msgid "Pages grace time: %i days"
 msgstr "Délai de grâce: %i jours"
-
-msgid "unused arguments [%s]. Aborting."
-msgstr "arguments [%s] inutilisés. Abandon."
 
 msgid "Invalid softlimit value %s."
 msgstr "Valeur %s invalide pour la limite souple."
@@ -395,3 +395,6 @@ msgstr "Impossible d'ajouter l'imprimante %s"
 
 msgid "Prototype object %s not found in Quota Storage."
 msgstr "Objet prototype %s introuvable dans le Quota Storage."
+
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Impossible d'envoyer un message à %s, erreur %s : %s"

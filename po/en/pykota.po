@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/06/25 10:39:18  jalet
+# Translations.
+#
 # Revision 1.27  2003/06/24 21:54:24  jalet
 # More translations.
 #
@@ -163,9 +166,6 @@ msgid "Undefined hard limit set to soft limit (%s) on printer %s."
 msgstr ""
 
 msgid "incompatible options, see help."
-msgstr ""
-
-msgid "unused arguments [%s]. Aborting."
 msgstr ""
 
 msgid "Invalid hardlimit value %s."
@@ -377,4 +377,7 @@ msgid "Impossible to add printer %s"
 msgstr ""
 
 msgid "Prototype object %s not found in Quota Storage."
+msgstr ""
+
+msgid "Impossible to send mail to %s, error %s : %s"
 msgstr ""
