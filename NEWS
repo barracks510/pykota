@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha24 :
     
+        - Now warnpykota only warns users limited by balance once.
+        
         - Now warnpykota only warns users who have ever printed,
           to not cause confusion to users who have just opened
           their account.

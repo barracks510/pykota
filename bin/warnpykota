@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/10/12 09:09:04  jalet
+# Now warnpykota warns users limited by balance only once per launch.
+#
 # Revision 1.33  2004/10/12 08:58:53  jalet
 # Now warnpykota only warns users who have already printed, to not confuse
 # users who have just opened their account.
@@ -236,13 +239,16 @@ class WarnPyKota(PyKotaTool) :
                 for (group, grouppquota) in self.storage.getPrinterGroupsAndQuotas(printer, ugnames) :
                     self.warnGroupPQuota(grouppquota)
             else :
+                alreadydone = {}
                 for (user, userpquota) in self.storage.getPrinterUsersAndQuotas(printer, ugnames) :
                     # we only want to warn users who have ever printed something
                     # and don't want to warn users who have never printed
                     if (user.AccountBalance and (user.AccountBalance != user.LifeTimePaid)) or \
                        userpquota.PageCounter or userpquota.LifePageCounter or \
                        self.storage.getUserNbJobsFromHistory(user) :
-                        self.warnUserPQuota(userpquota)
+                        if (user.LimitBy.lower() != 'balance') or not alreadydone.get(user.Name) :
+                            self.warnUserPQuota(userpquota)
+                        alreadydone[user.Name] = 1
                      
 if __name__ == "__main__" : 
     retcode = 0
