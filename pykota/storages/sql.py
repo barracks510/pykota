@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2004/06/08 17:44:43  jalet
+# Payment now gets deleted when the user is deleted
+#
 # Revision 1.41  2004/06/05 22:03:50  jalet
 # Payments history is now stored in database
 #
@@ -432,6 +435,7 @@ class SQLStorage :
         # TODO : we can't reassign the last job to the previous one, because next user would be
         # TODO : incorrectly charged (overcharged).
         for q in [ 
+                    "DELETE FROM payments WHERE userid=%s" % self.doQuote(user.ident),
                     "DELETE FROM groupsmembers WHERE userid=%s" % self.doQuote(user.ident),
                     "DELETE FROM jobhistory WHERE userid=%s" % self.doQuote(user.ident),
                     "DELETE FROM userpquota WHERE userid=%s" % self.doQuote(user.ident),
