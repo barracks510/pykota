@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.18alpha9 :
     
+        - Fix for empty user groups with LDAP.
+        
         - Preliminary version of the snmpprinterstatus command added.
         
     - 1.18alpha8 :
