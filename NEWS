@@ -26,6 +26,8 @@ PyKota NEWS :
         - a bad copy&paste prevented pkpgcounter to work at all, this
           is now fixed.
           
+        - improved PCL support in pkpgcounter.  
+          
     - 1.19alpha3 :
     
         - pkprinters now accepts the --list command line argument
