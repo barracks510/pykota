@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/08/22 08:25:33  jalet
+# Improved ESC/P2 miniparser thanks to Paulo Silva
+#
 # Revision 1.30  2004/08/21 23:16:57  jalet
 # First draft of ESC/P2 (mini-)parser.
 #
@@ -224,17 +227,13 @@ class ESCP2Analyzer :
                 
     def getJobSize(self) :    
         """Counts pages in an ESC/P2 document."""
-        # typical new page marker is Carriage Return (with optional Line Feed)
-        # followed by Form Feed, followed by Escape character
-        marker1 = chr(13) + chr(12) + chr(27)
-        marker2 = chr(13) + chr(10) + chr(12) + chr(27)
+        # with GhostScript, at least, for each page there
+        # are two Reset Printer sequences (ESC + @)
+        marker = "\033@"
         pagecount = 0
         for line in self.infile.xreadlines() : 
-            c = line.count(marker1)
-            if not c :
-                c = line.count(marker2)
-            pagecount += c    
-        return pagecount    
+            pagecount += line.count(marker)
+        return int(pagecount / 2)       
         
 class PCLAnalyzer :
     def __init__(self, infile) :
@@ -708,7 +707,9 @@ class PDLAnalyzer :
             
     def isESCP2(self, data) :        
         """Returns 1 if data is ESC/P2, else 0."""
-        if (data[:2] == "\033@") or (data[:2] == "\033*") :
+        if data.startswith("\033@") or \
+           data.startswith("\n\033@") :
+            #data.startswith("\033*") or 
             return 1
         else :    
             return 0
