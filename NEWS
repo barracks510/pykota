@@ -28,6 +28,8 @@ PyKota NEWS :
           people to protect its use with .htaccess files.
           When unprotected, or if REMOTE_USER is 'root', then 
           unrestricted access is granted.
+          NB : REMOTE_USER is automatically set by the web server
+          (e.g. Apache) when a page with restricted access is viewed.
           
     - 1.15alpha2 :
     
