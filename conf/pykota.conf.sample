@@ -337,6 +337,8 @@ utolower: No
 # If both are defined, the printer option has priority.
 #
 # accounter: hardware(/usr/share/pykota/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+# accounter: hardware(snmp)
+# accounter: hardware(pjl)
 accounter: software(/usr/bin/pkpgcounter)
 
 # What should we do if the accounter's subprocess doesn't return
@@ -502,7 +504,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #       '%(username)s'          will contain the user's name
 #       '%(printername)s'       will contain the printer's name
 #
-#   On your command line, to pass arguments to your command.
+#   On your command line, to pass arguments to your command. 
 #
 #   NB : Don't forget to redirect your command's standard output somewhere 
 #        (e.g. >/dev/null) so that there's no perturbation to the underlying
@@ -581,7 +583,7 @@ policy: deny
 # PYKOTAPHASE contains 'AFTER' during execution of posthook.
 #
 # uncomment the line below to see what environment variables are available
-posthook: /usr/bin/printenv >/tmp/after
+# posthook: /usr/bin/printenv >/tmp/after
 
 # How should enforcement be done for this printer ?
 #
