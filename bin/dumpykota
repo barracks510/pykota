@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2004/12/21 14:45:31  jalet
+# Prepared dumpykota to accept the new --filter command line option. Some
+# additionnal work needs to be done in the backends though.
+#
 # Revision 1.15  2004/10/12 15:37:00  jalet
 # Now outputs the name of the offending user if a mere mortal tries to use
 # one of these commands !!!
@@ -133,6 +137,25 @@ options :
                          - tsv : separate datas with tabs
                          - xml : dump data as XML
                          
+  -F - | --filter exp  Uses the filter to extract only parts of the                          
+                       datas. Allowed filters are of the form :
+                       
+                         key=value
+                         
+                       Allowed keys for now are :  
+                       
+                         username       User's name
+                         groupname      Users group's name
+                         printername    Printer's name
+                         pgroupname     Printers group's name
+                         
+                       Contrary to other PyKota management tools, wildcard
+                       characters are not expanded, so you can't use them.
+                         
+                       NB : not all keys are allowed for each data type,
+                       so the result may be empty if you use a key not
+                       available for a particular data type.
+                         
   -o | --output fname  All datas will be dumped to the file instead of
                        to the standard output. The special '-' filename
                        is the default value and means stdout.
@@ -148,6 +171,10 @@ Examples :
   $ dumpykota --data users --format xml -o users.xml
   
   Dumps all users datas to the users.xml file.
+  
+  $ dumpykota --data history --filter printername=HP2100
+  
+  Dumps the job history for printer HP2100 only.
   
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -171,6 +198,22 @@ class DumPyKota(PyKotaTool) :
         """Print Quota Data Dumper."""
         if not self.config.isAdmin :
             raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
+        extractonly = {}
+        filterexp = options["filter"]    
+        if filterexp :
+            try :
+                (filterkey, filtervalue) = [part.strip() for part in filterexp.split("=")]
+                if filterkey not in [ "username",
+                                      "groupname",
+                                      "printername",
+                                      "pgroupname",
+                                    ] :
+                    raise ValueError                
+            except ValueError :    
+                raise PyKotaToolError, _("Invalid value [%s] for --filter command line option, see help.") % filterexp
+            else :    
+                extractonly = { filterkey : filtervalue }
             
         datatype = options["data"]
         if datatype not in [ "history",
@@ -196,7 +239,7 @@ class DumPyKota(PyKotaTool) :
         if (format == "xml") and not hasJAXML :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
             
-        entries = getattr(self.storage, "extract%s" % datatype.title())()    
+        entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)    
         if entries :
             mustclose = 0    
             if options["output"].strip() == "-" :    
@@ -262,8 +305,8 @@ if __name__ == "__main__" :
                      "format" : "csv", \
                      "output" : "-", \
                    }
-        short_options = "vhd:f:o:"
-        long_options = ["help", "version", "data=", "format=", "output="]
+        short_options = "vhd:f:o:F:"
+        long_options = ["help", "version", "data=", "format=", "output=", "filter="]
         
         # Initializes the command line tool
         dumper = DumPyKota(doc=__doc__)
@@ -277,6 +320,7 @@ if __name__ == "__main__" :
         options["data"] = options["d"] or options["data"]
         options["format"] = options["f"] or options["format"] or defaults["format"]
         options["output"] = options["o"] or options["output"] or defaults["output"]
+        options["filter"] = options["F"] or options["filter"]
         
         if options["help"] :
             dumper.display_usage_and_quit()

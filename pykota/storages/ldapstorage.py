@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.90  2004/12/21 14:45:31  jalet
+# Prepared dumpykota to accept the new --filter command line option. Some
+# additionnal work needs to be done in the backends though.
+#
 # Revision 1.89  2004/12/02 22:27:11  jalet
 # Integrated and extended Stefan Wold's patch to store print quota entries
 # directly below the user or the group object with the LDAP backend
@@ -1395,7 +1399,7 @@ class Storage(BaseStorage) :
                 self.doModify(parent.ident, fields)         
         self.doDelete(printer.ident)    
         
-    def extractPrinters(self) :
+    def extractPrinters(self, extractonly={}) :
         """Extracts all printer records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
@@ -1404,7 +1408,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description))
             return result 
         
-    def extractUsers(self) :
+    def extractUsers(self, extractonly={}) :
         """Extracts all user records."""
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames()] if u.Exists]
         if entries :
@@ -1413,7 +1417,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.Name, entry.Email, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy))
             return result 
         
-    def extractGroups(self) :
+    def extractGroups(self, extractonly={}) :
         """Extracts all group records."""
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames()] if g.Exists]
         if entries :
@@ -1422,7 +1426,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy))
             return result 
         
-    def extractPayments(self) :
+    def extractPayments(self, extractonly={}) :
         """Extracts all payment records."""
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames()] if u.Exists]
         if entries :
@@ -1432,7 +1436,7 @@ class Storage(BaseStorage) :
                     result.append((entry.Name, date, amount))
             return result        
         
-    def extractUpquotas(self) :
+    def extractUpquotas(self, extractonly={}) :
         """Extracts all userpquota records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
@@ -1442,7 +1446,7 @@ class Storage(BaseStorage) :
                     result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
             return result
         
-    def extractGpquotas(self) :
+    def extractGpquotas(self, extractonly={}) :
         """Extracts all grouppquota records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
@@ -1452,7 +1456,7 @@ class Storage(BaseStorage) :
                     result.append((group.Name, entry.Name, grouppquota.ident, group.ident, entry.ident, grouppquota.LifePageCounter, grouppquota.PageCounter, grouppquota.SoftLimit, grouppquota.HardLimit, grouppquota.DateLimit))
             return result
         
-    def extractUmembers(self) :
+    def extractUmembers(self, extractonly={}) :
         """Extracts all user groups members."""
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames()] if g.Exists]
         if entries :
@@ -1462,7 +1466,7 @@ class Storage(BaseStorage) :
                     result.append((entry.Name, member.Name, entry.ident, member.ident))
             return result        
                 
-    def extractPmembers(self) :
+    def extractPmembers(self, extractonly={}) :
         """Extracts all printer groups members."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
@@ -1472,7 +1476,7 @@ class Storage(BaseStorage) :
                     result.append((parent.Name, entry.Name, parent.ident, entry.ident))
             return result        
         
-    def extractHistory(self) :
+    def extractHistory(self, extractonly={}) :
         """Extracts all jobhistory records."""
         entries = self.retrieveHistory(limit=None)
         if entries :

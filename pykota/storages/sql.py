@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2004/12/21 14:45:31  jalet
+# Prepared dumpykota to accept the new --filter command line option. Some
+# additionnal work needs to be done in the backends though.
+#
 # Revision 1.59  2004/10/25 14:12:25  jalet
 # For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
 # to hide print jobs' title, filename, and options.
@@ -131,47 +135,47 @@ class SQLStorage :
                 entries[i] = tuple(fields)    
             return entries
         
-    def extractPrinters(self) :
+    def extractPrinters(self, extractonly={}) :
         """Extracts all printer records."""
         result = self.doRawSearch("SELECT * FROM printers ORDER BY id ASC")
         return self.prepareRawResult(result)
         
-    def extractUsers(self) :
+    def extractUsers(self, extractonly={}) :
         """Extracts all user records."""
         result = self.doRawSearch("SELECT * FROM users ORDER BY id ASC")
         return self.prepareRawResult(result)
         
-    def extractGroups(self) :
+    def extractGroups(self, extractonly={}) :
         """Extracts all group records."""
         result = self.doRawSearch("SELECT groups.*,COALESCE(SUM(balance), 0) AS balance, COALESCE(SUM(lifetimepaid), 0) as lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby ORDER BY groups.id ASC")
         return self.prepareRawResult(result)
         
-    def extractPayments(self) :
+    def extractPayments(self, extractonly={}) :
         """Extracts all payment records."""
         result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid ORDER BY payments.id ASC")
         return self.prepareRawResult(result)
         
-    def extractUpquotas(self) :
+    def extractUpquotas(self, extractonly={}) :
         """Extracts all userpquota records."""
         result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid ORDER BY userpquota.id ASC")
         return self.prepareRawResult(result)
         
-    def extractGpquotas(self) :
+    def extractGpquotas(self, extractonly={}) :
         """Extracts all grouppquota records."""
         result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY grouppquota.id")
         return self.prepareRawResult(result)
         
-    def extractUmembers(self) :
+    def extractUmembers(self, extractonly={}) :
         """Extracts all user groups members."""
         result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid ORDER BY groupsmembers.groupid, groupsmembers.userid ASC")
         return self.prepareRawResult(result)
         
-    def extractPmembers(self) :
+    def extractPmembers(self, extractonly={}) :
         """Extracts all printer groups members."""
         result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid ORDER BY printergroupsmembers.groupid, printergroupsmembers.printerid ASC")
         return self.prepareRawResult(result)
         
-    def extractHistory(self) :
+    def extractHistory(self, extractonly={}) :
         """Extracts all jobhistory records."""
         result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid ORDER BY jobhistory.id ASC")
         return self.prepareRawResult(result)
