@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2004/03/18 09:18:09  jalet
+# Installation now checks for old scripts
+#
 # Revision 1.37  2004/03/03 19:35:36  jalet
 # Spelling problem. Thanks to Jurandy Martins
 #
@@ -172,6 +175,10 @@ from pykota.version import __version__, __doc__
 ACTION_CONTINUE = 0
 ACTION_ABORT = 1
 
+def checkOldScript(cmd) :
+    """Checks if an old shell script is still around in /usr/bin."""
+    return os.path.isfile(os.path.join("/usr/bin", cmd))
+
 def checkModule(module) :
     """Checks if a Python module is available or not."""
     try :
@@ -262,8 +269,15 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
                 sys.stderr.write("WARNING : PyKota's sample configuration file cannot be found.\nWhat you have downloaded seems to be incomplete,\nor you are not in the pykota directory.\nPlease double check, and restart the installation procedure.\n")
             dummy = raw_input("Please press ENTER when you have read the message above. ")
     else :    
-        # already at 1.14 or above, nothing to be done.
-        pass
+        # already at 1.14 or above.
+        # Now check if old scripts are still in /usr/bin
+        for script in ["cupspykota", "pykota", "waitprinter.sh", "papwaitprinter.sh", "mailandpopup.sh", "pagecount.pl"] :
+            if checkOldScript(script) :
+                sys.stderr.write("WARNING : the %s script is still present in /usr/bin, but the new version will be installed in /usr/share/pykota, please remove the %s script from /usr/bin and double check that your configuration is correct.\n" % (script, script))
+                if script == "cupspykota" :
+                    sys.stderr.write("\nBe sure to also remove the old symbolic link from /usr/lib/cups/backend/cupspykota to /usr/bin/cupspykota. You'll have to recreate it once the installation has finished successfully.\n")
+                sys.stderr.write("\nINSTALLATION ABORTED !\nPlease correct the problem and restart installation.\n")
+                sys.exit(-1)
         
     # Second stage, we will fail if onfiguration is incorrect for security reasons
     from pykota.config import PyKotaConfig,PyKotaConfigError
