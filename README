@@ -95,7 +95,7 @@ Prerequisite :
   You need to have the following tools installed on the CUPS Server :
   
     - CUPS
-    - Python
+    - Python v2.1 or above
     - eGenix' mxDateTime Python extension
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
       libraries.
