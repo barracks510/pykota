@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha6 :
       
+        - Improved mailandpopup.sh script.
+        
         - Small fixes for LPRng.
         
         - Now exports PYKOTAPRINTERHOSTNAME for network printers'

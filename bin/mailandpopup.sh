@@ -38,4 +38,10 @@ Print Quota problem for user $UNAME
 EOF2
 #
 # Launch WinPopup on user's host (may need a real Samba or NT domain) 
-echo "$UTF8MESSAGE" | smbclient -M "$UNAME" 2>&1 >/dev/null
+# In some cases the username does not suffice for smbclient to send a message;
+# we must also supply the IP address. This will use smbstatus to get all IPs
+# where the user is logged in and send the message there:
+IPS=`smbstatus -b -u $UNAME | grep '(' | cut -d'(' -f 2 | cut -d')' -f 1`
+for i in $IPS; do
+    echo $UTF8MESSAGE | smbclient -M "$UNAME" -I $i 2>&1 >/dev/null;
+done
