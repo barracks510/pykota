@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2003/06/30 12:46:15  jalet
+# Extracted reporting code.
+#
 # Revision 1.39  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -159,6 +162,8 @@ from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
+from pykota.reporter import PyKotaReporterError
+from pykota import reporter
 
 __doc__ = """repykota v%s (C) 2003 C@LL - Conseil Internet & Logiciels Libres
 
@@ -240,69 +245,9 @@ class RePyKota(PyKotaTool) :
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-        for printer in printers :
-            print _("*** Report for %s quota on printer %s") % ((options["groups"] and "group") or "user", printer.Name)
-            print _("Pages grace time: %i days") % self.config.getGraceDelay(printer.Name)
-            if printer.PricePerJob is not None :
-                print _("Price per job: %.3f") % printer.PricePerJob
-            if printer.PricePerPage is not None :    
-                print _("Price per page: %.3f") % printer.PricePerPage
-            total = 0
-            totalmoney = 0.0
-            if options["groups"] :
-                print _("Group           used    soft    hard    balance grace         total       paid") 
-                print "------------------------------------------------------------------------------"
-                for (group, grouppquota) in self.storage.getPrinterGroupsAndQuotas(printer, ugnames) :
-                    (pages, money) = self.printQuota(group, grouppquota)
-                    total += pages
-                    totalmoney += money
-            else :
-                # default is user quota report
-                print _("User            used    soft    hard    balance grace         total       paid") 
-                print "------------------------------------------------------------------------------"
-                for (user, userpquota) in self.storage.getPrinterUsersAndQuotas(printer, ugnames) :
-                    (pages, money) = self.printQuota(user, userpquota)
-                    total += pages
-                    totalmoney += money
-            if total or totalmoney :        
-                print (" " * 50) + (_("Total : %9i") % total) + ("%11s" % ("%7.2f" % totalmoney)[:11])
-            try :
-                msg = "%9i" % printer.LastJob.PrinterPageCounter
-            except TypeError :     
-                msg = _("unknown")
-            print (" " * 51) + (_("Real : %s") % msg)
-            print        
-        if options["groups"] :    
-            print _("Totals may be inaccurate if some users are members of several groups.")
-                        
-    def printQuota(self, entry, quota) :
-        """Prints the quota information."""
-        lifepagecounter = int(quota.LifePageCounter or 0)
-        pagecounter = int(quota.PageCounter or 0)
-        balance = float(entry.AccountBalance or 0.0)
-        lifetimepaid = float(entry.LifeTimePaid or 0.0)
-        
-        if quota.DateLimit is not None :
-            now = DateTime.now()
-            datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
-            if now >= datelimit :
-                datelimit = "DENY"
-        elif (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
-            datelimit = "DENY"
-        elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-            datelimit = "DENY"
-        else :    
-            datelimit = ""
             
-        if entry.LimitBy.lower() == "balance" :    
-            reached = (((balance <= 0) and "+") or "-") + "B"
-        else :
-            reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
-            
-        strbalance = ("%5.2f" % balance)[:10]
-        strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
-        print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (entry.Name, reached, pagecounter, str(quota.SoftLimit), str(quota.HardLimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
-        return (lifepagecounter, lifetimepaid)
+        self.reportingtool = reporter.openReporter(self, "text", printers, ugnames, (options["groups"] and 1) or 0)    
+        print self.reportingtool.generateReport()
                     
 if __name__ == "__main__" : 
     try :
@@ -313,10 +258,10 @@ if __name__ == "__main__" :
         long_options = ["help", "version", "users", "groups", "printer="]
         
         # Initializes the command line tool
-        reporter = RePyKota(doc=__doc__)
+        reportTool = RePyKota(doc=__doc__)
         
         # parse and checks the command line
-        (options, args) = reporter.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
+        (options, args) = reportTool.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
         
         # sets long options
         options["help"] = options["h"] or options["help"]
@@ -326,14 +271,14 @@ if __name__ == "__main__" :
         options["printer"] = options["P"] or options["printer"] or defaults["printer"]
         
         if options["help"] :
-            reporter.display_usage_and_quit()
+            reportTool.display_usage_and_quit()
         elif options["version"] :
-            reporter.display_version_and_quit()
+            reportTool.display_version_and_quit()
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
-            sys.exit(reporter.main(args, options))
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
+            sys.exit(reportTool.main(args, options))
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaReporterError), msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()
         sys.exit(-1)

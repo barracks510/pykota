@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/06/30 12:46:15  jalet
+# Extracted reporting code.
+#
 # Revision 1.6  2003/04/23 22:13:56  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -47,6 +50,11 @@
 import sys
 import os
 import cgi
+
+from pykota import version
+from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
 
 header = """Content-type: text/html
 

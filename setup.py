@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/06/30 12:46:15  jalet
+# Extracted reporting code.
+#
 # Revision 1.16  2003/06/06 20:49:15  jalet
 # Very latest schema. UNTESTED.
 #
@@ -227,7 +230,7 @@ setup(name = "pykota", version = __version__,
       author = "Jerome Alet",
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
-      packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters" ],
+      packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
       scripts = [ "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota" ],
       data_files = data_files)
 

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2003/06/30 12:46:15  jalet
+# Extracted reporting code.
+#
 # Revision 1.41  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -497,4 +500,3 @@ class PyKotaTool :
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        
-    
