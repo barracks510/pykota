@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha26 :
     
+        - Fix for recently introduced bug in LPRng support.
+        
         - Fix for incorrect locale setting when starting.
         
     - 1.20alpha25 :

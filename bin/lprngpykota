@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/10/19 21:37:57  jalet
+# Fixes recently introduced bug
+#
 # Revision 1.8  2004/10/13 20:51:27  jalet
 # Made debugging levels be the same in cupspykota and lprngpykota.
 # Now outputs more information in informational messages : user, printer, jobid
@@ -157,7 +160,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         if (self.accounter.isSoftware) or (action == "DENY") :    
             # update the quota for the current user on this printer 
             self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
-            self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
+            self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))
             jobprice = userpquota.increasePagesUsage(jobsize)
             
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
@@ -192,11 +195,11 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             # Software accounting method was used, and we are
             # in second pass, so all work is already done, 
             # now we just have to exit successfully
-            self.printMoreInfo(user, printer, _("Software accounting already done in first pass. Ignoring."))
+            self.printInfo(_("Software accounting already done in first pass. Ignoring."))
         elif printer.LastJob.JobAction == "DENY" :
             # Hardware accounting method was used, but job
             # was rejected during first pass, so nothing to do
-            self.printMoreInfo(user, printer, _("Hardware accounting already done in first pass. Ignoring."))
+            self.printInfo(_("Hardware accounting already done in first pass. Ignoring."))
         else :    
             # here if user and userpquota are both None
             # then it's a special second pass for a job

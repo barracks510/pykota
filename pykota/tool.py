@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.131  2004/10/19 21:37:57  jalet
+# Fixes recently introduced bug
+#
 # Revision 1.130  2004/10/19 15:21:48  jalet
 # Fixed incorrect setting of the user's locale
 #
@@ -1163,7 +1166,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         
     def printMoreInfo(self, user, printer, message, level="info") :            
         """Prefixes the information printed with 'user@printer(jobid) =>'."""
-        self.printInfo("%s@%s(%s) => %s" % (user.Name, printer.Name, self.jobid, message), level)
+        self.printInfo("%s@%s(%s) => %s" % (getattr(user, "Name", None), getattr(printer, "Name", None), self.jobid, message), level)
         
     def extractInfoFromCupsOrLprng(self) :    
         """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
