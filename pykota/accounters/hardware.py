@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2004/09/27 20:09:30  jalet
+# Lowered timeout delay for PJL queries
+#
 # Revision 1.27  2004/09/27 20:00:35  jalet
 # Typo
 #
@@ -124,6 +127,9 @@ import popen2
 
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
+ITERATIONDELAY = 2.0   # 2 Seconds
+STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
+
 try :
     from pysnmp.mapping.udp.error import SnmpOverUdpError
     from pysnmp.mapping.udp.role import Manager
@@ -132,8 +138,6 @@ except ImportError :
     hasSNMP = 0
 else :    
     hasSNMP = 1
-    SNMPDELAY = 2.0             # 2 Seconds
-    STABILIZATIONDELAY = 3      # We must read three times the same value to consider it to be stable
     pageCounterOID = ".1.3.6.1.2.1.43.10.2.1.4.1.1"
     hrPrinterStatusOID = ".1.3.6.1.2.1.25.3.5.1.1.1"
     printerStatusValues = { 1 : 'other',
@@ -195,7 +199,7 @@ else :
                     break
                 # In reality, and if I'm not mistaken, we will NEVER get there.    
                 self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)    
-                time.sleep(SNMPDELAY)
+                time.sleep(ITERATIONDELAY)
             
         def waitIdle(self) :
             """Waits for printer status being 'idle'."""
@@ -214,7 +218,7 @@ else :
                 else :    
                     idle_num = 0
                 self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.printername)    
-                time.sleep(SNMPDELAY)
+                time.sleep(ITERATIONDELAY)
                 
 pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 pjlStatusValues = {
@@ -258,7 +262,7 @@ class PJLAccounter :
                 self.timedout = 0
                 while (self.timedout == 0) or (actualpagecount is None) or (self.printerStatus is None) :
                     signal.signal(signal.SIGALRM, self.alarmHandler)
-                    signal.alarm(5)
+                    signal.alarm(3)
                     try :
                         answer = sock.recv(1024)
                     except IOError, msg :    
