@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/02/08 22:09:02  jalet
+# Only printer was added the first time.
+#
 # Revision 1.12  2003/02/08 21:44:49  jalet
 # Python 2.1 string module doesn't define ascii_letters
 #
@@ -136,27 +139,15 @@ Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
 class EdPyKota(PyKotaTool) :        
     """A class for edpykota."""
-    def isValidPrinterName(self, printername) :
-        """Checks if a printername is valid."""
-        # unfortunately Python 2.1 string modules doesn't define ascii_letters...
-        asciiletters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        digits = '0123456789'
-        if printername[0] in asciiletters :
-            validchars = asciiletters + digits + "-_"
-            for c in printername[1:] :
-                if c not in validchars :
-                    return 0
-            return 1        
-        return 0
-        
     def main(self, names, options) :
         """Edit user or group quotas."""
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
             pname = options["printer"]
             if options["add"] and pname :
-                if self.isValidPrinterName(pname) :
+                if self.isValidName(pname) :
                     self.storage.addPrinter(pname)
+                    printernames = [ pname ]
                 else :    
                     raise PyKotaToolError, "Invalid printer name %s" % pname
             else :
