@@ -90,6 +90,9 @@ msgstr ""
 "Vous devez passer des noms d'utilisateurs ou de groupes sur la ligne de "
 "commande"
 
+msgid "You have to pass printer names on the command line"
+msgstr "Vous devez passer des noms d'imprimantes sur la ligne de commande"
+
 #, python-format
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr "Prototype %s non trouvé dans le Quota Storage pour l'imprimante %s."

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2004/02/04 11:16:59  jalet
+# pkprinters command line tool added.
+#
 # Revision 1.32  2004/01/18 20:52:50  jalet
 # Portuguese portuguese translation replaces brasilian portuguese one, which
 # moves in its own directory.
@@ -379,7 +382,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
+      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
       data_files = data_files)
 
 if ("install" in sys.argv) and not ("help" in sys.argv) :

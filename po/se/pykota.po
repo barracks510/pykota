@@ -87,6 +87,9 @@ msgstr "Det finns ingen matchande skrivare till %s"
 msgid "You have to pass user or group names on the command line"
 msgstr "Du måste skicka med användare- eller gruppnamn på kommandoraden"
 
+msgid "You have to pass printer names on the command line"
+msgstr "Du måste skicka med skrivarnamn på kommandoraden"
+
 #, python-format
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr "Prototypen %s hittas inte i PyKotasystemet för skrivaren %s."

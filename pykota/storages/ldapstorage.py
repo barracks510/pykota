@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2004/02/04 11:17:00  jalet
+# pkprinters command line tool added.
+#
 # Revision 1.49  2004/01/29 22:35:45  jalet
 # Small fix from Matt.
 #
@@ -973,4 +976,25 @@ class Storage(BaseStorage) :
                 self.doModify(group.ident, fields, ignoreold=0)        
             else :    
                 self.doDelete(group.ident)
-            
+                
+    def deletePrinter(self, printer) :    
+        """Completely deletes an user from the Quota Storage."""
+        result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaPrinterName=%s))" % printer.Name, base=self.info["lastjobbase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("(&(objectClass=pykotaJob)(pykotaPrinterName=%s))" % printer.Name, base=self.info["jobbase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s))" % printer.Name, base=self.info["groupquotabase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s))" % printer.Name, base=self.info["userquotabase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        for parent in self.getParentPrinters(printer) :  
+            parent.uniqueMember.remove(printer.ident)
+            fields = {
+                       "uniqueMember" : parent.uniqueMember,
+                     }  
+            self.doModify(parent.ident, fields)         
+        self.doDelete(printer.ident)    

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/02/04 11:17:00  jalet
+# pkprinters command line tool added.
+#
 # Revision 1.34  2004/02/02 22:44:16  jalet
 # Preliminary work on Relationnal Database Independance via DB-API 2.0
 #
@@ -406,5 +409,16 @@ class SQLStorage :
                    "DELETE FROM grouppquota WHERE groupid=%s" % self.doQuote(group.ident),
                    "DELETE FROM groups WHERE id=%s" % self.doQuote(group.ident),
                  ] :  
+            self.doModify(q)
+            
+    def deletePrinter(self, printer) :    
+        """Completely deletes a printer from the Quota Storage."""
+        for q in [ 
+                    "DELETE FROM printergroupsmembers WHERE groupid=%s OR printerid=%s" % (self.doQuote(printer.ident), self.doQuote(printer.ident)),
+                    "DELETE FROM jobhistory WHERE printerid=%s" % self.doQuote(printer.ident),
+                    "DELETE FROM grouppquota WHERE printerid=%s" % self.doQuote(printer.ident),
+                    "DELETE FROM userpquota WHERE printerid=%s" % self.doQuote(printer.ident),
+                    "DELETE FROM printers WHERE id=%s" % self.doQuote(printer.ident),
+                  ] :
             self.doModify(q)
         

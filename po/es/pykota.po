@@ -85,6 +85,9 @@ msgid "You have to pass user or group names on the command line"
 msgstr ""
 "Usted tiene que pasar nombres de usuarios o grupos en la línea de comandos"
 
+msgid "You have to pass printer names on the command line"
+msgstr "Usted tiene que pasar nombres de impresoras en la línea de comandos"
+
 #, python-format
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr ""

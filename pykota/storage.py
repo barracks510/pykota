@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2004/02/04 11:16:59  jalet
+# pkprinters command line tool added.
+#
 # Revision 1.38  2004/01/12 22:43:40  jalet
 # New formula to compute a job's price
 #
@@ -271,6 +274,17 @@ class StoragePrinter(StorageObject) :
         else :    
             self.PricePerJob = float(priceperjob)
         self.parent.writePrinterPrices(self)
+        
+    def delete(self) :    
+        """Deletes a printer from the Quota Storage."""
+        self.parent.beginTransaction()
+        try :
+            self.parent.deletePrinter(self)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
         
 class StorageUserPQuota(StorageObject) :
     """User Print Quota class."""

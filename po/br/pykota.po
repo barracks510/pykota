@@ -83,6 +83,9 @@ msgstr "Impressora %s não encontrada"
 msgid "You have to pass user or group names on the command line"
 msgstr "Voce deve informar usuario ou grupo na linha de comando"
 
+msgid "You have to pass printer names on the command line"
+msgstr "Voce deve informar impressora na linha de comando"
+
 #, python-format
 msgid "Prototype %s not found in Quota Storage for printer %s."
 msgstr "Prototipo %s não encontrado no banco dedados para a impressora %s."
