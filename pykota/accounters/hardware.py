@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2004/09/22 19:27:41  jalet
+# Bad import statement
+#
 # Revision 1.20  2004/09/22 19:22:27  jalet
 # Just loop in case a network error occur
 #
@@ -103,7 +106,7 @@ import popen2
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 try :
-    from pysnmp.mapping.udp import SnmpOverUdpError
+    from pysnmp.mapping.udp.error import SnmpOverUdpError
     from pysnmp.mapping.udp.role import Manager
     from pysnmp.proto.api import alpha
 except ImportError :
