@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.82  2005/01/06 22:52:53  jalet
+# Implemented the dropping of priviledges. Beware, beware...
+#
 # Revision 1.81  2004/12/07 16:54:02  jalet
 # Now logs as errors differences between computed and precomputed job's sizes
 #
@@ -612,6 +615,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         else :    
             # Here we absolutely WANT to remove any filename from the command line !
             arguments = [ "Fake this because we are printing a banner" ] + sys.argv[1:6]
+            
+        self.regainPriv()    
+        
         self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + arguments[1:])])))
         subprocess = PyKotaPopen4([realbackend] + arguments[1:], bufsize=0, arg0=os.environ["DEVICE_URI"])
         
@@ -817,6 +823,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             retcode = -1
         else :    
             retcode = self.removeJob()
+            
+        self.dropPriv()    
+        
         return retcode    
     
 if __name__ == "__main__" :    

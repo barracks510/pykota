@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.21alpha17 :
      
+        - Now drops priviledges to user 'pykota' when launched as root
+          (directly or as a CUPS backend), if such an user exists.
+          
         - Fixed PCL3/4/5 parser for some drivers' output.
         
     - 1.21alpha16 :

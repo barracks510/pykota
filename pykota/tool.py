@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.147  2005/01/06 22:52:53  jalet
+# Implemented the dropping of priviledges. Beware, beware...
+#
 # Revision 1.146  2004/12/09 23:03:57  jalet
 # Fixed a bug when pkbanner's output was piped into another command (e.g. gs)
 #
@@ -574,6 +577,9 @@ class Tool :
     """Base class for tools with no database access."""
     def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
+        # did we drop priviledges ?
+        self.privdropped = 0
+        
         # locale stuff
         defaultToCLocale = 0
         try :
@@ -610,12 +616,13 @@ class Tool :
         
         # try to find the configuration files in user's 'pykota' home directory.
         try :
-            pykotauser = pwd.getpwnam("pykota")
+            self.pykotauser = pwd.getpwnam("pykota")
         except KeyError :    
+            self.pykotauser = None
             confdir = "/etc/pykota"
             missingUser = 1
         else :    
-            confdir = pykotauser[5]
+            confdir = self.pykotauser[5]
             missingUser = 0
             
         try :
@@ -634,6 +641,9 @@ class Tool :
             self.crashed(msg)
             raise
             
+        # now drop priviledge if possible
+        self.dropPriv()    
+        
         # We NEED this here, even when not in an accounting filter/backend    
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
@@ -646,6 +656,41 @@ class Tool :
         self.logdebug("Charset in use : %s" % self.charset)
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug("Command line arguments : %s" % arguments)
+        
+    def dropPriv(self) :    
+        """Drops priviledges."""
+        uid = os.geteuid()
+        if uid :
+            try :
+                username = pwd.getpwuid(uid)[0]
+            except (KeyError, IndexError), msg :    
+                self.printInfo(_("Strange problem with uid(%s) : %s") % (uid, msg), "warn")
+            else :
+                self.logdebug(_("Running as user '%s'.") % username)
+        else :
+            if self.pykotauser is None :
+                self.logdebug(_("No user named 'pykota'. Not dropping priviledges."))
+            else :    
+                try :
+                    os.setegid(self.pykotauser[3])
+                    os.seteuid(self.pykotauser[2])
+                except OSError, msg :    
+                    self.printInfo(_("Impossible to drop priviledges : %s") % msg, "warn")
+                else :    
+                    self.logdebug(_("Priviledges dropped. Now running as user 'pykota'."))
+                    self.privdropped = 1
+            
+    def regainPriv(self) :    
+        """Drops priviledges."""
+        if self.privdropped :
+            try :
+                os.seteuid(0)
+                os.setegid(0)
+            except OSError, msg :    
+                self.printInfo(_("Impossible to regain priviledges : %s") % msg, "warn")
+            else :    
+                self.logdebug(_("Regained priviledges."))
+                self.privdropped = 0
         
     def getCharset(self) :    
         """Returns the charset in use."""
