@@ -16,6 +16,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/02/27 08:44:01  jalet
+# Check to see if the printer was ever used at all, and displays "unknown"
+# as the pagecounter value in this casCheck to see if the printer was ever used at all, and displays "unknown"
+# as the pagecounter value in this case.
+#
 # Revision 1.12  2003/02/17 23:02:23  jalet
 # getGraceDelay for printer
 #
@@ -135,7 +140,11 @@ class RePyKota(PyKotaTool) :
                     total += self.printQuota(name, quota)
             if total :        
                 print (" " * 43) + (_("Total : %9i") % total)
-            print (" " * 44) + (_("Real : %9i") % printerpagecounter)
+            if printerpagecounter is None :    
+                msg = "unknown"
+            else :
+                msg = "%9i" % printerpagecounter
+            print (" " * 44) + (_("Real : %s") % msg)
             print        
                         
     def printQuota(self, name, quota) :
