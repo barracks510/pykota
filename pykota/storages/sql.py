@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/02/10 08:41:36  jalet
+# edpykota's --reset command line option resets the limit date too.
+#
 # Revision 1.16  2003/02/08 22:39:46  jalet
 # --reset command line option added
 #
@@ -171,7 +174,7 @@ class SQLStorage :
         """Resets the page counter to zero. Life time page counter is kept unchanged."""
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
-            self.doQuery("UPDATE userpquota SET pagecounter=0 WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
+            self.doQuery("UPDATE userpquota SET pagecounter=0, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
         
     def setDateLimit(self, username, printername, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (username, printername)."""
@@ -184,8 +187,4 @@ class SQLStorage :
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
             self.doQuery("UPDATE userpquota SET lifepagecounter=lifepagecounter+(%s), pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s;" % (self.doQuote(pagecount), self.doQuote(pagecount), self.doQuote(userid), self.doQuote(printerid)))
-        
-    def buyUserPQuota(self, username, printername, pagebought) :
-        """Buys pages for a given (username, printername)."""
-        self.updateUserPQuota(username, printername, -pagebought)
         
