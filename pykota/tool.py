@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.119  2004/09/02 13:09:58  jalet
+# Now exports PYKOTAPRINTERHOSTNAME
+#
 # Revision 1.118  2004/08/06 20:46:45  jalet
 # Finished group quota fix for balance when no user in group has a balance
 #
@@ -1035,6 +1038,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         os.environ["PYKOTAFILENAME"] = self.preserveinputfile or ""
         os.environ["PYKOTACOPIES"] = str(self.copies)
         os.environ["PYKOTAOPTIONS"] = self.options or ""
+        os.environ["PYKOTAPRINTERHOSTNAME"] = self.printerhostname or "localhost"
     
     def exportUserInfo(self, userpquota) :
         """Exports user information to the environment."""

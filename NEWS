@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.20alpha6 :
       
+        - Now exports PYKOTAPRINTERHOSTNAME for network printers'
+          hostname or IP address. Set to 'localhost' when not
+          meaningful.
+          
         - Fixed issue with how mod_auth_ldap Apache modules
           fills the REMOTE_USER environment variable.
           

@@ -507,6 +507,9 @@ policy: deny
 # PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price
 # PYKOTAJOBORIGINATINGHOSTNAME : contains the client's hostname if 
 #                                it is possible to retrieve it.
+# PYKOTAPRINTERHOSTNAME : the printer's hostname or IP address for network
+#                         printers, or "localhost" if not defined or not
+#                         meaningful.
 
 # PreHook : gets executed after being sure the user, printer and user quota
 # entry on the printer both exist in the PyKota database, and after
