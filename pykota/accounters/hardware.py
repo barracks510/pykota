@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2004/09/14 11:38:59  jalet
+# Minor fix
+#
 # Revision 1.14  2004/09/14 06:53:53  jalet
 # Small test added
 #
@@ -126,7 +129,7 @@ class Accounter(AccounterBase) :
                 after = max(self.counterbefore, self.counterafter)    
                 self.counterbefore = before
                 self.counterafter = after
-                if (not self.counterbefore) or (self.counterbefore == self.counterafter) :
+                if (not self.counterbefore) or (not counterafter) or (self.counterbefore == self.counterafter) :
                     self.filter.printInfo(_("Couldn't retrieve printer %s's internal page counter either before or after printing.") % printer.Name, "warn")
                     self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
                     self.counterbefore = 0
