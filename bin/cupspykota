@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/11/18 14:11:07  jalet
+# Small fix for bizarre urls
+#
 # Revision 1.8  2003/11/15 14:26:44  jalet
 # General improvements to the documentation.
 # Email address changed in sample configuration file, because
@@ -123,6 +126,8 @@ class PyKotaBackend(PyKotaTool) :
             # before launching the real backend.
             fulldevice_uri = os.environ.get("DEVICE_URI", "")
             device_uri = fulldevice_uri[len("cupspykota:"):]
+            if device_uri.startswith("//") :
+                device_uri = device_uri[2:]
             os.environ["DEVICE_URI"] = device_uri
             # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
             try :
