@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/07/23 16:51:32  jalet
+# waitprinter.sh is now included to prevent PyKota from asking the
+# printer's internal page counter while a job is still being printer.
+#
 # Revision 1.19  2003/07/16 21:53:07  jalet
 # Really big modifications wrt new configuration file's location and content.
 #
@@ -286,6 +290,6 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme" ],
+      scripts = [ "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh" ],
       data_files = data_files)
 

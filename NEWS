@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha8 :
+    
+        - bin/waitprinter.sh is now included to wait for
+          SNMP enabled printers to be idle again before
+          asking for their internal page counter.
+          See sample configuration file for details.
+          
     - 1.14alpha7 :
     
         - edpykota now doesn't check if the user/group is above

@@ -254,7 +254,12 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #
 # WARNING : In any case, when using an external requester, please test the command line outside
 #           of PyKota before. This will save you some headaches in case it doesn't work as expected.
-requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+#
+# The waitprinter.sh is there to wait until the printer is idle again.
+# This should prevent a job to be sent to the printer while another one is 
+# not yet finished (not all pages are printed, but the complete job is in 
+# the printer)
+requester: external(/usr/bin/waitprinter.sh %(printer)s && /usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
 # either allow or deny
