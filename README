@@ -45,9 +45,9 @@ PyKota features :
         
         - Supports OpenLDAP as the Quota Storage backend.
           Complete LDAP schema and sample tree are included.
-	  Plugging PyKota into your existing LDAP infrastructure
-	  is really easy thanks to PyKota's great configurability.
-	    
+          Plugging PyKota into your existing LDAP infrastructure
+          is really easy thanks to PyKota's great configurability.
+            
     Printers :        
     
         - Supports any printer which can report its internal
@@ -59,7 +59,7 @@ PyKota features :
           via SNMP, Netatalk, or any other mean of your
           choice. This is completely configurable.
           
-        - External accounting methods are configurable  
+        - External accounting methods are configurable.
             
     Quota systems :        
     
