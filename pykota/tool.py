@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.127  2004/10/11 12:48:38  jalet
+# Adds fake translation marker
+#
 # Revision 1.126  2004/10/05 09:41:13  jalet
 # Small fix for errors caused by unknown locale
 #
@@ -480,6 +483,10 @@ from mx import DateTime
 
 from pykota import version, config, storage, logger, accounter, pdlanalyzer
 
+def N_(message) :
+    """Fake translation marker for translatable strings extraction."""
+    return message
+
 class PyKotaToolError(Exception):
     """An exception for PyKota config related stuff."""
     def __init__(self, message = ""):
@@ -574,7 +581,7 @@ class PyKotaTool :
     def display_usage_and_quit(self) :
         """Displays command line usage, then exists successfully."""
         self.clean()
-        print self.documentation
+        print _(self.documentation)
         sys.exit(0)
         
     def crashed(self, message) :    
