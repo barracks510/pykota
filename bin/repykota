@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/07 23:39:16  jalet
+# Typos
+#
 # Revision 1.5  2003/02/07 08:38:36  jalet
 # Missing conversion.
 # empty line between two printers
@@ -66,7 +69,7 @@ examples :
 
   $ repykota --printer lp
   
-  This will print the quota status for all users who user the lp printer.
+  This will print the quota status for all users who use the lp printer.
 
   $ repykota 
   
@@ -97,7 +100,7 @@ class RePyKota(PyKotaTool) :
             raise PyKotaToolError, "There's no printer matching %s" % options["printer"]
         for printer in printernames :
             print "*** Report for %s quota on printer %s" % ((options["users"] and "user") or "group", printer)
-            print "Page grace time: %idays" % self.config.getGraceDelay()
+            print "Pages grace time: %idays" % self.config.getGraceDelay()
             if options["users"] :
                 print "User            used    soft    hard  grace"
                 print "-----------------------------------------------"
