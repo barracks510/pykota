@@ -238,9 +238,7 @@ jerome@nordine:~/pykota-1.21_official/initscripts/postgresql$
       <para>
         To improve security further, you could encrypt your database connections, or
         take any other step as needed. Please refer to <application>PostgreSQL</application>'s
-        documentation for details. Also if <application>PyKota</application>'s configuration
-        file <filename>~pykota/pykotadmin.conf</filename> is readable by anyone with access on your file system, 
-        a local user could create some script to modify his own print quota.
+        documentation for details. 
         <warning>
           <title>Warning</title>
           <para>
@@ -265,7 +263,7 @@ jerome@nordine:~/pykota-1.21_official/initscripts/postgresql$
           <para>
             If an error occured, maybe your PostgreSQL version is too old, or
             an unexpected problem (like a bug) happened. Please contact us via email so that we
-            can try to solve the problem. Thanks in advance.
+            can try to fix the problem. Thanks in advance.
           </para>
         </tip>  
       </para>
@@ -289,7 +287,7 @@ jerome@nordine:~/pykota-1.21_official/initscripts/postgresql$
       
       <para>
         To use <application>OpenLDAP</application> as your Quota Storage Backend, you have to copy the
-        <filename>pykota/initscripts/ldap/pykota.schema</filename> in <application>OpenLDAP</application>'s 
+        <filename>pykota/initscripts/ldap/pykota.schema</filename> into <application>OpenLDAP</application>'s 
         schemas directory.
         Under Debian GNU/Linux, this is something like :
         <screen>        
@@ -393,13 +391,18 @@ $ /etc/init.d/slapd restart
       </para>
       
       <para>
-        Once you have chosen and created your directory structure, you have to modify PyKota's configuration files <filename>~pykota/pykota.conf</filename>
-        and <filename>~pykota/pykotadmin.conf</filename>
-        to set some LDAP specific options and binding <literal>dn</literal>s. The easiest is
-        probably to give a look at 
-        <filename>pykota/conf/pykota.conf.sample</filename> to see all the options that are
-        needed. Adapt the values to your own configuration, and finally initialize your 
-        Quota Storage with the help of the <command>edpykota</command> command.
+        If no error occured, then your Quota DataBase is ready to be used.
+        Now you can let the Quota Storage Server alone, the remaining work
+        will have to be done on each one of the print servers which will
+        use this particular Quota Storage Server.
+        <tip>
+          <title>Tip</title>
+          <para>
+            If an error occured, maybe your OpenLDAP version is too old, or
+            an unexpected problem (like a bug) happened. Please contact us via email so that we
+            can try to fix the problem. Thanks in advance.
+          </para>
+        </tip>  
       </para>
     </sect2>  
     
@@ -538,6 +541,38 @@ $ /etc/init.d/slapd restart
             You can download it from <ulink url="http://www.egenix.com">http://www.egenix.com</ulink>.
           </para>
         </listitem>  
+        <listitem>
+          <para>
+            The Python acccelerator <application>Psyco</application>. It must match your default Python version.
+            You can download it from <ulink url="http://psyco.sourceforge.net">http://psyco.sourceforge.net</ulink>.
+            You only need this if you run on the <literal>x86</literal> architecture because 
+            <application>Psyco</application> doesn't yet exist on other architectures.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            The <application>pysnmp</application> Python module version 3.4.2 or 3.4.3 exclusively. 
+            You can download it from <ulink url="http://pysnmp.sourceforge.net">http://pysnmp.sourceforge.net</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            The <application>JAXML</application> Python module. 
+            You can download it from <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            The <application>ReportLab</application> Toolkit Python module. 
+            You can download it from <ulink url="http://www.reportlab.org">http://www.reportlab.org</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            The <application>PyOSD</application> Python module. 
+            You can download it from <ulink url="http://repose.cx/pyosd/">http://repose.cx/pyosd/</ulink>.
+          </para>
+        </listitem>  
       </itemizedlist>  
     </para>
     
@@ -576,9 +611,20 @@ $ python setup.py install
       <filename>conf/pykotadmin.conf.sample</filename> there, along with
       a <filename>README</filename> file explaining their purpose.
     </para>
+    
     <para>
-      You have to copy these files into the <filename>~pykota</filename>
-      directory (you have to create it before), under the respective names <filename>pykota.conf</filename> and 
+      Now you have to create a <literal>pykota</literal> system user and group. The <application>PyKota</application>
+      software will automatically search its configuration files in user <literal>pykota</literal>'s
+      home directory. For example we could create the user and group, and set <filename>/etc/pykota</filename>
+      as the home directory, but any other home directory will do :
+<screen>      
+    adduser --system --group --home /etc/pykota --gecos PyKota pykota
+</screen>
+    </para>
+    
+    <para>
+      You now have to copy the sample configuration files into the <filename>~pykota</filename>
+      directory, under the respective names <filename>pykota.conf</filename> and 
       <filename>pykotadmin.conf</filename>. Once copied there, you just
       have to modify these files to adapt them to your own setup.
       These files are heavily commented, so you should have no problem.
@@ -621,14 +667,17 @@ $ python setup.py install
       On the other hand, the <filename>~pykota/pykotadmin.conf</filename>
       file contains the read-write user's identity and password. You must then
       ensure that no normal user can read this file. It should only be readable
-      by the <literal>root</literal> user, which is always the case, by
-      the user your printing system is running as, and optionally by the print administrators,
-      who are usually members of the <literal>lpadmin</literal> group. Under my Debian GNU/Linux system,
-      with CUPS, here's how to do to give the correct permissions :
+      by the <literal>root</literal> user, which is always the case, and by 
+      <application>PyKota</application> administrators. In addition, <application>LPRng</application>
+      users, or users for which <application>CUPS</application> doesn't run as user <literal>root</literal> will 
+      have to ensure that the user their printing system is run as
+      can read both of these files. An easy way to do so is to put the <literal>lp</literal> user
+      (for example) into the <literal>pykota</literal> system group, then
+      to give the correct permissions to <application>PyKota</application>'s configuration files :
       <screen>
-$ chown root.root ~pykota/pykota.conf      
+$ chown pykota.pykota ~pykota/pykota.conf      
 $ chmod 644 ~pykota/pykota.conf      
-$ chown lp.lpadmin ~pykota/pykotadmin.conf      
+$ chown pykota.pykota ~pykota/pykotadmin.conf      
 $ chmod 640 ~pykota/pykotadmin.conf      
       </screen>
       
@@ -781,6 +830,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.32  2005/02/28 23:17:40  jalet
+Improved documentation
+
 Revision 1.31  2005/02/28 22:29:25  jalet
 More complete PostgreSQL configuration.
 Changed all occurences of /etc/pykota/ to ~pykota/
