@@ -13,9 +13,10 @@ command.
 .PP
 \fBpkpgcounter\fP is a convenience script provided by pykota that attempts
 to count the number of pages in a DSC compliant PostScript, PDF, PCL5 or 
-PCL6 (aka PCLXL) document. This may be of use
-as an external accounter as defined in /etc/pykota/pykota.conf, since currently
-\fBpkpgcounter\fP is the smarter software accounter included with PyKota.
+PCL6 (aka PCLXL) document. Binary PostScript is also supported through 
+GhostScript. This may be of use as an external accounter as defined in 
+/etc/pykota/pykota.conf, since currently \fBpkpgcounter\fP is the smarter 
+software accounter included with PyKota.
 
 \fBpkpgcounter\fP with no argument reads the job's data from stdin, and prints
 the number of pages on stdout. 

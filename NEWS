@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha35 :
+    
+        - Generic PDL analyzer now supports Binary PostScript documents
+          in addition to DSC compliant ones.
+        
     - 1.19alpha34 :
     
         - LPRng support : software accounting seems to work fine,

@@ -77,9 +77,10 @@ PyKota's FAQ :
     create a script which understands your printer's
     Page Description Language.
     
-    PyKota natively understands PostScript, PCL5, PCLXL (aka PCL6)
-    and PDF. More PDLs will be added in the future. However you can 
-    always plug your own PDL analyzer in PyKota.
+    PyKota natively understands DSC compliant PostScript, PCL5, 
+    PCLXL (aka PCL6) and PDF. Support for Binary PostScript is
+    done through GhostScript. More PDLs will be added in the future. 
+    However you can always plug your own PDL analyzer in PyKota.
           
   * I've got a great number of users. How can I automatically
     set an initial print quota for them on first print ?

@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2004/07/22 13:49:51  jalet
+# Added support for binary PostScript through GhostScript if native DSC
+# compliant PostScript analyzer doesn't find any page. This is much
+# slower though, so native analyzer is tried first.
+#
 # Revision 1.25  2004/07/10 14:06:36  jalet
 # Fix for Python2.1 incompatibilities
 #
@@ -107,6 +112,7 @@ import re
 from struct import unpack
 import tempfile
 import mmap
+import popen2
     
 KILOBYTE = 1024    
 MEGABYTE = 1024 * KILOBYTE    
@@ -124,14 +130,47 @@ class PostScriptAnalyzer :
     def __init__(self, infile) :
         """Initialize PostScript Analyzer."""
         self.infile = infile
+       
+    def throughGhostScript(self) :
+        """Get the count through GhostScript, useful for non-DSC compliant PS files."""
+        self.infile.seek(0)
+        command = 'gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET - 2>&1 | grep -c "%%HiResBoundingBox:" 2>/dev/null'
+        child = popen2.Popen4(command)
+        try :
+            data = self.infile.read(MEGABYTE)    
+            while data :
+                child.tochild.write(data)
+                data = self.infile.read(MEGABYTE)
+            child.tochild.flush()
+            child.tochild.close()    
+        except (IOError, OSError), msg :    
+            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
+            
+        pagecount = 0
+        try :
+            pagecount = int(child.fromchild.readline().strip())
+        except (IOError, OSError, AttributeError, ValueError) :
+            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
+        child.fromchild.close()
         
-    def getJobSize(self) :    
+        try :
+            retcode = child.wait()
+        except OSError, msg :    
+            raise PDLAnalyzerError, "Problem during analysis of Binary PostScript document."
+        return pagecount
+        
+    def natively(self) :
         """Count pages in a DSC compliant PostScript document."""
+        self.infile.seek(0)
         pagecount = 0
         for line in self.infile.xreadlines() : 
             if line.startswith("%%Page: ") :
                 pagecount += 1
         return pagecount
+        
+    def getJobSize(self) :    
+        """Count pages in PostScript document."""
+        return self.natively() or self.throughGhostScript()
         
 class PDFAnalyzer :
     def __init__(self, infile) :

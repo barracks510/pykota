@@ -68,8 +68,8 @@ PyKota features :
           other way.
           This is completely configurable.
           
-        - Supports DSC compliant PostScript, PDF, PCL5, and
-          PCLXL (aka PCL6) printers natively for software 
+        - Supports DSC compliant and binary PostScript, PDF, PCL5, 
+          and PCLXL (aka PCL6) printers natively for software 
           accounting methods. More formats to come.
             
     Quota systems :        
