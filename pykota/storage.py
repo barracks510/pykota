@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2004/09/10 21:32:52  jalet
+# Small fixes for incomplete entry intialization
+#
 # Revision 1.58  2004/09/02 10:09:30  jalet
 # Fixed bug in LDAP user deletion code which didn't correctly delete the user's
 # pykotaLastJob entries.
@@ -355,11 +358,11 @@ class StoragePrinter(StorageObject) :
     def setPrices(self, priceperpage = None, priceperjob = None) :    
         """Sets the printer's prices."""
         if priceperpage is None :
-            priceperpage = self.PricePerPage
+            priceperpage = self.PricePerPage or 0.0
         else :    
             self.PricePerPage = float(priceperpage)
         if priceperjob is None :    
-            priceperjob = self.PricePerJob
+            priceperjob = self.PricePerJob or 0.0
         else :    
             self.PricePerJob = float(priceperjob)
         self.parent.writePrinterPrices(self)

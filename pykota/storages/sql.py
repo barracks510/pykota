@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2004/09/10 21:32:54  jalet
+# Small fixes for incomplete entry intialization
+#
 # Revision 1.43  2004/07/01 17:45:49  jalet
 # Added code to handle the description field for printers
 #
@@ -285,12 +288,12 @@ class SQLStorage :
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns its id."""
-        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy), self.doQuote(user.AccountBalance), self.doQuote(user.LifeTimePaid), self.doQuote(user.Email)))
+        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email)))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
         """Adds a group to the quota storage, returns its id."""
-        self.doModify("INSERT INTO groups (groupname, limitby) VALUES (%s, %s)" % (self.doQuote(group.Name), self.doQuote(group.LimitBy)))
+        self.doModify("INSERT INTO groups (groupname, limitby) VALUES (%s, %s)" % (self.doQuote(group.Name), self.doQuote(group.LimitBy or "quota")))
         return self.getGroup(group.Name)
 
     def addUserToGroup(self, user, group) :    
