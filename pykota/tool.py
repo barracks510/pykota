@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.142  2004/11/16 23:15:05  jalet
+# Fix for LPRng job's file detection code
+#
 # Revision 1.141  2004/11/15 22:01:34  jalet
 # Improved banner handling.
 # Fix for raw printing and banners.
@@ -1349,20 +1352,29 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     rseen = "localhost"
                 
             spooldir = os.environ.get("SPOOL_DIR", ".")    
-            try :    
-                df_name = [line[8:] for line in os.environ.get("HF", "").split() if line.startswith("df_name=")][0]
-            except IndexError :
-                try :
-                    cftransfername = [line[15:] for line in os.environ.get("HF", "").split() if line.startswith("cftransfername=")][0]
+            df_name = os.environ.get("DATAFILES")
+            if not df_name :
+                try : 
+                    df_name = [line[10:] for line in os.environ.get("HF", "").split() if line.startswith("datafiles=")][0]
                 except IndexError :    
-                    try :
-                        df_name = [line[1:] for line in os.environ.get("CONTROL", "").split() if line.startswith("fdf") or line.startswith("Udf")][0]
-                    except IndexError :    
-                        inputfile = None
+                    try :    
+                        df_name = [line[8:] for line in os.environ.get("HF", "").split() if line.startswith("df_name=")][0]
+                    except IndexError :
+                        try :
+                            cftransfername = [line[15:] for line in os.environ.get("HF", "").split() if line.startswith("cftransfername=")][0]
+                        except IndexError :    
+                            try :
+                                df_name = [line[1:] for line in os.environ.get("CONTROL", "").split() if line.startswith("fdf") or line.startswith("Udf")][0]
+                            except IndexError :    
+                                raise PyKotaToolError, "Unable to find the file which holds the job's datas. Please file a bug report for PyKota."
+                            else :    
+                                inputfile = os.path.join(spooldir, df_name)
+                        else :    
+                            inputfile = os.path.join(spooldir, "d" + cftransfername[1:])
                     else :    
                         inputfile = os.path.join(spooldir, df_name)
                 else :    
-                    inputfile = os.path.join(spooldir, "d" + cftransfername[1:])
+                    inputfile = os.path.join(spooldir, df_name)
             else :    
                 inputfile = os.path.join(spooldir, df_name)
                 
