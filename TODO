@@ -65,7 +65,9 @@ TODO, in no particular order :
           if the job is a banner (embed a postscript comment
           in the banner).
           
-        - pkusers --nogroup
+          
+        - Introduce the pkusers command.
+          pkusers --nogroup
           pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
           
         - Ensures data are stored in a consistent way with Unicode :
