@@ -21,6 +21,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha1 :
+    
+        - Poor man's treshold included : users with a low account
+          balance (below 1.0 by default, configurable) are sent
+          a warning message.
+          
+        - All warning messages to users are now configurable.  
+          NB : Warning messages to the administrator are not.
+        
     - 1.13 :
     
         - Some small fixes wrt group handling. 

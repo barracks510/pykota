@@ -152,6 +152,37 @@ mailto: both
 # If the value is not set then the default seven (7) days applies.
 gracedelay: 7
 
+#
+# Poor man's threshold
+# If account balance reaches below this amount,
+# a warning message is sent by email
+#
+# If unset, default poor man's threshold is 1.0.
+# This option can only appear in the global section
+poorman: 2.0
+
+# Poor man's warning message
+# The warning message that is sent if the "poorman" value is reached
+# Again this must appear in the global section
+poorwarn: Your Print Quota account balance is low. 
+ Soon you'll not be allowed to print anymore.
+
+# Soft limit reached warning message
+# The warning message that is sent if the soft quota limit is reached
+# May appear either globally or on a per-printer basis
+softwarn: Your Print Quota Soft Limit is reached.
+ This means that you may still be allowed to print for some
+ time, but you must contact your administrator to purchase 
+ more print quota.
+ 
+# Hard limit reached error message
+# The error message that is sent if the hard quota limit is reached
+# May appear either globally or on a per-printer basis
+hardwarn: Your Print Quota Hard Limit is reached.
+ This means that you are not allowed to print anymore.
+ Please contact your administrator at root@localhost
+ as soon as possible to solve the problem.
+
 # one section per printer, or no other section at all if all options 
 # are defined globally.
 # Each section's name must be the same as the printer's queue name as defined

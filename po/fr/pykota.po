@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/07/08 19:43:51  jalet
+# Configurable warning messages.
+# Poor man's treshold value added.
+#
 # Revision 1.29  2003/07/03 11:38:44  jalet
 # Translations for pykotme added
 #
@@ -337,22 +341,8 @@ msgstr "Impossible de trouver le groupe %s sur l'imprimante %s, action par défau
 msgid "Print Quota exceeded for group %s on printer %s"
 msgstr "Dépassement de Quota d'impression pour le groupe %s sur l'imprimante %s"
 
-msgid ""
-"You are not allowed to print anymore because\n"
-"your group Print Quota is exceeded on printer %s."
-msgstr ""
-"Vous n'êtes plus autorisé à imprimer car\n"
-"le Quota d'Impression de votre groupe est dépassé sur l'imprimante %s."
-
 msgid "Print Quota soft limit exceeded for group %s on printer %s"
 msgstr "Limite souple de Quota d'Impression dépassée pour le groupe %s sur l'imprimante %s"
-
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your group Print Quota is almost reached on printer %s."
-msgstr ""
-"Vous n'aurez bientôt plus le droit d'imprimer car\n"
-"le Quota d'Impression de votre groupe sur l'imprimante %s est presque atteint."
 
 msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr "Les totaux peuvent être faux si des utilisateurs sont dans plusieurs groupes."
@@ -416,3 +406,19 @@ msgstr "Taille du job : %i pages"
 
 msgid "Cost on printer %s : %.2f"
 msgstr "Coût sur l'imprimante %s : %.2f"
+
+msgid "Invalid poor man's treshold %s"
+msgstr "Valeur 'pauvre homme' %s invalide"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"Le montant de votre compte d'impression est Bas.\n"
+"Bientôt vous ne serez plus autorisé(e) à imprimer.\n"
+"Merci de contacter l'Administrateur de Quota d'Impression pour résoudre ce problème."
+
+msgid "Print Quota Low"
+msgstr "Quota d'Impression Bas"
+

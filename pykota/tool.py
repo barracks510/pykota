@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2003/07/08 19:43:51  jalet
+# Configurable warning messages.
+# Poor man's treshold value added.
+#
 # Revision 1.44  2003/07/07 11:49:24  jalet
 # Lots of small fixes with the help of PyChecker
 #
@@ -336,9 +340,10 @@ class PyKotaTool :
         group = grouppquota.Group
         printer = grouppquota.Printer
         if group.LimitBy and (group.LimitBy.lower() == "balance") : 
-            # TODO : there's no warning (no account balance soft limit)
-            if float(group.AccountBalance) <= 0.0 :
+            if group.AccountBalance <= 0.0 :
                 action = "DENY"
+            elif group.AccountBalance <= self.config.getPoorMan() :    
+                action = "WARN"
             else :    
                 action = "ALLOW"
         else :
@@ -401,9 +406,11 @@ class PyKotaTool :
                     action = "POLICY_DENY"
                 self.logger.log_message(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (user.Name, action, printer.Name))
             else :    
-                # TODO : there's no warning (no account balance soft limit)
-                if float(user.AccountBalance or 0.0) <= 0.0 :
+                val = float(user.AccountBalance or 0.0)
+                if val <= 0.0 :
                     action = "DENY"
+                elif val <= self.config.getPoorMan() :    
+                    action = "WARN"
                 else :    
                     action = "ALLOW"
         else :
@@ -469,15 +476,19 @@ class PyKotaTool :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             for user in self.storage.getGroupMembers(group) :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour group Print Quota is exceeded on printer %s.") % printer.Name)
+                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
         elif action == "WARN" :    
             adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (group.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            if group.LimitBy and (group.LimitBy.lower() == "balance") : 
+                message = self.config.getPoorWarn()
+            else :     
+                message = self.config.getSoftWarn(printer.Name)
             for user in self.storage.getGroupMembers(group) :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour group Print Quota is almost reached on printer %s.") % printer.Name)
+                    self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), message)
         return action        
         
     def warnUserPQuota(self, userpquota) :
@@ -494,14 +505,18 @@ class PyKotaTool :
             adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printer.Name)
+                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
             adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (user.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printer.Name)
+                if user.LimitBy and (user.LimitBy.lower() == "balance") : 
+                    message = self.config.getPoorWarn()
+                else :     
+                    message = self.config.getSoftWarn(printer.Name)
+                self.sendMessageToUser(admin, adminmail, user.Name, _("Print Quota Low"), message)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        

@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/07/08 19:43:50  jalet
+# Configurable warning messages.
+# Poor man's treshold value added.
+#
 # Revision 1.30  2003/07/03 11:38:43  jalet
 # Translations for pykotme added
 #
@@ -324,17 +328,7 @@ msgstr ""
 msgid "Print Quota exceeded for group %s on printer %s"
 msgstr ""
 
-msgid ""
-"You are not allowed to print anymore because\n"
-"your group Print Quota is exceeded on printer %s."
-msgstr ""
-
 msgid "Print Quota soft limit exceeded for group %s on printer %s"
-msgstr ""
-
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your group Print Quota is almost reached on printer %s."
 msgstr ""
 
 msgid "Totals may be inaccurate if some users are members of several groups."
@@ -399,3 +393,16 @@ msgstr ""
 
 msgid "Cost on printer %s : %.2f"
 msgstr ""
+
+msgid "Invalid poor man's treshold %s"
+msgstr ""
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+
+msgid "Print Quota Low"
+msgstr ""
+

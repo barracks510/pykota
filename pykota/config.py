@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/07/08 19:43:51  jalet
+# Configurable warning messages.
+# Poor man's treshold value added.
+#
 # Revision 1.31  2003/07/07 11:49:24  jalet
 # Lots of small fixes with the help of PyChecker
 #
@@ -326,8 +330,40 @@ class PyKotaConfig :
             gd = 7
         try :
             return int(gd)
-        except ValueError :    
+        except (TypeError, ValueError) :    
             raise PyKotaConfigError, _("Invalid grace delay %s") % gd
+            
+    def getPoorMan(self) :    
+        """Returns the poor man's treshold."""
+        try :
+            pm = self.getGlobalOption("poorman")
+        except PyKotaConfigError :    
+            pm = 1.0
+        try :
+            return float(pm)
+        except (TypeError, ValueError) :    
+            raise PyKotaConfigError, _("Invalid poor man's treshold %s") % pm
+            
+    def getPoorWarn(self) :    
+        """Returns the poor man's warning message."""
+        try :
+            return self.getGlobalOption("poorwarn")
+        except PyKotaConfigError :    
+            return _("Your Print Quota account balance is Low.\nSoon you'll not be allowed to print anymore.\nPlease contact the Print Quota Administrator to solve the problem.")
+            
+    def getHardWarn(self, printer) :    
+        """Returns the hard limit error message."""
+        try :
+            return self.getPrinterOption(printer, "hardwarn")
+        except PyKotaConfigError :    
+            return _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printer
+            
+    def getSoftWarn(self, printer) :    
+        """Returns the soft limit error message."""
+        try :
+            return self.getPrinterOption(printer, "softwarn")
+        except PyKotaConfigError :    
+            return _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printer
             
     def getDebug(self) :          
         """Returns 1 if debugging is activated, else 0."""
