@@ -28,6 +28,8 @@ PyKota NEWS :
         - PyKota now has a nice logo, see the logos
           subdirectory.
         
+        - Manual pages were finally updated.
+        
     - 1.03beta :
     
         - Group quotas seem to work now !
