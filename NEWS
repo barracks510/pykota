@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14beta :
+    
+        - Two new LDAP-specific configuration fields were introduced,
+          newuser and newgroup. Use them to specify if you want to add
+          quota information to existing entries or elsewhere.
+          See sample configuration file for details.
+          
     - 1.14alpha9 :
     
         - Documentation improved.

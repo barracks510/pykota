@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/07/28 09:11:12  jalet
+# PyKota now tries to add its attributes intelligently in existing LDAP
+# directories.
+#
 # Revision 1.20  2003/07/25 10:41:30  jalet
 # Better documentation.
 # pykotme now displays the current user's account balance.
@@ -467,28 +471,56 @@ class Storage :
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns it."""
-        fields = { self.info["userrdn"] : user.Name,
-                   "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
-                   "cn" : user.Name,
-                   "pykotaUserName" : user.Name,
-                   "pykotaLimitBY" : (user.LimitBy or "quota"),
-                   "pykotaBalance" : str(user.AccountBalance or 0.0),
-                   "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),
-                 } 
-        dn = "%s=%s,%s" % (self.info["userrdn"], user.Name, self.info["userbase"])
-        self.doAdd(dn, fields)
+        newfields = {
+                       "pykotaUserName" : user.Name,
+                       "pykotaLimitBY" : (user.LimitBy or "quota"),
+                       "pykotaBalance" : str(user.AccountBalance or 0.0),
+                       "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),
+                    }   
+        mustadd = 1
+        if self.info["newuser"].lower() != 'below' :
+            result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (self.info["newuser"], self.info["userrdn"], user.Name), None, base=self.info["userbase"])
+            if result :
+                (dn, fields) = result[0]
+                fields["objectClass"].extend(["pykotaAccount", "pykotaAccountBalance"])
+                fields.update(newfields)
+                self.doModify(dn, fields)
+                mustadd = 0
+                
+        if mustadd :
+            fields = { self.info["userrdn"] : user.Name,
+                       "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
+                       "cn" : user.Name,
+                     } 
+            fields.update(newfields)         
+            dn = "%s=%s,%s" % (self.info["userrdn"], user.Name, self.info["userbase"])
+            self.doAdd(dn, fields)
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
         """Adds a group to the quota storage, returns it."""
-        fields = { self.info["grouprdn"] : group.Name,
-                   "objectClass" : ["pykotaObject", "pykotaGroup"],
-                   "cn" : group.Name,
-                   "pykotaGroupName" : group.Name,
-                   "pykotaLimitBY" : (group.LimitBy or "quota"),
-                 } 
-        dn = "%s=%s,%s" % (self.info["grouprdn"], group.Name, self.info["groupbase"])
-        self.doAdd(dn, fields)
+        newfields = { 
+                      "pykotaGroupName" : group.Name,
+                      "pykotaLimitBY" : (group.LimitBy or "quota"),
+                    } 
+        mustadd = 1
+        if self.info["newgroup"].lower() != 'below' :
+            result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (self.info["newgroup"], self.info["grouprdn"], group.Name), None, base=self.info["groupbase"])
+            if result :
+                (dn, fields) = result[0]
+                fields["objectClass"].extend(["pykotaGroup"])
+                fields.update(newfields)
+                self.doModify(dn, fields)
+                mustadd = 0
+                
+        if mustadd :
+            fields = { self.info["grouprdn"] : group.Name,
+                       "objectClass" : ["pykotaObject", "pykotaGroup"],
+                       "cn" : group.Name,
+                     } 
+            fields.update(newfields)         
+            dn = "%s=%s,%s" % (self.info["grouprdn"], group.Name, self.info["groupbase"])
+            self.doAdd(dn, fields)
         return self.getGroup(group.Name)
         
     def addUserToGroup(self, user, group) :    

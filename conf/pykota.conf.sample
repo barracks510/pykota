@@ -72,6 +72,21 @@ storageuser: pykotauser
 #userquotabase: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
 #groupquotabase: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
 #lastjobbase: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+#
+# How to create new accounts and groups
+# authorized values are "below" and "attach(objectclass name)"
+#
+# "below" creates the new accounts/groups as standalone entries
+# below the above defined 'userbase' ou
+# 
+# attach(objectclass name) tries to find some existing user/group
+# using the above defined 'userrdn' or 'grouprdn' and 'userbase'
+# 'groupbase', and attach the PyKota specific entries to it.
+#
+# a possible value:  newuser: attach(posixAccount)
+newuser : below
+newgroup : below
+
 # 
 # Choose what attribute contains the list of group members
 # common values are : memberUid, uniqueMember, member

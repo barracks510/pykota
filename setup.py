@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/07/28 09:11:12  jalet
+# PyKota now tries to add its attributes intelligently in existing LDAP
+# directories.
+#
 # Revision 1.20  2003/07/23 16:51:32  jalet
 # waitprinter.sh is now included to prevent PyKota from asking the
 # printer's internal page counter while a job is still being printer.
@@ -240,6 +244,18 @@ if "install" in sys.argv :
             sys.stderr.write("AND RESTART THE INSTALLATION.\n")
             sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
             sys.exit(-1)
+            
+        # warns for new LDAP fields    
+        if sb.get("storagebackend") == "ldapstorage" :    
+            newuser = conf.getGlobalOption("newuser", ignore=1)
+            newgroup = conf.getGlobalOption("newgroup", ignore=1)
+            if not (newuser and newgroup) :
+                sys.stderr.write("From version 1.14 on, PyKota LDAP Support needs two additional configuration fields.\n")
+                sys.stderr.write("Please put the 'newuser' and 'newgroup' configuration fields in a [global] section in /etc/pykota/pykota.conf\n")
+                sys.stderr.write("You can look at the conf/pykota.conf.sample file for examples.\n")
+                sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
+                sys.stderr.write("INSTALLATION ABORTED BECAUSE CONFIGURATION INCOMPLETE.\n")
+                sys.exit(-1)
         
     # change files permissions    
     os.chmod("/etc/pykota/pykota.conf", 0644)

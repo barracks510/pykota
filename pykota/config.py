@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2003/07/28 09:11:12  jalet
+# PyKota now tries to add its attributes intelligently in existing LDAP
+# directories.
+#
 # Revision 1.33  2003/07/16 21:53:07  jalet
 # Really big modifications wrt new configuration file's location and content.
 #
@@ -230,8 +234,12 @@ class PyKotaConfig :
                         "printerbase", "printerrdn", \
                         "userquotabase", "groupquotabase", \
                         "jobbase", "lastjobbase", \
+                        "newuser", "newgroup", \
                       ] :
-            ldapinfo[option] = self.getGlobalOption(option)
+            ldapinfo[option] = self.getGlobalOption(option).strip()
+        for field in ["newuser", "newgroup"] :
+            if ldapinfo[field].lower().startswith('attach(') :
+                ldapinfo[field] = ldapinfo[field][7:-1]
         return ldapinfo
         
     def getLoggingBackend(self) :    
