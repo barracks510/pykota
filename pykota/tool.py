@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.63  2003/11/29 20:06:20  jalet
+# Added 'utolower' configuration option to convert all usernames to
+# lowercase when printing. All database accesses are still and will
+# remain case sensitive though.
+#
 # Revision 1.62  2003/11/25 22:37:22  jalet
 # Small code move
 #
@@ -639,6 +644,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
         self.username = self.username or 'root' 
+        if self.config.getUserNameToLower() :
+            self.username = self.username.lower()
         self.preserveinputfile = self.inputfile 
         self.accounter = accounter.openAccounter(self)
     

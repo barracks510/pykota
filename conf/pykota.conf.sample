@@ -134,6 +134,24 @@ debug : No
 # If the value is not set then localhost is used.
 smtpserver: localhost
 
+# Should we force usernames to be all lowercase when printing ?
+# Default is No. 
+# This is a global option only.
+# Some people reported that WinXP sends mixed case usernames
+# setting 'utolower: Yes' solves the problem.
+# Of course you have to user lowercase only when adding
+# users with edpykota, because ALL database accesses are
+# still case sensitive.
+#
+# If utolower is Yes, the usernames received from the printing
+# system is converted to lowercase at the start of the cupspykota
+# backend or of the pykota filter.
+#
+# If utolower is No, which is the default, strict case checking
+# is done, this means that users 'Jerome' and 'jerome' are
+# different. Printer and groups names are ALWAYS case sensitive.
+utolower: No
+
 # What is the accounting backend to use
 # 
 # supported values :

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpah16 :
+    
+        - Added utolower configuration option to convert all usernames
+          to lowercase during printing. 
+          
     - 1.15alpha15 :
     
         - Now includes the papwaitprinter.sh shell script to wait for

@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2003/11/29 20:06:20  jalet
+# Added 'utolower' configuration option to convert all usernames to
+# lowercase when printing. All database accesses are still and will
+# remain case sensitive though.
+#
 # Revision 1.40  2003/11/18 23:43:12  jalet
 # Mailto can be any external command now, as usual.
 #
@@ -196,6 +201,13 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Configuration file %s not found.") % self.filename
         self.config = ConfigParser.ConfigParser()
         self.config.read([self.filename])
+            
+    def isTrue(self, option) :        
+        """Returns 1 if option is set to true, else 0."""
+        if (option is not None) and (option.upper().strip() in ['Y', 'YES', '1', 'ON', 'T', 'TRUE']) :
+            return 1
+        else :    
+            return 0
                         
     def getPrinterNames(self) :    
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
@@ -438,24 +450,16 @@ class PyKotaConfig :
             
     def getDebug(self) :          
         """Returns 1 if debugging is activated, else 0."""
-        debug = self.getGlobalOption("debug", ignore=1)
-        if (debug is not None) and (debug.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
-            return 1
-        else :    
-            return 0
+        return self.isTrue(self.getGlobalOption("debug", ignore=1))
             
     def getCaching(self) :          
         """Returns 1 if database caching is enabled, else 0."""
-        caching = self.getGlobalOption("storagecaching", ignore=1)
-        if (caching is not None) and (caching.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
-            return 1
-        else :    
-            return 0
+        return self.isTrue(self.getGlobalOption("storagecaching", ignore=1))
             
     def getDisableHistory(self) :          
         """Returns 1 if we want to disable history, else 0."""
-        disablehistory = self.getGlobalOption("disablehistory", ignore=1)
-        if (disablehistory is not None) and (disablehistory.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
-            return 1
-        else :    
-            return 0
+        return self.isTrue(self.getGlobalOption("disablehistory", ignore=1))
+            
+    def getUserNameToLower(self) :          
+        """Returns 1 if we want to convert usernames to lowercase when printing, else 0."""
+        return self.isTrue(self.getGlobalOption("utolower", ignore=1))
