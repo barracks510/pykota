@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/05/18 14:49:23  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.1  2004/05/13 13:59:30  jalet
 # Code simplifications
 #
@@ -44,7 +48,7 @@ class Accounter(AccounterBase) :
         else :    
             infile = open(self.filter.inputfile, "rb")
             
-        # launches external accounter
+        # launches software accounter
         # TODO : USE tempfile.mkstemp() instead ! Needs some work !
         infilename = tempfile.mktemp()
         outfilename = tempfile.mktemp()
@@ -67,17 +71,17 @@ class Accounter(AccounterBase) :
             
             # check exit status
             if (os.WIFEXITED(retcode) and not os.WEXITSTATUS(retcode)) or os.stat(errfilename) :
-                # tries to extract the job size from the external accounter's
+                # tries to extract the job size from the software accounter's
                 # standard output
                 childoutput = open(outfilename, "r")
                 try :
                     pagecount = int(childoutput.readline().strip())
                 except (AttributeError, ValueError) :
-                    self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % self.arguments)
+                    self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % self.arguments)
                     pagecount = 0
                 childoutput.close()    
             else :
-                self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % self.arguments)
+                self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % self.arguments)
                 pagecount = 0
             os.remove(infilename)
             os.remove(outfilename)
@@ -85,7 +89,7 @@ class Accounter(AccounterBase) :
         except IOError, msg :    
             # TODO : temporary files may remain on the filesystem...
             msg = "%s : %s" % (self.arguments, msg) 
-            self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % msg)
+            self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % msg)
             pagecount = 0
             
         if temporary is not None :    

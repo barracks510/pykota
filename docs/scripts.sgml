@@ -20,7 +20,7 @@
     </para>
     
     <para>
-      When defining an external <literal>requester</literal> for a printer, it is important to wait for the printer being
+      When defining an hardware <literal>accounter</literal> for a printer, it is important to wait for the printer being
       <literal>idle</literal> before asking it for its internal page counter, otherwise results could
       be inaccurate. If the printer is asked while the job is still being printed, then the page counter's
       value will be lower than expected with regard to the real job's size.
@@ -48,7 +48,7 @@
     </para>
     
     <para>
-      When defining an external <literal>requester</literal> for a printer, it is important to wait for the printer being
+      When defining an hardware <literal>accounter</literal> for a printer, it is important to wait for the printer being
       <literal>idle</literal> before asking it for its internal page counter, otherwise results could
       be inaccurate. If the printer is asked while the job is still being printed, then the page counter's
       value will be lower than expected with regard to the real job's size.
@@ -91,7 +91,7 @@
   <sect1>
     <title>pagecount.pl</title>
     <para>
-      This <application>Perl</application> script can be used in the <literal>requester</literal> directive of <filename>pykota.conf</filename>,
+      This <application>Perl</application> script can be used in the <literal>accounter</literal> directive of <filename>pykota.conf</filename>,
       to ask a printer for its internal page counter by sending a specially crafted <acronym>PJL</acronym> job
       to it over the AppSocket protocol, usually on <acronym>TCP</acronym> port 9100.
       It accepts the printer's hostname or <acronym>IP</acronym> address as its first parameter,
@@ -102,7 +102,7 @@
       Most of the time you'll use this script in combination with a script which waits for the printer
       to be in <literal>idle</literal> state, in something like :
 <screen>      
-requester: external(somewaitscript.sh && pagecount.pl %(printer)s)
+accounter: hardware(somewaitscript.sh && pagecount.pl %(printer)s)
 </screen>
     </para>
     
@@ -118,6 +118,10 @@ requester: external(somewaitscript.sh && pagecount.pl %(printer)s)
 <!--
 
 $Log$
+Revision 1.2  2004/05/18 14:48:48  jalet
+Big code changes to completely remove the need for "requester" directives,
+jsut use "hardware(... your previous requester directive's content ...)"
+
 Revision 1.1  2004/03/16 14:42:31  jalet
 Improved documentation
 

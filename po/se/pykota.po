@@ -173,24 +173,12 @@ msgid "Option logger only supports values in %s"
 msgstr "Variabeln 'logger' stödjer bara värden i %s"
 
 #, python-format
-msgid "Invalid external accounter %s for printer %s"
-msgstr "Ogiltig extern redovisningsmetod %s för printern %s"
+msgid "Invalid accounter %s for printer %s"
+msgstr "Ogiltig redovisningsmetod %s för printern %s"
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
 msgstr "Variabeln 'accounter' i sektion '%s' stödjer bara värden i %s"
-
-#, python-format
-msgid "Option requester for printer %s was not set"
-msgstr "Variabeln 'requester' för printer %s var inte satt"
-
-#, python-format
-msgid "Invalid requester %s for printer %s"
-msgstr "Ogiltigt värde %s på variabeln 'requester' för skrivare %s"
-
-#, python-format
-msgid "Option requester for printer %s only supports values in %s"
-msgstr "Variabeln 'requester' för skrivare %s stödjer bara värden i %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -289,10 +277,6 @@ msgstr "Summa : %9i"
 #, python-format
 msgid "Unsupported reporter backend %s"
 msgstr "Ej understödd rapportmetod %s"
-
-#, python-format
-msgid "Unsupported requester backend %s"
-msgstr "Ej understödd metod %s för variablen 'requester'"
 
 #, python-format
 msgid "Unsupported quota storage backend %s"
@@ -437,8 +421,8 @@ msgstr ""
 "utskriften avbryts"
 
 #, python-format
-msgid "Unable to compute job size with external accounter %s"
-msgstr "Kunde inte beräkna utskriftsstorlek med extern metod %s"
+msgid "Unable to compute job size with accounter %s"
+msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
 
 msgid "Using the 'stupid' accounting method is unreliable."
 msgstr "Användande av metoden 'puckad' ('stupid') för utskriftsberäkning är inte tillförlitligt"
@@ -447,12 +431,12 @@ msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr "Summor kan vara felaktiga om vissa användare är medlemmar i flera grupper."
 
 #, python-format
-msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
-msgstr "Okänd skrivaradress i EXTERNAL(%s) för skrivare %s"
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Okänd skrivaradress i HARDWARE(%s) för skrivare %s"
 
 #, python-format
-msgid "Unable to query printer %s via EXTERNAL(%s)"
-msgstr "Kunde inte hämta information från skrivare %s via EXTERNAL(%s)"
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Kunde inte hämta information från skrivare %s via HARDWARE(%s)"
 
 #, python-format
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
@@ -488,10 +472,6 @@ msgstr ""
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
-msgstr ""
-
-#, python-format
-msgid "SIGTERM was sent to external requester %s (pid: %s)"
 msgstr ""
 
 #, python-format

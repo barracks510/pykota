@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha10 :
+    
+        - configuration simplifications : the "accounter" directive's
+          'hardware' arguments now accepts what was in the "requester"
+          directive as it's content. The "requester" directive is not
+          supported anymore. See sample configuration file for details.
+        
     - 1.19alpha9 :
        
         - pkpgcounter is now just a wrapper around the PDLAnalyzer class

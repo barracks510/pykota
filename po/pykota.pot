@@ -173,23 +173,11 @@ msgid "Option logger only supports values in %s"
 msgstr ""
 
 #, python-format
-msgid "Invalid external accounter %s for printer %s"
+msgid "Invalid accounter %s for printer %s"
 msgstr ""
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Option requester for printer %s was not set"
-msgstr ""
-
-#, python-format
-msgid "Invalid requester %s for printer %s"
-msgstr ""
-
-#, python-format
-msgid "Option requester for printer %s only supports values in %s"
 msgstr ""
 
 #, python-format
@@ -277,10 +265,6 @@ msgstr ""
 
 #, python-format
 msgid "Unsupported reporter backend %s"
-msgstr ""
-
-#, python-format
-msgid "Unsupported requester backend %s"
 msgstr ""
 
 #, python-format
@@ -401,7 +385,7 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid "Unable to compute job size with external accounter %s"
+msgid "Unable to compute job size with accounter %s"
 msgstr ""
 
 msgid "Using the 'stupid' accounting method is unreliable."
@@ -411,11 +395,11 @@ msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr ""
 
 #, python-format
-msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
 msgstr ""
 
 #, python-format
-msgid "Unable to query printer %s via EXTERNAL(%s)"
+msgid "Unable to query printer %s via HARDWARE(%s)"
 msgstr ""
 
 #, python-format
@@ -456,10 +440,6 @@ msgstr ""
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
-msgstr ""
-
-#, python-format
-msgid "SIGTERM was sent to external requester %s (pid: %s)"
 msgstr ""
 
 #, python-format

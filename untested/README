@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 This directory contains scripts which may be used to query printers 
 for their life time page counter, so you could define them as
-external requesters in PyKota configuration file.
+hardware accounters in PyKota configuration file.
 
 They are completely untested, and you certainely have to edit them to
 make them work as part of PyKota.

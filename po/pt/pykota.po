@@ -170,24 +170,12 @@ msgid "Option logger only supports values in %s"
 msgstr "A opção logger só suporta valores em %s"
 
 #, python-format
-msgid "Invalid external accounter %s for printer %s"
-msgstr "Contador externo de páginas %s inválido, para a impressora %s"
+msgid "Invalid accounter %s for printer %s"
+msgstr "Contador de páginas %s inválido, para a impressora %s"
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
 msgstr "A opção accounter na secção %s só suporta valores em %s"
-
-#, python-format
-msgid "Option requester for printer %s was not set"
-msgstr "A opção requester para a impressora %s não foi configurada"
-
-#, python-format
-msgid "Invalid requester %s for printer %s"
-msgstr "Requester %s inválido para a impressora %s"
-
-#, python-format
-msgid "Option requester for printer %s only supports values in %s"
-msgstr "A opção requester para a impresora %s só suporta valores em %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -287,10 +275,6 @@ msgstr "Total : %9i"
 #, python-format
 msgid "Unsupported reporter backend %s"
 msgstr "Backend reporter %s não suportado"
-
-#, python-format
-msgid "Unsupported requester backend %s"
-msgstr "Backend requester %s não suportado"
 
 #, python-format
 msgid "Unsupported quota storage backend %s"
@@ -436,8 +420,8 @@ msgstr ""
 
 
 #, python-format
-msgid "Unable to compute job size with external accounter %s"
-msgstr "Foi impossível calcular o tamanho do trabalho com o contador externo %s"
+msgid "Unable to compute job size with accounter %s"
+msgstr "Foi impossível calcular o tamanho do trabalho com o contador %s"
 
 msgid "Using the 'stupid' accounting method is unreliable."
 msgstr "Usar o método de contagem 'stupid' pode dar origem a erros de contagem."
@@ -447,12 +431,12 @@ msgstr ""
 "O total pode não ser exacto, caso os utilizadores sejam membros de vários grupos."
 
 #, python-format
-msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
-msgstr "Endereço inválido em EXTERNAL(%s) para a impressora %s"
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Endereço inválido em HARDWARE(%s) para a impressora %s"
 
 #, python-format
-msgid "Unable to query printer %s via EXTERNAL(%s)"
-msgstr "Foi impossível consultar a impressora %s via EXTERNAL(%s)"
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Foi impossível consultar a impressora %s via HARDWARE(%s)"
 
 #, python-format
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
@@ -492,10 +476,6 @@ msgstr ""
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
-msgstr ""
-
-#, python-format
-msgid "SIGTERM was sent to external requester %s (pid: %s)"
 msgstr ""
 
 #, python-format

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2004/05/18 14:49:19  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.13  2004/01/12 22:43:40  jalet
 # New formula to compute a job's price
 #
@@ -62,6 +66,7 @@
 #
 
 import sys
+from pykota import pdlanalyzer
 
 class PyKotaAccounterError(Exception):
     """An exception for Accounter related stuff."""
@@ -79,11 +84,26 @@ class AccounterBase :
         self.filter = kotafilter
         self.arguments = arguments
         self.isDelayed = 0      # Accounting is immediate by default
+        self.firstPassSize = None
+        
+    def getSoftwareJobSize(self) :    
+        """Pre-computes the job's size with a software method."""
+        if self.filter.preserveinputfile is None :
+            raise PyKotaAccounterError, "Only supports raw jobs for now."""
+        else :    
+            fname = self.filter.preserveinputfile
+        parser = pdfanalyzer.PDLAnalyzer(fname)    
+        try : 
+            jobsize = parser.getJobSize()
+        except TypeError, msg :    
+            raise PyKotaAccounterError, msg
+        else :    
+            self.firstPassSize = jobsize
         
     def getLastPageCounter(self) :    
         """Returns last internal page counter value (possibly faked)."""
         try :
-            return self.LastPageCounter
+            return self.LastPageCounter or 0
         except :    
             return 0
             

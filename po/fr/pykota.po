@@ -181,26 +181,13 @@ msgid "Option logger only supports values in %s"
 msgstr "L'option logger supporte seulement les valeurs %s"
 
 #, python-format
-msgid "Invalid external accounter %s for printer %s"
-msgstr "Compteur de pages externe %s invalide pour l'imprimante %s"
+msgid "Invalid accounter %s for printer %s"
+msgstr "Compteur de pages %s invalide pour l'imprimante %s"
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
 msgstr ""
 "L'option accounter pour l'imprimante %s supporte seulement les valeurs %s"
-
-#, python-format
-msgid "Option requester for printer %s was not set"
-msgstr "L'option requester pour l'imprimante %s n'a pas été définie"
-
-#, python-format
-msgid "Invalid requester %s for printer %s"
-msgstr "Requester %s invalide pour l'imprimante %s"
-
-#, python-format
-msgid "Option requester for printer %s only supports values in %s"
-msgstr ""
-"L'option requester pour l'imprimante %s supporte seulement les valeurs %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -300,10 +287,6 @@ msgstr "Total : %9i"
 #, python-format
 msgid "Unsupported reporter backend %s"
 msgstr "backend reporter %s non supporté"
-
-#, python-format
-msgid "Unsupported requester backend %s"
-msgstr "Backend requester %s non supporté"
 
 #, python-format
 msgid "Unsupported quota storage backend %s"
@@ -436,8 +419,8 @@ msgid "User %s still doesn't have quota on printer %s in the PyKota system, job 
 msgstr "L'utilisateur %s n'a toujours pas de quota sur l'imprimante %s dans le système PyKota, le travail d'impression sera rejeté"
 
 #, python-format
-msgid "Unable to compute job size with external accounter %s"
-msgstr "Impossible de calculer la taille du job avec le compteur externe %s"
+msgid "Unable to compute job size with accounter %s"
+msgstr "Impossible de calculer la taille du job avec le compteur %s"
 
 msgid "Using the 'stupid' accounting method is unreliable."
 msgstr "Utiliser la méthode 'stupid' n'est pas fiable."
@@ -447,12 +430,12 @@ msgstr ""
 "Les totaux peuvent être faux si des utilisateurs sont dans plusieurs groupes."
 
 #, python-format
-msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
-msgstr "Adresse inconnue dans EXTERNAL(%s) pour l'imprimante %s"
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Adresse inconnue dans HARDWARE(%s) pour l'imprimante %s"
 
 #, python-format
-msgid "Unable to query printer %s via EXTERNAL(%s)"
-msgstr "Impossible d'interroger l'imprimante %s via EXTERNAL(%s)"
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Impossible d'interroger l'imprimante %s via HARDWARE(%s)"
 
 #, python-format
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
@@ -493,10 +476,6 @@ msgstr "L'imprimante %s existe déjà, elle sera modifiée."
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
 msgstr "Le fichier numéro %s a été retiré deux fois de l'objet poll, action ignorée."
-
-#, python-format
-msgid "SIGTERM was sent to external requester %s (pid: %s)"
-msgstr ""
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"

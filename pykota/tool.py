@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.88  2004/05/18 14:49:20  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.87  2004/05/17 19:14:59  jalet
 # Now catches SIGPIPE and SIGCHLD
 #
@@ -763,7 +767,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.title, \
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
-        self.username = self.username or 'root' 
+        self.username = self.username or 'root' # when printing test page from CUPS web interface, username is empty
         if self.config.getUserNameToLower() :
             self.username = self.username.lower()
         self.preserveinputfile = self.inputfile 

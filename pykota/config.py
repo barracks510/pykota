@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2004/05/18 14:49:20  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.46  2004/05/13 13:59:28  jalet
 # Code simplifications
 #
@@ -310,20 +314,19 @@ class PyKotaConfig :
         """   
         validaccounters = [ "hardware", "software" ]     
         fullaccounter = self.getPrinterOption(printername, "accounter").strip()
-        if fullaccounter.lower().startswith("software") :    
+        flower = fullaccounter.lower()
+        if flower.startswith("software") or flower.startswith("hardware") :    
             try :
                 (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
             except ValueError :    
-                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printername)
+                raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
             if args.endswith(')') :
                 args = args[:-1]
             if not args :
-                raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printername)
+                raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
             return (accounter.lower(), args)    
-        elif fullaccounter.lower() not in validaccounters :
+        else :
             raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printername, str(validaccounters))
-        else :    
-            return (fullaccounter.lower(), None)
         
     def getPreHook(self, printername) :    
         """Returns the prehook command line to launch, or None if unset."""
@@ -339,30 +342,6 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return      # No command to launch in the post-hook
             
-    def getRequesterBackend(self, printername) :    
-        """Returns the requester backend to use for a given printer, with its arguments."""
-        try :
-            fullrequester = self.getPrinterOption(printername, "requester")
-        except PyKotaConfigError :    
-            # No requester defined, maybe it is not needed if accounting method
-            # is not set to 'hardware', but if we are called, then the accounting
-            # method really IS 'hardware', and so there's a big problem.
-            raise PyKotaConfigError, _("Option requester for printer %s was not set") % printername
-        else :    
-            try :
-                (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
-            except ValueError :    
-                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printername)
-            if args.endswith(')') :
-                args = args[:-1]
-            if not args :
-                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printername)
-            validrequesters = [ "external" ] 
-            requester = requester.lower()
-            if requester not in validrequesters :
-                raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printername, str(validrequesters))
-            return (requester, args)
-        
     def getPrinterPolicy(self, printername) :    
         """Returns the default policy for the current printer."""
         validpolicies = [ "ALLOW", "DENY", "EXTERNAL" ]     

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2004/05/18 14:48:46  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.41  2004/05/13 14:17:32  jalet
 # Warning about changed accounter and requester directives
 #
@@ -300,7 +304,7 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
                 sys.exit(-1)
                 
         # now checks if pre-1.19alpha8 code is still there       
-        for module in ["accounters/querying", "accounters/external", "requesters/snmp"] :
+        for module in ["accounters/querying", "accounters/external", "requesters/snmp", "requesters/external"] :
             checkOldModule(module)
         
     # Second stage, we will fail if onfiguration is incorrect for security reasons
@@ -376,11 +380,11 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha7 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
-    sys.stdout.write("\n\nWARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha8 TO 1.19alpha8 OR ABOVE\n")
+    sys.stdout.write("\n\nWARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha10 TO 1.19alpha10 OR ABOVE\n")
     sys.stdout.write("YOU **MUST** MODIFY YOUR /etc/pykota/pykota.conf FILE BECAUSE accounter\n")
     sys.stdout.write("AND requester DIRECTIVES SUPPORTED VALUES HAVE CHANGED.\n\n")
     sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha8 OR ABOVE.\n\n")
+    sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha10 OR ABOVE.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     
     # checks if some needed Python modules are there or not.
@@ -441,7 +445,7 @@ setup(name = "pykota", version = __version__,
       author = "Jerome Alet",
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
-      packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
+      packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
       scripts = [ "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
 

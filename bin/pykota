@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/05/18 14:48:47  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.57  2004/03/15 10:47:56  jalet
 # This time the traceback formatting should be correct !
 #
@@ -232,7 +236,6 @@ from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
-from pykota.requester import PyKotaRequesterError
 
 class PyKotaFilter(PyKotaFilterOrBackend) :        
     """A class for the pykota filter."""
@@ -358,7 +361,7 @@ if __name__ == "__main__" :
         # Initializes the current tool
         kotafilter = PyKotaFilter()    
         retcode = kotafilter.mainWork()
-    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, PyKotaRequesterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
         import traceback
         mm = [((f.endswith('\n') and f) or (f + '\n')) for f in traceback.format_exception(*sys.exc_info())]
         sys.stderr.write("ERROR : pykota filter failed (%s)\n%s" % (msg, "ERROR : ".join(mm)))

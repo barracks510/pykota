@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/05/18 14:49:22  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.1  2004/05/13 13:59:30  jalet
 # Code simplifications
 #
@@ -29,22 +33,21 @@
 
 import sys
 import os
+import popen2
 from pykota.accounter import AccounterBase, PyKotaAccounterError
-from pykota.requester import openRequester, PyKotaRequesterError
 
 class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments)
-        self.requester = openRequester(kotabackend, kotabackend.printername)
         self.isDelayed = 1 # With the pykota filter, accounting is delayed by one job
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
         self.filter.logdebug("Reading printer's internal page counter...")
         try :
-            counter = self.requester.getPrinterPageCounter(self.filter.printerhostname)
-        except PyKotaRequesterError, msg :
+            counter = self.askPrinterPageCounter(self.filter.printerhostname)
+        except PyKotaAccounterError, msg :
             # can't get actual page counter, assume printer is off or warming up
             # log the message anyway.
             self.filter.logger.log_message("%s" % msg, "warn")
@@ -96,4 +99,37 @@ class Accounter(AccounterBase) :
         # adds the current job to history    
         userpquota.Printer.addJobToHistory(self.filter.jobid, userpquota.User, counterbeforejob, action, filename=self.filter.preserveinputfile, title=self.filter.title, copies=self.filter.copies, options=self.filter.options)
         return action
+        
+    def askPrinterPageCounter(self, printer) :
+        """Returns the page counter from the printer via an external command.
+        
+           The external command must report the life time page number of the printer on stdout.
+        """
+        commandline = self.arguments.strip() % locals()
+        if printer is None :
+            raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
+        error = 1
+        pagecounter = None
+        child = popen2.Popen4(commandline)    
+        try :
+            pagecounter = int(child.fromchild.readline().strip())
+        except ValueError :    
+            pass
+        except IOError :    
+            # we were interrupted by a signal, certainely a SIGTERM
+            # caused by the user cancelling the current job
+            try :
+                os.kill(child.pid, signal.SIGTERM)
+            except :    
+                pass # already killed ?
+            self.filter.logger.log_message(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid), "info")
+        else :    
+            error = 0
+        child.fromchild.close()    
+        child.tochild.close()
+        status = child.wait()
+        if (not error) and os.WIFEXITED(status) and (not os.WEXITSTATUS(status)) :
+            return pagecounter
+        else :    
+            raise PyKotaAccounterError, _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline) 
             

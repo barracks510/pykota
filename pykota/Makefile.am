@@ -6,11 +6,10 @@ pykota_PYTHON = 	\
 	__init__.py		\
 	logger.py		\
 	reporter.py		\
-	requester.py	\
 	storage.py		\
 	tool.py			\
 	pdlanalyzer.py			\
 	version.py
 
-SUBDIRS = accounters loggers reporters requesters storages
+SUBDIRS = accounters loggers reporters storages
 

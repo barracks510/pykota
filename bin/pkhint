@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/05/18 14:48:47  jalet
+# Big code changes to completely remove the need for "requester" directives,
+# jsut use "hardware(... your previous requester directive's content ...)"
+#
 # Revision 1.7  2004/05/13 13:59:27  jalet
 # Code simplifications
 #
@@ -213,15 +217,13 @@ class PKHint(PyKotaTool) :
                         
                     snmpcommand = self.accepts(SNMPTESTS, hostname)
                     if snmpcommand is not None :
-                        accounter = "hardware"
-                        requester = 'external(/usr/share/pykota/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
-                        configuration.append((printer, accounter, requester))
+                        accounter = 'hardware(/usr/share/pykota/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
+                        configuration.append((printer, accounter))
                     else :    
                         netpjlcommand = self.accepts(NETPJLTESTS, hostname, port)
                         if netpjlcommand is not None :
-                            accounter = "hardware"
-                            requester = 'external(' + netpjlcommand + ')'
-                            configuration.append((printer, accounter, requester))
+                            accounter = 'hardware(' + netpjlcommand + ')'
+                            configuration.append((printer, accounter))
                 elif devicetype == "direct" : 
                     sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
                 elif devicetype == "serial" : 
@@ -233,11 +235,9 @@ class PKHint(PyKotaTool) :
             print "\nSorry, pkhint can't help you for now. Please configure PyKota manually."
         else :
             print "\nPut the following lines into your /etc/pykota/pykota.conf file :\n"
-            for (printer, accounter, requester) in configuration :
+            for (printer, accounter) in configuration :
                 print "[%s]" % printer
                 print "accounter: %s" % accounter
-                if requester is not None :
-                    print "requester: %s" % requester
                 print    
         
 if __name__ == "__main__" : 
