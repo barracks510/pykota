@@ -145,7 +145,8 @@ jerome@nordine:~/pykota-1.02-official$
           <para>
             You can choose other names if you want, just modify the 
             <filename>initscripts/pykota-postgresql.sql</filename> file
-            accordingly. 
+            accordingly, and report your changes into <application>PyKota</application>'s
+            configuration file.
           </para>
         </note>  
       </para>
@@ -356,6 +357,9 @@ jerome@nordine:~/pykota-1.02-official/initscripts$
 <!--
 
 $Log$
+Revision 1.10  2003/03/23 17:59:56  jalet
+Clarify a point.
+
 Revision 1.9  2003/03/23 17:57:20  jalet
 Deleted a repetition.
 
