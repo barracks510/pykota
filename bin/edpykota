@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.67  2004/01/15 11:19:07  jalet
+# Typos in messages wrt gettext.
+#
 # Revision 1.66  2004/01/12 21:54:36  jalet
 # User's email address can now be set at user's creation time.
 #
@@ -438,13 +441,13 @@ class EdPyKota(PyKotaTool) :
             try :
                 balancevalue = float(balance)
             except ValueError :    
-                raise PyKotaToolError, _("Invalid balance value %s" % options["balance"])
+                raise PyKotaToolError, _("Invalid balance value %s") % options["balance"]
             
         if options["charge"] :
             try :
                 charges = [float(part) for part in options["charge"].split(',', 1)]
             except ValueError :    
-                raise PyKotaToolError, _("Invalid charge amount value %s" % options["charge"])
+                raise PyKotaToolError, _("Invalid charge amount value %s") % options["charge"]
             else :    
                 if len(charges) > 2 :
                     charges = charges[:2]
@@ -455,7 +458,7 @@ class EdPyKota(PyKotaTool) :
         if limitby :
             limitby = limitby.strip().lower()
         if limitby and (limitby not in ('quota', 'balance')) :    
-            raise PyKotaToolError, _("Invalid limitby value %s" % options["limitby"])
+            raise PyKotaToolError, _("Invalid limitby value %s") % options["limitby"]
             
         if options["ingroups"] :    
             groupnames = [gname.strip() for gname in options["ingroups"].split(',')]
