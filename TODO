@@ -15,12 +15,6 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 TODO, in order of importance :
 
-        - External requester (any shell command or script) : gives
-          instant support for any querying protocol (of course
-          querying tools still have to exist). Easy but I must
-          think about the different parameters I'll let the
-          command know before implementing this.
-          
         - Finalize the implementation of group quotas.
         
         - Per printer quota administrator name and email.
