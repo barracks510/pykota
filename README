@@ -337,6 +337,9 @@ The rest of the installation depends on your printing system :
         This file should contain a section named after the
         printer you've just added, unless you have set
         all options globally.
+        The new pkhint command can help you with correct settings 
+        for your printers, but don't rely on it because it is still
+        incomplete.
         
         That's all.
     
