@@ -263,7 +263,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # (You may need the pap CUPS backend installed, and copy the 
 # pagecount.ps file from untested/netatalk into /etc or any 
 # appropriate location)
-#     requester: external(/usr/bin/pap -p "%(printer)s:LaserWriter" /etc/pagecount.ps  2>/dev/null | grep -v status | grep -v Connect | tail -1)
+#     requester: external(/usr/bin/pap -p "MyPrinter:LaserWriter" /etc/pagecount.ps  2>/dev/null | grep -v status | grep -v Connect | tail -1)
 #
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
