@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-# PyKota accounting filter
-#
 # PyKota - Print Quotas for CUPS
 #
 # (c) 2003 Jerome Alet <alet@librelogiciel.com>
@@ -16,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/07 13:12:41  jalet
+# Bad old comment
+#
 # Revision 1.2  2003/02/05 23:00:12  jalet
 # Forgotten import
 # Bad datetime conversion
