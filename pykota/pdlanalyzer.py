@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2004/09/02 22:08:37  jalet
+# First draft of PCL3GUI analyzer.
+#
 # Revision 1.37  2004/09/02 21:22:49  jalet
 # One more PCL tag
 #
@@ -410,6 +413,25 @@ class PCLAnalyzer :
             pagecount += (nb - 1)
         return pagecount
         
+class PCL3GUIAnalyzer :
+    def __init__(self, infile) :
+        """Initialize PCL3GUI Analyzer."""
+        self.infile = infile
+        
+    def getJobSize(self) :     
+        """Count pages in a PCL3GUI document.
+         
+           Not much documentation available, so we will count occurences
+           of <ESC>*r1A which is start of graphical data.
+           
+           This is FAR from being accurate. PCL3 ressembles PCL5 in fact,
+           and PCL parser should be made better, but some documentation
+           definitely lacks.
+        """
+        data = self.infile.read()
+        pagecount = data.count("\033*r1A")
+        return pagecount
+        
 class PCLXLAnalyzer :
     def __init__(self, infile) :
         """Initialize PCLXL Analyzer."""
@@ -739,6 +761,13 @@ class PDLAnalyzer :
         else :    
             return 0
         
+    def isPCL3GUI(self, data) :    
+        """Returns 1 if data is PCL3GUI, else 0."""
+        if data.find("@PJL ENTER LANGUAGE=PCL3GUI") != -1 :
+            return 1
+        else :    
+            return 0
+        
     def isPCLXL(self, data) :    
         """Returns 1 if data is PCLXL aka PCL6, else 0."""
         if ((data[:128].find("\033%-12345X") != -1) and \
@@ -765,7 +794,7 @@ class PDLAnalyzer :
         """   
         # Try to detect file type by reading first block of datas    
         self.infile.seek(0)
-        firstblock = self.infile.read(KILOBYTE)
+        firstblock = self.infile.read(4 * KILOBYTE)
         self.infile.seek(0)
         if self.isPostScript(firstblock) :
             return PostScriptAnalyzer
@@ -773,6 +802,8 @@ class PDLAnalyzer :
             return PCLXLAnalyzer
         elif self.isPDF(firstblock) :    
             return PDFAnalyzer
+        elif self.isPCL3GUI(firstblock) :    
+            return PCL3GUIAnalyzer
         elif self.isPCL(firstblock) :    
             return PCLAnalyzer
         elif self.isESCP2(firstblock) :    
