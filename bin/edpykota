@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2003/06/11 19:32:00  jalet
+# Severe bug wrt account balance setting should be corrected.
+#
 # Revision 1.44  2003/04/29 22:03:38  jalet
 # Better error handling.
 #
@@ -387,6 +390,8 @@ class EdPyKota(PyKotaTool) :
         else :    
             groupnames = []
             
+        uwaschanged = {}         # tracks changed made at the user level
+        gwaschanged = {}         # tracks changed made at the group level
         for (printerid, printer) in printers :
             if options["charge"] :
                 (perpage, perjob) = charges
@@ -427,8 +432,12 @@ class EdPyKota(PyKotaTool) :
                     allidnames = self.storage.getPrinterUsers(printerid)
             for (ident, name) in [(i, n) for (i, n) in allidnames if self.matchString(n, names)]:
                 if options["groups"] :
+                    if not gwaschanged.has_key(ident) :
+                        gwaschanged[ident] = {}
                     quota = self.storage.getGroupPQuota(ident, printerid)
                 else :
+                    if not uwaschanged.has_key(ident) :
+                        uwaschanged[ident] = {"ingroups": []}
                     quota = self.storage.getUserPQuota(ident, printerid)
                 if quota is None :
                     # not found
@@ -464,7 +473,9 @@ class EdPyKota(PyKotaTool) :
                             if options["reset"] :
                                 self.storage.resetGroupPQuota(ident, printerid)
                             if limitby :
-                                self.storage.limitGroupBy(ident, limitby)
+                                if gwaschanged[ident].get("limitby") is None :
+                                    self.storage.limitGroupBy(ident, limitby)
+                                    gwaschanged[ident]["limitby"] = limitby
                             self.warnGroupPQuota(name, printer)    
                         else :
                             if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
@@ -472,18 +483,24 @@ class EdPyKota(PyKotaTool) :
                             if options["reset"] :
                                 self.storage.resetUserPQuota(ident, printerid)
                             if limitby :
-                                self.storage.limitUserBy(ident, limitby)
+                                if uwaschanged[ident].get("limitby") is None :
+                                    self.storage.limitUserBy(ident, limitby)
+                                    uwaschanged[ident]["limitby"] = limitby
                             if balance :
-                                if balance.startswith("+") or balance.startswith("-") :
-                                    self.storage.increaseUserBalance(ident, balancevalue)
-                                else :
-                                    self.storage.setUserBalance(ident, balancevalue)
+                                if uwaschanged[ident].get("balance") is None :
+                                    if balance.startswith("+") or balance.startswith("-") :
+                                        self.storage.increaseUserBalance(ident, balancevalue)
+                                    else :
+                                        self.storage.setUserBalance(ident, balancevalue)
+                                    uwaschanged[ident]["balance"] = balance
                             for groupname in groupnames :        
-                                groupid = self.storage.getGroupId(groupname)
-                                if groupid is not None :
-                                    self.storage.addUserToGroup(ident, groupid)
-                                else :
-                                    self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
+                                if groupname not in uwaschanged[ident]["ingroups"] :
+                                    groupid = self.storage.getGroupId(groupname)
+                                    if groupid is not None :
+                                        self.storage.addUserToGroup(ident, groupid)
+                                        uwaschanged[ident]["ingroups"].append(groupname)
+                                    else :
+                                        self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
                             self.warnUserPQuota(name, printer)    
                      
 if __name__ == "__main__" : 
