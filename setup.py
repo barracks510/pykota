@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/07/03 09:44:00  jalet
+# Now includes the pykotme utility
+#
 # Revision 1.17  2003/06/30 12:46:15  jalet
 # Extracted reporting code.
 #
@@ -231,6 +234,6 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota" ],
+      scripts = [ "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme" ],
       data_files = data_files)
 

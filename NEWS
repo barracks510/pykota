@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.11 :
+    
+        - Now includes the pykotme command line tool, to produce
+          printing quotes for users.
+          
     - 1.10 :
     
         - Bug fixed wrt quota reports when print limiting is by 
