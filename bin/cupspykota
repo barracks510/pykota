@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2004/01/13 10:48:28  jalet
+# Small streams polling loop modification.
+#
 # Revision 1.22  2004/01/12 22:43:40  jalet
 # New formula to compute a job's price
 #
@@ -250,10 +253,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         indata = ""
         outdata = ""
         errdata = ""
-        endinput = 0
-        status = -1
-        inputclosed = 0
+        endinput = endoutput = enderr = 0
+        inputclosed = outclosed = errclosed = 0
         self.logdebug("Entering streams polling loop...")
+        status = -1
         while status == -1 :
             # First check if original backend is still alive
             status = subprocess.poll()
@@ -267,7 +270,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     pass
             
             # In any case, deal with any remaining I/O
-            availablefds = pollster.poll()
+            availablefds = pollster.poll(5000)
+            if (not availablefds) and inputclosed and outputclosed and errclosed :
+                break
             for (fd, mask) in availablefds :
                 # self.logdebug("file: %i    mask: %04x" % (fd, mask))
                 if mask & select.POLLOUT :
@@ -276,20 +281,33 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                         if indata :
                             os.write(fd, indata)    
                             indata = ""
+                        if endinput :    
+                            pollster.unregister(tocfno)        
+                            os.close(tocfno)
+                            self.logdebug("Closing real backend's stdin.")
+                            inputclosed = 1
                     elif fd == stdoutfno :
                         if outdata :
                             os.write(fd, outdata)
                             outdata = ""
+                        if endoutput :    
+                            pollster.unregister(stdoutfno)        
+                            outputclosed = 1
                     elif fd == stderrfno :
                         if errdata :
                             os.write(fd, errdata)
                             errdata = ""
+                        if enderr :    
+                            pollster.unregister(stderrfno)        
+                            errclosed = 1
                 if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
                     # We have something to read
                     data = os.read(fd, 256 * 1024)
                     if fd == infno :
                         indata += data
                         if not data :    # If yes, then no more input data
+                            pollster.unregister(infno)
+                            self.logdebug("Input data ends.")
                             endinput = 1 # this happens with real files.
                     elif fd == fromcfno :
                         outdata += data
@@ -301,46 +319,27 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     # an EOF.
                     # 
                     # Some standard I/O stream has no more datas
+                    pollster.unregister(fd)
                     if fd == infno :
                         # Here we are in the case where the input file is stdin.
                         # which has no more data to be read.
+                        self.logdebug("Input data ends.")
                         endinput = 1
                     elif fd == fromcfno :    
                         # This should never happen, since
                         # CUPS backends don't send anything on their
-                        # standard output
-                        if outdata :                
-                            os.write(stdoutfno, outdata)
-                            outdata = ""
+                        # standard output.
                         # We are no more interested in this file descriptor        
-                        pollster.unregister(fromcfno)        
                         os.close(fromcfno)
                         self.logdebug("Real backend's stdout ends.")
+                        endoutput = 1
                     elif fd == cerrfno :    
                         # Original CUPS backend has finished 
-                        # to write informations on its standard error
-                        if errdata :                
-                            # Try to write remaining info (normally "Ready to print.")
-                            os.write(stderrfno, errdata)
-                            errdata = ""
-                        # We are no more interested in this file descriptor        
-                        pollster.unregister(cerrfno)        
+                        # to write informations on its standard error.
+                        # We are no more interested in this file descriptor        .
                         os.close(cerrfno)
                         self.logdebug("Real backend's stderr ends.")
-                        
-            if endinput and not inputclosed :            
-                # We deal with remaining input datas here
-                # because EOF can happen in two different
-                # situations and I don't want to duplicate
-                # code, nor making functions.
-                if indata :                
-                    os.write(tocfno, indata)
-                    indata = ""
-                # Again, we're not interested in this file descriptor anymore.
-                pollster.unregister(tocfno)        
-                os.close(tocfno)
-                inputclosed = 1
-                self.logdebug("Input data ends.")
+                        enderr = 1
                 
         # Input file was a real file, we have to close it.    
         if mustclose :
