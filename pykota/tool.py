@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.116  2004/07/24 20:20:29  jalet
+# Unitialized variable
+#
 # Revision 1.115  2004/07/21 09:35:48  jalet
 # Software accounting seems to be OK with LPRng support now
 #
@@ -600,7 +603,7 @@ class PyKotaTool :
     def isValidName(self, name) :
         """Checks if a user or printer name is valid."""
         invalidchars = "/@"
-        for c in invalidchars :
+        for c in list(invalidchars) :
             if c in name :
                 return 0
         return 1        
@@ -850,7 +853,7 @@ class PyKotaTool :
                     if mailto != "EXTERNAL" :
                         self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
                     else :    
-                        self.externalMailTo(arguments, action, user, printer, message)
+                        self.externalMailTo(arguments, action, user, printer, self.config.getHardWarn(printer.Name))
         elif action == "WARN" :    
             adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
             self.printInfo(adminmessage)
