@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/08/20 15:56:24  jalet
+# Better user and group deletion
+#
 # Revision 1.24  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #
@@ -716,7 +719,7 @@ class Storage :
                     todelete.reverse()
                     for i in todelete :
                         del fields[k][i]
-            if "objectclass" in [key.lower() for key in fields.keys()] :            
+            if fields.get("objectClass") or fields.get("objectclass") :
                 self.doModify(user.ident, fields, ignoreold=0)        
             else :    
                 self.doDelete(user.ident)
@@ -744,7 +747,7 @@ class Storage :
                     todelete.reverse()
                     for i in todelete :
                         del fields[k][i]
-            if "objectclass" in [key.lower() for key in fields.keys()] :            
+            if fields.get("objectClass") or fields.get("objectclass") :
                 self.doModify(group.ident, fields, ignoreold=0)        
             else :    
                 self.doDelete(group.ident)
