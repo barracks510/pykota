@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/10/06 13:12:27  jalet
+# More work on caching
+#
 # Revision 1.21  2003/10/03 09:02:20  jalet
 # Logs cache store actions too
 #
@@ -383,6 +386,32 @@ class BaseStorage :
             lastjob = self.getPrinterLastJobFromBackend(printer)
             self.cacheEntry("LASTJOBS", printer.Name, lastjob)
         return lastjob    
+        
+    def getGroupMembers(self, group) :        
+        """Returns the group's members list from in-group cache."""
+        if self.usecache :
+            if not hasattr(group, "Members") :
+                self.tool.logdebug("Cache miss (%s->Members)" % group.Name)
+                group.Members = self.getGroupMembersFromBackend(group)
+                self.tool.logdebug("Cache store (%s->Members)" % group.Name)
+            else :
+                self.tool.logdebug("Cache hit (%s->Members)" % group.Name)
+        else :        
+            group.Members = self.getGroupMembersFromBackend(group)
+        return group.Members    
+        
+    def getUserGroups(self, user) :        
+        """Returns the user's groups list from in-user cache."""
+        if self.usecache :
+            if not hasattr(user, "Groups") :
+                self.tool.logdebug("Cache miss (%s->Groups)" % user.Name)
+                user.Groups = self.getUserGroupsFromBackend(user)
+                self.tool.logdebug("Cache store (%s->Groups)" % user.Name)
+            else :
+                self.tool.logdebug("Cache hit (%s->Groups)" % user.Name)
+        else :        
+            user.Groups = self.getUserGroupsFromBackend(user)
+        return user.Groups   
         
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""

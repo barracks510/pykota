@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/10/06 13:12:28  jalet
+# More work on caching
+#
 # Revision 1.16  2003/10/03 18:01:49  jalet
 # Nothing interesting...
 #
@@ -255,16 +258,7 @@ class Storage(BaseStorage) :
             lastjob.Exists = 1
         return lastjob
             
-    def getUserGroups(self, user) :        
-        """Returns the user's groups list."""
-        groups = []
-        result = self.doSearch("SELECT groupname FROM groupsmembers JOIN groups ON groupsmembers.groupid=groups.id WHERE userid=%s" % self.doQuote(user.ident))
-        if result :
-            for record in result :
-                groups.append(self.getGroup(record.get("groupname")))
-        return groups        
-        
-    def getGroupMembers(self, group) :        
+    def getGroupMembersFromBackend(self, group) :        
         """Returns the group's members list."""
         groupmembers = []
         result = self.doSearch("SELECT * FROM groupsmembers JOIN users ON groupsmembers.userid=users.id WHERE groupid=%s" % self.doQuote(group.ident))
@@ -280,6 +274,15 @@ class Storage(BaseStorage) :
                 groupmembers.append(user)
                 self.cacheEntry("USERS", user.Name, user)
         return groupmembers        
+        
+    def getUserGroupsFromBackend(self, user) :        
+        """Returns the user's groups list."""
+        groups = []
+        result = self.doSearch("SELECT groupname FROM groupsmembers JOIN groups ON groupsmembers.groupid=groups.id WHERE userid=%s" % self.doQuote(user.ident))
+        if result :
+            for record in result :
+                groups.append(self.getGroup(record.get("groupname")))
+        return groups        
         
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers for which name matches a certain pattern."""

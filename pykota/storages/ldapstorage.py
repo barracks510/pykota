@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/10/06 13:12:28  jalet
+# More work on caching
+#
 # Revision 1.28  2003/10/03 12:27:02  jalet
 # Several optimizations, especially with LDAP backend
 #
@@ -265,8 +268,7 @@ class Storage(BaseStorage) :
                 group.LimitBy = group.LimitBy[0]
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
-            group.Members = self.getGroupMembers(group)
-            for member in group.Members :
+            for member in self.getGroupMembers(group) :
                 if member.Exists :
                     group.AccountBalance += member.AccountBalance
                     group.LifeTimePaid += member.LifeTimePaid
@@ -345,8 +347,6 @@ class Storage(BaseStorage) :
                         grouppquota.DateLimit = grouppquota.DateLimit[0]
                 grouppquota.PageCounter = 0
                 grouppquota.LifePageCounter = 0
-                if (not hasattr(group, "Members")) or (group.Members is None) :
-                    group.Members = self.getGroupMembers(group)
                 usernamesfilter = "".join(["(pykotaUserName=%s)" % member.Name for member in group.Members])
                 result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
                 if result :
@@ -383,16 +383,7 @@ class Storage(BaseStorage) :
                 lastjob.Exists = 1
         return lastjob
         
-    def getUserGroups(self, user) :        
-        """Returns the user's groups list."""
-        groups = []
-        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"]], base=self.info["groupbase"])
-        if result :
-            for (groupid, fields) in result :
-                groups.append(self.getGroup(fields.get(self.info["grouprdn"])[0]))
-        return groups        
-        
-    def getGroupMembers(self, group) :        
+    def getGroupMembersFromBackend(self, group) :        
         """Returns the group's members list."""
         groupmembers = []
         result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (group.Name, self.info["grouprdn"], group.Name), [self.info["groupmembers"]], base=self.info["groupbase"])
@@ -400,6 +391,15 @@ class Storage(BaseStorage) :
             for username in result[0][1].get(self.info["groupmembers"], []) :
                 groupmembers.append(self.getUser(username))
         return groupmembers        
+        
+    def getUserGroupsFromBackend(self, user) :        
+        """Returns the user's groups list."""
+        groups = []
+        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"]], base=self.info["groupbase"])
+        if result :
+            for (groupid, fields) in result :
+                groups.append(self.getGroup(fields.get(self.info["grouprdn"])[0]))
+        return groups        
         
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers for which name matches a certain pattern."""
