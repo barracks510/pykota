@@ -70,6 +70,13 @@ PyKota's FAQ :
           
           and restart CUPS.
           
+  * I've got a great number of users. How can I automatically
+    set an initial print quota for them on first print ?
+    
+    You have to define an external policy for unknown users,
+    to automatically add them to the Print Quota database.
+    The sample configuration file contains examples to do this.
+    
   * How can I diagnose the problem when something goes wrong ?
   
     Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
