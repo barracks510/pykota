@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/07/20 22:42:26  jalet
+# pykosd now supports setting color
+#
 # Revision 1.6  2004/07/20 22:29:49  jalet
 # pykosd now supports setting the font
 #
@@ -70,6 +73,10 @@ options :
   -v | --version       Prints pkprinters's version number then exits.
   -h | --help          Prints this message then exits.
   
+  -c | --color #rrggbb Sets the color to use for display as an hexadecimal
+                       triplet, for example #FF0000 is 100%% red.
+                       Defaults to 100%% green (#00FF00).
+                       
   -d | --duration d    Sets the duration of the display in seconds. 
                        Defaults to 3 seconds.
                        
@@ -126,9 +133,17 @@ class PyKOSD(PyKotaTool) :
         except :    
             raise PyKotaToolError, _("Invalid sleep option %s") % str(options["sleep"])
             
+        color = options["color"]    
+        if not color.startswith("#") :
+            color = "#%s" % color
+        if len(color) != 7 :    
+            raise PyKotaToolError, _("Invalid color option %s") % str(color)
+        savecolor = color
+        
         uid = os.geteuid()
         uname = pwd.getpwuid(uid)[0]
         while 1 :
+            color = savecolor
             user = cmd.storage.getUserFromBackend(uname)        # don't use cache
             if not user.Exists :
                 raise PyKotaToolError, _("User %s doesn't exist in PyKota's database") % uname
@@ -136,7 +151,7 @@ class PyKOSD(PyKotaTool) :
                 printers = cmd.storage.getMatchingPrinters("*")
                 upquotas = [ cmd.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache
                 nblines = len(upquotas)
-                display = pyosd.osd(font=options["font"], colour="#00FF00", timeout=duration, shadow=2, lines=nblines)
+                display = pyosd.osd(font=options["font"], colour=color, timeout=duration, shadow=2, lines=nblines)
                 for line in range(nblines) :
                     upq = upquotas[line]
                     if upq.HardLimit is None :
@@ -150,10 +165,9 @@ class PyKOSD(PyKotaTool) :
             else :
                 if user.AccountBalance <= 0 :
                     color = "#FF0000"
-                else :    
-                    color = "#00FF00"
                 display = pyosd.osd(font=options["font"], colour=color, timeout=duration, shadow=2)
                 display.display(_("PyKota Units left : %.2f") % user.AccountBalance, type=pyosd.TYPE_STRING)
+                
             time.sleep(duration + 1)
             if loop :
                 loop -= 1
@@ -167,13 +181,14 @@ if __name__ == "__main__" :
     retcode = -1
     try :
         defaults = { \
+                     "color" : "#00FF00", \
                      "duration" : "3", \
                      "font" : pyosd.default_font, \
                      "loop" : "0", \
                      "sleep" : "180", \
                    }
-        short_options = "hvd:f:l:s:"
-        long_options = ["help", "version", "duration=", "font=", "loop=", "sleep="]
+        short_options = "hvc:d:f:l:s:"
+        long_options = ["help", "version", "color=", "colour=", "duration=", "font=", "loop=", "sleep="]
         
         cmd = PyKOSD(doc=__doc__)
         
@@ -183,6 +198,7 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
+        options["color"] = options["c"] or options["color"] or options["colour"] or defaults["color"]
         options["duration"] = options["d"] or options["duration"] or defaults["duration"]
         options["font"] = options["f"] or options["font"] or defaults["font"]
         options["loop"] = options["l"] or options["loop"] or defaults["loop"]
