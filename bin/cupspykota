@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2004/01/16 17:51:46  jalet
+# Fuck Fuck Fuck !!!
+#
 # Revision 1.24  2004/01/14 15:52:01  jalet
 # Small fix for job cancelling code.
 #
@@ -268,7 +271,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         outdata = ""
         errdata = ""
         endinput = endoutput = enderr = 0
-        inputclosed = outclosed = errclosed = 0
+        inputclosed = outputclosed = errclosed = 0
         killed = 0
         self.logdebug("Entering streams polling loop...")
         status = -1
