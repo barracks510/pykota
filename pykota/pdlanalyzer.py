@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/06/18 10:09:05  jalet
+# Resets file pointer to start of file in all cases
+#
 # Revision 1.4  2004/06/18 06:16:14  jalet
 # Fixes PostScript detection code for incorrect drivers
 #
@@ -402,6 +405,15 @@ class PDLAnalyzer :
         """Closes the job's data stream if we can close it."""
         if self.mustclose :
             self.infile.close()    
+        else :    
+            # if we don't have to close the file, then
+            # ensure the file pointer is reset to the 
+            # start of the file in case the process wants
+            # to read the file again.
+            try :
+                self.infile.seek(0)
+            except :    
+                pass    # probably stdin, which is not seekable
         
     def isPostScript(self, data) :    
         """Returns 1 if data is PostScript, else 0."""

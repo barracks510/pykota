@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.19alpha22 :
     
+        - Ensures that the file pointer for job's data is 
+          reset to the start of the job's datas after the
+          job's size pre-computation phase.
+          
         - Improved PostScript detection code for bad drivers
           which don't correctly switch languages between PJL
           and PS.
