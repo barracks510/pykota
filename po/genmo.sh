@@ -13,7 +13,7 @@
 #
 # $Id$
 #
-for dir in br en es fr it pt sv th el de be ; do 
+for dir in *_* ; do 
     echo -n $dir ;
     cd $dir ;
     chmod 644 *.?o ;
