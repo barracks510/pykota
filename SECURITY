@@ -98,10 +98,20 @@ How to improve PyKota's security :
     OpenLDAP, you may have to take additionnal measures to render
     your database more secure. Please refer to your database system's
     documentation on configuration to learn how to do so. This is out
-    of the scope of the present document.
+    of the scope of the present document which will only give basic
+    informations.
     
     Keep in mind that if you use a centralized database, you may have
     to restrict which hosts can access to it (i.e. the Print Servers).
     
+    For the PostgreSQL backend, PyKota already defines a user with 
+    read/write access and another user with read-only access to
+    the Print Quota Database. PyKota doesn't set any passwords
+    for these users though, but doing it is recommanded, and 
+    explained elsewhere in PyKota's documentation.
+    
+    For the OpenLDAP backend, YOU have to ensure that no regular
+    user can write to any PyKota specific attribute or objectClass.
+    Otherwise they could modify their quota at will.
     
 ====================================================================
