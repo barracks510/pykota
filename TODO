@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - newuser: attach(posixAccount | inetOrgPerson | ..., fail|warn)
+          same for newgroup
+          
         - Test and document a possible workaround for knowing
           if the job is a banner (embed a postscript comment
           in the banner).
