@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/11/12 23:46:44  jalet
+# Heavy work on pkbanner. Not finished yet though, but mostly works.
+#
 # Revision 1.2  2004/11/11 14:25:48  jalet
 # Added some TODO comments
 #
@@ -34,13 +37,211 @@
 
 import sys
 import os
+import cStringIO
+
+try :
+    from reportlab.pdfgen import canvas
+    from reportlab.lib import pagesizes
+    from reportlab.lib.units import cm
+except ImportError :    
+    hasRL = 0
+else :    
+    hasRL = 1
+    
+try :
+    import PIL.Image 
+except ImportError :    
+    hasPIL = 0
+else :    
+    hasPIL = 1
+    
+from pykota.tool import Tool, PyKotaToolError, crashed, N_
+
+__doc__ = N_("""pkbanner v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+
+Generates banners.
+
+command line usage :
+
+  pkbanner  [options]  [files]
+
+options :
+
+  -v | --version       Prints pkbanner's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  ... TODO...
+  
+examples :                              
+
+  ... TODO...
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""")
+        
+class PyKotaBanner(Tool) :        
+    """A class for pkbanner."""
+    primaryfields = [ 
+                ("PRINTERNAME", N_("Printer")),
+                ("USERNAME", N_("User")),
+                ("JOBID", N_("JobId")),
+                ("JOBORIGINATINGHOSTNAME", N_("Client host")),
+                ("TITLE", N_("Title")),
+                ("FILENAME", N_("Filename")),
+                ("COPIES", N_("Copies")),
+                ("JOBSIZEBYTES", N_("Job size in bytes")),
+                ("PRECOMPUTEDJOBSIZE", N_("Estimated job size")),
+                ("PRECOMPUTEDJOBPRICE", N_("Estimated job price")),
+             ]   
+             
+    secondaryfields = [
+                ("LIMITBY", N_("Account limited by")),
+                ("BALANCE", N_("Account balance")),
+                ("PAGECOUNTER", N_("Number of pages on this printer")),
+                ("SOFTLIMIT", N_("Soft limit")),
+                ("HARDLIMIT", N_("Hard limit")),
+                ("DATELIMIT", N_("Date limit")),
+             ]                           
+    
+    tertiaryfields = [
+                ("ACTION", N_("Action taken for current job")),
+             ]                           
+    
+    def getPageSize(self, pgsize) :
+        """Returns the correct page size or None if not found."""
+        try :
+            return getattr(pagesizes, pgsize.upper())
+        except AttributeError :    
+            try :
+                return getattr(pagesizes, pgsize.lower())
+            except AttributeError :
+                pass
+                
+    def genPDF(self, pagesize, logo, url) :            
+        """Generates the banner in PDF format, return the PDF document as a string."""
+        document = cStringIO.StringIO()
+        c = canvas.Canvas(document, pagesize=pagesize, pageCompression=1)
+        
+        c.setAuthor("Jerome Alet")
+        c.setTitle("PyKota generated Banner")
+        c.setSubject("This is a print banner generated with PyKota")
+        
+        xcenter = pagesize[0] / 2.0
+        ycenter = pagesize[1] / 2.0
+                    
+        ypos = pagesize[1] - (2 * cm)            
+        try :    
+            imglogo = PIL.Image.open(logo)
+        except :    
+            self.printInfo("Unable to open image %s" % logo, "warn")
+        else :
+            (width, height) = imglogo.size
+            multi = float(width) / (8 * cm) 
+            width = float(width) / multi
+            height = float(height) / multi
+            xpos = xcenter - (width / 2.0)
+            ypos -= height
+            c.drawImage(logo, xpos, ypos, width, height)
+        
+        # New top
+        xpos = pagesize[0] / 5.0
+        ypos -= (1 * cm) + 20
+        
+        for fieldsgroup in [ self.primaryfields, self.secondaryfields, self.tertiaryfields] :
+            c.saveState()
+            for (varname, label) in fieldsgroup :
+                c.setFont("Helvetica-Bold", 14)
+                c.setFillColorRGB(0, 0, 0)
+                message = "%s :" % _(label).title()
+                c.drawRightString(xcenter, ypos, message)
+                c.setFont("Courier-Bold", 14)
+                c.setFillColorRGB(1, 0, 0)
+                c.drawString(xcenter + 0.5*cm, ypos, os.environ.get("PYKOTA%s" % varname, _("Unknown")))
+                ypos -= 18  # next line
+            c.restoreState()
+            ypos -= 18      # skip an additionnal line
+        
+        # URL
+        c.saveState()
+        c.setFont("Courier-Bold", 16)
+        c.setFillColorRGB(0, 0, 1)
+        c.drawCentredString(xcenter, 2 * cm, url)
+        c.restoreState()
+        
+        c.showPage()
+        c.save()
+        return document.getvalue()
+    
+    def main(self, files, options) :
+        """Generates a banner."""
+        if not hasRL :
+            raise PyKotaToolError, "The ReportLab module is missing. Download it from http://www.reportlab.org"
+        if not hasPIL :
+            raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
+            
+        pagesize = self.getPageSize(options["pagesize"])
+        if pagesize is None :
+            pagesize = self.getPageSize("a4")
+            self.printInfo("Unknown page size %s, defaulting to A4." % options["pagesize"], "warn")
+            
+        doc = self.genPDF(pagesize, options["logo"], options["url"].strip())
+        print doc
 
 def getInfo(name) :
     """Extracts some information from the environment."""
     return os.environ.get(name, _("Unknown"))
 
 if __name__ == "__main__" :
-    # TODO : --pagesize, --supporturl, extract admin's email address from pykota.conf
-    # TODO : --logourl and/or --logofile : to put a nice logo on the banner page
     # TODO : --papertray : to print banners on a different paper (colored for example)
-    pass
+    retcode = 0
+    try :
+        defaults = { \
+                     "pagesize" : "a4", \
+                     "logo" : "/usr/share/pykota/logos/pykota.jpeg",
+                     "url" : "http://www.librelogiciel.com/software/",
+                   }
+        short_options = "vhl:p:u:"
+        long_options = ["help", "version", "pagesize=", "logo=", "url="]
+        
+        # Initializes the command line tool
+        banner = PyKotaBanner(doc=__doc__)
+        
+        # parse and checks the command line
+        (options, args) = banner.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["pagesize"] = options["p"] or options["pagesize"] or defaults["pagesize"]
+        options["logo"] = options["l"] or options["logo"] or defaults["logo"]
+        options["url"] = options["u"] or options["url"] or defaults["url"]
+        
+        if options["help"] :
+            banner.display_usage_and_quit()
+        elif options["version"] :
+            banner.display_version_and_quit()
+        else :
+            retcode = banner.main(args, options)
+    except SystemExit :        
+        pass
+    except :
+        try :
+            banner.crashed("pkbanner failed")
+        except :    
+            crashed("pkbanner failed")
+        retcode = -1
+        
+    sys.exit(retcode)    

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.138  2004/11/12 23:46:44  jalet
+# Heavy work on pkbanner. Not finished yet though, but mostly works.
+#
 # Revision 1.137  2004/11/01 16:21:17  jalet
 # Little change for locale+gettext
 #
@@ -538,8 +541,8 @@ def crashed(message) :
     sys.stderr.flush()
     return msg
 
-class PyKotaTool :    
-    """Base class for all PyKota command line tools."""
+class Tool :
+    """Base class for tools with no database access."""
     def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
@@ -587,7 +590,6 @@ class PyKotaTool :
             self.smtpserver = self.config.getSMTPServer()
             self.maildomain = self.config.getMailDomain()
             self.logger = logger.openLogger(self.config.getLoggingBackend())
-            self.storage = storage.openConnection(self)
         except (config.PyKotaConfigError, logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
             self.crashed(msg)
             raise
@@ -613,13 +615,6 @@ class PyKotaTool :
         sys.stderr.write("%s: %s\n" % (level.upper(), message))
         sys.stderr.flush()
         
-    def clean(self) :    
-        """Ensures that the database is closed."""
-        try :
-            self.storage.close()
-        except (TypeError, NameError, AttributeError) :    
-            pass
-            
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
         self.clean()
@@ -710,6 +705,24 @@ class PyKotaTool :
             self.display_usage_and_quit()
         return (parsed, args)
     
+class PyKotaTool(Tool) :    
+    """Base class for all PyKota command line tools."""
+    def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
+        """Initializes the command line tool and opens the database."""
+        Tool.__init__(self, lang, charset, doc)
+        try :
+            self.storage = storage.openConnection(self)
+        except storage.PyKotaStorageError, msg :
+            self.crashed(msg)
+            raise
+        
+    def clean(self) :    
+        """Ensures that the database is closed."""
+        try :
+            self.storage.close()
+        except (TypeError, NameError, AttributeError) :    
+            pass
+            
     def isValidName(self, name) :
         """Checks if a user or printer name is valid."""
         invalidchars = "/@?*,;&|"

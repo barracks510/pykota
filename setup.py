@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/11/12 23:46:43  jalet
+# Heavy work on pkbanner. Not finished yet though, but mostly works.
+#
 # Revision 1.57  2004/11/10 22:40:45  jalet
 # Logos are installed now
 #
@@ -282,7 +285,7 @@ data_files.append((os.sep.join([directory, "conf"]), ["conf/README", "conf/pykot
 
 data_files.append((os.sep.join([directory, "cgi-bin"]), ["cgi-bin/README", "cgi-bin/printquota.cgi"]))
 
-data_files.append((os.sep.join([directory, "logos"]), glob.glob(os.sep.join(["logos", "*.png"])) + glob.glob(os.sep.join(["logos", "*.xcf"]))))
+data_files.append((os.sep.join([directory, "logos"]), glob.glob(os.sep.join(["logos", "*.jpeg"])) + glob.glob(os.sep.join(["logos", "*.png"])) + glob.glob(os.sep.join(["logos", "*.xcf"]))))
 
 pgdirectory = os.sep.join([directory, "postgresql"])
 data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", "initscripts/postgresql/pykota-postgresql.sql"]))
