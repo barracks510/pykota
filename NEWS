@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha19 :
+    
+        - Introduction of the new dumpykota.cgi CGI script, which
+          allows third party tools like phpPrintAnalyzer to be
+          interfaced in real time with PyKota. To use it you
+          may have to change your web server's configuration,
+          please see pykota/cgi-bin/README
+          
     - 1.21alpha18 :
     
         - Now dumpykota can dump the job history into CUPS' page_log
