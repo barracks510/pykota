@@ -25,6 +25,7 @@
     <copyright>
       <year>2003</year>
       <year>2004</year>
+      <year>2005</year>
       <holder>Jerome Alet</holder>
     </copyright>
 
@@ -136,6 +137,9 @@
 <!--
 
 $Log$
+Revision 1.16  2005/01/17 08:44:24  jalet
+Modified copyright years
+
 Revision 1.15  2004/10/06 10:03:16  jalet
 Improved documentation
 

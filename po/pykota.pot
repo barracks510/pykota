@@ -2,7 +2,7 @@
 #
 # PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -20,8 +20,8 @@
 # $Id$
 #
 # PyKota translation master file.
-# Copyright (c) 2003-2004 Conseil Internet & Logiciels Libres
-# Jerome Alet <alet@librelogiciel.com>, 2003-2004.
+# Copyright (c) 2003, 2004, 2005 Conseil Internet & Logiciels Libres
+# Jerome Alet <alet@librelogiciel.com>, 2003, 2004, 2005.
 #
 msgid ""
 msgstr ""
@@ -37,7 +37,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkbanner v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
 "Generates banners.\n"
 "\n"
@@ -158,7 +158,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkhint v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkhint v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "A tool to give hints on what accounting method is best for each printer.\n"
 "\n"
 "command line usage :\n"
@@ -227,7 +227,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkmail v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
 "Email gateway for PyKota.\n"
 "\n"
@@ -286,7 +286,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkprinters v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkprinters v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "A Printers Manager for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -426,7 +426,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pykosd v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "An OSD quota monitor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -511,7 +511,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pykotme v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
 "Gives print quotes to users.\n"
 "\n"
@@ -583,7 +583,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"autopykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "A tool to automate user account creation and initial balance setting.\n"
 "\n"
 "THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !\n"
@@ -658,7 +658,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"dumpykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
 "Dumps PyKota database's content.\n"
 "\n"
@@ -751,7 +751,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"edpykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"edpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "A Print Quota editor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -1008,7 +1008,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
 "Generates print quota reports.\n"
 "\n"
@@ -1072,7 +1072,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"warnpykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres\n"
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
 "Sends mail to users over print quota.\n"
 "\n"

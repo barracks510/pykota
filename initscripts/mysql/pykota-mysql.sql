@@ -1,7 +1,7 @@
 --
 -- PyKota - Print Quotas for CUPS and LPRng
 --
--- (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+-- (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.2  2005/01/17 08:44:24  jalet
+-- Modified copyright years
+--
 -- Revision 1.1  2004/06/20 19:14:20  jalet
 -- Added first draft of MySQL initialization script
 --

@@ -3,7 +3,6 @@
 # pykota.schema
 #
 # LDAP Schema for Pykota Quota System
-# Version 0.2
 #
 # Include it in OpenLDAP's configuration file (/etc/ldap/slapd.conf)
 # and restart slapd.

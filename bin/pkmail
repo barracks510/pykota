@@ -5,7 +5,7 @@
 #
 # PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2005/01/17 08:44:24  jalet
+# Modified copyright years
+#
 # Revision 1.2  2004/11/21 22:16:11  jalet
 # Added some kind of protection against bad guys
 #
@@ -39,7 +42,7 @@ import email
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
 
-__doc__ = N_("""pkmail v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+__doc__ = N_("""pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres
 
 Email gateway for PyKota.
 
