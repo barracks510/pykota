@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2004/11/22 21:53:38  jalet
+# Added the reject_unknown directive to pykota.conf to reject user/group
+# creation if user or group is unknown to the system
+#
 # Revision 1.56  2004/11/15 15:23:07  jalet
 # Strips spaces just in case
 #
@@ -556,6 +560,10 @@ class PyKotaConfig :
     def getUserNameToLower(self) :          
         """Returns 1 if we want to convert usernames to lowercase when printing, else 0."""
         return self.isTrue(self.getGlobalOption("utolower", ignore=1))
+        
+    def getRejectUnknown(self) :          
+        """Returns 1 if we want to reject the creation of unknown users or groups, else 0."""
+        return self.isTrue(self.getGlobalOption("reject_unknown", ignore=1))
         
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""

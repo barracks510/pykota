@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.82  2004/11/22 21:53:38  jalet
+# Added the reject_unknown directive to pykota.conf to reject user/group
+# creation if user or group is unknown to the system
+#
 # Revision 1.81  2004/10/12 15:37:00  jalet
 # Now outputs the name of the offending user if a mere mortal tries to use
 # one of these commands !!!
@@ -289,6 +293,7 @@
 import sys
 import os
 import pwd
+import grp
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
@@ -526,6 +531,7 @@ class EdPyKota(PyKotaTool) :
         if options["prototype"] :    
             protoentry = getattr(self.storage, "get%s" % suffix)(options["prototype"])
             
+        rejectunknown = self.config.getRejectUnknown()    
         printeradded = 0
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
@@ -619,7 +625,22 @@ class EdPyKota(PyKotaTool) :
                         # like /etc/passwd because users may be defined 
                         # only remotely
                         if self.isValidName(entry.Name) :
-                            entry = getattr(self.storage, "add%s" % suffix)(entry)
+                            reject = 0
+                            if rejectunknown :
+                                if options["groups"] :
+                                    try :
+                                        grp.getgrnam(entry.Name)
+                                    except KeyError :    
+                                        self.printInfo(_("Unknown group %s") % entry.Name, "error")
+                                        reject = 1
+                                else :    
+                                    try :
+                                        pwd.getpwnam(entry.Name)
+                                    except KeyError :    
+                                        self.printInfo(_("Unknown user %s") % entry.Name, "error")
+                                        reject = 1
+                            if not reject :        
+                                entry = getattr(self.storage, "add%s" % suffix)(entry)
                         else :    
                             if options["groups"] :
                                 self.printInfo(_("Invalid group name %s") % entry.Name)

@@ -216,6 +216,17 @@ utolower: No
 # 'Domain2/jerome' and 'jerome' are different. 
 # winbind_separator: /
 
+# When creating users or groups accounts, should we reject users
+# or groups which are unknown from the system ?
+# The default if unset is NO. This means that by default, you
+# can create users or groups for which `getent passwd username` 
+# or `getent group groupname` returns nothing.
+#
+# Allowed values : Yes | No
+# Default value : No
+#
+# reject_unknown: No
+
 # Do we want to hide jobs' title, filename and options for privacy
 # reasons ?
 # This may be required in some countries (Italy comes to mind).

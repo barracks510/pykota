@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha8 :
+    
+        - Added the new reject_unknown directive to reject the
+          creation of user or groups which are unknown to the system.
+          
     - 1.21alpha7 :
     
         - Introduction of the pkmail email gateway.
