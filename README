@@ -235,8 +235,9 @@ Prerequisite :
     - The JAXML Python module to be able to dump datas in the XML format.
       (http://www.librelogiciel.com/software/)
     - The Python-SNMP module to query printers for their page counter.
-      (http://pysnmp.sourceforge.net). Tested with version 3.4.x, but
-      version 2.x WON'T work with PyKota.
+      (http://pysnmp.sourceforge.net). 
+      IMPORTANT : version 3.4.3 (or 3.4.2) is REQUIRED. Versions 2.x or
+      4.x won't work for now.
     - The Python-OSD module to use the graphical print quota reminder.
     - SNMP tools (specifically the snmpget command) if you prefer to
       use your own script to request query printers.
