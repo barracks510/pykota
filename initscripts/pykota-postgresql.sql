@@ -13,6 +13,10 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.4  2003/02/27 08:40:14  jalet
+-- DATETIME is not supported anymore in PostgreSQL 7.3 it seems, but
+-- TIMESTAMP is.
+--
 -- Revision 1.3  2003/02/26 20:34:22  jalet
 -- Default value for printer page counter set to 0
 --
@@ -78,7 +82,7 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         pagecounter INT4 DEFAULT 0,
                         softlimit INT4,
                         hardlimit INT4,
-                        datelimit DATETIME);
+                        datelimit TIMESTAMP);
                         
 --
 -- Create the print quota table for groups
@@ -90,7 +94,7 @@ CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
                          pagecounter INT4 DEFAULT 0,
                          softlimit INT4,
                          hardlimit INT4,
-                         datelimit DATETIME);
+                         datelimit TIMESTAMP);
                         
 --                        
 -- Set some ACLs                        

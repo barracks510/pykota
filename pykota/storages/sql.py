@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/02/27 08:41:49  jalet
+# DATETIME is not supported anymore in PostgreSQL 7.3 it seems, but
+# TIMESTAMP is.
+#
 # Revision 1.18  2003/02/10 12:07:31  jalet
 # Now repykota should output the recorded total page number for each printer too.
 #
@@ -183,7 +187,7 @@ class SQLStorage :
         """Sets the limit date for a soft limit to become an hard one given (username, printername)."""
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
-            self.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(userid), self.doQuote(printerid)))
+            self.doQuery("UPDATE userpquota SET datelimit=%s::TIMESTAMP WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(userid), self.doQuote(printerid)))
         
     def updateUserPQuota(self, username, printername, pagecount) :
         """Updates the used user Quota information given (username, printername) and a job size in pages."""
