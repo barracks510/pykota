@@ -39,6 +39,7 @@ from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, Stora
 try :
     import ldap
     import ldap.modlist
+    import ldap.cidict
 except ImportError :    
     import sys
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the python-ldap module installed correctly." % sys.version.split()[0]
@@ -157,6 +158,7 @@ class Storage(BaseStorage) :
                 self.secondStageInit()
             else :     
                 self.tool.logdebug("QUERY : Result : %s" % result)
+                result = [ (dn, ldap.cidict.cidict(attrs)) for (dn, attrs) in result ]
                 if self.useldapcache :
                     for (dn, attributes) in result :
                         self.tool.logdebug("LDAP cache store %s => %s" % (dn, attributes))
@@ -166,7 +168,7 @@ class Storage(BaseStorage) :
             
     def doAdd(self, dn, fields) :
         """Adds an entry in the LDAP directory."""
-        fields = self.normalizeFields(fields)
+        fields = self.normalizeFields(ldap.cidict.cidict(fields))
         message = ""
         for tryit in range(3) :
             try :
@@ -212,6 +214,7 @@ class Storage(BaseStorage) :
             
     def doModify(self, dn, fields, ignoreold=1, flushcache=0) :
         """Modifies an entry in the LDAP directory."""
+        fields = ldap.cidict.cidict(fields)
         for tryit in range(3) :
             try :
                 # TODO : take care of, and update LDAP specific cache
@@ -245,7 +248,7 @@ class Storage(BaseStorage) :
                 entry = ldap.modlist.modifyModlist(oldentry, fields, ignore_oldexistent=ignoreold)
                 modentry = []
                 for (mop, mtyp, mval) in entry :
-                    if mtyp != "createTimestamp" :
+                    if mtyp and (mtyp.lower() != "createtimestamp") :
                         modentry.append((mop, mtyp, mval))
                 self.tool.logdebug("MODIFY : %s ==> %s ==> %s" % (fields, entry, modentry))
                 if modentry :
@@ -277,10 +280,10 @@ class Storage(BaseStorage) :
            Logs any missing attribute.
         """   
         result = []
-        for record in records :
-            attrval = record[1].get(attribute, [None])[0]
+        for (dn, record) in records :
+            attrval = record.get(attribute, [None])[0]
             if attrval is None :
-                self.tool.printInfo("Object %s has no %s attribute !" % (record[0], attribute), "error")
+                self.tool.printInfo("Object %s has no %s attribute !" % (dn, attribute), "error")
             else :    
                 result.append(attrval)
         return result        
@@ -689,7 +692,7 @@ class Storage(BaseStorage) :
             else :
                 message = _("Unable to find an existing objectClass %s entry with %s=%s to attach pykotaAccount objectClass") % (where, self.info["userrdn"], user.Name)
                 if action.lower() == "warn" :    
-                    self.tool.printInfo("%s. A new entry will be created instead." % message, "warn")
+                    self.tool.printInfo(_("%s. A new entry will be created instead.") % message, "warn")
                 else : # 'fail' or incorrect setting
                     raise PyKotaStorageError, "%s. Action aborted. Please check your configuration." % message
                 
