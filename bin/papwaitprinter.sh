@@ -13,9 +13,8 @@
 #
 # $Id$
 #
-
+PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/opt/bin
 sleep 5;
-until /usr/bin/papstatus -p "$1" | grep -i idle >/dev/null ; do 
+until papstatus -p "$1" | grep -i idle >/dev/null ; do 
    sleep 1 ; 
 done
-

@@ -25,6 +25,8 @@ PyKota NEWS :
     
         - Fixed over-verbose exits when displaying help
           or version.
+          
+        - Extended some PATH in the shell scripts  
 
     - 1.19alpha18 :
     
