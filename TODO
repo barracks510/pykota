@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - CUPS accepts the "STATE: ..." message as backchannel
+          data : use this to tell CUPS what action has been taken
+          for current job.
+          
         - Add frontbanner and rearbanner directives to pykota.conf
           This directives will allow the launch (if executable)
           or the use of the banner path passed as a parameter.
