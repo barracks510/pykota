@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/07/07 14:14:31  jalet
+# Now handles limits by quota in addition to limits by balance
+#
 # Revision 1.1  2004/07/07 13:21:27  jalet
 # Introduction of the pykosd command
 #
@@ -50,8 +53,25 @@ if __name__ == "__main__" :
             user = cmd.storage.getUser(uname)
             if not user.Exists :
                 raise PyKotaToolError, "User %s doesn't exist in PyKota's database." % uname
-            display = pyosd.osd(colour="#FF0000", timeout=5, shadow=2)
-            display.display("PyKota Units left : %.2f" % user.AccountBalance, type=pyosd.TYPE_STRING)    
+            if user.LimitBy == "quota" :    
+                printers = cmd.storage.getMatchingPrinters("*")
+                upquotas = [ cmd.storage.getUserPQuota(user, p) for p in printers ]
+                nblines = len(upquotas)
+                display = pyosd.osd(colour="#FF0000", timeout=5, shadow=2, lines=nblines)
+                for line in range(nblines) :
+                    upq = upquotas[line]
+                    if upq.HardLimit is None :
+                        if upq.SoftLimit is None :
+                            percent = 0
+                        else :        
+                            percent = (upq.PageCounter * 100) / upq.SoftLimit
+                    else :        
+                        percent = (upq.PageCounter * 100) / upq.HardLimit
+                    percent = min(percent, 100)
+                    display.display("Pages used on %s : %s%%" % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)    
+            else :
+                display = pyosd.osd(colour="#FF0000", timeout=5, shadow=2)
+                display.display("PyKota Units left : %.2f" % user.AccountBalance, type=pyosd.TYPE_STRING)    
             time.sleep(6)
         except :
             cmd.crashed("Strange problem : please report it ASAP to alet@librelogiciel.com")
