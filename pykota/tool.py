@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/02/10 11:28:45  jalet
+# Localization
+#
 # Revision 1.18  2003/02/10 01:02:17  jalet
 # External requester is about to work, but I must sleep
 #
@@ -99,11 +102,11 @@ class PyKotaTool :
     def __init__(self, isfilter=0, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
-	try :
+        try :
             locale.setlocale(locale.LC_ALL, "")
-	except locale.Error :
-	    pass
-        gettext.install("pykota")
+            gettext.install("pykota")
+        except (locale.Error, IOError) :
+            gettext.NullTranslations().install()
     
         # pykota specific stuff
         self.documentation = doc
