@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.05alpha1 :
     
+        - SECURITY file added to help improve PyKota's security.
+        
         - Extracting the printer's internal page counter is now
           tried several times, waiting several seconds between
           two tries. This lets the time to warm up for some printers 
