@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/06 10:39:23  jalet
+# Preliminary edpykota work.
+#
 # Revision 1.8  2003/02/06 09:19:02  jalet
 # More robust behavior (hopefully) when the user or printer is not managed
 # correctly by the Quota System : e.g. cupsFilter added in ppd file, but
@@ -45,13 +48,12 @@
 
 import sys
 import os
+import getopt
 import smtplib
 
 from mx import DateTime
 
-from pykota import config
-from pykota import storage
-from pykota import logger
+from pykota import version, config, storage, logger
 
 class PyKotaToolError(Exception):
     """An exception for PyKota config related stuff."""
@@ -64,8 +66,9 @@ class PyKotaToolError(Exception):
     
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, isfilter=0) :
+    def __init__(self, isfilter=0, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
+        self.documentation = doc
         self.config = config.PyKotaConfig(os.environ.get("CUPS_SERVERROOT", "/etc/cups"))
         self.logger = logger.openLogger(self.config)
         self.storage = storage.openConnection(self.config, asadmin=(not isfilter))
@@ -74,6 +77,76 @@ class PyKotaTool :
         self.admin = self.config.getAdmin()
         self.adminmail = self.config.getAdminMail()
         
+    def display_version_and_quit(self) :
+        """Displays version number, then exists successfully."""
+        print version.__version__
+        sys.exit(0)
+    
+    def display_usage_and_quit(self) :
+        """Displays command line usage, then exists successfully."""
+        print self.documentation
+        sys.exit(0)
+        
+    def parseCommandline(self, argv, short, long) :
+        """Parses the command line, controlling options."""
+        # split options in two lists: those which need an argument, those which don't need any
+        withoutarg = []
+        witharg = []
+        lgs = len(short)
+        i = 0
+        while i < lgs :
+            ii = i + 1
+            if (ii < lgs) and (short[ii] == ':') :
+                # needs an argument
+                witharg.append(short[i])
+                ii = ii + 1 # skip the ':'
+            else :
+                # doesn't need an argument
+                withoutarg.append(short[i])
+            i = ii
+                
+        for option in long :
+            if option[-1] == '=' :
+                # needs an argument
+                witharg.append(option[:-1])
+            else :
+                # doesn't need an argument
+                withoutarg.append(option)
+        
+        # we begin with all possible options unset
+        parsed = {}
+        for option in withoutarg + witharg :
+            parsed[option] = None
+        
+        # then we parse the command line
+        args = []       # to not break if something unexpected happened
+        try :
+            options, args = getopt.getopt(argv, short, long)
+            if options :
+                for (o, v) in options :
+                    # we skip the '-' chars
+                    lgo = len(o)
+                    i = 0
+                    while (i < lgo) and (o[i] == '-') :
+                        i = i + 1
+                    o = o[i:]
+                    if o in witharg :
+                        # needs an argument : set it
+                        parsed[o] = v
+                    elif o in withoutarg :
+                        # doesn't need an argument : boolean
+                        parsed[o] = 1
+                    else :
+                        # should never occur
+                        raise PyKotaToolError, "Unexpected problem when parsing command line"
+            elif (not args) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
+                self.display_usage_and_quit()
+        except getopt.error, msg :
+            sys.stderr.write("%s\n" % msg)
+            sys.stderr.flush()
+            self.display_usage_and_quit()
+        return (parsed, args)
+    
     def sendMessage(self, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
         if "@" not in touser :

@@ -16,9 +16,135 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/06 10:39:23  jalet
+# Preliminary edpykota work.
+#
 # Revision 1.1  2003/02/05 21:41:09  jalet
 # Skeletons added for all command line tools
 #
 #
 #
+
+import sys
+
+from pykota import version
+from pykota.tool import PyKotaTool, PyKotaToolError
+
+__doc__ = """edpykota v%s (C) 2003 C@LL - Conseil Internet & Logiciels Libres
+A Print Quota editor for PyKota.
+
+command line usage :
+
+  edpykota [-u] [-p username] [-f printername] username ...
+  edpykota -g [-p groupname] [-f printername] groupname ...
+
+options :
+
+  -v | --version       Prints edpykota's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -a | --add           Adds users and/or printers if they don't 
+                       exist on the Quota Storage Server.
+                       
+  -u | --users         Edit users print quotas, this is the default.
+  
+  -P | --printer p     Edit quotas on printer p only.
+  
+  -g | --groups        Edit groups print quotas instead of users.
+                          
+  -p | --prototype u|g Uses user u or group g as a prototype to set
+                       print quotas
+                       
+  -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
+  
+  -H | --hardlimit hl  Sets the quota hard limit to hl pages.
+  
+examples :                              
+
+  $ edpykota -p jerome john paul george ringo
+  
+  This will set print quotas for the users john, paul, george and ringo
+  to the same values than user jerome. User jerome must exist.
+  
+  $ edpykota --printer lp -S 50 -H 60 jerome
+  
+  This will set jerome's print quota on the lp printer to a soft limit
+  of 50 pages, and a hard limit of 60 pages. If either user jerome or
+  printer lp doesn't exist on the Quota Storage Server then nothing is done.
+
+  $ edpykota --add --printer lp -S 50 -H 60 jerome
+  
+  Same as above, but if either user jerome or printer lp doesn't exist 
+  on the Quota Storage Server they are automatically added. 
+  WARNING : the CUPS PPD file for this printer must still be modified
+            manually, as well as pykota's configuration file for a
+            new printer to be managed successfully.
+            
+  $ edpykota -g -S 500 -H 550 financial support            
+  
+  This will set print quota soft limit to 500 pages and hard limit
+  to 550 pages for groups financial and support on all printers.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+        
+def main(arguments, options) :
+    """Edit user or group quotas."""
+    pass
+    
+if __name__ == "__main__" : 
+    try :
+        tool = PyKotaTool(doc=__doc__)
+        
+        defaults = { \
+                     "users"  : 1, \
+                     "groups" : 0, \
+                   }
+        short_options = "vhaugp:P:S:H:"
+        long_options = ["help", "version", "add", "users", "groups", "prototype=", "printer=", "softlimit=", "hardlimit="]
+        
+        # Initializes the command line tool
+        tool = PyKotaTool(doc=__doc__)
+        
+        # parse and checks the command line
+        (options, args) = tool.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["add"] = options["a"] or options["add"]
+        options["users"] = options["u"] or options["users"] or defaults["users"]
+        options["groups"] = options["g"] or options["groups"] or defaults["groups"]
+        options["prototype"] = options["p"] or options["prototype"]
+        options["printer"] = options["P"] or options["printer"]
+        options["softlimit"] = options["S"] or options["softlimit"]
+        options["hardlimit"] = options["H"] or options["hardlimit"] 
+        
+        if options["help"] :
+            tool.display_usage_and_quit()
+        elif options["version"] :
+            tool.display_version_and_quit()
+        elif options["users"] and options["groups"] :    
+            raise PyKotaToolError, "edpykota: options --users and --groups are incompatible.\n"
+        elif options["groups"] : # TODO : add support for group quotas    
+            raise PyKotaToolError, "edpykota: group quotas are currently not implemented, sorry.\n"
+        else :
+            apply(main, args, options)
+    except PyKotaToolError, msg :            
+        sys.stderr.write("%s\n" % msg)
+        sys.stderr.flush()
+        sys.exit(-1)
 

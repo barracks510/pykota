@@ -17,3 +17,6 @@
 __version__ = "0.1-unofficial"
 
 __doc__ = """PyKota : a complete Printing Quota Solution for CUPS."""
+
+__author__ = """Jerome Alet - alet@librelogiciel.com"""
+
