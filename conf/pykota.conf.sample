@@ -639,6 +639,7 @@ policy: deny
 # accept PostScript as an input format.
 # NB : pkbanner's default page size is A4
 #
+# startingbanner: /home/joe/mystaticbanner.ps
 # startingbanner: /usr/bin/pkbanner --pagesize=A4 --logo="/home/joe/mylogo.jpeg" --url="http://tech.example.com"
 # startingbanner: /usr/bin/pkbanner
 
@@ -658,6 +659,7 @@ policy: deny
 # accept PostScript as an input format.
 # NB : pkbanner's default page size is A4
 #
+# endingbanner: /home/joe/mystaticbanner.ps
 # endingbanner: /usr/bin/pkbanner --pagesize=A4 --logo="/home/joe/mylogo.jpeg" --url="http://tech.example.com"
 # endingbanner: /usr/bin/pkbanner
 
