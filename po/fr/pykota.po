@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/10 08:50:45  jalet
+# External requester seems to be finally ok now
+#
 # Revision 1.2  2003/02/10 00:42:17  jalet
 # External requester should be ok (untested)
 # New syntax for configuration file wrt requesters
@@ -211,8 +214,8 @@ msgstr ""
 msgid "Print Quota exceeded for user %s on printer %s"
 msgstr "Dépassement de Quota d'Impression pour l'utilisateur %s sur l'imprimante %s"
 
-msgid "Invalid requester for printer %s"
-msgstr "Requester invalide pour l'imprimante %s"
+msgid "Invalid requester %s for printer %s"
+msgstr "Requester %s invalide pour l'imprimante %s"
 
 msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
 msgstr "Adresse inconnue dans EXTERNAL(%s) pour l'imprimante %s"

@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/02/10 08:50:45  jalet
+# External requester seems to be finally ok now
+#
 # Revision 1.10  2003/02/10 08:19:57  jalet
 # tell ConfigParser to return raw data, this allows our own strings
 # interpolations in the requester
@@ -108,9 +111,9 @@ class PyKotaConfig :
             validrequesters = [ "snmp", "external" ] # TODO : add more requesters
             fullrequester = self.config.get(printer, "requester", raw=1)
             try :
-                (requester, args) = [x.strip() for x in fullrequester.split('(')]
+                (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
             except ValueError :    
-                raise PyKotaConfigError, _("Invalid requester for printer %s") % printer
+                raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
             else :
                 if requester not in validrequesters :
                     raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
