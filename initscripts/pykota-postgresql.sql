@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.12  2003/04/14 20:01:02  jalet
+-- Typo
+--
 -- Revision 1.11  2003/04/14 19:58:59  jalet
 -- New database schema for users' account balance
 --
@@ -88,7 +91,7 @@ CREATE USER pykotaadmin;
 CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
                    username TEXT UNIQUE NOT NULL,
                    balance FLOAT DEFAULT 0.0,
-                   lieftimepaid FLOAT DEFAULT 0.0,
+                   lifetimepaid FLOAT DEFAULT 0.0,
                    limitby TEXT DEFAULT 'quota');
                    
 --
