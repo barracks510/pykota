@@ -661,7 +661,11 @@ if __name__ == "__main__" :
             lockfile.close()
             # we will execute each existing backend in device enumeration mode
             # and generate their PyKota accounting counterpart
-            for backend in [os.path.join(directory, b) for b in os.listdir(directory) if os.path.isfile(os.path.join(directory, b)) and (b != myname)] :
+            allbackends = [ os.path.join(directory, b) \
+                                for b in os.listdir(directory) 
+                                    if os.access(os.path.join(directory, b), os.X_OK) \
+                                        and (b != myname)] 
+            for backend in allbackends :                            
                 answer = os.popen(backend, "r")
                 try :
                     devices = [line.strip() for line in answer.readlines()]
