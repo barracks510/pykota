@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/10/08 21:12:27  jalet
+# Do not cache anymore entries which don't exist.
+#
 # Revision 1.24  2003/10/07 22:06:05  jalet
 # Preliminary code to disable job history
 #
@@ -341,7 +344,7 @@ class BaseStorage :
             
     def cacheEntry(self, cachetype, key, value) :        
         """Puts an entry in the cache."""
-        if self.usecache :
+        if self.usecache and getattr(value, "Exists", 0) :
             self.caches[cachetype][key] = value
             self.tool.logdebug("Cache store (%s->%s)" % (cachetype, key))
             
