@@ -51,11 +51,11 @@ pykota.schema :
 pykota-sample.ldif :
 
     This file represents a sample LDAP directory tree dump with
-    PyKota functionnalities. You can use it for testing purposes,
-    but don't use it in production.
+    PyKota functionnalities. 
+    DON'T USE THIS FILE. IT IS JUST THERE TO SERVE AS AN EXAMPLE.
     
 To use an LDAP directory as the Quota Storage, just modify  
-/etc/pykota.conf to make it contain lines similar to the LDAP
+/etc/pykota/pykota.conf to make it contain lines similar to the LDAP
 related ones in conf/pykota.conf.sample, but adapted to your
 own configuration. Also de-activate the PostgreSQL-related lines.
     

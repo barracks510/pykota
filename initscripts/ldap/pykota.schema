@@ -5,6 +5,9 @@
 # LDAP Schema for Pykota Quota System
 # Version 0.2
 #
+# Include it in OpenLDAP's configuration file (/etc/ldap/slapd.conf)
+# and restart slapd.
+#
 # Written 2003-05-28 by Wayne Godoy and John Flynn <wgodoy =AT= ub -DOT- edu -DOT- bz>
 #
 # Modified by Jerome Alet 2003-06-01
