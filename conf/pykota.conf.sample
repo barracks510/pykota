@@ -477,6 +477,8 @@ policy: deny
 # PYKOTASOFTLIMIT : user's soft page limit on this printer
 # PYKOTAHARDLIMIT : user's hard page limit on this printer
 # PYKOTADATELIMIT : user's soft to hard limit date limit on this printer
+# PYKOTASTATUS : contains "CANCELLED" when SIGTERM was received by PyKota
+#                else is not set.
 
 # PreHook : gets executed after being sure the user, printer and user quota
 # entry on the printer both exist in the PyKota database, and after
