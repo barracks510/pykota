@@ -23,9 +23,9 @@ PyKota NEWS :
 
     - 1.21alpha1 :
     
-        - added an IPP messages miniparser. This will allow PyKota
-          to extract informations from the CUPS request files directly
-          without needing to use the CUPS API. 
+        - added an IPP messages miniparser. Extraction of the client
+          hostname is now considered to be fiable, at least until
+          the CUPS developpers change something...
         
     - 1.20 :
     
