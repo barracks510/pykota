@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2003/11/25 21:54:05  jalet
+# updated FAQ
+#
 # Revision 1.59  2003/11/25 13:33:43  jalet
 # Puts 'root' instead of '' when printing from CUPS web interface (which
 # gives an empty username)
@@ -630,6 +633,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.title, \
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
+        self.username = self.username or 'root' 
         self.preserveinputfile = self.inputfile 
         self.accounter = openAccounter(self)
     
@@ -667,7 +671,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             return ("CUPS", \
                     printerhostname, \
                     os.environ.get("PRINTER"), \
-                    sys.argv[2].strip() or 'root', \
+                    sys.argv[2].strip(), \
                     sys.argv[1].strip(), \
                     inputfile, \
                     int(sys.argv[4].strip()), \
