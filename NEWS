@@ -17,7 +17,7 @@ PyKota NEWS :
 
     - 0.95 :
 
-        - Extarnal requesters for printers finally added.
+        - External requesters for printers finally added.
 
         - Full internationalization (english and french are supported)
  
