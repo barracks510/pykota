@@ -20,7 +20,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 ============================================================
 
 PyKota NEWS :
-
+       
+    - 1.21alpha23 :
+    
+        - Traditional Chinese translation added.
+    
+        - Several fixes and performance improvements with the LDAP backend.
+        
     - 1.21alpha22 :
     
         - edpykota's --delete command line option doesn't consider
