@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2004/09/21 13:42:18  jalet
+# Typo
+#
 # Revision 1.16  2004/09/21 13:30:53  jalet
 # First try at full SNMP handling from the Python code.
 #
@@ -314,7 +317,7 @@ class Accounter(AccounterBase) :
         try :
             if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
                (os.environ.get("PYKOTAACTION") != "DENY") and \
-               (os.environ.get("PYKOTAPHASE") == "AFTER" :
+               (os.environ.get("PYKOTAPHASE") == "AFTER") :
                 acc.waitPrinting()
             acc.waitIdle()    
         except :    
