@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/04/11 12:33:13  jalet
+# Displays WARN or DENY if datelimit is not set too.
+#
 # Revision 1.21  2003/04/10 21:47:20  jalet
 # Job history added. Upgrade script neutralized for now !
 #
@@ -194,12 +197,15 @@ class RePyKota(PyKotaTool) :
                 datelimit = DateTime.ISO.ParseDateTime(datelimit)
                 if now >= datelimit :
                     datelimit = "DENY"
+            elif pagecounter >= hardlimit :        
+                datelimit = "DENY"
+            elif pagecounter >= softlimit :    
+                datelimit = "WARN"
             else :    
                 datelimit = ""
             reached = ((softlimit is not None) and (pagecounter >= softlimit) and "+") or "-"
             print "%-10.10s %c %8i %8s %8s %10s %9i" % (name, reached, pagecounter, str(softlimit), str(hardlimit), str(datelimit)[:10], lifepagecounter)
             return lifepagecounter
-        
                     
 if __name__ == "__main__" : 
     try :
