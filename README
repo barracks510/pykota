@@ -229,6 +229,11 @@ Prerequisite :
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
       (http://netatalk.sourceforge.net)
+    - The ReportLab Python module (http://www.reportlab.org) if you want  
+      to have PyKota generate nice banners for you.
+    - The Python Imaging Library (aka PIL) module 
+      (http://www.pythonware.com/downloads) if you want to have PyKota 
+      generate nice banners for you.
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
       libraries if you plan to use PostgreSQL as the Quota Storage
       backend.
