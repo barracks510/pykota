@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.64  2003/11/29 22:03:17  jalet
+# Some code refactoring work. New code is not used at this time.
+#
 # Revision 1.63  2003/11/29 20:06:20  jalet
 # Added 'utolower' configuration option to convert all usernames to
 # lowercase when printing. All database accesses are still and will
@@ -715,3 +718,70 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                 return ("LPRNG", rseen, Pseen, nseen, jseen, None, Kseen, None, None, None)
         self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
         return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system
+        
+    def getPrinterUserAndUserPQuota(self) :        
+        """Returns a tuple (policy, printer, user, and user print quota) on this printer.
+        
+           "OK" is returned in the policy if both printer, user and user print quota
+           exist in the Quota Storage.
+           Otherwise, the policy as defined for this printer in pykota.conf is returned.
+           
+           If policy was set to "EXTERNAL" and one of printer, user, or user print quota
+           doesn't exist in the Quota Storage, then an external command is launched, as
+           defined in the external policy for this printer in pykota.conf
+           This external command can do anything, like automatically adding printers
+           or users, for example, and finally extracting printer, user and user print
+           quota from the Quota Storage is tried a second time.
+           
+           "EXTERNALERROR" is returned in case policy was "EXTERNAL" and an error status
+           was returned by the external command.
+        """
+        for passnumber in range(1, 3) :
+            printer = self.storage.getPrinter(self.printername)
+            user = self.storage.getUser(self.username)
+            userpquota = self.storage.getUserPQuota(user, printer)
+            if printer.Exists and user.Exists and userpquota.Exists :
+                policy = "OK"
+                break
+            (policy, args) = self.config.getPrinterPolicy(self.printername)
+            if policy == "EXTERNAL" :    
+                commandline = self.formatCommandLine(args, user, printer)
+                if not printer.Exists :
+                    self.logger.log_message(_("Printer %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.printername, commandline, self.printername), "info")
+                if not user.Exists :
+                    self.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.username, commandline, self.printername), "info")
+                if not userpquota.Exists :
+                    self.logger.log_message(_("User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s") % (self.username, self.printername, commandline, self.printername), "info")
+                if os.system(commandline) :
+                    # if an error occured, we die without error,
+                    # so that the job doesn't stop the print queue.
+                    self.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, self.printername), "error")
+                    policy = "EXTERNALERROR"
+                    break
+            else :        
+                break
+        return (policy, printer, user, userpquota)
+        
+    def main(self) :    
+        """Main work is done here."""
+        (policy, printer, user, userpquota) = self.getPrinterUserAndUserPQuota()
+        if policy == "EXTERNALERROR" :
+            # Policy was 'EXTERNAL' and the external command returned an error code
+            pass # TODO : reject job
+        elif policy == "EXTERNAL" :
+            # Policy was 'EXTERNAL' and the external command wasn't able
+            # to add either the printer, user or user print quota
+            pass # TODO : reject job
+        elif policy == "ALLOW":
+            # Either printer, user or user print quota doesn't exist,
+            # but the job should be allowed anyway.
+            pass # TODO : accept job
+        elif policy == "OK" :
+            # Both printer, user and user print quota exist, job should
+            # be allowed if current user is allowed to print on this
+            # printer
+            pass # TODO : decide what to do based on user quota.
+        else : # DENY
+            # Either printer, user or user print quota doesn't exist,
+            # and the job should be rejected.
+            pass # TODO : reject job
