@@ -52,12 +52,37 @@ Upgrade script :
 
   An sql script to upgrade a pre-1.01 PyKota Quota Storage 
   DataBase is included, if you want to keep your datas from
-  a pre-1.01 PyKota version, then please launch the above
-  procedure but with the pykota-upgrade-postgresql.sql script
-  instead of the pykota-postgresql.sql script.
+  a pre-1.01 PyKota version, then please launch the following
+  commands :
+  
+        - Launch the psql frontend and connect to the
+          database pykota as a PostgreSQL administrator
+          (i.e. the postgres user) :
+          
+            $ psql -h localhost -U postgres pykota
+          
+        - Executes the pykota-upgrade-postgresql.sql script :  
+        
+            pykota=# \i pykota-upgrade-postgresql.sql
+            
+        - Quit the psql frontend :    
+        
+            pykota=# \q
+            
+        - Your PostgreSQL PyKota storage is now ready
+          for use.
   
   If you already run PyKota v1.01 or above, you don't need
   to run this upgrade script.
+  
+WARNING :  
+
+  This script requires a recent version of PostgreSQL to run
+  successfully, because it requires the ALTER TABLE DROP COLUMN
+  syntax to be supported. However in case you've got an older
+  version, upgrading PostgreSQL is not mandatory, you will just 
+  have two unused fields in the grouppquota table, these
+  fields are pagecounter and lifepagecounter, just forgot them.
   
 IMPORTANT :
 
