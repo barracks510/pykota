@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/04/15 21:58:33  jalet
+# edpykota now accepts a --delete option.
+# Preparation to allow edpykota to accept much more command line options
+# (WARNING : docstring is OK, but code isn't !)
+#
 # Revision 1.24  2003/04/15 13:55:28  jalet
 # Options --limitby and --balance added to edpykota
 #
@@ -286,6 +291,24 @@ class SQLStorage :
             return self.doParseResult(result)[0]
         except TypeError :      # Not found
             return
+        
+    def deleteUser(self, userid) :    
+        """Completely deletes an user from the Quota Storage."""
+        queries = []
+        queries.append("DELETE FROM groupsmembers WHERE userid=%s" % self.doQuote(userid))
+        queries.append("DELETE FROM jobhistory WHERE userid=%s" % self.doQuote(userid))
+        queries.append("DELETE FROM userpquota WHERE userid=%s" % self.doQuote(userid))
+        queries.append("DELETE FROM users WHERE id=%s" % self.doQuote(userid))
+        # TODO : What should we do if we delete the last person who used a given printer ?
+        self.doQuery(queries)
+        
+    def deleteGroup(self, groupid) :    
+        """Completely deletes an user from the Quota Storage."""
+        queries = []
+        queries.append("DELETE FROM groupsmembers WHERE groupid=%s" % self.doQuote(groupid))
+        queries.append("DELETE FROM grouppquota WHERE groupid=%s" % self.doQuote(groupid))
+        queries.append("DELETE FROM groups WHERE id=%s" % self.doQuote(groupid))
+        self.doQuery(queries)
         
     def computePrinterJobPrice(self, printerid, jobsize) :    
         """Returns the price for a job on a given printer."""

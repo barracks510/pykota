@@ -22,6 +22,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2003/04/15 21:58:33  jalet
+# edpykota now accepts a --delete option.
+# Preparation to allow edpykota to accept much more command line options
+# (WARNING : docstring is OK, but code isn't !)
+#
 # Revision 1.36  2003/04/15 13:55:28  jalet
 # Options --limitby and --balance added to edpykota
 #
@@ -159,6 +164,18 @@ options :
   -a | --add           Adds users and/or printers if they don't 
                        exist on the Quota Storage Server.
                        
+  -d | --delete        Deletes users/groups from the quota storage.
+                       Printers are never deleted.
+                       
+  -c | --charge p[,j]  Sets the price per page and per job to charge
+                       for a particular printer. Job price is optional.
+                       If both are to be set, separate them with a comma.
+                       Floating point values are allowed.
+  
+  -i | --ingroups g1[,g2...]  Puts the users into each of the groups
+                              listed, separated by commas. The groups
+                              must already exist in the Quota Storage.
+  
   -u | --users         Edit users print quotas, this is the default.
   
   -P | --printer p     Edit quotas on printer p only. Actually p can
@@ -211,10 +228,12 @@ examples :
   of 50 pages, and a hard limit of 60 pages. If either user jerome or
   printer lp doesn't exist on the Quota Storage Server then nothing is done.
 
-  $ edpykota --add --printer lp -S 50 -H 60 jerome
+  $ edpykota --add --printer lp --ingroups coders,it -S 50 -H 60 jerome
   
   Same as above, but if either user jerome or printer lp doesn't exist 
-  on the Quota Storage Server they are automatically added. 
+  on the Quota Storage Server they are automatically added. Also
+  user jerome is put into the groups "coders" and "it" which must
+  already exist in the Quota Storage.
   WARNING : the CUPS PPD file for this printer must still be modified
             manually, as well as pykota's configuration file for a
             new printer to be managed successfully.
@@ -247,6 +266,11 @@ examples :
   This will increase jerome's account balance by 10.0 (in your
   own currency). You can decrease the account balance with a
   dash prefix, and set it to a fixed amount with no prefix.
+  
+  $ edpykota --delete jerome rachel
+  
+  This will completely delete jerome and rachel from the Quota Storage
+  database. All their quotas and jobs will be deleted too.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -321,10 +345,13 @@ class EdPyKota(PyKotaTool) :
                 softlimit = hardlimit
                 if softlimit is not None :
                     self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
-            if (not options["reset"] and not options["noquota"] and not options["prototype"] and not options["limitby"] and not options["balance"]) and ((hardlimit is None) or (softlimit is None)) :
+            if (not options["reset"] and not options["noquota"] and not options["prototype"] and not options["limitby"] and not options["balance"] and not options["delete"]) and ((hardlimit is None) or (softlimit is None)) :
                 raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
             if options["add"] :    
-                allidnames = [(self.storage.getUserId(n), n) for n in names]
+                if options["groups"] :    
+                    allidnames = [(self.storage.getGroupId(n), n) for n in names]
+                else :
+                    allidnames = [(self.storage.getUserId(n), n) for n in names]
             else :   
                 if options["groups"] :    
                     allidnames = self.storage.getPrinterGroups(printerid)
@@ -357,47 +384,53 @@ class EdPyKota(PyKotaTool) :
                 if quota is None :     
                     self.logger.log_message(_("Quota not found for object %s on printer %s.") % (name, printer))
                 else :    
-                    limitby = options["limitby"]
-                    if limitby :
-                        limitby = limitby.lower()
-                    if limitby and (limitby not in ('quota', 'balance')) :    
-                        limitby = 'quota'
-                    if options["groups"] :
-                        if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
-                            self.storage.setGroupPQuota(ident, printerid, softlimit, hardlimit)
-                        if options["reset"] :
-                            self.storage.resetGroupPQuota(ident, printerid)
-                        if limitby :
-                            self.storage.limitGroupBy(ident, limitby)
-                        self.warnGroupPQuota(name, printer)    
+                    if options["delete"] :
+                        if options["groups"] :
+                            self.storage.deleteGroup(ident)
+                        else :
+                            self.storage.deleteUser(ident)
                     else :
-                        if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
-                            self.storage.setUserPQuota(ident, printerid, softlimit, hardlimit)
-                        if options["reset"] :
-                            self.storage.resetUserPQuota(ident, printerid)
+                        limitby = options["limitby"]
                         if limitby :
-                            self.storage.limitUserBy(ident, limitby)
-                        balance = options["balance"]    
-                        if balance :
-                            balance = balance.strip()
-                            try :
-                                balancevalue = float(balance)
-                            except ValueError :    
-                                pass # TODO : log something when incorrect balance value
-                            else :    
-                                if balance.startswith("+") or balance.startswith("-") :
-                                    self.storage.increaseUserBalance(ident, balancevalue)
-                                else :
-                                    self.storage.setUserBalance(ident, balancevalue)
-                        self.warnUserPQuota(name, printer)    
+                            limitby = limitby.lower()
+                        if limitby and (limitby not in ('quota', 'balance')) :    
+                            limitby = 'quota'
+                        if options["groups"] :
+                            if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
+                                self.storage.setGroupPQuota(ident, printerid, softlimit, hardlimit)
+                            if options["reset"] :
+                                self.storage.resetGroupPQuota(ident, printerid)
+                            if limitby :
+                                self.storage.limitGroupBy(ident, limitby)
+                            self.warnGroupPQuota(name, printer)    
+                        else :
+                            if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
+                                self.storage.setUserPQuota(ident, printerid, softlimit, hardlimit)
+                            if options["reset"] :
+                                self.storage.resetUserPQuota(ident, printerid)
+                            if limitby :
+                                self.storage.limitUserBy(ident, limitby)
+                            balance = options["balance"]    
+                            if balance :
+                                balance = balance.strip()
+                                try :
+                                    balancevalue = float(balance)
+                                except ValueError :    
+                                    pass # TODO : log something when incorrect balance value
+                                else :    
+                                    if balance.startswith("+") or balance.startswith("-") :
+                                        self.storage.increaseUserBalance(ident, balancevalue)
+                                    else :
+                                        self.storage.setUserBalance(ident, balancevalue)
+                            self.warnUserPQuota(name, printer)    
                      
 if __name__ == "__main__" : 
     try :
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhl:b:naugrp:P:S:H:"
-        long_options = ["help", "version", "limitby=", "balance=", "noquota", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
+        short_options = "vhdc:l:b:i:naugrp:P:S:H:"
+        long_options = ["help", "version", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -419,6 +452,9 @@ if __name__ == "__main__" :
         options["noquota"] = options["n"] or options["noquota"]
         options["limitby"] = options["l"] or options["limitby"]
         options["balance"] = options["b"] or options["balance"] 
+        options["delete"] = options["d"] or options["delete"] 
+        options["ingroups"] = options["i"] or options["ingroups"]
+        options["charge"] = options["c"] or options["charge"]
         
         if options["help"] :
             editor.display_usage_and_quit()
@@ -426,11 +462,13 @@ if __name__ == "__main__" :
             editor.display_version_and_quit()
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
+        elif (options["add"] or options["prototype"]) and options["delete"] :    
+            raise PyKotaToolError, _("incompatible options, see help.")
         elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif options["groups"] and options["balance"] :
+        elif options["groups"] and (options["balance"] or options["ingroups"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["groups"] :    
             raise PyKotaToolError, _("option --groups is currently not implemented.")
