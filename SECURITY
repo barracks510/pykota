@@ -29,38 +29,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 How to improve PyKota's security :
 ----------------------------------
 
-  - In CUPS disable RAW printing, so that users can't bypass the accounting
-    filter.
-    
-  - Ensure that only the user your printing system is run as can
-    execute the pykota filter. Depending on your system's configuration,
-    this may give something like :
-    
-      $ chown lp.daemon /usr/bin/pykota
-      $ chmod 700 /usr/bin/pykota
-      
-    If any user could run the pykota filter, then he theorically could 
-    forbid any other user to print by incorrectly charging them for
-    pages they would never have printed.
-    
-  - Ensure that only the print quota administrator (e.g. root) can 
-    execute the edpykota and warnpykota commands. Depending on your 
-    system's configuration, this may give something like :
-    
-      $ chown root.root /usr/bin/edpykota /usr/bin/warnpykota
-      $ chmod 700 /usr/bin/edpykota /usr/bin/warnpykota
-      
-    or   
-    
-      $ chown root.lpadmin /usr/bin/edpykota /usr/bin/warnpykota
-      $ chmod 750 /usr/bin/edpykota /usr/bin/warnpykota
-      
-    If any user could run warnpykota, then he could fill the mailboxes
-    of all users who are above quota, by repeatedly running warnpykota.
-    
-    If any user could run edpykota, then he could, in the better case,
-    set his account to noquota mode. In the worst case he could render
-    PyKota and/or your printing system completely inoperative.
+  - Most of the stuff which was there was deleted because PyKota's
+    configuration files permissions should take care of most
+    security problems. BUT of course, you have to set them correctly !
     
   - Ensure that no regular user can read PyKota administrator's 
     configuration file, but that both the print quota administrator and 
@@ -74,9 +45,9 @@ How to improve PyKota's security :
     able to read PyKota's configuration file.
     
     Letting any user read PyKota administrator's configuration file may 
-    expose passwords or database information which would allow direct 
-    connections to it if the user can write and execute his own scripts 
-    or download and execute his own version of PyKota. 
+    expose passwords or database information which would allow write
+    access to the database, and so may transform your print quota
+    management in a nightmare.
   
     If you want to let users generate their own print quota reports, 
     then ensure that /etc/pykota/pykota.conf is readable by
@@ -113,5 +84,12 @@ How to improve PyKota's security :
     For the OpenLDAP backend, YOU have to ensure that no regular
     user can write to any PyKota specific attribute or objectClass.
     Otherwise they could modify their quota at will.
+    
+    You also have to define two binding DNs in your LDAP tree,
+    one of them should be able to have a read only access to
+    everything. The other one should be able to write, for 
+    example your LDAP admin user is fine for this.
+    Now put the readonly user in /etc/pykota/pykota.conf
+    and the read-write one in /etc/pykota/pykotadmin.conf
     
 ====================================================================

@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/11/15 14:26:44  jalet
+# General improvements to the documentation.
+# Email address changed in sample configuration file, because
+# I receive low quota messages almost every day...
+#
 # Revision 1.7  2003/11/14 22:05:12  jalet
 # New CUPS backend fully functionnal.
 # Old CUPS configuration method is now officially deprecated.
@@ -157,13 +162,14 @@ def main(thebackend) :
     # Fortunately SIGPIPE is already ignored by Python
     # It's there just in case this changes in the future.
     # But here we will IGNORE SIGTERM for now, and see
-    # if we shouldn't pass it to the original backend
-    # instead.
+    # in a future release if we shouldn't pass it to the 
+    # original backend instead.
     signal.signal(signal.SIGPIPE, signal.SIG_IGN)
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
     
     #
-    # Get the last page counter and last username from the Quota Storage backend
+    # retrieve some informations on the current printer and user
+    # from the Quota Storage.
     printer = thebackend.storage.getPrinter(thebackend.printername)
     if not printer.Exists :
         # The printer is unknown from the Quota Storage perspective

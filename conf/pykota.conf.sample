@@ -56,7 +56,9 @@ storageuser: pykotauser
 # caching mechanism works with both PostgreSQL and OpenLDAP backends
 # but may be really interesting only with OpenLDAP.
 #
-# ACTIVATING CACHE IS HEAVILY RECOMMANDED WITH THE LDAP BACKEND !
+# ACTIVATING CACHE MAY CAUSE PRECISION PROBLEMS IN PRINT ACCOUNTING
+# IF AN USER PRINTS ON SEVERAL PRINTERS AT THE SAME TIME.
+# YOU MAY FIND IT INTERESTING ANYWAY, ESPECIALLY FOR LDAP.
 #
 storagecaching: No
 
@@ -119,9 +121,12 @@ disablehistory: No
 # if the value is not set then the default SYSTEM applies.
 logger: system
 
-# Enable debugging ? Put YES instead here,
-# but only if something went wrong and you want
-# to learn from where the problem comes from.
+# Enable debugging ? Put YES or NO there.
+# From now on, YES is the default in this sample
+# configuration file, so that debugging is activated
+# when configuring PyKota. After all works, just
+# put NO instead to save some disk space in your
+# logs.
 # Actually only database queries are logged.
 debug : No
 
@@ -174,8 +179,8 @@ accounter: querying
 # If both are defined, the printer option has priority.
 # If these values are not set, the default admin root 
 # and the default adminmail root@localhost are used.
-admin: Jerome Alet
-adminmail: alet@librelogiciel.com
+admin: John Doe
+adminmail: root@localhost
 
 #
 # Who should we send an email to in case a quota is reached ?

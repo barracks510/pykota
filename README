@@ -160,20 +160,29 @@ implemented :
 
   - The 'querying' method consists in querying the printer (via SNMP
     or Netatalk or any other method of your choice) for its total pages 
-    counter, just before the beginning of a job, and use this to modify 
-    the *preceding* user's quota. So you're always late of one print job, 
-    but this is generally ok, especially because a check is also done to 
-    see if the current user is allowed or not to print. 
+    counter.
+    
+    With CUPS, this is done both at the beginning and at the end of a
+    print job. The counters difference is then immediately used to 
+    decrease the user's account balance or increase his quota usage.
+    
+    With LPRng, this is done just before the beginning of a job, and used 
+    this to modify the *preceding* user's quota. So you're always late 
+    of one print job, but this is generally ok, especially because a 
+    check is also done to see if the current user is allowed or not to 
+    print. 
     
   - The 'external' method consists in delegating the computation of the
     job's size in number of pages to any external command of your choice.
     The command can read the job's data from its standard input and MUST
-    output the job's size on its standard output.
+    output the job's size on its standard output. Changes to the user
+    account are reported immediately, both with CUPS and LPRng.
     
   - The 'stupid' method consists in counting the 'showpage' PostSript  
     statements in the job. THIS IS UNRELIABLE, but can serve as an
     example if you plan to write your own accounting method for
-    integration into PyKota.
+    integration into PyKota. It basically works like the 'external'
+    method, but does the computation internally.
   
 PyKota is known to work fine with HP Laserjet 2100 and 2200, and 
 Apple LaserWriter 16/600 PS, both with CUPS and LPRng, under 
@@ -188,13 +197,9 @@ systems.
 INSTALLATION:
 =============
 
-WARNING :
-=========
+NB :
+====
 
-  If you run a PyKota version lower than 1.03, you definitely have to 
-  upgrade you Quota Storage Database. Please read the documentation 
-  included in the initscripts subdirectory first ! 
-  
   Users of MacOS-X may find the following tutorial useful :
 
       http://ell-tech.com/pages/pykota.php
@@ -217,6 +222,13 @@ Prerequisite :
  or     
     - python-ldap Python module and the OpenLDAP client libraries  
       if you plan to use OpenLDAP as the Quota Storage backend.
+    
+  You may also benefit from having the following tools installed to
+  deal with some printers :
+  
+    - npadmin
+    - netcat
+    - ghostscript
     
   You need to have the following tools installed on the Quota Storage  
   Server :
@@ -271,13 +283,20 @@ the associated README file and execute the initialization script
 to create an empty PyKota Storage. Upgrade scripts may be 
 provided as well.
 
-Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample
+Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample 
 sample configuration files to /etc/pykota/pykota.conf and 
-/etc/pykota/pykotadmin.conf. The installation script tries to do this 
-for you if needed and you agreed to this action.
-You need to adapt these files to your own needs.
-Especially you have to create sections named after your own
-printers, and change the administrator's email address.
+/etc/pykota/pykotadmin.conf. The installation script tries to do 
+this for you if needed and you agreed to this action. You need to 
+adapt these files to your own needs. Especially you have to create 
+sections named after your own printers, and change the 
+administrator's email address which by default is root@localhost.
+Read and try to understand these two very well commented files,
+so that you'll encounter less problems later.
+Also be sure to double check that commands to query printers
+for their internal page counter work from the command line
+before using them in PyKota's configuration.
+
+The rest of the installation depends on your printing system :
 
   - CUPS Printing System :
   
@@ -308,19 +327,23 @@ printers, and change the administrator's email address.
             
         Configure your printer as usual.    
         
+        Now double check /etc/pykota/pykota.conf 
+        This file should contain a section named after the
+        printer you've just added.
+        
         That's all.
     
     For existing printers :
     
-        If you had already installed PyKota, then remove
-        the *cupsFilter lines in your PPD files for each
-        printer already managed printers. Each line to
-        remove is of the form :
+        If you had already installed a version of PyKota earlier 
+        than 1.16alpha7, then remove the *cupsFilter lines in your 
+        PPD files for each printer already managed printers. Each 
+        line to remove is of the form :
         
           *cupsFilter: "application/vnd.cups-postscript 0 /usr/bin/pykota"
         
         Don't touch anything else, especially any other *cupsFilter line.
-        Then save each of these files and restart CUPS.
+        Then save each of these files.
         
         Then, the easiest is to directly modify the DeviceURI lines 
         in /etc/cups/printers.conf, you just have to put 
@@ -343,6 +366,13 @@ printers, and change the administrator's email address.
     :as=|/usr/bin/pykota
     
     For each printer on which you want to use print accounting.
+    
+    And then save the file and restart LPRng :
+    
+        $ /etc/init.d/lprng restart
+        
+Now you can begin to populate the PyKota's database with printers,
+users and groups :
   
 Add printers and users to the quota system and set their quota values : 
 

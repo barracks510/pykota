@@ -26,10 +26,8 @@ PyKota's FAQ :
   * How can I make PyKota work with my non-postscript printer under 
     CUPS ?  
   
-    You have to define a new filtering chain for this, because most
-    probably your printer's PPD file already contain a *cupsFilter
-    line and only one is allowed. So it's impossible to plug PyKota
-    there. Search the mailing list archives to learn how to do.
+    From version 1.16alpha7, PyKota includes a CUPS backend which
+    allows you to use any type of printer and any driver.
     
   * How can I diagnose the problem when something goes wrong ?  
   
@@ -47,15 +45,10 @@ PyKota's FAQ :
     
   * Some, not all, print jobs are never accounted for, why ?
   
-    Probably because some jobs were printed in raw mode.
-    Job printed this way are never filtered, and so PyKota
-    doesn't see them.
-    If you print to a CUPS server through Samba, delete the
-    "-o raw" command line option in smb.conf's print command 
-    entry, and restart Samba. Gimp also sets the "-o raw"
-    command line option some times. Be sure to disable
-    raw mode in CUPS configuration. Eventually recompile
-    CUPS without raw mode support at all.
+    From version 1.16alpha7, you can now use the cupspykota
+    CUPS backend, which ensures that all print jobs will be
+    accounted for. The use of the old pykota filter is deprecated
+    with CUPS. It remains the filter of choice for LPRng though.
     
   * When printing from Windows, the jobs are never accounted for,
     but from *nix they are. Could you explain the reason for this ?
@@ -72,4 +65,10 @@ PyKota's FAQ :
     Sure. Ask your question to the mailing list. If this is a
     frequently asked question, or if your problem is on the contrary
     very specific, it will probably be added to this document.
+    
+    You can also ask questions by IRC :
+    
+        /server irc.freenode.net
+        /join #pykota
+        
     
