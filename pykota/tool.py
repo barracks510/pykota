@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/02/27 09:09:20  jalet
+# Added a method to match strings against wildcard patterns
+#
 # Revision 1.21  2003/02/17 23:01:56  jalet
 # Typos
 #
@@ -92,6 +95,7 @@
 
 import sys
 import os
+import fnmatch
 import getopt
 import smtplib
 import gettext
@@ -210,6 +214,13 @@ class PyKotaTool :
                 if c not in validchars :
                     return 0
             return 1        
+        return 0
+        
+    def matchString(self, s, patterns) :
+        """Returns 1 if the string s matches one of the patterns, else 0."""
+        for pattern in patterns :
+            if fnmatch.fnmatchcase(s, pattern) :
+                return 1
         return 0
         
     def sendMessage(self, adminmail, touser, fullmessage) :
