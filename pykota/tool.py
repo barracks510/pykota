@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/02/06 15:03:11  jalet
+# added a method to set the limit date
+#
 # Revision 1.9  2003/02/06 10:39:23  jalet
 # Preliminary edpykota work.
 #
@@ -192,7 +195,7 @@ class PyKotaTool :
                      if softlimit <= pagecounter < hardlimit :    
                          if datelimit is None :
                              datelimit = now + gracedelay
-                             self.storage.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
+                             self.storage.setDateLimit(username, printername, datelimit)
                          if (now + gracedelay) < datelimit :
                              action = "WARN"
                          else :    
