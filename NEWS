@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha26 :
+    
+        - Fix for incorrect locale setting when starting.
+        
     - 1.20alpha25 :
     
         - pkprinters allows --list to normal users, but require user
