@@ -13,7 +13,8 @@
 #
 # $Id$
 #
-for dir in br en es fr it pt sv th ; do 
+for dir in br en es fr it pt sv th el ; do 
+    echo -n $dir ;
     cd $dir ;
     chmod 644 *.?o ;
     msgmerge -N pykota.po ../pykota.pot >pykota.po.new ;

@@ -65,7 +65,7 @@ msgstr "Variabeln 'accounter' i sektion '%s' stödjer bara värden i %s"
 
 #, python-format
 msgid "Option enforcement in section %s only supports values in %s"
-msgstr ""
+msgstr "Tillämpad option i sektion %s stödjer bara värden i %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -171,7 +171,7 @@ msgstr "Ej understödd metod %s för att lagra data"
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"
-msgstr ""
+msgstr "Kunde ej få kontakt med SMTP server : %s"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
@@ -231,11 +231,11 @@ msgstr "Utskriftssaldo lågt"
 
 #, python-format
 msgid "Printing system %s, args=%s"
-msgstr ""
+msgstr "Utskriftssystem %s, args=%s"
 
 #, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr ""
+msgstr "Kunde ej förberäkna jobbets storlek med standard PDL analys : %s"
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
@@ -335,15 +335,15 @@ msgstr "Okänd skrivaradress i HARDWARE(%s) för skrivare %s"
 
 #, python-format
 msgid "Launching HARDWARE(%s)..."
-msgstr ""
+msgstr "Startar HÅRDVARA(%s)..."
 
 #, python-format
 msgid "Incorrect answer : %s"
-msgstr ""
+msgstr "Felaktigt svar : %s"
 
 #, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr ""
+msgstr "SIGTERM skickad till hårdvarumetod %s (pid: %s)"
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
@@ -351,7 +351,7 @@ msgstr "Kunde inte hämta information från skrivare %s via HARDWARE(%s)"
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
-msgstr ""
+msgstr "Startar MJUKVARA(%s)..."
 
 #, python-format
 msgid "Unable to compute job size with accounter %s"
@@ -359,17 +359,19 @@ msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
 
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr ""
+msgstr "Problem vid inväntan för mjukvarumetod pid %s att avslutas : %s"
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
-msgstr ""
+msgstr "Mjukvarumetod %s avslutningskod är %s"
 
 #, python-format
 msgid ""
 "Search base %s doesn't seem to exist. Probable misconfiguration. Please "
 "double check /etc/pykota/pykota.conf : %s"
 msgstr ""
+"Sökbasen %s existerar inte. Möjlig felkonfiguration. Var god kontrollera /"
+"etc/pykota/pykota.conf : %s"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
@@ -392,97 +394,101 @@ msgid ""
 "Unable to find an existing objectClass %s entry with %s=%s to attach "
 "pykotaAccount objectClass"
 msgstr ""
+"Kunde ej hitta en existerande 'objectClass' %s med posten %s=%s för att "
+"binda pykotaAccount objectClass"
 
 #, python-format
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
+"Kunde ej hitta existerande post för att binda pykotaGroup objectclass %s"
 
 msgid "PyKota Reports"
-msgstr ""
+msgstr "PyKota rapporter"
 
 msgid "Report"
-msgstr ""
+msgstr "Rapport"
 
 msgid "User / Group names mask"
-msgstr ""
+msgstr "Användar- / Gruppnamn maskering"
 
 msgid "Groups report"
-msgstr ""
+msgstr "Grupprapport"
 
 msgid "History"
-msgstr ""
+msgstr "Historia"
 
 msgid "Empty"
-msgstr ""
+msgstr "Tom"
 
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 msgid "Action"
-msgstr ""
+msgstr "Aktion"
 
 msgid "User"
-msgstr ""
+msgstr "Användare"
 
 msgid "Printer"
-msgstr ""
+msgstr "Skrivare"
 
 msgid "Hostname"
-msgstr ""
+msgstr "Datornamn"
 
 msgid "JobId"
-msgstr ""
+msgstr "JobbId"
 
 msgid "JobSize"
-msgstr ""
+msgstr "JobbStorlek"
 
 msgid "JobPrice"
-msgstr ""
+msgstr "JobbPris"
 
 msgid "Copies"
-msgstr ""
+msgstr "Kopior"
 
 msgid "JobBytes"
-msgstr ""
+msgstr "JobBytes"
 
 msgid "PageCounter"
-msgstr ""
+msgstr "SidRäknare"
 
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 msgid "Filename"
-msgstr ""
+msgstr "Filnamn"
 
 msgid "Options"
-msgstr ""
+msgstr "Optioner"
 
 msgid "Job contains no data. Printing is denied."
-msgstr ""
+msgstr "Jobb innehåller ingen data. Utskrift nekad"
 
 msgid "Job accounting begins."
-msgstr ""
+msgstr "Jobbsaldo påbörjas."
 
 msgid "Job accounting ends."
-msgstr ""
+msgstr "Jobbsaldo avslutas."
 
 msgid "Job size forced to 0 because printing is denied."
-msgstr ""
+msgstr "Jobbstorlek satt till 0 för att utskriften nekades."
 
 #, python-format
 msgid "Job size : %i"
-msgstr ""
+msgstr "Jobbstorlek : %i"
 
 #, python-format
 msgid "Updating user %s's quota on printer %s"
-msgstr ""
+msgstr "Uppdaterar användare %s kvot på skrivare %s"
 
 msgid "Job added to history."
-msgstr ""
+msgstr "Jobb adderat till arkivet."
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
 msgstr ""
+"Filnummer %s oregistrerat två gånger från utfrågning av objekt, ignoreras."
 
 #, python-format
 msgid "SIGTERM was sent to real backend %s (pid: %s)"
@@ -573,81 +579,86 @@ msgstr "Oförenliga val, se manualerna"
 
 #, python-format
 msgid "Printer %s already exists, skipping."
-msgstr ""
+msgstr "Skrivare %s existerar redan, hoppar över."
 
 #, python-format
 msgid "Printer %s already exists, will be modified."
-msgstr ""
+msgstr "Skrivare %s existerar redan, kommer bli modifierad."
 
 msgid "in"
-msgstr ""
+msgstr "i"
 
 msgid "You have to pass printer groups names on the command line"
-msgstr ""
+msgstr "Du måste skicka med skrivargruppnamn på kommandoraden"
 
 msgid "You have to pass printer names on the command line"
 msgstr "Du måste skicka med skrivarnamn på kommandoraden"
 
 msgid "Software accounting already done in first pass. Ignoring."
-msgstr ""
+msgstr "Mjukvarusaldo redan utfört under första passet. Ignoreras."
 
 msgid "Hardware accounting already done in first pass. Ignoring."
-msgstr ""
+msgstr "Hårdvarusaldo redan utfört under första passet. Ignoreras."
 
 #, python-format
 msgid "Invalid DeviceURI : %s"
-msgstr ""
+msgstr "Felaktig EnhetsURI : %s"
 
 msgid ""
 "\n"
 "Please wait while pkhint analyzes your printing system's configuration..."
 msgstr ""
+"\n"
+"Var god vänta medan pkhint analyserar utskriftssystemets konfiguration..."
 
 #, python-format
 msgid "Unknown device %s for printer %s"
-msgstr ""
+msgstr "Okänd enhet %s för skrivare %s"
 
 msgid ""
 "\n"
 "Put the following lines into your /etc/pykota/pykota.conf file :\n"
 msgstr ""
+"\n"
+"Lägg till följande rader i filen /etc/pykota/pykota.conf :\n"
 
 msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
-msgstr ""
+msgstr "# UPPMÄRKSAMMA : om mjukvarumetoden föreslås, betyder det inte"
 
 msgid "# that hardware accounting wouldn't work, this only means that PyKota"
 msgstr ""
+"# att hårdvarumetoden inte skulle fungera, det betyder endast att PyKota"
 
 msgid "# wasn't able to autodetect which hardware accounting method to use."
-msgstr ""
+msgstr "# inte automatiskt kunde upptäcka vilken metod den skall använda."
 
 #, python-format
 msgid "Invalid duration option %s"
-msgstr ""
+msgstr "Felaktig val för 'duration' %s"
 
 #, python-format
 msgid "Invalid loop option %s"
-msgstr ""
+msgstr "Felaktig val för 'loop' %s"
 
 #, python-format
 msgid "Invalid sleep option %s"
-msgstr ""
+msgstr "Felaktig val för 'sleep %s"
 
 #, python-format
 msgid "Invalid color option %s"
-msgstr ""
+msgstr "Felaktig val för 'color' %s"
 
 #, python-format
 msgid "User %s doesn't exist in PyKota's database"
-msgstr ""
+msgstr "Användare %s existerar inte i PyKotas databas"
 
 #, python-format
 msgid "Pages used on %s : %s"
-msgstr ""
+msgstr "Sidor använda på %s : %s"
 
 #, python-format
 msgid "PyKota Units left : %.2f"
-msgstr ""
+msgstr "PyKota enheter kvar : %.2f"
 
 #, python-format
 msgid "Your account balance : %.2f"
@@ -663,4 +674,4 @@ msgstr "Kostnad på skrivare %s : %.2f"
 
 #, python-format
 msgid "Previous page"
-msgstr ""
+msgstr "Föregående sida"
