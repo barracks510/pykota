@@ -88,7 +88,7 @@ msgid "Invalid grace delay %s"
 msgstr ""
 
 #, python-format
-msgid "Invalid poor man's treshold %s"
+msgid "Invalid poor man's threshold %s"
 msgstr ""
 
 msgid ""

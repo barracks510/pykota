@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2004/07/27 07:07:27  jalet
+# Typo : treshold ==> threshold
+#
 # Revision 1.49  2004/06/03 21:53:24  jalet
 # crashrecipient directive
 #
@@ -457,7 +460,7 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Invalid grace delay %s") % gd
             
     def getPoorMan(self) :    
-        """Returns the poor man's treshold."""
+        """Returns the poor man's threshold."""
         try :
             pm = self.getGlobalOption("poorman")
         except PyKotaConfigError :    
@@ -465,7 +468,7 @@ class PyKotaConfig :
         try :
             return float(pm)
         except (TypeError, ValueError) :    
-            raise PyKotaConfigError, _("Invalid poor man's treshold %s") % pm
+            raise PyKotaConfigError, _("Invalid poor man's threshold %s") % pm
             
     def getPoorWarn(self) :    
         """Returns the poor man's warning message."""

@@ -88,8 +88,8 @@ msgid "Invalid grace delay %s"
 msgstr "ค่า grace delay %s ไม่ถูกต้อง"
 
 #, python-format
-msgid "Invalid poor man's treshold %s"
-msgstr "ค่า poor man's treshold %s ไม่ถูกต้อง"
+msgid "Invalid poor man's threshold %s"
+msgstr "ค่า poor man's threshold %s ไม่ถูกต้อง"
 
 msgid ""
 "Your Print Quota account balance is Low.\n"

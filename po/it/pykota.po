@@ -91,8 +91,8 @@ msgid "Invalid grace delay %s"
 msgstr "Periodo di grace delay %s non valido"
 
 #, python-format
-msgid "Invalid poor man's treshold %s"
-msgstr "Poor man's treshold non valido %s"
+msgid "Invalid poor man's threshold %s"
+msgstr "Poor man's threshold non valido %s"
 
 msgid ""
 "Your Print Quota account balance is Low.\n"
