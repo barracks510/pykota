@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha22 :
     
+        - edpykota now refuse to work if the user is not a PyKota admin.
+        
         - Fixes a recently introduced bug with users groups and PostgreSQL.
         
     - 1.20alpha21 :
