@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2004/11/10 22:17:12  jalet
+# Installation script is now non-interactive again, and doesn't install
+# the sample configuration files into /etc/pykota anymore.
+# Dependencies check is now done by running checkdeps.py
+# The database creation scripts will now be included in RPM packages.
+#
 # Revision 1.55  2004/10/16 10:20:32  jalet
 # Now installs translated manual pages
 #
@@ -212,20 +218,6 @@
 #
 #
 
-#########################################################
-
-#
-# IMPORTANT : Modify the variable below if needed 
-#
-# 0 - You're NOT trying to build a Debian package 
-#
-# 1 - You ARE trying to build a Debian package
-#
-DEBIAN_BUILD_PACKAGE = 0
-
-#########################################################
-
-
 import sys
 import glob
 import os
@@ -237,254 +229,9 @@ except ImportError, msg :
     sys.stderr.write("You need the DistUtils Python module.\nunder Debian, you may have to install the python-dev package.\nOf course, YMMV.\n")
     sys.exit(-1)
 
-from distutils import sysconfig
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
 
-ACTION_CONTINUE = 0
-ACTION_ABORT = 1
-
-if DEBIAN_BUILD_PACKAGE :
-    ETC_DIR = "./debian/tmp/etc/pykota/"
-else :    
-    ETC_DIR = "/etc/pykota/"
-
-def checkOldModule(path) :
-    """Checks if an old PyKota module is still in the destination (in case of upgrade)."""
-    fname = os.path.join(sysconfig.get_python_lib(), "pykota", path)
-    for ext in ["py", "pyc", "pyo"] :
-        fullname = "%s.%s" % (fname, ext)
-        if os.path.isfile(fullname) and not DEBIAN_BUILD_PACKAGE :
-            sys.stderr.write("ERROR : old module %s still exists. Remove it and restart installation.\n" % fullname)
-            sys.stderr.write("INSTALLATION ABORTED !\n")
-            sys.exit(-1)
-    
-def checkOldScript(cmd) :
-    """Checks if an old shell script is still around in /usr/bin."""
-    return os.path.isfile(os.path.join("/usr/bin", cmd))
-
-def checkModule(module) :
-    """Checks if a Python module is available or not."""
-    try :
-        exec "import %s" % module
-    except ImportError :    
-        return 0
-    else :    
-        return 1
-        
-def checkCommand(command) :
-    """Checks if a command is available or not."""
-    input = os.popen("type %s 2>/dev/null" % command)
-    result = input.read().strip()
-    input.close()
-    return result
-    
-def checkWithPrompt(prompt, module=None, command=None, helper=None) :
-    """Tells the user what will be checked, and asks him what to do if something is absent."""
-    sys.stdout.write("Checking for %s availability : " % prompt)
-    sys.stdout.flush()
-    if command is not None :
-        result = checkCommand(command)
-    elif module is not None :    
-        result = checkModule(module)
-    if result :    
-        sys.stdout.write("OK\n")
-        return ACTION_CONTINUE
-    else :    
-        sys.stdout.write("NO.\n")
-        sys.stderr.write("ERROR : %s not available !\n" % prompt)
-        if helper is not None and not DEBIAN_BUILD_PACKAGE :
-            sys.stdout.write("%s\n" % helper)
-            sys.stdout.write("You may continue safely if you don't need this functionnality.\n")
-        answer = raw_input("%s is missing. Do you want to continue anyway (y/N) ? " % prompt)
-        if DEBIAN_BUILD_PACKAGE :
-            return ACTION_CONTINUE
-        elif answer[0:1].upper() == 'Y' :
-            return ACTION_CONTINUE
-        else :
-            return ACTION_ABORT
-    
-if ("install" in sys.argv) and not ("help" in sys.argv) :
-    # checks if Python version is correct, we need >= 2.1
-    if not (sys.version > "2.1") :
-        sys.stderr.write("PyKota needs at least Python v2.1 !\nYour version seems to be older than that, please update.\nAborted !\n")
-        sys.exit(-1)
-        
-    # checks if a configuration file is present in the new location
-    if not os.path.isfile(os.path.join(ETC_DIR,"pykota.conf")) :
-        if not os.path.isdir(ETC_DIR) :
-            try :
-                os.mkdir(ETC_DIR)
-            except OSError, msg :    
-                sys.stderr.write("An error occured while creating the etc/pykota directory.\n%s\n" % msg)
-                sys.exit(-1)
-                
-        if os.path.isfile("/etc/pykota.conf") and not DEBIAN_BUILD_PACKAGE :
-            # upgrade from pre-1.14 to 1.14 and above
-            sys.stdout.write("From version 1.14 on, PyKota expects to find its configuration\nfile in /etc/pykota/ instead of /etc/\n")
-            sys.stdout.write("It seems that you've got a configuration file in the old location,\nso it will not be used anymore,\nand there's no configuration file in the new location.\n")
-            answer = raw_input("Do you want to move /etc/pykota.conf to /etc/pykota/pykota.conf (y/N) ? ")
-            if answer[0:1].upper() == 'Y' :
-                try :
-                    os.rename("/etc/pykota.conf", os.path.join(ETC_DIR,"pykota.conf"))
-                except OSError :    
-                    sys.stderr.write("ERROR : An error occured while moving /etc/pykota.conf to /etc/pykota/pykota.conf\nAborted !\n")
-                    sys.exit(-1)
-                else :    
-                    sys.stdout.write("Configuration file /etc/pykota.conf moved to /etc/pykota/pykota.conf.\n")
-            else :
-                sys.stderr.write("WARNING : Configuration file /etc/pykota.conf won't be used ! Move it to /etc/pykota/ instead.\n")
-                sys.stderr.write("PyKota installation will continue anyway,\nbut the software won't run until you put a proper configuration file in /etc/pykota/\n")
-            dummy = raw_input("Please press ENTER when you have read the message above. ")
-        else :
-            # first installation
-            if DEBIAN_BUILD_PACKAGE :
-                try :
-                    shutil.copy("conf/pykota.conf.sample", os.path.join(ETC_DIR,"pykota.conf"))
-                    shutil.copy("conf/pykotadmin.conf.sample", os.path.join(ETC_DIR,"pykotadmin.conf"))
-                except IOError, msg :
-                    sys.stderr.write("WARNING : Problem while installing sample configuration files in /etc/pykota/, please do it manually.\n%s\n" % msg)
-            else :
-                if os.path.isfile("conf/pykota.conf.sample") :
-                    answer = raw_input("Do you want to install\n\tconf/pykota.conf.sample as /etc/pykota/pykota.conf (y/N) ? ")
-                    if answer[0:1].upper() == 'Y' :
-                        try :
-                            shutil.copy("conf/pykota.conf.sample", os.path.join(ETC_DIR,"pykota.conf"))        
-                            shutil.copy("conf/pykotadmin.conf.sample", os.path.join(ETC_DIR,"pykotadmin.conf"))        
-                        except IOError, msg :    
-                            sys.stderr.write("WARNING : Problem while installing sample configuration files in /etc/pykota/, please do it manually.\n%s\n" % msg)
-                        else :    
-                            sys.stdout.write("Configuration file /etc/pykota/pykota.conf and /etc/pykota/pykotadmin.conf installed.\nDon't forget to adapt these files to your needs.\n")
-                    else :        
-                        sys.stderr.write("WARNING : PyKota won't run without a configuration file !\n")
-                else :        
-                    # Problem ?
-                    sys.stderr.write("WARNING : PyKota's sample configuration file cannot be found.\nWhat you have downloaded seems to be incomplete,\nor you are not in the pykota directory.\nPlease double check, and restart the installation procedure.\n")
-                dummy = raw_input("Please press ENTER when you have read the message above. ")
-    else :    
-        # already at 1.14 or above.
-        # Now check if old scripts are still in /usr/bin
-        for script in ["cupspykota", "pykota", "waitprinter.sh", "papwaitprinter.sh", "mailandpopup.sh", "pagecount.pl"] :
-            if checkOldScript(script) and not DEBIAN_BUILD_PACKAGE :
-                sys.stderr.write("WARNING : the %s script is still present in /usr/bin, but the new version will be installed in /usr/share/pykota, please remove the %s script from /usr/bin and double check that your configuration is correct.\n" % (script, script))
-                if script == "cupspykota" :
-                    sys.stderr.write("\nBe sure to also remove the old symbolic link from /usr/lib/cups/backend/cupspykota to /usr/bin/cupspykota. You'll have to recreate it once the installation has finished successfully.\n")
-                sys.stderr.write("\nINSTALLATION ABORTED !\nPlease correct the problem and restart installation.\n")
-                sys.exit(-1)
-                
-        # now checks if pre-1.19alpha8 code is still there       
-        for module in ["accounters/querying", "accounters/external", "requesters/snmp", "requesters/external"] :
-            checkOldModule(module)
-        
-    # Second stage, we will fail if onfiguration is incorrect for security reasons
-    from pykota.config import PyKotaConfig,PyKotaConfigError
-    try :
-        conf = PyKotaConfig(ETC_DIR)
-    except PyKotaConfigError, msg :    
-        sys.stedrr.write("%s\nINSTALLATION ABORTED !\nPlease restart installation.\n" % msg)
-        sys.exit(-1)
-    else :
-        hasadmin = conf.getGlobalOption("storageadmin", ignore=1)
-        hasadminpw = conf.getGlobalOption("storageadminpw", ignore=1)
-        hasuser = conf.getGlobalOption("storageuser", ignore=1)
-        if hasadmin or hasadminpw : 
-            sys.stderr.write("From version 1.14 on, PyKota expects that /etc/pykota/pykota.conf doesn't contain the Quota Storage Administrator's name and optional password.\n")
-            sys.stderr.write("Please put these in a [global] section in /etc/pykota/pykotadmin.conf\n")
-            sys.stderr.write("Then replace these values with 'storageuser' and 'storageuserpw' in /etc/pykota/pykota.conf\n")
-            sys.stderr.write("These two fields were re-introduced to allow any user to read to his own quota, without allowing them to modify it.\n")
-            sys.stderr.write("You can look at the conf/pykota.conf.sample and conf/pykotadmin.conf.sample files for examples.\n")
-            sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
-            sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
-            sys.exit(-1)
-        if not hasuser :
-            sys.stderr.write("From version 1.14 on, PyKota expects that /etc/pykota/pykota.conf contains the Quota Storage Normal User's name and optional password.\n")
-            sys.stderr.write("Please put these in a [global] section in /etc/pykota/pykota.conf\n")
-            sys.stderr.write("These fields are respectively named 'storageuser' and 'storageuserpw'.\n")
-            sys.stderr.write("These two fields were re-introduced to allow any user to read to his own quota, without allowing them to modify it.\n")
-            sys.stderr.write("You can look at the conf/pykota.conf.sample and conf/pykotadmin.conf.sample files for examples.\n")
-            sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
-            sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
-            sys.exit(-1)
-            
-        sb = conf.getStorageBackend()
-        if (sb.get("storageadmin") is None) or (sb.get("storageuser") is None) :
-            sys.stderr.write("From version 1.14 on, PyKota expects that /etc/pykota/pykota.conf contains the Quota Storage Normal User's name and optional password which gives READONLY access to the Print Quota DataBase,")
-            sys.stderr.write("and that /etc/pykota/pykotadmin.conf contains the Quota Storage Administrator's name and optional password which gives READ/WRITE access to the Print Quota DataBase.\n")
-            sys.stderr.write("Your configuration doesn't seem to be OK, please modify your configuration files in /etc/pykota/\n")
-            sys.stderr.write("AND RESTART THE INSTALLATION.\n")
-            sys.stderr.write("INSTALLATION ABORTED FOR SECURITY REASONS.\n")
-            sys.exit(-1)
-            
-        # warns for new LDAP fields    
-        if sb.get("storagebackend") == "ldapstorage" :    
-            usermail = conf.getGlobalOption("usermail", ignore=1)
-            newuser = conf.getGlobalOption("newuser", ignore=1)
-            newgroup = conf.getGlobalOption("newgroup", ignore=1)
-            if not (usermail and newuser and newgroup) :
-                sys.stderr.write("From version 1.14 on, PyKota LDAP Support needs three additional configuration fields.\n")
-                sys.stderr.write("Please put the 'usermail', 'newuser' and 'newgroup' configuration fields in a\n[global] section in /etc/pykota/pykota.conf\n")
-                sys.stderr.write("You can look at the conf/pykota.conf.sample file for examples.\n")
-                sys.stderr.write("YOU HAVE TO DO THESE MODIFICATIONS MANUALLY, AND RESTART THE INSTALLATION.\n")
-                sys.stderr.write("INSTALLATION ABORTED BECAUSE CONFIGURATION INCOMPLETE.\n")
-                sys.exit(-1)
-
-#### INFO ####
-                
-        # Say something about caching mechanism and disabling job history
-        if not DEBIAN_BUILD_PACKAGE :
-            sys.stdout.write("You can now activate the database caching mechanism\nwhich is disabled by default.\nIt is especially recommended with the LDAP backend.\n")
-            sys.stdout.write("You can now disable the preservation of the complete\njob history which is enabled by default.\nIt is probably more useful with the LDAP backend.\n")
-            sys.stdout.write("PLEASE LOOK AT THE SAMPLE CONFIGURATION FILE conf/pykota.conf.sample\n")
-            sys.stdout.write("TO LEARN HOW TO DO\n")
-            dummy = raw_input("Please press ENTER when you have read the message above. ")
-            sys.stdout.write("\n")
-            
-    # change files permissions    
-    os.chmod(os.path.join(ETC_DIR,"pykota.conf"), 0644)
-    os.chmod(os.path.join(ETC_DIR,"pykotadmin.conf"), 0640)
-    
-#### INFO ####
-
-    # WARNING MESSAGE    
-    if not DEBIAN_BUILD_PACKAGE :
-        sys.stdout.write("WARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha17 TO 1.19alpha17 OR ABOVE\n")
-        sys.stdout.write("AND USE THE POSTGRESQL BACKEND, THEN YOU HAVE TO MODIFY YOUR\n")
-        sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.19.sql\n")
-        sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
-        sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-        sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha17 OR ABOVE.\n\n")
-        dummy = raw_input("Please press ENTER when you have read the message above. ")
-        
-        sys.stdout.write("\n\nWARNING : IF YOU ARE UPGRADING FROM A PRE-1.19alpha10 TO 1.19alpha10 OR ABOVE\n")
-        sys.stdout.write("YOU **MUST** MODIFY YOUR /etc/pykota/pykota.conf FILE BECAUSE accounter\n")
-        sys.stdout.write("AND requester DIRECTIVES SUPPORTED VALUES HAVE CHANGED.\n\n")
-        sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
-        sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION\nOR IF YOU ARE ALREADY RUNNING VERSION 1.19alpha10 OR ABOVE.\n\n")
-        dummy = raw_input("Please press ENTER when you have read the message above. ")
-    
-    # checks if some needed Python modules are there or not.
-    if not DEBIAN_BUILD_PACKAGE :
-        modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend.\nSee http://www.pygresql.org"),                                            
-                           ("mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"), 
-                           ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.\nSee http://python-ldap.sf.net"),
-                           ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
-                           ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
-                           ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
-                         ]
-        commandstocheck = [("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")]
-        for (name, module, helper) in modulestocheck :
-            action = checkWithPrompt(name, module=module, helper=helper)
-            if action == ACTION_ABORT :
-                sys.stderr.write("Aborted !\n")
-                sys.exit(-1)
-                
-        # checks if some software are there or not.
-        for (name, command, helper) in commandstocheck :
-            action = checkWithPrompt(name, command=command, helper=helper)
-            if action == ACTION_ABORT :
-                sys.stderr.write("Aborted !\n")
-                sys.exit(-1)
-            
 data_files = []
 mofiles = glob.glob(os.sep.join(["po", "*", "*.mo"]))
 for mofile in mofiles :
@@ -512,6 +259,9 @@ docfiles += glob.glob(os.sep.join(["openoffice", "*.png"]))
 docfiles += glob.glob(os.sep.join(["openoffice", "README"]))
 data_files.append((os.path.join(docdir, "openoffice"), docfiles))
 
+data_files.append((os.path.join(docdir, "postgresql"), ["initscripts/postgresql/README.postgresql"]))
+data_files.append((os.path.join(docdir, "ldap"), ["initscripts/ldap/README.ldap"]))
+
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
 data_files.append((directory, manpages))
@@ -523,7 +273,17 @@ for dir in modirs :
     data_files.append((directory, manpages))
 
 directory = os.sep.join(["share", "pykota"])
-data_files.append((directory, ["bin/cupspykota", "bin/lprngpykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
+data_files.append((directory, ["checkdeps.py", "bin/cupspykota", "bin/lprngpykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
+
+data_files.append((os.sep.join([directory, "conf"]), ["conf/README", "conf/pykota.conf.sample", "conf/pykotadmin.conf.sample"]))
+
+data_files.append((os.sep.join([directory, "cgi-bin"]), ["cgi-bin/README", "cgi-bin/printquota.cgi"]))
+
+pgdirectory = os.sep.join([directory, "postgresql"])
+data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", "initscripts/postgresql/pykota-postgresql.sql"]))
+
+ldapdirectory = os.sep.join([directory, "ldap"])
+data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", "initscripts/ldap/pykota.schema", "initscripts/ldap/pykota-sample.ldif"]))
 
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",
@@ -534,6 +294,3 @@ setup(name = "pykota", version = __version__,
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
       scripts = [ "bin/autopykota", "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
-
-if ("install" in sys.argv) and not ("help" in sys.argv) :
-    sys.stdout.write("\n\nYou can give a look at PyKota's documentation in:\n%s\n\n" % docdir)

@@ -330,13 +330,14 @@ provided as well.
 
 Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample 
 sample configuration files to /etc/pykota/pykota.conf and 
-/etc/pykota/pykotadmin.conf (the installation script tries to do 
-this for you if needed and you agreed to this action). You need to 
-adapt these files to your own needs. Especially you may have to create 
-sections named after your own printers, and change the 
-administrator's email address which by default is root@localhost.
-Read and try to understand these two very well commented files,
-so that you'll encounter less problems later.
+/etc/pykota/pykotadmin.conf  
+The installation script usually copies these files into /usr/share/pykota
+
+You need to adapt these files to your own needs. Especially you may 
+have to create sections named after your own printers, and change 
+the administrator's email address which by default is 
+root@localhost. Read and try to understand these two very well 
+commented files, so that you'll encounter less problems later. 
 
 Also be sure to double check that commands that query printers
 for their internal page counter work from the command line
