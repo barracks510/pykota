@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/05 23:55:02  jalet
+# Cleaner email messages
+#
 # Revision 1.5  2003/02/05 23:45:09  jalet
 # Better DateTime manipulation wrt grace delay
 #
@@ -65,7 +68,6 @@ class PyKotaTool :
         
     def sendMessage(self, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
-        fullmessage += "\n\nPlease contact your system administrator %s - <%s>\n" % (self.admin, self.adminmail)
         if "@" not in touser :
             touser = "%s@%s" % (touser, self.smtpserver)
         server = smtplib.SMTP(self.smtpserver)
@@ -74,6 +76,7 @@ class PyKotaTool :
         
     def sendMessageToUser(self, username, subject, message) :
         """Sends an email message to a user."""
+        message += "\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n" % (self.admin, self.adminmail)
         self.sendMessage(username, "Subject: %s\n\n%s" % (subject, message))
         
     def sendMessageToAdmin(self, subject, message) :
@@ -117,12 +120,12 @@ class PyKotaTool :
         if action == "DENY" :
             adminmessage = "Print Quota exceeded for user %s on printer %s" % (username, self.printername)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(username, "Print Quota Exceeded", "You are not allowed to print anymore because your Print Quota is exceeded.")
+            self.sendMessageToUser(username, "Print Quota Exceeded", "You are not allowed to print anymore because\nyour Print Quota is exceeded.")
             self.sendMessageToAdmin("Print Quota", adminmessage)
         elif action == "WARN" :    
             adminmessage = "Print Quota soft limit exceeded for user %s on printer %s" % (username, self.printername)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(username, "Print Quota Exceeded", "You will soon be forbidden to print anymore because your Print Quota is almost reached.")
+            self.sendMessageToUser(username, "Print Quota Exceeded", "You will soon be forbidden to print anymore because\nyour Print Quota is almost reached.")
             self.sendMessageToAdmin("Print Quota", adminmessage)
         return action        
     
