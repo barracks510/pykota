@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.16alpha8 :
     
+        - Now cupspykota transmits SIGTERMS to the original  
+          backend when the user deletes a job being processed.
+          
         - The documentation is now licensed under the terms of the
           GNU GPL too.
           

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/11/18 17:54:24  jalet
+# SIGTERMs are now transmitted to original backends.
+#
 # Revision 1.9  2003/11/18 14:11:07  jalet
 # Small fix for bizarre urls
 #
@@ -126,7 +129,7 @@ class PyKotaBackend(PyKotaTool) :
             # before launching the real backend.
             fulldevice_uri = os.environ.get("DEVICE_URI", "")
             device_uri = fulldevice_uri[len("cupspykota:"):]
-            if device_uri.startswith("//") :
+            if device_uri.startswith("//") :    # lpd (at least)
                 device_uri = device_uri[2:]
             os.environ["DEVICE_URI"] = device_uri
             # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
@@ -160,17 +163,26 @@ def format_commandline(prt, usr, cmdline) :
     # want to keep its standard error
     return "%s >/dev/null" % (cmdline % locals())
 
+gotSigTerm = 0
+def sigterm_handler(signum, frame) :
+    """Sets a global variable whenever SIGTERM is received."""
+    # SIGTERM will be ignore most of the time, but during
+    # the call to the real backend, we have to pass it through.
+    global gotSigTerm
+    gotSigTerm = 1
+    
 def main(thebackend) :    
     """Do it, and do it right !"""
     # first deal with signals
     # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
     # Fortunately SIGPIPE is already ignored by Python
     # It's there just in case this changes in the future.
-    # But here we will IGNORE SIGTERM for now, and see
-    # in a future release if we shouldn't pass it to the 
-    # original backend instead.
+    # Here we have to handle SIGTERM correctly, and pass
+    # it to the original backend if needed.
+    global gotSigTerm
+    gotSigTerm = 0
     signal.signal(signal.SIGPIPE, signal.SIG_IGN)
-    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    signal.signal(signal.SIGTERM, sigterm_handler)
     
     #
     # retrieve some informations on the current printer and user
@@ -285,6 +297,14 @@ def main(thebackend) :
             # First check if original backend is still alive
             status = subprocess.poll()
             
+            # Now if we got SIGTERM, we have 
+            # to kill -TERM the original backend
+            if gotSigTerm :
+                try :
+                    os.kill(subprocess.pid, signal.SIGTERM)
+                except : # ignore if process was already killed.
+                    pass
+            
             # In any case, deal with any remaining I/O
             availablefds = pollster.poll()
             for (fd, mask) in availablefds :
@@ -313,7 +333,11 @@ def main(thebackend) :
                         outdata += data
                     elif fd == cerrfno :    
                         errdata += data
-                if mask & select.POLLHUP :
+                if (mask & select.POLLHUP) or (mask & select.POLLERR) :
+                    # I've never seen POLLERR myself, but this probably
+                    # can't hurt to treat an error condition just like 
+                    # an EOF.
+                    # 
                     # Some standard I/O stream has no more datas
                     if fd == infno :
                         # Here we are in the case where the input file is stdin.
@@ -372,7 +396,7 @@ def main(thebackend) :
                     pass
                 else :    
                     os.close(tocfno)
-            
+                
         # Input file was a real file, we have to close it.    
         if mustclose :
             infile.close()
@@ -400,7 +424,7 @@ def main(thebackend) :
         # adds the current job to history    
         printer.addJobToHistory(thebackend.jobid, user, thebackend.accounter.getLastPageCounter(), action, jobsize)
     
-    return retcode
+    return retcode # return (retcode or gotSigTerm) shouldn't be needed
 
 if __name__ == "__main__" :    
     # This is a CUPS backend, we should act and die like a CUPS backend
@@ -439,7 +463,7 @@ if __name__ == "__main__" :
                             name = name[1:-1]
                         if fullname.startswith('"') and fullname.endswith('"') :
                             fullname = fullname[1:-1]
-                        print '%s cupspykota:%s "PyKota+%s" "PyKota managed %s"' % (devicetype, device, name, fullname)    
+                        print '%s cupspykota:%s "PyKota+%s" "PyKota managed %s"' % (devicetype, device, name, fullname)
         retcode = 0
     elif len(sys.argv) not in (6, 7) :    
         sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
