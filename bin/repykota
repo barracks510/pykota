@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2003/04/29 22:03:38  jalet
+# Better error handling.
+#
 # Revision 1.33  2003/04/28 08:25:48  jalet
 # Small display bug in repykota was fixed.
 #
@@ -132,6 +135,8 @@ from mx import DateTime
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
 
 __doc__ = """repykota v%s (C) 2003 C@LL - Conseil Internet & Logiciels Libres
 
@@ -302,7 +307,7 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
             sys.exit(reporter.main(options))
-    except PyKotaToolError, msg :            
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()
         sys.exit(-1)

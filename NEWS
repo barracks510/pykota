@@ -25,6 +25,8 @@ PyKota NEWS :
     
         - Pluggable accounting methods.
         
+        - Better error handling.
+        
     - 1.05alpha1 :
     
         - SECURITY file added to help improve PyKota's security.

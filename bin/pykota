@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/04/29 22:03:38  jalet
+# Better error handling.
+#
 # Revision 1.29  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
@@ -135,6 +138,7 @@ import os
 import time
 
 from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import openAccounter, PyKotaAccounterError
 
@@ -272,7 +276,7 @@ def main() :
 if __name__ == "__main__" :    
     try :
         retcode = main()
-    except (PyKotaToolError, PyKotaStorageError, PyKotaAccounterError), msg :
+    except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
         retcode = -1
