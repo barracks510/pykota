@@ -60,9 +60,9 @@ msgstr "Contador de páginas %s inválido, para la impresora %s"
 msgid "Option accounter in section %s only supports values in %s"
 msgstr "La opción accounter en la sección %s solo soporta valores en %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Option enforcement in section %s only supports values in %s"
-msgstr "La opción policy en la sección  %s solo soporta valores en %s"
+msgstr ""
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -227,13 +227,13 @@ msgstr "Baja cuota de impresión para el usuario %s en la impresora %s"
 msgid "Print Quota Low"
 msgstr "Cuota de impresión baja"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Printing system %s, args=%s"
-msgstr "Sistema de impresión desconocido, args=%s"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "Imposible calcular el tamaño del trabajo con el contador %s"
+msgstr ""
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
@@ -339,9 +339,9 @@ msgstr ""
 msgid "Incorrect answer : %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "SIGTERM fue enviado al real backend %s (pid: %s)"
+msgstr ""
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
@@ -467,13 +467,13 @@ msgstr ""
 msgid "Job size forced to 0 because printing is denied."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Job size : %i"
-msgstr "Tamaño del trabajo : %i páginas"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Updating user %s's quota on printer %s"
-msgstr "Reporte para la cuota %s en la impresora  %s"
+msgstr ""
 
 msgid "Job added to history."
 msgstr ""
@@ -584,9 +584,8 @@ msgstr ""
 msgid "in"
 msgstr "en"
 
-#, fuzzy
 msgid "You have to pass printer groups names on the command line"
-msgstr "Usted tiene que pasar nombres de impresoras en la línea de comandos"
+msgstr ""
 
 msgid "You have to pass printer names on the command line"
 msgstr "Usted tiene que pasar nombres de impresoras en la línea de comandos"
@@ -594,23 +593,21 @@ msgstr "Usted tiene que pasar nombres de impresoras en la línea de comandos"
 msgid "Software accounting already done in first pass. Exiting."
 msgstr ""
 
-msgid ""
-"Hardware accounting already finished ! This should be impossible, please "
-"report this problem ASAP."
+msgid "Hardware accounting already done in first pass. Exiting."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid DeviceURI : %s"
-msgstr "Tiempo de gracia %s inválido"
+msgstr ""
 
 msgid ""
 "\n"
 "Please wait while pkhint analyzes your printing system's configuration..."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown device %s for printer %s"
-msgstr "Política inválida %s para la impresora %s"
+msgstr ""
 
 msgid ""
 "\n"
@@ -626,21 +623,21 @@ msgstr ""
 msgid "# wasn't able to autodetect which hardware accounting method to use."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid duration option %s"
-msgstr "Nombre de impresora %s inválido"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid loop option %s"
-msgstr "Nombre de grupo %s inválido"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid sleep option %s"
-msgstr "Nombre de usuario %s inválido"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid color option %s"
-msgstr "Política inválida %s para la impresora %s"
+msgstr ""
 
 #, python-format
 msgid "User %s doesn't exist in PyKota's database"
@@ -669,3 +666,19 @@ msgstr "Costo en la impresora %s : %.2f"
 #, python-format
 msgid "Previous page"
 msgstr ""
+
+#~ msgid "Printer %s not registered in the PyKota system"
+#~ msgstr "Impresora %s no registrada en el sistema PyKota"
+
+#~ msgid "Printer %s was never used"
+#~ msgstr "La impresora %s nunca fue utilizada"
+
+#~ msgid "Using the 'stupid' accounting method is unreliable."
+#~ msgstr "Usar el método de cuenta 'stupid' no es confiable."
+
+#~ msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
+#~ msgstr ""
+#~ "Dirección de impresora desconocida en SNMP(%s, %s) para la impresora %s"
+
+#~ msgid "Unable to query printer %s via SNMP(%s, %s)"
+#~ msgstr "Imposible consultar impresora %s vía SNMP(%s, %s)"

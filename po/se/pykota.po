@@ -63,9 +63,9 @@ msgstr "Ogiltig redovisningsmetod %s för printern %s"
 msgid "Option accounter in section %s only supports values in %s"
 msgstr "Variabeln 'accounter' i sektion '%s' stödjer bara värden i %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Option enforcement in section %s only supports values in %s"
-msgstr "Variabeln 'policy' i sektion '%s' stödjer bara värden i %s"
+msgstr ""
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -229,13 +229,13 @@ msgstr "Utskriftssaldot är lågt användare %s på skrivare %s"
 msgid "Print Quota Low"
 msgstr "Utskriftssaldo lågt"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Printing system %s, args=%s"
-msgstr "Utskriftsystem okänt, args=%s"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
+msgstr ""
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
@@ -341,9 +341,9 @@ msgstr ""
 msgid "Incorrect answer : %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "SIGTERM sändes till bakgrundsprocess %s (pid: %s)"
+msgstr ""
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
@@ -469,13 +469,13 @@ msgstr ""
 msgid "Job size forced to 0 because printing is denied."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Job size : %i"
-msgstr "Utskriftsstorlek : %i sidor"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Updating user %s's quota on printer %s"
-msgstr "Rapport för %s utskriftssaldo på skrivare %s"
+msgstr ""
 
 msgid "Job added to history."
 msgstr ""
@@ -582,9 +582,8 @@ msgstr ""
 msgid "in"
 msgstr ""
 
-#, fuzzy
 msgid "You have to pass printer groups names on the command line"
-msgstr "Du måste skicka med skrivarnamn på kommandoraden"
+msgstr ""
 
 msgid "You have to pass printer names on the command line"
 msgstr "Du måste skicka med skrivarnamn på kommandoraden"
@@ -592,23 +591,21 @@ msgstr "Du måste skicka med skrivarnamn på kommandoraden"
 msgid "Software accounting already done in first pass. Exiting."
 msgstr ""
 
-msgid ""
-"Hardware accounting already finished ! This should be impossible, please "
-"report this problem ASAP."
+msgid "Hardware accounting already done in first pass. Exiting."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid DeviceURI : %s"
-msgstr "Ogiltigt uppskovsvärde (grace delay) %s"
+msgstr ""
 
 msgid ""
 "\n"
 "Please wait while pkhint analyzes your printing system's configuration..."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown device %s for printer %s"
-msgstr "Ogiltig policy %s för skrivare %s"
+msgstr ""
 
 msgid ""
 "\n"
@@ -624,21 +621,21 @@ msgstr ""
 msgid "# wasn't able to autodetect which hardware accounting method to use."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid duration option %s"
-msgstr "Ogiltigt skrivarnamn %s"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid loop option %s"
-msgstr "Ogiltigt gruppnamn %s"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid sleep option %s"
-msgstr "Ogiltigt användarnamn %s"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid color option %s"
-msgstr "Ogiltig policy %s för skrivare %s"
+msgstr ""
 
 #, python-format
 msgid "User %s doesn't exist in PyKota's database"
@@ -667,3 +664,20 @@ msgstr "Kostnad på skrivare %s : %.2f"
 #, python-format
 msgid "Previous page"
 msgstr ""
+
+#~ msgid "Printer %s not registered in the PyKota system"
+#~ msgstr "Skrivaren %s är inte registrerad i PyKotasystemet"
+
+#~ msgid "Printer %s was never used"
+#~ msgstr "Skrivare %s aldrig använd"
+
+#~ msgid "Using the 'stupid' accounting method is unreliable."
+#~ msgstr ""
+#~ "Användande av metoden 'puckad' ('stupid') för utskriftsberäkning är inte "
+#~ "tillförlitligt"
+
+#~ msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
+#~ msgstr "Okänd skrivaradress i SNMP(%s, %s) för skrivare %s"
+
+#~ msgid "Unable to query printer %s via SNMP(%s, %s)"
+#~ msgstr "Kunde inte hämta information från skrivare %s via SNMP(%s, %s)"
