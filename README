@@ -92,6 +92,12 @@ networked printers, and should work with any SNMP-enabled
 network printer capable of outputing its lifetime printed pages 
 number.
 
+If your printers don't support SNMP, then making them work with 
+PyKota is up to you. Some sample scripts which can query non-SNMP 
+printers for their lifetime page counter are included in the 
+./untested directory. You'll have to test and adapt them though, and 
+define them as external requesters in the PyKota configuration file. 
+
 ============================================================
 
 INSTALLATION:
@@ -212,8 +218,8 @@ SECURITY : You should ensure that only the print quota administrator
            
            You should ensure that only the print quota administrator
            can run the edpykota command, but this is actually not
-           enforced in the program. Any user could modify his/her
-           or other people's print quota.
+           enforced in the program. Otherwise, any user could modify 
+           his/her or other people's print quota.
           
            launching : chmod 750 /usr/bin/warnpykota /usr/bin/edpykota
            should make you reasonably safe.

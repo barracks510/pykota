@@ -22,8 +22,16 @@
 # only PostgreSQL is supported
 # Ldap, MySQL, Berkeley are planned
 storagebackend: postgresql
+
+# Quota Storage Server hostname (and port)
+# e.g. db.mydomain.com:5432
 storageserver: localhost
+
+#
+# name of the Quota Storage Database
 storagename: pykota
+
+# Quota Storage administrator's and normal user's names and passwords
 storageadmin: pykotaadmin
 storageuser: pykotauser
 # storageadminpw: Comment out if unused, or set to Quota Storage admin password

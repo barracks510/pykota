@@ -14,6 +14,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/03/22 13:11:33  jalet
+# The port on which the Quota Storage Sever is listening can now
+# be set in the configuration file (see sample).
+# Better error handling if PygreSQL is not installed.
+# Improved documentation.
+# Version number changed to 1.02alpha
+#
 # Revision 1.4  2003/02/17 22:05:50  jalet
 # Storage backend now supports admin and user passwords (untested)
 #
@@ -29,7 +36,12 @@
 #
 #
 
-import pg
+try :
+    import pg
+except ImportError :    
+    import sys
+    sys.stderr.write("This python version (%s) doesn't seem to have the PygreSQL module installed correctly.\n" % sys.version.split()[0])
+    raise
 
 from pykota.storage import PyKotaStorageError
 from pykota.storages import sql
@@ -39,7 +51,13 @@ class Storage(sql.SQLStorage) :
         """Opens the PostgreSQL database connection."""
         self.closed = 1
         try :
-            self.database = pg.connect(host=host, dbname=dbname, user=user, passwd=passwd)
+            (host, port) = host.split(":")
+            port = int(port)
+        except ValueError :    
+            port = -1         # Use PostgreSQL's default tcp/ip port (5432).
+        
+        try :
+            self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
             self.closed = 0
         except pg.error, msg :
             raise PyKotaStorageError, msg

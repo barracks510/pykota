@@ -15,6 +15,16 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 PyKota NEWS :
 
+    - 1.02alpha :
+    
+        - Improved documentation.
+        
+        - You can now set the tcp/ip port on which the Quota Storage
+          Server is listening, see sample configuration file for details.
+        
+        - Better error handling if PygreSQL is not installed or not 
+          available.
+        
     - 1.01 :
     
         - The configuration file now accepts an option   

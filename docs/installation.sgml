@@ -19,7 +19,7 @@
   </para>
   
   <para>
-    Now we will see what has to be done on all those servers.
+    Now we will see what has to be done on these servers.
     <note>
       <title>Note</title>
       <para>
@@ -91,9 +91,7 @@
           <title>Tip</title>
           <para>
             The TCP/IP network port used by PostgreSQL may be different. When in doubt, ask your 
-            <glossaryterm>System Administrator</glossaryterm> for the correct value. Actually
-            <application>PyKota</application> does not work if the port used is not the default one,
-            but this limitation will be removed in a future version.
+            <glossaryterm>System Administrator</glossaryterm> for the correct value. 
           </para>
         </tip>  
       </para>
@@ -153,6 +151,13 @@
 <!--
 
 $Log$
+Revision 1.5  2003/03/22 13:11:33  jalet
+The port on which the Quota Storage Sever is listening can now
+be set in the configuration file (see sample).
+Better error handling if PygreSQL is not installed.
+Improved documentation.
+Version number changed to 1.02alpha
+
 Revision 1.4  2003/03/22 07:20:38  jalet
 More information wrt PostgreSQL tcp/ip configuration.
 
