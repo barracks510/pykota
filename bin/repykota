@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/02/10 12:12:34  jalet
+# Translations.
+#
 # Revision 1.10  2003/02/10 12:07:30  jalet
 # Now repykota should output the recorded total page number for each printer too.
 #
@@ -128,8 +131,8 @@ class RePyKota(PyKotaTool) :
                     quota = self.storage.getGroupPQuota(name, printer) 
                     total += self.printQuota(name, quota)
             if total :        
-                print (" " * 43) + ("Total : %9i" % total)
-            print (" " * 44) + ("Real : %9i" % printerpagecounter)
+                print (" " * 43) + (_("Total : %9i") % total)
+            print (" " * 44) + (_("Real : %9i") % printerpagecounter)
             print        
                         
     def printQuota(self, name, quota) :
