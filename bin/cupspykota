@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2004/01/12 18:17:36  jalet
+# Denied jobs weren't stored into the history anymore, this is now fixed.
+#
 # Revision 1.20  2004/01/11 23:22:42  jalet
 # Major code refactoring, it's way cleaner, and now allows automated addition
 # of printers on first print.
@@ -164,16 +167,19 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         if policy == "OK" :
             self.logdebug("Checking user %s's quota on printer %s" % (user.Name, printer.Name))
             action = self.warnUserPQuota(userpquota)
-            if action not in ["ALLOW", "WARN"] :    
-                return self.removeJob()
             self.logdebug("Job accounting begins.")
             self.accounter.beginJob(userpquota)
+        else :    
+            action = "ALLOW"
             
         # pass the job's data to the real backend    
-        if gotSigTerm :
+        if action in ["ALLOW", "WARN"] :
+            if gotSigTerm :
+                retcode = self.removeJob()
+            else :    
+                retcode = self.handleData()        
+        else :        
             retcode = self.removeJob()
-        else :    
-            retcode = self.handleData()        
         
         if policy == "OK" :        
             # stops accounting. 
