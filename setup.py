@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/04/17 13:49:29  jalet
+# Typo
+#
 # Revision 1.10  2003/04/17 13:48:39  jalet
 # Better help
 #
@@ -104,7 +107,7 @@ def checkWithPrompt(prompt, module=None, command=None, help=None) :
         sys.stdout.write("NO.\n")
         sys.stderr.write("ERROR : %s not available !\n" % prompt)
         if help is not None :
-            sys.stout.write("%s\n" % help)
+            sys.stdout.write("%s\n" % help)
             sys.stdout.write("You may continue safely if you don't need this functionnality.\n")
         answer = raw_input("%s is missing. Do you want to continue anyway (y/N) ? " % prompt)
         if answer[0:1].upper() == 'Y' :
