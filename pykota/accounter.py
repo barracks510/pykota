@@ -21,8 +21,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.8  2003/12/27 15:43:36  uid67467
-# Savannah is back online...
+# Revision 1.9  2003/12/27 16:49:25  uid67467
+# Should be ok now.
 #
 # Revision 1.7  2003/11/25 23:46:40  jalet
 # Don't try to verify if module name is valid, Python does this better than us.
@@ -143,6 +143,11 @@ class AccounterBase :
         self.endJob(printer, user)
         return action
         
+    def computeJobSize(self) :    
+        """Must be overriden in children classes."""
+        raise RuntimeError, "AccounterBase.computeJobSize() must be overriden !"
+        
+        
 def openAccounter(kotafilter) :
     """Returns a connection handle to the appropriate accounter."""
     (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.printername)
@@ -151,4 +156,4 @@ def openAccounter(kotafilter) :
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
     else :    
-        return getattr(accounterbackend, "Accounter")(kotafilter, args)
+        return accounterbackend.Accounter(kotafilter, args)

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.6  2003/12/02 14:40:21  jalet
 # Some code refactoring.
 # New HTML reporter added, which is now used in the CGI script for web based
@@ -44,8 +47,6 @@
 #
 #
 
-from mx import DateTime
-
 from pykota.reporter import BaseReporter, PyKotaReporterError
     
 class Reporter(BaseReporter) :    
@@ -67,7 +68,7 @@ class Reporter(BaseReporter) :
                 self.report.append(header)
                 self.report.append('-' * len(header))
                 for (group, grouppquota) in self.tool.storage.getPrinterGroupsAndQuotas(printer, self.ugnames) :
-                    (pages, money, name, reached, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
+                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
                     self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
                     total += pages
                     totalmoney += money

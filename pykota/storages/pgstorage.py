@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.24  2003/11/29 22:02:14  jalet
 # Don't try to retrieve the user print quota information if current printer
 # doesn't exist.
@@ -391,6 +394,17 @@ class Storage(BaseStorage) :
                     groupsandquotas.append((group, grouppquota))
         return groupsandquotas
         
+    def getParentPrinters(self, printer) :    
+        """Get all the printer groups this printer is a member of."""
+        pgroups = []
+        result = self.doSearch("SELECT printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s;" % self.doQuote(printer.ident))
+        if result :
+            for record in result :
+                parentprinter = self.getPrinter(record.get("printername"))
+                if parentprinter.Exists :
+                    pgroups.append(parentprinter)
+        return pgroups
+        
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns it."""
         self.doModify("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(printername))
@@ -467,7 +481,7 @@ class Storage(BaseStorage) :
             if jobsize is not None :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
             else :    
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
         else :        
             # here we explicitly want to reset jobsize to NULL if needed
             self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, jobdate=now() WHERE id=%s;" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(printer.LastJob.ident)))

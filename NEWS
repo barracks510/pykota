@@ -21,6 +21,41 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha20 :
+    
+        - Fixed several small bugs with the help of PyChecker.
+        
+    - 1.16alpha19 :
+     
+        - Fixed a bug in PostgreSQL backend's code.
+        
+    - 1.16alpha18 :
+    
+        - Initial code for printer groups support. Printer groups have
+          to be added with external tools like psql or gq for example.
+          Printer groups seems to work fine with users. Untested with user 
+          groups for now.
+
+        - Several minor visual problems fixed in reports.
+        
+        - Fixed a bug in LDAP date handling.
+        
+        - Fix for LDAP problem with some combination of OpenLDAP + Python-LDAP
+          + some particular settings.
+          
+        - mailandpopup.sh shell script added. See sample configuration file
+          for details.
+        
+        - Several environment variables are now exported when executing 
+          external commands (accounters, requesters, mailers) :
+           
+            PYKOTAUSERNAME => user who is printing
+            PYKOTAPRINTERNAME => printer on which the job is being sent
+            PYKOTATITLE => Job's title
+            PYKOTAFILENAME => Job's filename
+            PYKOTACOPIES => number of copies asked
+            PYKOTAOPTIONS => print command options (-o with CUPS)
+          
     - 1.16alpha17 :
     
         - Added portugues translation.

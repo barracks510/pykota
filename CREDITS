@@ -59,6 +59,9 @@ Supporters :
     - King Man Leung
     - Stephen Markan - Faculty of Environmental Studies, University of Waterloo
     - Jeremy Worth - University of Oxford
+    - Roger Morgan - Höhere Technische Bundeslehranstalt Steyr
+    - Pal Monstad
+    - Richard Potter
 
 Contributors :
 --------------
@@ -66,7 +69,7 @@ Contributors :
   The following people contributed code or ideas to PyKota :
   
     - Joël Collet : PyKota's logo
-    - Stefan Wold - Stockholm University : code
+    - Stefan Wold - Stockholm University : inital code for external policies
     - John Flynn - University of Belize : LDAP support
     - Wayne Godoy - University of Belize : LDAP support
     - Leif Johansson - Stockholm University : LDAP support
@@ -77,6 +80,7 @@ Contributors :
     - Dennis Romero L. : Spanish translation
     - Daniel Mikkelsen : Sample configuration file fix
     - Carlos Fernandes : Portugues translation
+    - René Lund Jensen : Contributed the pagecount.pl script
 
 ==============================================================
 

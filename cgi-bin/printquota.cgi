@@ -1,4 +1,4 @@
-#! /usr/bin/python2.2
+#! /usr/bin/python
 
 # PyKota Print Quota Reports generator
 #
@@ -22,8 +22,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.17  2003/12/27 15:43:36  uid67467
-# Savannah is back online...
+# Revision 1.18  2003/12/27 16:49:25  uid67467
+# Should be ok now.
 #
 # Revision 1.16  2003/12/02 14:40:20  jalet
 # Some code refactoring.

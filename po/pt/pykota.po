@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.1  2003/12/03 18:49:37  jalet
 # Portugues translation added thanks to Carlos Fernandes
 #
@@ -82,8 +85,8 @@ msgstr "Grupo           usado   Minimo  Maximo  media   gratis        total     
 msgid "There's no printer matching %s"
 msgstr "Impressora %s não encontrada"
 
-msgid "*** Report for %s quota on printer %s"
-msgstr "*** Relatorio de quota %s para a impressora %s"
+msgid "Report for %s quota on printer %s"
+msgstr "Relatorio de quota %s para a impressora %s"
 
 msgid "Error in page count value %i for user %s on printer %s"
 msgstr "Erro no contagem de paginas %i para o usuario %s na impressora %s"

@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.3  2003/12/27 16:49:25  uid67467
+-- Should be ok now.
+--
 -- Revision 1.2  2003/11/23 19:01:36  jalet
 -- Job price added to history
 --
@@ -47,6 +50,24 @@ ALTER TABLE jobhistory ADD COLUMN title TEXT;
 ALTER TABLE jobhistory ADD COLUMN copies INT4;
 ALTER TABLE jobhistory ADD COLUMN options TEXT;
 
+--
+-- Remove bad integrity rules
+-- and replace them with a new one
+--
+ALTER TABLE jobhistory DROP CONSTRAINT "$1";
+ALTER TABLE jobhistory DROP CONSTRAINT "$2";
+ALTER TABLE jobhistory ADD CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota (userid, printerid);
+
+-- 
+-- Add new tables
+--
+--                         
+-- Create the printer groups relationship
+--
+CREATE TABLE printergroupsmembers(groupid INT4 REFERENCES printers(id),
+                           printerid INT4 REFERENCES printers(id),
+                           PRIMARY KEY (groupid, printerid));
+
 --                         
 -- Now add some indexes
 --
@@ -54,4 +75,11 @@ CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
 CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
+
+-- 
+-- And now sets some ACLs
+-- 
+REVOKE ALL ON printergroupsmembers FROM public;                        
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON printergroupsmembers TO pykotaadmin;
+GRANT SELECT ON printergroupsmembers TO pykotauser;
 

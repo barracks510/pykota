@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.47  2003/11/26 19:17:35  jalet
 # Printing on a printer not present in the Quota Storage now results
 # in the job being stopped or cancelled depending on the system.
@@ -273,17 +276,20 @@ def main(thefilter) :
         # if user exists, do accounting
         if user.Exists :
             # Now does the accounting and act depending on the result
+            thefilter.logdebug("Does accounting for user %s on printer %s." % (user.Name, printer.Name))
             action = thefilter.accounter.doAccounting(printer, user)
         
             # if not allowed to print then die, else proceed.
             if action == "DENY" :
                 # No, just die cleanly
+                thefilter.logdebug("Printing is denied.")
                 return thefilter.removeJob()
         elif policy == "EXTERNAL" :                
             thefilter.logger.log_message(_("External policy %s for printer %s couldn't add user %s. Job rejected.") % (commandline, thefilter.printername, thefilter.username), "error")
             return thefilter.removeJob()
         
         # pass the job untouched to the underlying layer
+        thefilter.logdebug("Passing input data to next filter.")
         thefilter.accounter.filterInput(thefilter.inputfile)      
     
         return thefilter.acceptJob()

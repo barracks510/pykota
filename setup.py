@@ -23,6 +23,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
+# Revision 1.28  2003/12/06 09:03:43  jalet
+# Added Perl script to retrieve printer's internal page counter via PJL,
+# contributed by René Lund Jensen.
+#
 # Revision 1.27  2003/11/28 08:31:28  jalet
 # Shell script to wait for AppleTalk enabled printers being idle was added.
 #
@@ -337,6 +344,6 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.requesters", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh", "bin/papwaitprinter.sh" ],
+      scripts = [ "bin/cupspykota", "bin/pykota", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl" ],
       data_files = data_files)
 

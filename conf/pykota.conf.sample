@@ -128,7 +128,7 @@ logger: system
 # put NO instead to save some disk space in your
 # logs.
 # Actually only database queries are logged.
-debug : No
+debug : Yes
 
 # Mail server to use to warn users
 # If the value is not set then localhost is used.
@@ -236,6 +236,12 @@ adminmail: root@localhost
 #   NB : I use ISO-8859-15, but Windows expects UTF-8, so we pipe the message
 #        into iconv before sending it to the Windows user.
 #
+# or more simply :
+#
+#       mailto: external(/usr/bin/mailandpopup.sh %(username)s %(printername)s "%(email)s" "%(message)s" 2>&1 >/dev/null)
+#
+#   NB : The mailandpopup.sh shell script is now included in PyKota
+#
 #   NB : in ANY case, don't forget to redirect your command's standard output
 #        somewhere (e.g. >/dev/null) so that there's no perturbation to the 
 #        underlying layer (filter or backend)
@@ -341,6 +347,12 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # server on port 9100 :
 #
 # requester: external(/bin/nc -w 2 %(printer)s 9100 <pagecount.pjl | /usr/bin/tail -2)
+#
+#
+# An example using the contributed pagecount.pl script which does 
+# the same as above, but should work on more printers : 
+#
+# requester: external(/usr/bin/pagecount.pl %(printer)s 9100)
 #
 #
 # WARNING : In any case, when using an external requester, please test the command line outside

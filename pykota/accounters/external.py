@@ -21,8 +21,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.11  2003/12/27 15:43:36  uid67467
-# Savannah is back online...
+# Revision 1.12  2003/12/27 16:49:25  uid67467
+# Should be ok now.
 #
 # Revision 1.10  2003/11/23 19:01:36  jalet
 # Job price added to history

@@ -21,8 +21,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.2  2003/12/27 15:43:36  uid67467
-# Savannah is back online...
+# Revision 1.3  2003/12/27 16:49:25  uid67467
+# Should be ok now.
 #
 # Revision 1.1  2003/12/02 14:41:17  jalet
 # And as always, I forgot most of the new files :-)
@@ -55,11 +55,11 @@ class Reporter(BaseReporter) :
             if self.isgroup :
                 for (group, grouppquota) in self.tool.storage.getPrinterGroupsAndQuotas(printer, self.ugnames) :
                     oddeven += 1
-                    if oddeven % 1 :
+                    if oddeven % 2 :
                         oddevenclass = "odd"
                     else :    
                         oddevenclass = "even"
-                    (pages, money, name, reached, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
+                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
                     self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid)])))
                     total += pages
                     totalmoney += money
@@ -67,7 +67,7 @@ class Reporter(BaseReporter) :
                 # default is user quota report
                 for (user, userpquota) in self.tool.storage.getPrinterUsersAndQuotas(printer, self.ugnames) :
                     oddeven += 1
-                    if oddeven % 1 :
+                    if oddeven % 2 :
                         oddevenclass = "odd"
                     else :    
                         oddevenclass = "even"

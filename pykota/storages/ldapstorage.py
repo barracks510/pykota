@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.40  2003/11/29 22:02:14  jalet
 # Don't try to retrieve the user print quota information if current printer
 # doesn't exist.
@@ -165,6 +168,7 @@
 # is 16868. Use this as a base to create the LDAP schema.
 #
 
+import types
 import time
 import md5
 
@@ -210,6 +214,16 @@ class Storage(BaseStorage) :
         """
         return md5.md5("%s" % time.time()).hexdigest()
         
+    def normalizeFields(self, fields) :    
+        """Ensure all items are lists."""
+        for (k, v) in fields.items() :
+            if type(v) not in (types.TupleType, types.ListType) :
+                if not v :
+                    del fields[k]
+                else :    
+                    fields[k] = [ v ]
+        return fields        
+        
     def beginTransaction(self) :    
         """Starts a transaction."""
         self.tool.logdebug("Transaction begins... WARNING : No transactions in LDAP !")
@@ -236,6 +250,7 @@ class Storage(BaseStorage) :
             
     def doAdd(self, dn, fields) :
         """Adds an entry in the LDAP directory."""
+        fields = self.normalizeFields(fields)
         try :
             self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
             self.database.add_s(dn, modlist.addModlist(fields))
@@ -254,6 +269,7 @@ class Storage(BaseStorage) :
             
     def doModify(self, dn, fields, ignoreold=1) :
         """Modifies an entry in the LDAP directory."""
+        fields = self.normalizeFields(fields)
         try :
             oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
             self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields))
@@ -544,6 +560,17 @@ class Storage(BaseStorage) :
         groupsandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return groupsandquotas
         
+    def getParentPrinters(self, printer) :    
+        """Get all the printer groups this printer is a member of."""
+        pgroups = []
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(uniqueMember=%s))" % printer.ident, ["pykotaPrinterName"], base=self.info["printerbase"])
+        if result :
+            for (printerid, fields) in result :
+                parentprinter = self.getPrinter(fields.get("pykotaPrinterName")[0])
+                if parentprinter.Exists :
+                    pgroups.append(parentprinter)
+        return pgroups
+        
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns it."""
         fields = { self.info["printerrdn"] : printername,
@@ -678,14 +705,14 @@ class Storage(BaseStorage) :
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
         """Sets the date limit permanently for a user print quota."""
         fields = {
-                   "pykotaDateLimit" : "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second),
+                   "pykotaDateLimit" : datelimit,
                  }
         return self.doModify(userpquota.ident, fields)
             
     def writeGroupPQuotaDateLimit(self, grouppquota, datelimit) :    
         """Sets the date limit permanently for a group print quota."""
         fields = {
-                   "pykotaDateLimit" : "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second),
+                   "pykotaDateLimit" : datelimit,
                  }
         return self.doModify(grouppquota.ident, fields)
         

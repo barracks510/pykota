@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.7  2003/12/27 16:49:25  uid67467
+-- Should be ok now.
+--
 -- Revision 1.6  2003/11/23 19:01:36  jalet
 -- Job price added to history
 --
@@ -109,8 +112,8 @@ CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
 --
 CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         jobid TEXT,
-                        userid INT4 REFERENCES users(id),
-                        printerid INT4 REFERENCES printers(id),
+                        userid INT4,
+                        printerid INT4,
                         pagecounter INT4 DEFAULT 0,
                         jobsize INT4,
                         jobprice FLOAT,
@@ -119,7 +122,8 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         title TEXT,
                         copies INT4,
                         options TEXT,
-                        jobdate TIMESTAMP DEFAULT now());
+                        jobdate TIMESTAMP DEFAULT now(),
+                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid));
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
                         
@@ -140,14 +144,21 @@ CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
 CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
                            userid INT4 REFERENCES users(id),
                            PRIMARY KEY (groupid, userid));
+                           
+--                         
+-- Create the printer groups relationship
+--
+CREATE TABLE printergroupsmembers(groupid INT4 REFERENCES printers(id),
+                           printerid INT4 REFERENCES printers(id),
+                           PRIMARY KEY (groupid, printerid));
 
 --                        
 -- Set some ACLs                        
 --
-REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory FROM public;                        
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory FROM public;                        
 REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq FROM public;
 
-GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotaadmin;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory TO pykotaadmin;
 GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq TO pykotaadmin;
-GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotauser;
+GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory TO pykotauser;
 

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.10  2003/11/25 22:37:22  jalet
 # Small code move
 #
@@ -68,11 +71,11 @@ class PyKotaLoggingError(Exception):
         return self.message
     __str__ = __repr__
 
-def openLogger(pykotatool, backend) :
+def openLogger(backend) :
     """Returns the appropriate logger subsystem object."""
     try :
         exec "from pykota.loggers import %s as loggingbackend" % backend.lower()    
     except ImportError :
         raise PyKotaLoggingError, _("Unsupported logging subsystem %s") % backend
     else :    
-        return getattr(loggingbackend, "Logger")()
+        return loggingbackend.Logger()

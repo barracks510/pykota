@@ -21,8 +21,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.5  2003/12/27 15:43:36  uid67467
-# Savannah is back online...
+# Revision 1.6  2003/12/27 16:49:25  uid67467
+# Should be ok now.
 #
 # Revision 1.4  2003/12/02 14:40:21  jalet
 # Some code refactoring.
@@ -40,6 +40,8 @@
 #
 #
 #
+
+from mx import DateTime
 
 class PyKotaReporterError(Exception):
     """An exception for Reporter related stuff."""
@@ -95,19 +97,22 @@ class BaseReporter :
             if balance <= 0 :
                 datelimit = "DENY"
                 reached = "+B"
+            elif balance <= self.tool.config.getPoorMan() :
+                datelimit = "WARNING"
+                reached = "?B"
             else :    
                 datelimit = ""
                 reached = "-B"
         else :
-            if quota.DateLimit is not None :
+            if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
+                datelimit = "DENY"
+            elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
+                datelimit = "DENY"
+            elif quota.DateLimit is not None :
                 now = DateTime.now()
                 datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
                 if now >= datelimit :
                     datelimit = "DENY"
-            elif (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
-                datelimit = "DENY"
-            elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-                datelimit = "DENY"
             else :    
                 datelimit = ""
             reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
@@ -123,4 +128,4 @@ def openReporter(tool, reporttype, printers, ugnames, isgroup) :
     except ImportError :
         raise PyKotaReporterError, _("Unsupported reporter backend %s") % reporttype
     else :    
-        return getattr(reporterbackend, "Reporter")(tool, printers, ugnames, isgroup)
+        return reporterbackend.Reporter(tool, printers, ugnames, isgroup)

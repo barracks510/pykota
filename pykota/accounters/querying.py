@@ -21,8 +21,8 @@
 # $Id$
 #
 # $Log$
-# Revision 1.9  2003/12/27 15:43:36  uid67467
-# Savannah is back online...
+# Revision 1.10  2003/12/27 16:49:25  uid67467
+# Should be ok now.
 #
 # Revision 1.8  2003/11/21 14:28:46  jalet
 # More complete job history.
@@ -69,7 +69,8 @@ class Accounter(AccounterBase) :
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
         global MAXTRIES, TIMETOSLEEP
-        for i in range(MAXTRIES) :
+        self.filter.logdebug("Reading printer's internal page counter...")
+        for dummy in range(MAXTRIES) :
             try :
                 counter = self.requester.getPrinterPageCounter(self.filter.printerhostname)
             except PyKotaRequesterError, msg :
@@ -81,6 +82,7 @@ class Accounter(AccounterBase) :
                 # printer answered, it is on so we can exit the loop
                 break
             time.sleep(TIMETOSLEEP)    
+        self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
         return counter    
         
     def beginJob(self, printer, user) :    

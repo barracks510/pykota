@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.28  2003/11/25 23:46:40  jalet
 # Don't try to verify if module name is valid, Python does this better than us.
 #
@@ -247,6 +250,7 @@ class StorageUserPQuota(StorageObject) :
         self.SoftLimit = None
         self.HardLimit = None
         self.DateLimit = None
+        self.ParentPrintersUserPQuota = (user.Exists and printer.Exists and parent.getParentPrintersUserPQuota(self)) or []
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
@@ -267,22 +271,22 @@ class StorageUserPQuota(StorageObject) :
         
     def increasePagesUsage(self, nbpages) :
         """Increase the value of used pages and money."""
-        if nbpages :
-            jobprice = (float(self.Printer.PricePerPage or 0.0) * nbpages) + float(self.Printer.PricePerJob or 0.0)
-            newpagecounter = int(self.PageCounter or 0) + nbpages
-            newlifepagecounter = int(self.LifePageCounter or 0) + nbpages
-            self.parent.beginTransaction()
-            try :
-                if jobprice : # optimization : don't access the database if unneeded.
-                    self.User.consumeAccountBalance(jobprice)
-                self.parent.writeUserPQuotaPagesCounters(self, newpagecounter, newlifepagecounter)
-            except PyKotaStorageError, msg :    
-                self.parent.rollbackTransaction()
-                raise PyKotaStorageError, msg
-            else :    
-                self.parent.commitTransaction()
-                self.PageCounter = newpagecounter
-                self.LifePageCounter = newlifepagecounter
+        jobprice = (float(self.Printer.PricePerPage or 0.0) * nbpages) + float(self.Printer.PricePerJob or 0.0)
+        self.parent.beginTransaction()
+        try :
+            if nbpages :
+                self.User.consumeAccountBalance(jobprice)
+                for upq in [ self ] + self.ParentPrintersUserPQuota :
+                    newpagecounter = int(upq.PageCounter or 0) + nbpages
+                    newlifepagecounter = int(upq.LifePageCounter or 0) + nbpages
+                    self.parent.writeUserPQuotaPagesCounters(upq, newpagecounter, newlifepagecounter)
+                    upq.PageCounter = newpagecounter
+                    upq.LifePageCounter = newlifepagecounter
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
         
 class StorageGroupPQuota(StorageObject) :
     """Group Print Quota class."""
@@ -343,6 +347,10 @@ class BaseStorage :
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
             self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }
+        
+    def close(self) :    
+        """Must be overriden in children classes."""
+        raise RuntimeError, "BaseStorage.close() must be overriden !"
         
     def __del__(self) :        
         """Ensures that the database connection is closed."""
@@ -440,6 +448,13 @@ class BaseStorage :
             user.Groups = self.getUserGroupsFromBackend(user)
         return user.Groups   
         
+    def getParentPrintersUserPQuota(self, userpquota) :     
+        """Returns all user print quota on the printer and its parents."""
+        upquotas = [ ]
+        for printer in self.getParentPrinters(userpquota.Printer) :
+            upquotas.append(self.getUserPQuota(userpquota.User, printer))
+        return upquotas        
+        
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
     backendinfo = pykotatool.config.getStorageBackend()
@@ -453,5 +468,5 @@ def openConnection(pykotatool) :
         database = backendinfo["storagename"]
         admin = backendinfo["storageadmin"] or backendinfo["storageuser"]
         adminpw = backendinfo["storageadminpw"] or backendinfo["storageuserpw"]
-        return getattr(storagebackend, "Storage")(pykotatool, host, database, admin, adminpw)
+        return storagebackend.Storage(pykotatool, host, database, admin, adminpw)
 

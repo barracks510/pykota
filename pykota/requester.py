@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
 # Revision 1.10  2003/11/25 23:46:40  jalet
 # Don't try to verify if module name is valid, Python does this better than us.
 #
@@ -74,4 +77,4 @@ def openRequester(config, printername) :
     except ImportError :
         raise PyKotaRequesterError, _("Unsupported requester backend %s") % backend
     else :    
-        return getattr(requesterbackend, "Requester")(printername, args)
+        return requesterbackend.Requester(printername, args)

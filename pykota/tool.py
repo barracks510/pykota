@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.65  2003/12/27 16:49:25  uid67467
+# Should be ok now.
+#
+# Revision 1.65  2003/12/06 08:14:38  jalet
+# Added support for CUPS device uris which contain authentication information.
+#
 # Revision 1.64  2003/11/29 22:03:17  jalet
 # Some code refactoring work. New code is not used at this time.
 #
@@ -287,7 +293,7 @@ class PyKotaTool :
         # pykota specific stuff
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc/pykota")
-        self.logger = logger.openLogger(self, self.config.getLoggingBackend())
+        self.logger = logger.openLogger(self.config.getLoggingBackend())
         self.debug = self.config.getDebug()
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
@@ -573,9 +579,10 @@ class PyKotaTool :
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                message = self.config.getHardWarn(printer.Name)
                 for user in self.storage.getGroupMembers(group) :
                     if mailto != "EXTERNAL" :
-                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
                     else :    
                         self.externalMailTo(arguments, action, user, printer, message)
         elif action == "WARN" :    
@@ -598,39 +605,52 @@ class PyKotaTool :
     def warnUserPQuota(self, userpquota) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
         user = userpquota.User
-        printer = userpquota.Printer
-        admin = self.config.getAdmin(printer.Name)
-        adminmail = self.config.getAdminMail(printer.Name)
-        (mailto, arguments) = self.config.getMailTo(printer.Name)
-        action = self.checkUserPQuota(userpquota)
-        if action.startswith("POLICY_") :
-            action = action[7:]
-        if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
-            self.logger.log_message(adminmessage)
-            if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                message = self.config.getHardWarn(printer.Name)
-                if mailto != "EXTERNAL" :
-                    self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
-                else :    
-                    self.externalMailTo(arguments, action, user, printer, message)
-            if mailto in [ "BOTH", "ADMIN" ] :
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-        elif action == "WARN" :    
-            adminmessage = _("Print Quota low for user %s on printer %s") % (user.Name, printer.Name)
-            self.logger.log_message(adminmessage)
-            if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                if user.LimitBy and (user.LimitBy.lower() == "balance") : 
-                    message = self.config.getPoorWarn()
-                else :     
-                    message = self.config.getSoftWarn(printer.Name)
-                if mailto != "EXTERNAL" :    
-                    self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
-                else :    
-                    self.externalMailTo(arguments, action, user, printer, message)
-            if mailto in [ "BOTH", "ADMIN" ] :
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-        return action        
+        actions = []
+        for upq in [userpquota] + userpquota.ParentPrintersUserPQuota :
+            printer = upq.Printer
+            admin = self.config.getAdmin(printer.Name)
+            adminmail = self.config.getAdminMail(printer.Name)
+            (mailto, arguments) = self.config.getMailTo(printer.Name)
+            self.logdebug("Checking quota for user %s on printer %s" % (upq.User.Name, printer.Name))
+            action = self.checkUserPQuota(upq)
+            self.logdebug("Result is %s" % action)
+            if action.startswith("POLICY_") :
+                action = action[7:]
+            if action == "DENY" :
+                adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
+                self.logger.log_message(adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    message = self.config.getHardWarn(printer.Name)
+                    if mailto != "EXTERNAL" :
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
+                    else :    
+                        self.externalMailTo(arguments, action, user, printer, message)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            elif action == "WARN" :    
+                adminmessage = _("Print Quota low for user %s on printer %s") % (user.Name, printer.Name)
+                self.logger.log_message(adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    if user.LimitBy and (user.LimitBy.lower() == "balance") : 
+                        message = self.config.getPoorWarn()
+                    else :     
+                        message = self.config.getSoftWarn(printer.Name)
+                    if mailto != "EXTERNAL" :    
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
+                    else :    
+                        self.externalMailTo(arguments, action, user, printer, message)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            actions.append(action)        
+        if "DENY" in actions :    
+            self.logdebug("Final result is %s" % action)
+            return "DENY"
+        elif "WARN" in actions :    
+            self.logdebug("Final result is %s" % action)
+            return "WARN"
+        else :    
+            self.logdebug("Final result is %s" % action)
+            return "ALLOW"
         
 class PyKotaFilterOrBackend(PyKotaTool) :    
     """Class for the PyKota filter or backend."""
@@ -650,6 +670,16 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         if self.config.getUserNameToLower() :
             self.username = self.username.lower()
         self.preserveinputfile = self.inputfile 
+        #
+        # Export internal data to the environment
+        os.environ["PYKOTAUSERNAME"] = str(self.username)
+        os.environ["PYKOTAPRINTERNAME"] = str(self.printername)
+        os.environ["PYKOTACOPIES"] = str(self.copies)
+        os.environ["PYKOTATITLE"] = str(self.title)
+        os.environ["PYKOTAOPTIONS"] = str(self.options)
+        os.environ["PYKOTAFILENAME"] = str(self.inputfile)
+        #
+        # And opens the correct accounter 
         self.accounter = accounter.openAccounter(self)
     
     def extractInfoFromCupsOrLprng(self) :    
@@ -682,6 +712,9 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                 raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
             while destination.startswith("/") :
                 destination = destination[1:]
+            checkauth = destination.split("@", 1)    
+            if len(checkauth) == 2 :
+                destination = checkauth[1]
             printerhostname = destination.split("/")[0].split(":")[0]
             return ("CUPS", \
                     printerhostname, \
@@ -736,7 +769,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
            "EXTERNALERROR" is returned in case policy was "EXTERNAL" and an error status
            was returned by the external command.
         """
-        for passnumber in range(1, 3) :
+        for dummy in range(1, 3) :
             printer = self.storage.getPrinter(self.printername)
             user = self.storage.getUser(self.username)
             userpquota = self.storage.getUserPQuota(user, printer)
