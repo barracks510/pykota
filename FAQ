@@ -113,7 +113,8 @@ PyKota's FAQ :
   * How can I share print quota between some printers only (not all) ?   
   
     To do this you have to put the printers into a printers group, and
-    set quota 
+    set quota on the printer group, instead of (or in addition to)
+    the printers themselves.
     
   * What is a printer group ?
   
