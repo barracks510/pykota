@@ -1,6 +1,8 @@
 #!/bin/sh -e
 # $Id$
 
+. /usr/share/debconf/confmodule
+
 if [ "$1" = "install" -o "$1" = "upgrade" ]; then
         if ! id -g pykota > /dev/null 2>&1 ; then
                 addgroup --system pykota

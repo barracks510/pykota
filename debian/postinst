@@ -1,6 +1,8 @@
 #!/bin/sh -e
 # $Id$
 
+. /usr/share/debconf/confmodule
+
 if [ "$1" = "install" ]; then
         chown -R pykota.pykota /etc/pykota
 fi
