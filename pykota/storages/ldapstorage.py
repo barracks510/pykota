@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.63  2004/05/06 12:37:46  jalet
+# pkpgcounter : comments
+# pkprinters : when --add is used, existing printers are now skipped.
+#
 # Revision 1.62  2004/03/05 14:31:58  jalet
 # Improvement on strange history entries
 #
@@ -443,10 +447,11 @@ class Storage(BaseStorage) :
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
-        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaLimitBy", self.info["usermail"]], base=self.info["userbase"])
+        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"]], base=self.info["userbase"])
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
+            user.Name = fields.get("pykotaUserName", [username])[0] 
             user.Email = fields.get(self.info["usermail"])
             if user.Email is not None :
                 user.Email = user.Email[0]
@@ -477,10 +482,11 @@ class Storage(BaseStorage) :
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
-        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaLimitBy"], base=self.info["groupbase"])
+        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaGroupName", "pykotaLimitBy"], base=self.info["groupbase"])
         if result :
             fields = result[0][1]
             group.ident = result[0][0]
+            group.Name = fields.get("pykotaGroupName", [groupname])[0] 
             group.LimitBy = fields.get("pykotaLimitBy")
             if group.LimitBy is not None :
                 group.LimitBy = group.LimitBy[0]
@@ -494,12 +500,13 @@ class Storage(BaseStorage) :
         return group
        
     def getPrinterFromBackend(self, printername) :        
-        """Extracts printer information given its name."""
+        """Extracts printer information given its name : returns first matching printer."""
         printer = StoragePrinter(self, printername)
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
         if result :
-            fields = result[0][1]
+            fields = result[0][1]       # take only first matching printer, ignore the rest
             printer.ident = result[0][0]
+            printer.Name = fields.get("pykotaPrinterName", [printername])[0] 
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
             printer.uniqueMember = fields.get("uniqueMember", [])

@@ -21,12 +21,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha5 :
+    
+        - pkprinters --add now completely skips existing printers, but
+          logs a warning.
+          
     - 1.19alpha4 :
     
         - a bad copy&paste prevented pkpgcounter to work at all, this
           is now fixed.
           
-        - improved PCL support in pkpgcounter.  
+        - improved PCL support in pkpgcounter, with the use of
+          HP PCL/PJL Reference Set
+          PCL5 Printer Language Technical Quick Reference Guide
         
         - pkpgcounter now uses mmap to speed things up : duration
           is halved with the sample 87 pages PCL document I use for

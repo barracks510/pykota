@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/05/06 12:37:29  jalet
+# pkpgcounter : comments
+# pkprinters : when --add is used, existing printers are now skipped.
+#
 # Revision 1.5  2004/04/16 16:52:09  jalet
 # Better formatting
 #
@@ -162,14 +166,17 @@ class PKPrinters(PyKotaTool) :
             printers = []
             for pname in names :
                 printer = self.storage.getPrinter(pname)
-                if not printer.Exists :
+                if printer.Exists :
+                    self.logger.log_message(_("Printer %s already exists, skipping.") % printer.Name, "warn")
+                else :
                     if self.isValidName(pname) :
                         printer = self.storage.addPrinter(pname)
                         if not printer.Exists :
                             raise PyKotaToolError, _("Impossible to add printer %s") % pname
+                        else :    
+                            printers.append(printer)
                     else :    
                         raise PyKotaToolError, _("Invalid printer name %s") % pname
-                printers.append(printer)
         else :        
             printers = self.storage.getMatchingPrinters(",".join(names))
             if not printers :

@@ -478,3 +478,8 @@ msgstr "Errore avvenuto cancellando la entry LDAP (%s)"
 #, python-format
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Errore avvenuto durante la modifica della entry LDAP (%s, %s)"
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr ""
+

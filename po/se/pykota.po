@@ -477,3 +477,8 @@ msgstr "Problem med att ta bort LDAP post (%s)"
 #, python-format
 msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problem med att modifiera LDAP post (%s, %s)"
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr ""
+

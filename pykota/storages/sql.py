@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2004/05/06 12:37:47  jalet
+# pkpgcounter : comments
+# pkprinters : when --add is used, existing printers are now skipped.
+#
 # Revision 1.37  2004/02/23 22:53:21  jalet
 # Don't retrieve data when it's not needed, to avoid database queries
 #
@@ -62,6 +66,7 @@ class SQLStorage :
         if result :
             fields = result[0]
             user.ident = fields.get("id")
+            user.Name = fields.get("username", username)
             user.LimitBy = fields.get("limitby")
             user.AccountBalance = fields.get("balance")
             user.LifeTimePaid = fields.get("lifetimepaid")
@@ -76,6 +81,7 @@ class SQLStorage :
         if result :
             fields = result[0]
             group.ident = fields.get("id")
+            group.Name = fields.get("groupname", groupname)
             group.LimitBy = fields.get("limitby")
             result = self.doSearch("SELECT SUM(balance) AS balance, SUM(lifetimepaid) AS lifetimepaid FROM users WHERE id IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(group.ident))
             if result :
@@ -92,6 +98,7 @@ class SQLStorage :
         if result :
             fields = result[0]
             printer.ident = fields.get("id")
+            printer.Name = fields.get("printername", printername)
             printer.PricePerJob = fields.get("priceperjob")
             printer.PricePerPage = fields.get("priceperpage")
             printer.Exists = 1

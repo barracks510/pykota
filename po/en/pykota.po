@@ -445,3 +445,8 @@ msgstr ""
 #, python-format
 msgid "in"
 msgstr ""
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr ""
+

@@ -481,3 +481,8 @@ msgstr "Problema modificando entrada LDAP (%s, %s)"
 #, python-format
 msgid "in"
 msgstr "em"
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr ""
+
