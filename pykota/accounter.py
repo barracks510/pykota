@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/07/14 14:14:59  jalet
+# Old template
+#
 # Revision 1.3  2003/04/30 19:53:58  jalet
 # 1.05
 #
@@ -68,7 +71,7 @@ class AccounterBase :
         if mustclose :    
             infile.close()
             
-    def doAccounting(self, printerid, userid) :    
+    def doAccounting(self, printer, user) :    
         """Does the real accounting."""
         raise PyKotaAccounterError, "Accounter not implemented !"
         
