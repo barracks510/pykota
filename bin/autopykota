@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/10/06 07:51:07  jalet
+# Now autopykota uses 0.0 as the default value for initial account balance
+# if the --initbalance command line option is not used.
+#
 # Revision 1.2  2004/09/30 11:22:30  jalet
 # Extends the PATH and doesn't use absolute path anymore to launch edpykota.
 #
@@ -49,8 +53,6 @@ command line usage :
   THIS TOOL MUST NOT BE USED FROM THE COMMAND LINE BUT ONLY AS PART
   OF AN external policy IN pykota.conf
   
-  THIS TOOL IS STILL EXPERIMENTAL. USE AT YOUR OWN RISK !!!
-  
   autopykota { -i | --initbalance value } 
 
 options :
@@ -60,7 +62,7 @@ options :
   
   -i | --initbalance b Sets the user's account initial balance value to b.
                        If the user already exists, actual balance is left
-                       unmodified.
+                       unmodified. If unset, the default value is 0.
                        
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -90,6 +92,7 @@ class AutoPyKota(PyKotaTool) :
         else :
             user = self.storage.getUser(username)
             if user.Exists :
+                self.logdebug("User %s already exits." % username) 
                 printer = self.storage.getPrinter(printername)
                 if printer.Exists :
                     userpquota = self.storage.getUserPQuota(user, printer)
@@ -97,22 +100,21 @@ class AutoPyKota(PyKotaTool) :
                         self.logdebug("User %s's quota entry on printer %s already exists. Nothing to do." % (username, printername))
                         return 0
                     else :    
-                        self.logdebug("User %s already exists. Creating a quota entry for user %s on printer %s." % (username, username, printername))
+                        self.logdebug("Creating a quota entry for user %s on printer %s." % (username, printername))
                         return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
                 else :
-                    self.logdebug("User %s already exists. Printer %s doesn't exist. Creating printer %s and a quota entry for user %s on printer %s." % (username, printername, printername, username, printername))
+                    self.logdebug("Printer %s doesn't exist. Creating printer %s and a quota entry for user %s on printer %s." % (printername, printername, username, printername))
                     return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
             else :
-                if options["initbalance"] is None :
-                    raise PyKotaToolError, "User %s doesn't exist yet, but no initial balance value is given. Fatal Error." % username
-                else :
-                    self.logdebug("User %s doesn't exist yet. Creating user %s's account and quota entries on all existing printers." % (username, username))
-                    return os.system('edpykota --add --limitby balance --balance "%s" "%s"' % (options["initbalance"], username))
+                self.logdebug("User %s doesn't exist yet." % username)
+                self.logdebug("Creating user %s's account with balance %.2f and quota entries on all existing printers." % (username, options["initbalance"]))
+                return os.system('edpykota --add --limitby balance --balance "%s" "%s"' % (options["initbalance"], username))
     
 if __name__ == "__main__" :    
     retcode = 0
     try :
         defaults = { \
+                     "initbalance" : 0.0
                    }
         short_options = "vhi:"
         long_options = ["help", "version", "initbalance="]
@@ -126,7 +128,7 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
-        options["initbalance"] = options["i"] or options["initbalance"] 
+        options["initbalance"] = options["i"] or options["initbalance"] or defaults["initbalance"]
         
         if options["help"] :
             automat.display_usage_and_quit()
