@@ -50,9 +50,20 @@ storageadmin: pykotaadmin
 #storageserver: ldap://ldap.librelogiciel.com:389
 #storagename: dc=librelogiciel,dc=com
 #storageadmin: cn=admin,dc=librelogiciel,dc=com
-#storageuser: cn=admin,dc=librelogiciel,dc=com
 #storageadminpw: abc.123
-#storageuserpw: xyz.345
+#
+# Here we define some helpers to know where 
+# to plug into an existing LDAP directory
+#usersou: ou=People,dc=librelogiciel,dc=com
+#userrdn: uid
+#groupsou: ou=Groups,dc=librelogiciel,dc=com
+#grouprdn: cn
+#printersou: ou=Printers,dc=librelogiciel,dc=com
+#printerrdn: cn
+#jobsou: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
+#userquotasou: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#groupquotasou: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#lastjobsou: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
 
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
@@ -133,8 +144,10 @@ mailto: both
 gracedelay: 7
 
 # one section per printer, or no other section at all if all options 
-# are defined globally
-[lp]
+# are defined globally.
+# The section's name must be the same as the printer's name as defined
+# in your printing system, be it CUPS or LPRng.
+[hpmarketing]
 
 # How to query the lp printer for its page counter.
 # THIS IS ONLY USED IF YOU HAVE SET 'accounter' TO 'querying'
@@ -144,13 +157,13 @@ gracedelay: 7
 # Only snmp(community, oid) and external(command) are supported
 #
 # Example : 
-#     requester: external(snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+#     requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 # and :
 #     requester: snmp(public, mib-2.43.10.2.1.4.1.1)
 # are equivalent
 #
 # Another untested example, using npadmin :
-#     requester: external(npadmin --pagecount %(printer)s)
+#     requester: external(/usr/bin/npadmin --pagecount %(printer)s)
 #
 # Another example, for AppleTalk printers which works fine :
 # (You may need the pap CUPS backend installed, and copy the 
@@ -168,7 +181,7 @@ gracedelay: 7
 #
 # WARNING : In any case, when using an external requester, please test the command line outside
 #           of PyKota before. This will save you some headaches in case it doesn't work as expected.
-requester: external(snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+requester: external(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 
 # Default policy for inexistant users (e.g. root)
 # either allow or deny
