@@ -32,6 +32,11 @@ PyKota NEWS :
         - Manual pages are included since 1.00, but I forgot to    
           add this information to this file.
           
+        - Redistribution terms for the official package have  
+          softened and are now fully GPL compatible : 
+          unrestricted modification is now allowed even for
+          the version number.
+          
     - 1.00 :
     
         - edpykota now accepts a --noquota option. This
