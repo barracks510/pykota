@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 22:28:38  jalet
+# More robust storage
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -25,15 +28,24 @@ from mx import DateTime
 class SQLStorage :    
     def getUserId(self, username) :
         result = self.doQuery("SELECT id FROM users WHERE username=%s;" % self.doQuote(username))
-        return self.doParseResult(result)["id"]
+        try :
+            return self.doParseResult(result)[0]["id"]
+        except TypeError :      # Not found
+            return
             
     def getPrinterId(self, printername) :        
         result = self.doQuery("SELECT id FROM printers WHERE printername=%s;" % self.doQuote(printername))
-        return self.doParseResult(result)["id"]
+        try :
+            return self.doParseResult(result)[0]["id"]
+        except TypeError :      # Not found    
+            return
             
     def getPrinterPageCounter(self, printername) :
         result = self.doQuery("SELECT pagecounter, lastusername FROM printers WHERE printername=%s;" % self.doQuote(printername))
-        return self.doParseResult(result)
+        try :
+            return self.doParseResult(result)[0]
+        except TypeError :      # Not found
+            return
         
     def updatePrinterPageCounter(self, printername, username, pagecount) :
         return self.doQuery("UPDATE printers SET pagecounter=%s, lastusername=%s WHERE printername=%s;" % (self.doQuote(pagecount), self.doQuote(username), self.doQuote(printername)))
@@ -52,7 +64,10 @@ class SQLStorage :
         
     def getUserPQuota(self, username, printername) :
         result = self.doQuery("SELECT pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
-        return self.doParseResult(result)
+        try :
+            return self.doParseResult(result)[0]
+        except TypeError :      # Not found    
+            return
         
     def setUserPQuota(self, username, printername, softlimit, hardlimit) :
         self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))

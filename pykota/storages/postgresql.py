@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 22:28:38  jalet
+# More robust storage
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -57,9 +60,7 @@ class Storage(sql.SQLStorage) :
         return pg._quote(field, typ)
         
     def doParseResult(self, result) :
-        """Returns the result as a Python dictionnary."""
-        try :
-            return result.dictresult()[0]
-        except IndexError :    
-            return None # not found
+        """Returns the result as a list of Python mappings."""
+        if result.ntuples() > 0 :
+            return result.dictresult()
         
