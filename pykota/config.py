@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/06 23:58:05  jalet
+# repykota should be ok
+#
 # Revision 1.4  2003/02/06 09:19:02  jalet
 # More robust behavior (hopefully) when the user or printer is not managed
 # correctly by the Quota System : e.g. cupsFilter added in ppd file, but
@@ -139,4 +142,8 @@ class PyKotaConfig :
         
     def getGraceDelay(self) :    
         """Returns the grace delay in days."""
-        return int(self.config.get("global", "gracedelay"))
+        gd = self.config.get("global", "gracedelay")
+        try :
+            return int(gd)
+        except ValueError :    
+            raise PyKotaConfigError, "Invalid grace delay %s" % gd
