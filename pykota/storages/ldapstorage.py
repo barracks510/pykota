@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/07/11 14:23:13  jalet
+# When adding an user only adds one object containing both the user and
+# its account balance instead of two objects.
+#
 # Revision 1.17  2003/07/07 12:51:07  jalet
 # Small fix
 #
@@ -456,21 +460,14 @@ class Storage :
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns it."""
         fields = { self.info["userrdn"] : user.Name,
-                   "objectClass" : ["pykotaObject", "pykotaAccount"],
+                   "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
                    "cn" : user.Name,
                    "pykotaUserName" : user.Name,
                    "pykotaLimitBY" : (user.LimitBy or "quota"),
-                 } 
-        dn = "%s=%s,%s" % (self.info["userrdn"], user.Name, self.info["userbase"])
-        self.doAdd(dn, fields)
-        fields = { 
-                   "objectClass" : ["pykotaObject", "pykotaAccountBalance"],
-                   "cn" : user.Name,
-                   "pykotaUserName" : user.Name,
                    "pykotaBalance" : str(user.AccountBalance or 0.0),
                    "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),
                  } 
-        dn = "cn=%s,%s" % (user.Name, self.info["balancebase"])
+        dn = "%s=%s,%s" % (self.info["userrdn"], user.Name, self.info["userbase"])
         self.doAdd(dn, fields)
         return self.getUser(user.Name)
         
