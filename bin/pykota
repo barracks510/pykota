@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/05 22:42:51  jalet
+# Typo
+#
 # Revision 1.3  2003/02/05 22:38:39  jalet
 # Typo
 #
@@ -33,7 +36,7 @@ import sys
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota import requester
 
-class PyKotaFiler(PyKotaTool) :    
+class PyKotaFilter(PyKotaTool) :    
     """Class for the PyKota filter."""
     def __init__(self, username) :
         PyKotaTool.__init__(self, isfilter=1)
