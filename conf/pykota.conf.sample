@@ -81,6 +81,18 @@ disablehistory: No
 #storageuser: cn=notadmin,dc=librelogiciel,dc=com
 #storageuserpw: abc.123
 #
+# TLS support for LDAP
+#
+# ldaptls can be set to either Yes or No
+# the default value when not set is No, meaning that TLS won't be used.
+#ldaptls: No
+#
+# cacert points to the CA Certificate file to use for TLS.
+# Ensure that every user who can launch PyKota commands can read this file.
+# There's NO default value for this directive.
+#cacert /etc/pykota/mycertfile
+#
+#
 # Here we define some helpers to know where 
 # to plug into an existing LDAP directory
 #userbase: ou=People,dc=librelogiciel,dc=com
@@ -91,9 +103,9 @@ disablehistory: No
 #grouprdn: cn
 #printerbase: ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
 #printerrdn: cn
-#jobbase: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
 #userquotabase: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
 #groupquotabase: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#jobbase: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
 #lastjobbase: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
 #
 # How to create new accounts and groups

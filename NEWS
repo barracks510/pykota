@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.21alpha11 :
     
+        - TLS is now supported with the LDAP backend. Thanks to Stefan
+          Wold for the patch.
+          
         - edpkota now accepts the -U | --used value command line argument
           to preset the page counters to an initial value. Thanks to
           Wilson Roberto Afonso and Matt Hyclak for the patch.

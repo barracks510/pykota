@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2004/12/02 22:01:58  jalet
+# TLS is now supported with the LDAP backend
+#
 # Revision 1.57  2004/11/22 21:53:38  jalet
 # Added the reject_unknown directive to pykota.conf to reject user/group
 # creation if user or group is unknown to the system
@@ -336,6 +339,15 @@ class PyKotaConfig :
         for field in ["newuser", "newgroup"] :
             if ldapinfo[field].lower().startswith('attach(') :
                 ldapinfo[field] = ldapinfo[field][7:-1]
+                
+        # should we use TLS, by default (if unset) value is NO        
+        ldapinfo["ldaptls"] = self.isTrue(self.getGlobalOption("ldaptls", ignore=1))
+        ldapinfo["cacert"] = self.getGlobalOption("cacert", ignore=1)
+        if ldapinfo["cacert"] :
+            ldapinfo["cacert"] = ldapinfo["cacert"].strip()
+        if ldapinfo["ldaptls"] :    
+            if not os.access(ldapinfo["cacert"] or "", os.R_OK) :
+                raise PyKotaConfigError, _("Option ldaptls is set, but certificate %s is not readable.") % str(ldapinfo["cacert"])
         return ldapinfo
         
     def getLoggingBackend(self) :    

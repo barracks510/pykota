@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.88  2004/12/02 22:01:58  jalet
+# TLS is now supported with the LDAP backend
+#
 # Revision 1.87  2004/12/02 12:34:00  jalet
 # Now automates LDAP reconnections if the server dropped the connection due
 # to a timeout.
@@ -352,6 +355,11 @@ class Storage(BaseStorage) :
         for tryit in range(3) :
             try :
                 self.database = ldap.initialize(self.savedhost) 
+                if self.info["ldaptls"] :
+                    # we want TLS
+                    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, self.info["cacert"])
+                    self.database.set_option(ldap.OPT_X_TLS, ldap.OPT_X_TLS_DEMAND)
+                    self.database.start_tls_s()
                 self.database.simple_bind_s(self.saveduser, self.savedpasswd)
                 self.basedn = self.saveddbname
             except ldap.SERVER_DOWN :    
