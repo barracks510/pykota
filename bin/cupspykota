@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.77  2004/11/06 22:40:57  jalet
+# Safer code
+#
 # Revision 1.76  2004/11/06 22:35:58  jalet
 # Added a miniparser for IPP messages (RFC 2910). The job-originating-host-name
 # retrieval is now fiable, unless the CUPS developpers change something...
@@ -343,7 +346,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         return 0
         
     def getCupsConfigDirectives(self, directives=[]) :
-        """Retrieves some CUPS directives from its configuration file."""
+        """Retrieves some CUPS directives from its configuration file.
+        
+           Returns a mapping with lowercased directives as keys and 
+           their setting as values.
+        """
         dirvalues = {} 
         cupsroot = os.environ.get("CUPS_SERVERROOT", "/etc/cups")
         cupsdconf = os.path.join(cupsroot, "cupsd.conf")
@@ -420,8 +427,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 self.printInfo("Unable to open IPP message file %s" % ippmessagefile, "warn")
             else :    
                 self.logdebug("Parsing of IPP message file %s begins." % ippmessagefile)
-                ippmessage = IPPMessage(ippdatafile.read())
-                self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
+                try :
+                    ippmessage = IPPMessage(ippdatafile.read())
+                except PyKotaIPPError, msg :    
+                    self.printInfo("Error while parsing %s : %s" % (ippmessagefile, msg), "warn")
+                else :    
+                    self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
                 ippdatafile.close()
                 
             clienthost = ippmessage.get("job-originating-host-name") \
