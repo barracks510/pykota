@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2004/10/23 19:28:18  jalet
+# Small fix to the cgi script to please Freshmeat's fmII URL validator/1.1
+#
 # Revision 1.39  2004/10/13 09:38:25  jalet
 # Added a translatable message from the CGI script
 #
@@ -208,7 +211,7 @@ def getLanguagePreference() :
     
 def getCharsetPreference() :
     """Returns the preferred charset."""
-    charsets = os.environ.get("HTTP_ACCEPT_CHARSET", "no charset defined")
+    charsets = os.environ.get("HTTP_ACCEPT_CHARSET", "UTF-8")
     charsets = [l.strip().split(';')[0] for l in charsets.split(",")]
     return charsets[0]
 
