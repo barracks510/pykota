@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.99  2004/06/11 07:07:38  jalet
+# Now detects and logs configuration syntax errors instead of failing without
+# any notice message.
+#
 # Revision 1.98  2004/06/08 19:27:12  jalet
 # Doesn't ignore SIGCHLD anymore
 #
@@ -378,6 +382,7 @@ import locale
 import signal
 import socket
 import tempfile
+import ConfigParser
 
 from mx import DateTime
 
@@ -406,14 +411,19 @@ class PyKotaTool :
     
         # pykota specific stuff
         self.documentation = doc
-        self.config = config.PyKotaConfig("/etc/pykota")
+        try :
+            self.config = config.PyKotaConfig("/etc/pykota")
+        except ConfigParser.ParsingError, msg :    
+            sys.stderr.write("ERROR: Problem encountered while parsing configuration file : %s\n" % msg)
+            sys.stderr.flush()
+            sys.exit(-1)
         self.debug = self.config.getDebug()
         self.smtpserver = self.config.getSMTPServer()
         self.maildomain = self.config.getMailDomain()
         try :
             self.logger = logger.openLogger(self.config.getLoggingBackend())
             self.storage = storage.openConnection(self)
-        except (logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
+        except (config.PyKotaConfigError, logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
             self.crashed(msg)
             raise
         self.softwareJobSize = 0
