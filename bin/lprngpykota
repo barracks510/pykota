@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/09/13 16:02:44  jalet
+# Added fix for incorrect job's size when hardware accounting fails
+#
 # Revision 1.6  2004/09/02 14:40:13  jalet
 # Another bunch of LPRng fixes
 #
@@ -140,7 +143,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         jobsize = None
         if self.accounter.isSoftware :
             self.accounter.endJob(printer)
-            jobsize = self.accounter.getJobSize()
+            jobsize = self.accounter.getJobSize(printer)
             self.logdebug("Job accounting ends.")
             
         if action == "DENY" :   
@@ -215,7 +218,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             self.logdebug("Job accounting ends.")
                 
             # retrieve the job size    
-            jobsize = self.accounter.getJobSize()
+            jobsize = self.accounter.getJobSize(printer)
             
             self.logdebug("Job size : %i" % jobsize)
             self.logdebug("Updating user %s's quota on printer %s" % (user.Name, printer.Name))

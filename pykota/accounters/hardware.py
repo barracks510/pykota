@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/09/13 16:02:45  jalet
+# Added fix for incorrect job's size when hardware accounting fails
+#
 # Revision 1.12  2004/09/06 15:42:34  jalet
 # Fix missing import statement for the signal module
 #
@@ -104,27 +107,49 @@ class Accounter(AccounterBase) :
         # save page counter after job
         self.LastPageCounter = self.counterafter = self.getPrinterInternalPageCounter()
         
-    def getJobSize(self) :    
+    def getJobSize(self, printer) :    
         """Returns the actual job size."""
-        try :
-            jobsize = (self.counterafter - self.counterbefore)    
-            if jobsize < 0 :
-                # Try to take care of HP printers 
-                # Their internal page counter is saved to NVRAM
-                # only every 10 pages. If the printer was switched
-                # off then back on during the job, and that the
-                # counters difference is negative, we know 
-                # the formula (we can't know if more than eleven
-                # pages were printed though) :
-                if jobsize > -10 :
-                    jobsize += 10
-                else :    
-                    # here we may have got a printer being replaced
-                    # DURING the job. This is HIGHLY improbable !
-                    jobsize = 0
-        except :    
-            # takes care of the case where one counter (or both) was never set.
-            jobsize = 0
+        if (not self.counterbefore) or (not self.counterafter) :
+            # there was a problem retrieving page counter
+            self.filter.printInfo(_("A problem occured while reading printer %s's internal page counter.") % printer.Name, "warn")
+            if printer.LastJob.Exists :
+                # if there's a previous job, use the last value from database
+                self.filter.printInfo(_("Retrieving printer %s's page counter from database instead.") % printer.Name, "warn")
+                if not self.counterbefore : 
+                    self.counterbefore = printer.LastJob.PrinterPageCounter or 0
+                if not self.counterafter :
+                    self.counterafter = printer.LastJob.PrinterPageCounter or 0
+                before = min(self.counterbefore, self.counterafter)    
+                after = max(self.counterbefore, self.counterafter)    
+                self.counterbefore = before
+                self.counterafter = after
+                if self.counterbefore == self.counterafter :
+                    self.filter.printInfo(_("Couldn't retrieve printer %s's internal page counter either before or after printing.") % printer.Name, "warn")
+                    self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
+                    self.counterafter = self.counterbefore + 1
+            else :
+                self.filter.printInfo(_("No previous job in database for printer %s.") % printer.Name, "warn")
+                self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
+                self.counterbefore = 0
+                self.counterafter = 1
+                
+        jobsize = (self.counterafter - self.counterbefore)    
+        if jobsize < 0 :
+            # Try to take care of HP printers 
+            # Their internal page counter is saved to NVRAM
+            # only every 10 pages. If the printer was switched
+            # off then back on during the job, and that the
+            # counters difference is negative, we know 
+            # the formula (we can't know if more than eleven
+            # pages were printed though) :
+            if jobsize > -10 :
+                jobsize += 10
+            else :    
+                # here we may have got a printer being replaced
+                # DURING the job. This is HIGHLY improbable !
+                self.filter.printInfo(_("Inconsistent values for printer %s's internal page counter.") % printer.Name, "warn")
+                self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
+                jobsize = 1
         return jobsize
         
     def askPrinterPageCounter(self, printer) :

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2004/09/13 16:02:45  jalet
+# Added fix for incorrect job's size when hardware accounting fails
+#
 # Revision 1.19  2004/08/31 23:29:53  jalet
 # Introduction of the new 'onaccountererror' configuration directive.
 # Small fix for software accounter's return code which can't be None anymore.
@@ -139,7 +142,7 @@ class AccounterBase :
         """Do nothing."""
         pass
         
-    def getJobSize(self) :    
+    def getJobSize(self, printer) :    
         """Returns the actual job size."""
         try :
             return self.JobSize

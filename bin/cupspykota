@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.72  2004/09/13 16:02:44  jalet
+# Added fix for incorrect job's size when hardware accounting fails
+#
 # Revision 1.71  2004/09/06 17:05:06  jalet
 # Fix for autodetection of SC_OPEN_MAX
 #
@@ -438,7 +441,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 jobsize = 0
                 self.printInfo(_("Job size forced to 0 because printing is denied."))
             else :    
-                jobsize = self.accounter.getJobSize()
+                jobsize = self.accounter.getJobSize(printer)
             self.printInfo(_("Job size : %i") % jobsize)
             
             # update the quota for the current user on this printer 
