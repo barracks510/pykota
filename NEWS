@@ -28,6 +28,9 @@ PyKota NEWS :
           pkprinters logs a warning message whenever --add is
           used and a printer already exists.
           
+        - LDAP schema now allows accented chars in pykotaFileName
+          and pykotaTitle attributes.
+        
     - 1.19alpha4 :
     
         - a bad copy&paste prevented pkpgcounter to work at all, this
