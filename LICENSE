@@ -1,4 +1,4 @@
-# $Id : $
+# $Id$
 
 PyKota - Print Quota for CUPS
 
@@ -18,6 +18,9 @@ the Free Software Foundation's WEB site http://www.fsf.org
   * You can access to PyKota's source code by using CVS from :
   
         http://savannah.nongnu.org/projects/pykota/
+        
+    Follow the "CVS Repository" link then follow the instructions in
+    the section labeled "Getting a Copy of the CVS Repository".
 
   * The CVS version will always be labelled as **unofficial** and the 
     word **unofficial** will appear whenever you run PyKota command line 
