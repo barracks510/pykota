@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/04/17 09:36:30  jalet
+# Bad alignment in output
+#
 # Revision 1.27  2003/04/17 09:26:21  jalet
 # repykota now reports account balances too.
 #
@@ -202,7 +205,8 @@ class RePyKota(PyKotaTool) :
                     total += pages
                     totalmoney += money
             if total or totalmoney :        
-                print (" " * 50) + (_("Total : %9i") % total) + (" %-12.12s" % ("%7.2f" % totalmoney)[:12])
+                pass
+            print (" " * 50) + (_("Total : %9i") % total) + ("%11s" % ("%7.2f" % totalmoney)[:11])
             printerpagecounter = self.storage.getPrinterPageCounter(printerid)
             try :
                 msg = "%9i" % printerpagecounter["pagecounter"]
@@ -237,8 +241,8 @@ class RePyKota(PyKotaTool) :
             else :
                 reached = (((softlimit is not None) and (pagecounter >= softlimit) and "+") or "-") + "Q"
             strbalance = ("%5.2f" % balance)[:10]
-            strlifetimepaid = ("%6.2f" % lifetimepaid)[:11]
-            print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %-11.11s" % (name, reached, pagecounter, str(softlimit), str(hardlimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
+            strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
+            print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, str(softlimit), str(hardlimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
             return (lifepagecounter, lifetimepaid)
         
                     
