@@ -22,6 +22,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/07/25 10:41:29  jalet
+# Better documentation.
+# pykotme now displays the current user's account balance.
+# Some test changed in ldap module.
+#
 # Revision 1.1  2003/07/03 09:44:01  jalet
 # Now includes the pykotme utility
 #
@@ -31,7 +36,6 @@
 import sys
 import os
 import pwd
-import grp
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
@@ -115,9 +119,17 @@ class PyKotMe(PyKotaTool) :
             if not (filename is sys.stdin) :        
                 stream.close()
                 
+        # get current user
+        uid = os.geteuid()
+        username = pwd.getpwuid(uid)[0]
+        user = self.storage.getUser(username)
+        if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
+            print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
+            
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
+            
         print _("Job size : %i pages") % nbpages    
         for printer in printers :
             cost = (nbpages * float(printer.PricePerPage or 0)) + float(printer.PricePerJob or 0)

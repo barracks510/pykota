@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/07/25 10:41:30  jalet
+# Better documentation.
+# pykotme now displays the current user's account balance.
+# Some test changed in ldap module.
+#
 # Revision 1.31  2003/07/21 23:01:56  jalet
 # Modified some messages aout soft limit
 #
@@ -424,4 +429,7 @@ msgstr ""
 
 msgid "Print Quota Low"
 msgstr "Quota d'Impression Bas"
+
+msgid "Your account balance : %.2f"
+msgstr "Votre solde : %.2f"
 

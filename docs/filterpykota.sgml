@@ -43,12 +43,11 @@
   <para>
     Currently with a <application>CUPS</application> backend, the <application>pykota</application> filter is used at the very last stage of the print mechanism,
     just before the final data is sent to the printer, but it may eventually be used earlier with some
-    modifications to <application>CUPS</application>'s filtering configuration. This is not tested yet, but this
-    may be the solution to use <application>PyKota</application> with printers which really needs to have
-    a specific filter like <application>magicfilter</application> or <application>cupsomatic</application>, 
-    i.e. non-postscript printers. This is a limitation in <application>CUPS</application> which doesn't really
-    allow to specify multiple print filters for different purposes. This problem will be solved in <application>CUPS</application>
-    version 1.2 and higher.
+    modifications to <application>CUPS</application>'s filtering configuration. 
+    You can find in the mailing list archives of July 2003 an explanation on how to do this.
+    This may allow you to use PyKota with a not-PostScript printer or with a PostScript printer
+    which really needs to have
+    a specific filter like <application>magicfilter</application> or <application>cupsomatic</application>.
   </para>
   
   <para>
@@ -67,6 +66,7 @@
   </para>
   
   <para>
+    When using the <literal>querying</literal> accounting method,
     <application>pykota</application> then asks the printer for its internal page counter, read from the Quota DataBase the internal
     page counter for this printer when the previous job was launched, computes the difference, and report it as the 
     previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
@@ -76,9 +76,18 @@
   </para>
   
   <para>
+    When using the <literal>external</literal> accounting method,
+    and if the user is still allowed to print,
+    the command you specified is launched with the job's data on its 
+    standard input. Your command must print the job's size in number of
+    pages on a single line on its standard output. This number is then
+    read by PyKota and used to update the current user's quota information.
+  </para>
+  
+  <para>
     If a problem occurs, it is logged either to the filter's standard output or to the system logger, depending on
     your preferences in <application>PyKota</application>'s configuration file. Also if a print quota is reached
-    you may choose if the administrator, the user, both or noone will receive an email message explaining
+    you may choose if the administrator, the user, both or no-one will receive an email message explaining
     the situation and proposing a solution.
   </para>
   
@@ -87,6 +96,11 @@
 <!--
 
 $Log$
+Revision 1.5  2003/07/25 10:41:29  jalet
+Better documentation.
+pykotme now displays the current user's account balance.
+Some test changed in ldap module.
+
 Revision 1.4  2003/04/30 20:00:51  jalet
 Typo
 

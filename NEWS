@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha9 :
+    
+        - Documentation improved.
+        
+        - pykotme now also prints the user's account balance value
+          if the user is registered in the Quota Storage and his
+          limiting factor is "balance".
+          
     - 1.14alpha8 :
     
         - bin/waitprinter.sh is now included to wait for

@@ -2,8 +2,9 @@
 
   <!entity INSTALLATION system "installation.sgml">
   <!entity EDPYKOTA system "edpykota.sgml">
-  <!entity WARNPYKOTA system "warnpykota.sgml">
   <!entity REPYKOTA system "repykota.sgml">
+  <!entity PYKOTME system "pykotme.sgml">
+  <!entity WARNPYKOTA system "warnpykota.sgml">
   <!entity FILTERPYKOTA system "filterpykota.sgml">
   <!entity GNUFDL system "gnufdl.sgml">
 
@@ -85,6 +86,8 @@
     
   &REPYKOTA;
     
+  &PYKOTME;  
+  
   &WARNPYKOTA;
     
   &GNUFDL;
@@ -94,6 +97,11 @@
 <!--
 
 $Log$
+Revision 1.5  2003/07/25 10:41:29  jalet
+Better documentation.
+pykotme now displays the current user's account balance.
+Some test changed in ldap module.
+
 Revision 1.4  2003/03/25 09:32:06  jalet
 Improved documentation.
 

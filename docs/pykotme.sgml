@@ -1,0 +1,76 @@
+<!-- $Id: -->
+
+<chapter>
+  <title id="pykotme">Get print quotes before printing for real</title>
+  <para>Last modified on $Date$</para>
+  
+  <para>
+    PyKota features a print quote generator, named <application>pykotme</application>.
+    This command line tool can be used to learn in advance how much a print job
+    will cost to you if you really send it to a printer.
+    You can then decide if printing your document is a good idea or not, and do it
+    knowingly.
+  </para>
+  
+  <para>
+    To get a print quote, you have to launch <application>pykotme</application>
+    from the command line, passing your print job's content in the PostScript
+    format, either in the form of one or more file names on the command line,
+    or on its standard input (i.e. in a shell pipe or redirection).
+  </para>
+  
+  <para>
+    Without any command line argument, <application>pykotme</application>
+    automatically reads your job's data from its standard input.
+  </para>
+  
+  <para>
+    By default, <application>pykotme</application>
+    will display a quote for your job on all printers. You can restrict
+    this by using the <literal>-p | --printer</literal> command line
+    option followed with either a printer's name or a wildcard
+    which will be used to search all printers which name matches.
+  </para>
+  
+  <sect1>
+    <title>Examples</title>
+    <para>
+      Here are some examples of <application>pykotme</application> usage.
+    </para>
+    
+    <para>
+      The simplest form :
+<screen>    
+port50-2:~$ pykotme pykota.ps
+Your account balance : 16.25
+Job size : 22 pages
+Cost on printer apple : 1.35
+port50-2:~$ 
+</screen>    
+    </para>
+    
+    <para>
+      More complex, with printer name wildcard and within a pipe :
+<screen>      
+port50-2:~$ a2ps -o - pykota/README | pykotme --printer "a*"
+[pykota/README (plain): 6 pages on 3 sheets]
+[Total: 6 pages on 3 sheets] sent to the standard output
+Your account balance : 16.25
+Job size : 3 pages
+Cost on printer apple : 0.40
+port50-2:~$ 
+</screen>
+    </para>
+  </sect1>
+</chapter>
+
+<!--
+
+$Log$
+Revision 1.1  2003/07/25 10:41:30  jalet
+Better documentation.
+pykotme now displays the current user's account balance.
+Some test changed in ldap module.
+
+
+-->

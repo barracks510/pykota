@@ -115,7 +115,7 @@ jerome@nordine:~/pykota-1.09_official$
         one or more network firewalls along the route from one machine to the other. If this
         is the case, then the best thing you can do is to ask your <firstterm>Network Administrator</firstterm>
         to not filter the IP port used by <application>PostgreSQL</application>, which is
-        usually port 5432/tcp.
+        usually port <literal>5432/tcp</literal>.
         <note>
           <title>Note</title>
           <para>
@@ -137,6 +137,10 @@ jerome@nordine:~/pykota-1.09_official$
         itself, he is only defined in <application>PostgreSQL</application> and don't
         have to exist on any system, nor in the Quota DataBase. His default names
         is <literal>pykotaadmin</literal>. 
+        A Quota Storage read-only user is also created under the name of <literal>pykotauser</literal>.
+        This read-only user is used by <application>PyKota</application> to connect to the 
+        Quota Storage when a non-root user launches a pykota command. This prevents normal
+        users from being able to modify their own, or other users', quota information.
         The database which will be created will be named <literal>pykota</literal> by default.
         <note>
           <title>Note</title>
@@ -176,15 +180,15 @@ pykota=#
       <para>
         For security reasons, you may want to set passwords in 
         <application>PostgreSQL</application> for the 
-        <literal>pykotaadmin</literal> user.
+        <literal>pykotaadmin</literal> and <literal>pykotauser</literal> users.
         Otherwise any user able to connect to 
         <application>PostgreSQL</application> on your Quota Storage Server 
-        could connect to the quota database as this user, and modify it without problem. 
+        could connect to the quota database, and either see it, or even modify it without problem. 
       </para>
       
       <para>
         To do so, just type the following lines while still being at the <application>psql</application>
-        prompt (replace the password values by your own) :
+        prompt (replace the password values by your own, and do the same for the <literal>pykotauser</literal> user) :
         <screen>
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
@@ -202,7 +206,7 @@ jerome@nordine:~/pykota-1.09_official/initscripts/postgresql$
         To improve security further, you could encrypt your database connections, or
         take any other step as needed. Please refer to <application>PostgreSQL</application>'s
         documentation for details. Also if <application>PyKota</application>'s configuration
-        file is readable by anyone with access on your file system, a local user could 
+        file <filename>/etc/pykota/pykotadmin.conf</filename> is readable by anyone with access on your file system, a local user could 
         create some script to modify his own print quota.
         <warning>
           <title>Warning</title>
@@ -273,7 +277,8 @@ $ /etc/init.d/slapd restart
       </para>
       
       <para>
-        Then you have to modify PyKota's configuration file <filename>/etc/pykota.conf</filename>
+        Then you have to modify PyKota's configuration files <filename>/etc/pykota/pykota.conf</filename>
+        and <filename>/etc/pykota/pykotadmin.conf</filename>
         to include LDAP specific options. You may want to give a look at 
         <filename>pykota/conf/pykota.conf.sample</filename> to see all the options that are
         needed. Adapt the values to your own configuration, and finally initialize your 
@@ -360,12 +365,12 @@ $ /etc/init.d/slapd restart
               </listitem>  
               <listitem>
                 <para>
-                  MySQL backend : TODO
+                  LDAP backend : TODO
                 </para>
               </listitem>
               <listitem>
                 <para>
-                  LDAP backend : TODO
+                  MySQL backend : TODO
                 </para>
               </listitem>
               <listitem>
@@ -406,6 +411,11 @@ $ /etc/init.d/slapd restart
 <!--
 
 $Log$
+Revision 1.18  2003/07/25 10:41:29  jalet
+Better documentation.
+pykotme now displays the current user's account balance.
+Some test changed in ldap module.
+
 Revision 1.17  2003/06/30 21:44:18  jalet
 1.09 is out !
 

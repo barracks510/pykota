@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/07/25 10:41:30  jalet
+# Better documentation.
+# pykotme now displays the current user's account balance.
+# Some test changed in ldap module.
+#
 # Revision 1.19  2003/07/14 14:18:16  jalet
 # Wrong documentation strings
 #
@@ -663,7 +668,7 @@ class Storage :
                     todelete.reverse()
                     for i in todelete :
                         del fields[k][i]
-            if fields.get("objectclass") :            
+            if "objectclass" in [key.lower() for key in fields.keys()] :            
                 self.doModify(user.ident, fields, ignoreold=0)        
             else :    
                 self.doDelete(user.ident)
@@ -691,7 +696,7 @@ class Storage :
                     todelete.reverse()
                     for i in todelete :
                         del fields[k][i]
-            if fields.get("objectclass") :            
+            if "objectclass" in [key.lower() for key in fields.keys()] :            
                 self.doModify(group.ident, fields, ignoreold=0)        
             else :    
                 self.doDelete(group.ident)
