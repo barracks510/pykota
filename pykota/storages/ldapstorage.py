@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2003/11/24 09:54:06  jalet
+# Small fix for LDAP when pykotaOptions attribute wasn't present.
+#
 # Revision 1.37  2003/11/23 19:01:37  jalet
 # Job price added to history
 #
@@ -419,10 +422,10 @@ class Storage(BaseStorage) :
                 lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
                 lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 lastjob.JobAction = fields.get("pykotaAction")[0]
-                lastjob.JobFileName = fields.get("pykotaFileName")[0]
-                lastjob.JobTitle = fields.get("pykotaTitle")[0]
+                lastjob.JobFileName = fields.get("pykotaFileName", [""])[0]
+                lastjob.JobTitle = fields.get("pykotaTitle", [""])[0]
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
-                lastjob.JobOptions = fields.get("pykotaOptions")[0]
+                lastjob.JobOptions = fields.get("pykotaOptions", [""])[0]
                 date = fields.get("createTimestamp")[0]
                 year = int(date[:4])
                 month = int(date[4:6])
