@@ -51,133 +51,140 @@ imprimantes.
 Vous pouvez spécifier plusieurs noms ou jokers,
 en les séparant avec des virgules.
 .TP
-\fB\-G\fR | \fB\-\-pgroups\fR pg1[,pg2...] Adds the printer(s) to the printer groups
-pg1, pg2, etc... which must already exist.
-A printer group is just like a normal printer,
-only that it is usually unknown from the printing
-system. Create printer groups exactly the same
-way that you create printers, then add other
-printers to them with this option.
-Accounting is done on a printer and on all
-the printer groups it belongs to, quota checking
-is done on a printer and on all the printer groups
-it belongs to.
+\fB\-G\fR | \fB\-\-pgroups\fR pg1[,pg2...] Ajoute l'imprimante aux groupes d'imprimantes
+pg1, pg2, etc... qui doivent déjà exister.
+Un groupe d'imprimantes est comme une imprimante
+normale, sauf que celle-ci est inconnue du système
+d'impression. On crée des groupes d'imprimantes de la
+même manière que des imprimantes normale, et ensuite
+on y ajoute d'autres imprimantes avec cette option.
+Le décompte est fait sur une imprimante et sur tous
+les groupes d'imprimantes auxquels elle appartient,
+la vérification de quota est faite sur une imprimante
+et sur tous les groupes d'imprimantes auxquels elle
+appartient.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Edit users groups print quotas instead of users.
+Modifie les quotas de groupes plutôt que ceux des
+utilisateurs.
 .TP
-\fB\-p\fR | \fB\-\-prototype\fR u|g Uses user u or group g as a prototype to set
-print quotas
+\fB\-p\fR | \fB\-\-prototype\fR u|g Prend l'utilisateur u ou le groupe g comme modèle
+pour positionner le quota d'impression.
 .TP
 \fB\-n\fR | \fB\-\-noquota\fR
-Doesn't set a quota but only does accounting.
+Ne définit aucun quota, mais laisse le décompte actif.
 .TP
 \fB\-r\fR | \fB\-\-reset\fR
-Resets the actual page counter for the user
-or group to zero on the specified printers.
-The life time page counter is kept unchanged.
+Remet à zéro le compteur de pages courant pour
+l'utilisateur ou le groupe sur les imprimantes
+spécifiées.
+Le compteur de pages 'éternel' est inchangé.
 .TP
 \fB\-R\fR | \fB\-\-hardreset\fR
-Resets the actual and life time page counters
-for the user or group to zero on the specified
-printers.
+Remet à zéro les compteurs de pages courant et
+\&'éternel' pour l'utilisateur ou le groupe sur les
+imprimantes spécifiées.
 .TP
 \fB\-l\fR | \fB\-\-limitby\fR l
-Choose if the user/group is limited in printing
-by its account balance or by its page quota.
-The default value is 'quota'. Allowed values
-are 'quota' 'balance' 'quota-then-balance' and
+Définit le facteur de limitation pour l'utilisateur
+ou le groupe : soit par le solde du compte (balance),
+soit par le quota par pages.
+La valeur par défaut est 'quota'. Les valeurs
+autorisées sont 'quota' 'balance' 'quota-then-balance'
 \&'balance-then-quota'.
-WARNING : quota-then-balance and balance-then-quota
-are not yet implemented.
+ATTENTION : quota-then-balance et balance-then-quota
+ne sont pas encore implémentées.
 .TP
 \fB\-b\fR | \fB\-\-balance\fR b
-Sets the user's account balance to b.
-Account balance may be increase or decreased
-if b is prefixed with + or -.
-WARNING : when decreasing account balance,
-the total paid so far by the user is decreased
-too.
-Groups don't have a real balance, but the
-sum of their users' account balance.
+Fixe le solde de l'utiliateur à la valeur b.
+Le solde peut aussi être incrémenté ou décrémenté
+si b est précédé d'un signe + ou -.
+ATTENTION : si on décrémente le solde, le total
+réglé par l'utilisateur est décrémenté aussi.
+Les groupes n'ont pas de solde, leur solde est la
+somme des soldes des utilisateurs membres.
 .TP
 \fB\-S\fR | \fB\-\-softlimit\fR sl
-Sets the quota soft limit to sl pages.
+Fixe la limite souple à sl pages.
 .TP
 \fB\-H\fR | \fB\-\-hardlimit\fR hl
-Sets the quota hard limit to hl pages.
+Fixe la limite dure à hl pages.
 .IP
-user1 through userN and group1 through groupN can use wildcards
-if the \fB\-\-add\fR option is not set.
+les noms d'utilisateurs ou de groupes peuvent contenir des caractères
+joker si l'option \fB\-\-add\fR n'est pas utilisée.
 .PP
-examples :
+exemples :
 .IP
 \f(CW$ edpykota --add -p jerome john paul george ringo/ringo@example.com\fR
 .IP
-This will add users john, paul, george and ringo to the quota
-database, and set their print quotas to the same values than user
-jerome. User jerome must already exist.
-User ringo's email address will also be set to 'ringo@example.com'
+Ceci va ajouter les utilisateurs john, paul, george and ringo à la base
+de données, et fixer leur quota par pages à la même valeur que
+l'utilisateur jerome. L'utilisateur jerome doit exister.
+L'adresse email de ringo sera fixée à 'ringo@example.com'
 .IP
 \f(CW$ edpykota --printer lp -S 50 -H 60 jerome\fR
 .IP
-This will set jerome's print quota on the lp printer to a soft limit
-of 50 pages, and a hard limit of 60 pages. If either user jerome or
-printer lp doesn't exist on the Quota Storage Server then nothing is done.
+Ceci va fixer une limite souple de 50 pages et une limite dure de 60 pages
+pour l'utilisteur jerome sur l'imprimante lp.
+Si l'utilisateur jerome ou l'imprimante lp n'existent pas dans la base de
+donnée alors aucune modification n'est effectuée.
 .IP
 \f(CW$ edpykota --add --printer lp --ingroups coders,it -S 50 -H 60 jerome\fR
 .IP
-Same as above, but if either user jerome or printer lp doesn't exist
-on the Quota Storage Server they are automatically added. Also
-user jerome is put into the groups "coders" and "it" which must
-already exist in the Quota Storage.
+Comme ci-dessus, mais l'utilisateur jerome et l'imprimante lp sont ajoutés
+automatiquement s'ils n'existaient pas. L'utilisateur jerome est aussi
+ajoutés aux groupes "coders" et "it" quoi doivent déjà exister dans
+la base de données.
 .IP
 \f(CW$ edpykota -g -S 500 -H 550 financial support\fR
 .IP
-This will set print quota soft limit to 500 pages and hard limit
-to 550 pages for groups financial and support on all printers.
+Ceci va fixer une limite souple de 500 pages et une limite dure de 550
+pages pour les groupes financial et support sur toutes les imprimantes.
 .IP
 \f(CW$ edpykota --reset jerome "jo*"\fR
 .IP
-This will reset jerome's page counter to zero on all printers, as
-well as every user whose name begins with 'jo'.
-Their life time page counter on each printer will be kept unchanged.
-You can also reset the life time page counters by using the
-\fB\-\-hardreset\fR | \fB\-R\fR command line option.
+Ceci va remettre à zéro le compteur de pages courant de jerome sur toutes
+les imprimantes, ainsi que pour chaque utilisateur dont le nom commence
+par 'jo'.
+Leurs compteurs 'éternels' ne seront pas modifiés.
+Vous pouvez également remettre à zéro les compteurs 'éternels' grâce à
+l'option \fB\-\-hardreset\fR | \fB\-R\fR de la ligne de commande.
 .IP
 \f(CW$ edpykota --printer hpcolor --noquota jerome\fR
 .IP
-This will tell PyKota to not limit jerome when printing on the
-hpcolor printer. All his jobs will be allowed on this printer, but
-accounting of the pages he prints will still be kept.
-Print Quotas for jerome on other printers are unchanged.
+Ceci indique à PyKota de ne pas limiter jerome lorsqu'il va imprimer
+sur l'imprimante hpcolor. Tous ses travaux seront autorisés sur cette
+imprimantes, mais la comptabilité de ses impressions sera quand même
+tenue. Les quotas des autres utilisateurs sont inchangés.
 .IP
 \f(CW$ edpykota --limitby balance jerome\fR
 .IP
-This will tell PyKota to limit jerome by his account's balance
-when printing.
+Ceci indique à PyKota de limiter jerome par le solde de son compte
+lorsqu'il imprime.
 .IP
 \f(CW$ edpykota --balance +10.0 jerome\fR
 .IP
-This will increase jerome's account balance by 10.0 (in your
-own currency). You can decrease the account balance with a
-dash prefix, and set it to a fixed amount with no prefix.
+Ceci va incrémenter le solde de jerome de 10.0 unités (dans votre
+propre monnaie). Vous pouvez décrémenter ce solde en utilisant le signe
+négatif, et positionner la valeur en n'utilisant aucun signe.
 .IP
 \f(CW$ edpykota --delete jerome rachel\fR
 .IP
-This will completely delete jerome and rachel from the Quota Storage
-database. All their quotas and jobs will be deleted too.
+Ceci va complètement effacer les utilisateurs jerome et rachel de la base
+de données. Tous leurs quotas et leurs historiques seront aussi effacés.
 .IP
 \f(CW$ edpykota --printer lp --charge 0.1\fR
 .IP
-This will set the page price for printer lp to 0.1. Job price
-will not be changed.
+Ceci va fixer le coût par page à 0.1 unité sur l'imprimante lp. Le coût
+d'un travail ne sera pas modifié.
 .IP
 \f(CW$ edpykota --printer hplj1,hplj2 --pgroups Laser,HP\fR
 .IP
-This will put printers hplj1 and hplj2 in printers groups Laser and HP.
-When printing either on hplj1 or hplj2, print quota will also be
-checked and accounted for on virtual printers Laser and HP.
+Ceci va ajouter les imprimantes hplj1 et hplj2 dans les groupes
+d'imprimantes Laser et HP.
+En imprimant sur hplj1 ou hplj2, les quotas seront également vérifiés
+.PP
+n  et comptabilisés sur les imprimantes virtuelles Laser et HP.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -193,4 +200,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Merci d'envoyer les rapports de bugs à: Jerome Alet - alet@librelogiciel.com
