@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/02/10 10:36:33  jalet
+# Small problem wrt external requester
+#
 # Revision 1.11  2003/02/10 08:50:45  jalet
 # External requester seems to be finally ok now
 #
@@ -144,12 +147,12 @@ class PyKotaConfig :
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
         fullrequester = self.config.get(printer, "requester", raw=1)
-        (requester, args) = [x.strip() for x in fullrequester.split('(')]
+        (requester, args) = [x.strip() for x in fullrequester.split('(', 1)]
         if args.endswith(')') :
             args = args[:-1]
         args = [x.strip() for x in args.split(',')]
         if not args :
-            raise PyKotaConfigError, _("Invalid requester for printer %s") % printer
+            raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
         return (requester, args)
         
     def getPrinterPolicy(self, printer) :    

@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/10 10:36:33  jalet
+# Small problem wrt external requester
+#
 # Revision 1.3  2003/02/10 00:42:17  jalet
 # External requester should be ok (untested)
 # New syntax for configuration file wrt requesters
@@ -48,7 +51,7 @@ class Requester :
         answer = os.popen(commandline)
         try :
             pagecounter = int(answer.readline().strip())
-        except IndexError :    
+        except ValueError :    
             raise PyKotaRequesterError, _("Unable to query printer %s via EXTERNAL(%s)") % (printer, commandline) 
         answer.close()
         return pagecounter
