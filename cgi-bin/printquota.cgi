@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2005/01/08 17:19:02  jalet
+# Fixed incorrect import statement
+#
 # Revision 1.41  2005/01/08 17:13:08  jalet
 # Move some functions outside of the CGI to allow their use in other CGI scripts
 #
@@ -163,7 +166,7 @@ import urllib
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.reporter import PyKotaReporterError, openReporter
-import pykota.cgifuncs
+from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 
 header = """Content-type: text/html
 
@@ -357,8 +360,8 @@ class PyKotaReportGUI(PyKotaTool) :
             self.body = "\n".join(self.report)    
             
 if __name__ == "__main__" :
-    os.environ["LC_ALL"] = cgifuncs.getLanguagePreference()
-    admin = PyKotaReportGUI(lang=os.environ["LC_ALL"], charset=cgifuncs.getCharsetPreference())
+    os.environ["LC_ALL"] = getLanguagePreference()
+    admin = PyKotaReportGUI(lang=os.environ["LC_ALL"], charset=getCharsetPreference())
     admin.form = cgi.FieldStorage()
     admin.guiAction()
     admin.guiDisplay()
