@@ -21,10 +21,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Test and document a possible workaround for knowing
+          if the job is a banner (embed a postscript comment
+          in the banner).
+          
         - pkusers --nogroup
           pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
           
-        - Ensures data are stored in a consistent way with Unicode.
+        - Ensures data are stored in a consistent way with Unicode :
+          I can't reproduce the problem.
         
         - Allow the --ingroups command line option to repykota, to
           report only users members of the specified groups.
