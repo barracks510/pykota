@@ -1,0 +1,57 @@
+<!-- $Id$ -->
+
+<chapter>
+  <title>Detects the best settings for your printers with pkhint</title>
+  <para>Last modified on $Date$</para>
+  
+  <para>
+    <filename>pkhint</filename> is an experimental command designed with the goal to 
+    help you find the best <application>PyKota</application> settings for each of your
+    printers.
+  </para>  
+  
+  <para>
+    Currently <filename>pkhint</filename> only recognizes <application>CUPS</application>' <filename>printers.conf</filename>
+    file format, but <application>LPRng</application>' <filename>printcap</filename> file format support will be added
+    in the future.
+  </para>
+  
+  <para>
+    <filename>pkhint</filename> accepts optional printers names as its arguments, and reads your printing system's
+    printers configuration file from stdin. Then it launches different tests to see if your printers supports
+    some special features which would allow you to use either hardware or software accounting on them, with
+    a preference for hardware since it's more reliable. If it can help you, it will print some text which
+    you will be able to copy and paste into <filename>/etc/pykota/pykota.conf</filename>.
+  </para>
+  
+  <warning>
+    <title>Warning</title>
+    <para>
+      Because <filename>pkhint</filename> is still a work in progress, don't expect it to allow you
+      to fully configure <application>PyKota</application> for you. You'll still have to double
+      check that your configuration is correct.
+    </para>
+  </warning>  
+  
+  <sect1>
+    <title>Reference</title>
+    <para>
+      <cmdsynopsis>
+        <command>pkhint</command>
+        <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+        <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+        <arg choice="opt"><replaceable>printer1</replaceable></arg>
+        <arg choice="opt"><replaceable>printer2</replaceable></arg>
+        <arg choice="opt"><replaceable>...</replaceable></arg>
+      </cmdsynopsis>
+    </para>
+  </sect1>
+</chapter>
+
+<!--
+
+$Log$
+Revision 1.1  2004/03/18 10:32:23  jalet
+Added pkhint's documentation
+
+-->
