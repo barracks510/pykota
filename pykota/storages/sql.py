@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2004/10/05 09:59:20  jalet
+# Restore compatibility with Python 2.1
+#
 # Revision 1.52  2004/10/04 22:23:54  jalet
 # Charset conversions for dumps from the PostgreSQL backend
 #
@@ -105,7 +108,7 @@ class SQLStorage :
                     field = fields[j]
                     if type(field) == StringType :
                         try :
-                            fields[j] = field.decode("UTF-8").encode(self.tool.getCharset()) 
+                            fields[j] = unicode(field, "UTF-8").encode(self.tool.getCharset()) 
                         except UnicodeEncodeError : # takes care of old jobs in history not stored as UTF-8    
                             pass
                 entries[i] = tuple(fields)    
@@ -211,7 +214,7 @@ class SQLStorage :
             printer.Name = fields.get("printername", printername)
             printer.PricePerJob = fields.get("priceperjob") or 0.0
             printer.PricePerPage = fields.get("priceperpage") or 0.0
-            printer.Description = (fields.get("description") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+            printer.Description = unicode((fields.get("description") or ""), "UTF-8").encode(self.tool.getCharset()) 
             printer.Exists = 1
         return printer    
         
@@ -260,10 +263,10 @@ class SQLStorage :
             lastjob.JobSize = fields.get("jobsize")
             lastjob.JobPrice = fields.get("jobprice")
             lastjob.JobAction = fields.get("action")
-            lastjob.JobFileName = (fields.get("filename") or "").decode("UTF-8").encode(self.tool.getCharset()) 
-            lastjob.JobTitle = (fields.get("title") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+            lastjob.JobFileName = unicode((fields.get("filename") or ""), "UTF-8").encode(self.tool.getCharset()) 
+            lastjob.JobTitle = unicode((fields.get("title") or ""), "UTF-8").encode(self.tool.getCharset()) 
             lastjob.JobCopies = fields.get("copies")
-            lastjob.JobOptions = (fields.get("options") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+            lastjob.JobOptions = unicode((fields.get("options") or ""), "UTF-8").encode(self.tool.getCharset()) 
             lastjob.JobDate = fields.get("jobdate")
             lastjob.JobHostName = fields.get("hostname")
             lastjob.JobSizeBytes = fields.get("jobsizebytes")
@@ -322,7 +325,7 @@ class SQLStorage :
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob") or 0.0
                     printer.PricePerPage = record.get("priceperpage") or 0.0
-                    printer.Description = (record.get("description") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+                    printer.Description = unicode((record.get("description") or ""), "UTF-8").encode(self.tool.getCharset()) 
                     printer.Exists = 1
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -410,7 +413,7 @@ class SQLStorage :
         """Write the printer's description back into the storage."""
         description = printer.Description
         if description is not None :
-            description = printer.Description.decode(self.tool.getCharset()).encode("UTF-8"), 
+            description = unicode(printer.Description, self.tool.getCharset()).encode("UTF-8"), 
         self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(description), self.doQuote(printer.ident)))
         
     def writeUserLimitBy(self, user, limitby) :    
@@ -459,11 +462,11 @@ class SQLStorage :
     def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
         """Adds a job in a printer's history."""
         if filename is not None :
-            filename = filename.decode(self.tool.getCharset()).encode("UTF-8")
+            filename = unicode(filename, self.tool.getCharset()).encode("UTF-8")
         if title is not None :
-            title = title.decode(self.tool.getCharset()).encode("UTF-8")
+            title = unicode(title, self.tool.getCharset()).encode("UTF-8")
         if options is not None :
-            options = options.decode(self.tool.getCharset()).encode("UTF-8")
+            options = unicode(options, self.tool.getCharset()).encode("UTF-8")
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes)))
@@ -523,10 +526,10 @@ class SQLStorage :
                 job.JobSize = fields.get("jobsize")
                 job.JobPrice = fields.get("jobprice")
                 job.JobAction = fields.get("action")
-                job.JobFileName = (fields.get("filename") or "").decode("UTF-8").encode(self.tool.getCharset()) 
-                job.JobTitle = (fields.get("title") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+                job.JobFileName = unicode((fields.get("filename") or ""), "UTF-8").encode(self.tool.getCharset()) 
+                job.JobTitle = unicode((fields.get("title") or ""), "UTF-8").encode(self.tool.getCharset()) 
                 job.JobCopies = fields.get("copies")
-                job.JobOptions = (fields.get("options") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+                job.JobOptions = unicode((fields.get("options") or ""), "UTF-8").encode(self.tool.getCharset()) 
                 job.JobDate = fields.get("jobdate")
                 job.JobHostName = fields.get("hostname")
                 job.JobSizeBytes = fields.get("jobsizebytes")

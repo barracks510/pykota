@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/10/05 09:59:19  jalet
+# Restore compatibility with Python 2.1
+#
 # Revision 1.7  2004/10/04 21:25:29  jalet
 # dumpykota can now output datas in the XML format
 #
@@ -217,7 +220,7 @@ class DumPyKota(PyKotaTool) :
             x.entry()
             for i in range(len(entry)) :
                 value = entry[i]
-                strvalue = str(value).decode(self.getCharset()).encode("UTF-8")
+                strvalue = unicode(str(value), self.getCharset()).encode("UTF-8")
                 x.attribute(strvalue, type=type(value).__name__, name=headers[i])
             x._pop()    
         x._output(self.outfile)
