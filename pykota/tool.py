@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.115  2004/07/21 09:35:48  jalet
+# Software accounting seems to be OK with LPRng support now
+#
 # Revision 1.114  2004/07/20 22:19:45  jalet
 # Sanitized a bit + use of gettext
 #
@@ -1126,7 +1129,12 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             try :    
                 df_name = [line[8:] for line in os.environ.get("HF", "").split() if line.startswith("df_name=")][0]
             except IndexError :
-                inputfile = None        
+                try :
+                    cftransfername = [line[15:] for line in os.environ.get("HF", "").split() if line.startswith("cftransfername=")][0]
+                except IndexError :    
+                    inputfile = None
+                else :    
+                    inputfile = os.path.join(os.environ.get("SPOOL_DIR", "."), "d" + cftransfername[1:])
             else :    
                 inputfile = os.path.join(os.environ.get("SPOOL_DIR", "."), df_name)
             if jseen and Pseen and nseen and rseen :        
