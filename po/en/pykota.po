@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/04/16 12:35:49  jalet
+# Groups quota work now !
+#
 # Revision 1.17  2003/04/16 08:53:14  jalet
 # Printing can now be limited either by user's account balance or by
 # page quota (the default). Quota report doesn't include account balance
@@ -252,7 +255,7 @@ msgstr ""
 msgid "Real : %s"
 msgstr ""
 
-msgid "You have to pass user names on the command line"
+msgid "You have to pass user or group names on the command line"
 msgstr ""
 
 msgid "unknown"
@@ -277,4 +280,26 @@ msgid "Invalid limitby value %s"
 msgstr ""
 
 msgid "Unable to find user %s's account balance, applying default policy (%s) for printer %s"
+msgstr ""
+
+msgid "Unable to find group %s's account balance, applying default policy (%s) for printer %s"
+msgstr ""
+
+msgid "Unable to match group %s on printer %s, applying default policy (%s)"
+msgstr ""
+
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr ""
+
+msgid ""
+"You are not allowed to print anymore because\n"
+"your group Print Quota is exceeded on printer %s."
+msgstr ""
+
+msgid "Print Quota soft limit exceeded for group %s on printer %s"
+msgstr ""
+
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your group Print Quota is almost reached on printer %s."
 msgstr ""

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/04/16 12:35:49  jalet
+# Groups quota work now !
+#
 # Revision 1.26  2003/04/16 08:53:14  jalet
 # Printing can now be limited either by user's account balance or by
 # page quota (the default). Quota report doesn't include account balance
@@ -195,6 +198,20 @@ class SQLStorage :
         else :    
             return [(record["id"], record["groupname"]) for record in result]
         
+    def getGroupMembersNames(self, groupname) :        
+        """Returns the list of user's names which are member of this group."""
+        groupid = self.getGroupId(groupname)
+        if groupid is None :
+            return []
+        else :
+            result = self.doQuery("SELECT DISTINCT username FROM users WHERE id IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(groupid))
+            return [record["username"] for record in (self.doParseResult(result) or [])]
+        
+    def getUserGroupsNames(self, userid) :        
+        """Returns the list of groups' names the user is a member of."""
+        result = self.doQuery("SELECT DISTINCT groupname FROM groups WHERE id IN (SELECT groupid FROM groupsmembers WHERE userid=%s)" % self.doQuote(userid))
+        return [record["groupname"] for record in (self.doParseResult(result) or [])]
+        
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns its id."""
         self.doQuery("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(printername))
@@ -215,15 +232,19 @@ class SQLStorage :
         userid = self.getUserId(username)     
         if userid is None :    
             userid = self.addUser(username)
-        self.doQuery("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s)" % (self.doQuote(userid), self.doQuote(printerid)))
+        uqexists = (self.getUserPQuota(userid, printerid) is not None)    
+        if not uqexists : 
+            self.doQuery("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s)" % (self.doQuote(userid), self.doQuote(printerid)))
         return (userid, printerid)
         
     def addGroupPQuota(self, groupname, printerid) :
         """Initializes a group print quota on a printer, adds the group to the quota storage if needed."""
         groupid = self.getGroupId(groupname)     
         if groupid is None :    
-            groupid = self.addUser(groupname)
-        self.doQuery("INSERT INTO grouppquota (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(groupid), self.doQuote(printerid)))
+            groupid = self.addGroup(groupname)
+        gqexists = (self.getGroupPQuota(groupid, printerid) is not None)    
+        if not gqexists : 
+            self.doQuery("INSERT INTO grouppquota (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(groupid), self.doQuote(printerid)))
         return (groupid, printerid)
         
     def increaseUserBalance(self, userid, amount) :    
@@ -233,6 +254,14 @@ class SQLStorage :
     def getUserBalance(self, userid) :    
         """Returns the current account balance for a given user."""
         result = self.doQuery("SELECT balance FROM users WHERE id=%s" % self.doQuote(userid))
+        try :
+            return self.doParseResult(result)[0]["balance"]
+        except TypeError :      # Not found    
+            return
+        
+    def getGroupBalance(self, groupid) :    
+        """Returns the current account balance for a given group, as the sum of each of its users' account balance."""
+        result = self.doQuery("SELECT SUM(balance) AS balance FROM users WHERE id in (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(groupid))
         try :
             return self.doParseResult(result)[0]["balance"]
         except TypeError :      # Not found    
@@ -272,9 +301,17 @@ class SQLStorage :
         """Sets soft and hard limits for a user quota on a specific printer given (userid, printerid)."""
         self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userid), self.doQuote(printerid)))
         
+    def setGroupPQuota(self, groupid, printerid, softlimit, hardlimit) :
+        """Sets soft and hard limits for a group quota on a specific printer given (groupid, printerid)."""
+        self.doQuery("UPDATE grouppquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE groupid=%s AND printerid=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(groupid), self.doQuote(printerid)))
+        
     def resetUserPQuota(self, userid, printerid) :    
         """Resets the page counter to zero for a user on a printer. Life time page counter is kept unchanged."""
         self.doQuery("UPDATE userpquota SET pagecounter=0, datelimit=NULL WHERE userid=%s AND printerid=%s" % (self.doQuote(userid), self.doQuote(printerid)))
+        
+    def resetGroupPQuota(self, groupid, printerid) :    
+        """Resets the page counter to zero for a group on a printer. Life time page counter is kept unchanged."""
+        self.doQuery("UPDATE grouppquota SET pagecounter=0, datelimit=NULL WHERE groupid=%s AND printerid=%s" % (self.doQuote(groupid), self.doQuote(printerid)))
         
     def updateUserPQuota(self, userid, printerid, pagecount) :
         """Updates the used user Quota information given (userid, printerid) and a job size in pages."""
@@ -292,9 +329,30 @@ class SQLStorage :
         except TypeError :      # Not found    
             return
         
+    def getGroupPQuota(self, groupid, printerid) :
+        """Returns the Print Quota information for a given (groupid, printerid)."""
+        result = self.doQuery("SELECT softlimit, hardlimit, datelimit FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(groupid), self.doQuote(printerid)))
+        try :
+            grouppquota = self.doParseResult(result)[0]
+        except TypeError :    
+            return
+        else :    
+            result = self.doQuery("SELECT SUM(lifepagecounter) as lifepagecounter, SUM(pagecounter) as pagecounter FROM userpquota WHERE printerid=%s AND userid in (SELECT userid FROM groupsmembers WHERE groupid=%s)" % (self.doQuote(printerid), self.doQuote(groupid)))
+            try :
+                result = self.doParseResult(result)[0]
+            except TypeError :      # Not found    
+                return
+            else :    
+                grouppquota.update({"lifepagecounter": result["lifepagecounter"], "pagecounter": result["pagecounter"]})
+                return grouppquota
+        
     def setUserDateLimit(self, userid, printerid, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (userid, printerid)."""
         self.doQuery("UPDATE userpquota SET datelimit=%s::TIMESTAMP WHERE userid=%s AND printerid=%s" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(userid), self.doQuote(printerid)))
+        
+    def setGroupDateLimit(self, groupid, printerid, datelimit) :
+        """Sets the limit date for a soft limit to become an hard one given (groupid, printerid)."""
+        self.doQuery("UPDATE grouppquota SET datelimit=%s::TIMESTAMP WHERE groupid=%s AND printerid=%s" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(groupid), self.doQuote(printerid)))
         
     def addJobToHistory(self, jobid, userid, printerid, pagecounter, action) :
         """Adds a job to the history: (jobid, userid, printerid, last page counter taken from requester)."""
@@ -312,6 +370,16 @@ class SQLStorage :
             return self.doParseResult(result)[0]
         except TypeError :      # Not found
             return
+        
+    def addUserToGroup(self, userid, groupid) :    
+        """Adds an user to a group."""
+        result = self.doQuery("SELECT COUNT(*) AS mexists FROM groupsmembers WHERE groupid=%s AND userid=%s" % (self.doQuote(groupid), self.doQuote(userid)))
+        try :
+            mexists = self.doParseResult(result)[0]["mexists"]
+        except TypeError :    
+            mexists = 0
+        if not mexists :    
+            self.doQuery("INSERT INTO groupsmembers (groupid, userid) VALUES (%s, %s)" % (self.doQuote(groupid), self.doQuote(userid)))
         
     def deleteUser(self, userid) :    
         """Completely deletes an user from the Quota Storage."""

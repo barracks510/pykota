@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/04/16 12:35:49  jalet
+# Groups quota work now !
+#
 # Revision 1.15  2003/04/16 08:53:14  jalet
 # Printing can now be limited either by user's account balance or by
 # page quota (the default). Quota report doesn't include account balance
@@ -262,8 +265,8 @@ msgstr "Total : %9i"
 msgid "Real : %s"
 msgstr "Réèl : %s"
 
-msgid "You have to pass user names on the command line"
-msgstr "Vous devez passer des noms d'utilisateur sur la ligne de commande"
+msgid "You have to pass user or group names on the command line"
+msgstr "Vous devez passer des noms d'utilisateurs ou de groupes sur la ligne de commande"
 
 msgid "unknown"
 msgstr "inconnu"
@@ -288,3 +291,29 @@ msgstr "Valeur de l'option limitby %s invalide"
 
 msgid "Unable to find user %s's account balance, applying default policy (%s) for printer %s"
 msgstr "Impossible de trouver le solde du compte de l'utilisateur %s, action par défaut (%s) appliquée sur l'imprimante %s"
+
+msgid "Unable to find group %s's account balance, applying default policy (%s) for printer %s"
+msgstr "Impossible de trouver le solde du compte du groupe %s, action par défaut (%s) appliquée sur l'imprimante %s"
+
+msgid "Unable to match group %s on printer %s, applying default policy (%s)"
+msgstr "Impossible de trouver le groupe %s sur l'imprimante %s, action par défaut (%s) appliquée"
+
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Dépassement de Quota d'impression pour le groupe %s sur l'imprimante %s"
+
+msgid ""
+"You are not allowed to print anymore because\n"
+"your group Print Quota is exceeded on printer %s."
+msgstr ""
+"Vous n'êtes plus autorisé à imprimer car\n"
+"le Quota d'Impression de votre groupe est dépassé sur l'imprimante %s."
+
+msgid "Print Quota soft limit exceeded for group %s on printer %s"
+msgstr "Limite souple de Quota d'Impression dépassée pour le groupe %s sur l'imprimante %s"
+
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your group Print Quota is almost reached on printer %s."
+msgstr ""
+"Vous n'aurez bientôt plus le droit d'imprimer car\n"
+"le Quota d'Impression de votre groupe sur l'imprimante %s est presque atteint."

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2003/04/16 12:35:49  jalet
+# Groups quota work now !
+#
 # Revision 1.32  2003/04/16 08:53:14  jalet
 # Printing can now be limited either by user's account balance or by
 # page quota (the default). Quota report doesn't include account balance
@@ -286,10 +289,85 @@ class PyKotaTool :
         """Sends an email message to the Print Quota administrator."""
         self.sendMessage(adminmail, adminmail, "Subject: %s\n\n%s" % (subject, message))
         
+    def checkGroupPQuota(self, groupname, printername) :    
+        """Checks the group quota on a printer and deny or accept the job."""
+        printerid = self.storage.getPrinterId(printername)
+        groupid = self.storage.getGroupId(groupname)
+        limitby = self.storage.getGroupLimitBy(groupid)
+        if limitby == "balance" : 
+            balance = self.storage.getGroupBalance(groupid)
+            if balance is None :
+                policy = self.config.getPrinterPolicy(printername)
+                if policy in [None, "ALLOW"] :
+                    action = "POLICY_ALLOW"
+                else :    
+                    action = "POLICY_DENY"
+                self.logger.log_message(_("Unable to find group %s's account balance, applying default policy (%s) for printer %s") % (groupname, action, printername))
+            else :    
+                # TODO : there's no warning (no account balance soft limit)
+                if balance <= 0.0 :
+                    action = "DENY"
+                else :    
+                    action = "ALLOW"
+        else :
+            quota = self.storage.getGroupPQuota(groupid, printerid)
+            if quota is None :
+                # Unknown group or printer or combination
+                policy = self.config.getPrinterPolicy(printername)
+                if policy in [None, "ALLOW"] :
+                    action = "POLICY_ALLOW"
+                else :    
+                    action = "POLICY_DENY"
+                self.logger.log_message(_("Unable to match group %s on printer %s, applying default policy (%s)") % (groupname, printername, action))
+            else :    
+                pagecounter = quota["pagecounter"]
+                softlimit = quota["softlimit"]
+                hardlimit = quota["hardlimit"]
+                datelimit = quota["datelimit"]
+                if softlimit is not None :
+                    if pagecounter < softlimit :
+                        action = "ALLOW"
+                    else :    
+                        if hardlimit is None :
+                            # only a soft limit, this is equivalent to having only a hard limit
+                            action = "DENY"
+                        else :    
+                            if softlimit <= pagecounter < hardlimit :    
+                                now = DateTime.now()
+                                if datelimit is not None :
+                                    datelimit = DateTime.ISO.ParseDateTime(datelimit)
+                                else :
+                                    datelimit = now + self.config.getGraceDelay(printername)
+                                    self.storage.setGroupDateLimit(groupid, printerid, datelimit)
+                                if now < datelimit :
+                                    action = "WARN"
+                                else :    
+                                    action = "DENY"
+                            else :         
+                                action = "DENY"
+                else :        
+                    if hardlimit is not None :
+                        # no soft limit, only a hard one.
+                        if pagecounter < hardlimit :
+                            action = "ALLOW"
+                        else :      
+                            action = "DENY"
+                    else :
+                        # Both are unset, no quota, i.e. accounting only
+                        action = "ALLOW"
+        return action
+    
     def checkUserPQuota(self, username, printername) :
         """Checks the user quota on a printer and deny or accept the job."""
-        printerid = self.storage.getPrinterId(printername)
+        # first we check any group the user is a member of
         userid = self.storage.getUserId(username)
+        for groupname in self.storage.getUserGroupsNames(userid) :
+            action = self.checkGroupPQuota(groupname, printername)
+            if action in ("DENY", "POLICY_DENY") :
+                return action
+                
+        # then we check the user's own quota
+        printerid = self.storage.getPrinterId(printername)
         limitby = self.storage.getUserLimitBy(userid)
         if limitby == "balance" : 
             balance = self.storage.getUserBalance(userid)
@@ -354,10 +432,33 @@ class PyKotaTool :
                         action = "ALLOW"
         return action
     
-    def warnGroupPQuota(self, username, printername=None) :
-        """Checks a user quota and send him a message if quota is exceeded on current printer."""
+    def warnGroupPQuota(self, groupname, printername=None) :
+        """Checks a group quota and send messages if quota is exceeded on current printer."""
         pname = printername or self.printername
-        raise PyKotaToolError, _("Group quotas are currently not implemented.")
+        admin = self.config.getAdmin(pname)
+        adminmail = self.config.getAdminMail(pname)
+        mailto = self.config.getMailTo(pname)
+        action = self.checkGroupPQuota(groupname, pname)
+        groupmembers = self.storage.getGroupMembersNames(groupname)
+        if action.startswith("POLICY_") :
+            action = action[7:]
+        if action == "DENY" :
+            adminmessage = _("Print Quota exceeded for group %s on printer %s") % (groupname, pname)
+            self.logger.log_message(adminmessage)
+            if mailto in [ "BOTH", "ADMIN" ] :
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            for username in groupmembers :
+                if mailto in [ "BOTH", "USER" ] :
+                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour group Print Quota is exceeded on printer %s.") % pname)
+        elif action == "WARN" :    
+            adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (groupname, pname)
+            self.logger.log_message(adminmessage)
+            if mailto in [ "BOTH", "ADMIN" ] :
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            for username in groupmembers :
+                if mailto in [ "BOTH", "USER" ] :
+                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour group Print Quota is almost reached on printer %s.") % pname)
+        return action        
         
     def warnUserPQuota(self, username, printername=None) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""

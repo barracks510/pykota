@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/04/16 12:35:49  jalet
+# Groups quota work now !
+#
 # Revision 1.25  2003/04/15 11:30:57  jalet
 # More work done on money print charging.
 # Minor bugs corrected.
@@ -176,7 +179,7 @@ class RePyKota(PyKotaTool) :
             if options["groups"] :
                 print _("Group            used     soft     hard   grace        total")
                 print "------------------------------------------------------------"
-                for name in self.storage.getPrinterGroups(printerid) :
+                for (ident, name) in self.storage.getPrinterGroups(printerid) :
                     quota = self.storage.getGroupPQuota(ident, printerid) 
                     total += self.printQuota(name, quota)
             else :
@@ -199,8 +202,8 @@ class RePyKota(PyKotaTool) :
     def printQuota(self, name, quota) :
         """Prints the quota information."""
         if quota is not None :
-            lifepagecounter = quota["lifepagecounter"]
-            pagecounter = quota["pagecounter"]
+            lifepagecounter = quota["lifepagecounter"] or 0
+            pagecounter = quota["pagecounter"] or 0
             softlimit = quota["softlimit"]
             hardlimit = quota["hardlimit"]
             datelimit = quota["datelimit"]
@@ -243,8 +246,6 @@ if __name__ == "__main__" :
             reporter.display_version_and_quit()
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif options["groups"] :    
-            raise PyKotaToolError, _("option --groups is currently not implemented.")
         elif args :    
             raise PyKotaToolError, _("unused arguments [%s]. Aborting.") % ", ".join(args)
         else :

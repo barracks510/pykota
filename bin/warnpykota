@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/04/16 12:35:49  jalet
+# Groups quota work now !
+#
 # Revision 1.15  2003/04/10 21:47:20  jalet
 # Job history added. Upgrade script neutralized for now !
 #
@@ -174,8 +177,6 @@ if __name__ == "__main__" :
             sender.display_version_and_quit()
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif options["groups"] :    
-            raise PyKotaToolError, _("option --groups is currently not implemented.")
         elif args :    
             raise PyKotaToolError, _("unused arguments [%s]. Aborting.") % ", ".join(args)
         else :
