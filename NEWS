@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.03alpha :
+    
+        - The installation script now allows to install the sample
+          configuration file during first installation.
+        
     - 1.02 :
     
         - The installation script now checks for software availability
