@@ -45,8 +45,12 @@ Actual working features :
           WARNING : actually all your printers must have an unique name,
                     but this may change in a future version.
                     
-        - SNMP querying of any networked SNMP-enabled printer. More
-          querying methods will be implemented soon.
+        - SNMP querying of any networked SNMP-enabled printer. 
+        
+        - External command querying of any printer : you can use
+          you own querying command, e.g. to query a printer via
+          the serial port, sending it a special PJL job and 
+          reading the result.
         
         - Special scripts included for a seamless integration of
           PyKota on Debian machines.
@@ -165,6 +169,17 @@ Restart CUPS, for example under Debian GNU/Linux systems :
 Your users now should be able to print but not exceed their 
 printing quota.
 
+To see printer command usage, you can use :
+
+    $ repykota --printer lp
+    
+or :
+
+    $ repykota
+    
+    which will print quota usage for all users on all printers,
+    along with totals.
+    
 WARNING : as of today, 2003-02-06, group quotas are not
 implemented.
 
