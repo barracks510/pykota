@@ -52,9 +52,16 @@ logger: system
 # If the value is not set then localhost is used.
 smtpserver: localhost
 
-# Accounting method
-# Only LAZY is currently supported, see documentation
-method: lazy
+# What is the accounting backend to use
+# 
+# supported values :
+#
+#    - querying : asks the printer for its lifetime page counter
+#    - more to be added in the future
+#
+# This value can be set either globally or on a per printer basis
+# if not set it defaults to 'querying'
+accounter: querying
 
 # Print Quota administrator
 # These values can be set either globally or per printer or both.
@@ -85,15 +92,6 @@ gracedelay: 7
 # one section per printer, or no other section at all if all options 
 # are defined globally
 [lp]
-
-# What is the accounting backend to use
-# 
-# supported values :
-#
-#    - querying : asks the printer for its lifetime page counter
-#    - more to be added in the future
-#
-accounter: querying
 
 # How to query the lp printer for its page counter, if needed
 # Only snmp(community, oid) and external(command) are supported
