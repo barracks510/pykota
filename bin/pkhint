@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/03/30 12:59:47  jalet
+# Fixed path problem
+#
 # Revision 1.5  2004/02/09 13:07:06  jalet
 # Should now be able to handle network + pjl printers
 #
@@ -97,7 +100,7 @@ SNMPTESTS = [ \
             ]
             
 NETPJLTESTS = [ \
-                '/usr/bin/pagecount.pl %(printer)s %(port)s 2>/dev/null', \
+                '/usr/share/pykota/pagecount.pl %(printer)s %(port)s 2>/dev/null', \
                 '/bin/nc -w 2 %(printer)s %(port)s </usr/share/pykota/pagecount.pjl 2>/dev/null | /usr/bin/tail -2', \
               ]
 
@@ -208,7 +211,7 @@ class PKHint(PyKotaTool) :
                     snmpcommand = self.accepts(SNMPTESTS, hostname)
                     if snmpcommand is not None :
                         accounter = "querying"
-                        requester = 'external(/usr/bin/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
+                        requester = 'external(/usr/share/pykota/waitprinter.sh %(printer)s && ' + snmpcommand + ')'
                         configuration.append((printer, accounter, requester))
                     else :    
                         netpjlcommand = self.accepts(NETPJLTESTS, hostname, port)
