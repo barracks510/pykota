@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2005/01/07 15:53:58  jalet
+# Another fix for PCL3/4/5
+#
 # Revision 1.49  2005/01/06 17:41:34  jalet
 # Of course if I forget some files during the commits, the software doesn't
 # work as expected ;-)
@@ -422,10 +425,12 @@ class PCLAnalyzer :
                      "&a" : "G", # TODO : 0 means next side, 1 front side, 2 back side
                      "*g" : "W",
                      "*r" : "sbABC",
+                     "*t" : "R",
                      # "*b" : "VW", # treated specially because it occurs very often
                    }  
         pagecount = resets = ejects = backsides = startgfx = endgfx = 0
-        starb = ampl = ispcl3 = 0
+        starb = ampl = ispcl3 = escstart = 0
+        mediasourcecount = mediasizecount = orientationcount = mediatypecount = 0
         tag = None
         pages = {}
         pos = 0
@@ -459,6 +464,7 @@ class PCLAnalyzer :
                     #     <ESC>&l###A -> mediasize
                     #     <ESC>&l###O -> orientation
                     #     <ESC>&l###M -> mediatype
+                    #     <ESC>*t###R -> gfx resolution
                     #
                     tagstart = minfile[pos] ; pos += 1
                     if tagstart in "E9=YZ" : # one byte PCL tag
@@ -490,13 +496,17 @@ class PCLAnalyzer :
                                 self.setPageDict(pages, pagecount, "copies", size)
                             elif char == "H" :
                                 self.setPageDict(pages, pagecount, "mediasource", self.mediasources.get(size, str(size)))
+                                mediasourcecount += 1
                                 ejects += 1 
                             elif char == "A" :
                                 self.setPageDict(pages, pagecount, "mediasize", self.mediasizes.get(size, str(size)))
+                                mediasizecount += 1
                             elif char == "O" :
                                 self.setPageDict(pages, pagecount, "orientation", self.orientations.get(size, str(size)))
+                                orientationcount += 1
                             elif char == "M" :
                                 self.setPageDict(pages, pagecount, "mediatype", self.mediatypes.get(size, str(size)))
+                                mediatypecount += 1
                         elif tag == "*r" :
                             # Special tests for PCL3
                             if (char == "s") and size :
@@ -508,6 +518,8 @@ class PCLAnalyzer :
                                 ispcl3 = 1 # Certainely a PCL3 file
                             startgfx += (char == "A") and (minfile[pos - 2] in ("0", "1", "2", "3")) # Start Gfx
                             endgfx += (not size) and (char in ("C", "B")) # End Gfx
+                        elif tag == "*t" :    
+                            escstart += 1
                         elif (tag == "&a") and (size == 2) :
                             backsides += 1      # Back side in duplex mode
                         else :    
@@ -547,12 +559,16 @@ class PCLAnalyzer :
                             pos -= 1    # fix position : we were ahead
                             if char == "h" :
                                 self.setPageDict(pages, pagecount, "mediasource", self.mediasources.get(size, str(size)))
+                                mediasourcecount += 1
                             elif char == "a" :
                                 self.setPageDict(pages, pagecount, "mediasize", self.mediasizes.get(size, str(size)))
+                                mediasizecount += 1
                             elif char == "o" :
                                 self.setPageDict(pages, pagecount, "orientation", self.orientations.get(size, str(size)))
+                                orientationcount += 1
                             elif char == "m" :
                                 self.setPageDict(pages, pagecount, "mediatype", self.mediatypes.get(size, str(size)))
+                                mediatypecount += 1
         except IndexError : # EOF ?
             minfile.close() # reached EOF
                             
@@ -573,6 +589,11 @@ class PCLAnalyzer :
             sys.stderr.write("backsides : %s\n" % backsides)
             sys.stderr.write("startgfx : %s\n" % startgfx)
             sys.stderr.write("endgfx : %s\n" % endgfx)
+            sys.stderr.write("mediasourcecount : %s\n" % mediasourcecount)
+            sys.stderr.write("mediasizecount : %s\n" % mediasizecount)
+            sys.stderr.write("orientationcount : %s\n" % orientationcount)
+            sys.stderr.write("mediatypecount : %s\n" % mediatypecount)
+            sys.stderr.write("escstart : %s\n" % escstart)
         
 #        if not pagecount :
 #            pagecount = (pagecount or ((resets - 3) * (resets > 2)))
@@ -598,7 +619,9 @@ class PCLAnalyzer :
 #                pagecount = endgfx
                 
             
-        if (not startgfx) and (not endgfx) :
+        if pagecount == mediasourcecount == escstart : 
+            pass        # should be OK.
+        elif (not startgfx) and (not endgfx) :
             pagecount = ejects or pagecount
         elif startgfx == endgfx :    
             pagecount = startgfx
