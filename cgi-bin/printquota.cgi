@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/06/30 13:32:01  jalet
+# Much more powerful CGI script for quota reports
+#
 # Revision 1.7  2003/06/30 12:46:15  jalet
 # Extracted reporting code.
 #
@@ -53,36 +56,116 @@ import cgi
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
-from pykota.config import PyKotaConfigError
-from pykota.storage import PyKotaStorageError
+from pykota.reporter import PyKotaReporterError, openReporter
 
 header = """Content-type: text/html
 
 <?xml version="1.0" encoding="iso-8859-1"?>
 <html>
   <head>
-    <title>Print Quota Report</title>
+    <title>PyKota Reports</title>
   </head>
   <body>
-    <h2>Print Quota Report</h2>
-    <p>
-      <pre>"""
-
+    <form action="printquota.cgi" method="POST">
+      <table>
+        <tr>
+          <td>
+            <p>
+              <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/calllogo" alt="PyKota's Logo" /></a>
+              <br />
+              <a href="http://www.librelogiciel.com/software/">PyKota</a>
+            </p>
+          </td>
+          <td colspan="2">
+            <h2>PyKota Reports</h2>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="center">
+            <input type="submit" name="action" value="Report" />
+          </td>
+        </tr>
+      </table>"""
+    
 footer = """
-      </pre>
-    </p>  
-    <p>
-      <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/calllogo" /></a>
-      <br />
-      Report generated with <a href="http://www.librelogiciel.com/software/">PyKota</a>
-    </p>
+    </form>
   </body>
 </html>"""  
 
-print header
 
-out = os.popen("repykota")
-print out.read().strip()
-out.close()
-
-print footer
+class PyKotaReportGUI(PyKotaTool) :
+    """PyKota Administrative GUI"""
+    def guiDisplay(self) :
+        """Displays the administrative interface."""
+        global header, footer
+        print header
+        print self.body
+        print footer
+        
+    def error(self, message) :
+        """Adds an error message to the GUI's body."""
+        if message :
+            self.body = '<p><font color="red">%s</font></p>\n%s' % (message, self.body)
+        
+    def htmlListPrinters(self, selected=[], mask="*") :    
+        """Displays the printers multiple selection list."""
+        printers = self.storage.getMatchingPrinters(mask)
+        selectednames = [p.Name for p in selected]
+        message = 'Printer : <select name="printers" multiple="multiple">'
+        for printer in printers :
+            if printer.Name in selectednames :
+                message += '<option value="%s" selected="selected">%s</option>' % (printer.Name, printer.Name)
+            else :
+                message += '<option value="%s">%s</option>' % (printer.Name, printer.Name)
+        message += '</select>'
+        return message
+        
+    def htmlUGNamesInput(self, value="*") :    
+        """Input field for user/group names wildcard."""
+        return 'User / Group names mask : <input type="text" name="ugmask" size="20" value="%s" /> <em>e.g. <strong>jo*</strong></em>' % (value or "*")
+        
+    def htmlGroupsCheckbox(self, isgroup=0) :
+        """Groups checkbox."""
+        if isgroup :
+            return 'Groups report : <input type="checkbox" checked="checked" name="isgroup" />'
+        else :    
+            return 'Groups report : <input type="checkbox" name="isgroup" />'
+            
+    def guiAction(self) :
+        """Main function"""
+        printers = ugmask = isgroup = None
+        self.body = "<p>Please click on the menu above</p>\n"
+        if self.form.has_key("action") :
+            action = self.form["action"].value
+            if action == "Report" :
+                if self.form.has_key("printers") :
+                    printersfield = self.form["printers"]
+                    if type(printersfield) != type([]) :
+                        printersfield = [ printersfield ]
+                    printers = [self.storage.getPrinter(p.value) for p in printersfield]
+                else :    
+                    printers = self.storage.getMatchingPrinters("*")
+                if self.form.has_key("ugmask") :     
+                    ugmask = self.form["ugmask"].value
+                else :     
+                    ugmask = "*"
+                if self.form.has_key("isgroup") :    
+                    isgroup = 1
+                else :    
+                    isgroup = 0
+            else :
+                self.error(body, "Invalid action [%s]" % action)
+        self.body += self.htmlListPrinters(printers or [])            
+        self.body += "<br />"
+        self.body += self.htmlUGNamesInput(ugmask)
+        self.body += "<br />"
+        self.body += self.htmlGroupsCheckbox(isgroup)
+        if printers and ugmask :
+            self.reportingtool = openReporter(admin, "text", printers, [ ugmask ], isgroup)
+            self.body += "<pre>%s</pre>" % self.reportingtool.generateReport()
+    
+if __name__ == "__main__" :
+    admin = PyKotaReportGUI()
+    admin.form = cgi.FieldStorage()
+    admin.guiAction()
+    admin.guiDisplay()
