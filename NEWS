@@ -31,6 +31,10 @@ PyKota NEWS :
           but doesn't reflect price paid for jobs, which appear
           in the jobs history instead.
           
+        - Jobs history web reports now include the job's size in
+          bytes. Also columns were reordered to render the report
+          more easily readable.
+          
     - 1.19alpha17 :
     
         - Mysterious bug (program exited unexpectedly without leaving
