@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/02/10 12:07:30  jalet
+# Now repykota should output the recorded total page number for each printer too.
+#
 # Revision 1.19  2003/02/09 13:40:29  jalet
 # typo
 #
@@ -176,7 +179,7 @@ class EdPyKota(PyKotaTool) :
             if options["add"] and pname :
                 if self.isValidName(pname) :
                     self.storage.addPrinter(pname)
-                    printernames = [ pname ]
+                    printernames = [ (pname, 0) ]
                 else :    
                     raise PyKotaToolError, _("Invalid printer name %s") % pname
             else :
@@ -196,7 +199,7 @@ class EdPyKota(PyKotaTool) :
             # error, exchange them
             self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit), "warn")
             (softlimit, hardlimit) = (hardlimit, softlimit)
-        for printer in printernames :
+        for (printer, printerpagecounter) in printernames :
             if options["prototype"] :
                 if options["users"] :
                     prototype = self.storage.getUserPQuota(options["prototype"], printer)

@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/02/10 12:07:31  jalet
+# Now repykota should output the recorded total page number for each printer too.
+#
 # Revision 1.17  2003/02/10 08:41:36  jalet
 # edpykota's --reset command line option resets the limit date too.
 #
@@ -76,17 +79,17 @@ import fnmatch
 
 class SQLStorage :    
     def getMatchingPrinters(self, printerpattern) :
-        """Returns the list of all printer names which match a certain pattern."""
+        """Returns the list of all printers tuples (name, pagecounter) which match a certain pattern for the printer name."""
         printerslist = []
         # We 'could' do a SELECT printername FROM printers WHERE printername LIKE ...
         # but we don't because other storages semantics may be different, so every
         # storage should use fnmatch to match patterns and be storage agnostic
-        result = self.doQuery("SELECT printername FROM printers;")
+        result = self.doQuery("SELECT printername, pagecounter FROM printers;")
         result = self.doParseResult(result)
         if result is not None :
             for printer in result :
                 if fnmatch.fnmatchcase(printer["printername"], printerpattern) :
-                    printerslist.append(printer["printername"])
+                    printerslist.append((printer["printername"], printer["pagecounter"]))
         return printerslist        
             
     def addPrinter(self, printername) :        
@@ -95,7 +98,7 @@ class SQLStorage :
         
     def getPrinterUsers(self, printername) :        
         """Returns the list of usernames which uses a given printer."""
-        result = self.doQuery("SELECT DISTINCT username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid IN (SELECT printerid FROM printers WHERE printername=%s));" % self.doQuote(printername))
+        result = self.doQuery("SELECT DISTINCT username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid IN (SELECT printerid FROM printers WHERE printername=%s)) ORDER BY username;" % self.doQuote(printername))
         result = self.doParseResult(result)
         if result is None :
             return []

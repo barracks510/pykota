@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/02/10 12:07:30  jalet
+# Now repykota should output the recorded total page number for each printer too.
+#
 # Revision 1.9  2003/02/09 13:40:29  jalet
 # typo
 #
@@ -108,7 +111,7 @@ class RePyKota(PyKotaTool) :
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-        for printer in printernames :
+        for (printer, printerpagecounter) in printernames :
             print _("*** Report for %s quota on printer %s") % ((options["users"] and "user") or "group", printer)
             print _("Pages grace time: %idays") % self.config.getGraceDelay()
             total = 0
@@ -126,6 +129,7 @@ class RePyKota(PyKotaTool) :
                     total += self.printQuota(name, quota)
             if total :        
                 print (" " * 43) + ("Total : %9i" % total)
+            print (" " * 44) + ("Real : %9i" % printerpagecounter)
             print        
                         
     def printQuota(self, name, quota) :

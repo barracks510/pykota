@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/10 12:07:31  jalet
+# Now repykota should output the recorded total page number for each printer too.
+#
 # Revision 1.6  2003/02/09 13:05:43  jalet
 # Internationalization continues...
 #
@@ -47,7 +50,7 @@ class PyKotaStorageError(Exception):
 class BaseStorage :    
     """Base class for all storages."""
     def getMatchingPrinters(self, printerpattern) :
-        """Returns the list of all printer names which match a certain pattern."""
+        """Returns the list of all printers tuples (name, pagecounter) which match a certain pattern for the printer name."""
         pass
             
     def addPrinter(self, printername) :        

@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/10 12:07:30  jalet
+# Now repykota should output the recorded total page number for each printer too.
+#
 # Revision 1.7  2003/02/09 13:40:29  jalet
 # typo
 #
@@ -106,7 +109,7 @@ class WarnPyKota(PyKotaTool) :
         printernames = self.storage.getMatchingPrinters(options["printer"])
         if not printernames :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-        for printer in printernames :
+        for (printer, printerpagecounter) in printernames :
             if options["users"] :
                 for name in self.storage.getPrinterUsers(printer) :
                     self.warnUserPQuota(name, printer)
