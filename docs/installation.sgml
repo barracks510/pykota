@@ -130,16 +130,14 @@ jerome@nordine:~/pykota-1.08-official$
         is waiting for your connections, you have to create the Quota Storage DataBase.
         To do so, you'll have to feed <application>PostgreSQL</application> with the
         <filename>pykota-x.xx/initscripts/postgresql/pykota-postgresql.sql</filename> file.
-        This file will create a Quota DataBase administrator and a Quota DataBase user
-        in the <application>PostgreSQL</application> system, then create an empty
+        This file will create a Quota DataBase administrator in the <application>PostgreSQL</application> system, then create an empty
         Quota DataBase and set some permissions on it. The Quota DataBase administrator
-        will be able to add printers, users and groups to the Quota DataBase, while
-        the Quota DataBase user will be used to update the print quota usage
-        in the Quota DataBase. None of these two users is present in the Quota Database
-        itself, they are only defined in <application>PostgreSQL</application> and don't
-        have to exist on any system, nor in the Quota DataBase. Their default names
-        are <literal>pykotaadmin</literal> for the administrator and <literal>pykotauser</literal>
-        for the user. The database which will be created will be named <literal>pykota</literal>.
+        is the <application>PostgreSQL</application>'s user used to manage the Quota database.
+        The Quota DataBase Administrator is not present in the Quota Database
+        itself, he is only defined in <application>PostgreSQL</application> and don't
+        have to exist on any system, nor in the Quota DataBase. His default names
+        is <literal>pykotaadmin</literal>. 
+        The database which will be created will be named <literal>pykota</literal> by default.
         <note>
           <title>Note</title>
           <para>
@@ -178,19 +176,17 @@ pykota=#
       <para>
         For security reasons, you may want to set passwords in 
         <application>PostgreSQL</application> for the 
-        <literal>pykotaadmin</literal> and <literal>pykotauser</literal> 
-        users. Otherwise any user able to connect to 
+        <literal>pykotaadmin</literal> user.
+        Otherwise any user able to connect to 
         <application>PostgreSQL</application> on your Quota Storage Server 
-        could connect to the quota database as one of them and modify it without problem. 
+        could connect to the quota database as this user, and modify it without problem. 
       </para>
       
       <para>
         To do so, just type the following lines while still being at the <application>psql</application>
-        prompt (replace the passwords values by your own) :
+        prompt (replace the password values by your own) :
         <screen>
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
-ALTER USER
-pykota=# ALTER USER pykotauser PASSWORD 'anotherpassword';
 ALTER USER
 pykota=# \q
 jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
@@ -252,8 +248,10 @@ jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
       <title>LDAP</title>
       
       <para>
-        An <application>LDAP</application> Storage Backend is planned, but it actually
-        doesn't exist. Some people may already be working on this, though. 
+        An <application>LDAP</application> Storage Backend is currently under heavy work.
+        You can already give a look at the LDAP schema which was defined for PyKota.
+        Full support for LDAP in PyKota should be OK by the end of July 2003, if all
+        continues to go well.
       </para>
     </sect2>  
     
@@ -373,6 +371,12 @@ jerome@nordine:~/pykota-1.08-official/initscripts/postgresql$
 <!--
 
 $Log$
+Revision 1.15  2003/06/10 16:37:54  jalet
+Deletion of the second user which is not needed anymore.
+Added a debug configuration field in /etc/pykota.conf
+All queries can now be sent to the logger in debug mode, this will
+greatly help improve performance when time for this will come.
+
 Revision 1.14  2003/06/05 07:12:29  jalet
 Reorganization of directories
 

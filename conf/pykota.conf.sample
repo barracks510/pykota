@@ -25,9 +25,11 @@
 
 [global]
 # Storage backend for quotas
-# only PostgreSQL is supported
+# only PGStorage (PostgreSQL) is supported
 # Ldap, MySQL, Berkeley are planned
-storagebackend: postgresql
+
+# the 'postgresql' value is deprecated, use 'pgstorage' instead.
+storagebackend: pgstorage
 
 # Quota Storage Server hostname (and optional port)
 # e.g. db.mydomain.com:5432
@@ -39,9 +41,9 @@ storagename: pykota
 
 # Quota Storage administrator's and normal user's names and passwords
 storageadmin: pykotaadmin
-storageuser: pykotauser
 # storageadminpw: Comment out if unused, or set to Quota Storage admin password
-# storageuserpw: Comment out if unused, or set to Quota Storage user password
+
+# NB : storageuser and storageuserpw are not used anymore
 
 # LDAP example :
 #storagebackend: ldapstorage
@@ -56,6 +58,9 @@ storageuser: pykotauser
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
 # if the value is not set then the default SYSTEM applies.
 logger: system
+
+# Enable debugging ? Put YES instead here.
+debug : No
 
 # Mail server to use to warn users
 # If the value is not set then localhost is used.

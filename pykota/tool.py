@@ -20,6 +20,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
+#
 # Revision 1.39  2003/04/29 18:37:54  jalet
 # Pluggable accounting methods (actually doesn't support external scripts)
 #
@@ -187,7 +193,7 @@ class PyKotaToolError(Exception):
     
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, asadmin=1, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
         try :
@@ -199,8 +205,8 @@ class PyKotaTool :
         # pykota specific stuff
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc")
-        self.logger = logger.openLogger(self.config)
-        self.storage = storage.openConnection(self.config, asadmin=asadmin)
+        self.logger = logger.openLogger(self)
+        self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
         
     def display_version_and_quit(self) :

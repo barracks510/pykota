@@ -20,6 +20,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
+#
 # Revision 1.12  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -77,14 +83,19 @@ class PyKotaStorageError(Exception):
         return self.message
     __str__ = __repr__
         
-def openConnection(config, asadmin=0) :
+def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
-    backendinfo = config.getStorageBackend()
+    backendinfo = pykotatool.config.getStorageBackend()
     backend = backendinfo["storagebackend"]
     try :
         if not backend.isalpha() :
             # don't trust user input
             raise ImportError
+        #    
+        # TODO : descending compatibility
+        # 
+        if backend == "postgresql" :
+            backend = "pgstorage"       # TODO : delete, this is for descending compatibility only
         exec "from pykota.storages import %s as storagebackend" % backend.lower()    
     except ImportError :
         raise PyKotaStorageError, _("Unsupported quota storage backend %s") % backend
@@ -92,11 +103,6 @@ def openConnection(config, asadmin=0) :
         host = backendinfo["storageserver"]
         database = backendinfo["storagename"]
         admin = backendinfo["storageadmin"]
-        user = backendinfo["storageuser"]
         adminpw = backendinfo["storageadminpw"]
-        userpw = backendinfo["storageuserpw"]
-        if asadmin :
-            return getattr(storagebackend, "Storage")(host, database, admin, adminpw)
-        else :    
-            return getattr(storagebackend, "Storage")(host, database, user, userpw)
+        return getattr(storagebackend, "Storage")(pykotatool, host, database, admin, adminpw)
 

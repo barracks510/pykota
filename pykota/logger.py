@@ -20,6 +20,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
+#
 # Revision 1.6  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -54,9 +60,9 @@ class PyKotaLoggingError(Exception):
         return self.message
     __str__ = __repr__
 
-def openLogger(config) :
+def openLogger(pykotatool) :
     """Returns the appropriate logger subsystem object."""
-    backend = config.getLoggingBackend()
+    backend = pykotatool.config.getLoggingBackend()
     try :
         if not backend.isalpha() :
             # don't trust user input

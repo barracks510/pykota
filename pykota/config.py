@@ -20,6 +20,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
+#
 # Revision 1.27  2003/05/27 23:00:21  jalet
 # Big rewrite of external accounting methods.
 # Should work well now.
@@ -182,11 +188,9 @@ class PyKotaConfig :
         backendinfo = {}
         for option in [ "storagebackend", "storageserver", \
                         "storagename", "storageadmin", \
-                        "storageuser", \
                       ] :
             backendinfo[option] = self.getGlobalOption(option)
-        for option in [ "storageadminpw", "storageuserpw" ] :    
-            backendinfo[option] = self.getGlobalOption(option, ignore=1)
+        backendinfo["storageadminpw"] = self.getGlobalOption("storageadminpw", ignore=1)
         return backendinfo
         
     def getLoggingBackend(self) :    
@@ -303,3 +307,11 @@ class PyKotaConfig :
             return int(gd)
         except ValueError :    
             raise PyKotaConfigError, _("Invalid grace delay %s") % gd
+            
+    def getDebug(self) :          
+        """Returns 1 if debugging is activated, else 0."""
+        debug = self.getGlobalOption("debug", ignore=1)
+        if (debug is not None) and (debug.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
+            return 1
+        else :    
+            return 0

@@ -22,6 +22,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
+#
 # Revision 1.36  2003/06/06 14:21:08  jalet
 # New LDAP schema.
 # Small bug fixes.
@@ -290,7 +296,7 @@ if __name__ == "__main__" :
         long_options = ["help", "version", "users", "groups", "printer="]
         
         # Initializes the command line tool
-        reporter = RePyKota(asadmin=0, doc=__doc__)
+        reporter = RePyKota(doc=__doc__)
         
         # parse and checks the command line
         (options, args) = reporter.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)

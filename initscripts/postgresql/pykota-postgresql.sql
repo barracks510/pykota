@@ -19,6 +19,12 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.2  2003/06/10 16:37:54  jalet
+-- Deletion of the second user which is not needed anymore.
+-- Added a debug configuration field in /etc/pykota.conf
+-- All queries can now be sent to the logger in debug mode, this will
+-- greatly help improve performance when time for this will come.
+--
 -- Revision 1.1  2003/06/05 07:12:31  jalet
 -- Reorganization of directories
 --
@@ -40,7 +46,6 @@ CREATE DATABASE pykota;
 --
 -- Create the print quota database users
 -- 
-CREATE USER pykotauser;
 CREATE USER pykotaadmin;
 
 -- 
@@ -119,8 +124,4 @@ CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
 REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory FROM public;                        
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, jobhistory TO pykotaadmin;
 GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq TO pykotaadmin;
-GRANT SELECT, UPDATE ON printers, userpquota, grouppquota TO pykotauser;
-GRANT SELECT ON users, groups, groupsmembers TO pykotauser;
-GRANT SELECT, INSERT, UPDATE ON jobhistory TO pykotauser;
-GRANT SELECT, UPDATE ON jobhistory_id_seq TO pykotauser;
 

@@ -20,6 +20,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
+#
 # Revision 1.4  2003/06/10 10:45:32  jalet
 # Not implemented methods now raise an exception when called.
 #
@@ -54,9 +60,11 @@ except ImportError :
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the python-ldap module installed correctly." % sys.version.split()[0]
     
 class Storage :
-    def __init__(self, host, dbname, user, passwd) :
+    def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the LDAP connection."""
         # raise PyKotaStorageError, "Sorry, the LDAP backend for PyKota is not yet implemented !"
+        self.tool = pykotatool
+        self.debug = pykotatool.config.getDebug()
         self.closed = 1
         try :
             self.database = ldap.initialize(host) 
@@ -66,17 +74,23 @@ class Storage :
             raise PyKotaStorageError, "LDAP backend for PyKota seems to be down !" # TODO : translate
         else :    
             self.closed = 0
+            if self.debug :
+                self.tool.logger.log_message("Database opened (host=%s, dbname=%s, user=%s)" % (host, dbname, user), "debug")
             
     def __del__(self) :        
         """Closes the database connection."""
         if not self.closed :
             del self.database
             self.closed = 1
+            if self.debug :
+                self.tool.logger.log_message("Database closed.", "debug")
         
     def doSearch(self, key, fields, base="", scope=ldap.SCOPE_SUBTREE) :
         """Does an LDAP search query."""
         try :
             # prepends something more restrictive at the beginning of the base dn
+            if self.debug :
+                self.tool.logger.log_message("QUERY : BaseDN : %s, Scope : %s, Filter : %s, Attributes : %s" % ((base or self.basedn), scope, key, fields), "debug")
             result = self.database.search_s(base or self.basedn, scope, key, fields)
         except ldap.NO_SUCH_OBJECT :    
             return

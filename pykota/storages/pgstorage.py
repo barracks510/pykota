@@ -20,122 +20,96 @@
 # $Id$
 #
 # $Log$
-# Revision 1.32  2003/06/05 11:19:13  jalet
-# More good work on LDAP storage.
+# Revision 1.1  2003/06/10 16:37:54  jalet
+# Deletion of the second user which is not needed anymore.
+# Added a debug configuration field in /etc/pykota.conf
+# All queries can now be sent to the logger in debug mode, this will
+# greatly help improve performance when time for this will come.
 #
-# Revision 1.31  2003/04/30 13:36:40  jalet
-# Stupid accounting method was added.
-#
-# Revision 1.30  2003/04/27 08:04:15  jalet
-# LDAP storage backend's skeleton added. DOESN'T WORK.
-#
-# Revision 1.29  2003/04/23 22:13:57  jalet
-# Preliminary support for LPRng added BUT STILL UNTESTED.
-#
-# Revision 1.28  2003/04/17 09:26:21  jalet
-# repykota now reports account balances too.
-#
-# Revision 1.27  2003/04/16 12:35:49  jalet
-# Groups quota work now !
-#
-# Revision 1.26  2003/04/16 08:53:14  jalet
-# Printing can now be limited either by user's account balance or by
-# page quota (the default). Quota report doesn't include account balance
-# yet, though.
-#
-# Revision 1.25  2003/04/15 21:58:33  jalet
-# edpykota now accepts a --delete option.
-# Preparation to allow edpykota to accept much more command line options
-# (WARNING : docstring is OK, but code isn't !)
-#
-# Revision 1.24  2003/04/15 13:55:28  jalet
-# Options --limitby and --balance added to edpykota
-#
-# Revision 1.23  2003/04/15 11:30:57  jalet
-# More work done on money print charging.
-# Minor bugs corrected.
-# All tools now access to the storage as priviledged users, repykota excepted.
-#
-# Revision 1.22  2003/04/10 21:47:20  jalet
-# Job history added. Upgrade script neutralized for now !
-#
-# Revision 1.21  2003/04/08 20:38:08  jalet
-# The last job Id is saved now for each printer, this will probably
-# allow other accounting methods in the future.
-#
-# Revision 1.20  2003/03/29 13:45:27  jalet
-# GPL paragraphs were incorrectly (from memory) copied into the sources.
-# Two README files were added.
-# Upgrade script for PostgreSQL pre 1.01 schema was added.
-#
-# Revision 1.19  2003/02/27 08:41:49  jalet
-# DATETIME is not supported anymore in PostgreSQL 7.3 it seems, but
-# TIMESTAMP is.
-#
-# Revision 1.18  2003/02/10 12:07:31  jalet
-# Now repykota should output the recorded total page number for each printer too.
-#
-# Revision 1.17  2003/02/10 08:41:36  jalet
-# edpykota's --reset command line option resets the limit date too.
-#
-# Revision 1.16  2003/02/08 22:39:46  jalet
-# --reset command line option added
-#
-# Revision 1.15  2003/02/08 22:12:09  jalet
-# Life time counter for users and groups added.
-#
-# Revision 1.14  2003/02/07 22:13:13  jalet
-# Perhaps edpykota is now able to add printers !!! Oh, stupid me !
-#
-# Revision 1.13  2003/02/07 00:08:52  jalet
-# Typos
-#
-# Revision 1.12  2003/02/06 23:20:03  jalet
-# warnpykota doesn't need any user/group name argument, mimicing the
-# warnquota disk quota tool.
-#
-# Revision 1.11  2003/02/06 15:05:13  jalet
-# self was forgotten
-#
-# Revision 1.10  2003/02/06 15:03:11  jalet
-# added a method to set the limit date
-#
-# Revision 1.9  2003/02/06 14:52:35  jalet
-# Forgotten import
-#
-# Revision 1.8  2003/02/06 14:49:04  jalet
-# edpykota should be ok now
-#
-# Revision 1.7  2003/02/06 14:28:59  jalet
-# edpykota should be ok, minus some typos
-#
-# Revision 1.6  2003/02/06 09:19:02  jalet
-# More robust behavior (hopefully) when the user or printer is not managed
-# correctly by the Quota System : e.g. cupsFilter added in ppd file, but
-# printer and/or user not 'yet?' in storage.
-#
-# Revision 1.5  2003/02/05 23:26:22  jalet
-# Incorrect handling of grace delay
-#
-# Revision 1.4  2003/02/05 23:02:10  jalet
-# Typo
-#
-# Revision 1.3  2003/02/05 23:00:12  jalet
-# Forgotten import
-# Bad datetime conversion
-#
-# Revision 1.2  2003/02/05 22:28:38  jalet
-# More robust storage
-#
-# Revision 1.1  2003/02/05 21:28:17  jalet
-# Initial import into CVS
 #
 #
 #
 
 import fnmatch
 
-class SQLStorage :    
+from pykota.storage import PyKotaStorageError
+
+try :
+    import pg
+except ImportError :    
+    import sys
+    # TODO : to translate or not to translate ?
+    raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PygreSQL module installed correctly." % sys.version.split()[0]
+
+class Storage :
+    def __init__(self, pykotatool, host, dbname, user, passwd) :
+        """Opens the PostgreSQL database connection."""
+        self.tool = pykotatool
+        self.debug = pykotatool.config.getDebug()
+        self.closed = 1
+        try :
+            (host, port) = host.split(":")
+            port = int(port)
+        except ValueError :    
+            port = -1         # Use PostgreSQL's default tcp/ip port (5432).
+        
+        try :
+            self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
+            self.closed = 0
+        except pg.error, msg :
+            raise PyKotaStorageError, msg
+        else :    
+            if self.debug :
+                self.tool.logger.log_message("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user), "debug")
+            
+    def __del__(self) :        
+        """Closes the database connection."""
+        if not self.closed :
+            self.database.close()
+            self.closed = 1
+            if self.debug :
+                self.tool.logger.log_message("Database closed.", "debug")
+        
+    def doQuery(self, query) :
+        """Does a query."""
+        if type(query) in (type([]), type(())) :
+            query = ";".join(query)
+        query = query.strip()    
+        if not query.endswith(';') :    
+            query += ';'
+        self.database.query("BEGIN;")
+        if self.debug :
+            self.tool.logger.log_message("Transaction began.", "debug")
+        try :
+            if self.debug :
+                self.tool.logger.log_message("QUERY : %s" % query, "debug")
+            result = self.database.query(query)
+        except pg.error, msg :    
+            self.database.query("ROLLBACK;")
+            if self.debug :
+                self.tool.logger.log_message("Transaction aborted.", "debug")
+            raise PyKotaStorageError, msg
+        else :    
+            self.database.query("COMMIT;")
+            if self.debug :
+                self.tool.logger.log_message("Transaction committed.", "debug")
+            return result
+        
+    def doQuote(self, field) :
+        """Quotes a field for use as a string in SQL queries."""
+        if type(field) == type(0.0) : 
+            typ = "decimal"
+        elif type(field) == type(0) :    
+            typ = "int"
+        else :    
+            typ = "text"
+        return pg._quote(field, typ)
+        
+    def doParseResult(self, result) :
+        """Returns the result as a list of Python mappings."""
+        if (result is not None) and (result.ntuples() > 0) :
+            return result.dictresult()
+            
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers as tuples (id, name) for printer names which match a certain pattern."""
         printerslist = []
@@ -427,3 +401,4 @@ class SQLStorage :
         else :    
             (perpage, perjob) = prices
         return perjob + (perpage * jobsize)
+        

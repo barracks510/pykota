@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.08alpha8 :
+    
+        - Code refactoring.
+        - A single user/password pair is used to connect
+          to the database backend. The storageuser configuration
+          field, and its associated passwords storageuserpw, are 
+          not used anymore.
+        
     - 1.08alpha7 :
     
         - Very latest LDAP schema.
