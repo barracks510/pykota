@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2003/08/18 16:35:28  jalet
+# New pychecker pass, on the tools this time.
+#
 # Revision 1.42  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #
@@ -161,7 +164,6 @@
 import sys
 import os
 import pwd
-import grp
 
 from mx import DateTime
 

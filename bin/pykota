@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2003/08/18 16:35:28  jalet
+# New pychecker pass, on the tools this time.
+#
 # Revision 1.38  2003/08/18 16:20:59  jalet
 # Improvement of the printing system detection code.
 #
@@ -160,7 +163,6 @@
 
 import sys
 import os
-import time
 
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.config import PyKotaConfigError
