@@ -21,7 +21,7 @@
     printers configuration file from stdin. Then it launches different tests to see if your printers supports
     some special features which would allow you to use either hardware or software accounting on them, with
     a preference for hardware since it's more reliable. If it can help you, it will print some text which
-    you will be able to copy and paste into <filename>/etc/pykota/pykota.conf</filename>.
+    you will be able to copy and paste into <filename>~pykota/pykota.conf</filename>.
   </para>
   
   <warning>
@@ -51,6 +51,10 @@
 <!--
 
 $Log$
+Revision 1.2  2005/02/28 22:29:25  jalet
+More complete PostgreSQL configuration.
+Changed all occurences of /etc/pykota/ to ~pykota/
+
 Revision 1.1  2004/03/18 10:32:23  jalet
 Added pkhint's documentation
 

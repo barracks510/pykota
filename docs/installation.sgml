@@ -103,6 +103,25 @@ jerome@nordine:~/pykota-1.21_official$
         self documented and easy to modify too. Allowing <acronym>TCP/IP</acronym> connections
         is not necessary though if your Quota Storage Server and your Print Server are
         the very same host.
+      </para>  
+      
+      <para>
+        Here's an excerpt from a <filename>pg_hba.conf</filename> file. This one rejects all
+        connections to PyKota's database excepted when made from the same host by <application>PostgreSQL</application> users
+        <literal>pykotauser</literal> or <literal>pykotaadmin</literal> with the correct password.
+<screen>        
+        local all    postgres                              ident sameuser
+        local all    all                                   reject
+        host  pykota pykotauser  127.0.0.1 255.255.255.255 crypt
+        host  pykota pykotaadmin 127.0.0.1 255.255.255.255 crypt
+        host  pykota all         127.0.0.1 255.255.255.255 reject
+</screen>
+     </para>
+     
+     <para>
+        Of course if your print server and your database servers have different <acronym>IP</acronym>
+        addresses, you have to replace the <literal>127.0.0.1</literal> address above with your print
+        server's <acronym>IP</acronym> address.
         <tip>
           <title>Tip</title>
           <para>
@@ -132,7 +151,7 @@ jerome@nordine:~/pykota-1.21_official$
         Now that your <application>PostgreSQL</application> server is up and running, and
         is waiting for your connections, you have to create the Quota Storage DataBase.
         To do so, you'll have to feed <application>PostgreSQL</application> with the
-        <filename>pykota-x.xx/initscripts/postgresql/pykota-postgresql.sql</filename> file.
+        <filename>pykota-1.21/initscripts/postgresql/pykota-postgresql.sql</filename> file.
         This file will create a Quota DataBase administrator in the <application>PostgreSQL</application> system, then create an empty
         Quota DataBase and set some permissions on it. The Quota DataBase administrator
         is the <application>PostgreSQL</application>'s user used to manage the Quota database.
@@ -143,7 +162,7 @@ jerome@nordine:~/pykota-1.21_official$
         A Quota Storage read-only user is also created under the name of <literal>pykotauser</literal>.
         This read-only user is used by <application>PyKota</application> to connect to the 
         Quota Storage when an user who is not a <application>PyKota</application> administrator 
-        <footnote><para>a <application>PyKota</application> administrator is an user who can read the <filename>/etc/pykota/pykotadmin.conf</filename> file.</para></footnote>
+        <footnote><para>a <application>PyKota</application> administrator is an user who can read the <filename>~pykota/pykotadmin.conf</filename> file.</para></footnote>
         launches a pykota command. This prevents normal
         users from being able to modify their own, or other users', quota information.
         The database which will be created will be named <literal>pykota</literal> by default.
@@ -220,7 +239,7 @@ jerome@nordine:~/pykota-1.21_official/initscripts/postgresql$
         To improve security further, you could encrypt your database connections, or
         take any other step as needed. Please refer to <application>PostgreSQL</application>'s
         documentation for details. Also if <application>PyKota</application>'s configuration
-        file <filename>/etc/pykota/pykotadmin.conf</filename> is readable by anyone with access on your file system, 
+        file <filename>~pykota/pykotadmin.conf</filename> is readable by anyone with access on your file system, 
         a local user could create some script to modify his own print quota.
         <warning>
           <title>Warning</title>
@@ -374,8 +393,8 @@ $ /etc/init.d/slapd restart
       </para>
       
       <para>
-        Once you have chosen and created your directory structure, you have to modify PyKota's configuration files <filename>/etc/pykota/pykota.conf</filename>
-        and <filename>/etc/pykota/pykotadmin.conf</filename>
+        Once you have chosen and created your directory structure, you have to modify PyKota's configuration files <filename>~pykota/pykota.conf</filename>
+        and <filename>~pykota/pykotadmin.conf</filename>
         to set some LDAP specific options and binding <literal>dn</literal>s. The easiest is
         probably to give a look at 
         <filename>pykota/conf/pykota.conf.sample</filename> to see all the options that are
@@ -558,7 +577,7 @@ $ python setup.py install
       a <filename>README</filename> file explaining their purpose.
     </para>
     <para>
-      You have to copy these files into the <filename>/etc/pykota</filename>
+      You have to copy these files into the <filename>~pykota</filename>
       directory (you have to create it before), under the respective names <filename>pykota.conf</filename> and 
       <filename>pykotadmin.conf</filename>. Once copied there, you just
       have to modify these files to adapt them to your own setup.
@@ -574,7 +593,7 @@ $ python setup.py install
     </para>
     
     <para>
-      Please create a backup copy of the <filename>/etc/pykota</filename>
+      Please create a backup copy of the <filename>~pykota</filename>
       directory before modifying a working installation.
     </para>
     
@@ -594,12 +613,12 @@ $ python setup.py install
       After you have modified PyKota's configuration files, you have to
       double check their permissions, otherwise your installation may be
       insecure or may not work at all.
-      The main configuration file <filename>/etc/pykota/pykota.conf</filename>
+      The main configuration file <filename>~pykota/pykota.conf</filename>
       doesn't contain much sensitive information, so it can be made
       readable by anyone. If normal users read this file, at best they
       will learn the username and optional password of the read-only
       database user, so they won't be allowed to do any harm.
-      On the other hand, the <filename>/etc/pykota/pykotadmin.conf</filename>
+      On the other hand, the <filename>~pykota/pykotadmin.conf</filename>
       file contains the read-write user's identity and password. You must then
       ensure that no normal user can read this file. It should only be readable
       by the <literal>root</literal> user, which is always the case, by
@@ -607,16 +626,16 @@ $ python setup.py install
       who are usually members of the <literal>lpadmin</literal> group. Under my Debian GNU/Linux system,
       with CUPS, here's how to do to give the correct permissions :
       <screen>
-$ chown root.root /etc/pykota/pykota.conf      
-$ chmod 644 /etc/pykota/pykota.conf      
-$ chown lp.lpadmin /etc/pykota/pykotadmin.conf      
-$ chmod 640 /etc/pykota/pykotadmin.conf      
+$ chown root.root ~pykota/pykota.conf      
+$ chmod 644 ~pykota/pykota.conf      
+$ chown lp.lpadmin ~pykota/pykotadmin.conf      
+$ chmod 640 ~pykota/pykotadmin.conf      
       </screen>
       
       <warning>
         <title>Warning</title>
         <para>
-          All the users allowed to read the <filename>/etc/pykota/pykotadmin.conf</filename> 
+          All the users allowed to read the <filename>~pykota/pykotadmin.conf</filename> 
           are considered to be <application>PyKota</application> administrators. So be
           careful with these files permissions.
         </para>
@@ -762,6 +781,10 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.31  2005/02/28 22:29:25  jalet
+More complete PostgreSQL configuration.
+Changed all occurences of /etc/pykota/ to ~pykota/
+
 Revision 1.30  2005/02/28 00:07:37  jalet
 Added pkmail's doc.
 Used the <command> tag instead of <application> for commands.

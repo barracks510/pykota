@@ -108,8 +108,8 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
         <title>Note</title>
         <para>
           Please ensure that the user your web server is run as, for example <literal>www-data</literal> under
-          Debian, is allowed to read <filename>/etc/pykota/pykota.conf</filename> but for security reasons you
-          must ensure that this user <emphasis>is not</emphasis> allowed to read <filename>/etc/pykota/pykotadmin.conf</filename>
+          Debian, is allowed to read <filename>~pykota/pykota.conf</filename> but for security reasons you
+          must ensure that this user <emphasis>is not</emphasis> allowed to read <filename>~pykota/pykotadmin.conf</filename>
         </para>
       </note>  
     </para>
@@ -151,6 +151,10 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
 <!--
 
 $Log$
+Revision 1.10  2005/02/28 22:29:25  jalet
+More complete PostgreSQL configuration.
+Changed all occurences of /etc/pykota/ to ~pykota/
+
 Revision 1.9  2005/02/28 00:07:37  jalet
 Added pkmail's doc.
 Used the <command> tag instead of <application> for commands.
