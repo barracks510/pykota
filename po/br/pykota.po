@@ -34,43 +34,43 @@ msgstr ""
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
-msgstr "SIGTERM recebido, trabalho %s reiniciado."
+msgstr "SIGTERM recebida, trabalho %s reiniciado."
 
 #, python-format
 msgid "SIGTERM was sent to real backend %s (pid: %s)"
-msgstr "Foi enviado um SIGTERM para o backend %s (pid: %s)"
+msgstr "SIGTERM foi emitida a real backend %s (pid: %s)"
 
 #, python-format
 msgid "CUPS backend %s died abnormally."
-msgstr "O backend CUPS morreu inesperadamente."
+msgstr "Backend CUPS morreu anormalmente."
 
 #, python-format
 msgid "Invalid softlimit value %s."
-msgstr "Valor incorrecto para o limite mínimo %s."
+msgstr "Valor incorreto para o limite %s."
 
 #, python-format
 msgid "Invalid hardlimit value %s."
-msgstr "Valor incorrecto para limite máximo %s."
+msgstr "Valor incorreto para o limite Maximo %s."
 
 #, python-format
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
-msgstr "Limite máximo %i é menor que o limite mínimo %i, os valores serão invertidos."
+msgstr "Limite maximo %i é menor que o limite %i, os valores serão invertidos."
 
 #, python-format
 msgid "Invalid balance value %s"
-msgstr "Valor de saldo inválido %s"
+msgstr "Valor da media %s inválido"
 
 #, python-format
 msgid "Invalid charge amount value %s"
-msgstr "Valor de custo inválido %s"
+msgstr "Valor de carga: %s inválido"
 
 #, python-format
 msgid "Invalid limitby value %s"
-msgstr "Valor inválido para política de quota %s"
+msgstr "Valor do limitby %s inválido"
 
 #, python-format
 msgid "Impossible to add printer %s"
-msgstr "Foi impossível adicionar a impressora %s"
+msgstr "Imposivel adicionar impressora %s"
 
 #, python-format
 msgid "Invalid printer name %s"
@@ -78,26 +78,27 @@ msgstr "Nome de impressora %s inválido"
 
 #, python-format
 msgid "There's no printer matching %s"
-msgstr "A impressora %s não existe"
+msgstr "Impressora %s não encontrada"
 
 msgid "You have to pass user or group names on the command line"
-msgstr "É Obrigatória a utilização de nomes de utilizador ou grupo na linha de comando"
+msgstr "Voce deve informar usuario ou grupo na linha de comando"
 
 #, python-format
 msgid "Prototype %s not found in Quota Storage for printer %s."
-msgstr "Protótipo %s não encontrado na base de dados para a impressora %s."
+msgstr "Prototipo %s não encontrado no banco dedados para a impressora %s."
 
 #, python-format
 msgid "Prototype object %s not found in Quota Storage."
-msgstr "Objecto do protótipo %s não encontrado na base de dados."
+msgstr "Objeto Prototipo %s não encontrado no banco de dados."
 
 #, python-format
 msgid "Undefined hard limit set to soft limit (%s) on printer %s."
-msgstr "Limite máximo indefinido, foi usado o valor do limite mínimo (%s) para a impressora %s."
+msgstr ""
+"O limite maximo invalido, configurando o limite minimo (%s) na impressora %s."
 
 #, python-format
 msgid "Undefined soft limit set to hard limit (%s) on printer %s."
-msgstr "Limite mínimo indefinido, foi usado o valor do limite máximo (%s) para a impressora %s."
+msgstr "Limite indefinido, configurando a límite maximo (%s) na impressora %s."
 
 #, python-format
 msgid "Invalid email address %s"
@@ -109,102 +110,102 @@ msgstr "O nome do grupo %s é inválido"
 
 #, python-format
 msgid "Invalid user name %s"
-msgstr "O nome do utilizador %s é inválido"
+msgstr "O nome de usuario %s é inválido"
 
 #, python-format
 msgid "Quota not found for object %s on printer %s."
-msgstr "Cota não encontrada para o objecto %s da impressora %s."
+msgstr "Quota não encontrada para o objeto %s para a impressora %s."
 
 #, python-format
 msgid "Group %s not found in the PyKota Storage."
-msgstr "Grupo %s não encontrado na base de dados."
+msgstr "Grupo %s não encontrado no banco de dados."
 
 msgid "incompatible options, see help."
-msgstr "Opções incompatíveis, veja a ajuda."
+msgstr "Oções incompativeis, veja a ajuda."
 
 #, python-format
 msgid "Printer %s not registered in the PyKota system"
-msgstr "Impressora %s não registada no sistema."
+msgstr "Impressora %s não registrada no sistema PyKota"
 
 #, python-format
 msgid "Printer %s was never used"
-msgstr "A impressora %s nunca foi usada"
+msgstr "A impressora %s foi usada nunca"
 
 #, python-format
 msgid "Unable to compute size of %s in number of pages.\n"
-msgstr "Não foi possível calcular o tamanho de %s em número de páginas.\n"
+msgstr "Imposivel calcular o tamanho %s em número de páginas.\n"
 
 #, python-format
 msgid "Your account balance : %.2f"
-msgstr "Saldo da sua conta : %.2f"
+msgstr "Balanço de sua conta : %.2f"
 
 #, python-format
 msgid "Job size : %i pages"
-msgstr "Tamanho do pedido : %i páginas"
+msgstr "Tamanho do JOB : %i páginas"
 
 #, python-format
 msgid "Cost on printer %s : %.2f"
-msgstr "Custo da impressora %s : %.2f"
+msgstr "Custo da impresora %s : %.2f"
 
 #, python-format
 msgid "Unsupported accounter backend %s"
-msgstr "Backend de cota %s não suportado"
+msgstr "Accounter Backend %s não suportado"
 
 #, python-format
 msgid "Configuration file %s not found."
-msgstr "Ficheiro de configuração %s não encontrado."
+msgstr "Arquivo de configuração %s não encontrado."
 
 #, python-format
 msgid "Option %s not found in section global of %s"
-msgstr "A opção %s não foi encontrada na secção global de %s"
+msgstr "Opção %s não encontrada na seção global de %s"
 
 #, python-format
 msgid "Option %s not found in section %s of %s"
-msgstr "A opção %s não foi encontrada na secção %s de %s"
+msgstr "Opção %s não encontrada na seção %s de %s"
 
 #, python-format
 msgid "Option logger only supports values in %s"
-msgstr "A opção logger só suporta valores em %s"
+msgstr "a opção logger só suporta valores em %s"
 
 #, python-format
 msgid "Invalid external accounter %s for printer %s"
-msgstr "Contador externo de páginas %s inválido, para a impressora %s"
+msgstr "Contador de páginas externo %s inválido, para a impressora %s"
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
-msgstr "A opção accounter na secção %s só suporta valores em %s"
+msgstr "A opção accounter na seção %s só suporta valores em %s"
 
 #, python-format
 msgid "Option requester for printer %s was not set"
-msgstr "A opção requester para a impressora %s não foi configurada"
+msgstr "A opção requester para a impressora %s não foi configurada "
 
 #, python-format
 msgid "Invalid requester %s for printer %s"
-msgstr "Requester %s inválido para a impressora %s"
+msgstr "Requester inválido %s para a impressora %s"
 
 #, python-format
 msgid "Option requester for printer %s only supports values in %s"
-msgstr "A opção requester para a impresora %s só suporta valores em %s"
+msgstr "a opção requester para a impresora %s só suporta valores em %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
-msgstr "Política %s inválida para a impressora %s"
+msgstr "Política inválida %s para a impressora %s"
 
 #, python-format
 msgid "Option policy in section %s only supports values in %s"
-msgstr "A opção policy na secção %s só suporta valores em %s"
+msgstr "A opção policy na seção %s só suporta valores em %s"
 
 #, python-format
 msgid "Invalid option mailto %s for printer %s"
-msgstr "Opção mailto %s inválida, para a impressora %s"
+msgstr "Opção mailto %s inválida,  para a impressora %s"
 
 #, python-format
 msgid "Option mailto in section %s only supports values in %s"
-msgstr "a opção mailto na secção %s só suporta valores em %s"
+msgstr "a opção mailto na seção %s só suporta valores em %s"
 
 #, python-format
 msgid "Invalid grace delay %s"
-msgstr "Período de tolerância inválido %s"
+msgstr "Tiempo gartis %s inválido"
 
 #, python-format
 msgid "Invalid poor man's treshold %s"
@@ -215,9 +216,9 @@ msgid ""
 "Soon you'll not be allowed to print anymore.\n"
 "Please contact the Print Quota Administrator to solve the problem."
 msgstr ""
-"O seu saldo de impressão é baixo.\n"
-"Em breve não poderá imprimir.\n"
-"Por favor contacte o administrador do serviço de impressão de forma a resolver "
+"A media de sua quota de impressão está baixa.\n"
+"voce não pode imprimir .\n"
+"Por favor entre em contato com o administrador das Impressoras para resolver "
 "o problema."
 
 #, python-format
@@ -225,7 +226,7 @@ msgid ""
 "You are not allowed to print anymore because\n"
 "your Print Quota is exceeded on printer %s."
 msgstr ""
-"Foi-lhe vedado o acesso ao serviço de impressão já que a\n"
+"Voce não pode imprimir porque\n"
 "sua quota de impressão foi excedida, na impressora %s."
 
 #, python-format
@@ -233,24 +234,24 @@ msgid ""
 "You will soon be forbidden to print anymore because\n"
 "your Print Quota is almost reached on printer %s."
 msgstr ""
-"Em breve não poderá imprimir já que a\n"
-"sua quota de impressão está quase a ser atingida, na impressora %s."
+"Sua impressão está bloqueada porque\n"
+"sua quota de impressão foi atingida, na impressora %s."
 
 #, python-format
 msgid "Unsupported logging subsystem %s"
-msgstr "Sistema de logging %s não suportado"
+msgstr "Sistema de log %s não suportado"
 
 #, python-format
 msgid "Report for %s quota on printer %s"
-msgstr "Relatório de cota %s para a impressora %s"
+msgstr "Relatorio de quota %s para a impressora %s"
 
 #, python-format
 msgid "Pages grace time: %i days"
-msgstr "Período de tolerância : %i días"
+msgstr "Tempo de cortesia : %i días"
 
 #, python-format
 msgid "Price per job: %.3f"
-msgstr "Preço por trabalho: %.3f"
+msgstr "Preço por impressão: %.3f"
 
 #, python-format
 msgid "Price per page: %.3f"
@@ -260,14 +261,14 @@ msgid ""
 "Group           used    soft    hard    balance grace         total       "
 "paid"
 msgstr ""
-"Grupo           gasto   mínimo  máximo  saldo   tolerância    total       "
+"Grupo           usado   Minimo  Maximo  media   gratis        total       "
 "pago"
 
 msgid ""
 "User            used    soft    hard    balance grace         total       "
 "paid"
 msgstr ""
-"Utilizador      gasto   mínimo  máximo  saldo   tolerância    total       "
+"Usuario         usado   Minimo  Maximo  media   gratis        total       "
 "pago"
 
 msgid "unknown"
@@ -283,19 +284,19 @@ msgstr "Total : %9i"
 
 #, python-format
 msgid "Unsupported reporter backend %s"
-msgstr "Backend reporter %s não suportado"
+msgstr "Reporter backend %s não suportado"
 
 #, python-format
 msgid "Unsupported requester backend %s"
-msgstr "Backend requester %s não suportado"
+msgstr "Requester backend %s não suportado"
 
 #, python-format
 msgid "Unsupported quota storage backend %s"
-msgstr "Base de dados %s não suportada"
+msgstr "o banco de dados: %s  não suportado"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "Impossível enviar email para  %s, erro %s : %s"
+msgstr "Imposivel enviar email para  %s, erro %s : %s"
 
 #, python-format
 msgid ""
@@ -316,42 +317,43 @@ msgid ""
 "Unable to find user %s's account balance, applying default policy (%s) for "
 "printer %s"
 msgstr ""
-"Não foi possível encontrar o saldo da conta do utilizador %s, foi configurado por omissão o valor "
-"(%s) para a impressora %s"
+"Imposivel encontrar a media da conta do usuario %s, configurando o valor "
+"padrão (%s) para a impressora %s"
 
 #, python-format
 msgid "Unable to match user %s on printer %s, applying default policy (%s)"
 msgstr ""
-"Não foi possível encontrar o utilizador %s para a impressora %s, foi aplicada por omissão a política (%s)"
+"Imposivel encontrar o usuário %s para impressorao %s, aplicando politica "
+"padrão (%s)"
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "Cota de impressão excedida para o grupo %s na impressora %s"
+msgstr "Quota de impressão excedida para o grupo %s na impressora %s"
 
 msgid "Print Quota"
-msgstr "Cota de Impressão"
+msgstr "Quota de impreção"
 
 msgid "Print Quota Exceeded"
-msgstr "Cota de impressão excedida"
+msgstr "Quota de Impressão Excedida"
 
 #, python-format
 msgid "Print Quota low for group %s on printer %s"
-msgstr "Cota de impressão baixa para o grupo %s na impresora %s"
+msgstr "Quota de impressora baixa para o grupo %s na impresora %s"
 
 #, python-format
 msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "Cota de impressão excedida para o utilizador %s na impressora %s"
+msgstr "Quota de impressão excedida para o usuario %s na impressora %s"
 
 #, python-format
 msgid "Print Quota low for user %s on printer %s"
-msgstr "Cota de impressão baixa para o utilizador %s na impressora %s"
+msgstr "Quota de impressão baixa para o usuario %s na impressora %s"
 
 msgid "Print Quota Low"
-msgstr "Cota de impressão baixa"
+msgstr "Quota de impressão baixa"
 
 msgid "Printer hostname undefined, set to 'localhost'"
 msgstr ""
-"Nome do servidor de impressão não definido, foi configurado para 'localhost'"
+"Nome do servidor de impressão não definido, configurando para 'localhost'"
 
 #, python-format
 msgid "Printing system unknown, args=%s"
@@ -370,7 +372,7 @@ msgid ""
 "User %s not registered in the PyKota system, applying external policy (%s) "
 "for printer %s"
 msgstr ""
-"Utilizador %s não registado no sistema de impressão, foi aplicada a política externa (%s) "
+"Usuario %s não registrado no sistema PyKota, aplicando política externa (%s) "
 "para a impressora %s"
 
 #, python-format
@@ -386,8 +388,8 @@ msgid ""
 "External policy %s for printer %s produced an error. Job rejected. Please "
 "check PyKota's configuration files."
 msgstr ""
-"Política externa %s para a impressora %s devolveu um erro. Trabalho "
-"reiniciado. Por favor verifique os ficheiros de configuração do Pykota."
+"Política externa %s para a impressora %s retornou un error. Trabalho "
+"reiniciado. Por favor verifique os arquivos de configuração do PyKota."
 
 #, python-format
 msgid ""
@@ -400,8 +402,8 @@ msgid ""
 "User %s not registered in the PyKota system, applying default policy (%s) "
 "for printer %s"
 msgstr ""
-"Utilizador %s não registrado no sistema PyKota, foi aplicada por omissão a política (%s)"
-"para a impressora %s"
+"Usuario %s não registrado no sistema PyKota, aplicando configurações padrões "
+"(%s) para a impressora %s"
 
 #, python-format
 msgid ""
@@ -429,49 +431,47 @@ msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
 msgstr ""
-"O utilizador %s ainda não tem cota definida na impressora %s, o pedido será rejeitado"
-
 
 #, python-format
 msgid "Unable to compute job size with external accounter %s"
-msgstr "Foi impossível calcular o tamanho do trabalho com o contador externo %s"
+msgstr "Impossivel calcular o tamanho do trabalho com o contador externo %s"
 
 msgid "Using the 'stupid' accounting method is unreliable."
-msgstr "Usar o método de contagem 'stupid' pode dar origem a erros de contagem."
+msgstr "Usar o metodo 'stupid' não é confiavel."
 
 msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr ""
-"O total pode não ser exacto, caso os utilizadores sejam membros de vários grupos."
+"o Total pode não ser exato se os usuarios forem mebros de varios grupos."
 
 #, python-format
 msgid "Unknown printer address in EXTERNAL(%s) for printer %s"
-msgstr "Endereço inválido em EXTERNAL(%s) para a impressora %s"
+msgstr "Endereço invalido em  EXTERNAL(%s) para a impressora %s"
 
 #, python-format
 msgid "Unable to query printer %s via EXTERNAL(%s)"
-msgstr "Foi impossível consultar a impressora %s via EXTERNAL(%s)"
+msgstr "Imposive consultar a impressora %s via EXTERNAL(%s)"
 
 #, python-format
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
-msgstr "Endereço SNMP(%s, %s) inválido para a impressora %s"
+msgstr "Endereço da impressora invalido em SNMP(%s, %s) para a impressora %s"
 
 #, python-format
 msgid "Unable to query printer %s via SNMP(%s, %s)"
-msgstr "Foi impossível consultar a impressora %s via SNMP(%s, %s)"
+msgstr "Imposivel consultar a impresora %s vía SNMP(%s, %s)"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "A pesquisa de %s(%s) usando o escópio %s(scope=%s) não devolveu resultados."
+msgstr "Buscar por %s(%s) apartir de %s(scope=%s) nenhum registro encontrado."
 
 #, python-format
 msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "Ocorreu um problema ao adicionar a entrada LDAP (%s, %s)"
+msgstr "Problema adicionando entrada LDAP (%s, %s)"
 
 #, python-format
 msgid "Problem deleting LDAP entry (%s)"
-msgstr "Ocorreu um problema ao apagar a entrada LDAP (%s)"
+msgstr "Problema apagando entrada LDAP (%s)"
 
 #, python-format
 msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "Ocorreu um problema ao modificar a entrada LDAP (%s, %s)"
+msgstr "Problema modificando entrada LDAP (%s, %s)"
 

@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/01/18 20:52:50  jalet
+# Portuguese portuguese translation replaces brasilian portuguese one, which
+# moves in its own directory.
+# Installation script modified to reorganise installed documentation and include
+# the documentation on OpenOffice.org + ODBC
+#
 # Revision 1.31  2004/01/15 12:50:41  jalet
 # Installation scripts now tells where the documentation was installed.
 #
@@ -344,8 +350,23 @@ for mofile in mofiles :
     data_files.append((directory, [ mofile ]))
     
 docdir = "/usr/share/doc/pykota"    
-docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO", "NEWS"] + glob.glob(os.sep.join(["docs", "*.pdf"])) + glob.glob(os.sep.join(["docs", "pykota", "*.html"]))
+docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO", "NEWS"]
 data_files.append((docdir, docfiles))
+
+docfiles = glob.glob(os.sep.join(["docs", "*.pdf"]))
+data_files.append((docdir, docfiles))
+
+docfiles = glob.glob(os.sep.join(["docs", "spanish", "*.pdf"]))
+docfiles += glob.glob(os.sep.join(["docs", "spanish", "*.sxw"]))
+data_files.append((os.path.join(docdir, "spanish"), docfiles))
+
+docfiles = glob.glob(os.sep.join(["docs", "pykota", "*.html"]))
+data_files.append((os.path.join(docdir, "html"), docfiles))
+
+docfiles = glob.glob(os.sep.join(["openoffice", "*.sxw"]))
+docfiles += glob.glob(os.sep.join(["openoffice", "*.png"]))
+docfiles += glob.glob(os.sep.join(["openoffice", "README"]))
+data_files.append((os.path.join(docdir, "openoffice"), docfiles))
 
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
