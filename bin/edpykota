@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/07 22:17:58  jalet
+# Incomplete test
+#
 # Revision 1.6  2003/02/07 22:13:13  jalet
 # Perhaps edpykota is now able to add printers !!! Oh, stupid me !
 #
@@ -137,7 +140,7 @@ class EdPyKota(PyKotaTool) :
                 hardlimit = int(options["hardlimit"].strip())
             except ValueError :    
                 raise PyKotaToolError, "Invalid hardlimit value %s." % options["hardlimit"]
-        if hardlimit < softlimit :        
+        if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
             # error, exchange them
             self.logger.log_message("Hard limit %i is less than soft limit %i, values will be exchanged." % (hardlimit, softlimit), "warn")
             (softlimit, hardlimit) = (hardlimit, softlimit)
