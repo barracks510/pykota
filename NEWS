@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha5 :
+    
+        - Debian packaging specific files, contributed by
+          Peter Hawkins are now included in the project's tree.
+          
+        - Preliminary work on future low-level LDAP caching to speed
+          up modifications (at least).
+          
     - 1.18alpha4 :
     
         - Applied some of the modifications suggested by
