@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16beta3 :
+    
+        - Swedish translation added.
+        
+        - Small fix in documentation.
+        
     - 1.16beta2 :
     
         - Small fix for job cancelling code while job already
