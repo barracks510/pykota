@@ -1,3 +1,4 @@
+# translation of pykota.po to Norwegian Bokmål <
 # translation of pykota.po to Norwegian Bokmål
 #
 # PyKota : Print Quotas for CUPS and LPRng
@@ -30,7 +31,7 @@ msgstr ""
 "Project-Id-Version: pykota\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-11-25 10:16+0100\n"
-"PO-Revision-Date: 2005-02-23 11:00+0100\n"
+"PO-Revision-Date: 2005-03-05 12:16+0100\n"
 "Last-Translator: Klaus Ade Johnstad <klaus@skolelinux.no>\n"
 "Language-Team: Norwegian Bokmål < <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -186,11 +187,11 @@ msgstr "Opsjonen mailto i avsnitt %s støtter kun verdier i %s"
 
 #, python-format
 msgid "Invalid maximal deny banners counter %s"
-msgstr ""
+msgstr "Ugyldig verdi for maksimalt antall nektede bannere %s"
 
 #, python-format
 msgid "Invalid grace delay %s"
-msgstr ""
+msgstr "Ugyldig grace forsinkelse %s"
 
 #, python-format
 msgid "Invalid poor man's threshold %s"
@@ -245,7 +246,7 @@ msgid "Users Groups Print Quotas"
 msgstr "Brukerens gruppeutskriftskvote"
 
 msgid "History of Payments"
-msgstr ""
+msgstr "Betalingshistorikk"
 
 msgid "Printers Groups Membership"
 msgstr "Skriverens gruppemedlemskap"
@@ -287,7 +288,7 @@ msgid "XML output is disabled because the jaxml module is not available."
 msgstr "Bruk av XML er ikke mulig fordi jaxml modulen ikke er tilgjengelig."
 
 msgid "PyKota data dumper failed : I/O error"
-msgstr "PyKotasystemets datadumper feilet: I/O-feil"
+msgstr "PyKota datadumper feilet: I/O-feil"
 
 #, python-format
 msgid "Unsupported logging subsystem %s"
@@ -303,21 +304,26 @@ msgstr ""
 
 #, python-format
 msgid "Price per job: %.3f"
-msgstr "Pris per utskriftsjobb: %.3f"
+msgstr "Pris per utskrift: %.3f"
 
 #, python-format
 msgid "Price per page: %.3f"
 msgstr "Pris per side: %.3f"
 
+#, fuzzy
 msgid ""
 "Group          overcharge   used    soft    hard    balance grace         "
 "total       paid warn"
 msgstr ""
+"Gruppe          overcharge   brukt    myk    hard    balanse grace         "
+"totalt       betalt advarsel"
 
 msgid ""
 "User           overcharge   used    soft    hard    balance grace         "
 "total       paid warn"
 msgstr ""
+"Bruker           overcharge   brukt    myk    hard    balanse grace         "
+"totalt       betalt advarsel"
 
 msgid "unknown"
 msgstr "ukjent"
@@ -390,7 +396,7 @@ msgstr ""
 
 #, python-format
 msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr ""
+msgstr "Klarte ikke å finne bruker %s på skriver %s, bruker standard regel (%s)"
 
 #, python-format
 msgid ""
@@ -434,12 +440,12 @@ msgstr "Utskriftssystem %s, args=%s"
 #, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
 msgstr ""
-"Klarer ikke å beregne størrelsen på utskriftsjobben ved hjelp av den "
+"Klarer ikke å beregne størrelsen på utskriften ved hjelp av den "
 "generiske PDL analyseren : %s"
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
-msgstr "Signalet SIGTERM ble sendt, utskriftsjobb %s avbrutt."
+msgstr "Signalet SIGTERM ble sendt, utskriften %s ble avbrutt."
 
 msgid "Printer hostname undefined, set to 'localhost'"
 msgstr "Vertsnavnet til skriveren er udefinert, setter det lik 'localhost'"
@@ -452,19 +458,19 @@ msgstr "Utskriftssystemet er ukjent, args=%s"
 msgid ""
 "Printer %s not registered in the PyKota system, applying external policy (%"
 "s) for printer %s"
-msgstr ""
+msgstr "Skriver %s er ikke registret i Pykotasystemet, bruker ekstern regel (%s) på skriver %s"
 
 #, python-format
 msgid ""
 "User %s not registered in the PyKota system, applying external policy (%s) "
 "for printer %s"
-msgstr ""
+msgstr "Bruker %s er ikke registret i Pykotasystemet, bruker ekstern regel (%s) på skriver %s"
 
 #, python-format
 msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "external policy (%s) for printer %s"
-msgstr ""
+msgstr "Bruker %s har ingen kvote på skriver %s i Pykotasystemet, bruker ekstern regel (%s) på skriver %s"
 
 #, python-format
 msgid ""
@@ -474,39 +480,39 @@ msgstr ""
 
 #, python-format
 msgid "Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
+msgstr "Skriveren %s er ikke registrert i Pykotasystemet, bruker standard regel (%s)"
 
 #, python-format
 msgid ""
 "User %s not registered in the PyKota system, applying default policy (%s) "
 "for printer %s"
-msgstr ""
+msgstr "Bruker %s er ikke registrert i PyKota systemet, bruker standard regel (%s) for skriver %s"
 
 #, python-format
 msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "default policy (%s)"
-msgstr ""
+msgstr "Bruker %s har ingen kvote på skriver %s i PyKota systemet, bruker standard regel (%s)"
 
 #, python-format
 msgid "Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr ""
+msgstr "Skriver %s er fremdeles ikke registrert i Pykotasystemet, utskriften vil derfor bli nektet"
 
 #, python-format
 msgid ""
 "User %s still not registered in the PyKota system, job will be rejected on "
 "printer %s"
-msgstr ""
+msgstr "Bruker %s er fremdeles ikke registrert i Pykotasystemet, utskriften vil derfor bli nektet på skriver %s"
 
 #, python-format
 msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
-msgstr ""
+msgstr "Bruker %s har fremdeles ikke en kvote på skriver %s i Pykotasystemet, utskriften vil derfor bli nektet"
 
 #, python-format
 msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr ""
+msgstr "Feil på nettverket mens SNMP spørring ble utført på skriver %s : %s"
 
 #, python-format
 msgid "SNMP message decoding error for printer %s : %s"
@@ -514,7 +520,7 @@ msgstr ""
 
 #, python-format
 msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr ""
+msgstr "En feil oppstod mens en SNMP spørring ble utført på skriver %s : %s"
 
 #, python-format
 msgid "Waiting for printer %s to be printing..."
@@ -522,7 +528,7 @@ msgstr "Venter på at skriver %s skal begynne å skrive ..."
 
 #, python-format
 msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr ""
+msgstr "Venter på at skriver %s sin hvilestatus skal stabilisere seg ..."
 
 #, python-format
 msgid "Problem during connection to %s:%s : %s"
@@ -548,11 +554,11 @@ msgstr ""
 
 #, python-format
 msgid "Job's size forced to 1 page for printer %s."
-msgstr ""
+msgstr "Utskriftstørrelsen ble satt til 1 side for skriver %s."
 
 #, python-format
 msgid "No previous job in database for printer %s."
-msgstr "Ingen tidligere utskriftsjobb er registrert i databasen for skriver %s."
+msgstr "Ingen tidligere utskrift er registrert i databasen for skriver %s."
 
 #, python-format
 msgid "Inconsistent values for printer %s's internal page counter."
@@ -573,7 +579,7 @@ msgstr "Starter HARDWARE(%s) ..."
 
 #, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr ""
+msgstr "SIGTERM ble sendt til hardware bokholders %s (pid: %s)"
 
 #, python-format
 msgid "Line [%s] skipped in accounter's output. Trying again..."
@@ -581,11 +587,11 @@ msgstr ""
 
 #, python-format
 msgid "Hardware accounter %s exit code is %s"
-msgstr ""
+msgstr "Hardware telleren %s avsluttet med kode %s"
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr ""
+msgstr "Klarte ikke å spørre skriver %s via HARDWARE(%s)"
 
 #, python-format
 msgid ""
@@ -605,7 +611,7 @@ msgstr "Starter SOFTWARE(%s) ..."
 
 #, python-format
 msgid "Unable to compute job size with accounter %s"
-msgstr ""
+msgstr "Klarte ikke å beregne utskriftstørrelse med bokholder %s"
 
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
@@ -616,7 +622,7 @@ msgid "Software accounter %s exit code is %s"
 msgstr ""
 
 msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr ""
+msgstr "Totalen kan være feil hvis en bruker er medlem av flere grupper."
 
 #, python-format
 msgid ""
@@ -626,7 +632,7 @@ msgstr ""
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr ""
+msgstr "Søk etter %s(%s) fra %s(scope=%s) returnerte ikke et svar."
 
 #, python-format
 msgid "Problem adding LDAP entry (%s, %s)"
@@ -743,28 +749,28 @@ msgid "Banner generator %s exit code is %s"
 msgstr ""
 
 msgid "Job contains no data. Printing is denied."
-msgstr "Utskriftsjobben inneholdt ingen data. Ingen utskrift utført."
+msgstr "Utskriften inneholdt ingen data. Ingen utskrift utført."
 
 msgid "Job is a duplicate. Printing is denied."
-msgstr ""
+msgstr "Utskriften er en duplikat. Utskriften blir ikke skrevet."
 
 msgid "Banner won't be printed : maximum number of deny banners reached."
-msgstr ""
+msgstr "Utskriftsbanner vil ikke bli skrevet : det maksimale antall utskriftsbannere som nektes er nådd."
 
 msgid "Job accounting begins."
-msgstr "Telling av utskriftsjobber begynner."
+msgstr "Telling av utskrifter begynner."
 
 msgid "Job accounting ends."
-msgstr "Telling av utskriftsjobber avsluttes."
+msgstr "Telling av utskrifter avsluttes."
 
 msgid "Job size forced to 0 because printing is denied."
 msgstr ""
-"Størrelsen på utskriftsjobben ble satt til 0 fordi du har ikke tillatelse "
+"Størrelsen på utskriften ble satt til 0 fordi du har ikke tillatelse "
 "til å skrive ut."
 
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
-msgstr "Advarsel : beregnet jobbstørrelse (%s) != forberegnet jobbstørrelse (%s)"
+msgstr "Advarsel : beregnet utskriftstørrelse (%s) != forberegnet utskriftstørrelse (%s)"
 
 msgid "The job size will be trusted anyway according to the 'trustjobsize' directive"
 msgstr ""
@@ -777,18 +783,18 @@ msgstr ""
 
 #, python-format
 msgid "The job size will be modified according to the 'trustjobsize' directive : %s"
-msgstr ""
+msgstr "Størrelsen på utskriften vil bli endret, i samsvar med 'trustjobsize' regelen : %s"
 
 #, python-format
 msgid "Job size : %i"
-msgstr "Størrelse på utskriftsjobben : %i"
+msgstr "Størrelse på utskriften : %i"
 
 #, python-format
 msgid "Updating user %s's quota on printer %s"
 msgstr "Oppdaterer brukeren %s sin kvote på skriveren %s"
 
 msgid "Job added to history."
-msgstr "Utskriftsjobben er bokført."
+msgstr "Utskriften er bokført."
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
@@ -1139,7 +1145,7 @@ msgstr "Hardgrensen %i er mindre enn mykgrensen %i, verdiene vil bli utbyttet."
 
 #, python-format
 msgid "Invalid overcharge value %s"
-msgstr ""
+msgstr "Ugyldig overcharge verdi %s"
 
 #, python-format
 msgid "Invalid balance value %s"
@@ -1222,7 +1228,7 @@ msgid "Hardware accounting already done in first pass. Ignoring."
 msgstr "Maskinvare basert bokføring ble utført i første omgang. Ignorerer."
 
 msgid "Job size and price now set in history."
-msgstr "Jobbstørrelse og pris er bokført."
+msgstr "Utskriftstørrelse og pris er bokført."
 
 #, python-format
 msgid ""
@@ -1495,7 +1501,7 @@ msgid "Username"
 msgstr "Brukernavn"
 
 msgid "Job"
-msgstr "Jobb"
+msgstr "Utskrift"
 
 msgid "Allowed"
 msgstr "Tillat"
@@ -1514,7 +1520,7 @@ msgid "Pages printed so far on %s"
 msgstr "Antall sider skrevet ut hittil på %s"
 
 msgid "Account balance"
-msgstr ""
+msgstr "Konto oversikt"
 
 msgid "Soft Limit"
 msgstr "Mykgrense"
@@ -1712,6 +1718,61 @@ msgid ""
 "\n"
 "Please e-mail bugs to: %s"
 msgstr ""
+"pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Epost gateway for PyKota.\n"
+"\n"
+"kommandolinje bruk :\n"
+"\n"
+"  pkmail  [opsjoner]\n"
+"\n"
+"opsjoner :\n"
+"\n"
+"  -v | --version       Viser pkmail's versjon nummer.\n"
+"  -h | --help          Viser denne meldingen.\n"
+"  \n"
+"    \n"
+"  Denne kommandoen er ment brukt fra din epostservers aliasfil,\n"
+"  som en pipe. Den vil da akseptere kommandoer sendt til den i epost,\n"
+"  og vil sende et svar til avsenderen.\n"
+"  \n"
+"  For å bruke denne kommandoen, lag en epostalias i /etc/aliases med\n"
+"  følgende format :\n"
+"  \n"
+"    pykotacmd: \"|/usr/bin/pkmail\"\n"
+"    \n"
+"  Utfør deretter kommandoen 'newaliases' for å gjenoppfriske alias databasen.\n"
+"  \n"
+"  Du kan nå sende kommandoer i epost til 'pykotacmd@yourdomain.com', med\n"
+"  kommandoen i Emne-feltet.\n"
+"  \n"
+"  Liste med støttede kommandoer :\n"
+"  \n"
+"        report [brukernavn]\n"
+"  \n"
+"  NB : For at plmail skal fungere korrect, så må du muligens legge til 'mail'\n"
+"  system brukeren til 'lpadmin' systemgruppa slik at brukeren kan\n"
+"  lese fila /etc/pykota/pykotadmin.conf, og kunne restarte din\n"
+"  epostserver (f.eks /etc/init.d/exim restart). Det anbefales på det sterkeste\n"
+"  at du tenker deg om minst to ganger før du gjør dette.\n"
+"  \n"
+"  Brukes på eget ansvar !\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
 
 #, python-format
 msgid ""
@@ -1836,8 +1897,8 @@ msgstr ""
 "  \n"
 "  -D | --description d Legger til en beskrivelse av skriverene.\n"
 "                       \n"
-"  -c | --charge p[,j]  Setter prisen for side og utskriftsjobb til charge.\n"
-"                       Pris på utskriftsjobb er frivillig.\n"
+"  -c | --charge p[,j]  Setter prisen for side og utskrift til charge.\n"
+"                       Pris på utskrift er frivillig.\n"
 "                       Hvis begge brukes, så separer dem med et komma.\n"
 "                       Desimaltall og negative verdider er tillat.\n"
 "  \n"
@@ -1882,7 +1943,7 @@ msgstr ""
 "  \n"
 "  Dette vil opprette tre skrivere med navn hp2100, hp2200 og hp8000.\n"
 "  Prisen per side vilo bli satt lik 0.05 enheter, og prisen per\n"
-"  utskriftsjobb vil bli satt lik 0.1 enhet. Enheter kan være kroner og øre,\n"
+"  utskrifts vil bli satt lik 0.1 enhet. Enheter kan være kroner og øre,\n"
 "  eller noe helt annet hvis du ønsker det.\n"
 "  Alle deres beskrivelser settes lik med strengen \"HP Printer\".\n"
 "  Hvis noen av disse allerede finnes så vil de bli endret,\n"
@@ -2078,7 +2139,6 @@ msgid "PyKota Units left : %.2f"
 msgstr "Pykota enheter igjen : %.2f"
 
 #, python-format
-#, fuzzy
 msgid ""
 "pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
 "\n"
@@ -2150,33 +2210,32 @@ msgstr ""
 "  -v | --version       Viser pykotme's versjons nummer.\n"
 "  -h | --help          Viser denne meldingen.\n"
 "  \n"
-"  -P | --printer p     Gives a quote for this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
+"  -P | --printer p     Setter kvoter på kun denne skriveren. Opsjonen p kan\n"
+"                       bruker jokertegn for å velge kun noen skrivere.\n"
+"                       Standard verdi er *, som betyr\n"
+"                       alle skrivere.\n"
+"                       Du kan oppgi flere skrivernavn eller jokertegn ved å\n"
+"                       skille dem med komma.\n"
 "  \n"
-"examples :                              \n"
+"eksempler :                              \n"
 "\n"
 "  $ pykotme --printer apple file1.ps file2.ps\n"
 "  \n"
-"  This will give a print quote to the current user. The quote will show\n"
-"  the price and size of a job consisting in file1.ps and file2.ps \n"
-"  which would be sent to the apple printer.\n"
+"  Dette vil sette en utskriftskvote for brukeren. Utskriftskvoten vil \n"
+"  vise prisen og størrelsen på en utskrift som består av filene file1.ps og file2.ps \n"
+"  som skal skrives ut på skriver apple.\n"
 "  \n"
 "  $ pykotme --printer apple,hplaser <file1.ps\n"
 "  \n"
-"  This will give a print quote to the current user. The quote will show\n"
-"  the price and size of a job consisting in file1.ps as read from\n"
-"  standard input, which would be sent to the apple or hplaser\n"
-"  printer.\n"
-"\n"
+"  Dette vil sette en utskriftskvote for brukeren. Utskriftskvoten vil \n"
+"  vise prisen og størrelsen på en utskrift som består av filen file1.ps\n"
+"  som skal skrives ut på skriver apple eller hplaser.\n"
+"  \n"
 "  $ pykotme \n"
 "  \n"
-"  This will give a quote for a job consisting of what is on standard \n"
-"  input. The quote will list the job size, and the price the job\n"
-"  would cost on each printer.\n"
+"  Dette vil sette en utskriftskvote for utskrift som ligger på\n"
+"  standard inout. Utskriftskvoten vil vise størrelsen og prisen på\n"
+"  utskriften på hver skriver.\n"
 "\n"
 "This program is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -2200,7 +2259,7 @@ msgstr "Din utskriftskvote balanse : %.2f"
 
 #, python-format
 msgid "Job size : %i pages"
-msgstr "Størrelse på utskriftsjobben : %i sider"
+msgstr "Størrelse på utskriften : %i sider"
 
 #, python-format
 msgid "Cost on printer %s : %.2f"
