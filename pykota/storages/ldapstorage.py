@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.65  2004/05/27 12:52:12  jalet
+# More useful error message in case of misconfiguration of an LDAP  search base
+# in pykota.conf
+#
 # Revision 1.64  2004/05/26 14:50:01  jalet
 # First try at saving the job-originating-hostname in the database
 #
@@ -333,6 +337,8 @@ class Storage(BaseStorage) :
             else :
                 self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
                 result = self.database.search_s(base, scope, key, fields)
+        except ldap.NO_SUCH_OBJECT, msg :        
+            raise PyKotaStorageError, (_("Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s") % (base, msg))
         except ldap.LDAPError, msg :    
             raise PyKotaStorageError, (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
         else :     
