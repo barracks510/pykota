@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/05/24 11:59:49  jalet
+# More robust (?) code
+#
 # Revision 1.6  2004/05/07 14:43:44  jalet
 # Now logs the PID too
 #
@@ -51,5 +54,12 @@ class Logger :
     """A logger class which logs to stderr."""
     def log_message(self, message, level="info") :
         """Sends the message to the appropriate logging subsystem."""
-        sys.stderr.write("%s: PyKota (PID %s) : %s\n" % (level.upper(), os.getpid(), message.strip()))
-        sys.stderr.flush()
+        try :
+            sys.stderr.write("%s: PyKota (PID %s) : %s\n" % (level.upper(), os.getpid(), message.strip()))
+        except IOError :    
+            pass # What else could we do ?
+        else :    
+            try :
+                sys.stderr.flush()
+            except IOError :    
+                pass # What else could we do ?

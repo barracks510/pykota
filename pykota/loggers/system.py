@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/05/24 11:59:51  jalet
+# More robust (?) code
+#
 # Revision 1.10  2004/05/07 14:43:46  jalet
 # Now logs the PID too
 #
@@ -73,4 +76,7 @@ class Logger :
     def log_message(self, message, level="info") :
         """Sends the message to syslog."""
         priority = getattr(syslog, "LOG_%s" % self.levels.get(level.lower(), "DEBUG").upper(), syslog.LOG_DEBUG)
-        syslog.syslog(priority, "(PID %s) : %s" % (os.getpid(), message.strip()))
+        try :
+            syslog.syslog(priority, "(PID %s) : %s" % (os.getpid(), message.strip()))
+        except :    
+            pass # What else could we do ?
