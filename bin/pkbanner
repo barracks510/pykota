@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/11/11 14:25:48  jalet
+# Added some TODO comments
+#
 # Revision 1.1  2004/11/10 22:48:47  jalet
 # Banner generator's skeleton added
 #
@@ -37,4 +40,7 @@ def getInfo(name) :
     return os.environ.get(name, _("Unknown"))
 
 if __name__ == "__main__" :
+    # TODO : --pagesize, --supporturl, extract admin's email address from pykota.conf
+    # TODO : --logourl and/or --logofile : to put a nice logo on the banner page
+    # TODO : --papertray : to print banners on a different paper (colored for example)
     pass
