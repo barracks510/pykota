@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2003/11/25 22:03:28  jalet
+# No more message on stderr when the translation is not available.
+#
 # Revision 1.60  2003/11/25 21:54:05  jalet
 # updated FAQ
 #
@@ -269,7 +272,7 @@ class PyKotaTool :
             gettext.install("pykota")
         except (locale.Error, IOError) :
             gettext.NullTranslations().install()
-            sys.stderr.write("PyKota : Error while loading translations\n")
+            # sys.stderr.write("PyKota : Error while loading translations\n")
     
         # pykota specific stuff
         self.documentation = doc
