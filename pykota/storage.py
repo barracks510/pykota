@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.66  2004/12/02 21:24:50  jalet
+# Integrated the patch by Wilson Roberto Afonso and Matt Hyclak to allow
+# edpykota to accept the -U | --used value command line option.
+#
 # Revision 1.65  2004/10/25 14:12:25  jalet
 # For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
 # to hide print jobs' title, filename, and options.
@@ -438,6 +442,17 @@ class StorageUserPQuota(StorageObject) :
         self.HardLimit = hardlimit
         self.DateLimit = None
         
+    def setUsage(self, used) :
+        """Sets the PageCounter and LifePageCounter to used, or if used is + or - prefixed, changes the values of {Life,}PageCounter by that amount."""
+        vused = int(used)
+        if used.startswith("+") or used.startswith("-") :
+           self.parent.increaseUserPQuotaPagesCounters(self, vused)
+           self.PageCounter += vused
+           self.LifePageCounter += vused
+        else :
+           self.parent.writeUserPQuotaPagesCounters(self, vused, vused)
+           self.PageCounter = self.LifePageCounter = vused
+
     def reset(self) :    
         """Resets page counter to 0."""
         self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))

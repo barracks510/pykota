@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha11 :
+    
+        - edpkota now accepts the -U | --used value command line argument
+          to preset the page counters to an initial value. Thanks to
+          Wilson Roberto Afonso and Matt Hyclak for the patch.
+          
     - 1.21alpha10 :
     
         - Now automatically reconnects up to three times if the LDAP server

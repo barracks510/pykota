@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.83  2004/12/02 21:24:50  jalet
+# Integrated the patch by Wilson Roberto Afonso and Matt Hyclak to allow
+# edpykota to accept the -U | --used value command line option.
+#
 # Revision 1.82  2004/11/22 21:53:38  jalet
 # Added the reject_unknown directive to pykota.conf to reject user/group
 # creation if user or group is unknown to the system
@@ -361,7 +365,7 @@ options :
                        
   -R | --hardreset     Resets the actual and life time page counters
                        for the user or group to zero on the specified 
-                       printers. 
+                       printers. This is a shortcut for '--used 0'.
                        
   -l | --limitby l     Choose if the user/group is limited in printing                     
                        by its account balance or by its page quota.
@@ -383,7 +387,17 @@ options :
   -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
   
   -H | --hardlimit hl  Sets the quota hard limit to hl pages.
-  
+
+  -U | --used usage    Sets the pagecounters for the user to usage pages;
+                       useful for migrating users from a different system
+                       where they have already used some pages. Actual
+                       and Life Time page counters may be increased or decreased
+                       if usage is prefixed with + or -.
+                       WARNING : BOTH page counters are modified in all cases,
+                       so be careful.
+                       NB : if 'usage' equals '0', then the action taken is
+                       the same as if --hardreset was used.
+
   user1 through userN and group1 through groupN can use wildcards
   if the --add option is not set.
   
@@ -481,7 +495,16 @@ class EdPyKota(PyKotaTool) :
         
         suffix = (options["groups"] and "Group") or "User"        
         
-        softlimit = hardlimit = None    
+        softlimit = hardlimit = None
+
+        used = options["used"]
+        if used :
+            used = used.strip()
+            try :
+                int(used)
+            except ValueError :
+                raise PyKotaToolError, _("Invalid used value %s.") % used
+
         if not options["noquota"] :
             if options["softlimit"] :
                 try :
@@ -667,8 +690,10 @@ class EdPyKota(PyKotaTool) :
                     if not options["groups"] :
                         if options["reset"] :
                             entrypquota.reset()
-                        elif options["hardreset"] :    
+                        if options["hardreset"] :    
                             entrypquota.hardreset()
+                        if options["used"] :
+                            entrypquota.setUsage(used)
                             
                         if balance :
                             if changed[entry.Name].get("balance") is None :
@@ -691,11 +716,6 @@ class EdPyKota(PyKotaTool) :
                                     changed[entry.Name]["ingroups"].append(groupname)
                                 else :
                                     self.printInfo(_("Group %s not found in the PyKota Storage.") % groupname)
-                                    
-                    # This line disabled to prevent sending of unwanted email                 
-                    # messages if quota is reached at creation/modification time.
-                    # The check will be done at print time anyway.
-                    # getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
                         
         # Now delete what has to be deleted                
         for (name, entry) in todelete.items() :                
@@ -707,8 +727,8 @@ if __name__ == "__main__" :
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhdc:l:b:i:naugrp:P:S:H:G:R"
-        long_options = ["help", "version", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "hardreset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups="]
+        short_options = "vhdc:l:b:i:naugrp:P:S:H:G:RU:"
+        long_options = ["help", "version", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "hardreset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups=", "used="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -735,6 +755,7 @@ if __name__ == "__main__" :
         options["charge"] = options["c"] or options["charge"]
         options["pgroups"] = options["G"] or options["pgroups"]
         options["hardreset"] = options["R"] or options["hardreset"] 
+        options["used"] = options["U"] or options["used"]
         
         if options["help"] :
             editor.display_usage_and_quit()
@@ -748,7 +769,7 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif options["groups"] and (options["balance"] or options["ingroups"]) :
+        elif options["groups"] and (options["balance"] or options["ingroups"] or options["used"] or options["reset"] or options["hardreset"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = editor.main(args, options)
