@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2004/09/22 19:48:01  jalet
+# Logs the looping message as debug instead of as info
+#
 # Revision 1.21  2004/09/22 19:27:41  jalet
 # Bad import statement
 #
@@ -174,7 +177,8 @@ else :
                 statusAsString = printerStatusValues.get(self.printerStatus)
                 if statusAsString in ('idle', 'printing') :
                     break
-                self.parent.filter.printInfo(_("Waiting for printer to be idle or printing..."))    
+                # In reality, and if I'm not mistaken, we will NEVER get there.    
+                self.parent.filter.logdebug(_("Waiting for printer to be idle or printing..."))    
                 time.sleep(SNMPDELAY)
             
         def waitIdle(self) :
@@ -193,7 +197,7 @@ else :
                         break
                 else :    
                     idle_num = 0
-                self.parent.filter.printInfo(_("Waiting for printer's idle status to stabilize..."))    
+                self.parent.filter.logdebug(_("Waiting for printer's idle status to stabilize..."))    
                 time.sleep(SNMPDELAY)
     
 class Accounter(AccounterBase) :
