@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/04/18 08:34:51  jalet
+# Minor fix.
+#
 # Revision 1.29  2003/04/18 08:29:30  jalet
 # Minor bug fix
 #
@@ -242,8 +245,10 @@ class RePyKota(PyKotaTool) :
                 reached = (((balance <= 0) and "+") or "-") + "B"
             else :
                 reached = (((softlimit is not None) and (pagecounter >= softlimit) and "+") or "-") + "Q"
-            strbalance = ("%5.2f" % (balance or 0.0))[:10]
-            strlifetimepaid = ("%6.2f" % (lifetimepaid or 0.0))[:10]
+            balance = balance or 0.0    
+            lifetimepaid = lifetimepaid or 0.0
+            strbalance = ("%5.2f" % balance)[:10]
+            strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
             print "%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, str(softlimit), str(hardlimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
             return (lifepagecounter, lifetimepaid)
         
