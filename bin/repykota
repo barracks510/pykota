@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/02/27 09:04:02  jalet
+# Missing translation
+#
 # Revision 1.13  2003/02/27 08:44:01  jalet
 # Check to see if the printer was ever used at all, and displays "unknown"
 # as the pagecounter value in this casCheck to see if the printer was ever used at all, and displays "unknown"
@@ -141,7 +144,7 @@ class RePyKota(PyKotaTool) :
             if total :        
                 print (" " * 43) + (_("Total : %9i") % total)
             if printerpagecounter is None :    
-                msg = "unknown"
+                msg = _("unknown")
             else :
                 msg = "%9i" % printerpagecounter
             print (" " * 44) + (_("Real : %s") % msg)
