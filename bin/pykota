@@ -16,6 +16,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/03/07 22:16:57  jalet
+# Algorithmically incorrect : last user quota wasn't updated if current
+# user wasn't allowed to print.
+#
 # Revision 1.13  2003/02/27 23:59:28  jalet
 # Stupid bug wrt exception handlingand value conversion
 #
@@ -147,24 +151,28 @@ def main() :
             
         # Update the last page counter and last username in the Quota Storage backend
         # set them to current user and 
-        kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob) # TODO : allow or deny users not in quota system, and die cleanly if needed
+        kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob)
         
-        # Is the current user allowed to print at all ?
-        action = kotafilter.warnUserPQuota(username)
-        if action == "DENY" :
-            # No, just die cleanly
-            return 1
-            
-        # Yes     
+        # Was the printer ever used ?
         if (lastpagecounter is None) or (lastusername is None) :
             lastusername = username
             lastpagecounter = counterbeforejob
+            
+        # Update the quota for the previous user on this printer according 
+        # to the job size (difference between actual counter and latest one from storage)
         jobsize = (counterbeforejob - lastpagecounter)    
-        if jobsize >= 0:
+        if jobsize >= 0 :
             kotafilter.storage.updateUserPQuota(lastusername, kotafilter.printername, jobsize)
             kotafilter.warnUserPQuota(lastusername)
         else :    
             kotafilter.logger.log_message(_("Error in page count value %i for user %s on printer %s") % (jobsize, kotafilter.printername, lastusername), "error")
+            
+        # Is the current user allowed to print at all ?
+        # if no then die, else proceed.
+        action = kotafilter.warnUserPQuota(username)
+        if action == "DENY" :
+            # No, just die cleanly
+            return 1
         
     # pass the job untouched to the underlying layer
     kotafilter.filterInput(inputfile)      
