@@ -23,6 +23,14 @@
 # $Id$
 #
 # $Log$
+# Revision 1.73  2004/10/13 16:56:45  jalet
+# Added a space to the pattern to differentiate jobs which id begins with
+# the same digits, like jobs 87 and 879 for example : if printed by same
+# user on same printer, but from a different host this could have broken
+# the result. (In reality this couldn't happen because 879 would be the
+# last line to match anyway because of job ordering, but we never know
+# if the page_log file gets corrupt somewhat)
+#
 # Revision 1.72  2004/09/13 16:02:44  jalet
 # Added fix for incorrect job's size when hardware accounting fails
 #
@@ -353,7 +361,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         else :    
             # TODO : read backward so we could take first value seen
             # TODO : here we read forward so we must take the last value seen
-            prefix = ("%s %s %s" % (printername, username, jobid)).lower()
+            prefix = ("%s %s %s " % (printername, username, jobid)).lower()
             matchingline = None
             while 1 :
                 line = pagelog.readline()
