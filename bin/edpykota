@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/08 09:38:06  jalet
+# Badly placed test
+#
 # Revision 1.8  2003/02/07 22:53:57  jalet
 # Checks if printer name is valid before adding it
 #
@@ -173,14 +176,14 @@ class EdPyKota(PyKotaTool) :
                     continue    # skip this printer
                 else :    
                     (softlimit, hardlimit) = (prototype["softlimit"], prototype["hardlimit"])
-            if (hardlimit is None) or (softlimit is None) :        
-                raise PyKotaToolError, "Both hard and soft limits must be set !  Aborting."
             if hardlimit is None :    
                 hardlimit = softlimit
                 self.logger.message("Undefined hard limit set to %i on printer %s." % (hardlimit, printer))
             if softlimit is None :    
                 softlimit = hardlimit
                 self.logger.message("Undefined soft limit set to %i on printer %s." % (softlimit, printer))
+            if (hardlimit is None) or (softlimit is None) :        
+                raise PyKotaToolError, "Both hard and soft limits must be set !  Aborting."
             for name in names :
                 if options["users"] :
                     quota = self.storage.getUserPQuota(name, printer)
