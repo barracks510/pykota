@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/02/07 10:42:45  jalet
+# Indentation problem
+#
 # Revision 1.13  2003/02/07 08:34:16  jalet
 # Test wrt date limit was wrong
 #
@@ -200,17 +203,17 @@ class PyKotaTool :
                 if pagecounter < softlimit :
                     action = "ALLOW"
                 elif hardlimit is not None :
-                     if softlimit <= pagecounter < hardlimit :    
-                         now = DateTime.now()
-                         if datelimit is None :
-                             datelimit = now + self.config.getGraceDelay()
-                             self.storage.setDateLimit(username, printername, datelimit)
-                         if now < datelimit :
-                             action = "WARN"
-                         else :    
-                             action = "DENY"
-                     else :         
-                         action = "DENY"
+                    if softlimit <= pagecounter < hardlimit :    
+                        now = DateTime.now()
+                        if datelimit is None :
+                            datelimit = now + self.config.getGraceDelay()
+                            self.storage.setDateLimit(username, printername, datelimit)
+                        if now < datelimit :
+                            action = "WARN"
+                        else :    
+                            action = "DENY"
+                    else :         
+                        action = "DENY"
                 else :        
                     action = "DENY"
             else :        
