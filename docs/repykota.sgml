@@ -1,8 +1,8 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title>Print Quota usage reports</title>
-  <subtitle><application>repykota</application></subtitle>
+  <title id="repykota">Create print quota usage reports with repykota</title>
+  <para>Last modified on $Date$</para>
   
   <para>
     To account for print usage is good, however there must be a way to easily
@@ -34,6 +34,9 @@
 <!--
 
 $Log$
+Revision 1.3  2003/03/25 09:32:06  jalet
+Improved documentation.
+
 Revision 1.2  2003/03/08 22:22:40  jalet
 First bit of documentation
 

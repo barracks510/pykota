@@ -1,15 +1,59 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title>TODO : Title here</title>
+  <title id="filter">The pykota filter</title>
+  
+  <para>Last modified on $Date$</para>
+  
   <para>
-    TODO : blah
+    To account for pages or eventually ink usage, you must plug your accounting
+    system into <application>CUPS</application>. One way to do this without having
+    to modify <application>CUPS</application> itself, is by using a <firstterm>filter</firstterm>.
   </para>
+  
+  <para>
+    A filter is a computer program which takes data in one format as its input, and outputs the
+    same data but transformed into another format. <application>CUPS</application> already
+    contains many filters. For example there's one filter named <application>pstops</application> which accepts 
+    PostScript data as its input, and, as its name implies, outputs PostScript data too, but after having
+    eventually rearranged the pages to fit several pages on a single sheet of paper, or other manipulations
+    like that.
+  </para>
+  
+  <para>
+    The <application>pstops</application> filter described above is also in charge of doing basic page
+    accounting, but <application>PyKota</application> currently doesn't use this facility since it may
+    prove to be unreliable depending on the drivers used or if a paper jam occur for example.
+  </para>
+  
+  <para>
+    So to do its own accounting, <application>PyKota</application> has its own filter, named <application>pykota</application>,
+    which you have to plug into the different set of filters used by <application>CUPS</application>. The procedure to 
+    install the <application>pykota</application> filter is described in the 
+    <xref linkend="installation" endterm="installation"> chapter.
+  </para>
+  
+  <para>
+    Currently the <application>pykota</application> filter is used at the very last stage of the print mechanism,
+    just before the final data is sent to the printer, but it may eventually be used earlier with some
+    modifications to <application>CUPS</application>'s filtering configuration. This is not tested yet, but this
+    may be the solution to use <application>PyKota</application> with printers which really needs to have
+    a <literal>*cupsFilter</literal> line in their <acronym>PPD</acronym> file, i.e. non-postscript printers.
+  </para>
+  
+  <para>
+    The <application>pykota</application> filter really is the only thing which depends on <application>CUPS</application>,
+    so it is probable that a next version of <application>PyKota</application> will support other printing environments.
+  </para>
+  
 </chapter>
 
 <!--
 
 $Log$
+Revision 1.2  2003/03/25 09:32:06  jalet
+Improved documentation.
+
 Revision 1.1  2003/02/08 00:03:35  jalet
 Documentation skeleton added
 
