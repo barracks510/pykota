@@ -15,6 +15,15 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 PyKota NEWS :
 
+    - 0.99 :
+    
+        - Under some circumstances while the user wasn't allowed
+          to print, he didn't receive any email message. It is
+          now fixed.
+          
+        - When an user wasn't allowed to print, the quota for
+          the previous user wasn't updated.
+          
     - 0.98 :
     
         - Correctly handle the case where the printer is switched off.
