@@ -5,9 +5,9 @@ pkmail \- page de manuel de pkmail 1.21beta_unofficial
 .SH DESCRIPTION
 pkmail v1.21beta_unofficial (c) 2003, 2004, 2005 C@LL \- Conseil Internet & Logiciels Libres
 .PP
-Email gateway for PyKota.
+Passerelle courrier électronique pour PyKota.
 .PP
-command line usage :
+ligne de commande :
 .TP
 pkmail
 [options]
@@ -15,36 +15,39 @@ pkmail
 options :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pkmail's version number then exits.
+Affiche la version de pkmail et quitte.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Affiche ce message et quitte.
 .IP
-This command is meant to be used from your mail server's aliases file,
-as a pipe. It will then accept commands send to it in email messages,
-and will send the answer to the command's originator.
+Cette commande est faite pour être utilisée depuis la base de données
+d'alias de votre serveur de courrier électronique, en tant que pipe.
+Elle va accepter les commandes qui lui sont envoyées dans des messages
+et renverra sa réponse à l'expéditeur de la demande.
 .IP
-To use this command, create an email alias in /etc/aliases with
-the following format :
+Pour utiliser cette commande, créez un alias email dans /etc/aliases
+avec le format suivant :
 .IP
 pykotacmd: "|/usr/bin/pkmail"
 .IP
-Then run the 'newaliases' command to regenerate the aliases database.
+Puis lancez la commande 'newaliases' pour régénérer la base de données
+d'alias.
 .IP
-You can now send commands by email to 'pykotacmd@yourdomain.com', with
-the command in the subject.
+Vous pouvez maintenant envoyer vos demandes par email à l'adresse
+\&'pykotacmd@yourdomain.com', avec la commande dans le champ sujet.
 .IP
-List of supported commands :
+Liste des commandes supportées :
 .IP
-report [username]
+report [utilisateur]
 .IP
-NB : For pkmail to work correctly, you may have to put the 'mail'
-system user in the 'pykota' system group to ensure this user can
-read the /etc/pykota/pykotadmin.conf file, and restart your
-mail server (e.g. /etc/init.d/exim restart). It is strongly advised
-that you think at least twice before doing this though.
+NB : Pour que pkmail fonctionne correctement, il se peut que vous ayez à
+mettre l'utilisateur 'mail' dans le groupe système 'pykota' afin d'assurer
+que cet utilisateur puisse lire le fichier /etc/pykota/pykotadmin.conf,
+et de relancer votre serveur de courrier électronique (par exemple
+/etc/init.d/exim restart). Cependant, il est fortement conseillé que vous
+réfléchissiez plutôt deux fois qu'une avant de faire ceci.
 .IP
-Use at your own risk !
+Utilisez à vos risques et périls !
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,4 +63,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111\-1307, USA.
 .PP
-Please e\-mail bugs to: Jerome Alet \- alet@librelogiciel.com
+Merci d'envoyer les rapports de bugs à: Jerome Alet \- alet@librelogiciel.com
