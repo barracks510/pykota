@@ -78,6 +78,12 @@ smtpserver: localhost
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
 # if not set it defaults to 'querying'.
+#
+# A script which seems to be accurate, copy it from the
+# untested/postscript directory to another place.
+# accounter: external(/usr/local/bin/pagecount.sh)
+#
+# default value 
 accounter: querying
 
 # Print Quota administrator
