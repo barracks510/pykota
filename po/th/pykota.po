@@ -12,7 +12,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
@@ -29,10 +29,10 @@ msgstr ""
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-07-21 15:35:00+0100\n"
 "PO-Revision-Date: 2004-07-21 15:35:00+0100\n"
-"Last-Translator: Jerome Alet <alet@librelogiciel.com>\n"
-"Language-Team: English <alet@librelogiciel.com>\n"
+"Last-Translator: Suthep Yonpimai <tomzt@hotmail.com>\n"
+"Language-Team: Thai <tomzt@hotmail.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=TIS-620\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #, python-format
@@ -140,16 +140,13 @@ msgid ""
 "Group           used    soft    hard    balance grace         total       "
 "paid"
 msgstr ""
-"กลุ่ม           ใช้ไป    soft    hard    ยอดเงิน grace         รวม       "
-"ชำระ"
+"กลุ่ม           ใช้ไป    soft    hard    ยอดเงิน grace         รวม       ชำระ"
 
 msgid ""
 "User            used    soft    hard    balance grace         total       "
 "paid"
 msgstr ""
-"ผู้ใช้            ใช้ไป    soft    hard    ยอดเงิน grace         รวม       
-"
-"ชำระ"
+"ผู้ใช้            ใช้ไป    soft    hard    ยอดเงิน grace         รวม       ชำระ"
 
 msgid "unknown"
 msgstr "ไม่ทราบข้อมูล"
@@ -194,17 +191,13 @@ msgstr ""
 
 #, python-format
 msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr "ไม่พบชื่อผู้ใช้ %s บนเครื่องพิมพ์ %s, ตรวจสอบกฏการใช้งานเบื้องต้น 
-(%s)"
+msgstr "ไม่พบชื่อผู้ใช้ %s บนเครื่องพิมพ์ %s, ตรวจสอบกฏการใช้งานเบื้องต้น (%s)"
 
 #, python-format
 msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for 
-"
+"Unable to find user %s's account balance, applying default policy (%s) for "
 "printer %s"
-msgstr ""
-"ไม่พบยอดเงินของผู้ใช้ %s, ตรวจสอบกฏการใช้งานเบื้องต้น(%s) ของ "
-"เครื่องพิมพ์ %s"
+msgstr "ไม่พบยอดเงินของผู้ใช้ %s, ตรวจสอบกฏการใช้งานเบื้องต้น(%s) ของ เครื่องพิมพ์ %s"
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
@@ -236,8 +229,7 @@ msgid "Printing system %s, args=%s"
 msgstr "ระบบการพิมพ์ %s, args=%s"
 
 #, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : 
-%s"
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
 msgstr "ไม่สามารถทำการคำนวณขนาดของงานได้ด้วย PDL analyzer : %s"
 
 #, python-format
@@ -253,22 +245,18 @@ msgstr "ไม่ทราบระบบการพิมพ์, args=%s"
 
 #, python-format
 msgid ""
-"Printer %s not registered in the PyKota system, applying external policy 
-(%"
+"Printer %s not registered in the PyKota system, applying external policy (%"
 "s) for printer %s"
 msgstr ""
-"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota 
-,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%"
+"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%"
 "s) สำหรับเครื่องพิมพ์ %s"
 
 #, python-format
 msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) 
-"
+"User %s not registered in the PyKota system, applying external policy (%s) "
 "for printer %s"
 msgstr ""
-"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, 
-,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) "
+"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) "
 "สำหรับเครื่องพิมพ์ %s"
 
 #, python-format
@@ -276,34 +264,30 @@ msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "external policy (%s) for printer %s"
 msgstr ""
-"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota, 
-ลงทะเบียนในส่วน"
-"กฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
+"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota, "
+"ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
 
 #, python-format
 msgid ""
 "External policy %s for printer %s produced an error. Job rejected. Please "
 "check PyKota's configuration files."
 msgstr ""
-"กฏการใช้งานภายนอก %s สำหรับเครื่องพิมพ์ %s แจ้งข้อผิดพลาด. ยกเลิกการทำงาน. 
-กรุณา"
-"ตรวจสอบไฟล์คอนฟิกกุเรชั่นของ PyKota"
+"กฏการใช้งานภายนอก %s สำหรับเครื่องพิมพ์ %s แจ้งข้อผิดพลาด. ยกเลิกการทำงาน. "
+"กรุณาตรวจสอบไฟล์คอนฟิกกุเรชั่นของ PyKota"
 
 #, python-format
 msgid ""
-"Printer %s not registered in the PyKota system, applying default policy 
-(%s)"
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
 msgstr ""
-"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, 
-ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s)"
+"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%"
+"s)"
 
 #, python-format
 msgid ""
 "User %s not registered in the PyKota system, applying default policy (%s) "
 "for printer %s"
 msgstr ""
-"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, 
-ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s) "
+"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s) "
 "สำหรับเครื่องพิมพ์ %s"
 
 #, python-format
@@ -311,35 +295,28 @@ msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "default policy (%s)"
 msgstr ""
-"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota , 
-ลงทะเบียน "
+"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota , ลงทะเบียน "
 "ในส่วนกฏการใช้งานเบื้องต้น (%s)"
 
 #, python-format
 msgid ""
 "Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr ""
-"เครื่องพิมพ์ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก"
+msgstr "เครื่องพิมพ์ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก"
 
 #, python-format
 msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on 
-"
+"User %s still not registered in the PyKota system, job will be rejected on "
 "printer %s"
-msgstr ""
-"ผู้ใช้ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก "
-"printer %s"
+msgstr "ผู้ใช้ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก printer %s"
 
 #, python-format
 msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
 msgstr ""
-"ผู้ใช้ %s ยังคงไม่มีโคงต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,"
-"งานที่สั่งจะถูกยกเลิก "
+"ผู้ใช้ %s ยังคงไม่มีโคงต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,งานที่สั่งจะถูกยกเลิก "
 
-msgid "Totals may be inaccurate if some users are members of several 
-groups."
+msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr "จำนวนรวมอาจไม่ถูกต้อง หากผู้ใช้บางท่านเป็นสมาชิกของกลุ่มหลายกลุ่ม."
 
 #, python-format
@@ -383,8 +360,8 @@ msgid ""
 "Search base %s doesn't seem to exist. Probable misconfiguration. Please "
 "double check /etc/pykota/pykota.conf : %s"
 msgstr ""
-"ผลการค้นหา %s ไม่พบ. อาจมีการตั้งค่าไม่ถูกต้อง กรุณา "
-"ตรวสอบ /etc/pykota/pykota.conf : %s อีกครั้ง"
+"ผลการค้นหา %s ไม่พบ. อาจมีการตั้งค่าไม่ถูกต้อง กรุณา ตรวสอบ /etc/pykota/pykota.conf : %"
+"s อีกครั้ง"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
@@ -407,14 +384,12 @@ msgid ""
 "Unable to find an existing objectClass %s entry with %s=%s to attach "
 "pykotaAccount objectClass"
 msgstr ""
-"ไม่สามารถค้นพบออปเจ็กคลาส %s ที่เข้าถึงด้วย %s=%s เพื่อแนบกับ "
-"ระบบสมาชิก Pykota ออปเจ็กคลาส"
+"ไม่สามารถค้นพบออปเจ็กคลาส %s ที่เข้าถึงด้วย %s=%s เพื่อแนบกับ ระบบสมาชิก Pykota "
+"ออปเจ็กคลาส"
 
 #, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass 
-%s"
-msgstr "ไม่สามารถค้นพบสิ่งใดที่เข้าถึงเพื่อเชื่อมต่อกับ pykotaGroup 
-ออปเจ็กคลาส %s"
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr "ไม่สามารถค้นพบสิ่งใดที่เข้าถึงเพื่อเชื่อมต่อกับ pykotaGroup ออปเจ็กคลาส %s"
 
 msgid "PyKota Reports"
 msgstr "รายงาน PyKota"
@@ -563,7 +538,7 @@ msgid "Undefined hard limit set to soft limit (%s) on printer %s."
 msgstr "ไม่ได้ทำการตั้งค่า hard limit ถึง soft limit (%s) บนเครื่องพิมพ์ %s"
 
 #, python-format
-msgid "ไม่ได้ทำการตั้งค่า soft limit ถึง hard limit (%s) บนเครื่องพิมพ์ %s."
+msgid "Undefined soft limit set to hard limit (%s) on printer %s."
 msgstr ""
 
 #, python-format
@@ -583,7 +558,7 @@ msgid "Quota not found for object %s on printer %s."
 msgstr "ไม่พบโควต้าในการพิมพ์สำหรับ %s บนเครื่องพิมพ์ %s"
 
 #, python-format
-msgid "ไมพบกลุ่มผู้ใช้ %s ในหน่วยเก็บข้อมูลของ PyKota"
+msgid "Group %s not found in the PyKota Storage."
 msgstr ""
 
 msgid "incompatible options, see help."
@@ -637,10 +612,8 @@ msgstr ""
 msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
 msgstr "# โปรดระวัง : ถ้าซอฟต์แวร์ระบบสมาชิกมีข้อแนะนำ"
 
-msgid "# that hardware accounting wouldn't work, this only means that 
-PyKota"
-msgstr "# ฮาร์ดแวร์ระบบสมาชิกไม่สามารถทำงานได้, ปัญหานี้อาจเกิดเฉพาะกับ 
-PyKota"
+msgid "# that hardware accounting wouldn't work, this only means that PyKota"
+msgstr "# ฮาร์ดแวร์ระบบสมาชิกไม่สามารถทำงานได้, ปัญหานี้อาจเกิดเฉพาะกับ PyKota"
 
 msgid "# wasn't able to autodetect which hardware accounting method to use."
 msgstr "# ตรวจไม่พบฮาร์ดแวร์ระบบสมาชิกที่สามารถใช้ได้"
@@ -688,5 +661,3 @@ msgstr "ราคาการพิมพ์ของเครื่องพิมพ์ %s : %.2f"
 #, python-format
 msgid "Previous page"
 msgstr "หน้าที่แล้ว"
-
-
