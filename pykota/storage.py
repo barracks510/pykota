@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/07/07 08:33:18  jalet
+# Bug fix due to a typo in LDAP code
+#
 # Revision 1.17  2003/07/05 07:46:50  jalet
 # The previous bug fix was incomplete.
 #
@@ -111,6 +114,7 @@ class StorageUser(StorageObject) :
         self.LimitBy = None
         self.AccountBalance = None
         self.LifeTimePaid = None
+        self.Email = None
         
     def consumeAccountBalance(self, amount) :     
         """Consumes an amount of money from the user's account balance."""

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/07/07 08:33:19  jalet
+# Bug fix due to a typo in LDAP code
+#
 # Revision 1.4  2003/06/30 13:54:21  jalet
 # Sorts by user / group name
 #
@@ -143,6 +146,7 @@ class Storage :
             user.LimitBy = fields.get("limitby")
             user.AccountBalance = fields.get("balance")
             user.LifeTimePaid = fields.get("lifetimepaid")
+            user.Email = fields.get("email")
             user.Exists = 1
         return user
        
@@ -195,6 +199,7 @@ class Storage :
                 user.LimitBy = record.get("limitby")
                 user.AccountBalance = record.get("balance")
                 user.LifeTimePaid = record.get("lifetimepaid")
+                user.Email = record.get("email")
                 user.Exists = 1
                 groupmembers.append(user)
         return groupmembers        
@@ -281,6 +286,7 @@ class Storage :
                     user.LimitBy = record.get("limitby")
                     user.AccountBalance = record.get("balance")
                     user.LifeTimePaid = record.get("lifetimepaid")
+                    user.Email = record.get("email")    # TODO : Always None here
                     user.Exists = 1
                     userpquota = StorageUserPQuota(self, user, printer)
                     userpquota.ident = record.get("id")

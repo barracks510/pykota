@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/07/07 08:33:18  jalet
+# Bug fix due to a typo in LDAP code
+#
 # Revision 1.13  2003/07/05 07:46:50  jalet
 # The previous bug fix was incomplete.
 #
@@ -594,7 +597,7 @@ class Storage :
             self.doModify(printer.LastJob.lastjobident, fields)         
         else :    
             lastjuuid = self.genUUID()
-            lastjdn = "cn=%s,%s" % (lasjuuid, self.info["lastjobbase"])
+            lastjdn = "cn=%s,%s" % (lastjuuid, self.info["lastjobbase"])
             fields = {
                        "objectClass" : ["pykotaObject", "pykotaLastJob"],
                        "cn" : lastjuuid,
