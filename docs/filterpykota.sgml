@@ -7,8 +7,9 @@
   
   <para>
     To account for pages or eventually ink usage, you must plug your accounting
-    system into <application>CUPS</application>. One way to do this without having
-    to modify <application>CUPS</application> itself, is by using a <firstterm>filter</firstterm>.
+    system somewhere into the printing system you use, be it either <application>CUPS</application>
+    or <application>LPRng</application>. One way to do this without having
+    to modify the printing system itself, is by using a <firstterm>filter</firstterm>.
   </para>
   
   <para>
@@ -17,7 +18,7 @@
     contains many filters. For example there's one filter named <application>pstops</application> which accepts 
     PostScript data as its input, and, as its name implies, outputs PostScript data too, but after having
     eventually rearranged the pages to fit several pages on a single sheet of paper, or other manipulations
-    like that.
+    like that. 
   </para>
   
   <para>
@@ -27,23 +28,58 @@
   </para>
   
   <para>
+    <application>LPRng</application> can also use filters, one often used in combination with
+    <application>LPRng</application> is <application>magicfilter</application> which can convert 
+    different input formats to native printers languages like PostScript or ESC/P2.
+  </para>  
+  
+  <para>
     So to do its own accounting, <application>PyKota</application> has its own filter, named <application>pykota</application>,
-    which you have to plug into the different set of filters used by <application>CUPS</application>. The procedure to 
+    which you have to plug into the different set of filters used by your printing system of choice. The procedure to 
     install the <application>pykota</application> filter is described in the 
     <xref linkend="installation" endterm="installation"> chapter.
   </para>
   
   <para>
-    Currently the <application>pykota</application> filter is used at the very last stage of the print mechanism,
+    Currently with a <application>CUPS</application> backend, the <application>pykota</application> filter is used at the very last stage of the print mechanism,
     just before the final data is sent to the printer, but it may eventually be used earlier with some
     modifications to <application>CUPS</application>'s filtering configuration. This is not tested yet, but this
     may be the solution to use <application>PyKota</application> with printers which really needs to have
-    a <literal>*cupsFilter</literal> line in their <acronym>PPD</acronym> file, i.e. non-postscript printers.
+    a specific filter like <application>magicfilter</applicaton> or <application>cupsomatic</application>, 
+    i.e. non-postscript printers. This is a limitation in <application>CUPS</application> which doesn't really
+    allow to specify multiple print filters for different purposes. This problem will be solved in <application>CUPS</application>
+    version 1.2 and higher.
   </para>
   
   <para>
-    The <application>pykota</application> filter really is the only thing which depends on <application>CUPS</application>,
-    so it is probable that a next version of <application>PyKota</application> will support other printing environments.
+    When used with an <application>LPRng</application> backend, the accounting filter is not defined the same way 
+    input filters are, so the problem described above doesn't exist, and <application>PyKota</application>
+    may work with non-postscript printers, provided they can report their page counter and you know how to do
+    this.
+  </para>
+  
+  <para>
+    When you submit a print job, <application>pykota</application> is automatically launched by your printing system,
+    so it has to detect which system you are using (<application>CUPS</application> or <application>LPRng</application>)
+    and behave like if it was specifically designed for your printing system. Fortunately there's not a lot
+    of differences, the more important one is the exit codes used to tell the printing environment if a job
+    has to be accepted or rejected. 
+  </para>
+  
+  <para>
+    <application>pykota</application> then asks the printer for its internal page counter, read from the Quota DataBase the internal
+    page counter for this printer when the previous job was launched, computes the difference, and report it as the 
+    previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
+    warn him if he is over quota or his account balance below 0. Finally it checks if the user who launched the 
+    current job is below or above his print quota, and either allow or deny the job's datas to pass to the underlying 
+    layer (the printer itself).
+  </para>
+  
+  <para>
+    If a problem occurs, it is logged either to the filter's standard output or to the system logger, depending on
+    your preferences in <application>PyKota</application>'s configuration file. Also if a print quota is reached
+    you may choose if the administrator, the user, both or noone will receive an email message explaining
+    the situation and proposing a solution.
   </para>
   
 </chapter>
@@ -51,6 +87,9 @@
 <!--
 
 $Log$
+Revision 1.3  2003/04/24 21:09:47  jalet
+Documentation slightly improved.
+
 Revision 1.2  2003/03/25 09:32:06  jalet
 Improved documentation.
 

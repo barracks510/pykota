@@ -32,6 +32,13 @@
     will not forget it !
   </para>
   
+  <para>
+    At the very least, try to make your best to disallow ordinary users to be able to
+    launch this command, since malicious users could fill other users mailboxes
+    by repeatedly running <application>warnpykota</application> : each user above
+    quota would receive multiple email messages, and possibly the administrator too !
+  </para>
+  
   <sect1>
     <title>Command line parameters</title>
     <para>
@@ -70,6 +77,9 @@
 <!--
 
 $Log$
+Revision 1.4  2003/04/24 21:09:47  jalet
+Documentation slightly improved.
+
 Revision 1.3  2003/03/25 12:30:37  jalet
 Added warnpykota command synopsis
 

@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.03-official.tar.gz    
-jerome@nordine:~$ cd pykota-1.03-official
-jerome@nordine:~/pykota-1.03-official$
+jerome@nordine:~$ tar -zxf pykota-1.04-official.tar.gz    
+jerome@nordine:~$ cd pykota-1.04-official
+jerome@nordine:~/pykota-1.04-official$
     </screen>
   </para>
   
@@ -159,8 +159,8 @@ jerome@nordine:~/pykota-1.03-official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.03-official/initscripts/
-jerome@nordine:~/pykota-1.03-official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.04-official/initscripts/
+jerome@nordine:~/pykota-1.04-official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -193,7 +193,7 @@ ALTER USER
 pykota=# ALTER USER pykotauser PASSWORD 'anotherpassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.03-official/initscripts$
+jerome@nordine:~/pykota-1.04-official/initscripts$
         </screen>
       </para>
       
@@ -205,7 +205,9 @@ jerome@nordine:~/pykota-1.03-official/initscripts$
       <para>
         To improve security further, you could encrypt your database connections, or
         take any other step as needed. Please refer to <application>PostgreSQL</application>'s
-        documentation for details.
+        documentation for details. Also if <application>PyKota</application>'s configuration
+        file is readable by anyone with access on your file system, a local user could 
+        create some script to modify his own print quota.
         <warning>
           <title>Warning</title>
           <para>
@@ -273,18 +275,23 @@ jerome@nordine:~/pykota-1.03-official/initscripts$
     <para>
       For each Print Server on which you plan to implement the print quota
       mechanism, you have, of course, to have an already working printing environment. 
-      Currently <application>PyKota</application> only works with the
-      <ulink url="http://www.cups.org"><application>CUPS</application></ulink> environment,
+      Currently <application>PyKota</application> works with either the
+      <ulink url="http://www.cups.org"><application>CUPS</application></ulink>
+      or the <ulink url="http://lprng.sourceforge.net"><application>LPRng</application></ulink>,
       but more may be added in the future.
     </para>
     
     <para>
-      Here's the list of software you have to install on each Print Server :
+      Here's the list of software you have to install on each Print Server, version numbers
+      are given as an indication of which was successfully tested, but older versions may 
+      work too.
       <itemizedlist>
         <listitem>
           <para>
-            CUPS version 1.1 or above.
-            You can download it from <ulink url="http://www.cups.org">http://www.cups.org</ulink>.
+            <application>CUPS</application> version 1.1 or above, or <application>LPRng</application>
+            version 3.8.20 or above (it probably works with older versions but this is untested).
+            You can download them from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
+            or <ulink url="http://lprng.sourceforge.net">http://lprng.sourceforge.net</ulink>
           </para>
         </listitem>  
         <listitem>
@@ -340,12 +347,21 @@ jerome@nordine:~/pykota-1.03-official/initscripts$
           <para>
             <application>ucd-snmp</application> or <application>net-snmp</application> tools, version 4.2.5 or above. You only need
             the <application>snmpget</application> command.
-            You can download them from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>
+            You can download them from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>.
+            You only need this if you plan to query your printers for their internal page counter via SNMP.
           </para>
         </listitem>  
         <listitem>
           <para>
-            eGenix' mxDateTime Python module. It must match your default Python version.
+            <application>netatalk</application> version 1.6.1 or above. You only need
+            the <application>pap</application> command.
+            You can download them from <ulink url="http://netatalk.sourceforge.net/">http://netatalk.sourceforge.net/</ulink>.
+            You only need this if you plan to query your printers for their internal page counter via AppleTalk.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            eGenix' mxDateTime Python module version 2.0.3 or above. It must match your default Python version.
             You can download it from <ulink url="http://www.egenix.com">http://www.egenix.com</ulink>.
           </para>
         </listitem>  
@@ -357,6 +373,9 @@ jerome@nordine:~/pykota-1.03-official/initscripts$
 <!--
 
 $Log$
+Revision 1.13  2003/04/24 21:09:47  jalet
+Documentation slightly improved.
+
 Revision 1.12  2003/04/17 21:33:16  jalet
 Version 1.03 is out.
 
