@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.22alpha3 :
     
+        - Fixes some case related problems with some LDAP backends.
+        
         - Fixes some problem for printers which directly go from
           "idle" to "warmup" and never to "printing" before
           returning to "idle".

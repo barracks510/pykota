@@ -679,7 +679,8 @@ class Storage(BaseStorage) :
             result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (where, self.info["userrdn"], user.Name), None, base=self.info["userbase"])
             if result :
                 (dn, fields) = result[0]
-                fields["objectClass"].extend(["pykotaAccount", "pykotaAccountBalance"])
+                oc = fields.get("objectClass", fields.get("objectclass", []))
+                oc.extend(["pykotaAccount", "pykotaAccountBalance"])
                 fields.update(newfields)
                 fields.update({ "pykotaBalance" : str(user.AccountBalance or 0.0),
                                 "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), })   
@@ -735,7 +736,8 @@ class Storage(BaseStorage) :
             result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (where, self.info["grouprdn"], group.Name), None, base=self.info["groupbase"])
             if result :
                 (dn, fields) = result[0]
-                fields["objectClass"].extend(["pykotaGroup"])
+                oc = fields.get("objectClass", fields.get("objectclass", []))
+                oc.extend(["pykotaGroup"])
                 fields.update(newfields)
                 self.doModify(dn, fields)
                 mustadd = 0
