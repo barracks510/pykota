@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha3 :
+    
+        - Fixed a rare bug in cupspykota backend which gave 
+          incorrect "CUPS backend died abnormally" messages.
+        
     - 1.18alpha2 :
     
         - Added the pkprinters command line tool to manage printers
