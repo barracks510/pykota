@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/04/15 11:09:04  jalet
+# Small bug was fixed when a printer was never used and its internal
+# page counter is not accessible.
+#
 # Revision 1.21  2003/04/12 17:20:14  jalet
 # Better formula for HP workaround
 #
@@ -216,7 +220,12 @@ def main() :
             # Computes the last job size as the difference between internal page
             # counter in the printer and last page counter taken from the Quota
             # Storage database for this particular printer
-            jobsize = (counterbeforejob - lastpagecounter)    
+            try :
+                jobsize = (counterbeforejob - lastpagecounter)    
+            except TypeError :    
+                # never used, and internal page counter not accessible
+                jobsize = 0
+                
             if jobsize < 0 :
                 # Probably an HP printer which was switched off and back on, 
                 # its primary counter is only saved in a 10 increment, so
