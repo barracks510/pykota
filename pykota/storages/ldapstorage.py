@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.77  2004/09/28 14:29:00  jalet
+# dumpykota for LDAP backend is almost there.
+#
 # Revision 1.76  2004/09/28 09:11:56  jalet
 # Fix for accented chars in print job's title, filename, and options
 #
@@ -476,6 +479,14 @@ class Storage(BaseStorage) :
                 self.tool.logdebug("LDAP cache update %s => %s" % (dn, cachedentry))
             return dn
             
+    def getAllPrintersNames(self) :    
+        """Extracts all printer names."""
+        printernames = []
+        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName"], base=self.info["printerbase"])
+        if result :
+            printernames = [record[1]["pykotaPrinterName"][0] for record in result]
+        return printernames
+        
     def getAllUsersNames(self) :    
         """Extracts all user names."""
         usernames = []
@@ -1273,3 +1284,75 @@ class Storage(BaseStorage) :
                          }  
                 self.doModify(parent.ident, fields)         
         self.doDelete(printer.ident)    
+        
+    def extractPrinters(self) :
+        """Extracts all printer records."""
+        entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
+        if entries :
+            result = [ ("dn", "pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerPage", "description") ]
+            for entry in entries :
+                result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description))
+            return result 
+        
+    def extractUsers(self) :
+        """Extracts all user records."""
+        entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames()] if u.Exists]
+        if entries :
+            result = [ ("dn", "pykotaUserName", self.info["usermail"], "pykotaBalance", "pykotaLifeTimePaid", "pykotaLimitBy") ]
+            for entry in entries :
+                result.append((entry.ident, entry.Name, entry.Email, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy))
+            return result 
+        
+    def extractGroups(self) :
+        """Extracts all group records."""
+        entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames()] if g.Exists]
+        if entries :
+            result = [ ("dn", "pykotaGroupName", "pykotaBalance", "pykotaLifeTimePaid", "pykotaLimitBy") ]
+            for entry in entries :
+                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy))
+            return result 
+        
+    def extractPayments(self) :
+        """Extracts all payment records."""
+        pass
+        
+    def extractUpquotas(self) :
+        """Extracts all userpquota records."""
+        entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
+        if entries :
+            pass    
+        
+    def extractGpquotas(self) :
+        """Extracts all grouppquota records."""
+        entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
+        if entries :
+            pass
+        
+    def extractUmembers(self) :
+        """Extracts all user groups members."""
+        entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames()] if g.Exists]
+        if entries :
+            result = [ ("pykotaGroupName", "pykotaUserName", "groupdn", "userdn") ]
+            for entry in entries :
+                for member in entry.Members :
+                    result.append((entry.Name, member.Name, entry.ident, member.ident))
+            return result        
+                
+    def extractPmembers(self) :
+        """Extracts all printer groups members."""
+        entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
+        if entries :
+            result = [ ("pykotaPGroupName", "pykotaPrinterName", "pgroupdn", "printerdn") ]
+            for entry in entries :
+                for parent in self.getParentPrinters(entry) :
+                    result.append((parent.Name, entry.Name, parent.ident, entry.ident))
+            return result        
+        
+    def extractHistory(self) :
+        """Extracts all jobhistory records."""
+        entries = self.retrieveHistory(limit=None)
+        if entries :
+            result = [ ("pykotaUserName", "pykotaPrinterName", "dn", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "createTimeStamp", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "pykotaJobPrice", "pykotaHostName", "pykotaJobSizeBytes") ] 
+            for entry in entries :
+                result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes)) 
+            return result    
