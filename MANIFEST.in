@@ -11,4 +11,4 @@ recursive-include logos README *.png *.xcf
 recursive-include contributed README *.pl *.sh *.py
 recursive-include stylesheets README *.css
 recursive-include openoffice README *.png *.sxw *.sxc *.pdf
-recursive-include tests README *.ps *.sh
+recursive-include tests README *.ps.gz *.sh
