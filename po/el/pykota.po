@@ -1,0 +1,686 @@
+# PyKota
+# 
+# PyKota : Print Quotas for CUPS and LPRng
+# 
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+# 
+# $Id$
+# 
+# PyKota translation master file.
+# Copyright (c) 2003-2004 Conseil Internet & Logiciels Libres
+# Jerome Alet <alet@librelogiciel.com>, 2003-2004.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PyKota v1.19\n"
+"Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
+"POT-Creation-Date: 2004-07-21 15:35:00+0100\n"
+"PO-Revision-Date: 2004-07-28 16:35:00+0200\n"
+"Last-Translator: Spyros Melissovas <peppe@cs.uoi.gr>\n"
+"Language-Team: Greek <peppe@cs.uoi.gr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-7\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "Μη υποστηριζόμενη διεπαφή σελιδομετρητή %s"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "Δε βρέθηκε το αρχείο ρυθμίσεων %s."
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "Η παράμετρος %s δε βρέθηκε στην ενότητα global του %s"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "Η παράμετρος %s δε βρέθηκε στην ενότητα %s του %s"
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "Η παράμετρος logger υποστηρίζει μόνο τις τιμές %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "Μη αποδεκτός σελιδομετρητής %s για τον εκτυπωτή %s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr ""
+"Η παράμετρος σελιδομετρητή στην ενότητα %s υποστηρίζει μόνο τις τιμές %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "Η παράμετρος enforcement στην ενότητα %s υποστηρίζει μόνο τις τιμές %s"
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "Μη αποδεκτή πολιτική %s για τον εκτυπωτή %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "Η παράμετρος policy στην ενότητα %s υποστηρίζει μόνο τις τιμές %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "Μη αποδεκτή παράμετρος mailto %s για τον εκτυπωτή %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "Η παράμετρος mailto στην ενότητα  %s υποστηρίζει μόνο τις τιμές %s"
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "Μη αποδεκτή περίοδος χάριτος %s"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "Μη αποδεκτό κατώφλι poor man's %s"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"Το υπόλοιπο του ορίου εκτυπώσεών σας είναι χαμηλό.\n"
+"Σύντομα δε θα επιτρέπεται να τυπώσετε πλέον.\n"
+"Παρακαλώ επικοινωνήστε με τον διαχειριστή εκτυπώσεων."
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"Δεν επιτρέπεται να εκτυπώσετε πλέον γιατί\n"
+"έχετε υπερβεί το όριο εκτυπώσεών σας στον εκτυπωτή %s."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"Σύντομα δε θα μπορείτε πλέον να τυπώσετε γιατί\n"
+"έχετε φτάσει σχεδόν το όριο εκτυπώσεών σας στον εκτυπώτή %s."
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "Μη υποστηριζόμενο υποσύστημα καταχώρησης %s"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "Αναφορά για όριο %s στον εκτυπωτή %s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "Περίοδος χάριτος σελίδων: %i μέρες"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "Τιμή ανά εργασία: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "Τιμή ανά σελίδα: %.3f"
+
+msgid ""
+"Group           used    soft    hard    balance grace         total       "
+"paid"
+msgstr ""
+"Ομάδα           τρέχον  προειδ. ανώτατο υπόλοιπο χάρη         σύνολο      "
+"πληρωμένα"
+
+msgid ""
+"User            used    soft    hard    balance grace         total       "
+"paid"
+msgstr ""
+"Χρήστης         τρέχον  προειδ. ανώτατο υπόλοιπο χάρη         σύνολο      "
+"πληρωμένα"
+
+msgid "unknown"
+msgstr "άγνωστο"
+
+#, python-format
+msgid "Real : %s"
+msgstr "Πραγματικό : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "Σύνολο : %9i"
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "Μη υποστηριζόμενη διεπαφή αναφορών %s"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "Μη υποστηριζόμενη διεπαφή αποθήκευσης %s"
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "Αδύνατη η σύνδεση με τον εξυπηρετητή SMTP : %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Αδύνατη η αποστολή e-mail στον %s, σφάλμα %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"Παρακαλώ επικοινωνήστε με τον διαχειριστή συστήματος :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"Αδύνατη η εύρεση χρήστη %s στον εκτυπωτή %s, εφαρμογή ερήμην πολιτικής (%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+"Αδύνατη η εύρεση του υπολοίπου του χρήστη %s, εφαρμογή ερήμην πολιτικής (%s)"
+"για τον εκτυπωτή %s"
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Υπέρβαση ορίου εκτυπώσεων για την ομάδα %s στον εκτυπωτή %s"
+
+msgid "Print Quota"
+msgstr "Όριο εκτυπώσεων"
+
+msgid "Print Quota Exceeded"
+msgstr "Υπέρβαση ορίου εκτυπώσεων"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Χαμηλό υπόλοιπο εκτυπώσεων για την ομάδα %s στον εκτυπωτή %s"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "Υπέρβαση ορίου εκτυπώσεων για τον χρήστη %s στον εκτυπωτή %s"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Χαμηλό υπόλοιπο εκτυπώσεων για τον χρήστη %s στον εκτυπωτή %s"
+
+msgid "Print Quota Low"
+msgstr "Χαμηλό υπόλοιπο εκτυπώσεων"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Σύστημα εκτυπώσεων %s, παράμετροι=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "Αδύνατος ο προϋπολογισμός της εργασίας με τον αναλυτή PDL : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "SIGTERM ελήφθη, ακύρωση εργασίας %s."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Αόριστο όνομα κόμβου εκτυπωτή, χρήση 'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "’γνωστο σύστημα εκτυπώσεων, παράμετροι=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"Ο εκτυπωτής %s δεν είναι καταχωρημένος στο σύστημα PyKota, εφαρμογή "
+"εξωτερικής πολιτικής (%s) για τον εκτυπωτή %s"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"Ο χρήστης %s δεν είναι καταχωρημένος στο σύστημα PyKota, εφαρμογή εξωτερικής "
+"πολιτικής (%s) για τον εκτυπωτή %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"Ο χρήστης %s δεν έχει όριο στον εκτυπωτή %s στο σύστημα PyKota, εφαρμογή "
+"εξωτερικής πολιτικής (%s) για τον εκτυπωτή %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"Η εξωτερική πολιτική %s για τον εκτυπωτή %s παρήγαγε σφάλμα.Απόρριψη "
+"εργασίας. Παρακαλώ ελέγξτε τα αρχεία ρυθμίσεων του PyKota."
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"Ο εκτυπωτής %s δεν είναι καταχωρημένος στο σύστημα PyKota, εφαρμογή ερήμην "
+"πολιτικής (%s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"Ο χρήστης %s δεν είναι καταχωρημένος στο σύστημα PyKota, εφαρμογή ερήμην "
+"πολιτικής (%s) για τον εκτυπωτή %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"Ο χρήστης %s δεν έχει όριο στον εκτυπωτή %s στο σύστημα PyKota, εφαρμογή "
+"ερήμην πολιτικής (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr ""
+"Ο εκτυπωτής %s δεν είναι ακόμη καταχωρημένος στο σύστημα PyKota, η εργασία "
+"θα απορριφθεί"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"Ο χρήστης %s δεν είναι ακόμη καταχωρημένος στο σύστημα PyKota, η εργασία θα "
+"απορριφθεί στον εκτυπωτή %s"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"Ο χρήστης %s δεν έχει ακόμη όριο στον εκτυπωτή %s στο σύστημα PyKota, η "
+"εργασία θα απορριφθεί"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr ""
+"Τα σύνολα μπορεί να είναι ανακριβή αν κάποιοι χρήστες είναι μέλη πολλών "
+"ομάδων."
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "’γνωστη διεύθυνση εκτυπώτή στο HARDWARE(%s) για τον εκτυπωτή %s"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "Εκτέλεση HARDWARE(%s)..."
+
+#, python-format
+msgid "Incorrect answer : %s"
+msgstr "Λάθος απάντηση : %s"
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "SIGTERM ελήφθη από τον σελιδομετρητή υλικού %s (pid: %s)"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Αδύνατη η επικοινωνία με τον εκτυπωτη %s μέσω HARDWARE(%s)"
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "Εκτέλεση SOFTWARE(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "Αδύνατος ο υπολογισμός εργασίας με τον σελιδομετρητή %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr ""
+"Σφάλμα κατά την αναμονή τερματισμού του σελιδομετρητή λογισμικού pid %s : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "Η τιμή εξόδου του σελιδομετρητή λογισμικού %s είναι %s"
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"Η βάση αναζήτησης %s δε φαίνεται να υπάρχει. Πιθανό λάθος στις ρυθμίσεις. "
+"Παρακαλώ ελέγξτε πάλι το αρχείο /etc/pykota/pykota.conf : %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "Η αναζήτηση του %s(%s) από %s(εύρος=%s) δεν επέστρεψε αποτέλεσμα."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Σφάλμα κατά την προσθήκη καταχώρησης LDAP (%s, %s)"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Σφάλμα κατά την διαγραφή καταχώρησης LDAP (%s)"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Σφάλμα κατά την τροποποίηση καταχώρησης LDAP (%s, %s)"
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"Αδύνατη η εύρεση υπάρχουσας objectClass %s καταχώρησης με %s=%s για προσθήκη "
+"pykotaAccount objectClass"
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+"Αδύνατη η εύρεση υπάρχουσας καταχώρησης για την προσθήκη pykotaGroup "
+"objectclass %s"
+
+msgid "PyKota Reports"
+msgstr "Αναφορές PyKota"
+
+msgid "Report"
+msgstr "Αναφορά"
+
+msgid "User / Group names mask"
+msgstr "Μάσκα ονόματος Χρήστη / Ομάδας"
+
+msgid "Groups report"
+msgstr "Αναφορά ομάδων"
+
+msgid "History"
+msgstr "Ιστορικό"
+
+msgid "Empty"
+msgstr "’δειο"
+
+msgid "Date"
+msgstr "Ημερομηνία"
+
+msgid "Action"
+msgstr "Ενέργεια"
+
+msgid "User"
+msgstr "Χρήστης"
+
+msgid "Printer"
+msgstr "Εκτυπωτής"
+
+msgid "Hostname"
+msgstr "Όνομα κόμβου"
+
+msgid "JobId"
+msgstr "Εργασία"
+
+msgid "JobSize"
+msgstr "Σελίδες"
+
+msgid "JobPrice"
+msgstr "Τιμή"
+
+msgid "Copies"
+msgstr "Αντίγραφα"
+
+msgid "JobBytes"
+msgstr "Μέγεθος"
+
+msgid "PageCounter"
+msgstr "Σελιδομετρητής"
+
+msgid "Title"
+msgstr "Τίτλος"
+
+msgid "Filename"
+msgstr "Όνομα αρχείου"
+
+msgid "Options"
+msgstr "Παράμετροι"
+
+msgid "Job contains no data. Printing is denied."
+msgstr "Η εργασία δεν περιέχει δεδομένα. Η εκτύπωση απορρίπτεται."
+
+msgid "Job accounting begins."
+msgstr "Έναρξη σελιδομέτρησης εργασίας."
+
+msgid "Job accounting ends."
+msgstr "Λήξη σελιδομέτρησης εργασίας."
+
+msgid "Job size forced to 0 because printing is denied."
+msgstr "Το μέγεθος της εργασίας μηδενίστηκε γιατί η εκτύπωση απαγορεύεται."
+
+#, python-format
+msgid "Job size : %i"
+msgstr "Μέγεθος εργασίας : %i"
+
+#, python-format
+msgid "Updating user %s's quota on printer %s"
+msgstr "Ενημέρωση ορίου του χρήστη %s στον εκτυπωτή %s"
+
+msgid "Job added to history."
+msgstr "Η εργασία προστέθηκε στο ιστορικό."
+
+#, python-format
+msgid "File number %s unregistered twice from polling object, ignored."
+msgstr ""
+"Το αρχείο με αριθμό %s διαγράφηκε δύο φορές από το αντικείμενο "
+"παρακολούθησης, παράβλεψη."
+
+#, python-format
+msgid "SIGTERM was sent to real backend %s (pid: %s)"
+msgstr "SIGTERM ελήφθη από την πραγματική διεπαφή %s (pid: %s)"
+
+#, python-format
+msgid "CUPS backend %s died abnormally."
+msgstr "Η διεπαφή CUPS %s τερματίστηκε απρόσμενα."
+
+#, python-format
+msgid "Invalid softlimit value %s."
+msgstr "Μη αποδεκτό όριο προειδοποίησης %s."
+
+#, python-format
+msgid "Invalid hardlimit value %s."
+msgstr "Μη αποδεκτό ανώτατο όριο %s."
+
+#, python-format
+msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
+msgstr ""
+"Το ανώτατο όριο  %i είναι μικρότερο από το όριο προειδοποίησης %i, ανταλλαγή "
+"τιμών."
+
+#, python-format
+msgid "Invalid balance value %s"
+msgstr "Μη αποδεκτή τιμή υπολοίπου %s"
+
+#, python-format
+msgid "Invalid charge amount value %s"
+msgstr "Μη αποδεκτό ποσό χρέωσης %s"
+
+#, python-format
+msgid "Invalid limitby value %s"
+msgstr "Μη αποδεκτή τιμή limitby %s"
+
+#, python-format
+msgid "Impossible to add printer %s"
+msgstr "Αδύνατη η προσθήκη του εκτυπωτή %s"
+
+#, python-format
+msgid "Invalid printer name %s"
+msgstr "Μη αποδεκτό όνομα εκτυπωτή %s"
+
+#, python-format
+msgid "There's no printer matching %s"
+msgstr "Δεν υπάρχει εκτυπωτής που να ταιριάζει στο %s"
+
+msgid "You have to pass user or group names on the command line"
+msgstr "Πρέπει να εισάγετε ονόματα χρηστών ή ομάδων στην γραμμή εντολών"
+
+#, python-format
+msgid "Prototype %s not found in Quota Storage for printer %s."
+msgstr "Το πρότυπο %s δε βρέθηκε στη βάση δεδομένων για τον εκτυπωτή %s."
+
+#, python-format
+msgid "Prototype object %s not found in Quota Storage."
+msgstr "Το πρότυπο αντικείμενο %s δε βρέθηκε στη βάση δεδομένων."
+
+#, python-format
+msgid "Undefined hard limit set to soft limit (%s) on printer %s."
+msgstr ""
+"Αόριστο ανώτατο όριο ορίστηκε στο όριο προειδοποίησης(%s) στον εκτυπωτή %s."
+
+#, python-format
+msgid "Undefined soft limit set to hard limit (%s) on printer %s."
+msgstr ""
+"Αόριστο όριο προειδοποίησης ορίστηκε στο ανώτατο όριο (%s) στον εκτυπωτή %s."
+
+#, python-format
+msgid "Invalid email address %s"
+msgstr "Μη αποδεκτή διεύθυνση e-mail %s"
+
+#, python-format
+msgid "Invalid group name %s"
+msgstr "Μη αποδεκτό όνομα ομάδας %s"
+
+#, python-format
+msgid "Invalid user name %s"
+msgstr "Μη αποδεκτό όνομα χρήστη %s"
+
+#, python-format
+msgid "Quota not found for object %s on printer %s."
+msgstr "Δε βρέθηκε όριο για το αντικείμενο %s στον εκτυπωτή %s."
+
+#, python-format
+msgid "Group %s not found in the PyKota Storage."
+msgstr "Η ομάδα %s δε βρέθηκε στη βάση δεδομένων του PyKota."
+
+msgid "incompatible options, see help."
+msgstr "ασύμβατες παράμετροι, διαβάστε τη βοήθεια."
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr "Ο εκτυπωτής %s υπάρχει ήδη, παράβλεψη."
+
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr "Ο εκτυπωτής %s υπάρχει ήδη, θα τροποποιηθεί."
+
+msgid "in"
+msgstr "σε"
+
+msgid "You have to pass printer groups names on the command line"
+msgstr "Πρέπει να εισάγετε ονόματα ομάδων εκτυπωτών στη γραμμή εντολών"
+
+msgid "You have to pass printer names on the command line"
+msgstr "Πρέπει να εισάγετε ονόματα εκτυπωτών στη γραμμή εντολών"
+
+msgid "Software accounting already done in first pass. Ignoring."
+msgstr "Σελιδομέτρηση λογισμικού έγινε ήδη στο πρώτο πέρασμα. Παράβλεψη."
+
+msgid "Hardware accounting already done in first pass. Ignoring."
+msgstr "Σελιδομέτρηση υλικού έγινε ήδη στο πρώτο πέρασμα. Παράβλεψη."
+
+#, python-format
+msgid "Invalid DeviceURI : %s"
+msgstr "Μη αποδεκτό URI συσκευής: %s"
+
+msgid ""
+"\n"
+"Please wait while pkhint analyzes your printing system's configuration..."
+msgstr ""
+"\n"
+"Παρακαλώ περιμένετε όσο το pkhint αναλύει τις ρυθμίσεις του συστήματος "
+"εκτυπώσεων..."
+
+#, python-format
+msgid "Unknown device %s for printer %s"
+msgstr "’γνωστη συσκευή %s για τον εκτυπωτή %s"
+
+msgid ""
+"\n"
+"Put the following lines into your /etc/pykota/pykota.conf file :\n"
+msgstr ""
+"\n"
+"Εισάγετε τις ακόλουθες γραμμές στο αρχείο /etc/pykota/pykota.conf :\n"
+
+msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
+msgstr "# ΠΡΟΣΟΧΗ : αν συνίσταται σελιδομέτρηση λογισμικού, αυτό δε σημαίνει"
+
+msgid "# that hardware accounting wouldn't work, this only means that PyKota"
+msgstr "# πως η σελιδομέτρηση υλικού δε δουλεύει, απλά ότι το PyKota"
+
+msgid "# wasn't able to autodetect which hardware accounting method to use."
+msgstr "# δε μπόρεσε να εντοπίσει τη μέθοδο σελιδομέτρησης υλικού."
+
+#, python-format
+msgid "Invalid duration option %s"
+msgstr "Μη αποδεκτή παράμετρος διάρκειας %s"
+
+#, python-format
+msgid "Invalid loop option %s"
+msgstr "Μη αποδεκτή παράμετρος επανάληψης %s"
+
+#, python-format
+msgid "Invalid sleep option %s"
+msgstr "Μη αποδεκτή παράμετρος αναμονής %s"
+
+#, python-format
+msgid "Invalid color option %s"
+msgstr "Μη αποδεκτή παράμετρος χρώματος %s"
+
+#, python-format
+msgid "User %s doesn't exist in PyKota's database"
+msgstr "Ο χρήστης %s δεν υπάρχει στη βάση δεδομένων του PyKota"
+
+#, python-format
+msgid "Pages used on %s : %s"
+msgstr "Τυπωμένες σελίδες στον %s : %s"
+
+#, python-format
+msgid "PyKota Units left : %.2f"
+msgstr "Μονάδες PyKota που απομένουν : %.2f"
+
+#, python-format
+msgid "Your account balance : %.2f"
+msgstr "Το υπόλοιπο του λογαριασμού σας : %.2f"
+
+#, python-format
+msgid "Job size : %i pages"
+msgstr "Μέγεθος εργασίας : %i σελίδες"
+
+#, python-format
+msgid "Cost on printer %s : %.2f"
+msgstr "Τιμή στον εκτυπωτή %s : %.2f"
+
+#, python-format
+msgid "Previous page"
+msgstr "Προηγούμενη σελίδα"
