@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/07/20 22:29:49  jalet
+# pykosd now supports setting the font
+#
 # Revision 1.5  2004/07/20 22:19:45  jalet
 # Sanitized a bit + use of gettext
 #
@@ -45,7 +48,12 @@ import sys
 import os
 import pwd
 import time
-import pyosd
+
+try :
+    import pyosd
+except ImportError :    
+    sys.stderr.write("Sorry ! You need both xosd and the Python OSD library (pyosd) for this software to work.\n")
+    sys.exit(-1)
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
@@ -64,6 +72,9 @@ options :
   
   -d | --duration d    Sets the duration of the display in seconds. 
                        Defaults to 3 seconds.
+                       
+  -f | --font f        Sets the font to use for display.                      
+                       Defaults to the Python OSD library's default.
   
   -l | --loop n        Sets the number of times the info will be displayed.
                        Defaults to 0, which means loop forever.
@@ -125,7 +136,7 @@ class PyKOSD(PyKotaTool) :
                 printers = cmd.storage.getMatchingPrinters("*")
                 upquotas = [ cmd.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache
                 nblines = len(upquotas)
-                display = pyosd.osd(colour="#00FF00", timeout=duration, shadow=2, lines=nblines)
+                display = pyosd.osd(font=options["font"], colour="#00FF00", timeout=duration, shadow=2, lines=nblines)
                 for line in range(nblines) :
                     upq = upquotas[line]
                     if upq.HardLimit is None :
@@ -141,7 +152,7 @@ class PyKOSD(PyKotaTool) :
                     color = "#FF0000"
                 else :    
                     color = "#00FF00"
-                display = pyosd.osd(colour=color, timeout=duration, shadow=2)
+                display = pyosd.osd(font=options["font"], colour=color, timeout=duration, shadow=2)
                 display.display(_("PyKota Units left : %.2f") % user.AccountBalance, type=pyosd.TYPE_STRING)
             time.sleep(duration + 1)
             if loop :
@@ -157,11 +168,12 @@ if __name__ == "__main__" :
     try :
         defaults = { \
                      "duration" : "3", \
+                     "font" : pyosd.default_font, \
                      "loop" : "0", \
                      "sleep" : "180", \
                    }
-        short_options = "hvd:l:s:"
-        long_options = ["help", "version", "duration=", "loop=", "sleep="]
+        short_options = "hvd:f:l:s:"
+        long_options = ["help", "version", "duration=", "font=", "loop=", "sleep="]
         
         cmd = PyKOSD(doc=__doc__)
         
@@ -172,6 +184,7 @@ if __name__ == "__main__" :
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
         options["duration"] = options["d"] or options["duration"] or defaults["duration"]
+        options["font"] = options["f"] or options["font"] or defaults["font"]
         options["loop"] = options["l"] or options["loop"] or defaults["loop"]
         options["sleep"] = options["s"] or options["sleep"] or defaults["sleep"]
         
