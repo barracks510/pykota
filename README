@@ -152,14 +152,18 @@ Just type :
 
 You may need to be logged in with sufficient privileges (e.g. root)
 
+The installation script will now automatically check if some software
+is missing and ask you if you still want to proceed with the 
+installation or abort it completely.
+
 Go to the initscripts subdirectory of PyKota's sources, and choose
 the appropriate storage backend for your configuration. Read
 the associated README file and execute the initialization script
-to create an empty PyKota Storage.
+to create an empty PyKota Storage. Upgrade scripts may be 
+provided as well.
 
 Copy the conf/pykota.conf.sample sample configuration file to
-CUPS' configuration directory, usually /etc/cups, under the
-name pykota.conf, and adapt this file to your own needs and 
+/etc/pykota.conf, and adapt this file to your own needs and 
 configuration.
 
 Modify the PPD files for each printer on which you want to manage
