@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/07/21 23:01:55  jalet
+# Modified some messages aout soft limit
+#
 # Revision 1.31  2003/07/08 19:43:50  jalet
 # Configurable warning messages.
 # Poor man's treshold value added.
@@ -251,7 +254,7 @@ msgstr ""
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
 msgstr ""
 
-msgid "Print Quota soft limit exceeded for user %s on printer %s"
+msgid "Print Quota low for user %s on printer %s"
 msgstr ""
 
 msgid "Unsupported logging subsystem %s"
@@ -328,7 +331,7 @@ msgstr ""
 msgid "Print Quota exceeded for group %s on printer %s"
 msgstr ""
 
-msgid "Print Quota soft limit exceeded for group %s on printer %s"
+msgid "Print Quota low for group %s on printer %s"
 msgstr ""
 
 msgid "Totals may be inaccurate if some users are members of several groups."

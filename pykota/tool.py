@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2003/07/21 23:01:56  jalet
+# Modified some messages aout soft limit
+#
 # Revision 1.47  2003/07/16 21:53:08  jalet
 # Really big modifications wrt new configuration file's location and content.
 #
@@ -484,7 +487,7 @@ class PyKotaTool :
                 if mailto in [ "BOTH", "USER" ] :
                     self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
         elif action == "WARN" :    
-            adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (group.Name, printer.Name)
+            adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
@@ -515,7 +518,7 @@ class PyKotaTool :
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
-            adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (user.Name, printer.Name)
+            adminmessage = _("Print Quota low for user %s on printer %s") % (user.Name, printer.Name)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
                 if user.LimitBy and (user.LimitBy.lower() == "balance") : 

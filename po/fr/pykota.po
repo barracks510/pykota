@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/07/21 23:01:56  jalet
+# Modified some messages aout soft limit
+#
 # Revision 1.30  2003/07/08 19:43:51  jalet
 # Configurable warning messages.
 # Poor man's treshold value added.
@@ -262,8 +265,8 @@ msgstr "Les quota de groupes ne sont pas encore implémentés."
 msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
 msgstr "Adresse d'imprimante inconnue dans SNMP(%s, %s) pour l'imprimante %s"
 
-msgid "Print Quota soft limit exceeded for user %s on printer %s"
-msgstr "Limite souple de Quota d'Impression dépassée pour l'utilisateur %s sur l'imprimante %s"
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Quota d'Impression faible pour l'utilisateur %s sur l'imprimante %s"
 
 msgid "Unsupported logging subsystem %s"
 msgstr "Système de log %s non supporté"
@@ -341,8 +344,8 @@ msgstr "Impossible de trouver le groupe %s sur l'imprimante %s, action par défau
 msgid "Print Quota exceeded for group %s on printer %s"
 msgstr "Dépassement de Quota d'impression pour le groupe %s sur l'imprimante %s"
 
-msgid "Print Quota soft limit exceeded for group %s on printer %s"
-msgstr "Limite souple de Quota d'Impression dépassée pour le groupe %s sur l'imprimante %s"
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Quota d'Impression faible pour le groupe %s sur l'imprimante %s"
 
 msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr "Les totaux peuvent être faux si des utilisateurs sont dans plusieurs groupes."
