@@ -45,7 +45,7 @@ storageadmin: pykotaadmin
 
 # NB : storageuser and storageuserpw are not used anymore
 
-# LDAP example :
+# LDAP example (DOESN'T WORK YET) :
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.librelogiciel.com:389
 #storagename: dc=librelogiciel,dc=com
@@ -145,8 +145,10 @@ gracedelay: 7
 
 # one section per printer, or no other section at all if all options 
 # are defined globally.
-# The section's name must be the same as the printer's name as defined
+# Each section's name must be the same as the printer's name as defined
 # in your printing system, be it CUPS or LPRng.
+# If you don't want any special printer section, just comment out
+# the line below so that following options are global.
 [hpmarketing]
 
 # How to query the lp printer for its page counter.

@@ -83,8 +83,9 @@ Actual working features :
           stored in the Quota Storage, and account balance can be
           used to limit the user printing instead of a print quota.
           Actually you can limit either by account balance OR by
-          print quota, but maybe both should be checked at the 
-          same time. Tell me what you prefer.
+          print quota. Account balance is shared between printers
+          for an user, while quotas are define separately for
+          each printer the user prints on.
           
 All the command line tools accept the -h | --help command line option
 which prints all the available options and show usage examples.

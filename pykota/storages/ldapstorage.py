@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/06/13 19:07:57  jalet
+# Two big bugs fixed, time to release something ;-)
+#
 # Revision 1.5  2003/06/10 16:37:54  jalet
 # Deletion of the second user which is not needed anymore.
 # Added a debug configuration field in /etc/pykota.conf
@@ -133,7 +136,10 @@ class Storage :
             return groupid
             
     def getJobHistoryId(self, jobid, userid, printerid) :        
-        """Returns the history line's id given a (jobid, userid, printerid)."""
+        """Returns the history line's id given a (jobid, userid, printerid).
+        
+           TODO : delete because shouldn't be needed by the LDAP backend
+        """
         raise PyKotaStorageError, "Not implemented !"
             
     def getPrinterUsers(self, printerid) :        
@@ -343,10 +349,16 @@ class Storage :
     
     def getPrinterPageCounter(self, printerid) :
         """Returns the last page counter value for a printer given its id, also returns last username, last jobid and history line id."""
-        return # TODO
-        result = self.doSearch("objectClass=pykotaPrinterJob", ["pykotaJobHistoryId", "pykotaJobId", "uid", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobDate"], base=printerid)
+        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName", "cn"], base=printerid, scope=ldap.SCOPE_BASE)
         if result :
-            pass # TODO
+            fields = result[0][1]
+            printername = (fields.get("pykotaPrinterName") or fields.get("cn"))[0]
+            result = self.doSearch("(&(objectClass=pykotaLastjob)(|(pykotaPrinterName=%s)(cn=%s)))" % (printername, printername), ["pykotaLastJobIdent"])
+            if result :
+                lastjobident = result[0][1]["pykotaLastJobIdent"][0]
+                result = self.doSearch("(&(objectClass=pykotaJob)(cn=%s))" % lastjobident, ["pykotaUserName", "pykotaPrinterName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "createTimestamp"])
+                if result :
+                    pass # TODO
         
     def addUserToGroup(self, userid, groupid) :    
         """Adds an user to a group."""
