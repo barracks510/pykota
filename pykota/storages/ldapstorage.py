@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/06/30 13:54:21  jalet
+# Sorts by user / group name
+#
 # Revision 1.11  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -401,6 +404,7 @@ class Storage :
                             userpquota.DateLimit = userpquota.DateLimit[0]
                     userpquota.Exists = 1
                     usersandquotas.append((user, userpquota))
+        usersandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return usersandquotas
                 
     def getPrinterGroupsAndQuotas(self, printer, names=None) :        
@@ -413,6 +417,7 @@ class Storage :
                 if (names is None) or self.tool.matchString(user.Name, names) :
                     grouppquota = self.getGroupPQuota(group, printer)
                     groupsandquotas.append((group, grouppquota))
+        groupsandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return groupsandquotas
         
     def addPrinter(self, printername) :        

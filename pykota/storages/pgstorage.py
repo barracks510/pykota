@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/06/30 13:54:21  jalet
+# Sorts by user / group name
+#
 # Revision 1.3  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -269,7 +272,7 @@ class Storage :
     def getPrinterUsersAndQuotas(self, printer, names=None) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
-        result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
                 user = StorageUser(self, record.get("username"))
@@ -293,7 +296,7 @@ class Storage :
     def getPrinterGroupsAndQuotas(self, printer, names=None) :        
         """Returns the list of groups which uses a given printer, along with their quotas."""
         groupsandquotas = []
-        result = self.doSearch("SELECT groupname FROM groups JOIN grouppquota ON groups.id=grouppquota.groupid AND printerid=%s" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT groupname FROM groups JOIN grouppquota ON groups.id=grouppquota.groupid AND printerid=%s ORDER BY groupname ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
                 group = self.getGroup(record.get("groupname"))
