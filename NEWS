@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha19 :
+    
+        - The description, filename, title, and options fields
+          are now stored as UTF-8 strings in both LDAP and PostgreSQL.
+          Proper charset is used during extraction from the database.
+          
     - 1.20alpha18 :
     
         - Experimental autopykota command to initialize user

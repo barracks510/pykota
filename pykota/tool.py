@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.124  2004/10/02 05:48:56  jalet
+# Should now correctly deal with charsets both when storing into databases and when
+# retrieving datas. Works with both PostgreSQL and LDAP.
+#
 # Revision 1.123  2004/09/29 20:20:52  jalet
 # Added the winbind_separator directive to pykota.conf to allow the admin to
 # strip out the Samba/Winbind domain name when users print.
@@ -492,7 +496,7 @@ def crashed(message) :
 
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, lang=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, lang=None, charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
         try :
@@ -500,6 +504,12 @@ class PyKotaTool :
             gettext.install("pykota")
         except (locale.Error, IOError) :
             gettext.NullTranslations().install()
+            
+        # We can force the charset.    
+        # The CHARSET environment variable is set by CUPS when printing.
+        # Else we use the current locale's one.
+        # If nothing is set, we use ISO-8859-15 widely used in western Europe.
+        self.charset = charset or os.environ.get("CHARSET") or locale.getlocale()[1] or locale.getdefaultlocale()[1] or "ISO-8859-15"
     
         # pykota specific stuff
         self.documentation = doc
@@ -521,6 +531,11 @@ class PyKotaTool :
             raise
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
+        self.logdebug("Charset in use : %s" % self.charset)
+        
+    def getCharset(self) :    
+        """Returns the charset in use."""
+        return self.charset
         
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""

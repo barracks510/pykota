@@ -78,9 +78,6 @@ TODO, in no particular order :
           pkusers --nogroup
           pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
           
-        - Ensures data are stored in a consistent way with Unicode
-          under PostgreSQL : I can't reproduce the problem.
-        
         - Allow the --ingroups command line option to repykota, to
           report only users members of the specified groups.
           

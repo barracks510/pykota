@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2004/10/02 05:48:56  jalet
+# Should now correctly deal with charsets both when storing into databases and when
+# retrieving datas. Works with both PostgreSQL and LDAP.
+#
 # Revision 1.36  2004/09/02 10:34:09  jalet
 # Fixed problem with mod_auth_ldap Apache module
 #
@@ -194,6 +198,12 @@ def getLanguagePreference() :
     languages = os.environ.get("HTTP_ACCEPT_LANGUAGE", "")
     langs = [l.strip().split(';')[0] for l in languages.split(",")]
     return "%s_%s" % (langs[0], langs[0].upper())
+    
+def getCharsetPreference() :
+    """Returns the preferred charset."""
+    charsets = os.environ.get("HTTP_ACCEPT_CHARSET", "no charset defined")
+    charsets = [l.strip().split(';')[0] for l in charsets.split(",")]
+    return charsets[0]
 
 class PyKotaReportGUI(PyKotaTool) :
     """PyKota Administrative GUI"""
@@ -350,7 +360,7 @@ class PyKotaReportGUI(PyKotaTool) :
             
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()
-    admin = PyKotaReportGUI(lang=os.environ["LC_ALL"])
+    admin = PyKotaReportGUI(lang=os.environ["LC_ALL"], charset=getCharsetPreference())
     admin.form = cgi.FieldStorage()
     admin.guiAction()
     admin.guiDisplay()

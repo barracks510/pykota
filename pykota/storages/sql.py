@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2004/10/02 05:48:56  jalet
+# Should now correctly deal with charsets both when storing into databases and when
+# retrieving datas. Works with both PostgreSQL and LDAP.
+#
 # Revision 1.47  2004/09/15 07:26:20  jalet
 # Data dumps are now ordered by entry creation date if applicable.
 # Now dumpykota exits with a message when there's a broken pipe like
@@ -186,7 +190,7 @@ class SQLStorage :
             printer.Name = fields.get("printername", printername)
             printer.PricePerJob = fields.get("priceperjob") or 0.0
             printer.PricePerPage = fields.get("priceperpage") or 0.0
-            printer.Description = fields.get("description") or ""
+            printer.Description = (fields.get("description") or "").decode("UTF-8").encode(self.tool.getCharset()) 
             printer.Exists = 1
         return printer    
         
@@ -238,10 +242,10 @@ class SQLStorage :
             lastjob.JobSize = fields.get("jobsize")
             lastjob.JobPrice = fields.get("jobprice")
             lastjob.JobAction = fields.get("action")
-            lastjob.JobFileName = fields.get("filename")
-            lastjob.JobTitle = fields.get("title")
+            lastjob.JobFileName = (fields.get("filename") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+            lastjob.JobTitle = (fields.get("title") or "").decode("UTF-8").encode(self.tool.getCharset()) 
             lastjob.JobCopies = fields.get("copies")
-            lastjob.JobOptions = fields.get("options")
+            lastjob.JobOptions = (fields.get("options") or "").decode("UTF-8").encode(self.tool.getCharset()) 
             lastjob.JobDate = fields.get("jobdate")
             lastjob.JobHostName = fields.get("hostname")
             lastjob.JobSizeBytes = fields.get("jobsizebytes")
@@ -300,7 +304,7 @@ class SQLStorage :
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob") or 0.0
                     printer.PricePerPage = record.get("priceperpage") or 0.0
-                    printer.Description = record.get("description") or ""
+                    printer.Description = (record.get("description") or "").decode("UTF-8").encode(self.tool.getCharset()) 
                     printer.Exists = 1
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -386,7 +390,10 @@ class SQLStorage :
         
     def writePrinterDescription(self, printer) :    
         """Write the printer's description back into the storage."""
-        self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(printer.Description), self.doQuote(printer.ident)))
+        description = printer.Description
+        if description is not None :
+            description = printer.Description.decode(self.tool.getCharset()).encode("UTF-8"), 
+        self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(description), self.doQuote(printer.ident)))
         
     def writeUserLimitBy(self, user, limitby) :    
         """Sets the user's limiting factor."""
@@ -431,8 +438,14 @@ class SQLStorage :
         """Sets the last job's size permanently."""
         self.doModify("UPDATE jobhistory SET jobsize=%s, jobprice=%s WHERE id=%s" % (self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(lastjob.ident)))
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :    
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
         """Adds a job in a printer's history."""
+        if filename is not None :
+            filename = filename.decode(self.tool.getCharset()).encode("UTF-8")
+        if title is not None :
+            title = title.decode(self.tool.getCharset()).encode("UTF-8")
+        if options is not None :
+            options = options.decode(self.tool.getCharset()).encode("UTF-8")
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes)))
@@ -492,10 +505,10 @@ class SQLStorage :
                 job.JobSize = fields.get("jobsize")
                 job.JobPrice = fields.get("jobprice")
                 job.JobAction = fields.get("action")
-                job.JobFileName = fields.get("filename")
-                job.JobTitle = fields.get("title")
+                job.JobFileName = (fields.get("filename") or "").decode("UTF-8").encode(self.tool.getCharset()) 
+                job.JobTitle = (fields.get("title") or "").decode("UTF-8").encode(self.tool.getCharset()) 
                 job.JobCopies = fields.get("copies")
-                job.JobOptions = fields.get("options")
+                job.JobOptions = (fields.get("options") or "").decode("UTF-8").encode(self.tool.getCharset()) 
                 job.JobDate = fields.get("jobdate")
                 job.JobHostName = fields.get("hostname")
                 job.JobSizeBytes = fields.get("jobsizebytes")
