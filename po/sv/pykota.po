@@ -25,7 +25,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PyKota v1.19\n"
+"Project-Id-Version: PyKota v1.20\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-10-11 14:49+0200\n"
 "PO-Revision-Date: 2004-01-15 12:00+0100\n"
@@ -1462,6 +1462,3 @@ msgstr "Optioner"
 
 msgid "Previous page"
 msgstr "Föregående sida"
-
-#~ msgid "Incorrect answer : %s"
-#~ msgstr "Felaktigt svar : %s"

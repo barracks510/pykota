@@ -1493,6 +1493,3 @@ msgstr "Opciones"
 
 msgid "Previous page"
 msgstr "Página anterior"
-
-#~ msgid "Incorrect answer : %s"
-#~ msgstr "Respuesta incorrecta : %s"

@@ -25,7 +25,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PyKota v1.19\n"
+"Project-Id-Version: PyKota v1.20\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-10-11 14:49+0200\n"
 "PO-Revision-Date: 2004-07-21 15:55:00+0100\n"
@@ -257,7 +257,7 @@ msgid ""
 msgstr ""
 
 msgid "You're not allowed to use this command."
-msgstr ""
+msgstr "Vous n'êtes pas autorisé(e) à utiliser cette commande."
 
 #, python-format
 msgid "Invalid softlimit value %s."
@@ -610,22 +610,27 @@ msgstr ""
 #, python-format
 msgid "Invalid modifier [%s] for --data command line option, see help."
 msgstr ""
+"Le modifier [%s] pour l'option de ligne de commande --data est invalide, "
+"voir l'aide."
 
 #, python-format
 msgid "Invalid modifier [%s] for --format command line option, see help."
 msgstr ""
+"Le modifier [%s] pour l'option de ligne de commande --format est invalide, "
+"voir l'aide."
 
 msgid "XML output is disabled because the jaxml module is not available."
-msgstr ""
+msgstr "La sortie XML est désactivée car le module jaxml n'est pas disponible."
 
 msgid "PyKota data dumper failed : I/O error"
-msgstr ""
+msgstr "Erreur de l'exporteur de données de PyKota : erreur d'entrée/sortie"
 
 msgid "The -d | --data command line option is mandatory, see help."
 msgstr ""
+"L'option de ligne de commande -d | --data est obligatoire, voir l'aide."
 
 msgid "Too many arguments, see help."
-msgstr ""
+msgstr "Trop d'arguments, voir l'aide."
 
 msgid "Software accounting already done in first pass. Ignoring."
 msgstr "Décompte logiciel déjà effectué durant la première phase. Ignoré."
@@ -1004,6 +1009,8 @@ msgstr ""
 #, python-format
 msgid "Option onaccountererror in section %s only supports values in %s"
 msgstr ""
+"L'option onaccountererror pour l'imprimante %s supporte seulement les "
+"valeurs %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -1299,6 +1306,8 @@ msgid ""
 "No pykotaAccountBalance object found for user %s. Did you create LDAP "
 "entries manually ?"
 msgstr ""
+"Aucun objet pykotaAccountBalance trouvé pour l'utilisateur %s. Avez vous "
+"créé des entrées LDAP manuellement ?"
 
 #, python-format
 msgid ""
@@ -1320,58 +1329,67 @@ msgstr ""
 
 #, python-format
 msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr ""
+msgstr "Erreur réseau durant les requêtes SNMP sur l'imprimante %s : %s"
 
 #, python-format
 msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr ""
+msgstr "Problème rencontré durant les requêtes SNMP sur l'imprimante %s : %s"
 
 #, python-format
 msgid "Waiting for printer %s to be idle or printing..."
 msgstr ""
+"En attente que l'imprimante %s soit disponible ou en train d'imprimer..."
 
 #, python-format
 msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr ""
+msgstr "En attente que l'état disponible de l'imprimante %s se stabilise..."
 
 #, python-format
 msgid "Problem during connection to %s:%s : %s"
-msgstr ""
+msgstr "Problème durant la connexion à %s:%s : %s"
 
 #, python-format
 msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr ""
+msgstr "Problème lors de l'envoi des requêtes PJL à %s:%s : %s"
 
 #, python-format
 msgid "A problem occured while reading printer %s's internal page counter."
 msgstr ""
+"Un problème est survenu durant la lecture du compteur de pages internes de "
+"l'imprimante %s."
 
 #, python-format
 msgid "Retrieving printer %s's page counter from database instead."
 msgstr ""
+"Récupération du compteur de pages de l'imprimante %s depuis la base de "
+"données."
 
 #, python-format
 msgid ""
 "Couldn't retrieve printer %s's internal page counter either before or after "
 "printing."
 msgstr ""
+"Impossible de récupérer le compteur de page internes de l'imprimante avant "
+"ou après l'impression."
 
 #, python-format
 msgid "Job's size forced to 1 page for printer %s."
-msgstr ""
+msgstr "Taille du travail forcé à 1 page pour l'imprimante %s."
 
 #, python-format
 msgid "No previous job in database for printer %s."
-msgstr ""
+msgstr "Aucun travail précédent pour l'imprimante %s dans la base de données."
 
 #, python-format
 msgid "Inconsistent values for printer %s's internal page counter."
-msgstr ""
+msgstr "Valeurs bizarres pour le compteur de pages interne de l'imprimante %s."
 
 msgid ""
 "Internal SNMP accounting asked, but Python-SNMP is not available. Please "
 "download it from http://pysnmp.sourceforge.net"
 msgstr ""
+"Comptage SNMP interne demandé, mais Python-SNMP n'est pas disponible. Merci "
+"de le télécharger depuis http://pysnmp.sourceforge.net"
 
 #, python-format
 msgid "Unknown printer address in HARDWARE(%s) for printer %s"
@@ -1387,11 +1405,11 @@ msgstr "SIGTERM a été envoyé au compteur hardware %s (pid: %s)"
 
 #, python-format
 msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr ""
+msgstr "Ligne [%s] ignoré dans la sortie du compteur. Réessayer..."
 
 #, python-format
 msgid "Hardware accounter %s exit code is %s"
-msgstr ""
+msgstr "Le code de sortie du compteur hardware %s est %s"
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
@@ -1402,12 +1420,16 @@ msgid ""
 "SNMP querying stage interrupted. Using latest value seen for internal page "
 "counter (%s) on printer %s."
 msgstr ""
+"Interrogation SNMP interrompue. Utilisation de la dernière valeur connue du "
+"compteur (%s) sur l'imprimante %s."
 
 #, python-format
 msgid ""
 "PJL querying stage interrupted. Using latest value seen for internal page "
 "counter (%s) on printer %s."
 msgstr ""
+"Interrogation PJL interrompue. Utilisation de la dernière valeur connue du "
+"compteur (%s) sur l'imprimante %s."
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
@@ -1488,6 +1510,3 @@ msgstr "Options"
 
 msgid "Previous page"
 msgstr "Page précédente"
-
-#~ msgid "Incorrect answer : %s"
-#~ msgstr "Réponse incorrecte : %s"
