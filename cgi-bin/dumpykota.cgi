@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2005/01/08 19:47:00  jalet
+# Fixed a bad copy&paste
+#
 # Revision 1.1  2005/01/08 19:13:11  jalet
 # dumpykota.cgi was added to allow the use of dumpykota through the web.
 # This makes real time interfacing with the third party software phpPrintAnalyzer
@@ -154,7 +157,7 @@ class PyKotaDumperGUI(DumPyKota) :
                     ctype = "text/plain"
                     fname = "page_log"
                 print "Content-type: %s" % ctype    
-                print "Content-disposition: inline; attachment=%s" % fname 
+                print "Content-disposition: attachment; filename=%s" % fname 
                 print
                 try :
                     self.main(self.arguments, self.options)
