@@ -122,7 +122,7 @@ jerome@nordine:~/pykota-1.21_official$
         Of course if your print server and your database servers have different <acronym>IP</acronym>
         addresses, you have to replace the <literal>127.0.0.1</literal> address above with your print
         server's <acronym>IP</acronym> address. As an alternative, you could still keep these
-        lines and add similar lines with other <acronym>IP</acronym> addresses if have several
+        lines and add similar lines with other <acronym>IP</acronym> addresses if you have several
         print servers for which you want a single centralized database.
         <tip>
           <title>Tip</title>
