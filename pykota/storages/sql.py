@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.63  2005/01/01 08:16:17  jalet
+# Fixed a problem which occured when 'limitby' was unset in the PostgreSQL
+# database
+#
 # Revision 1.62  2004/12/21 16:19:44  jalet
 # Fixed the problem with dumpykota's filtering of printers groups membership
 #
@@ -261,7 +265,7 @@ class SQLStorage :
             fields = result[0]
             user.ident = fields.get("id")
             user.Name = fields.get("username", username)
-            user.LimitBy = fields.get("limitby")
+            user.LimitBy = fields.get("limitby") or "quota"
             user.AccountBalance = fields.get("balance")
             user.LifeTimePaid = fields.get("lifetimepaid")
             user.Email = fields.get("email")
@@ -276,7 +280,7 @@ class SQLStorage :
             fields = result[0]
             group.ident = fields.get("id")
             group.Name = fields.get("groupname", groupname)
-            group.LimitBy = fields.get("limitby")
+            group.LimitBy = fields.get("limitby") or "quota"
             group.AccountBalance = fields.get("balance")
             group.LifeTimePaid = fields.get("lifetimepaid")
             group.Exists = 1
@@ -362,7 +366,7 @@ class SQLStorage :
             for record in result :
                 user = StorageUser(self, record.get("username"))
                 user.ident = record.get("userid")
-                user.LimitBy = record.get("limitby")
+                user.LimitBy = record.get("limitby") or "quota"
                 user.AccountBalance = record.get("balance")
                 user.LifeTimePaid = record.get("lifetimepaid")
                 user.Email = record.get("email")
@@ -421,7 +425,7 @@ class SQLStorage :
                 if self.tool.matchString(record.get("username"), names) :
                     user = StorageUser(self, record.get("username"))
                     user.ident = record.get("uid")
-                    user.LimitBy = record.get("limitby")
+                    user.LimitBy = record.get("limitby") or "quota"
                     user.AccountBalance = record.get("balance")
                     user.LifeTimePaid = record.get("lifetimepaid")
                     user.Email = record.get("email") 
