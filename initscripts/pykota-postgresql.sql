@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.9  2003/04/09 20:11:29  jalet
+-- Added a field to save the action taken for this job (Allow, Deny)
+--
 -- Revision 1.8  2003/04/09 20:09:34  jalet
 -- New table to keep job history
 --
@@ -113,6 +116,7 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         jobid TEXT,
                         userid INT4 REFERENCES users(id),
                         printerid INT4 REFERENCES printers(id),
+                        action TEXT,
                         jobsize INT4,
                         jobdate TIMESTAMP DEFAULT now());
                         
