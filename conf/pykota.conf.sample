@@ -31,9 +31,11 @@ storageuser: pykotauser
 
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
+# if the value is not set then the default SYSTEM applies.
 logger: system
 
 # Mail server to use to warn users
+# If the value is not set then localhost is used.
 smtpserver: localhost
 
 # Accounting method
@@ -43,6 +45,8 @@ method: lazy
 # Print Quota administrator
 # These values can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
+# If these values are not set, the default admin root 
+# and the default adminmail root@localhost are used.
 admin: Jerome Alet
 adminmail: alet@librelogiciel.com
 
@@ -54,15 +58,18 @@ adminmail: alet@librelogiciel.com
 # The DevNull value means no email message will be sent.
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
+# If the value is not set, then the default BOTH applies.
 mailto: both
 
 #
 # Grace delay in days
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
+# If the value is not set then the default seven (7) days applies.
 gracedelay: 7
 
-# one section per printer, or no other section at all if all options are defined globally
+# one section per printer, or no other section at all if all options 
+# are defined globally
 [lp]
 
 # How to query the lp printer for its page counter
@@ -84,5 +91,6 @@ requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2
 # either allow or deny
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
+# If the value is not set then the default policy ALLOW applies.
 policy: allow
 

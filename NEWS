@@ -25,6 +25,10 @@ PyKota NEWS :
             - Admin means only the admin will receive them.
             - Both means the User and the Admin will receive them.
             
+        - The configuration file now uses hard-coded default values
+          when an option is not set. See sample configuration file
+          for details.
+          
         - Manual pages are included since 1.00, but I forgot to    
           add this information to this file.
           

@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/03/16 08:00:50  jalet
+# Default hard coded options are now used if they are not set in the
+# configuration file.
+#
 # Revision 1.17  2003/03/15 23:01:28  jalet
 # New mailto option in configuration file added.
 # No time to test this tonight (although it should work).
@@ -151,7 +155,10 @@ class PyKotaConfig :
     def getLoggingBackend(self) :    
         """Returns the logging backend information."""
         validloggers = [ "stderr", "system" ] 
-        logger = self.getGlobalOption("logger").lower()
+        try :
+            logger = self.getGlobalOption("logger").lower()
+        except PyKotaConfigError :    
+            logger = "system"
         if logger not in validloggers :             
             raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
         return logger    
@@ -175,34 +182,52 @@ class PyKotaConfig :
     def getPrinterPolicy(self, printer) :    
         """Returns the default policy for the current printer."""
         validpolicies = [ "ALLOW", "DENY" ]     
-        policy = self.getPrinterOption(printer, "policy").upper()
+        try :
+            policy = self.getPrinterOption(printer, "policy").upper()
+        except PyKotaConfigError :    
+            policy = "ALLOW"
         if policy not in validpolicies :
             raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
         return policy
         
     def getSMTPServer(self) :    
         """Returns the SMTP server to use to send messages to users."""
-        return self.getGlobalOption("smtpserver")
+        try :
+            return self.getGlobalOption("smtpserver")
+        except PyKotaConfigError :    
+            return "localhost"
         
     def getAdminMail(self, printer) :    
         """Returns the Email address of the Print Quota Administrator."""
-        return self.getPrinterOption(printer, "adminmail")
+        try :
+            return self.getPrinterOption(printer, "adminmail")
+        except PyKotaConfigError :    
+            return "root@localhost"
         
     def getAdmin(self, printer) :    
         """Returns the full name of the Print Quota Administrator."""
-        return self.getPrinterOption(printer, "admin")
+        try :
+            return self.getPrinterOption(printer, "admin")
+        except PyKotaConfigError :    
+            return "root"
         
     def getMailTo(self, printer) :    
         """Returns the recipient of email messages."""
         validmailtos = [ "DEVNULL", "BOTH", "USER", "ADMIN" ]
-        mailto = self.getPrinterOption(printer, "mailto").upper()
+        try :
+            mailto = self.getPrinterOption(printer, "mailto").upper()
+        except PyKotaConfigError :    
+            mailto = "BOTH"
         if mailto not in validmailtos :
             raise PyKotaConfigError, _("Option mailto in section %s only supports values in %s") % (printer, str(validmailtos))
         return mailto    
         
     def getGraceDelay(self, printer) :    
         """Returns the grace delay in days."""
-        gd = self.getPrinterOption(printer, "gracedelay")
+        try :
+            gd = self.getPrinterOption(printer, "gracedelay")
+        except PyKotaConfigError :    
+            gd = 7
         try :
             return int(gd)
         except ValueError :    
