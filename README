@@ -119,9 +119,9 @@ into /usr/bin.
 Do this in each ppd file present in this directory if you want
 to enable quota on every printer.
           
-Add users to the quota system and set their quota values : 
+Add printers and users to the quota system and set their quota values : 
 
-        $ edpykota username printer softlimit hardlimit
+        $ edpykota -P printer -S softlimit -H hardlimit user1 ... userN
 
 Restart CUPS, for example under Debian GNU/Linux systems :          
 
