@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2004/12/13 20:48:33  jalet
+# Outputs debug info to stderr
+#
 # Revision 1.45  2004/12/13 20:39:46  jalet
 # Added a --debug command line option to pkpgcounter, for people interested
 # in seeing what happens, and what will be available in the future :-)
@@ -579,7 +582,7 @@ class PCLAnalyzer :
             for pnum in range(pagecount) :
                 # if no number of copies defined, take the preceding one else the one set before any page else 1.
                 page = pages.get(pnum, pages.get(pnum - 1, pages.get(0, { "copies" : 1, "mediasource" : "Main", "mediasize" : "Default", "mediatype" : "Plain", "orientation" : "Portrait"})))
-                print "%s*%s*%s*%s*%s" % (page["copies"], page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"])
+                sys.stderr.write("%s*%s*%s*%s*%s\n" % (page["copies"], page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"]))
             
         return pagecount
         
@@ -885,7 +888,7 @@ class PCLXLAnalyzer :
             copies = page["copies"]
             self.pagecount += (copies - 1)
             if self.debug :
-                print "%s*%s*%s*%s*%s" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"])
+                sys.stdrr.write("%s*%s*%s*%s*%s\n" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"]))
             
         return self.pagecount
         
