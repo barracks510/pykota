@@ -32,6 +32,9 @@ Actual working features :
         
         - Command line print quota automated warning sender : warnpykota
         
+        - Command line tools mimic the disk quota utilities for
+          easier mastering.
+        
         - Centralized storage of quotas : you can manage quotas for
           different printers on different print servers and store them all
           on the same quota storage server. 
