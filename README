@@ -28,7 +28,7 @@ lazy method ?
   or not to print.
   
   Problem may arise however in batches on successive print jobs 
-  my different users when there's no sleep time between two jobs :
+  by different users when there's no sleep time between two jobs :
   the used pages may be attributed to incorrect user. This
   depends on the printer speed and time between jobs.
   
