@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/04/17 09:32:13  jalet
+# Translation
+#
 # Revision 1.17  2003/04/17 09:26:21  jalet
 # repykota now reports account balances too.
 #
@@ -149,7 +152,7 @@ msgid "Invalid hardlimit value %s."
 msgstr "Valeur %s invalide pour la limite dure."
 
 msgid  "Group           used    soft    hard    balance grace         total       paid"
-msgstr "Groupe          util    soft    hard    solde   grâce         total       payé"
+msgstr "Groupe          util    soft    hard      solde grâce         total       payé"
 
 msgid "There's no printer matching %s"
 msgstr "Aucune imprimante ne correspond à %s"
@@ -164,7 +167,7 @@ msgid "Invalid group name %s"
 msgstr "Nom de groupe %s invalide"
 
 msgid  "User            used    soft    hard    balance grace         total       paid"
-msgstr "Utilisateur     util    soft    hard    solde   grâce         total       payé"
+msgstr "Utilisateur     util    soft    hard      solde grâce         total       payé"
 
 msgid "Invalid printer name %s"
 msgstr "Nom d'imprimante %s invalide"
