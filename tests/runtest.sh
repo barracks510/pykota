@@ -14,5 +14,6 @@ python ../pykota/pdlanalyzer.py master2.ps
 
 echo "Analyzing testsuite..."
 for file in testsuite.* ; do
-    echo -n "$file ===> " && python ../pykota/pdlanalyzer.py "$file" ;
+    echo -n "$file ===> " && python ../pykota/pdlanalyzer.py --debug "$file" ;
+    echo ;
 done    
