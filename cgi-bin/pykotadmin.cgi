@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/07/28 21:16:24  jalet
+# Cleanly deactivate pykotadmin.cgi
+#
 # Revision 1.1  2003/05/03 17:33:08  jalet
 # First shot at the complete web-based administrative interface.
 #
@@ -112,6 +115,7 @@ class PyKotaAdminGUI(PyKotaTool) :
         self.body = self.body + self.htmlListPrinters()            
     
 if __name__ == "__main__" :
-    admin = PyKotaAdminGUI()
-    admin.guiAction()
-    admin.guiDisplay()
+    #admin = PyKotaAdminGUI()
+    #admin.guiAction()
+    #admin.guiDisplay()
+    print "Content-type: text/html\n\n<html><head><title>PyKotAdmin.cgi</title></head><body>This program is actually a draft. Don't use it !</body></html>"
