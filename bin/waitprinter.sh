@@ -74,7 +74,7 @@ function main() {
         log_msg "BEGIN"
         ##log_msg "`ls -la /var/spool/{cups,samba}`"
         log_msg "Pykota Phase: ${PYKOTAPHASE}"
-        if [ x$PYKOTAACTION != "xDENY" ] && [ x$PYKOTAPHASE = "xAFTER" ] ; then
+        if [ x$PYKOTASTATUS != "xCANCELLED" ] && [ x$PYKOTAACTION != "xDENY" ] && [ x$PYKOTAPHASE = "xAFTER" ] ; then
                 printing_wait "${printer}"
         fi
         idle_wait "${printer}" #in any case
