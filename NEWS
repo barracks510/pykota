@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14alpha5 :
+        
+        - Big bug fixed when changing the prices for a printer
+        
     - 1.14alpha4 :
     
         - When adding an user, the user itself and its account balance

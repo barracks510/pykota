@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/07/14 17:20:15  jalet
+# Bug in postgresql storage when modifying the prices for a printer
+#
 # Revision 1.8  2003/07/14 14:18:17  jalet
 # Wrong documentation strings
 #
@@ -359,7 +362,7 @@ class Storage :
         
     def writePrinterPrices(self, printer) :    
         """Write the printer's prices back into the storage."""
-        self.doModify("UPDATE printers SET priceperpage=%s, priceperjob=%s WHERE printerid=%s" % (self.doQuote(printer.PricePerPage), self.doQuote(printer.PricePerJob), self.doQuote(printer.ident)))
+        self.doModify("UPDATE printers SET priceperpage=%s, priceperjob=%s WHERE id=%s" % (self.doQuote(printer.PricePerPage), self.doQuote(printer.PricePerJob), self.doQuote(printer.ident)))
         
     def writeUserLimitBy(self, user, limitby) :    
         """Sets the user's limiting factor."""
