@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/05/21 20:53:34  jalet
+# Now pykotme doesn't spawn a new process anymore to compute job's size, but
+# use the PDLAnalyzer class directly
+#
 # Revision 1.8  2004/05/10 07:23:21  jalet
 # pykotme now uses pkpgcounter to compute the job's size.
 #
@@ -62,6 +66,7 @@ from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
+from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
 
 __doc__ = """pykotme v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 
@@ -121,40 +126,38 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
+        
 class PyKotMe(PyKotaTool) :        
     """A class for pykotme."""
     def main(self, files, options) :
         """Gives print quotes."""
         if (not sys.stdin.isatty()) and ("-" not in files) :
             files.append("-")
-        pipe = os.popen("pkpgcounter %s" % " ".join([' "%s"' % f for f in files]))
-        answer = pipe.readline().strip()
-        status = pipe.close()
-        try :
-            if status is None :
-                nbpages = int(answer)
-            else :        
-                raise ValueError, "ERROR in pkpgcounter" 
-        except ValueError, msg :    
-            sys.stderr.write(_("Unable to compute size of %s in number of pages.\n") % files)
-            sys.stderr.write("%s\n" % msg)
-        else :    
-            # get current user
-            uid = os.geteuid()
-            username = pwd.getpwuid(uid)[0]
-            user = self.storage.getUser(username)
-            if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
-                print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
-                
-            printers = self.storage.getMatchingPrinters(options["printer"])
-            if not printers :
-                raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-                
-            print _("Job size : %i pages") % nbpages    
-            for printer in printers :
-                userpquota = self.storage.getUserPQuota(user, printer)
-                cost = userpquota.computeJobPrice(nbpages)
-                print _("Cost on printer %s : %.2f") % (printer.Name, cost)
+        totalsize = 0    
+        for filename in files :    
+            try :
+                parser = PDLAnalyzer(filename)
+                totalsize += parser.getJobSize()
+            except PDLAnalyzerError, msg :    
+                sys.stderr.write("%s\n" % msg)
+                sys.stderr.flush()
+            
+        # get current user
+        uid = os.geteuid()
+        username = pwd.getpwuid(uid)[0]
+        user = self.storage.getUser(username)
+        if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
+            print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
+            
+        printers = self.storage.getMatchingPrinters(options["printer"])
+        if not printers :
+            raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
+            
+        print _("Job size : %i pages") % totalsize    
+        for printer in printers :
+            userpquota = self.storage.getUserPQuota(user, printer)
+            cost = userpquota.computeJobPrice(totalsize)
+            print _("Cost on printer %s : %.2f") % (printer.Name, cost)
             
 if __name__ == "__main__" : 
     retcode = 0

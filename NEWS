@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha10 :
     
+        - pykotme now uses generic PDL Analyzer directly instead
+          of spawning a new process.
+          
         - Improvements to generic PDL Analyzer.
         
         - 25% Speedup in PCL parser. Getting more of the Python version
