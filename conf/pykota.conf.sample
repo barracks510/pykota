@@ -59,6 +59,6 @@ snmpcmnty: public
 snmpoid: 43.10.2.1.4.1.1
 #
 # Default policy for inexistant users (e.g. root)
-# either accept or deny
-policy: accept
+# either allow or deny
+policy: allow
 

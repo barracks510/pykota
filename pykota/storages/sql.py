@@ -14,6 +14,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/06 09:19:02  jalet
+# More robust behavior (hopefully) when the user or printer is not managed
+# correctly by the Quota System : e.g. cupsFilter added in ppd file, but
+# printer and/or user not 'yet?' in storage.
+#
 # Revision 1.5  2003/02/05 23:26:22  jalet
 # Incorrect handling of grace delay
 #
@@ -59,29 +64,36 @@ class SQLStorage :
         return self.doQuery("UPDATE printers SET pagecounter=%s, lastusername=%s WHERE printername=%s;" % (self.doQuote(pagecount), self.doQuote(username), self.doQuote(printername)))
         
     def addUserPQuota(self, username, printername) :
-        printerid = self.getPrinterId(printername)
+        (userid, printerid) = self.getUPIds(username, printername)
         if printerid is None :    
             self.doQuery("INSERT INTO printers (printername) VALUES (%s);" % self.doQuote(printername))
-            printerid = self.getPrinterId(printername)
-        userid = self.getUserId(username)
         if userid is None :    
             self.doQuery("INSERT INTO users (username) VALUES (%s);" % self.doQuote(username))
-            userid = self.getUserId(username)
-        if (printerid is not None) and (userid is not None) :    
+        (userid, printerid) = self.getUPIds(username, printername)
+        if (userid is not None) and (printerid is not None) :
             return self.doQuery("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s);" % (self.doQuote(userid), self.doQuote(printerid)))
         
+    def getUPIds(self, username, printername) :    
+        return (self.getUserId(username), self.getPrinterId(printername))
+        
     def getUserPQuota(self, username, printername) :
-        result = self.doQuery("SELECT pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
-        try :
-            return self.doParseResult(result)[0]
-        except TypeError :      # Not found    
-            return
+        (userid, printerid) = self.getUPIds(username, printername)
+        if (userid is not None) and (printerid is not None) :
+            result = self.doQuery("SELECT pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
+            try :
+                return self.doParseResult(result)[0]
+            except TypeError :      # Not found    
+                pass
         
     def setUserPQuota(self, username, printername, softlimit, hardlimit) :
-        self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
+        (userid, printerid) = self.getUPIds(username, printername)
+        if (userid is not None) and (printerid is not None) :
+            self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userid), self.doQuote(printerid)))
         
     def updateUserPQuota(self, username, printername, pagecount) :
-        self.doQuery("UPDATE userpquota SET pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s;" % (self.doQuote(pagecount), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
+        (userid, printerid) = self.getUPIds(username, printername)
+        if (userid is not None) and (printerid is not None) :
+            self.doQuery("UPDATE userpquota SET pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s;" % (self.doQuote(pagecount), self.doQuote(userid), self.doQuote(printerid)))
         
     def buyUserPQuota(self, username, printername, pagebought) :
         self.updateUserPQuota(username, printername, -pagebought)
