@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2003/10/06 14:21:41  jalet
+# Test reversed to not retrieve group members when no messages for them.
+#
 # Revision 1.50  2003/10/02 20:23:18  jalet
 # Storage caching mechanism added.
 #
@@ -504,8 +507,8 @@ class PyKotaTool :
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-            for user in self.storage.getGroupMembers(group) :
-                if mailto in [ "BOTH", "USER" ] :
+            if mailto in [ "BOTH", "USER" ] :
+                for user in self.storage.getGroupMembers(group) :
                     self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
         elif action == "WARN" :    
             adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
@@ -516,8 +519,8 @@ class PyKotaTool :
                 message = self.config.getPoorWarn()
             else :     
                 message = self.config.getSoftWarn(printer.Name)
-            for user in self.storage.getGroupMembers(group) :
-                if mailto in [ "BOTH", "USER" ] :
+            if mailto in [ "BOTH", "USER" ] :
+                for user in self.storage.getGroupMembers(group) :
                     self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
         return action        
         
