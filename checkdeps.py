@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/11/15 21:11:01  jalet
+# Modified some labels for Python modules
+#
 # Revision 1.2  2004/11/15 21:08:01  jalet
 # Now checks for the presence of ReportLab and PIL
 #
@@ -78,8 +81,8 @@ if __name__ == "__main__" :
         sys.exit(-1)
         
     # checks if some needed Python modules are there or not.
-    modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend.\nSee http://www.pygresql.org"),
-                       ("mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"),
+    modulestocheck = [ ("Python-PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend.\nSee http://www.pygresql.org"),
+                       ("Python-egenix-mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"),
                        ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.\nSee http://python-ldap.sf.net"),
                        ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
                        ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
