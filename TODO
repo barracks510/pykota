@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Add an MD5 checksum of the job's datas to the
+          history, to be able to discover duplicate print
+          jobs.
+          
         - Add --hardreset command line option to
           edpykota to also reset lifetime page counters to 0.
           
