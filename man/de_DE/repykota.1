@@ -5,54 +5,55 @@ repykota \- manual page for repykota 1.20beta_unofficial
 .SH DESCRIPTION
 repykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Generates print quota reports.
+Erzeugt Berichte zu den Druckkontingenten.
 .PP
-command line usage :
+Kommandozeilen-Gebrauch:
 .IP
-repykota [options]
-.PP
-options :
+repykota [Optionen]
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints repykota's version number then exits.
+Gibt die Versionsnummer von repykota aus und endet.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Gibt diese Meldung aus und endet.
 .TP
 \fB\-u\fR | \fB\-\-users\fR
-Generates a report on users quota, this is
-the default.
+Erzeugt einen Bericht über die Kontigente der Nutzer.
+Dies ist der Standard.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Generates a report on group quota instead of users.
+Erzeugt einen Bericht über die Kontingente der Gruppe
+anstelle der Nutzer.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Report quotas on this printer only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Druckkontingent nur für diesen Drucker ausgeben.
+p kann Platzhalter enthalten um nur einige Drucker
+auszuwählen. Der Standardwert ist *, d.h. alle
+Drucker.
+Sie können verschiedene Namen oder Platzhalter angeben,
+die Sie mit Kommas abtrennen.
 .PP
-examples :
+Beispiele:
 .IP
 \f(CW$ repykota --printer lp\fR
 .IP
-This will print the quota status for all users who use the lp printer.
+Dies gibt den Stand der Kontingente aller Nutzer aus, die den
+Drucker lp benutzen.
 .IP
 \f(CW$ repykota\fR
 .IP
-This will print the quota status for all users on all printers.
+Dies gibt den Stand der Kontingente für alle Nutzer auf allen Druckern aus.
 .IP
 \f(CW$ repykota --printer "laser*,*pson" jerome "jo*"\fR
 .IP
-This will print the quota status for user jerome and all users
-whose name begins with "jo" on all printers which name begins
-with "laser" or ends with "pson".
+Dies gibt den Stand der Kontingente für den Nutzer jerome und für alle
+Nutzer aus, deren Namen mit "jo" beginnt, auf allen Druckern, deren Namen
+mit "laser" beginnt oder mit "pson" endet.
 .IP
-If launched by an user who is not a PyKota administrator, additionnal
-arguments representing users or groups names are ignored, and only the
-current user/group is reported.
+Wenn das Programm von einem Nutzer aufgerufen wird, der kein
+PyKota-Administrator ist, so werden die zusätzlichen Optionen für Nutzer
+oder Gruppen ignoriert und nur die Daten des aktuellen Nutzers/Gruppe
+ausgegeben.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,4 +69,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Melden Sie bitte Fehler an: Jerome Alet - alet@librelogiciel.com

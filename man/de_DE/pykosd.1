@@ -4,47 +4,48 @@
 pykosd \- manual page for pykosd 1.20beta_unofficial
 .SH DESCRIPTION
 pykosd v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
-An OSD quota monitor for PyKota.
+Ein OSD Kontingent-Anzeiger für PyKota.
 .PP
-command line usage :
+Kommandozeilen-Gebrauch:
 .IP
-pykosd [options]
+pykosd [Optionen]
 .PP
-options :
+Optionen:
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pykosd's version number then exits.
+Gibt die Versionsnummer von pykosd aus und endet.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Gibt diese Meldung aus und endet.
 .TP
-\fB\-c\fR | \fB\-\-color\fR #rrggbb Sets the color to use for display as an hexadecimal
-triplet, for example #FF0000 is 100% red.
-Defaults to 100% green (#00FF00).
+\fB\-c\fR | \fB\-\-color\fR #rrggbb Stellt die Farbe für die Anzeige in Form eines
+hexadezimalen Triplets ein; zum Beipiel: #FF0000 ist 100% rot.
+Standard ist 100% grün (#00FF00).
 .TP
 \fB\-d\fR | \fB\-\-duration\fR d
-Sets the duration of the display in seconds.
-Defaults to 3 seconds.
+Stellt die Dauer der Anzeige in Sekunden ein.
+Standard ist 3 Sekunden.
 .TP
 \fB\-f\fR | \fB\-\-font\fR f
-Sets the font to use for display.
-Defaults to the Python OSD library's default.
+Stellt die Schriftart für die Anzeige ein.
+Standard ist der Standard der Python OSD Bibliothek.
 .TP
 \fB\-l\fR | \fB\-\-loop\fR n
-Sets the number of times the info will be displayed.
-Defaults to 0, which means loop forever.
+Stellt ein, wie oft die Information angezeigt wird.
+Standard ist 0, das heißt immer.
 .TP
 \fB\-s\fR | \fB\-\-sleep\fR s
-Sets the sleeping duration between two displays
-in seconds. Defaults to 180 seconds (3 minutes).
+Stellt die Schlafdauer zwischen zwei Anzeigen in
+Sekunden ein.
+Standard ist 180 Sekunden (3 Minuten).
 .PP
-examples :
+Beispiele:
 .IP
 \f(CW$ pykosd -s 60 --loop 5\fR
 .IP
-Will launch pykosd. Display will be refreshed every 60 seconds,
-and will last for 3 seconds (the default) each time. After five
-iterations, the program will exit.
+Startet pykosd. Die Anzeige wird alle 60 Sekunden erneuert und dauert
+jedes Mal 3 Sekunden (der Standardwert). Nach fünf Durchläufen endet
+das Programm.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -60,4 +61,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Melden Sie bitte Fehler an: Jerome Alet - alet@librelogiciel.com

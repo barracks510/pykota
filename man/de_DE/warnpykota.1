@@ -5,59 +5,56 @@ warnpykota \- manual page for warnpykota 1.20beta_unofficial
 .SH DESCRIPTION
 warnpykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Sends mail to users over print quota.
+Sendet Post an die Nutzer bezüglich Druckerkontingente.
 .PP
-command line usage :
+Befehlszeilen-Gebrauch:
 .TP
 warnpykota
-[options]  [names]
+[Optionen]  [Namen]
 .PP
-options :
+Optionen:
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints warnpykota's version number then exits.
+Gibt die Version von warnpykota aus und endet.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Gibt diese Meldung aus und endet.
 .TP
 \fB\-u\fR | \fB\-\-users\fR
-Warns users over their print quota, this is the
-default.
+Warnt die Nutzer bezüglich ihres Druckerkontingents.
+Das ist der Standard.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Warns users whose groups quota are over limit.
+Warnt die Nutzer deren Gruppen über dem Limit sind.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Verify quotas on this printer only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Verfiziert die Kontingente allein für diesen Drucker.
+p kann Platzhalter enthalten um nur einige Drucker
+auszuwählen. Standardwert ist *, d.h. alle Drucker.
+Sie können verschiedene Namen und Platzhalter angeben,
+die Sie mit Kommas abtrennen müssen.
 .PP
-examples :
+Beispiele:
 .IP
 \f(CW$ warnpykota --printer lp\fR
 .IP
-This will warn all users of the lp printer who have exceeded their
-print quota.
+Dies warnt alle Nutzer des Druckers lp, die ihr Druckkontingent
+überschritten haben.
 .IP
 \f(CW$ warnpykota\fR
-.TP
-This will warn all users
-who have exceeded their print quota on
 .IP
-any printer.
+Dies warnt alle Nutzer die Ihr Druckkontingent auf irgendeinem
+Drucker überschritten haben.
 .IP
 \f(CW$ warnpykota --groups --printer "laserjet*" "dev*"\fR
 .IP
-This will warn all users of groups which names begins with "dev" and
-who have exceeded their print quota on any printer which name begins
-with "laserjet"
+Dies warnt alle Nutzer der Gruppen, deren Namen mit "dev" beginnen und
+die ihr Druckkontingent auf irgendeinem Drucker, dessen Name mit
+"laserjet" beginnt.
 .IP
-If launched by an user who is not a PyKota administrator, additionnal
-arguments representing users or groups names are ignored, and only the
-current user/group is reported.
+Wenn das Programm von einem Nutzer aufgerufen wird, der nicht ein
+Pykota-Administrator ist, werden die Optionen für Nutzer- und
+Gruppennamen ignoriert und nur der aktuelle Nutzer/Gruppe angezeigt.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -73,4 +70,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Melden Sie bitte Fehler an: Jerome Alet - alet@librelogiciel.com

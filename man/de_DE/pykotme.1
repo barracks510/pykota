@@ -5,49 +5,46 @@ pykotme \- manual page for pykotme 1.20beta_unofficial
 .SH DESCRIPTION
 pykotme v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Gives print quotes to users.
+Gibt den Nutzern Druckerkontingente an.
 .PP
-command line usage :
+Kommandozeilen-Gebrauch:
 .TP
 pykotme
-[options]  [files]
-.PP
-options :
+[Optionen]  [Dateien]
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pykotme's version number then exits.
+Gibt die Versionsnummer von pyktome aus und endet.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Gibt diese Nachricht aus und endet.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Gives a quote for this printer only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Zeigt ein Kontingent ausschliesslich für diesen Drucker an.
+p kann Platzhalter enthalten um nur einige Drucker
+auszuwählen. Standardwert ist *, d.h. alle Drucker.
+Sie können verschiedene Namen oder Platzhalter,
+durch Kommas getrennt, angeben.
 .PP
-examples :
+Beispiele:
 .IP
 \f(CW$ pykotme --printer apple file1.ps file2.ps\fR
 .IP
-This will give a print quote to the current user. The quote will show
-the price and size of a job consisting in file1.ps and file2.ps
-which would be sent to the apple printer.
+Dies gibt ein Druckkontingent für den aktuellen Nutzer an. Das Kontingent
+wird mit dem Preis und der Größe eines Auftrags auf Basis von file1.ps
+und file2.ps angegeben, wenn sie an den Drucker apple gesendet würden.
 .IP
 \f(CW$ pykotme --printer apple,hplaser <file1.ps\fR
 .IP
-This will give a print quote to the current user. The quote will show
-the price and size of a job consisting in file1.ps as read from
-standard input, which would be sent to the apple or hplaser
-printer.
+Dies gibt ein Druckkontingent für den aktuellen Nutzer an. Das Kontingent
+wird mit dem Preis und der Größe eines Auftrags auf Basis von file1.ps,
+angegeben, so wie sie vom Standard Input her gelesen wird, wenn sie an
+den Drucker apple oder hplaser gesendet würde.
 .IP
 \f(CW$ pykotme\fR
 .IP
-This will give a quote for a job consisting of what is on standard
-input. The quote will list the job size, and the price the job
-would cost on each printer.
+Dies gibt ein Kontingent für einen Auftrag an, der aus dem besteht, was
+via Standard Input ankommt. Das Kontingent zeigt die Größe des Auftrags
+und den Preis, den der Auftrag auf jedem Drucker kosten würde.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,4 +60,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Melden Sie bitte Fehler an: Jerome Alet - alet@librelogiciel.com

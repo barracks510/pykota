@@ -4,179 +4,188 @@
 edpykota \- manual page for edpykota 1.20beta_unofficial
 .SH DESCRIPTION
 edpykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
-A Print Quota editor for PyKota.
+Ein Druckerkontingent-Editor für PyKota.
 .PP
-command line usage :
+Kommandozeilen-Gebrauch:
 .IP
 edpykota [options] user1 user2 ... userN
 .IP
 edpykota [options] group1 group2 ... groupN
 .PP
-options :
+Optionen:
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints edpykota's version number then exits.
+Gibt die Versionsnummer von edpykota aus und endet.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Gibt diese Meldung aus und endet.
 .TP
 \fB\-a\fR | \fB\-\-add\fR
-Adds users and/or printers if they don't
-exist on the Quota Storage Server.
+Fügt neue Nutzer und/oder Drucker hinzu, wenn sie
+noch nicht im der Datenbank des Kontigentservers vorhanden sind.
 .TP
 \fB\-d\fR | \fB\-\-delete\fR
-Deletes users/groups from the quota storage.
-Printers are never deleted.
+Löscht Nutzer/Gruppen aus der Kontigentsverwaltung.
+Drucker werden nie gelöscht.
 .TP
 \fB\-c\fR | \fB\-\-charge\fR p[,j]
-Sets the price per page and per job to charge
-for a particular printer. Job price is optional.
-If both are to be set, separate them with a comma.
-Floating point values are allowed.
+Setzt den Preis pro Seite und pro Auftrag fest, der
+für den betreffenden Drucker festgesetzt ist. Der Preis
+pro Auftrag ist fakultativ. Werden beide verwendet,
+trennen Sie sie mit einem Komma ab.
+Fließkommazahlen sind erlaubt.
 .TP
-\fB\-i\fR | \fB\-\-ingroups\fR g1[,g2...]
-Puts the users into each of the groups
-listed, separated by commas. The groups
-must already exist in the Quota Storage.
+\fB\-i\fR | \fB\-\-ingroups\fR g1[,g2...] Fügt den Nutzer in jede der aufgeführten
+Gruppen ein, Trennung mit Kommas. Die Gruppen
+müssen schon in der Kontingentdatenbank existieren.
 .TP
 \fB\-u\fR | \fB\-\-users\fR
-Edit users print quotas, this is the default.
+Ediert das Kontingent für den Nutzer, dies ist der Standard.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
-Edit quotas on printer p only. Actually p can
-use wildcards characters to select only
-some printers. The default value is *, meaning
-all printers.
-You can specify several names or wildcards,
-by separating them with commas.
+Ediert das Kontingent nur auf dem Drucker p. p kann aber
+Platzhalter-Zeichen enthalten um nur einige Drucker
+auszuwählen. Der Standardwert ist *, das heisst alle
+Drucker
+Sie können verschiedene Namen oder Platzhalter,
+getrennt durch Kommas, angeben.
 .TP
-\fB\-G\fR | \fB\-\-pgroups\fR pg1[,pg2...] Adds the printer(s) to the printer groups
-pg1, pg2, etc... which must already exist.
-A printer group is just like a normal printer,
-only that it is usually unknown from the printing
-system. Create printer groups exactly the same
-way that you create printers, then add other
-printers to them with this option.
-Accounting is done on a printer and on all
-the printer groups it belongs to, quota checking
-is done on a printer and on all the printer groups
-it belongs to.
+\fB\-G\fR | \fB\-\-pgroups\fR pg1[,pg2...] Fügt den/die Drucker der Druckergruppen pg1,
+pg2, etc..., die schon existieren müssen, hinzu.
+Eine Druckergruppe ist wie ein normaler Drucker,
+bloss kennt man ihn üblicherweise nicht im
+Drucksystem. Richten Sie Druckergruppen genau
+gleich wie Drucker ein, dann fügen Sie andere
+Drucker mit dieser Option dazu.
+Accounting wird für einen Drucker und für alle
+Druckergruppen, denen er angehört, gemacht,
+die Kontingentüberprüfung wird für den Drucker
+und für alle Druckergruppen, zu denen er gehört,
+gemacht.
 .TP
 \fB\-g\fR | \fB\-\-groups\fR
-Edit users groups print quotas instead of users.
+Ediert Nutzergruppen-Kontingente anstelle von
+Einzelnutzern.
 .TP
-\fB\-p\fR | \fB\-\-prototype\fR u|g Uses user u or group g as a prototype to set
-print quotas
+\fB\-p\fR | \fB\-\-prototype\fR u|g Benutzt Nutzer u oder Gruppe g als Vorlage, um
+Druckkontingente zu setzen.
 .TP
 \fB\-n\fR | \fB\-\-noquota\fR
-Doesn't set a quota but only does accounting.
+Setzt keine Kontingentsbeschränkung, sondern
+macht bloss Accounting.
 .TP
 \fB\-r\fR | \fB\-\-reset\fR
-Resets the actual page counter for the user
-or group to zero on the specified printers.
-The life time page counter is kept unchanged.
+Setzt den aktuellen Seitenzähler auf den
+angegebenen Druckern für den Nutzer oder für
+die Gruppe auf Null zurück. Der lebenslängliche
+Seitenzähler bleibt unverändert.
 .TP
 \fB\-R\fR | \fB\-\-hardreset\fR
-Resets the actual and life time page counters
-for the user or group to zero on the specified
-printers.
+Setzt den aktuellen und den lebenslänglichen
+Seitenzähler auf den angegebenen Druckern für
+den Nutzer oder die Gruppe auf Null zurück.
 .TP
 \fB\-l\fR | \fB\-\-limitby\fR l
-Choose if the user/group is limited in printing
-by its account balance or by its page quota.
-The default value is 'quota'. Allowed values
-are 'quota' 'balance' 'quota-then-balance' and
+Bestimmen Sie, ob der Nutzer/die Gruppe für das
+Drucken via account balance oder via Seitenkontingent
+limitiert wird.
+Der Standardwert ist 'quota'. Erlaubte Werte sind
+\&'quota' 'balance' 'quota-then-balance' und
 \&'balance-then-quota'.
-WARNING : quota-then-balance and balance-then-quota
-are not yet implemented.
+ACHTUNG: quota-then-balance und balance-then-quota
+sind noch nicht implementiert.
 .TP
 \fB\-b\fR | \fB\-\-balance\fR b
-Sets the user's account balance to b.
-Account balance may be increase or decreased
-if b is prefixed with + or -.
-WARNING : when decreasing account balance,
-the total paid so far by the user is decreased
-too.
-Groups don't have a real balance, but the
-sum of their users' account balance.
+Setzt die Abrechnungsbalance für den Nutzer auf b.
+Die Abrechnungsbalance kann erhöht oder vermindert
+werden, wenn b das Vorzeichen + oder - trägt.
+ACHTUNG: wenn die Abrechnungsbalance vermindert wird,
+wird auch die Gesamtsumme, die der Nutzer bis anhin
+bezahlt hat, ebenso vermindert.
+Gruppen haben keine eigentliche Balance, sondern
+die Summe der Balance ihrer Nutzer.
 .TP
 \fB\-S\fR | \fB\-\-softlimit\fR sl
-Sets the quota soft limit to sl pages.
+Setzt die weiche Kontingentslimite auf sl Seiten.
 .TP
 \fB\-H\fR | \fB\-\-hardlimit\fR hl
-Sets the quota hard limit to hl pages.
+Setzt die harte Kontingentslimita auf hl Seiten.
 .IP
-user1 through userN and group1 through groupN can use wildcards
-if the \fB\-\-add\fR option is not set.
-.PP
-examples :
+user1 bis userN und group1 bis groupN können Platzhalter benutzen,
+wenn die Option \fB\-\-add\fR nicht gesetzt ist.
+.SS "Beispiele:"
 .IP
-\f(CW$ edpykota --add -p jerome john paul george ringo/ringo@example.com\fR
+$ edpykota \fB\-\-add\fR \fB\-p\fR jerome john paul george ringo/ringo@example.com
 .IP
-This will add users john, paul, george and ringo to the quota
-database, and set their print quotas to the same values than user
-jerome. User jerome must already exist.
-User ringo's email address will also be set to 'ringo@example.com'
+Nutzer john, paul, george und ringo werden zur Kontingent-Datenbank
+hinzugefügt, alle ihre Druckerkontingentwerte werden auf den den Wert
+von Nutzer jerome gesetzt. Der Nutzer jerome muss schon existieren.
 .IP
 \f(CW$ edpykota --printer lp -S 50 -H 60 jerome\fR
 .IP
-This will set jerome's print quota on the lp printer to a soft limit
-of 50 pages, and a hard limit of 60 pages. If either user jerome or
-printer lp doesn't exist on the Quota Storage Server then nothing is done.
+Dies setzt das Druckerkontingent von jerome für den lp Drucker auf
+eine weiche Grenze von 50 Seiten und auf eine harte Grenze von 80
+Seiten. Wenn entweder der Nutzer jerome oder der Drucker lp nicht
+exisitiert, wird nichts ausgeführt.
 .IP
 \f(CW$ edpykota --add --printer lp --ingroups coders,it -S 50 -H 60 jerome\fR
 .IP
-Same as above, but if either user jerome or printer lp doesn't exist
-on the Quota Storage Server they are automatically added. Also
-user jerome is put into the groups "coders" and "it" which must
-already exist in the Quota Storage.
+Das gleiche wie oben, doch wenn entweder der Nutzer jerome oder der
+Drucker lp auf dem Kontingentverwaltungsserver nicht exisitieren,
+werden sie automatisch angelegt. Desgleichen wird der Nutzer jerome
+in die Gruppen 'coders' und 'it' eingefügt, die aber schon in der
+Kontingentverwaltung existieren müssen.
 .IP
 \f(CW$ edpykota -g -S 500 -H 550 financial support\fR
 .IP
-This will set print quota soft limit to 500 pages and hard limit
-to 550 pages for groups financial and support on all printers.
+Dies setzt den Gruppen 'financial' und 'support' das weiche
+Druckerkontingent auf 500 und das harte auf 550 Seiten für alle
+Drucker.
 .IP
 \f(CW$ edpykota --reset jerome "jo*"\fR
 .IP
-This will reset jerome's page counter to zero on all printers, as
-well as every user whose name begins with 'jo'.
-Their life time page counter on each printer will be kept unchanged.
-You can also reset the life time page counters by using the
-\fB\-\-hardreset\fR | \fB\-R\fR command line option.
+Dies setzt den Seitenzähler für jerome auf allen Druckern auf Null
+zurück, ebenso für alle Nutzer, deren Namen mit 'jo' beginnt.
+Ihre lebenslänglichen Seitenzähler auf den einzelnen Druckern bleibt
+unverändert.
+Sie können die lebenslänglichen Seitenzähler mit der
+Kommandozeilenoption \fB\-\-hardreset\fR | \fB\-R\fR zurücksetzen.
 .IP
 \f(CW$ edpykota --printer hpcolor --noquota jerome\fR
 .IP
-This will tell PyKota to not limit jerome when printing on the
-hpcolor printer. All his jobs will be allowed on this printer, but
-accounting of the pages he prints will still be kept.
-Print Quotas for jerome on other printers are unchanged.
+Dies weist Pykota an, jerome beim Drucken auf dem Drucker hpcolor
+keine Limiten aufzuerlegen. Alle seine Aufträge auf diesen Drucker
+werden zugelassen, doch die Abrechnung der Seiten bleibt.
+Druckerkontingente für jerome auf den anderen Druckern bleiben
+unverändert.
 .IP
 \f(CW$ edpykota --limitby balance jerome\fR
 .IP
-This will tell PyKota to limit jerome by his account's balance
-when printing.
+Das weist Pykota an, jerome beim Drucken via Konto-Balance zu
+begrenzen.
 .IP
 \f(CW$ edpykota --balance +10.0 jerome\fR
 .IP
-This will increase jerome's account balance by 10.0 (in your
-own currency). You can decrease the account balance with a
-dash prefix, and set it to a fixed amount with no prefix.
+Dies erhöht den Kontostand von jerome mit 10.0 (in Ihrer Währung).
+Sie können den Stand mit einem Minuszeichen erniedrigen und ihn,
+wenn sie kein Vorzeichen eingeben, auf einen fixen Betrag festlegen.
 .IP
 \f(CW$ edpykota --delete jerome rachel\fR
 .IP
-This will completely delete jerome and rachel from the Quota Storage
-database. All their quotas and jobs will be deleted too.
+Dies löscht jerome und rachel komplett aus der Kontingendatenbank.
+Alle ihre Kontingenge und Aufträge werden ebenfalls gelöscht.
 .IP
 \f(CW$ edpykota --printer lp --charge 0.1\fR
 .IP
-This will set the page price for printer lp to 0.1. Job price
-will not be changed.
+Dies setzt den Seitenpreis auf dem Drucker lp auf 0.1. Der Preis
+pro Auftrag wird nicht verändert.
 .IP
 \f(CW$ edpykota --printer hplj1,hplj2 --pgroups Laser,HP\fR
 .IP
-This will put printers hplj1 and hplj2 in printers groups Laser and HP.
-When printing either on hplj1 or hplj2, print quota will also be
-checked and accounted for on virtual printers Laser and HP.
+Dies fügt die Drucker hplj1 und hlpj2 in die Druckergruppen Laser
+und HP ein. Wenn entweder auf hplj1 oder hplj2 gedruckt wird, wird
+das Druckerkontingent ebenso für die virtuellen Drucker Laser und
+HP beachtet und berechnet.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -192,4 +201,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Melden Sie bitte Fehler an: Jerome Alet - alet@librelogiciel.com

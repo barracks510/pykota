@@ -5,63 +5,70 @@ dumpykota \- manual page for dumpykota 1.20beta_unofficial
 .SH DESCRIPTION
 dumpykota v1.20beta_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Dumps PyKota database's content.
+Erzeugt einen Dump des Inhalts der Pykota-Datenbank.
 .PP
-command line usage :
+Kommandozeilen-Gebrauch:
 .IP
-dumpykota [options]
+dumpykota [Optionen]
 .PP
-options :
+Optionen:
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints dumpykota's version number then exits.
+Gibt die Versionsnummer von dumpykota aus und endet.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Gibt diese Meldung aus und endet.
 .TP
 \fB\-d\fR | \fB\-\-data\fR type
-Dumps 'type' datas. Allowed types are :
+Dumpt 'type' Daten. Erlaubte Typen sind:
+.TP
+- history:
+Dumpt die Liste der Aufträge.
+.TP
+- users:
+Dumpt die Nutzer.
+.TP
+- groups:
+Dumpt die Gruppen.
 .IP
-- history : dumps the jobs history.
-- users : dumps users.
-- groups : dumps user groups.
-- printers : dump printers.
-- upquotas : dump user quotas.
-- gpquotas : dump user groups quotas.
-- payments : dumps user payments.
-- pmembers : dumps printer groups members.
-- umembers : dumps user groups members.
+- printers: Dumpt die Drucker.
+- upquotas: Dumpt die Nutzerkontingente.
+- gpquotas: Dumpt die Gruppenkontingente.
+- payments: Dumpt die Zahlungen der Nutzer.
+- pmembers: Dumpt die Mitglieder der Druckergruppen.
+- umembers: Dumpt die Mitglieder der Nutzergruppen.
 .IP
-NB : the \fB\-d\fR | \fB\-\-data\fR command line option
-is MANDATORY.
+N.B.: die Kommandozeilenoption \fB\-d\fR | \fB\-\-data\fR
+ist VERPFLICHTEND.
 .TP
 \fB\-f\fR | \fB\-\-format\fR fmt
-Dumps datas in the 'fmt' format. When not specified,
-the format is to dump datas in the csv format (comma
-separated values). All data dumped is between double
-quotes. Allowed formats are :
+Dumpt die Daten in dem 'fmt' Format. Wenn nicht angegeben,
+werden die Daten im csv (comma separated values = Die Werte
+sind durch Kommas getrennt) ausgegeben. Alle gedumpten Daten
+erscheinen zwischen doppelten Gänsefüsschen. Erlaubte Formate
+sind:
 .IP
-- csv : separate datas with commas
-- ssv : separate datas with semicolons
-- tsv : separate datas with tabs
-- xml : dump data as XML
+- csv: trennt Daten durch Kommas
+- ssv: trennt Daten durch Strichpunkte
+- tsv: trennt Daten durch Tabulatorensprünge
+- xml: gibt die Daten als XML aus
 .TP
 \fB\-o\fR | \fB\-\-output\fR fname
-All datas will be dumped to the file instead of
-to the standard output. The special '-' filename
-is the default value and means stdout.
-WARNING : existing files are truncated !
+Alle Daten werden in eine Datei anstatt in die Standardausgabe
+geschrieben. Der spezielle Dateiname '-' ist der Standardwert
+und bezeichnet stdout.
+ACHTUNG: Existierende Dateien werden überschrieben.
 .PP
-Examples :
+Beispiele:
 .IP
 \f(CW$ dumpykota --data history --format csv >myfile.csv\fR
 .IP
-This dumps the history in a comma separated values file, for possible
-use in a spreadsheet.
+Dies dumpt die Liste der Aufträge in eine Datei, in der die Daten durch Kommas
+getrennt sind, zum möglichen Gebrauch in einer Tabellenverarbeitung.
 .IP
 \f(CW$ dumpykota --data users --format xml -o users.xml\fR
 .IP
-Dumps all users datas to the users.xml file.
+Dumpt alle Daten der Nutzer in die Datei users.xml.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -77,4 +84,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 .PP
-Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+Melden Sie bitte Fehler an: Jerome Alet - alet@librelogiciel.com
