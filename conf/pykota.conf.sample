@@ -54,7 +54,10 @@ storageuser: pykotauser
 # Should the database caching mechanism be enabled or not ?
 # If unset, caching is disabled. Possible values Y/N/YES/NO
 # caching mechanism works with both PostgreSQL and OpenLDAP backends
-# but may be interesting only with OpenLDAP.
+# but may be really interesting only with OpenLDAP.
+#
+# ACTIVATING CACHE IS HEAVILY RECOMMANDED WITH THE LDAP BACKEND !
+#
 storagecaching: No
 
 # LDAP example, uncomment and adapt it to your own configuration :

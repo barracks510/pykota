@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/10/07 14:23:25  jalet
+# More work on cache
+#
 # Revision 1.31  2003/10/07 09:07:30  jalet
 # Character encoding added to please latest version of Python
 #
@@ -404,10 +407,26 @@ class Storage(BaseStorage) :
     def getUserGroupsFromBackend(self, user) :        
         """Returns the user's groups list."""
         groups = []
-        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"]], base=self.info["groupbase"])
+        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"], "pykotaGroupName", "pykotaLimitBy"], base=self.info["groupbase"])
         if result :
             for (groupid, fields) in result :
-                groups.append(self.getGroup(fields.get(self.info["grouprdn"])[0]))
+                groupname = (fields.get("pykotaGroupName", [None]) or fields.get(self.info["grouprdn"], [None]))[0]
+                group = self.getFromCache("GROUPS", groupname)
+                if group is None :
+                    group = StorageGroup(self, groupname)
+                    group.ident = groupid
+                    group.LimitBy = fields.get("pykotaLimitBy")
+                    if group.LimitBy is not None :
+                        group.LimitBy = group.LimitBy[0]
+                    group.AccountBalance = 0.0
+                    group.LifeTimePaid = 0.0
+                    for member in self.getGroupMembers(group) :
+                        if member.Exists :
+                            group.AccountBalance += member.AccountBalance
+                            group.LifeTimePaid += member.LifeTimePaid
+                    group.Exists = 1
+                    self.cacheEntry("GROUPS", group.Name, group)
+                groups.append(group)
         return groups        
         
     def getMatchingPrinters(self, printerpattern) :
