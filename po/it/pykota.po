@@ -491,3 +491,11 @@ msgstr ""
 msgid "File number %s unregistered twice from polling object, ignored."
 msgstr ""
 
+#, python-format
+msgid "SIGTERM was sent to external requester %s (pid: %s)"
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr ""
+

@@ -494,3 +494,11 @@ msgstr "L'imprimante %s existe déjà, elle sera modifiée."
 msgid "File number %s unregistered twice from polling object, ignored."
 msgstr "Le fichier numéro %s a été retiré deux fois de l'objet poll, action ignorée."
 
+#, python-format
+msgid "SIGTERM was sent to external requester %s (pid: %s)"
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "Impossible de se connecter au serveur SMTP : %s"
+
