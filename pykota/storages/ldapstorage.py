@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.87  2004/12/02 12:34:00  jalet
+# Now automates LDAP reconnections if the server dropped the connection due
+# to a timeout.
+#
 # Revision 1.86  2004/10/25 14:12:25  jalet
 # For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
 # to hide print jobs' title, filename, and options.
@@ -328,29 +332,47 @@ try :
     import ldap.modlist
 except ImportError :    
     import sys
-    # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the python-ldap module installed correctly." % sys.version.split()[0]
     
 class Storage(BaseStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the LDAP connection."""
-        BaseStorage.__init__(self, pykotatool)
-        self.info = pykotatool.config.getLDAPInfo()
-        try :
-            self.database = ldap.initialize(host) 
-            self.database.simple_bind_s(user, passwd)
-            self.basedn = dbname
-        except ldap.SERVER_DOWN :    
-            raise PyKotaStorageError, "LDAP backend for PyKota seems to be down !" # TODO : translate
-        except ldap.LDAPError :    
-            raise PyKotaStorageError, "Unable to connect to LDAP server %s as %s." % (host, user) # TODO : translate
-        else :    
-            self.useldapcache = pykotatool.config.getLDAPCache()
-            if self.useldapcache :
-                self.tool.logdebug("Low-Level LDAP Caching enabled.")
-                self.ldapcache = {} # low-level cache specific to LDAP backend
-            self.closed = 0
-            self.tool.logdebug("Database opened (host=%s, dbname=%s, user=%s)" % (host, dbname, user))
+        self.savedtool = pykotatool
+        self.savedhost = host
+        self.saveddbname = dbname
+        self.saveduser = user
+        self.savedpasswd = passwd
+        self.secondStageInit()
+        
+    def secondStageInit(self) :    
+        """Second stage initialisation."""
+        BaseStorage.__init__(self, self.savedtool)
+        self.info = self.tool.config.getLDAPInfo()
+        message = ""
+        for tryit in range(3) :
+            try :
+                self.database = ldap.initialize(self.savedhost) 
+                self.database.simple_bind_s(self.saveduser, self.savedpasswd)
+                self.basedn = self.saveddbname
+            except ldap.SERVER_DOWN :    
+                message = "LDAP backend for PyKota seems to be down !"
+                self.tool.printInfo("%s" % message, "error")
+                self.tool.printInfo("Trying again in 2 seconds...", "warn")
+                time.sleep(2)
+            except ldap.LDAPError :    
+                message = "Unable to connect to LDAP server %s as %s." % (self.savedhost, self.saveduser)
+                self.tool.printInfo("%s" % message, "error")
+                self.tool.printInfo("Trying again in 2 seconds...", "warn")
+                time.sleep(2)
+            else :    
+                self.useldapcache = self.tool.config.getLDAPCache()
+                if self.useldapcache :
+                    self.tool.logdebug("Low-Level LDAP Caching enabled.")
+                    self.ldapcache = {} # low-level cache specific to LDAP backend
+                self.closed = 0
+                self.tool.logdebug("Database opened (host=%s, dbname=%s, user=%s)" % (self.savedhost, self.saveddbname, self.saveduser))
+                return # All is fine here.
+        raise PyKotaStorageError, message         
             
     def close(self) :    
         """Closes the database connection."""
@@ -390,124 +412,150 @@ class Storage(BaseStorage) :
         
     def doSearch(self, key, fields=None, base="", scope=ldap.SCOPE_SUBTREE, flushcache=0) :
         """Does an LDAP search query."""
-        try :
-            base = base or self.basedn
-            if self.useldapcache :
-                # Here we overwrite the fields the app want, to try and
-                # retrieve ALL user defined attributes ("*")
-                # + the createTimestamp attribute, needed by job history
-                # 
-                # This may not work with all LDAP servers
-                # but works at least in OpenLDAP (2.1.25) 
-                # and iPlanet Directory Server (5.1 SP3)
-                fields = ["*", "createTimestamp"]         
-                
-            if self.useldapcache and (not flushcache) and (scope == ldap.SCOPE_BASE) and self.ldapcache.has_key(base) :
-                entry = self.ldapcache[base]
-                self.tool.logdebug("LDAP cache hit %s => %s" % (base, entry))
-                result = [(base, entry)]
-            else :
-                self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
-                result = self.database.search_s(base, scope, key, fields)
-        except ldap.NO_SUCH_OBJECT, msg :        
-            raise PyKotaStorageError, (_("Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s") % (base, msg))
-        except ldap.LDAPError, msg :    
-            raise PyKotaStorageError, (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
-        else :     
-            self.tool.logdebug("QUERY : Result : %s" % result)
-            if self.useldapcache :
-                for (dn, attributes) in result :
-                    self.tool.logdebug("LDAP cache store %s => %s" % (dn, attributes))
-                    self.ldapcache[dn] = attributes
-            return result
+        message = ""
+        for tryit in range(3) :
+            try :
+                base = base or self.basedn
+                if self.useldapcache :
+                    # Here we overwrite the fields the app want, to try and
+                    # retrieve ALL user defined attributes ("*")
+                    # + the createTimestamp attribute, needed by job history
+                    # 
+                    # This may not work with all LDAP servers
+                    # but works at least in OpenLDAP (2.1.25) 
+                    # and iPlanet Directory Server (5.1 SP3)
+                    fields = ["*", "createTimestamp"]         
+                    
+                if self.useldapcache and (not flushcache) and (scope == ldap.SCOPE_BASE) and self.ldapcache.has_key(base) :
+                    entry = self.ldapcache[base]
+                    self.tool.logdebug("LDAP cache hit %s => %s" % (base, entry))
+                    result = [(base, entry)]
+                else :
+                    self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
+                    result = self.database.search_s(base, scope, key, fields)
+            except ldap.NO_SUCH_OBJECT, msg :        
+                raise PyKotaStorageError, (_("Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s") % (base, msg))
+            except ldap.LDAPError, msg :    
+                message = (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
+                self.tool.printInfo("LDAP error : %s" % message, "error")
+                self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
+                self.close()
+                self.secondStageInit()
+            else :     
+                self.tool.logdebug("QUERY : Result : %s" % result)
+                if self.useldapcache :
+                    for (dn, attributes) in result :
+                        self.tool.logdebug("LDAP cache store %s => %s" % (dn, attributes))
+                        self.ldapcache[dn] = attributes
+                return result
+        raise PyKotaStorageError, message
             
     def doAdd(self, dn, fields) :
         """Adds an entry in the LDAP directory."""
-        # TODO : store into LDAP specific cache
         fields = self.normalizeFields(fields)
-        try :
-            self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
-            entry = ldap.modlist.addModlist(fields)
-            self.tool.logdebug("%s" % entry)
-            self.database.add_s(dn, entry)
-        except ldap.LDAPError, msg :
-            raise PyKotaStorageError, (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
-        else :
-            if self.useldapcache :
-                self.tool.logdebug("LDAP cache add %s => %s" % (dn, fields))
-                self.ldapcache[dn] = fields
-            return dn
+        message = ""
+        for tryit in range(3) :
+            try :
+                self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
+                entry = ldap.modlist.addModlist(fields)
+                self.tool.logdebug("%s" % entry)
+                self.database.add_s(dn, entry)
+            except ldap.LDAPError, msg :
+                message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
+                self.tool.printInfo("LDAP error : %s" % message, "error")
+                self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
+                self.close()
+                self.secondStageInit()
+            else :
+                if self.useldapcache :
+                    self.tool.logdebug("LDAP cache add %s => %s" % (dn, fields))
+                    self.ldapcache[dn] = fields
+                return dn
+        raise PyKotaStorageError, message
             
     def doDelete(self, dn) :
         """Deletes an entry from the LDAP directory."""
-        # TODO : delete from LDAP specific cache
-        try :
-            self.tool.logdebug("QUERY : Delete(%s)" % dn)
-            self.database.delete_s(dn)
-        except ldap.LDAPError, msg :
-            raise PyKotaStorageError, (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % str(msg)
-        else :    
-            if self.useldapcache :
-                try :
-                    self.tool.logdebug("LDAP cache del %s" % dn)
-                    del self.ldapcache[dn]
-                except KeyError :    
-                    pass
+        message = ""
+        for tryit in range(3) :
+            try :
+                self.tool.logdebug("QUERY : Delete(%s)" % dn)
+                self.database.delete_s(dn)
+            except ldap.LDAPError, msg :
+                message = (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % str(msg)
+                self.tool.printInfo("LDAP error : %s" % message, "error")
+                self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
+                self.close()
+                self.secondStageInit()
+            else :    
+                if self.useldapcache :
+                    try :
+                        self.tool.logdebug("LDAP cache del %s" % dn)
+                        del self.ldapcache[dn]
+                    except KeyError :    
+                        pass
+                return        
+        raise PyKotaStorageError, message
             
     def doModify(self, dn, fields, ignoreold=1, flushcache=0) :
         """Modifies an entry in the LDAP directory."""
-        try :
-            # TODO : take care of, and update LDAP specific cache
-            if self.useldapcache and not flushcache :
-                if self.ldapcache.has_key(dn) :
-                    old = self.ldapcache[dn]
-                    self.tool.logdebug("LDAP cache hit %s => %s" % (dn, old))
-                    oldentry = {}
-                    for (k, v) in old.items() :
-                        if k != "createTimestamp" :
-                            oldentry[k] = v
-                else :    
-                    self.tool.logdebug("LDAP cache miss %s" % dn)
-                    oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)[0][1]
-            else :        
-                oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE, flushcache=flushcache)[0][1]
-            for (k, v) in fields.items() :
-                if type(v) == type({}) :
-                    try :
-                        oldvalue = v["convert"](oldentry.get(k, [0])[0])
-                    except ValueError :    
-                        self.tool.logdebug("Error converting %s with %s(%s)" % (oldentry.get(k), k, v))
-                        oldvalue = 0
-                    if v["operator"] == '+' :
-                        newvalue = oldvalue + v["value"]
+        for tryit in range(3) :
+            try :
+                # TODO : take care of, and update LDAP specific cache
+                if self.useldapcache and not flushcache :
+                    if self.ldapcache.has_key(dn) :
+                        old = self.ldapcache[dn]
+                        self.tool.logdebug("LDAP cache hit %s => %s" % (dn, old))
+                        oldentry = {}
+                        for (k, v) in old.items() :
+                            if k != "createTimestamp" :
+                                oldentry[k] = v
                     else :    
-                        newvalue = oldvalue - v["value"]
-                    fields[k] = str(newvalue)
-            fields = self.normalizeFields(fields)
-            self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry, fields))
-            entry = ldap.modlist.modifyModlist(oldentry, fields, ignore_oldexistent=ignoreold)
-            modentry = []
-            for (mop, mtyp, mval) in entry :
-                if mtyp != "createTimestamp" :
-                    modentry.append((mop, mtyp, mval))
-            self.tool.logdebug("MODIFY : %s ==> %s ==> %s" % (fields, entry, modentry))
-            if modentry :
-                self.database.modify_s(dn, modentry)
-        except ldap.LDAPError, msg :
-            raise PyKotaStorageError, (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % str(msg)
-        else :
-            if self.useldapcache :
-                cachedentry = self.ldapcache[dn]
-                for (mop, mtyp, mval) in entry :
-                    if mop in (ldap.MOD_ADD, ldap.MOD_REPLACE) :
-                        cachedentry[mtyp] = mval
-                    else :
+                        self.tool.logdebug("LDAP cache miss %s" % dn)
+                        oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)[0][1]
+                else :        
+                    oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE, flushcache=flushcache)[0][1]
+                for (k, v) in fields.items() :
+                    if type(v) == type({}) :
                         try :
-                            del cachedentry[mtyp]
-                        except KeyError :    
-                            pass
-                self.tool.logdebug("LDAP cache update %s => %s" % (dn, cachedentry))
-            return dn
+                            oldvalue = v["convert"](oldentry.get(k, [0])[0])
+                        except ValueError :    
+                            self.tool.logdebug("Error converting %s with %s(%s)" % (oldentry.get(k), k, v))
+                            oldvalue = 0
+                        if v["operator"] == '+' :
+                            newvalue = oldvalue + v["value"]
+                        else :    
+                            newvalue = oldvalue - v["value"]
+                        fields[k] = str(newvalue)
+                fields = self.normalizeFields(fields)
+                self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry, fields))
+                entry = ldap.modlist.modifyModlist(oldentry, fields, ignore_oldexistent=ignoreold)
+                modentry = []
+                for (mop, mtyp, mval) in entry :
+                    if mtyp != "createTimestamp" :
+                        modentry.append((mop, mtyp, mval))
+                self.tool.logdebug("MODIFY : %s ==> %s ==> %s" % (fields, entry, modentry))
+                if modentry :
+                    self.database.modify_s(dn, modentry)
+            except ldap.LDAPError, msg :
+                message = (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % str(msg)
+                self.tool.printInfo("LDAP error : %s" % message, "error")
+                self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
+                self.close()
+                self.secondStageInit()
+            else :
+                if self.useldapcache :
+                    cachedentry = self.ldapcache[dn]
+                    for (mop, mtyp, mval) in entry :
+                        if mop in (ldap.MOD_ADD, ldap.MOD_REPLACE) :
+                            cachedentry[mtyp] = mval
+                        else :
+                            try :
+                                del cachedentry[mtyp]
+                            except KeyError :    
+                                pass
+                    self.tool.logdebug("LDAP cache update %s => %s" % (dn, cachedentry))
+                return dn
+        raise PyKotaStorageError, message
             
     def getAllPrintersNames(self) :    
         """Extracts all printer names."""
