@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/06/25 19:52:31  jalet
+# Should be ready for testing :-)
+#
 # Revision 1.15  2003/06/25 14:10:58  jalet
 # Exception raising for now.
 #
@@ -114,7 +117,9 @@ class StorageUser(StorageObject) :
         
     def setAccountBalance(self, balance, lifetimepaid) :    
         """Sets the user's account balance in case he pays more money."""
-        raise PyKotaStorageError, "Not implemented."
+        self.parent.writeUserAccountBalance(self, balance, lifetimepaid)
+        self.AccountBalance = balance
+        self.LifeTimePaid = lifetimepaid
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""

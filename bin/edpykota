@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2003/06/25 19:52:30  jalet
+# Should be ready for testing :-)
+#
 # Revision 1.47  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -478,9 +481,13 @@ class EdPyKota(PyKotaTool) :
                             if balance :
                                 if changed[entry.Name].get("balance") is None :
                                     if balance.startswith("+") or balance.startswith("-") :
-                                        entry.consumeAccountBalance(-balancevalue)
+                                        newbalance = float(entry.AccountBalance or 0.0) + balancevalue
+                                        newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
+                                        entry.setAccountBalance(newbalance, newlifetimepaid)
                                     else :
-                                        entry.consumeAccountBalance(float(entry.AccountBalance or 0.0) - balancevalue)
+                                        diff = balancevalue - float(entry.AccountBalance or 0.0)
+                                        newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
+                                        entry.setAccountBalance(balancevalue, newlifetimepaid)
                                     changed[entry.Name]["balance"] = balance
                             for groupname in groupnames :        
                                 if groupname not in changed[name]["ingroups"] :

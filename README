@@ -31,6 +31,9 @@ Actual working features :
 
         - Supports both CUPS and LPRng backends.
         
+        - Can store quota information either with PostgreSQL or with 
+          OpenLDAP.
+        
         - Per printer user and group quotas.
         
         - Automated email warning of users above quota to the
@@ -145,20 +148,34 @@ Prerequisite :
     - CUPS or LPRng
     - Python v2.1 or above
     - eGenix' mxDateTime Python extension
-    - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
-      libraries.
     - SNMP tools (specifically the snmpget command) if you plan to
       request your printer's lifetime page counter via SNMP.
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
+    - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
+      libraries if you plan to use PostgreSQL as the Quota Storage
+      backend.
+ or     
+    - python-ldap Python module and the OpenLDAP client libraries  
+      if you plan to use OpenLDAP as the Quota Storage backend.
     
   You need to have the following tools installed on the Quota Storage  
   Server :
   
     - PostgreSQL
     
-  PygreSQL and the PostgreSQL client libraries's versions on the Print
+  or  
+  
+    - OpenLDAP
+    
+  PygreSQL and the PostgreSQL client libraries' versions on the Print
   Server must match the PostgreSQL version used on the Quota Storage 
+  Server.
+  
+or  
+
+  python-ldap and the OpenLDAP client libraries' versions on the Print
+  Server must match the OpenLDAP version used on the Quota Storage 
   Server.
   
   This list of prerequisite software may change in the future, when
