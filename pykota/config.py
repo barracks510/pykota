@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/10 00:44:38  jalet
+# Typos
+#
 # Revision 1.8  2003/02/10 00:42:17  jalet
 # External requester should be ok (untested)
 # New syntax for configuration file wrt requesters
@@ -101,7 +104,7 @@ class PyKotaConfig :
             validrequesters = [ "snmp", "external" ] # TODO : add more requesters
             fullrequester = self.config.get(printer, "requester")
             try :
-                (requester, args) = [x.strip() for x in fullrequester.split('('))]
+                (requester, args) = [x.strip() for x in fullrequester.split('(')]
             except ValueError :    
                 raise PyKotaConfigError, _("Invalid requester for printer %s") % printer
             else :
@@ -134,7 +137,7 @@ class PyKotaConfig :
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
         fullrequester = self.config.get(printer, "requester")
-        (requester, args) = [x.strip() for x in fullrequester.split('('))]
+        (requester, args) = [x.strip() for x in fullrequester.split('(')]
         if args.endswith(')') :
             args = args[:-1]
         args = [x.strip() for x in args.split(',')]
