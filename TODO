@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Add precomputed job size (and price) to the history for
+          controlling purpose.
+          
         - Improve the SECURITY document to include good PostgreSQL 
           and OpenLDAP default settings.
           
