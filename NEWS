@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha14 :
+    
+        - Italian translation added.
+        
     - 1.18alpha13 :
     
         - Pre and Post hooks are now available in the pykota
