@@ -19,6 +19,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ====================================================================
 
+   NOTE FOR LPRNG USERS :
+   
+     FROM MAY 21ST 2004 ON, AND UNTIL THIS NOTE IS REMOVED
+     FROM THIS FILE, PYKOTA CAN'T BE USED ANYMORE WITH LPRNG.
+     
+     SUPPORT FOR LPRNG SHOULD BE RE-ADDED SOON WHEN A HUGE REWRITE
+     OF SOME PARTS OF PYKOTA WILL HAVE TAKEN PLACE
+
+====================================================================
+
 READ SPECIAL LICENSING AND REDISTRIBUTION TERMS IN THE FILE 'LICENSE'
 
 ====================================================================
