@@ -23,7 +23,7 @@ for prog in pkmail pkbanner autopykota dumpykota edpykota pykotme repykota warnp
                 echo "  $dir" ;
                 cd ../man/$dir ;
                 help2man --no-info --locale=$dir --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
-                cd .. ;
+                cd ../../po ;
             fi ;    
         fi ;     
     done
