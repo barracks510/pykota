@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2004/02/20 14:42:21  jalet
+# Experimental ldapcache directive added
+#
 # Revision 1.43  2004/02/19 14:20:21  jalet
 # maildomain pykota.conf directive added.
 # Small improvements on mail headers quality.
@@ -469,6 +472,10 @@ class PyKotaConfig :
     def getCaching(self) :          
         """Returns 1 if database caching is enabled, else 0."""
         return self.isTrue(self.getGlobalOption("storagecaching", ignore=1))
+            
+    def getLDAPCache(self) :          
+        """Returns 1 if low-level LDAP caching is enabled, else 0."""
+        return self.isTrue(self.getGlobalOption("ldapcache", ignore=1))
             
     def getDisableHistory(self) :          
         """Returns 1 if we want to disable history, else 0."""

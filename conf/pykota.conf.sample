@@ -118,6 +118,11 @@ disablehistory: No
 # common values are : memberUid, uniqueMember, member
 #groupmembers: memberUid
 
+# Activate low-level LDAP cache yes/no
+# Nothing to do with "storagecaching" which is higher level
+# and database independant.
+ldapcache: no
+
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
 # if the value is not set then the default SYSTEM applies.

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha7 :
+    
+        - New experimental ldapcache directive to improve
+          LDAP caching.
+          
     - 1.18alpha6 :
         
         - New configuration directive added : maildomain
