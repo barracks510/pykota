@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.20alpha20 :
     
+        - Reduced delay in internal SNMP and PJL_over_TCP handlers
+          from 2 to 1 second.
+        
         - dumpykota can now output XML.
         
     - 1.20alpha19 :

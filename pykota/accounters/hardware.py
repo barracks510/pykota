@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2004/10/05 09:20:07  jalet
+# Reduced delay from 2 to 1 seconds in internal SNMP and PJL_over_TCP
+# handlers
+#
 # Revision 1.28  2004/09/27 20:09:30  jalet
 # Lowered timeout delay for PJL queries
 #
@@ -127,7 +131,7 @@ import popen2
 
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
-ITERATIONDELAY = 2.0   # 2 Seconds
+ITERATIONDELAY = 1.0   # 1 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
 
 try :
