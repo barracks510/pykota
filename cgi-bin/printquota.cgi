@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/10/10 19:48:07  jalet
+# Now displays version number
+#
 # Revision 1.13  2003/08/25 11:23:05  jalet
 # More powerful CGI script for quota reports
 #
@@ -88,7 +91,7 @@ header = """Content-type: text/html
             <p>
               <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/calllogo" alt="PyKota's Logo" /></a>
               <br />
-              <a href="http://www.librelogiciel.com/software/">PyKota</a>
+              <a href="http://www.librelogiciel.com/software/">PyKota version %s</a>
             </p>
           </td>
           <td colspan="2">
@@ -113,7 +116,7 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header
+        print header % version.__version__
         print self.body
         print footer
         
