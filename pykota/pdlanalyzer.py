@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2004/07/10 14:06:36  jalet
+# Fix for Python2.1 incompatibilities
+#
 # Revision 1.24  2004/07/05 21:00:39  jalet
 # Fix for number of copies for each page in PCLXL parser
 #
@@ -167,7 +170,7 @@ class PCLAnalyzer :
            http://h20000.www2.hp.com/bc/docs/support/SupportManual/bpl13205/bpl13205.pdf 
         """
         infileno = self.infile.fileno()
-        minfile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
+        minfile = mmap.mmap(infileno, os.fstat(infileno)[6], prot=mmap.PROT_READ, flags=mmap.MAP_SHARED)
         tagsends = { "&n" : "W", 
                      "&b" : "W", 
                      "*i" : "W", 
@@ -458,7 +461,7 @@ class PCLXLAnalyzer :
         """
         infileno = self.infile.fileno()
         self.copies = {}
-        self.minfile = minfile = mmap.mmap(infileno, os.fstat(infileno).st_size, access=mmap.ACCESS_READ)
+        self.minfile = minfile = mmap.mmap(infileno, os.fstat(infileno)[6], prot=mmap.PROT_READ, flags=mmap.MAP_SHARED)
         tags = self.tags
         self.pagecount = 0
         self.pos = pos = self.infile.tell()

@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha31 :
+    
+        - Fixed a double Python2.1 incompatibility with newer versions,
+          which prevented the PCL5 and the PCLXL parsers to work with
+          this older version of Python.
+          
     - 1.19alpha30 :
     
         - Introduction of preliminary version of the pykosd command
