@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/07/10 06:09:52  jalet
+# Incorrect documentation string
+#
 # Revision 1.35  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -168,7 +171,7 @@ class PyKotaFilter(PyKotaTool) :
     def extractInfoFromCupsOrLprng(self) :    
         """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename) depending on the printing system in use (as seen by the print filter).
         
-           Returns (None, None, None, None, None, None) if no printing system is recognized.
+           Returns (None, None, None, None, None, None, None) if no printing system is recognized.
         """
         # Try to detect CUPS
         if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
