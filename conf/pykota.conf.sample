@@ -74,9 +74,8 @@ smtpserver: localhost
 #                   accounter: external(/bin/grep -c "%%Page:")
 # 
 #    - stupid : counts the occurences of the 'showpage' postscript
-#               statement in the document to be printed, only at
-#               the beginning of each line which makes the postscript
-#               file. THIS IS NOT RELIABLE. This is just to serve as
+#               statement in the document to be printed.
+#               THIS IS NOT RELIABLE. This is just to serve as
 #               an example on how to implement your own accounting
 #               method.
 #
