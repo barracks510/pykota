@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.16alpah16 :
     
+        - Code refactoring, and addition of a real HTML reporter, to 
+          have nice looking and useful web based reports (in the future).
+        
         - Added utolower configuration option to convert all usernames
           to lowercase during printing. 
           

@@ -22,6 +22,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/12/02 14:40:20  jalet
+# Some code refactoring.
+# New HTML reporter added, which is now used in the CGI script for web based
+# print quota reports. It will need some de-uglyfication though...
+#
 # Revision 1.15  2003/10/24 22:06:42  jalet
 # Initial support for browser's language preference added.
 #
@@ -127,7 +132,6 @@ class PyKotaReportGUI(PyKotaTool) :
         global header, footer
         print header % version.__version__
         print self.body
-        print "<!-- %s -->" % str(getLanguagePreference())
         print footer
         
     def error(self, message) :
@@ -200,8 +204,9 @@ class PyKotaReportGUI(PyKotaTool) :
         self.body += "<br />"
         self.body += self.htmlGroupsCheckbox(isgroup)
         if printers and ugmask :
-            self.reportingtool = openReporter(admin, "text", printers, ugmask.split(), isgroup)
-            self.body += "<pre>%s</pre>" % self.reportingtool.generateReport()
+            self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
+            # self.body += "<pre>%s</pre>" % self.reportingtool.generateReport()
+            self.body += "%s" % self.reportingtool.generateReport()
             
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()

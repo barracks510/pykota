@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/12/02 14:40:21  jalet
+# Some code refactoring.
+# New HTML reporter added, which is now used in the CGI script for web based
+# print quota reports. It will need some de-uglyfication though...
+#
 # Revision 1.5  2003/10/07 09:07:29  jalet
 # Character encoding added to please latest version of Python
 #
@@ -44,76 +49,44 @@ from mx import DateTime
 from pykota.reporter import BaseReporter, PyKotaReporterError
     
 class Reporter(BaseReporter) :    
-    """Base class for all PyKota command line tools."""
+    """Text reporter."""
     def generateReport(self) :
         """Produces a simple text report."""
         self.report = []
         for printer in self.printers :
-            self.report.append(_("*** Report for %s quota on printer %s") % ((self.isgroup and "group") or "user", printer.Name))
-            self.report.append(_("Pages grace time: %i days") % self.tool.config.getGraceDelay(printer.Name))
-            if printer.PricePerJob is not None :
-                self.report.append(_("Price per job: %.3f") % printer.PricePerJob)
-            if printer.PricePerPage is not None :    
-                self.report.append(_("Price per page: %.3f") % printer.PricePerPage)
+            self.report.append(self.getPrinterTitle(printer))
+            self.report.append(self.getPrinterGraceDelay(printer))
+            (pjob, ppage) = self.getPrinterPrices(printer)
+            self.report.append(pjob)
+            self.report.append(ppage)
+            
             total = 0
             totalmoney = 0.0
             if self.isgroup :
-                self.report.append(_("Group           used    soft    hard    balance grace         total       paid"))
-                self.report.append("------------------------------------------------------------------------------")
+                header = self.getReportHeader()
+                self.report.append(header)
+                self.report.append('-' * len(header))
                 for (group, grouppquota) in self.tool.storage.getPrinterGroupsAndQuotas(printer, self.ugnames) :
-                    (pages, money) = self.printQuota(group, grouppquota)
+                    (pages, money, name, reached, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(group, grouppquota)
+                    self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
                     total += pages
                     totalmoney += money
             else :
                 # default is user quota report
-                self.report.append(_("User            used    soft    hard    balance grace         total       paid"))
-                self.report.append("------------------------------------------------------------------------------")
+                header = self.getReportHeader()
+                self.report.append(header)
+                self.report.append('-' * len(header))
                 for (user, userpquota) in self.tool.storage.getPrinterUsersAndQuotas(printer, self.ugnames) :
-                    (pages, money) = self.printQuota(user, userpquota)
+                    (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(user, userpquota)
+                    self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
                     total += pages
                     totalmoney += money
             if total or totalmoney :        
-                self.report.append((" " * 50) + (_("Total : %9i") % total) + ("%11s" % ("%7.2f" % totalmoney)[:11]))
-            try :
-                msg = "%9i" % printer.LastJob.PrinterPageCounter
-            except TypeError :     
-                msg = _("unknown")
-            self.report.append((" " * 51) + (_("Real : %s") % msg))
+                (tpage, tmoney) = self.getTotals(total, totalmoney)
+                self.report.append((" " * 50) + tpage + tmoney)
+            self.report.append((" " * 51) + self.getPrinterRealPageCounter(printer))
             self.report.append("")        
         if self.isgroup :    
             self.report.append(_("Totals may be inaccurate if some users are members of several groups."))
         return "\n".join(self.report)    
                         
-    def printQuota(self, entry, quota) :
-        """Prints the quota information."""
-        lifepagecounter = int(quota.LifePageCounter or 0)
-        pagecounter = int(quota.PageCounter or 0)
-        balance = float(entry.AccountBalance or 0.0)
-        lifetimepaid = float(entry.LifeTimePaid or 0.0)
-        
-        if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
-            if balance <= 0 :
-                datelimit = "DENY"
-                reached = "+B"
-            else :    
-                datelimit = ""
-                reached = "-B"
-        else :
-            if quota.DateLimit is not None :
-                now = DateTime.now()
-                datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
-                if now >= datelimit :
-                    datelimit = "DENY"
-            elif (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
-                datelimit = "DENY"
-            elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-                datelimit = "DENY"
-            else :    
-                datelimit = ""
-            reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
-            
-        strbalance = ("%5.2f" % balance)[:10]
-        strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
-        self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (entry.Name, reached, pagecounter, str(quota.SoftLimit), str(quota.HardLimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid))
-        return (lifepagecounter, lifetimepaid)
-    
