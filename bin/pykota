@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/02/27 22:40:26  jalet
+# Correctly handles cases where the printer is off.
+#
 # Revision 1.8  2003/02/09 12:56:53  jalet
 # Internationalization begins...
 #
@@ -107,8 +110,15 @@ def main() :
     kotafilter = PyKotaFilter(username)    
     
     # Get the page counter directly from the printer itself
-    counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname) # TODO use printername instead, make them match from CUPS' config files
-    
+    try :
+        counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname) # TODO use printername instead, make them match from CUPS' config files
+    except PyKotaRequesterError, msg :
+        # can't get actual page counter, assume printer is off, but warns in log
+        kotafilter.logger.log_message(msg, "warn")
+        printerIsOff = 1
+    else :    
+        printerIsOff = 0
+        
     # Get the last page counter and last username from the Quota Storage backend
     pgc = kotafilter.storage.getPrinterPageCounter(kotafilter.printername)    
     if pgc is None :
@@ -116,8 +126,13 @@ def main() :
         # we let the job pass through, but log a warning message
         kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "warn")
     else :    
+        # get last values from Quota Storage
         (lastpagecounter, lastusername) = (pgc["pagecounter"], pgc["lastusername"])
         
+        # if printer is off then we assume the correct counter value is the last one
+        if printerIsOff :
+            counterbeforejob = lastpagecounter
+            
         # Update the last page counter and last username in the Quota Storage backend
         # set them to current user and 
         kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob) # TODO : allow or deny users not in quota system, and die cleanly if needed
