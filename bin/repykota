@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/04/14 20:05:20  jalet
+# Reversed test.
+#
 # Revision 1.23  2003/04/11 14:42:54  jalet
 # Translations
 #
@@ -158,7 +161,7 @@ class RePyKota(PyKotaTool) :
         if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
         for (printerid, printer) in printers :
-            print _("*** Report for %s quota on printer %s") % ((options["users"] and "user") or "group", printer)
+            print _("*** Report for %s quota on printer %s") % ((options["groups"] and "group") or "user", printer)
             print _("Pages grace time: %idays") % self.config.getGraceDelay(printer)
             total = 0
             if options["groups"] :
