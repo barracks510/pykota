@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha24 :
+    
+        - Native PDF parsing code now works perfectly with
+          Python 2.1 and above, and is way faster than before.
+          GhostScript is not used anymore to convert PDF to PS,
+          because PDF is parsed directly.
+          
     - 1.19alpha23 :
     
         - Fixed waitprinter.sh wrt PowerSave mode and some

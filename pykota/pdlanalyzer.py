@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/06/18 22:21:27  jalet
+# Native PDF parser greatly improved.
+# GhostScript based PDF parser completely removed because native code
+# is now portable across Python versions.
+#
 # Revision 1.8  2004/06/18 20:49:46  jalet
 # "ERROR:" prefix added
 #
@@ -50,6 +55,7 @@
 
 import sys
 import os
+import re
 import struct
 import tempfile
 import popen2
@@ -74,10 +80,7 @@ class PostScriptAnalyzer :
     def getJobSize(self) :    
         """Count pages in a DSC compliant PostScript document."""
         pagecount = 0
-        while 1 :
-            line = self.infile.readline()
-            if not line :
-                break
+        for line in self.infile.xreadlines() : 
             if line.startswith("%%Page: ") :
                 pagecount += 1
         return pagecount
@@ -86,57 +89,13 @@ class PDFAnalyzer :
     def __init__(self, infile) :
         """Initialize PDF Analyzer."""
         self.infile = infile
-        try :
-            if float(sys.version[:3]) >= 2.3 :
-                self.getJobSize = self.native_getJobSize
-            else :    
-                self.getJobSize = self.gs_getJobSize
-        except :
-            self.getJobSize = self.gs_getJobSize
                 
-    def native_getJobSize(self) :    
-        """Counts pages in a PDF document natively."""
+    def getJobSize(self) :    
+        """Counts pages in a PDF document."""
+        regexp = re.compile(r"(/Type) ?(/Page)[/ \r\n]")
         pagecount = 0
-        content = []
-        while 1 :     
-            line = self.infile.readline()
-            if not line :
-                break
-            line = line.strip()
-            content.append(line)
-            if line.endswith("endobj") :
-                pagecount += " /".join([x.strip() for x in " ".join(content).split("/")]).count(" /Type /Page ")
-                content = []
-        return pagecount    
-        
-    def gs_getJobSize(self) :    
-        """Counts pages in a PDF document using GhostScript to convert PDF to PS."""
-        MEGABYTE = 1024*1024
-        child = popen2.Popen4("gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pswrite -sOutputFile=- -c save pop -f - 2>/dev/null")
-        try :
-            data = self.infile.read(MEGABYTE)    
-            while data :
-                child.tochild.write(data)
-                data = self.infile.read(MEGABYTE)
-            child.tochild.flush()
-            child.tochild.close()    
-        except (IOError, OSError), msg :    
-            raise PDLAnalyzerError, "Unable to convert PDF input to PS with GhostScript : %s" % msg
-        
-        psanalyzer = PostScriptAnalyzer(child.fromchild)
-        pagecount = psanalyzer.getJobSize()
-        child.fromchild.close()
-        try :
-            retcode = child.wait()
-        except OSError, msg :    
-            self.filter.logger.log_message(_("Problem while waiting for PDF to PS converter (GhostScript pid %s) to exit : %s") % (child.pid, msg))
-        else :    
-            if os.WIFEXITED(retcode) :
-                status = os.WEXITSTATUS(retcode)
-            else :    
-                status = retcode
-            if status :    
-                raise PDLAnalyzerError, "PDF to PS converter (GhostScript pid %s) exit code is %s" % (child.pid, repr(status))
+        for line in self.infile.xreadlines() : 
+            pagecount += len(regexp.findall(line))
         return pagecount    
         
 class PCLAnalyzer :
@@ -457,13 +416,13 @@ class PDLAnalyzer :
             infile = sys.stdin
         else :    
             # normal file
-            self.infile = open(self.filename, "rbU") # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
+            self.infile = open(self.filename, "rb") # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
             self.mustclose = 1
             return
             
         # Use a temporary file, always seekable contrary to standard input.
         # This also has the benefit to let us use the "U" mode (new in Python 2.3)
-        self.infile = tempfile.TemporaryFile(mode="w+bU")   # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
+        self.infile = tempfile.TemporaryFile(mode="w+b")   # TODO : "U" mode only works in 2.3, is ignored in 2.1 and 2.2
         while 1 :
             data = infile.read(MEGABYTE) 
             if not data :
