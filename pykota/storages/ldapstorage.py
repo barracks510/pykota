@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.47  2004/01/10 09:44:02  jalet
+# Fixed potential accuracy problem if a user printed on several printers at
+# the very same time.
+#
 # Revision 1.46  2004/01/08 16:33:27  jalet
 # Additionnal check to not create a circular printers group.
 #
@@ -284,9 +288,21 @@ class Storage(BaseStorage) :
             
     def doModify(self, dn, fields, ignoreold=1) :
         """Modifies an entry in the LDAP directory."""
-        fields = self.normalizeFields(fields)
         try :
             oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
+            for (k, v) in fields.items() :
+                if type(v) == type({}) :
+                    try :
+                        oldvalue = v["convert"](oldentry[0][1].get(k, [0])[0])
+                    except ValueError :    
+                        self.tool.logdebug("Error converting %s with %s(%s)" % (oldentry[0][1].get(k), k, v))
+                        oldvalue = 0
+                    if v["operator"] == '+' :
+                        newvalue = oldvalue + v["value"]
+                    else :    
+                        newvalue = oldvalue - v["value"]
+                    fields[k] = str(newvalue)
+            fields = self.normalizeFields(fields)
             self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields))
             self.database.modify_s(dn, modlist.modifyModlist(oldentry[0][1], fields, ignore_oldexistent=ignoreold))
         except ldap.LDAPError, msg :
@@ -734,6 +750,14 @@ class Storage(BaseStorage) :
                  }
         return self.doModify(grouppquota.ident, fields)
         
+    def increaseUserPQuotaPagesCounters(self, userpquota, nbpages) :    
+        """Increase page counters for a user print quota."""
+        fields = {
+                   "pykotaPageCounter" : { "operator" : "+", "value" : nbpages, "convert" : int },
+                   "pykotaLifePageCounter" : { "operator" : "+", "value" : nbpages, "convert" : int },
+                 }
+        return self.doModify(userpquota.ident, fields)         
+        
     def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
         """Sets the new page counters permanently for a user print quota."""
         fields = {
@@ -741,6 +765,13 @@ class Storage(BaseStorage) :
                    "pykotaLifePageCounter" : str(newlifepagecounter),
                  }  
         return self.doModify(userpquota.ident, fields)         
+       
+    def decreaseUserAccountBalance(self, user, amount) :    
+        """Decreases user's account balance from an amount."""
+        fields = {
+                   "pykotaBalance" : { "operator" : "-", "value" : amount, "convert" : float },
+                 }
+        return self.doModify(user.idbalance, fields)         
        
     def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
         """Sets the new account balance and eventually new lifetime paid."""
@@ -824,8 +855,9 @@ class Storage(BaseStorage) :
     def writePrinterToGroup(self, pgroup, printer) :
         """Puts a printer into a printer group."""
         if printer.ident not in pgroup.uniqueMember :
+            pgroup.uniqueMember.append(printer.ident)
             fields = {
-                       "uniqueMember" : pgroup.uniqueMember + [printer.ident]
+                       "uniqueMember" : pgroup.uniqueMember
                      }  
             self.doModify(pgroup.ident, fields)         
         

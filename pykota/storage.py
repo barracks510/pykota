@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/01/10 09:44:02  jalet
+# Fixed potential accuracy problem if a user printed on several printers at
+# the very same time.
+#
 # Revision 1.35  2004/01/08 16:33:27  jalet
 # Additionnal check to not create a circular printers group.
 #
@@ -170,9 +174,8 @@ class StorageUser(StorageObject) :
         
     def consumeAccountBalance(self, amount) :     
         """Consumes an amount of money from the user's account balance."""
-        newbalance = float(self.AccountBalance or 0.0) - amount
-        self.parent.writeUserAccountBalance(self, newbalance)
-        self.AccountBalance = newbalance
+        self.parent.decreaseUserAccountBalance(self, amount)
+        self.AccountBalance = float(self.AccountBalance or 0.0) - amount
         
     def setAccountBalance(self, balance, lifetimepaid) :    
         """Sets the user's account balance in case he pays more money."""
@@ -249,6 +252,7 @@ class StoragePrinter(StorageObject) :
         """Adds a printer to a printer group."""
         if (printer not in self.parent.getParentPrinters(self)) and (printer.ident != self.ident) :
             self.parent.writePrinterToGroup(self, printer)
+            # TODO : reset cached value for printer parents, or add new parent to cached value
         
     def setPrices(self, priceperpage = None, priceperjob = None) :    
         """Sets the printer's prices."""
@@ -300,11 +304,9 @@ class StorageUserPQuota(StorageObject) :
             if nbpages :
                 self.User.consumeAccountBalance(jobprice)
                 for upq in [ self ] + self.ParentPrintersUserPQuota :
-                    newpagecounter = int(upq.PageCounter or 0) + nbpages
-                    newlifepagecounter = int(upq.LifePageCounter or 0) + nbpages
-                    self.parent.writeUserPQuotaPagesCounters(upq, newpagecounter, newlifepagecounter)
-                    upq.PageCounter = newpagecounter
-                    upq.LifePageCounter = newlifepagecounter
+                    self.parent.increaseUserPQuotaPagesCounters(upq, nbpages)
+                    upq.PageCounter = int(upq.PageCounter or 0) + nbpages
+                    upq.LifePageCounter = int(upq.LifePageCounter or 0) + nbpages
         except PyKotaStorageError, msg :    
             self.parent.rollbackTransaction()
             raise PyKotaStorageError, msg

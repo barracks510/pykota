@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha23 :
+    
+        - Fixed concurrent access potential accounting accuracy problem.
+        
     - 1.16alpha22 :
     
         - edpykota now allows adding printers to printer groups

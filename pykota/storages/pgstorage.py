@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/01/10 09:44:02  jalet
+# Fixed potential accuracy problem if a user printed on several printers at
+# the very same time.
+#
 # Revision 1.30  2004/01/08 16:33:27  jalet
 # Additionnal check to not create a circular printers group.
 #
@@ -212,7 +216,7 @@ class Storage(BaseStorage) :
     def getAllUsersNames(self) :    
         """Extracts all user names."""
         usernames = []
-        result = self.doSearch("SELECT username FROM users;")
+        result = self.doSearch("SELECT username FROM users")
         if result :
             usernames = [record["username"] for record in result]
         return usernames
@@ -220,7 +224,7 @@ class Storage(BaseStorage) :
     def getAllGroupsNames(self) :    
         """Extracts all group names."""
         groupnames = []
-        result = self.doSearch("SELECT groupname FROM groups;")
+        result = self.doSearch("SELECT groupname FROM groups")
         if result :
             groupnames = [record["groupname"] for record in result]
         return groupnames
@@ -353,7 +357,7 @@ class Storage(BaseStorage) :
     def getParentPrintersFromBackend(self, printer) :    
         """Get all the printer groups this printer is a member of."""
         pgroups = []
-        result = self.doSearch("SELECT groupid,printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s;" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT groupid,printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s" % self.doQuote(printer.ident))
         if result :
             for record in result :
                 if record["groupid"] != printer.ident : # in case of integrity violation
@@ -476,16 +480,24 @@ class Storage(BaseStorage) :
         """Sets the date limit permanently for a group print quota."""
         self.doModify("UPDATE grouppquota SET datelimit=%s WHERE id=%s" % (self.doQuote(datelimit), self.doQuote(grouppquota.ident)))
         
+    def increaseUserPQuotaPagesCounters(self, userpquota, nbpages) :    
+        """Increase page counters for a user print quota."""
+        self.doModify("UPDATE userpquota SET pagecounter=pagecounter+%s,lifepagecounter=lifepagecounter+%s WHERE id=%s" % (self.doQuote(nbpages), self.doQuote(nbpages), self.doQuote(userpquota.ident)))
+       
     def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
-       """Sets the new page counters permanently for a user print quota."""
-       self.doModify("UPDATE userpquota SET pagecounter=%s,lifepagecounter=%s WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
+        """Sets the new page counters permanently for a user print quota."""
+        self.doModify("UPDATE userpquota SET pagecounter=%s,lifepagecounter=%s WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
+       
+    def decreaseUserAccountBalance(self, user, amount) :    
+        """Decreases user's account balance from an amount."""
+        self.doModify("UPDATE users SET balance=balance-%s WHERE id=%s" % (self.doQuote(amount), self.doQuote(user.ident)))
        
     def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
-       """Sets the new account balance and eventually new lifetime paid."""
-       if newlifetimepaid is not None :
-           self.doModify("UPDATE users SET balance=%s, lifetimepaid=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newlifetimepaid), self.doQuote(user.ident)))
-       else :    
-           self.doModify("UPDATE users SET balance=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(user.ident)))
+        """Sets the new account balance and eventually new lifetime paid."""
+        if newlifetimepaid is not None :
+            self.doModify("UPDATE users SET balance=%s, lifetimepaid=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newlifetimepaid), self.doQuote(user.ident)))
+        else :    
+            self.doModify("UPDATE users SET balance=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(user.ident)))
             
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
@@ -500,7 +512,7 @@ class Storage(BaseStorage) :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options)))
         else :        
             # here we explicitly want to reset jobsize to NULL if needed
-            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, jobdate=now() WHERE id=%s;" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(printer.LastJob.ident)))
+            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(printer.LastJob.ident)))
             
     def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota."""
@@ -513,12 +525,12 @@ class Storage(BaseStorage) :
     def writePrinterToGroup(self, pgroup, printer) :
         """Puts a printer into a printer group."""
         children = []
-        result = self.doSearch("SELECT printerid FROM printergroupsmembers WHERE groupid=%s;" % self.doQuote(pgroup.ident))
+        result = self.doSearch("SELECT printerid FROM printergroupsmembers WHERE groupid=%s" % self.doQuote(pgroup.ident))
         if result :
             for record in result :
                 children.append(record.get("printerid")) # TODO : put this into the database integrity rules
         if printer.ident not in children :        
-            self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s);" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
+            self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""
