@@ -1,7 +1,7 @@
 Source: pykota
 Section: text
 Priority: extra
-Maintainer: Peter Hawkins <peterh@debian.org>
+Maintainer: Jerome Alet <alet@librelogiciel.com>
 Build-Depends-Indep: debhelper (>= 4.0.0), python, docbook-utils, python-dev
 Standards-Version: 3.6.1
 
