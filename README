@@ -199,7 +199,8 @@ PyKota features :
           and traditional Chinese languages. 
           More to come.
           
-        - Web based print quota monitor and data dumper are included.  
+        - Web enabled print quota monitor, data dumper, and print quote
+          generator.
         
         - An On Screen Display X-Window print quota monitor is included.
         

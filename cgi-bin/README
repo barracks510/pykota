@@ -24,6 +24,8 @@ put on a web server along with PyKota command line tools.
 
 Be sure to restrict access to these CGI scripts as necessary.
 
+For now, pykotme.cgi doesn't need any restriction.
+
 If you protect access to printquota.cgi or dumpykota.cgi with 
 username+password authentication, the REMOTE_USER CGI environment variable
 is honored, so an user can only see his own datas, but not

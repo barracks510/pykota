@@ -28,6 +28,7 @@ import sys
 import os
 import cgi
 import urllib
+import cStringIO
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
@@ -43,7 +44,7 @@ header = """Content-type: text/html
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
-    <form action="pykotme.cgi" method="POST">
+    <form action="pykotme.cgi" method="POST" enctype="multipart/form-data">
       <table>
         <tr>
           <td>
@@ -90,22 +91,22 @@ class PyKotMeGUI(PyKotaTool) :
         if message :
             self.body = '<p><font color="red">%s</font></p>\n%s' % (message, self.body)
         
-#    def htmlListPrinters(self, selected=[], mask="*") :    
-#        """Displays the printers multiple selection list."""
-#        printers = self.storage.getMatchingPrinters(mask)
-#        selectednames = [p.Name for p in selected]
-#        message = '<table><tr><td valign="top">%s :</td><td valign="top"><select name="printers" multiple="multiple">' % _("Printer")
-#        for printer in printers :
-#            if printer.Name in selectednames :
-#                message += '<option value="%s" selected="selected">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
-#            else :
-#                message += '<option value="%s">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
-#        message += '</select></td></tr></table>'
-#        return message
+    def htmlListPrinters(self, selected=[], mask="*") :    
+        """Displays the printers multiple selection list."""
+        printers = self.storage.getMatchingPrinters(mask)
+        selectednames = [p.Name for p in selected]
+        message = '<table><tr><td valign="top">%s :</td><td valign="top"><select name="printers" multiple="multiple">' % _("Printer")
+        for printer in printers :
+            if printer.Name in selectednames :
+                message += '<option value="%s" selected="selected">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
+            else :
+                message += '<option value="%s">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
+        message += '</select></td></tr></table>'
+        return message
         
     def guiAction(self) :
         """Main function"""
-        printers = None
+        printers = inputfile = None
         self.body = "<p>%s</p>\n" % _("Please click on the above button")
         if self.form.has_key("report") :
             if self.form.has_key("printers") :
@@ -115,9 +116,22 @@ class PyKotMeGUI(PyKotaTool) :
                 printers = [self.storage.getPrinter(p.value) for p in printersfield]
             else :    
                 printers = self.storage.getMatchingPrinters("*")
+            if self.form.has_key("inputfile") :    
+                inputfile = self.form["inputfile"].value
                 
-        #self.body += self.htmlListPrinters(printers or [])            
-        #self.body += "<br />"
+        self.body += self.htmlListPrinters(printers or [])            
+        self.body += "<br />"
+        self.body += _("Filename") + " : "
+        self.body += '<input type="file" size="64" name="inputfile" />'
+        self.body += "<br />"
+        if inputfile :
+            try :
+                parser = PDLAnalyzer(cStringIO.StringIO(inputfile))
+                jobsize = parser.getJobSize()
+            except PDLAnalyzerError, msg :    
+                self.body += '<font color="red">%s</font>' % msg
+            else :    
+                self.body += _("This file is %i pages long.") % jobsize
             
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()
