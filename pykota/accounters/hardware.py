@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2004/09/27 20:00:35  jalet
+# Typo
+#
 # Revision 1.26  2004/09/27 19:56:27  jalet
 # Added internal handling for PJL queries over port tcp/9100. Now waits
 # for printer being idle before asking, just like with SNMP.
@@ -253,7 +256,7 @@ class PJLAccounter :
             else :    
                 actualpagecount = self.printerStatus = None
                 self.timedout = 0
-                while (self.timedout = 0) or (actualpagecount is None) or (self.printerStatus is None) :
+                while (self.timedout == 0) or (actualpagecount is None) or (self.printerStatus is None) :
                     signal.signal(signal.SIGALRM, self.alarmHandler)
                     signal.alarm(5)
                     try :
