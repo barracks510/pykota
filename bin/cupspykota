@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.79  2004/11/15 22:01:34  jalet
+# Improved banner handling.
+# Fix for raw printing and banners.
+#
 # Revision 1.78  2004/11/15 19:59:34  jalet
 # PyKota banners now basically work !
 #
@@ -525,13 +529,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.accounter.endJob(printer)
             self.printMoreInfo(user, printer, _("Job accounting ends."))
                 
-            # handle ending banner pages after accounting ends
-            if accountbanner in ["STARTING", "NONE"] :
-                banner = self.endingBanner(printer.Name)
-                if banner :
-                    self.logdebug("Printing ending banner after accounting ends.")
-                    self.handleData(banner)
- 
             # retrieve the job size    
             if action == "DENY" :
                 jobsize = 0
@@ -554,6 +551,13 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # then re-export user information with new value
             self.exportUserInfo(userpquota)
+            
+            # handle ending banner pages after accounting ends
+            if accountbanner in ["STARTING", "NONE"] :
+                banner = self.endingBanner(printer.Name)
+                if banner :
+                    self.logdebug("Printing ending banner after accounting ends.")
+                    self.handleData(banner)
             
             # Launches the post hook
             self.posthook(userpquota)
@@ -594,8 +598,13 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], self.originalbackend)
         
         # And launch it
-        self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + sys.argv[1:])])))
-        subprocess = PyKotaPopen4([realbackend] + sys.argv[1:], bufsize=0, arg0=os.environ["DEVICE_URI"])
+        if filehandle is None :
+            arguments = sys.argv
+        else :    
+            # Here we absolutely WANT to remove any filename from the command line !
+            arguments = [ "Fake this because we are printing a banner" ] + sys.argv[1:6]
+        self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + arguments)])))
+        subprocess = PyKotaPopen4([realbackend] + arguments, bufsize=0, arg0=os.environ["DEVICE_URI"])
         
         # Save file descriptors, we will need them later.
         stderrfno = sys.stderr.fileno()

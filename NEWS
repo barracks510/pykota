@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha3 :
+    
+        - PyKota can now generate its own banners, and either account
+          for them or not, depending on newly introduced directives
+          in pykota.conf
+          Thanks to Matt Hyclak for the patch.
+          
     - 1.21alpha2 :
     
         - Installation script is now non interactive again, as it should

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/11/15 22:01:34  jalet
+# Improved banner handling.
+# Fix for raw printing and banners.
+#
 # Revision 1.4  2004/11/15 19:59:34  jalet
 # PyKota banners now basically work !
 #
@@ -40,6 +44,7 @@
 
 import sys
 import os
+import time
 import cStringIO
 import popen2
 
@@ -74,11 +79,29 @@ options :
   -v | --version       Prints pkbanner's version number then exits.
   -h | --help          Prints this message then exits.
   
-  ... TODO...
+  -d | --darkness d    Sets the darkness to d%%. This can be used to
+                       save toner. The default value is 100.
+                       NOT IMPLEMENTED YET.
+  
+  -p | --pagesize sz   Sets sz as the page size. Most well known
+                       page sizes are recognized, like 'A4' or 'Letter'
+                       to name a few.
+  
+  -l | --logo img      Use the image as the banner's logo. The logo will
+                       be drawn at the top center of the page. The default
+                       logo is /usr/share/pykota/logos/pykota.jpeg
+                       
+  -u | --url u         Uses u as an url to be written at the bottom of 
+                       the banner page. The default url is :
+                       http://www.librelogiciel.com/software/
   
 examples :                              
 
-  ... TODO...
+  Using pkbanner directly from the command line is not recommended,
+  excepted for testing purposes. You should use pkbanner in the
+  'startingbanner' or 'endingbanner' directives in pykota.conf
+  
+  For this reason, there's no example.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -100,7 +123,6 @@ class PyKotaBanner(Tool) :
     """A class for pkbanner."""
     primaryfields = [ 
                 ("PRINTERNAME", N_("Printer")),
-                ("USERNAME", N_("User")),
                 ("JOBID", N_("JobId")),
                 ("JOBORIGINATINGHOSTNAME", N_("Client host")),
                 ("TITLE", N_("Title")),
@@ -134,8 +156,31 @@ class PyKotaBanner(Tool) :
             except AttributeError :
                 pass
                 
-    def genPDF(self, pagesize, logo, url) :            
+    def getVar(self, varname) :            
+        """Extracts a variable from the environment and returns its value or 'Unknown' in the current locale."""
+        return os.environ.get(varname) or _("Unknown")
+        
+    def printVar(self, canvas, x, y, label, value, size, darkness) :
+        """Outputs a variable onto the PDF canvas.
+        
+           Returns the number of points to substract to current Y coordinate.
+        """   
+        canvas.saveState()
+        canvas.setFont("Helvetica-Bold", size)
+        (r, g, b) =  (0, 0, 0)  # Black : TODO : darkness
+        canvas.setFillColorRGB(r, g, b)
+        message = "%s :" % _(label).title()
+        canvas.drawRightString(x, y, message)
+        canvas.setFont("Courier-Bold", size)
+        (r, g, b) = (1, 0, 0)   # Red : TODO : darkness
+        canvas.setFillColorRGB(r, g, b)
+        canvas.drawString(x + 0.5*cm, y, value)
+        canvas.restoreState()
+        return (size + 4)
+    
+    def genPDF(self, pagesize, logo, url, darkness) :
         """Generates the banner in PDF format, return the PDF document as a string."""
+        
         document = cStringIO.StringIO()
         c = canvas.Canvas(document, pagesize=pagesize, pageCompression=1)
         
@@ -147,48 +192,86 @@ class PyKotaBanner(Tool) :
         ycenter = pagesize[1] / 2.0
                     
         ypos = pagesize[1] - (2 * cm)            
-        try :    
-            imglogo = PIL.Image.open(logo)
-        except :    
-            self.printInfo("Unable to open image %s" % logo, "warn")
-        else :
-            (width, height) = imglogo.size
-            multi = float(width) / (8 * cm) 
-            width = float(width) / multi
-            height = float(height) / multi
-            xpos = xcenter - (width / 2.0)
-            ypos -= height
-            c.drawImage(logo, xpos, ypos, width, height)
+        
+        if logo :
+            try :    
+                imglogo = PIL.Image.open(logo)
+            except :    
+                self.printInfo("Unable to open image %s" % logo, "warn")
+            else :
+                (width, height) = imglogo.size
+                multi = float(width) / (8 * cm) 
+                width = float(width) / multi
+                height = float(height) / multi
+                xpos = xcenter - (width / 2.0)
+                ypos -= height
+                c.drawImage(logo, xpos, ypos, width, height)
         
         # New top
         xpos = pagesize[0] / 5.0
         ypos -= (1 * cm) + 20
         
-        for fieldsgroup in [ self.primaryfields, self.secondaryfields, self.tertiaryfields] :
-            c.saveState()
-            for (varname, label) in fieldsgroup :
-                c.setFont("Helvetica-Bold", 14)
-                c.setFillColorRGB(0, 0, 0)
-                message = "%s :" % _(label).title()
-                c.drawRightString(xcenter, ypos, message)
-                c.setFont("Courier-Bold", 14)
-                c.setFillColorRGB(1, 0, 0)
-                c.drawString(xcenter + 0.5*cm, ypos, os.environ.get("PYKOTA%s" % varname, _("Unknown")))
-                ypos -= 18  # next line
-            c.restoreState()
-            ypos -= 18      # skip an additionnal line
+        printername = self.getVar("PYKOTAPRINTERNAME")
+        username = self.getVar("PYKOTAUSERNAME")
+        accountbanner = self.config.getAccountBanner(printername)
         
+        # Outputs the username
+        ypos -= self.printVar(c, xcenter, ypos, _("Username"), username, 20, darkness) 
+        
+        # Printer and Job Id
+        job = "%s - %s" % (printername, self.getVar("PYKOTAJOBID"))
+        ypos -= self.printVar(c, xcenter, ypos, _("Job"), job, 14, darkness) 
+        
+        # Current date (TODO : at the time the banner was printed ! Change this to job's submission date)
+        datetime = time.strftime("%c", time.localtime())
+        ypos -= self.printVar(c, xcenter, ypos, _("Date"), datetime, 14, darkness) 
+        
+        # Result of the print job
+        action = self.getVar("PYKOTAACTION")
+        if action == "ALLOW" :
+            action = _("Allowed")
+        elif action == "DENY" :    
+            action = _("Denied")
+        elif action == "WARN" :    
+            action = _("Allowed with Warning")
+        ypos -= self.printVar(c, xcenter, ypos, _("Result"), action, 14, darkness) 
+        
+        # skip some space
+        ypos -= 20
+        
+        # Outputs title and filename
+        title = self.getVar("PYKOTATITLE")
+        ypos -= self.printVar(c, xcenter, ypos, _("Title"), title, 10, darkness) 
+        
+        filename = self.getVar("PYKOTAFILENAME")
+        ypos -= self.printVar(c, xcenter, ypos, _("Filename"), filename, 10, darkness) 
+        
+        # skip some space
+        ypos -= 20
+        
+        # Now outputs the user's account balance or page counter
+        ypos -= self.printVar(c, xcenter, ypos, _("Pages printed on %s") % printername, self.getVar("PYKOTAPAGECOUNTER"), 14, darkness) 
+        limitby = self.getVar("PYKOTALIMITBY")
+        if limitby == "balance" :  
+            ypos -= self.printVar(c, xcenter, ypos, _("Account balance"), self.getVar("PYKOTABALANCE"), 14, darkness) 
+        else :
+            ypos -= self.printVar(c, xcenter, ypos, _("Soft Limit"), self.getVar("PYKOTASOFTLIMIT"), 14, darkness) 
+            ypos -= self.printVar(c, xcenter, ypos, _("Hard Limit"), self.getVar("PYKOTAHARDLIMIT"), 14, darkness) 
+            ypos -= self.printVar(c, xcenter, ypos, _("Date Limit"), self.getVar("PYKOTADATELIMIT"), 14, darkness) 
+            
         # URL
-        c.saveState()
-        c.setFont("Courier-Bold", 16)
-        c.setFillColorRGB(0, 0, 1)
-        c.drawCentredString(xcenter, 2 * cm, url)
-        c.restoreState()
+        if url :
+            c.saveState()
+            c.setFont("Courier-Bold", 16)
+            (r, g, b) = (0, 0, 1)   # Blue : TODO : darkness
+            c.setFillColorRGB(r, g, b)
+            c.drawCentredString(xcenter, 2 * cm, url)
+            c.restoreState()
         
         c.showPage()
         c.save()
         return document.getvalue()
-    
+        
     def main(self, files, options) :
         """Generates a banner."""
         if not hasRL :
@@ -196,13 +279,22 @@ class PyKotaBanner(Tool) :
         if not hasPIL :
             raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
             
+        try :
+            darkness = int(options["darkness"])
+            if (darkness <= 0) or (darkness > 100) :
+                raise ValueError, "Allowed range is (1..100)"
+            darkness /= 100.0    
+        except (TypeError, ValueError), msg :
+            self.printInfo("Invalid darkness value %s : %s" % (options["darkness"], msg), "warn")
+            darkness = 1.0
+            
         pagesize = self.getPageSize(options["pagesize"])
         if pagesize is None :
             pagesize = self.getPageSize("a4")
             self.printInfo("Unknown page size %s, defaulting to A4." % options["pagesize"], "warn")
             
         self.logdebug("Generating the banner in PDF format...")    
-        doc = self.genPDF(pagesize, options["logo"], options["url"].strip())
+        doc = self.genPDF(pagesize, options["logo"].strip(), options["url"].strip(), darkness)
         
         self.logdebug("Converting the banner to PostScript...")    
         os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
@@ -228,12 +320,13 @@ if __name__ == "__main__" :
     retcode = 0
     try :
         defaults = { \
+                     "darkness" : "100", \
                      "pagesize" : "a4", \
                      "logo" : "/usr/share/pykota/logos/pykota.jpeg",
                      "url" : "http://www.librelogiciel.com/software/",
                    }
-        short_options = "vhl:p:u:"
-        long_options = ["help", "version", "pagesize=", "logo=", "url="]
+        short_options = "vhd:l:p:u:"
+        long_options = ["help", "version", "darkness=", "pagesize=", "logo=", "url="]
         
         # Initializes the command line tool
         banner = PyKotaBanner(doc=__doc__)
@@ -244,6 +337,7 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
+        options["darkness"] = options["d"] or options["darkness"] or defaults["darkness"]
         options["pagesize"] = options["p"] or options["pagesize"] or defaults["pagesize"]
         options["logo"] = options["l"] or options["logo"] or defaults["logo"]
         options["url"] = options["u"] or options["url"] or defaults["url"]

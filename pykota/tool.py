@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.141  2004/11/15 22:01:34  jalet
+# Improved banner handling.
+# Fix for raw printing and banners.
+#
 # Revision 1.140  2004/11/15 19:59:34  jalet
 # PyKota banners now basically work !
 #
@@ -625,13 +629,19 @@ class Tool :
         
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
-        self.clean()
+        try :
+            self.clean()
+        except AttributeError :    
+            pass
         print version.__version__
         sys.exit(0)
     
     def display_usage_and_quit(self) :
         """Displays command line usage, then exists successfully."""
-        self.clean()
+        try :
+            self.clean()
+        except AttributeError :    
+            pass
         print _(self.documentation) % (version.__version__, version.__author__)
         sys.exit(0)
         
