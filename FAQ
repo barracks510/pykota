@@ -110,6 +110,48 @@ PyKota's FAQ :
     a PCL and a PostScript driver under Windows. Don't install the 
     PCL one.
     
+  * How can I share print quota between some printers only (not all) ?   
+  
+    To do this you have to put the printers into a printers group, and
+    set quota 
+    
+  * What is a printer group ?
+  
+     A printer group is exactly like a normal printer, but is
+     unknown by the printing system. You can use printer groups
+     to share print quota between printers.
+    
+  * How can I create a printer group ?   
+  
+    Just use edpykota, like for normal printers.
+ 
+  * How can I put a printer into a printer group ?
+  
+    Use the new -G|--pgroups command line option to edpykota
+    You can put sereval printers into several printers groups
+    in one command using the following syntax :
+    
+      $ edpykota --pgroups pg1[,pg2,pg3,...] --printers p1[,p2,p3,...]
+        
+    What is between square brackets is optional.    
+    Both p1,p2 and pg1,pg2 can contain wildcards.
+    
+  * How quota checking and update is done with printer groups ?   
+  
+    Print accounting and quota checking is done for a printer and
+    all the printers groups it belongs to, recursively.
+    If quota is reached on ANY of these printers for the current user,
+    printing is denied.
+
+  * Is this feature robust ?
+  
+    It should be. However, beware of integrity problems. LDAP has no 
+    sense of database integrity, and PostgreSQL constraints have not 
+    yet been fully implemented. The code actually *tries* to forbid 
+    circular printers groups, but if you create printer groups with
+    another tool (e.g. psql or gq), then you are mostly on you 
+    own to not create infinite loops.
+    
   * My question isn't answered there, can you help ?  
   
     Sure. Ask your question to the mailing list. If this is a
