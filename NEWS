@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha22 :
     
+        - Hopefully final fix for data encoding charset.
+        
         - edpykota now refuse to work if the user is not a PyKota admin.
         
         - Fixes a recently introduced bug with users groups and PostgreSQL.

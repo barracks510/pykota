@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.83  2004/10/07 21:14:28  jalet
+# Hopefully final fix for data encoding to and from the database
+#
 # Revision 1.82  2004/10/05 09:59:20  jalet
 # Restore compatibility with Python 2.1
 #
@@ -591,7 +594,7 @@ class Storage(BaseStorage) :
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
             printer.uniqueMember = fields.get("uniqueMember", [])
-            printer.Description = unicode(fields.get("description", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
+            printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
             printer.Exists = 1
         return printer    
         
@@ -692,10 +695,10 @@ class Storage(BaseStorage) :
                 except ValueError :    
                     lastjob.JobPrice = None
                 lastjob.JobAction = fields.get("pykotaAction", [""])[0]
-                lastjob.JobFileName = unicode(fields.get("pykotaFileName", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
-                lastjob.JobTitle = unicode(fields.get("pykotaTitle", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
+                lastjob.JobFileName = self.databaseToUserCharset(fields.get("pykotaFileName", [""])[0]) 
+                lastjob.JobTitle = self.databaseToUserCharset(fields.get("pykotaTitle", [""])[0]) 
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
-                lastjob.JobOptions = unicode(fields.get("pykotaOptions", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
+                lastjob.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
                 lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
@@ -768,7 +771,7 @@ class Storage(BaseStorage) :
                 printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
                 printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
                 printer.uniqueMember = fields.get("uniqueMember", [])
-                printer.Description = unicode(fields.get("description", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
+                printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                 printer.Exists = 1
                 printers.append(printer)
                 self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -980,7 +983,7 @@ class Storage(BaseStorage) :
     def writePrinterDescription(self, printer) :    
         """Write the printer's description back into the storage."""
         fields = {
-                   "description" : unicode(str(printer.Description), self.tool.getCharset()).encode("UTF-8"), 
+                   "description" : self.userCharsetToDatabase(str(printer.Description)), 
                  }
         self.doModify(printer.ident, fields)
         
@@ -1079,10 +1082,10 @@ class Storage(BaseStorage) :
                    "pykotaJobId" : jobid,
                    "pykotaPrinterPageCounter" : str(pagecounter),
                    "pykotaAction" : action,
-                   "pykotaFileName" : ((filename is None) and "None") or unicode(filename, self.tool.getCharset()).encode("UTF-8"), 
-                   "pykotaTitle" : ((title is None) and "None") or unicode(title, self.tool.getCharset()).encode("UTF-8"), 
+                   "pykotaFileName" : ((filename is None) and "None") or self.userCharsetToDatabase(filename), 
+                   "pykotaTitle" : ((title is None) and "None") or self.userCharsetToDatabase(title), 
                    "pykotaCopies" : str(copies), 
-                   "pykotaOptions" : ((options is None) and "None") or unicode(options, self.tool.getCharset()).encode("UTF-8"), 
+                   "pykotaOptions" : ((options is None) and "None") or self.userCharsetToDatabase(options), 
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
                  }
@@ -1181,10 +1184,10 @@ class Storage(BaseStorage) :
                 except ValueError :
                     job.JobPrice = None
                 job.JobAction = fields.get("pykotaAction", [""])[0]
-                job.JobFileName = unicode(fields.get("pykotaFileName", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
-                job.JobTitle = unicode(fields.get("pykotaTitle", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
+                job.JobFileName = self.databaseToUserCharset(fields.get("pykotaFileName", [""])[0]) 
+                job.JobTitle = self.databaseToUserCharset(fields.get("pykotaTitle", [""])[0]) 
                 job.JobCopies = int(fields.get("pykotaCopies", [0])[0])
-                job.JobOptions = unicode(fields.get("pykotaOptions", [""])[0], "UTF-8").encode(self.tool.getCharset()) 
+                job.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 job.JobHostName = fields.get("pykotaHostName", [""])[0]
                 job.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/10/07 21:14:28  jalet
+# Hopefully final fix for data encoding to and from the database
+#
 # Revision 1.11  2004/10/07 14:35:40  jalet
 # Now edpykota refuses to launch if the user is not a PyKota administrator.
 # dumpykota : now has the same error message than edpykota in this case.
@@ -233,9 +236,12 @@ class DumPyKota(PyKotaTool) :
             x._push()
             x.entry()
             for i in range(len(entry)) :
-                value = entry[i]
-                strvalue = unicode(str(value), self.getCharset()).encode("UTF-8")
-                x.attribute(strvalue, type=type(value).__name__, name=headers[i])
+                value = str(entry[i])
+                try :
+                    value = unicode(value, self.getCharset()).encode("UTF-8")
+                except UnicodeError :    
+                    pass
+                x.attribute(value, type=type(value).__name__, name=headers[i])
             x._pop()    
         x._output(self.outfile)
                            

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2004/10/07 21:14:28  jalet
+# Hopefully final fix for data encoding to and from the database
+#
 # Revision 1.55  2004/10/07 09:37:53  jalet
 # Fixes recently introduced bug wrt users groups (was it three days ago ?)
 #
@@ -113,10 +116,7 @@ class SQLStorage :
                 for j in range(nbfields) :
                     field = fields[j]
                     if type(field) == StringType :
-                        try :
-                            fields[j] = unicode(field, "UTF-8").encode(self.tool.getCharset()) 
-                        except UnicodeError : # takes care of old jobs in history not stored as UTF-8    
-                            pass
+                        fields[j] = self.databaseToUserCharset(field) 
                 entries[i] = tuple(fields)    
             return entries
         
@@ -223,7 +223,7 @@ class SQLStorage :
             printer.Name = fields.get("printername", printername)
             printer.PricePerJob = fields.get("priceperjob") or 0.0
             printer.PricePerPage = fields.get("priceperpage") or 0.0
-            printer.Description = unicode((fields.get("description") or ""), "UTF-8").encode(self.tool.getCharset()) 
+            printer.Description = self.databaseToUserCharset(fields.get("description") or "")
             printer.Exists = 1
         return printer    
         
@@ -275,10 +275,10 @@ class SQLStorage :
             lastjob.JobSize = fields.get("jobsize")
             lastjob.JobPrice = fields.get("jobprice")
             lastjob.JobAction = fields.get("action")
-            lastjob.JobFileName = unicode((fields.get("filename") or ""), "UTF-8").encode(self.tool.getCharset()) 
-            lastjob.JobTitle = unicode((fields.get("title") or ""), "UTF-8").encode(self.tool.getCharset()) 
+            lastjob.JobFileName = self.databaseToUserCharset(fields.get("filename") or "") 
+            lastjob.JobTitle = self.databaseToUserCharset(fields.get("title") or "") 
             lastjob.JobCopies = fields.get("copies")
-            lastjob.JobOptions = unicode((fields.get("options") or ""), "UTF-8").encode(self.tool.getCharset()) 
+            lastjob.JobOptions = self.databaseToUserCharset(fields.get("options") or "") 
             lastjob.JobDate = fields.get("jobdate")
             lastjob.JobHostName = fields.get("hostname")
             lastjob.JobSizeBytes = fields.get("jobsizebytes")
@@ -337,7 +337,7 @@ class SQLStorage :
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob") or 0.0
                     printer.PricePerPage = record.get("priceperpage") or 0.0
-                    printer.Description = unicode((record.get("description") or ""), "UTF-8").encode(self.tool.getCharset()) 
+                    printer.Description = self.databaseToUserCharset(record.get("description") or "") 
                     printer.Exists = 1
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -423,9 +423,7 @@ class SQLStorage :
         
     def writePrinterDescription(self, printer) :    
         """Write the printer's description back into the storage."""
-        description = printer.Description
-        if description is not None :
-            description = unicode(printer.Description, self.tool.getCharset()).encode("UTF-8"), 
+        description = self.userCharsetToDatabase(printer.Description)
         self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(description), self.doQuote(printer.ident)))
         
     def writeUserLimitBy(self, user, limitby) :    
@@ -473,12 +471,9 @@ class SQLStorage :
         
     def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
         """Adds a job in a printer's history."""
-        if filename is not None :
-            filename = unicode(filename, self.tool.getCharset()).encode("UTF-8")
-        if title is not None :
-            title = unicode(title, self.tool.getCharset()).encode("UTF-8")
-        if options is not None :
-            options = unicode(options, self.tool.getCharset()).encode("UTF-8")
+        filename = self.userCharsetToDatabase(filename)
+        title = self.userCharsetToDatabase(title)
+        options = self.userCharsetToDatabase(options)
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes)))
@@ -538,10 +533,10 @@ class SQLStorage :
                 job.JobSize = fields.get("jobsize")
                 job.JobPrice = fields.get("jobprice")
                 job.JobAction = fields.get("action")
-                job.JobFileName = unicode((fields.get("filename") or ""), "UTF-8").encode(self.tool.getCharset()) 
-                job.JobTitle = unicode((fields.get("title") or ""), "UTF-8").encode(self.tool.getCharset()) 
+                job.JobFileName = self.databaseToUserCharset(fields.get("filename") or "") 
+                job.JobTitle = self.databaseToUserCharset(fields.get("title") or "") 
                 job.JobCopies = fields.get("copies")
-                job.JobOptions = unicode((fields.get("options") or ""), "UTF-8").encode(self.tool.getCharset()) 
+                job.JobOptions = self.databaseToUserCharset(fields.get("options") or "") 
                 job.JobDate = fields.get("jobdate")
                 job.JobHostName = fields.get("hostname")
                 job.JobSizeBytes = fields.get("jobsizebytes")

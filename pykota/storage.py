@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.63  2004/10/07 21:14:28  jalet
+# Hopefully final fix for data encoding to and from the database
+#
 # Revision 1.62  2004/09/28 17:45:31  jalet
 # Added the --hardreset command line option to edpykota
 #
@@ -683,6 +686,24 @@ class BaseStorage :
             if gpq.Exists :
                 gpquotas.append(gpq)
         return gpquotas        
+        
+    def databaseToUserCharset(self, text) :
+        """Converts from database format (UTF-8) to user's charset."""
+        if text is not None :
+            try :
+                return unicode(text, "UTF-8").encode(self.tool.getCharset()) 
+            except UnicodeError :    
+                pass
+        return text
+        
+    def userCharsetToDatabase(self, text) :
+        """Converts from user's charset to database format (UTF-8)."""
+        if text is not None :
+            try :
+                return unicode(text, self.tool.getCharset()).encode("UTF-8") 
+            except UnicodeError :    
+                pass
+        return text
         
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
