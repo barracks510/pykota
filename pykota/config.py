@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/02/10 08:19:57  jalet
+# tell ConfigParser to return raw data, this allows our own strings
+# interpolations in the requester
+#
 # Revision 1.9  2003/02/10 00:44:38  jalet
 # Typos
 #
@@ -84,11 +88,11 @@ class PyKotaConfig :
                 
         # more precise checks        
         validloggers = [ "stderr", "system" ] 
-        if self.config.get("global", "logger").lower() not in validloggers :             
+        if self.config.get("global", "logger", raw=1).lower() not in validloggers :             
             raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
             
         validmethods = [ "lazy" ] # TODO add more methods            
-        if self.config.get("global", "method").lower() not in validmethods :             
+        if self.config.get("global", "method", raw=1).lower() not in validmethods :             
             raise PyKotaConfigError, _("Option method only supports values in %s") % str(validmethods)
             
         # check all printers now 
@@ -98,11 +102,11 @@ class PyKotaConfig :
                     raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
                     
             validpolicies = [ "ALLOW", "DENY" ]     
-            if self.config.get(printer, "policy").upper() not in validpolicies :
+            if self.config.get(printer, "policy", raw=1).upper() not in validpolicies :
                 raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
             
             validrequesters = [ "snmp", "external" ] # TODO : add more requesters
-            fullrequester = self.config.get(printer, "requester")
+            fullrequester = self.config.get(printer, "requester", raw=1)
             try :
                 (requester, args) = [x.strip() for x in fullrequester.split('(')]
             except ValueError :    
@@ -127,16 +131,16 @@ class PyKotaConfig :
                         "storagename", "storageadmin", \
                         "storageuser", # TODO : "storageadminpw", "storageusepw", \
                       ] :
-            backendinfo.append(self.config.get("global", option))
+            backendinfo.append(self.config.get("global", option, raw=1))
         return tuple(backendinfo)    
         
     def getLoggingBackend(self) :    
         """Returns the logging backend information."""
-        return self.config.get("global", "logger").lower()
+        return self.config.get("global", "logger", raw=1).lower()
         
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
-        fullrequester = self.config.get(printer, "requester")
+        fullrequester = self.config.get(printer, "requester", raw=1)
         (requester, args) = [x.strip() for x in fullrequester.split('(')]
         if args.endswith(')') :
             args = args[:-1]
@@ -147,23 +151,23 @@ class PyKotaConfig :
         
     def getPrinterPolicy(self, printer) :    
         """Returns the default policy for the current printer."""
-        return self.config.get(printer, "policy").upper()
+        return self.config.get(printer, "policy", raw=1).upper()
         
     def getSMTPServer(self) :    
         """Returns the SMTP server to use to send messages to users."""
-        return self.config.get("global", "smtpserver").lower()
+        return self.config.get("global", "smtpserver", raw=1)
         
     def getAdminMail(self) :    
         """Returns the Email address of the Print Quota Administrator."""
-        return self.config.get("global", "adminmail")
+        return self.config.get("global", "adminmail", raw=1)
         
     def getAdmin(self) :    
         """Returns the full name of the Print Quota Administrator."""
-        return self.config.get("global", "admin")
+        return self.config.get("global", "admin", raw=1)
         
     def getGraceDelay(self) :    
         """Returns the grace delay in days."""
-        gd = self.config.get("global", "gracedelay")
+        gd = self.config.get("global", "gracedelay", raw=1)
         try :
             return int(gd)
         except ValueError :    
