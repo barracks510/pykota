@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha1 : 
     
+        - Added german translation.
+        
         - Fixed problem on first print for user group quota when
           "enforcement: strict" is used.
         

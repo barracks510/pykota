@@ -1,0 +1,686 @@
+# PyKota
+#
+# PyKota : Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# PyKota translation master file.
+# Copyright (c) 2003-2004 Conseil Internet & Logiciels Libres
+# Jerome Alet <alet@librelogiciel.com>, 2003-2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PyKota v1.19\n"
+"Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
+"POT-Creation-Date: 2004-07-21 15:35:00+0100\n"
+"PO-Revision-Date: 2004-08-06 15:35:00+0100\n"
+"Last-Translator: Johannes Lämmermann <johannes.laemmermann@t-online.de>\n"
+"Language-Team: German <alet@librelogiciel.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "Accounterbackend %s wird nicht unterstüzt"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "Konfigurationsdatei %s nicht gefunden."
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "Option %s im globalen Abscnitt von %s nicht gefunden"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "Option %s in Abschnitt %s von %s nicht gfunden"
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "Option logger unterstüzt nur folgende Werte %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "Ungültiger Accounter %s für Drucker %s "
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "Option 'accounter' in Abschnitt %s unterstüzt nur folgende Werte %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "Option 'enforcement' in Abschnitt %s unterstüzt nur folgende Werte %s"
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "Ungültige Richtlinie ('policy') %s für Drucker %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "Option 'policy' in Abschnitt %s unterstüzt nur folgende Werte %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "Ungültige Option 'mailto' %s für Drucker %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "Option 'mailto' in Abschnitt %s unterstüzt nur folgende Werte %s"
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "Ungültige grace delay %s"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "Ungültige 'poorman' Grenze %s"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"Ihr Druck-Kontingent Kontostand ist niedrig.\n"
+"Bald wird es ihnen nicht mehr gestattet sein zu drucken.\n"
+"Bitte kontaktieren sie den Druck-Kontingent Administrator um dieses Problem "
+"zu lösen."
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"Es ist ihnen nicht gestattet weiterhin zu drucken, weil \n"
+"ihr Druck-Kontingent auf Drucker %s überzogen ist."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"Bald wird es ihnen verboten sein zu Drucken, weil \n"
+"ihr Druck-Kontingent auf Drucker %s fast aufgebraucht ist."
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "Nicht unterstüztes logging subsystem %s"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "Report für %s Kontingent auf Drucker %s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "Schonfrist: %i Tage"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "Preis pro Auftrag: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "Preis pro Seite: %.3f"
+
+msgid ""
+"Group           used    soft    hard    balance grace         total       "
+"paid"
+msgstr ""
+"Gruppe          used    Soft    Hard    Konto   Aufschub      Gesamt   "
+"Bezahlt"
+
+msgid ""
+"User            used    soft    hard    balance grace         total       "
+"paid"
+msgstr ""
+"User            used    Soft    Hard    Konto   Aufschub      Gesamt   "
+"Bezahlt"
+
+msgid "unknown"
+msgstr "unbekannt"
+
+#, python-format
+msgid "Real : %s"
+msgstr "Real : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "Gesamt : %9i"
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "Nicht unterstüztes Reporterbackend %s"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "Nicht unterstüztes Kontingentspeicherungsbackend (quota storage) %s"
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "Unmöglich zu SMTP Server %s zu connecten"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Unmöglich Mail an %s zusenden, Fehler %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"Bitte kontakieren sie ihren Systemadministrator :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"Keine Übereinstimmung für User %s auf Drucker %s vorhanden, wende Standard-"
+"Richtlinie an (%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+"Keine Übereinstimmung für User %ss Kontostand, wende Standard-Richtlinie (%"
+"s) für Drucker %s an"
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Überzogenes Druck-Kontingent für Gruppe %s auf Drucker %s"
+
+msgid "Print Quota"
+msgstr "Druck-Kontingent"
+
+msgid "Print Quota Exceeded"
+msgstr "Überzogenes Druck-Kontingent"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Niedriges Druck-Kontingent für Gruppe %s auf Drucker %s"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "Überzogenes Druck-Kontingent für User %s auf Drucker %s"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Niedriges Druck-Kontingent für User %s auf Drucker %s"
+
+msgid "Print Quota Low"
+msgstr "Niedriges Druck-Kontingent"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Drucksystem %s, args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr ""
+"Vorberechnen der Auftragsgröße nicht möglich mit der allgemeinen PDL "
+"Analyseroutine : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "SIGTERM empfangen, Auftrag %s abgebrochen."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Hostname des Drucker nicht definiert, setze auf 'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "Drucksystem unbekannt, args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"Drucker %s ist nicht im PyKota System registriert, wende externe Richtlinie "
+"(%s) für Drucker %s an"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"User %s ist nicht im PyKota System registriert, wende externe Richtlinie (%"
+"s) für Drucker %s an"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"User %s hat im PyKota System kein Kontingent auf Drucker %s, wende externe "
+"Richtlinie (%s) für Drucker %s an"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"Externe Richtlinie %s für Drucker %s hat eine Fehler erzeugt. Auftrag "
+"abgelehnt. Bitte checken sie PyKota's Konfigurationsdatei."
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"Drucker %s ist nicht im PyKota System registriert, wende Standard-Richtlinie "
+"(%s) an"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"User %s ist nicht im PyKota System registriert, wende Standard-Richtlinie (%"
+"s) für Drucker %s an"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"User %s hat im PyKota System für Drucker %s kein Kontingent, wende Standard-"
+"Richtlinie (%s) an"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr ""
+"Drucker %s noch immer nicht im PyKota System registriert, Auftrag wird "
+"abgelehnt werden"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"User %s noch immer nicht im PyKota System registriert, Auftrag wird für "
+"Drucker %s abgelehnt"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"User %s hat im PyKota System noch immer kein Kontingent für Drucker %s, "
+"Auftrag wird abgelehnt werden"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr ""
+"Gesamtsummen sind möglicherweise ungenau, falles einige User Mitglieder von "
+"mehreren Gruppen sind."
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Unbekannte Drucker Adresse in HARDWARE(%s) für Drucker %s"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "Starte HARDWARE(%s)..."
+
+#, python-format
+msgid "Incorrect answer : %s"
+msgstr "Falsche Antwort : %s"
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "SIGTERM wurde an Hardware Accounter %s (pid: %s) gesendet"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Unmöglich Drucker %s via HARDWARE(%s) abzufragen"
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "Starte SOFTWARE(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "Unmöglich Auftragsgröße mit Accounter %s zu berechnen"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr "Problem beim Warten auf Software Accounter pid %s zu schließen : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "Software Accounter %s Exit Code ist %s"
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"Such Basis %s scheint nicht zu existieren. Möglicherweise Miskonfiguration. "
+"Bitte /etc/pykota/pykota.conf überprüfen: %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "Suche nach %s(%s) aus %s(scope=%s) ergab kein Antwort."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Problem LDAP Eintrag (%s, %s) hinzu zu fügen"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Problem LDAP Eintrag (%s) zu löschen"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Problem LDAP Eintrag (%s, %s) zu modifizieren"
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"Unmöglich einen existierenden obejctClass %s Eintrag mit %s=%s zu finden, um "
+"pykotaAccount objectClass anzufügen"
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+"Unmöglich einen existierenden Eintrag zu finden, um pykotaGroup objectClass "
+"anzufügen"
+
+msgid "PyKota Reports"
+msgstr "PyKota Reporte"
+
+msgid "Report"
+msgstr "Report"
+
+msgid "User / Group names mask"
+msgstr "User / Gruppen Namen Maske"
+
+msgid "Groups report"
+msgstr "Gruppen Report"
+
+msgid "History"
+msgstr "Verlauf"
+
+msgid "Empty"
+msgstr "Leer"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Action"
+msgstr "Aktion"
+
+msgid "User"
+msgstr "User"
+
+msgid "Printer"
+msgstr "Drucker"
+
+msgid "Hostname"
+msgstr "Hostname"
+
+msgid "JobId"
+msgstr "AuftragsId"
+
+msgid "JobSize"
+msgstr "AuftragsGröße"
+
+msgid "JobPrice"
+msgstr "AuftragsPreis"
+
+msgid "Copies"
+msgstr "Kopien"
+
+msgid "JobBytes"
+msgstr "Auftrag in Bytes"
+
+msgid "PageCounter"
+msgstr "SeitenZähler"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Filename"
+msgstr "Dateiname"
+
+msgid "Options"
+msgstr "Optionen"
+
+msgid "Job contains no data. Printing is denied."
+msgstr "Auftrag beinhaltet keine Daten. Drucken verweigert."
+
+msgid "Job accounting begins."
+msgstr "Auftrag Accounting beginnt."
+
+msgid "Job accounting ends."
+msgstr "Auftrag Accounting endet."
+
+msgid "Job size forced to 0 because printing is denied."
+msgstr "Auftragsgröße festgesetzt auf 0, weil Drucken verweigert wurde."
+
+#, python-format
+msgid "Job size : %i"
+msgstr "Auftragsgröße : %i"
+
+#, python-format
+msgid "Updating user %s's quota on printer %s"
+msgstr "Update User %ss Kontingent für Drucker %s"
+
+msgid "Job added to history."
+msgstr "Auftrag zum Verlauf hinzugefügt."
+
+#, python-format
+msgid "File number %s unregistered twice from polling object, ignored."
+msgstr "Datei Nummer %s zweifach vom Abfrage Objekt deregistriert, ignoriert."
+
+#, python-format
+msgid "SIGTERM was sent to real backend %s (pid: %s)"
+msgstr "SIGTERM wurde an reales Backend %s (pid: %s) gesendet"
+
+#, python-format
+msgid "CUPS backend %s died abnormally."
+msgstr "CUPS Backend %s abgestürzt."
+
+#, python-format
+msgid "Invalid softlimit value %s."
+msgstr "Ungültiger Softlimit Wert %s."
+
+#, python-format
+msgid "Invalid hardlimit value %s."
+msgstr "Ungültiger Hardlimit Wert %s."
+
+#, python-format
+msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
+msgstr "Hardlimit %i ist kleiner als Softlimit %i, Werte werden ausgetauscht."
+
+#, python-format
+msgid "Invalid balance value %s"
+msgstr "Ungültiger Balance Wert %s"
+
+#, python-format
+msgid "Invalid charge amount value %s"
+msgstr "Ungültiger Preishöhe Wert %s"
+
+#, python-format
+msgid "Invalid limitby value %s"
+msgstr "Ungültiger limitby Wert %s"
+
+#, python-format
+msgid "Impossible to add printer %s"
+msgstr "Unmöglich Drucker %s hinzu zufügen"
+
+#, python-format
+msgid "Invalid printer name %s"
+msgstr "Ungültiger Drucker Name %s"
+
+#, python-format
+msgid "There's no printer matching %s"
+msgstr "Kein Drucker stimmt mit %s überein"
+
+msgid "You have to pass user or group names on the command line"
+msgstr "Sie müssen User oder Gruppen Name auf der Kommandozeile übergeben"
+
+#, python-format
+msgid "Prototype %s not found in Quota Storage for printer %s."
+msgstr "Prototyp %s in Kontingentspeicherung für Drucker %s nicht gefunden."
+
+#, python-format
+msgid "Prototype object %s not found in Quota Storage."
+msgstr "Prototyp Objekt %s in Kontingentspeicherung nicht gefunden."
+
+#, python-format
+msgid "Undefined hard limit set to soft limit (%s) on printer %s."
+msgstr "Nicht definiertes Hardlimit auf Softlimit (%s) für Drucker %s gesetzt."
+
+#, python-format
+msgid "Undefined soft limit set to hard limit (%s) on printer %s."
+msgstr "Nicht definiertes Softlimit auf Hardlimit (%s) für Drucker %s gesetzt."
+
+#, python-format
+msgid "Invalid email address %s"
+msgstr "Ungültige Email Addresse %s"
+
+#, python-format
+msgid "Invalid group name %s"
+msgstr "Ungültiger Gruppen Name %s"
+
+#, python-format
+msgid "Invalid user name %s"
+msgstr "Ungültiger User Name %s"
+
+#, python-format
+msgid "Quota not found for object %s on printer %s."
+msgstr "Kontingent für Objekt %s für Drucker %s nicht gefunden."
+
+#, python-format
+msgid "Group %s not found in the PyKota Storage."
+msgstr "Gruppe %s in der PyKota Speicherung nicht gefunden."
+
+msgid "incompatible options, see help."
+msgstr "inkompatible Optionen, siehe Hilfe."
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr "Drucker %s existiert bereits, überspringe"
+
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr "Drucker %s existiert bereits, wird modifiziert."
+
+msgid "in"
+msgstr "in"
+
+msgid "You have to pass printer groups names on the command line"
+msgstr "Sie müssen Druckergruppen Namen auf der Kommandozeile übergeben"
+
+msgid "You have to pass printer names on the command line"
+msgstr "Sie müssen Drucker Namen auf der Kommandozeile übergeben"
+
+msgid "Software accounting already done in first pass. Ignoring."
+msgstr "Software Accounting bereits im ersten Durchgang erledigt. Ignoriere."
+
+msgid "Hardware accounting already done in first pass. Ignoring."
+msgstr "Hardware Accounting bereits im ersten Durchgang erledigt. Ignoriere."
+
+#, python-format
+msgid "Invalid DeviceURI : %s"
+msgstr "Ungültige DeviceURI : %s"
+
+msgid ""
+"\n"
+"Please wait while pkhint analyzes your printing system's configuration..."
+msgstr ""
+"\n"
+"Bitte warten während pkhint ihre Drucksystem Konfiguration analysiert..."
+
+#, python-format
+msgid "Unknown device %s for printer %s"
+msgstr "Unbekanntes Gerät %s für Drucker %s"
+
+msgid ""
+"\n"
+"Put the following lines into your /etc/pykota/pykota.conf file :\n"
+msgstr ""
+"\n"
+"Fügen sie folgende Zeilen in ihre /etc/pykota/pykota.conf Datei ein :\n"
+
+msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
+msgstr ""
+"# ACHTUNG: wenn Software Accounting vorgeschlagen wird, bedeutet dies nicht,"
+
+msgid "# that hardware accounting wouldn't work, this only means that PyKota"
+msgstr ""
+" dass Hardware Accounting nicht funktionieren würde, es bedeutet nur, dass "
+"PyKota"
+
+msgid "# wasn't able to autodetect which hardware accounting method to use."
+msgstr ""
+" nicht in der Lage war automatisch festzustellen welche Hardware Accounting "
+"Methode zu benutzen ist."
+
+#, python-format
+msgid "Invalid duration option %s"
+msgstr "Ungültige Zeitdauer Option %s"
+
+#, python-format
+msgid "Invalid loop option %s"
+msgstr "Ungültige loop Option %s"
+
+#, python-format
+msgid "Invalid sleep option %s"
+msgstr "Ungültige sleep Option %s"
+
+#, python-format
+msgid "Invalid color option %s"
+msgstr "Ungültige Farben Option %s"
+
+#, python-format
+msgid "User %s doesn't exist in PyKota's database"
+msgstr "User %s existiert nicht in PyKota's Datenbank"
+
+#, python-format
+msgid "Pages used on %s : %s"
+msgstr "Seiten benutzt für %s : %s"
+
+#, python-format
+msgid "PyKota Units left : %.2f"
+msgstr "PyKota Einheiten verbleibend : %.2f"
+
+#, python-format
+msgid "Your account balance : %.2f"
+msgstr "Ihr Kontostand : %.2f"
+
+#, python-format
+msgid "Job size : %i pages"
+msgstr "Auftragsgröße : %i Seiten"
+
+#, python-format
+msgid "Cost on printer %s : %.2f"
+msgstr "Kosten für Drucker %s : %.2f"
+
+#, python-format
+msgid "Previous page"
+msgstr "Vorherige Seite"
