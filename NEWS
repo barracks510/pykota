@@ -23,7 +23,7 @@ PyKota NEWS :
 
     - 1.21alpha2 :
     
-        - Installation script is now non interactive, as it should
+        - Installation script is now non interactive again, as it should
           have stayed from the beginning. Dependencies checking can
           be done by launching the checkdeps.py command.
           
