@@ -2,6 +2,15 @@ PyKota's FAQ :
 
   # $Id$
   
+  * I've installed all correctly, I've created users
+    and printers, but when printing nothing works. 
+    What is the problem ?
+    The most probable cause for this is that you didn't
+    adapt /etc/pykota/pykota.conf to your own configuration.
+    The file installed by default is just an example, you
+    have to modify it. See the rest of this document to
+    learn how to really diagnose what went wrong.
+  
   * Why doesn't CUPS under Debian Woody automatically
     detects PyKota managed devices ?
     
