@@ -95,6 +95,8 @@ Actual working features :
           for an user, while quotas are define separately for
           each printer the user prints on.
           
+        - Unknown users can be automatically added on first print.
+          
 All the command line tools accept the -h | --help command line option
 which prints all the available options and show usage examples.
         
