@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/03/09 16:49:04  jalet
+# The installation script installs the man pages too now.
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
@@ -36,6 +39,10 @@ for mofile in mofiles :
     lang = mofile.split(os.sep)[1]
     directory = os.sep.join(["share", "locale", lang, "LC_MESSAGES"])
     data_files.append((directory, [ mofile ]))
+    
+directory = os.sep.join(["share", "man", "man1"])
+manpages = glob.glob(os.sep.join(["man", "*.1"]))    
+data_files.append((directory, manpages))
 
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",
