@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/04/26 08:41:24  jalet
+# Small code reorganisation (UNTESTED) to allow pluggable accounting
+# methods in the future.
+#
 # Revision 1.27  2003/04/25 09:23:47  jalet
 # Debug message passed through !
 #
@@ -189,24 +193,6 @@ def main() :
             sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
             return kotafilter.removeJob()
     
-    # Get the page counter directly from the printer itself
-    # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
-    # This was seen with my Apple LaserWriter 16/600 PS which doesn't answer before having warmed up.
-    for i in range(MAXTRIES) :
-        try :
-            counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname)
-        except PyKotaRequesterError, msg :
-            # can't get actual page counter, assume printer is off or warming up
-            # log the message anyway.
-            kotafilter.logger.log_message("%s" % msg, "warn")
-            counterbeforejob = None
-            printerIsOff = 1
-        else :    
-            # printer answered, it is on so we can exit the loop
-            printerIsOff = 0
-            break
-        time.sleep(TIMETOSLEEP)    
-        
     # Get the last page counter and last username from the Quota Storage backend
     printerid = kotafilter.storage.getPrinterId(kotafilter.printername)
     if printerid is None :
@@ -229,6 +215,24 @@ def main() :
             if action == "POLICY_DENY" :
                 return kotafilter.removeJob()
         else :
+            # Get the page counter directly from the printer itself
+            # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
+            # This was seen with my Apple LaserWriter 16/600 PS which doesn't answer before having warmed up.
+            for i in range(MAXTRIES) :
+                try :
+                    counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname)
+                except PyKotaRequesterError, msg :
+                    # can't get actual page counter, assume printer is off or warming up
+                    # log the message anyway.
+                    kotafilter.logger.log_message("%s" % msg, "warn")
+                    counterbeforejob = None
+                    printerIsOff = 1
+                else :    
+                    # printer answered, it is on so we can exit the loop
+                    printerIsOff = 0
+                    break
+                time.sleep(TIMETOSLEEP)    
+        
             # get last job information for this printer
             pgc = kotafilter.storage.getPrinterPageCounter(printerid)    
             if pgc is None :
