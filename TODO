@@ -21,11 +21,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Improve the SECURITY document to include good PostgreSQL 
+          and OpenLDAP default settings.
+          
         - Try to talk to education based distribution coordinators
           (SambaEdu, SkoleLinux, K12LTSP, ...) to see how to
           better integrate PyKota with these.
           
+        - Write an IPP message parser, and extract the IPP
+          billing code, job originating hostname and ipp username
+          from job's control files : this would even solve the
+          actual page_log parsing problem.
+        
         - Allow soft and hard limits to be increased/decreased.
+        
+        - Better --prototype option in edpykota
         
         - Web enabled pykotme and dumpykota.
         
@@ -51,7 +61,7 @@ TODO, in no particular order :
         - Add a description field to users/groups.
         
         - Allow the admin to choose an action to take when the database
-          is unavailable (server is down or something like that) :
+          is unavailable (server is down or something like that), so
           introduce two directives :
           
             nodb: accept|reject|hold
@@ -72,6 +82,10 @@ TODO, in no particular order :
                       frontbanner: -somepath
           to allow/deny accounting of the banner itself
           (not sure because may be VERY DIFFICULT !)
+          
+          Matt Hyclak has sent a patch for cupspykota which seems
+          to be ok, but we have to find how to do the same with
+          lprngpykota...
           
         - Think about some possible client <=> PyKota dialog
           possibilities, like embedding a small web server in
