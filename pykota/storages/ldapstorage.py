@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/01/08 16:24:49  jalet
+# edpykota now supports adding printers to printer groups.
+#
 # Revision 1.44  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -360,13 +363,14 @@ class Storage(BaseStorage) :
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
         printer = StoragePrinter(self, printername)
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
         if result :
             fields = result[0][1]
             printer.ident = result[0][0]
             printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
             printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
             printer.LastJob = self.getPrinterLastJob(printer)
+            printer.uniqueMember = fields.get("uniqueMember", [])
             printer.Exists = 1
         return printer    
         
@@ -520,7 +524,7 @@ class Storage(BaseStorage) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
         # see comment at the same place in pgstorage.py
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)" % pname for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)" % pname for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
                 printername = fields["pykotaPrinterName"][0]
@@ -528,6 +532,7 @@ class Storage(BaseStorage) :
                 printer.ident = printerid
                 printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
                 printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
+                printer.uniqueMember = fields.get("uniqueMember", [])
                 printer.LastJob = self.getPrinterLastJob(printer)
                 printer.Exists = 1
                 printers.append(printer)
@@ -813,6 +818,14 @@ class Storage(BaseStorage) :
                  }
         self.doModify(grouppquota.ident, fields)
             
+    def writePrinterToGroup(self, pgroup, printer) :
+        """Puts a printer into a printer group."""
+        if (printer.ident not in pgroup.uniqueMember) and (printer.ident != pgroup.ident) :
+            fields = {
+                       "uniqueMember" : pgroup.uniqueMember + [printer.ident]
+                     }  
+            self.doModify(pgroup.ident, fields)         
+        
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""
         # TODO : What should we do if we delete the last person who used a given printer ?

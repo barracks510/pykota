@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2004/01/08 16:24:49  jalet
+# edpykota now supports adding printers to printer groups.
+#
 # Revision 1.28  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -504,6 +507,10 @@ class Storage(BaseStorage) :
         """Sets soft and hard limits for a group quota on a specific printer."""
         self.doModify("UPDATE grouppquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(grouppquota.ident)))
 
+    def writePrinterToGroup(self, pgroup, printer) :
+        """Puts a printer into a printer group."""
+        self.doModify("INSERT INTO printergroupsmembers (groupid, printerid) VALUES (%s, %s);" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
+        
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""
         # TODO : What should we do if we delete the last person who used a given printer ?

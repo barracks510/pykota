@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/01/08 16:24:49  jalet
+# edpykota now supports adding printers to printer groups.
+#
 # Revision 1.33  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -238,6 +241,11 @@ class StoragePrinter(StorageObject) :
         """Adds a job to the printer's history."""
         self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options)
         # TODO : update LastJob object ? Probably not needed.
+        
+    def addPrinterToGroup(self, printer) :    
+        """Adds a printer to a printer group."""
+        if printer not in self.parent.getParentPrinters(self) :
+            self.parent.writePrinterToGroup(self, printer)
         
     def setPrices(self, priceperpage = None, priceperjob = None) :    
         """Sets the printer's prices."""
