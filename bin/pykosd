@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/10/17 19:41:54  jalet
+# Fixed help message which displayed "pkprinters" instead of "pykosd"
+#
 # Revision 1.10  2004/10/11 22:53:05  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -79,7 +82,7 @@ command line usage :
 
 options :
 
-  -v | --version       Prints pkprinters's version number then exits.
+  -v | --version       Prints pykosd's version number then exits.
   -h | --help          Prints this message then exits.
   
   -c | --color #rrggbb Sets the color to use for display as an hexadecimal
