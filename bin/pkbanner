@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2004/11/17 13:28:19  jalet
+# Fixed some typo in the help
+#
 # Revision 1.9  2004/11/17 13:24:05  jalet
 # Improved pkbanner's help
 #
@@ -92,14 +95,14 @@ options :
   -h | --help          Prints this message then exits.
   
   -l | --logo img      Use the image as the banner's logo. The logo will
-                       be drawn at the top center of the page. The default
+                       be drawn at the center top of the page. The default
                        logo is /usr/share/pykota/logos/pykota.jpeg
                        
   -p | --pagesize sz   Sets sz as the page size. Most well known
                        page sizes are recognized, like 'A4' or 'Letter'
                        to name a few. The default size is A4.
   
-  -s | --savetoner s   Sets the text luminosity factor to d%%. This can be 
+  -s | --savetoner s   Sets the text luminosity factor to s%%. This can be 
                        used to save toner. The default value is 0, which
                        means that no toner saving will be done.
   
