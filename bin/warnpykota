@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/03/25 11:45:32  jalet
+# Clearer help.
+#
 # Revision 1.9  2003/03/09 23:39:14  jalet
 # Simplified translations.
 #
@@ -62,10 +65,11 @@ options :
   -v | --version       Prints warnpykota's version number then exits.
   -h | --help          Prints this message then exits.
   
-  -u | --users         Send mail to users over print quota, this is 
-                       the default.
+  -u | --users         Warns users over their print quota, this is the 
+                       default.
   
-  -g | --groups        Send mail to group administrators instead of users.
+  -g | --groups        Warns group administrators instead of users,
+                       for each group over its print quota.
   
   -P | --printer p     Verify quotas on this printer only. Actually p can
                        use wildcards characters to select only
