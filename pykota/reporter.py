@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.4  2003/12/02 14:40:21  jalet
 # Some code refactoring.
 # New HTML reporter added, which is now used in the CGI script for web based
@@ -57,7 +60,7 @@ class BaseReporter :
         self.isgroup = isgroup
         
     def getPrinterTitle(self, printer) :     
-        return _("*** Report for %s quota on printer %s") % ((self.isgroup and "group") or "user", printer.Name)
+        return _("Report for %s quota on printer %s") % ((self.isgroup and "group") or "user", printer.Name)
         
     def getPrinterGraceDelay(self, printer) :    
         return _("Pages grace time: %i days") % self.tool.config.getGraceDelay(printer.Name)

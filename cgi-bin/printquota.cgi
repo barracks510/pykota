@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python2.2
 
 # PyKota Print Quota Reports generator
 #
@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.16  2003/12/02 14:40:20  jalet
 # Some code refactoring.
 # New HTML reporter added, which is now used in the CGI script for web based
@@ -90,6 +93,7 @@ header = """Content-type: text/html
 <html>
   <head>
     <title>PyKota Reports</title>
+    <link rel="stylesheet" type="text/css" href="pykota.css" />
   </head>
   <body>
     <form action="printquota.cgi" method="POST">
@@ -103,7 +107,7 @@ header = """Content-type: text/html
             </p>
           </td>
           <td colspan="2">
-            <h2>PyKota Reports</h2>
+            <h1>PyKota Reports</h1>
           </td>
         </tr>
         <tr>

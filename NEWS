@@ -21,7 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
-    - 1.16alpah16 :
+    - 1.16alpha17 :
+    
+        - Added portugues translation.
+        
+        - Major code refactoring in accounters.
+        
+    - 1.16alpha16 :
     
         - Code refactoring, and addition of a real HTML reporter, to 
           have nice looking and useful web based reports (in the future).

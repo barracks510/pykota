@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.8  2003/11/21 14:28:46  jalet
 # More complete job history.
 #
@@ -181,6 +184,5 @@ class Accounter(AccounterBase) :
         
         # adds the current job to history    
         printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, filename=self.filter.preserveinputfile, title=self.filter.title, copies=self.filter.copies, options=self.filter.options)
-            
         return action
             

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.8  2003/11/23 19:01:37  jalet
 # Job price added to history
 #
@@ -54,73 +57,14 @@ import tempfile
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 class Accounter(AccounterBase) :
-    def beginJob(self) :    
-        """Saves the computed job size."""
-        self.JobSize = self.computeJobSize()
-        
-        # get last job information for this printer
-        if not printer.LastJob.Exists :
-            # The printer hasn't been used yet, from PyKota's point of view
-            self.LastPageCounter = 0
-        else :    
-            # get last job size and page counter from Quota Storage
-            # Last lifetime page counter before actual job is 
-            # last page counter + last job size
-            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
-        
-    def endJob(self) :    
-        """Do nothing."""
-        pass
-        
-    def getJobSize(self) :    
-        """Returns the actual job size."""
-        try :
-            return self.JobSize
-        except AttributeError :    
-            return 0
-        
-    def doAccounting(self, printer, user) :
-        """Does print accounting by stupidly counting the 'showpage' postscript instructions in the document.
-        
-           This method is essentially unreliable, but shows how to create a simple accounter.
-        """
-        # first we log a message because using this accounting method is not recommended.
-        self.filter.logger.log_message(_("Using the 'stupid' accounting method is unreliable."), "warn")
-        
-        # get the job size    
-        jobsize = self.computeJobSize() * self.filter.copies
-            
-        # get last job information for this printer
-        if not printer.LastJob.Exists :
-            # The printer hasn't been used yet, from PyKota's point of view
-            counterbeforejob = 0
-        else :    
-            # get last job size and page counter from Quota Storage
-            # Last lifetime page counter before actual job is 
-            # last page counter + last job size
-            counterbeforejob = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
-            
-        # Is the current user allowed to print at all ?
-        userpquota = self.filter.storage.getUserPQuota(user, printer)
-        action = self.filter.warnUserPQuota(userpquota)
-        
-        # update the quota for the current user on this printer, if allowed to print
-        if action == "DENY" :
-            jobsize = 0
-        else :    
-            userpquota.increasePagesUsage(jobsize)
-        
-        # adds the current job to history    
-        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
-        printer.addJobToHistory(self.filter.jobid, user, counterbeforejob, action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
-            
-        return action
-        
     def computeJobSize(self) :    
         """Computes the job size and return its value.
         
            THIS METHOD IS COMPLETELY UNRELIABLE BUT SERVES AS AN EXAMPLE.
         """
+        # first we log a message because using this accounting method is not recommended.
+        self.filter.logger.log_message(_("Using the 'stupid' accounting method is unreliable."), "warn")
+        
         temporary = None    
         if self.filter.inputfile is None :    
             infile = sys.stdin
@@ -145,6 +89,4 @@ class Accounter(AccounterBase) :
             self.filter.inputfile = temporary
         else :
             infile.close()
-            
         return pagecount    
-            

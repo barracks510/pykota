@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.10  2003/11/23 19:01:36  jalet
 # Job price added to history
 #
@@ -62,60 +65,6 @@ import tempfile
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 class Accounter(AccounterBase) :
-    def beginJob(self, printer, user) :    
-        """Saves the computed job size."""
-        # computes job's size
-        self.JobSize = self.computeJobSize()
-        
-        # get last job information for this printer
-        if not printer.LastJob.Exists :
-            # The printer hasn't been used yet, from PyKota's point of view
-            self.LastPageCounter = 0
-        else :    
-            # get last job size and page counter from Quota Storage
-            # Last lifetime page counter before actual job is 
-            # last page counter + last job size
-            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
-        
-    def endJob(self, printer, user) :    
-        """Do nothing."""
-        pass
-        
-    def getJobSize(self) :    
-        """Returns the actual job size."""
-        try :
-            return self.JobSize
-        except AttributeError :    
-            return 0
-        
-    def doAccounting(self, printer, user) :
-        """Deletgates the computation of the job size to an external command.
-        
-           The command must print the job size on its standard output and exit successfully.
-        """
-        self.beginJob(printer, user)
-        
-        # get the job size, which is real job size * number of copies.
-        jobsize = self.getJobSize() * self.filter.copies
-            
-        # Is the current user allowed to print at all ?
-        userpquota = self.filter.storage.getUserPQuota(user, printer)
-        action = self.filter.warnUserPQuota(userpquota)
-        
-        # update the quota for the current user on this printer, if allowed to print
-        if action == "DENY" :
-            jobsize = 0
-        else :    
-            userpquota.increasePagesUsage(jobsize)
-        
-        # adds the current job to history    
-        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
-        printer.addJobToHistory(self.filter.jobid, user, self.getLastPageCounter(), action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
-        
-        self.endJob(printer, user)
-            
-        return action
-        
     def computeJobSize(self) :    
         """Feeds an external command with our datas to let it compute the job size, and return its value."""
         temporary = None    
@@ -180,6 +129,5 @@ class Accounter(AccounterBase) :
             self.filter.inputfile = temporary
         else :
             infile.close()
-            
         return pagecount    
             

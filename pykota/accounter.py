@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.7  2003/11/25 23:46:40  jalet
 # Don't try to verify if module name is valid, Python does this better than us.
 #
@@ -88,9 +91,57 @@ class AccounterBase :
         if mustclose :    
             infile.close()
             
-    def doAccounting(self, printer, user) :    
-        """Does the real accounting."""
-        raise PyKotaAccounterError, "Accounter not implemented !"
+    def beginJob(self, printer, user) :    
+        """Saves the computed job size."""
+        # computes job's size
+        self.JobSize = self.computeJobSize()
+        
+        # get last job information for this printer
+        if not printer.LastJob.Exists :
+            # The printer hasn't been used yet, from PyKota's point of view
+            self.LastPageCounter = 0
+        else :    
+            # get last job size and page counter from Quota Storage
+            # Last lifetime page counter before actual job is 
+            # last page counter + last job size
+            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
+        
+    def endJob(self, printer, user) :    
+        """Do nothing."""
+        pass
+        
+    def getJobSize(self) :    
+        """Returns the actual job size."""
+        try :
+            return self.JobSize
+        except AttributeError :    
+            return 0
+        
+    def doAccounting(self, printer, user) :
+        """Deletgates the computation of the job size to an external command.
+        
+           The command must print the job size on its standard output and exit successfully.
+        """
+        self.beginJob(printer, user)
+        
+        # get the job size, which is real job size * number of copies.
+        jobsize = self.getJobSize() * self.filter.copies
+            
+        # Is the current user allowed to print at all ?
+        userpquota = self.filter.storage.getUserPQuota(user, printer)
+        action = self.filter.warnUserPQuota(userpquota)
+        
+        # update the quota for the current user on this printer, if allowed to print
+        if action == "DENY" :
+            jobsize = 0
+        else :    
+            userpquota.increasePagesUsage(jobsize)
+        
+        # adds the current job to history    
+        jobprice = (float(printer.PricePerPage or 0.0) * jobsize) + float(printer.PricePerJob or 0.0)
+        printer.addJobToHistory(self.filter.jobid, user, self.getLastPageCounter(), action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
+        self.endJob(printer, user)
+        return action
         
 def openAccounter(kotafilter) :
     """Returns a connection handle to the appropriate accounter."""

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.35  2003/11/18 23:43:12  jalet
 # Mailto can be any external command now, as usual.
 #
@@ -209,8 +212,8 @@ msgstr "Groupe          util    soft    hard      solde grâce         total     
 msgid "There's no printer matching %s"
 msgstr "Aucune imprimante ne correspond à %s"
 
-msgid "*** Report for %s quota on printer %s"
-msgstr "*** Rapport pour le quota %s sur l'imprimante %s"
+msgid "Report for %s quota on printer %s"
+msgstr "Rapport pour le quota %s sur l'imprimante %s"
 
 msgid "Error in page count value %i for user %s on printer %s"
 msgstr "Erreur dans la valeur %i du nombre de page pour l'utilisateur %s sur l'imprimante %s"

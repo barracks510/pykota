@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2003/12/27 15:43:36  uid67467
+# Savannah is back online...
+#
 # Revision 1.36  2003/11/18 23:43:11  jalet
 # Mailto can be any external command now, as usual.
 #
@@ -205,7 +208,7 @@ msgstr ""
 msgid "There's no printer matching %s"
 msgstr ""
 
-msgid "*** Report for %s quota on printer %s"
+msgid "Report for %s quota on printer %s"
 msgstr ""
 
 msgid "Error in page count value %i for user %s on printer %s"
