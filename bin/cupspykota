@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2004/05/26 16:44:48  jalet
+# Now logs something when client hostname can't be extracted
+#
 # Revision 1.53  2004/05/26 14:49:35  jalet
 # First try at saving the job-originating-hostname in the database
 #
@@ -262,6 +265,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         try :
             conffile = open(cupsdconf, "r")
         except IOError :    
+            self.logdebug("Unable to open %s" % cupsdconf)
             return # file doesn't exist or can't be read
         else :    
             for line in conffile.readlines() :
@@ -280,6 +284,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         try :
             pagelog = open(pagelogpath, "r")
         except IOError :    
+            self.logdebug("Unable to open %s" % pagelogpath)
             return # no page log or can't read it, originating hostname unknown yet
         else :    
             # TODO : read backward so we could take first value seen
@@ -296,6 +301,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                         matchingline = line # no break, because we read forward
             pagelog.close()        
             if matchingline is None :
+                self.logdebug("No matching line found in page_log")
                 return # correct line not found, job-originating-hostname unknown
             else :    
                 return matchingline.split()[-1]
@@ -313,6 +319,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # tries to extract job-originating-hostname 
             clienthost = self.getJobOriginatingHostname(printer.Name, user.Name, self.jobid)
+            self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
             os.putenv("PYKOTAJOBORIGINATINGHOSTNAME", str(clienthost or ""))
             
             # enters first phase
