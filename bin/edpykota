@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2003/04/15 22:02:43  jalet
+# More complete docstring
+#
 # Revision 1.37  2003/04/15 21:58:33  jalet
 # edpykota now accepts a --delete option.
 # Preparation to allow edpykota to accept much more command line options
@@ -271,6 +274,11 @@ examples :
   
   This will completely delete jerome and rachel from the Quota Storage
   database. All their quotas and jobs will be deleted too.
+  
+  $ edpykota --printer lp --charge 0.1
+  
+  This will set the page price for printer lp to 0.1. Job price
+  will not be changed.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
