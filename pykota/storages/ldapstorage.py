@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2004/03/05 14:31:58  jalet
+# Improvement on strange history entries
+#
 # Revision 1.61  2004/03/05 13:19:53  jalet
 # Code safer wrt entries created in other tools
 #
@@ -589,7 +592,7 @@ class Storage(BaseStorage) :
                 lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
                 lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
                 lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
-                lastjob.JobAction = fields.get("pykotaAction")[0]
+                lastjob.JobAction = fields.get("pykotaAction", [""])[0]
                 lastjob.JobFileName = fields.get("pykotaFileName", [""])[0]
                 lastjob.JobTitle = fields.get("pykotaTitle", [""])[0]
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
