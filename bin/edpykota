@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2003/04/16 08:01:53  jalet
+# edpykota --charge command line option works now.
+#
 # Revision 1.38  2003/04/15 22:02:43  jalet
 # More complete docstring
 #
@@ -333,7 +336,21 @@ class EdPyKota(PyKotaTool) :
                 raise PyKotaToolError, _("You have to pass user names on the command line")
             else :    
                 names = [ "*" ] # all users
+        if options["charge"] :
+            try :
+                charges = [float(part) for part in options["charge"].split(',', 1)]
+            except ValueError :    
+                raise PyKotaToolError, _("Invalid charge amount value %s" % options["charge"])
+            else :    
+                if len(charges) < 2 :
+                    charges.append(None)
         for (printerid, printer) in printers :
+            if options["charge"] :
+                (perpage, perjob) = charges
+                if perjob is None :
+                    # we don't want to change this one, get the old value
+                    (dummy, perjob) = self.storage.getPrinterPrices(printerid)
+                self.storage.setPrinterPrices(printerid, perpage, perjob)    
             if options["prototype"] :
                 if options["groups"] :
                     prototype = self.storage.getGroupPQuota(self.storage.getGroupId(options["prototype"]), printerid)
@@ -353,7 +370,7 @@ class EdPyKota(PyKotaTool) :
                 softlimit = hardlimit
                 if softlimit is not None :
                     self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
-            if (not options["reset"] and not options["noquota"] and not options["prototype"] and not options["limitby"] and not options["balance"] and not options["delete"]) and ((hardlimit is None) or (softlimit is None)) :
+            if (not options["reset"] and not options["noquota"] and not options["prototype"] and not options["limitby"] and not options["balance"] and not options["delete"] and not options["charge"]) and ((hardlimit is None) or (softlimit is None)) :
                 raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
             if options["add"] :    
                 if options["groups"] :    

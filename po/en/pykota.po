@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/04/16 08:01:54  jalet
+# edpykota --charge command line option works now.
+#
 # Revision 1.14  2003/04/11 14:42:54  jalet
 # Translations
 #
@@ -253,4 +256,7 @@ msgid "Configuration file %s not found."
 msgstr ""
 
 msgid "User %s not registered in the PyKota system"
+msgstr ""
+
+msgid "Invalid charge amount value %s"
 msgstr ""
