@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.132  2004/10/19 21:45:25  jalet
+# Now correctly logs command line arguments
+#
 # Revision 1.131  2004/10/19 21:37:57  jalet
 # Fixes recently introduced bug
 #
@@ -1005,7 +1008,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
          
-        self.logdebug(_("Printing system %s, args=%s") % (str(self.printingsystem), " ".join(sys.argv)))
+        arguments = " ".join(['"%s"' % arg for arg in sys.argv])
+        self.logdebug(_("Printing system %s, args=%s") % (str(self.printingsystem), arguments))
         
         self.username = self.username or 'root' # when printing test page from CUPS web interface, username is empty
         
