@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2004/06/28 23:11:26  jalet
+# Code de-factorization in PCLXL parser
+#
 # Revision 1.20  2004/06/28 22:38:41  jalet
 # Increased speed by a factor of 2 in PCLXL parser
 #
@@ -263,7 +266,7 @@ class PCLXLAnalyzer :
         """Initialize PCLXL Analyzer."""
         # raise PDLAnalyzerError, "PCLXL (aka PCL6) is not supported yet."
         self.infile = infile
-        self.islittleendian = None
+        self.endianness = None
         found = 0
         while not found :
             line = self.infile.readline()
@@ -332,8 +335,8 @@ class PCLXLAnalyzer :
         self.pagecount += 1
         return 0
         
-    def handleArray(self, itemsize) :        
-        """Handles arrays."""
+    def array_8(self) :    
+        """Handles byte arrays."""
         pos = self.pos
         datatype = self.minfile[pos]
         pos += 1
@@ -345,32 +348,58 @@ class PCLXLAnalyzer :
         posl = pos + length
         sarraysize = self.minfile[pos:posl]
         self.pos = posl
-        if self.islittleendian :
-            fmt = "<"
-        else :    
-            fmt = ">"
         if length == 1 :    
-            fmt += "B"
+            return struct.unpack(self.endianness + "B", sarraysize)[0]
         elif length == 2 :    
-            fmt += "H"
+            return struct.unpack(self.endianness + "H", sarraysize)[0]
         elif length == 4 :    
-            fmt += "I"
+            return struct.unpack(self.endianness + "I", sarraysize)[0]
         else :    
             raise PDLAnalyzerError, "Error on array size at %s" % self.pos
-        arraysize = struct.unpack(fmt, sarraysize)[0]
-        return arraysize * itemsize
-        
-    def array_8(self) :    
-        """Handles byte arrays."""
-        return self.handleArray(1)
         
     def array_16(self) :    
         """Handles byte arrays."""
-        return self.handleArray(2)
+        pos = self.pos
+        datatype = self.minfile[pos]
+        pos += 1
+        length = self.tags[ord(datatype)]
+        if callable(length) :
+            self.pos = pos
+            length = length()
+            pos = self.pos
+        posl = pos + length
+        sarraysize = self.minfile[pos:posl]
+        self.pos = posl
+        if length == 1 :    
+            return 2 * struct.unpack(self.endianness + "B", sarraysize)[0]
+        elif length == 2 :    
+            return 2 * struct.unpack(self.endianness + "H", sarraysize)[0]
+        elif length == 4 :    
+            return 2 * struct.unpack(self.endianness + "I", sarraysize)[0]
+        else :    
+            raise PDLAnalyzerError, "Error on array size at %s" % self.pos
         
     def array_32(self) :    
         """Handles byte arrays."""
-        return self.handleArray(4)
+        pos = self.pos
+        datatype = self.minfile[pos]
+        pos += 1
+        length = self.tags[ord(datatype)]
+        if callable(length) :
+            self.pos = pos
+            length = length()
+            pos = self.pos
+        posl = pos + length
+        sarraysize = self.minfile[pos:posl]
+        self.pos = posl
+        if length == 1 :    
+            return 4 * struct.unpack(self.endianness + "B", sarraysize)[0]
+        elif length == 2 :    
+            return 4 * struct.unpack(self.endianness + "H", sarraysize)[0]
+        elif length == 4 :    
+            return 4 * struct.unpack(self.endianness + "I", sarraysize)[0]
+        else :    
+            raise PDLAnalyzerError, "Error on array size at %s" % self.pos
         
     def embeddedDataSmall(self) :
         """Handle small amounts of data."""
@@ -381,10 +410,7 @@ class PCLXLAnalyzer :
         
     def embeddedData(self) :
         """Handle normal amounts of data."""
-        if self.islittleendian :
-            fmt = "<I"
-        else :    
-            fmt = ">I"
+        fmt = self.endianness + "I"
         pos = self.pos
         pos4 = pos + 4
         data = self.minfile[pos:pos4]
@@ -393,12 +419,12 @@ class PCLXLAnalyzer :
         
     def littleEndian(self) :        
         """Toggles to little endianness."""
-        self.islittleendian = 1 # little endian
+        self.endianness = "<" # little endian
         return 0
         
     def bigEndian(self) :    
         """Toggles to big endianness."""
-        self.islittleendian = 0 # big endian
+        self.endianness = ">" # big endian
         return 0
     
     def getJobSize(self) :
@@ -585,4 +611,4 @@ def main() :
     print "%s" % totalsize
     
 if __name__ == "__main__" :    
-    main()        
+    main()
