@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/04/09 22:24:47  jalet
+# Began work on correct handling of child processes when jobs are cancelled by
+# the user. Especially important when an external requester is running for a
+# long time.
+#
 # Revision 1.12  2004/01/11 23:22:42  jalet
 # Major code refactoring, it's way cleaner, and now allows automated addition
 # of printers on first print.
@@ -71,7 +76,7 @@ class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments)
-        self.requester = openRequester(kotabackend.config, kotabackend.printername)
+        self.requester = openRequester(kotabackend, kotabackend.printername)
         self.isDelayed = 1 # With the pykota filter, accounting is delayed by one job
         
     def getPrinterInternalPageCounter(self) :    

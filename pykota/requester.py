@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/04/09 22:24:46  jalet
+# Began work on correct handling of child processes when jobs are cancelled by
+# the user. Especially important when an external requester is running for a
+# long time.
+#
 # Revision 1.12  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -72,12 +77,12 @@ class PyKotaRequesterError(Exception):
         return self.message
     __str__ = __repr__
     
-def openRequester(config, printername) :
+def openRequester(kotabackend, printername) :
     """Returns a connection handle to the appropriate requester."""
-    (backend, args) = config.getRequesterBackend(printername)
+    (backend, args) = kotabackend.config.getRequesterBackend(printername)
     try :
         exec "from pykota.requesters import %s as requesterbackend" % backend.lower()
     except ImportError :
         raise PyKotaRequesterError, _("Unsupported requester backend %s") % backend
     else :    
-        return requesterbackend.Requester(printername, args)
+        return requesterbackend.Requester(kotabackend, printername, args)

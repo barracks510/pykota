@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.81  2004/04/09 22:24:47  jalet
+# Began work on correct handling of child processes when jobs are cancelled by
+# the user. Especially important when an external requester is running for a
+# long time.
+#
 # Revision 1.80  2004/04/06 12:00:21  jalet
 # uninitialized values caused problems
 #
@@ -739,6 +744,23 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.preserveinputfile = self.inputfile 
         self.accounter = accounter.openAccounter(self)
         self.exportJobInfo()
+        
+        # then deal with signals
+        # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
+        # Fortunately SIGPIPE is already ignored by Python
+        # It's there just in case this changes in the future.
+        # Here we have to handle SIGTERM correctly, and pass
+        # it to any child if needed.
+        self.gotSigTerm = 0
+        signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
+        
+    def sigterm_handler(self, signum, frame) :
+        """Sets a global variable whenever SIGTERM is received."""
+        # SIGTERM will be ignore most of the time, but during
+        # the call to the real backend, we have to pass it through.
+        self.gotSigTerm = 1
+        self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""

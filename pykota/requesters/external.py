@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/04/09 22:24:47  jalet
+# Began work on correct handling of child processes when jobs are cancelled by
+# the user. Especially important when an external requester is running for a
+# long time.
+#
 # Revision 1.10  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -62,8 +67,9 @@ from pykota.requester import PyKotaRequesterError
 
 class Requester :
     """A class to send queries to printers via external commands."""
-    def __init__(self, printername, arguments) :
+    def __init__(self, kotabackend, printername, arguments) :
         """Sets instance vars depending on the current printer."""
+        self.kotabackend = kotabackend
         self.printername = printername
         self.commandline = arguments.strip()
         
