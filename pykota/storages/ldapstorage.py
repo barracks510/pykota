@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/07/07 12:11:13  jalet
+# Small fix
+#
 # Revision 1.15  2003/07/07 11:49:24  jalet
 # Lots of small fixes with the help of PyChecker
 #
@@ -485,6 +488,8 @@ class Storage :
             result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)    
             if result :
                 fields = result[0][1]
+                if not fields.has_key(self.info["groupmembers"]) :
+                    fields[self.info["groupmembers"]] = []
                 fields[self.info["groupmembers"]].append(user.Name)
                 self.doModify(group.ident, fields)
                 group.Members.append(user)

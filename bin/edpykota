@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2003/07/07 12:11:13  jalet
+# Small fix
+#
 # Revision 1.51  2003/07/07 11:55:50  jalet
 # Small fix
 #
@@ -456,6 +459,8 @@ class EdPyKota(PyKotaTool) :
             for (entry, entrypquota) in [(e, q) for (e, q) in allentries if self.matchString(e.Name, names)] :
                 if not changed.has_key(entry.Name) :
                     changed[entry.Name] = {}
+                    if not options["groups"] :
+                        changed[entry.Name]["ingroups"] = []
                 if not entrypquota.Exists :
                     # not found
                     if options["add"] :
