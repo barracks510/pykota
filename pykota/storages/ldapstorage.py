@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.69  2004/06/05 22:18:04  jalet
+# Now catches some exceptions earlier.
+# storage.py and ldapstorage.py : removed old comments
+#
 # Revision 1.68  2004/06/05 22:03:50  jalet
 # Payments history is now stored in database
 #
@@ -274,7 +278,6 @@ except ImportError :
 class Storage(BaseStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the LDAP connection."""
-        # raise PyKotaStorageError, "Sorry, the LDAP backend for PyKota is not yet implemented !"
         BaseStorage.__init__(self, pykotatool)
         self.info = pykotatool.config.getLDAPInfo()
         try :

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.96  2004/06/05 22:18:04  jalet
+# Now catches some exceptions earlier.
+# storage.py and ldapstorage.py : removed old comments
+#
 # Revision 1.95  2004/06/03 21:50:34  jalet
 # Improved error logging.
 # crashrecipient directive added.
@@ -398,8 +402,12 @@ class PyKotaTool :
         self.debug = self.config.getDebug()
         self.smtpserver = self.config.getSMTPServer()
         self.maildomain = self.config.getMailDomain()
-        self.logger = logger.openLogger(self.config.getLoggingBackend())
-        self.storage = storage.openConnection(self)
+        try :
+            self.logger = logger.openLogger(self.config.getLoggingBackend())
+            self.storage = storage.openConnection(self)
+        except (logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
+            self.crashed(msg)
+            raise
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
         
