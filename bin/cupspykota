@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2004/06/02 22:18:07  jalet
+# I think the bug when cancelling jobs should be fixed right now
+#
 # Revision 1.56  2004/06/02 21:50:56  jalet
 # Moved the sigterm capturing elsewhere
 #
@@ -503,7 +506,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 if indata :
                                     try :
                                         os.write(fd, indata)    
-                                    except IOError, msg :    
+                                    except (OSError, IOError), msg :    
                                         self.logdebug("Error while writing to real backend's stdin %s : %s" % (fd, msg))
                                     else :    
                                         indata = ""
@@ -520,7 +523,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 if outdata :
                                     try :
                                         os.write(fd, outdata)
-                                    except IOError, msg :    
+                                    except (OSError, IOError), msg :    
                                         self.logdebug("Error while writing to CUPS back channel (stderr) %s : %s" % (fd, msg))
                                     else :
                                         outdata = ""
