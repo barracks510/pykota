@@ -25,8 +25,8 @@
 
 [global]
 # Storage backend for quotas
-# only PGStorage (PostgreSQL) is supported
-# Ldap, MySQL, Berkeley are planned
+# only PGStorage (PostgreSQL) and LDAPStorage (OpenLDAP) are supported.
+# MySQL and BerkeleyDB are planned.
 
 # the 'postgresql' value is deprecated, use 'pgstorage' instead.
 storagebackend: pgstorage
@@ -76,7 +76,10 @@ storageadmin: pykotaadmin
 # if the value is not set then the default SYSTEM applies.
 logger: system
 
-# Enable debugging ? Put YES instead here.
+# Enable debugging ? Put YES instead here,
+# but only if something went wrong and you want
+# to learn from where the problem comes from.
+# Actually only database queries are logged.
 debug : No
 
 # Mail server to use to warn users
@@ -151,16 +154,20 @@ gracedelay: 7
 
 # one section per printer, or no other section at all if all options 
 # are defined globally.
-# Each section's name must be the same as the printer's name as defined
+# Each section's name must be the same as the printer's queue name as defined
 # in your printing system, be it CUPS or LPRng.
 # If you don't want any special printer section, just comment out
 # the line below so that following options are global.
 [hpmarketing]
 
-# How to query the lp printer for its page counter.
+# How to query the hpmarketing printer for its page counter.
 # THIS IS ONLY USED IF YOU HAVE SET 'accounter' TO 'querying'
 # JUST COMMENT IT OUT IF YOU USE ANY OTHER ACCOUNTING METHOD.
 # (it would be ignored anyway)
+#
+# In the lines below "%(printer)s" is automatically replaced
+# at run time with your printer's Fully Qualified Domain Name
+# e.g. myprinter.domain.com
 #
 # Only snmp(community, oid) and external(command) are supported
 #
