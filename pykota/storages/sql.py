@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/05 23:26:22  jalet
+# Incorrect handling of grace delay
+#
 # Revision 1.4  2003/02/05 23:02:10  jalet
 # Typo
 #
@@ -29,8 +32,6 @@
 #
 #
 #
-
-from mx import DateTime
 
 class SQLStorage :    
     def getUserId(self, username) :
@@ -85,35 +86,3 @@ class SQLStorage :
     def buyUserPQuota(self, username, printername, pagebought) :
         self.updateUserPQuota(username, printername, -pagebought)
         
-    def checkUserPQuota(self, username, printername) :
-        # TODO : this doesn't work as expected wrt dates
-        # TODO : GRACEDELAY should come from the configuration file
-        # TODO : move this into the PyKotaTool class
-        now = DateTime.now()
-        quota = self.getUserPQuota(username, printername)
-        pagecounter = quota["pagecounter"]
-        softlimit = quota["softlimit"]
-        hardlimit = quota["hardlimit"]
-        datelimit = quota["datelimit"]
-        if datelimit :
-            datelimit = DateTime.DateTime(datelimit)    # TODO : check this !
-        if softlimit is not None :
-            if pagecounter < softlimit :
-                action = "ALLOW"
-            elif hardlimit is not None :
-                 if softlimit <= pagecounter < hardlimit :    
-                     if datelimit is None :
-                         self.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i" % (now.year, now.month, now.day, now.hour, now.minute)), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
-                         datelimit = now
-                     if (now - datelimit) <= GRACEDELAY :
-                         action = "WARN"
-                     else :    
-                         action = "DENY"
-                 else :         
-                     action = "DENY"
-            else :        
-                action = "DENY"
-        else :        
-            action = "ALLOW"
-        return (action, (hardlimit - pagecounter), datelimit)
-    

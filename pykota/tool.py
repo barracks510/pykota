@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/02/05 23:26:22  jalet
+# Incorrect handling of grace delay
+#
 # Revision 1.3  2003/02/05 22:16:20  jalet
 # DEVICE_URI is undefined outside of CUPS, i.e. for normal command line tools
 #
@@ -29,6 +32,8 @@
 import sys
 import os
 import smtplib
+
+from mx import DateTime
 
 from pykota import config
 from pykota import storage
@@ -72,6 +77,36 @@ class PyKotaTool :
         """Sends an email message to the Print Quota administrator."""
         self.sendMessage(self.adminmail, "Subject: %s\n\n%s" % (subject, message))
         
+    def checkUserPQuota(self, username, printername) :
+        """Checks the user quota on a printer and deny or accept the job."""
+        now = DateTime.now()
+        quota = self.storage.getUserPQuota(username, printername)
+        pagecounter = quota["pagecounter"]
+        softlimit = quota["softlimit"]
+        hardlimit = quota["hardlimit"]
+        datelimit = quota["datelimit"]
+        if datelimit :
+            datelimit = DateTime.DateTime(datelimit)    # TODO : check this !
+        if softlimit is not None :
+            if pagecounter < softlimit :
+                action = "ALLOW"
+            elif hardlimit is not None :
+                 if softlimit <= pagecounter < hardlimit :    
+                     if datelimit is None :
+                         self.storage.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i" % (now.year, now.month, now.day, now.hour, now.minute)), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
+                         datelimit = now
+                     if (now - datelimit) <= self.config.getGraceDelay() :
+                         action = "WARN"
+                     else :    
+                         action = "DENY"
+                 else :         
+                     action = "DENY"
+            else :        
+                action = "DENY"
+        else :        
+            action = "ALLOW"
+        return (action, (hardlimit - pagecounter), datelimit)
+    
     def warnQuotaPrinter(self, username) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
         (action, grace, gracedate) = self.storage.checkUserPQuota(username, self.printername)

@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/05 23:26:22  jalet
+# Incorrect handling of grace delay
+#
 # Revision 1.2  2003/02/05 23:09:20  jalet
 # Name conflict
 #
@@ -128,3 +131,7 @@ class PyKotaConfig :
     def getAdmin(self) :    
         """Returns the full name of the Print Quota Administrator."""
         return self.config.get("global", "admin")
+        
+    def getGraceDelay(self) :    
+        """Returns the grace delay in days."""
+        return int(self.config.get("global", "gracedelay"))
