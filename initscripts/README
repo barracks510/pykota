@@ -35,8 +35,9 @@ Files :
     
   * pykota-upgrade-postgresql.sql :
   
-    This files upgrades the PostgreSQL Quota Storage Database schema
+    This file upgrades the PostgreSQL Quota Storage Database schema
     from versions before 1.01 to version 1.01.
+    Don't use it if you already run a post-1.01 PyKota version.
     
   * upgrade-1.01-to-1.03.sh :
   
