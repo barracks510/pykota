@@ -373,7 +373,7 @@ msgstr ""
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
-msgstr "Le code de sortie du compteur software est %s"
+msgstr "Le code de sortie du compteur software %s est %s"
 
 #, python-format
 msgid ""

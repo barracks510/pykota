@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/08/06 13:45:51  jalet
+# Fixed french translation problem.
+# Fixed problem with group quotas and strict enforcement.
+#
 # Revision 1.6  2004/07/01 19:56:43  jalet
 # Better dispatching of error messages
 #
@@ -85,7 +89,7 @@ class Accounter(AccounterBase) :
                 status = os.WEXITSTATUS(retcode)
             else :    
                 status = retcode
-            self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, repr(retcode)))
+            self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
         self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, pagecount))
         return pagecount    
             

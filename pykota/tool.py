@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.117  2004/08/06 13:45:51  jalet
+# Fixed french translation problem.
+# Fixed problem with group quotas and strict enforcement.
+#
 # Revision 1.116  2004/07/24 20:20:29  jalet
 # Unitialized variable
 #
@@ -715,7 +719,7 @@ class PyKotaTool :
             if (enforcement == "STRICT") and (val == 0.0) :
                 action = "WARN" # we can still print until account is 0
         else :
-            val = grouppquota.PageCounter
+            val = grouppquota.PageCounter or 0
             if enforcement == "STRICT" :
                 val += self.softwareJobSize
             if grouppquota.SoftLimit is not None :

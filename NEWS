@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha1 : 
+    
+        - Fixed problem on first print for user group quota when
+          "enforcement: strict" is used.
+        
+        - Fixed interpolation problem in french translation.
+        
     - 1.19 :
     
         - Updated existing translations.    
