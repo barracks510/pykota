@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/03/15 23:01:28  jalet
+# New mailto option in configuration file added.
+# No time to test this tonight (although it should work).
+#
 # Revision 1.26  2003/03/09 23:58:16  jalet
 # Comment
 #
@@ -311,18 +315,23 @@ class PyKotaTool :
         pname = printername or self.printername
         admin = self.config.getAdmin(pname)
         adminmail = self.config.getAdminMail(pname)
+        mailto = self.config.getMailTo(pname)
         action = self.checkUserPQuota(username, pname)
         if action.startswith("POLICY_") :
             action = action[7:]
         if action == "DENY" :
             adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, pname)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
-            self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            if mailto in [ "BOTH", "USER" ] :
+                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
+            if mailto in [ "BOTH", "ADMIN" ] :
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
             adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, pname)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % pname)
-            self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            if mailto in [ "BOTH", "USER" ] :
+                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % pname)
+            if mailto in [ "BOTH", "ADMIN" ] :
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        
     

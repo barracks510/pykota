@@ -15,6 +15,19 @@ the Free Software Foundation's WEB site http://www.fsf.org
 
 PyKota NEWS :
 
+    - 1.01 :
+    
+        - The configuration file now accepts an option   
+          to choose the recipient(s) of the email messages :
+          
+            - DevNull means no one will receive them.
+            - User means only the user will receive them.
+            - Admin means only the admin will receive them.
+            - Both means the User and the Admin will receive them.
+            
+        - Manual pages are included since 1.00, but I forgot to    
+          add this information to this file.
+          
     - 1.00 :
     
         - edpykota now accepts a --noquota option. This

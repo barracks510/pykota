@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/03/15 23:01:28  jalet
+# New mailto option in configuration file added.
+# No time to test this tonight (although it should work).
+#
 # Revision 1.16  2003/02/17 23:01:56  jalet
 # Typos
 #
@@ -187,6 +191,14 @@ class PyKotaConfig :
     def getAdmin(self, printer) :    
         """Returns the full name of the Print Quota Administrator."""
         return self.getPrinterOption(printer, "admin")
+        
+    def getMailTo(self, printer) :    
+        """Returns the recipient of email messages."""
+        validmailtos = [ "DEVNULL", "BOTH", "USER", "ADMIN" ]
+        mailto = self.getPrinterOption(printer, "mailto").upper()
+        if mailto not in validmailtos :
+            raise PyKotaConfigError, _("Option mailto in section %s only supports values in %s") % (printer, str(validmailtos))
+        return mailto    
         
     def getGraceDelay(self, printer) :    
         """Returns the grace delay in days."""

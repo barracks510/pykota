@@ -47,6 +47,16 @@ admin: Jerome Alet
 adminmail: alet@librelogiciel.com
 
 #
+# Who should we send an email to in case a quota is reached ?
+# possible values are : DevNull, User, Admin, Both
+# The Both value means that the User and the Admin will receive 
+# an email message.
+# The DevNull value means no email message will be sent.
+# This value can be set either globally or per printer or both.
+# If both are defined, the printer option has priority.
+mailto: both
+
+#
 # Grace delay in days
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.

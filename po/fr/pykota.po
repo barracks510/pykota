@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/03/15 23:01:28  jalet
+# New mailto option in configuration file added.
+# No time to test this tonight (although it should work).
+#
 # Revision 1.7  2003/03/09 23:38:43  jalet
 # Simplified translations.
 #
@@ -228,3 +232,6 @@ msgstr "Vous devez passer des noms d'utilisateur sur la ligne de commande"
 
 msgid "unknown"
 msgstr "inconnu"
+
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "L'option mailto dans la section %s supporte seulement les valeurs %s"
