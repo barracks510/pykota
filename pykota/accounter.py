@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2004/05/24 22:45:49  jalet
+# New 'enforcement' directive added
+# Polling loop improvements
+#
 # Revision 1.14  2004/05/18 14:49:19  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -83,7 +87,6 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
-        self.isDelayed = 0      # Accounting is immediate by default
         self.firstPassSize = None
         
     def getSoftwareJobSize(self) :    
@@ -137,31 +140,9 @@ class AccounterBase :
         except AttributeError :    
             return 0
         
-    def doAccounting(self, userpquota) :
-        """Does accounting for current job."""
-        self.beginJob(userpquota)
-            
-        # Is the current user allowed to print at all ?
-        action = self.filter.warnUserPQuota(userpquota)
-        
-        # update the quota for the current user on this printer, if allowed to print
-        if action == "DENY" :
-            jobsize = 0
-        else :    
-            # get the job size
-            jobsize = self.getJobSize()
-            userpquota.increasePagesUsage(jobsize)
-        
-        # adds the current job to history    
-        jobprice = userpquota.computeJobPrice(jobsize)
-        userpquota.Printer.addJobToHistory(self.filter.jobid, userpquota.User, self.getLastPageCounter(), action, jobsize, jobprice, self.filter.preserveinputfile, self.filter.title, self.filter.copies, self.filter.options)
-        self.endJob(userpquota)
-        return action
-        
     def computeJobSize(self) :    
         """Must be overriden in children classes."""
         raise RuntimeError, "AccounterBase.computeJobSize() must be overriden !"
-        
         
 def openAccounter(kotafilter) :
     """Returns a connection handle to the appropriate accounter."""

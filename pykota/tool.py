@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.90  2004/05/24 22:45:49  jalet
+# New 'enforcement' directive added
+# Polling loop improvements
+#
 # Revision 1.89  2004/05/21 22:02:52  jalet
 # Preliminary work on pre-accounting
 #
@@ -378,6 +382,7 @@ class PyKotaTool :
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
         self.maildomain = self.config.getMailDomain()
+        self.softwareJobPrice = 0.0
         
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
@@ -512,6 +517,7 @@ class PyKotaTool :
         # if we get there we are sure that policy is not EXTERNAL
         user = userpquota.User
         printer = userpquota.Printer
+        enforcement = self.config.getPrinterEnforcement(printer.Name)
         self.logdebug("Checking user %s's quota on printer %s" % (user.Name, printer.Name))
         (policy, dummy) = self.config.getPrinterPolicy(userpquota.Printer.Name)
         if not userpquota.Exists :
@@ -523,6 +529,8 @@ class PyKotaTool :
             self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (user.Name, printer.Name, action))
         else :    
             pagecounter = int(userpquota.PageCounter or 0)
+            if enforcement == "STRICT" :
+                pagecounter += self.softwareJobSize
             if userpquota.SoftLimit is not None :
                 softlimit = int(userpquota.SoftLimit)
                 if pagecounter < softlimit :
@@ -563,18 +571,25 @@ class PyKotaTool :
         """Checks the group quota on a printer and deny or accept the job."""
         group = grouppquota.Group
         printer = grouppquota.Printer
+        enforcement = self.config.getPrinterEnforcement(printer.Name)
         self.logdebug("Checking group %s's quota on printer %s" % (group.Name, printer.Name))
         if group.LimitBy and (group.LimitBy.lower() == "balance") : 
-            if group.AccountBalance <= 0.0 :
+            val = group.AccountBalance
+            if enforcement == "STRICT" : 
+                val -= self.softwareJobPrice # use precomputed size.
+            if val <= 0.0 :
                 action = "DENY"
-            elif group.AccountBalance <= self.config.getPoorMan() :    
+            elif val <= self.config.getPoorMan() :    
                 action = "WARN"
             else :    
                 action = "ALLOW"
         else :
+            val = grouppquota.PageCounter
+            if enforcement == "STRICT" :
+                val += self.softwareJobSize
             if grouppquota.SoftLimit is not None :
                 softlimit = int(grouppquota.SoftLimit)
-                if grouppquota.PageCounter < softlimit :
+                if val < softlimit :
                     action = "ALLOW"
                 else :    
                     if grouppquota.HardLimit is None :
@@ -582,7 +597,7 @@ class PyKotaTool :
                         action = "DENY"
                     else :    
                         hardlimit = int(grouppquota.HardLimit)
-                        if softlimit <= grouppquota.PageCounter < hardlimit :    
+                        if softlimit <= val < hardlimit :    
                             now = DateTime.now()
                             if grouppquota.DateLimit is not None :
                                 datelimit = DateTime.ISO.ParseDateTime(grouppquota.DateLimit)
@@ -599,7 +614,7 @@ class PyKotaTool :
                 if grouppquota.HardLimit is not None :
                     # no soft limit, only a hard one.
                     hardlimit = int(grouppquota.HardLimit)
-                    if grouppquota.PageCounter < hardlimit :
+                    if val < hardlimit :
                         action = "ALLOW"
                     else :      
                         action = "DENY"
@@ -642,6 +657,8 @@ class PyKotaTool :
                 return action        
             else :    
                 val = float(user.AccountBalance or 0.0)
+                if self.config.getPrinterEnforcement(printer.Name) == "STRICT" : 
+                    val -= self.softwareJobPrice # use precomputed size.
                 if val <= 0.0 :
                     return "DENY"
                 elif val <= self.config.getPoorMan() :    
@@ -819,9 +836,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         
     def precomputeJobSize(self) :    
         """Computes the job size with a software method."""
+        self.logdebug("Precomputing job's size with generic PDL analyzer...")
         try :
             parser = pdlanalyzer.PDLAnalyzer(self.jobdatastream)
-            return parser.getJobSize()
+            jobsize = parser.getJobSize()
         except pdlanalyzer.PDLAnalyzerError, msg :    
             # Here we just log the failure, but
             # we finally ignore it and return 0 since this
@@ -829,6 +847,13 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # job's size MAY be.
             self.logger.log_message(_("Unable to precompute the job's size with the generic PDL analyzer."), "warn")
             return 0
+        else :    
+            if ((self.printingsystem == "CUPS") \
+                and (self.preserveinputfile is not None)) \
+                or (self.printingsystem != "CUPS") :
+                return jobsize * self.copies
+            else :        
+                return jobsize
             
     def sigterm_handler(self, signum, frame) :
         """Sets an attribute whenever SIGTERM is received."""

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/05/24 22:45:49  jalet
+# New 'enforcement' directive added
+# Polling loop improvements
+#
 # Revision 1.2  2004/05/18 14:49:23  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -29,78 +33,50 @@
 # Code simplifications
 #
 #
-#
 
 import sys
 import os
 import popen2
-import tempfile
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 class Accounter(AccounterBase) :
     def computeJobSize(self) :    
         """Feeds an external command with our datas to let it compute the job size, and return its value."""
-        temporary = None    
-        if self.filter.inputfile is None :    
-            infile = sys.stdin
-            # we will have to duplicate our standard input
-            temporary = tempfile.TemporaryFile()
-        else :    
-            infile = open(self.filter.inputfile, "rb")
-            
-        # launches software accounter
-        # TODO : USE tempfile.mkstemp() instead ! Needs some work !
-        infilename = tempfile.mktemp()
-        outfilename = tempfile.mktemp()
-        errfilename = tempfile.mktemp()
-        
+        self.filter.logdebug("Launching software accounter %s" % self.arguments)
+        MEGABYTE = 1024*1024
+        self.filter.jobdatastream.seek(0)
+        child = popen2.Popen4(self.arguments)
         try :
-            # feed it with our data
-            fakeinput = open(infilename, "wb")
-            data = infile.read(256*1024)    
+            data = self.filter.jobdatastream.read(MEGABYTE)    
             while data :
-                fakeinput.write(data)
-                if temporary is not None :
-                    temporary.write(data)
-                data = infile.read(256*1024)
-            fakeinput.close()
-        
-            # launches child process
-            command = "%s <%s >%s 2>%s" % (self.arguments, infilename, outfilename, errfilename)
-            retcode = os.system(command)
-            
-            # check exit status
-            if (os.WIFEXITED(retcode) and not os.WEXITSTATUS(retcode)) or os.stat(errfilename) :
-                # tries to extract the job size from the software accounter's
-                # standard output
-                childoutput = open(outfilename, "r")
-                try :
-                    pagecount = int(childoutput.readline().strip())
-                except (AttributeError, ValueError) :
-                    self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % self.arguments)
-                    pagecount = 0
-                childoutput.close()    
-            else :
-                self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % self.arguments)
-                pagecount = 0
-            os.remove(infilename)
-            os.remove(outfilename)
-            os.remove(errfilename)
-        except IOError, msg :    
-            # TODO : temporary files may remain on the filesystem...
+                child.tochild.write(data)
+                data = self.filter.jobdatastream.read(MEGABYTE)
+            child.tochild.flush()
+            child.tochild.close()    
+        except (IOError, OSError), msg :    
             msg = "%s : %s" % (self.arguments, msg) 
             self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % msg)
-            pagecount = 0
-            
-        if temporary is not None :    
-            # this is a copy of our previous standard input
-            # flush, then rewind
-            temporary.flush()
-            temporary.seek(0, 0)
-            # our temporary file will be used later if the
-            # job is allowed.
-            self.filter.inputfile = temporary
-        else :
-            infile.close()
+        
+        pagecount = 0
+        try :
+            pagecount = int(child.fromchild.readline().strip())
+        except (AttributeError, ValueError) :
+            self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % self.arguments)
+        except (IOError, OSError), msg :    
+            msg = "%s : %s" % (self.arguments, msg) 
+            self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % msg)
+        child.fromchild.close()
+        
+        try :
+            retcode = child.wait()
+        except OSError, msg :    
+            self.filter.logger.log_message(_("Problem while waiting for software accounter pid %s to exit") % child.pid)
+        else :    
+            if os.WIFEXITED(retcode) :
+                status = os.WEXITSTATUS(retcode)
+            else :    
+                status = retcode
+            self.filter.logger.log_message(_("Software accounter %s exit code is %s") % (self.arguments, repr(retcode)))
+        self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, pagecount))
         return pagecount    
             

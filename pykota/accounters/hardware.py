@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/05/24 22:45:49  jalet
+# New 'enforcement' directive added
+# Polling loop improvements
+#
 # Revision 1.3  2004/05/24 14:36:40  jalet
 # Revert to old polling loop. Will need optimisations
 #
@@ -43,7 +47,6 @@ class Accounter(AccounterBase) :
     def __init__(self, kotabackend, arguments) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments)
-        self.isDelayed = 1 # With the pykota filter, accounting is delayed by one job
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
@@ -90,18 +93,6 @@ class Accounter(AccounterBase) :
             # takes care of the case where one counter (or both) was never set.
             jobsize = 0
         return jobsize
-        
-    def doAccounting(self, userpquota) :
-        """Does print accounting and returns if the job status is ALLOW or DENY."""
-        # Get the page counter directly from the printer itself
-        counterbeforejob = self.getPrinterInternalPageCounter() or 0
-        
-        # Is the current user allowed to print at all ?
-        action = self.filter.warnUserPQuota(userpquota)
-        
-        # adds the current job to history    
-        userpquota.Printer.addJobToHistory(self.filter.jobid, userpquota.User, counterbeforejob, action, filename=self.filter.preserveinputfile, title=self.filter.title, copies=self.filter.copies, options=self.filter.options)
-        return action
         
     def askPrinterPageCounter(self, printer) :
         """Returns the page counter from the printer via an external command.

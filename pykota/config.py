@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2004/05/24 22:45:49  jalet
+# New 'enforcement' directive added
+# Polling loop improvements
+#
 # Revision 1.47  2004/05/18 14:49:20  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -341,6 +345,19 @@ class PyKotaConfig :
             return self.getPrinterOption(printername, "posthook").strip()
         except PyKotaConfigError :    
             return      # No command to launch in the post-hook
+            
+    def getPrinterEnforcement(self, printername) :    
+        """Returns if quota enforcement should be strict or laxist for the current printer."""
+        validenforcements = [ "STRICT", "LAXIST" ]     
+        try :
+            enforcement = self.getPrinterOption(printername, "enforcement")
+        except PyKotaConfigError :    
+            return "LAXIST"
+        else :    
+            enforcement = enforcement.upper()
+            if enforcement not in validenforcements :
+                raise PyKotaConfigError, _("Option enforcement in section %s only supports values in %s") % (printername, str(validenforcements))
+            return enforcement    
             
     def getPrinterPolicy(self, printername) :    
         """Returns the default policy for the current printer."""

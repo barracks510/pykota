@@ -424,7 +424,7 @@ policy: deny
 # The actual phase of PyKota's execution is available in the
 # PYKOTAPHASE environment variable.
 # Pre and Post Hooks can be defined either globally, per printer,
-# or both if both are defined, the printer specific hook has
+# or both. If both are defined, the printer specific hook has
 # priority.
 #
 # List of available environment variables :
@@ -475,3 +475,19 @@ policy: deny
 # uncomment the line below to see what environment variables are available
 #posthook: /usr/bin/printenv >/tmp/after
 
+# How should enforcement be done for this printer ?
+#
+# "laxist" is the default if value is not set, and allows users
+# to be over quota on their last job. 
+#
+# "strict" tries to prevent users from ever being over quota.
+#
+# Enforcement can be defined either globally, per printer,
+# or both. If both are defined, the printer specific enforcement 
+# setting has priority. 
+#
+# valid values : "strict" or "laxist"
+#
+# default value
+# enforcement : laxist
+enforcement : strict
