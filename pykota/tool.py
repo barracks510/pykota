@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2003/04/17 09:26:21  jalet
+# repykota now reports account balances too.
+#
 # Revision 1.33  2003/04/16 12:35:49  jalet
 # Groups quota work now !
 #
@@ -305,6 +308,7 @@ class PyKotaTool :
                 self.logger.log_message(_("Unable to find group %s's account balance, applying default policy (%s) for printer %s") % (groupname, action, printername))
             else :    
                 # TODO : there's no warning (no account balance soft limit)
+                (balance, lifetimepaid) = balance
                 if balance <= 0.0 :
                     action = "DENY"
                 else :    
@@ -380,6 +384,7 @@ class PyKotaTool :
                 self.logger.log_message(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (username, action, printername))
             else :    
                 # TODO : there's no warning (no account balance soft limit)
+                (balance, lifetimepaid) = balance
                 if balance <= 0.0 :
                     action = "DENY"
                 else :    

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/04/17 09:26:21  jalet
+# repykota now reports account balances too.
+#
 # Revision 1.16  2003/04/16 12:35:49  jalet
 # Groups quota work now !
 #
@@ -145,8 +148,8 @@ msgstr "Limite dure indéfinie, positionnée à la limite souple (%s) sur l'imprima
 msgid "Invalid hardlimit value %s."
 msgstr "Valeur %s invalide pour la limite dure."
 
-msgid "Group            used     soft     hard   grace        total"
-msgstr "Groupe           used     soft     hard   grace        total"
+msgid  "Group           used    soft    hard    balance grace         total       paid"
+msgstr "Groupe          util    soft    hard    solde   grâce         total       payé"
 
 msgid "There's no printer matching %s"
 msgstr "Aucune imprimante ne correspond à %s"
@@ -160,8 +163,8 @@ msgstr "Erreur dans la valeur %i du nombre de page pour l'utilisateur %s sur l'i
 msgid "Invalid group name %s"
 msgstr "Nom de groupe %s invalide"
 
-msgid "User             used     soft     hard   grace        total"
-msgstr "Utilisateur      used     soft     hard   grace        total"
+msgid  "User            used    soft    hard    balance grace         total       paid"
+msgstr "Utilisateur     util    soft    hard    solde   grâce         total       payé"
 
 msgid "Invalid printer name %s"
 msgstr "Nom d'imprimante %s invalide"
@@ -317,3 +320,6 @@ msgid ""
 msgstr ""
 "Vous n'aurez bientôt plus le droit d'imprimer car\n"
 "le Quota d'Impression de votre groupe sur l'imprimante %s est presque atteint."
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr "Les totaux peuvent être faux si des utilisateurs sont dans plusieurs groupes."

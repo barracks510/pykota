@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/04/17 09:26:21  jalet
+# repykota now reports account balances too.
+#
 # Revision 1.27  2003/04/16 12:35:49  jalet
 # Groups quota work now !
 #
@@ -253,19 +256,23 @@ class SQLStorage :
         
     def getUserBalance(self, userid) :    
         """Returns the current account balance for a given user."""
-        result = self.doQuery("SELECT balance FROM users WHERE id=%s" % self.doQuote(userid))
+        result = self.doQuery("SELECT balance, lifetimepaid FROM users WHERE id=%s" % self.doQuote(userid))
         try :
-            return self.doParseResult(result)[0]["balance"]
+            result = self.doParseResult(result)[0]
         except TypeError :      # Not found    
             return
+        else :    
+            return (result["balance"], result["lifetimepaid"])
         
     def getGroupBalance(self, groupid) :    
         """Returns the current account balance for a given group, as the sum of each of its users' account balance."""
-        result = self.doQuery("SELECT SUM(balance) AS balance FROM users WHERE id in (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(groupid))
+        result = self.doQuery("SELECT SUM(balance) AS balance, SUM(lifetimepaid) AS lifetimepaid FROM users WHERE id in (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(groupid))
         try :
-            return self.doParseResult(result)[0]["balance"]
+            result = self.doParseResult(result)[0]
         except TypeError :      # Not found    
             return
+        else :    
+            return (result["balance"], result["lifetimepaid"])
         
     def getUserLimitBy(self, userid) :    
         """Returns the way in which user printing is limited."""
@@ -285,7 +292,7 @@ class SQLStorage :
         
     def setUserBalance(self, userid, balance) :    
         """Sets the account balance for a given user to a fixed value."""
-        current = self.getUserBalance(userid)
+        (current, lifetimepaid) = self.getUserBalance(userid)
         difference = balance - current
         self.increaseUserBalance(userid, difference)
         

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/04/17 09:26:21  jalet
+# repykota now reports account balances too.
+#
 # Revision 1.18  2003/04/16 12:35:49  jalet
 # Groups quota work now !
 #
@@ -144,7 +147,7 @@ msgstr ""
 msgid "Invalid hardlimit value %s."
 msgstr ""
 
-msgid "Group            used     soft     hard   grace        total"
+msgid "Group           used    soft    hard    balance grace         total       paid"
 msgstr ""
 
 msgid "There's no printer matching %s"
@@ -159,7 +162,7 @@ msgstr ""
 msgid "Invalid group name %s"
 msgstr ""
 
-msgid "User             used     soft     hard   grace        total"
+msgid "User            used    soft    hard    balance grace         total       paid"
 msgstr ""
 
 msgid "Invalid printer name %s"
@@ -302,4 +305,7 @@ msgstr ""
 msgid ""
 "You will soon be forbidden to print anymore because\n"
 "your group Print Quota is almost reached on printer %s."
+msgstr ""
+
+msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr ""
