@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.07 : Release of the Shame !
+    
+        - The external accounting methods driver was left out of 
+          the CVS tree. Nobody could use it since it wasn't included !
+          
+        
     - 1.06 :
     
         - Severe bug fixed : if you had a printer in 
