@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/10/09 21:25:26  jalet
+# Multiple printer names or wildcards can be passed on the command line
+# separated with commas.
+# Beta phase.
+#
 # Revision 1.24  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -130,6 +135,8 @@ options :
                        use wildcards characters to select only
                        some printers. The default value is *, meaning
                        all printers.
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
   
 examples :                              
 

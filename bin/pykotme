@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/10/09 21:25:25  jalet
+# Multiple printer names or wildcards can be passed on the command line
+# separated with commas.
+# Beta phase.
+#
 # Revision 1.4  2003/10/07 09:07:27  jalet
 # Character encoding added to please latest version of Python
 #
@@ -66,6 +71,8 @@ options :
                        use wildcards characters to select only
                        some printers. The default value is *, meaning
                        all printers.
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
   
 examples :                              
 
@@ -74,6 +81,13 @@ examples :
   This will give a print quote to the current user. The quote will show
   the price and size of a job consisting in file1.ps and file2.ps 
   which would be sent to the apple printer.
+  
+  $ pykotme --printer apple,hplaser <file1.ps
+  
+  This will give a print quote to the current user. The quote will show
+  the price and size of a job consisting in file1.ps as read from
+  standard input, which would be sent to the apple or hplaser
+  printer.
 
   $ pykotme 
   

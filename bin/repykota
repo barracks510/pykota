@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2003/10/09 21:25:25  jalet
+# Multiple printer names or wildcards can be passed on the command line
+# separated with commas.
+# Beta phase.
+#
 # Revision 1.44  2003/10/07 09:07:27  jalet
 # Character encoding added to please latest version of Python
 #
@@ -200,6 +205,8 @@ options :
                        use wildcards characters to select only
                        some printers. The default value is *, meaning
                        all printers.
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
   
 examples :                              
 
@@ -211,11 +218,11 @@ examples :
   
   This will print the quota status for all users on all printers.
   
-  $ repykota --printer "laser*" jerome "jo*"
+  $ repykota --printer "laser*,*pson" jerome "jo*"
   
   This will print the quota status for user jerome and all users
-  whose name begins with "jo" on all printers which name begin
-  with "laser"
+  whose name begins with "jo" on all printers which name begins
+  with "laser" or ends with "pson".
   
   If launched by a non-root user, additionnal arguments representing
   users or groups names are ignored, and only the current user/group

@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2003/10/09 21:25:24  jalet
+# Multiple printer names or wildcards can be passed on the command line
+# separated with commas.
+# Beta phase.
+#
 # Revision 1.59  2003/10/07 09:07:27  jalet
 # Character encoding added to please latest version of Python
 #
@@ -254,7 +259,9 @@ options :
   -P | --printer p     Edit quotas on printer p only. Actually p can
                        use wildcards characters to select only
                        some printers. The default value is *, meaning
-                       all printers.
+                       all printers. 
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
   
   -g | --groups        Edit groups print quotas instead of users.
                           

@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/10/09 21:25:26  jalet
+# Multiple printer names or wildcards can be passed on the command line
+# separated with commas.
+# Beta phase.
+#
 # Revision 1.19  2003/10/08 07:01:20  jalet
 # Job history can be disabled.
 # Some typos in README.
@@ -302,7 +307,7 @@ class Storage(BaseStorage) :
         result = self.doSearch("SELECT * FROM printers")
         if result :
             for record in result :
-                if self.tool.matchString(record["printername"], [ printerpattern ]) :
+                if self.tool.matchString(record["printername"], printerpattern.split(",")) :
                     printer = StoragePrinter(self, record["printername"])
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob")
