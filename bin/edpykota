@@ -16,6 +16,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/02/08 22:20:01  jalet
+# Clarification on why we don't check with /etc/passwd to see if the user
+# name is valid or not.
+#
 # Revision 1.14  2003/02/08 22:18:15  jalet
 # Now checks user and group names for validity before adding them
 #
@@ -197,6 +201,10 @@ class EdPyKota(PyKotaTool) :
                 if quota is None :
                     # not found
                     if options["add"] :
+                        # In case we want to add something, it is crucial
+                        # that we DON'T check with the system accounts files
+                        # like /etc/passwd because users may be defined 
+                        # only remotely
                         if options["users"] :
                             if self.isValidName(name) :
                                 self.storage.addUserPQuota(name, printer)
