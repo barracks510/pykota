@@ -108,8 +108,8 @@ PyKota features :
         - Account balances can be set, incremented, or  
           decremented.
           
-        - Users can be automatically added on first print  
-          in a completely configurable way.
+        - Both printers and users can be automatically added on 
+          first print in a completely configurable way.
           
         - Quota report generator available either from the  
           command line or in any web browser.
