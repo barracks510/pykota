@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/12 11:31:51  jalet
+# doesn't use the jaxml module anymore
+#
 # Revision 1.1  2003/02/10 13:41:38  jalet
 # repykota cgi script added.
 # cleaner doc.
@@ -25,21 +28,26 @@ import sys
 import os
 import cgi
 
-import jaxml
+header = """Content-type: text/html
 
-x = jaxml.CGI_document()
-x.html()
-x._push()
-x.head()
-x.title("Print Quota Report")
-x._pop()
+<?xml version="1.0" encoding="iso-8859-1"?>
+<html>
+  <head>
+    <title>Print Quota Report</title>
+  </head>
+  <body>
+    <h2>Print Quota Report</h2>
+    <pre>"""
 
-x.h2("Print Quota Report")
+footer = """
+    </pre>
+  </body>
+</html>"""  
 
-x.pre()
+print header
 
 out = os.popen("repykota")
-x._text(out.read())
+print out.read().strip()
 out.close()
 
-x._output()
+print footer
