@@ -21,6 +21,8 @@
 # $Id$
 #
 # $Log$
+#
+# $Log$
 # Revision 1.151  2005/02/22 17:56:58  jalet
 # Now logs the type of user running the command : mere mortal vs PyKota Admin
 #
