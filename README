@@ -159,12 +159,11 @@ Actually three (or an infinity of) page accounting methods are
 implemented :
 
   - The 'querying' method consists in querying the printer (via SNMP
-    or Netatalk) for its total pages counter, just before the beginning 
-    of a job, and use this to modify the *preceding* user's quota. So 
-    you're always late of one print job, but this is generally ok, 
-    especially because a check is also done to see if the current user 
-    is allowed or not to print. You're not limited to SNMP or Netatalk,
-    because you can also use any external command instead if you want.
+    or Netatalk or any other method of your choice) for its total pages 
+    counter, just before the beginning of a job, and use this to modify 
+    the *preceding* user's quota. So you're always late of one print job, 
+    but this is generally ok, especially because a check is also done to 
+    see if the current user is allowed or not to print. 
     
   - The 'external' method consists in delegating the computation of the
     job's size in number of pages to any external command of your choice.
@@ -381,6 +380,14 @@ Mailing list :
   or consult its archives at :
   
     http://cgi.librelogiciel.com/mailman/listinfo/pykota
+    
+IRC :    
+-----
+
+  You can also chat with us :
+  
+        /server irc.freenode.net
+        /join #pykota
     
 ============================================================
     
