@@ -21,10 +21,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
-    - 1.21alpha20 :
+    - 1.21alpha21 :
     
-        - Big bug fix wrt the datelimit field which was never
-          reset.
+        - dumpykota.cgi can now be run as a normal user as opposed to 
+          a PyKota administrator. No read access to pykotadmin.conf is
+          necessary anymore. This CGI scripts now honors the REMOTE_USER
+          environment variable just like printquota.cgi does, see 
+          the file cgi-bin/README for details.
+          The command line tool dumpykota must still be run by a PyKota 
+          administrator.
+          
+        - Fix exception's name error due to a change in recent versions 
+          of PygreSQL.   
+          
+    - 1.21alpha20 :
+          
+        - Big bug fix wrt the datelimit field which was never reset.
           
     - 1.21alpha19 :
     

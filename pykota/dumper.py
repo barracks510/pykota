@@ -20,6 +20,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2005/01/19 08:49:41  jalet
+# Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
+# variables if the script is username+password protected.
+# Small fix in printquota.cgi wrt ldap auth with Apache : the workaround was
+# not used everywhere.
+#
 # Revision 1.1  2005/01/08 17:03:07  jalet
 # "--format cups" output more resembling CUPS' page_log.
 # Split into a command line tool and a module, to allow easier coding of
@@ -68,9 +74,9 @@ class DumPyKota(PyKotaTool) :
                         "printername",
                         "pgroupname",
                       ]
-    def main(self, arguments, options) :
+    def main(self, arguments, options, restricted=1) :
         """Print Quota Data Dumper."""
-        if not self.config.isAdmin :
+        if restricted and not self.config.isAdmin :
             raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         extractonly = {}

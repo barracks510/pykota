@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2005/01/19 08:49:41  jalet
+# Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
+# variables if the script is username+password protected.
+# Small fix in printquota.cgi wrt ldap auth with Apache : the workaround was
+# not used everywhere.
+#
 # Revision 1.4  2005/01/17 08:44:24  jalet
 # Modified copyright years
 #
@@ -148,12 +154,28 @@ class PyKotaDumperGUI(DumPyKota) :
                 if self.form.has_key("filter") :    
                     self.arguments = self.form["filter"].value.split()
                     
+                # when no authentication is done, or when the remote username    
+                # is 'root' (even if not run as root of course), then unrestricted
+                # dump is allowed.
+                remuser = os.environ.get("REMOTE_USER", "root")    
+                # special hack to accomodate mod_auth_ldap Apache module
+                try :
+                    remuser = remuser.split("=")[1].split(",")[0]
+                except IndexError :    
+                    pass
+                if remuser != "root" :
+                    # non-'root' users when the script is password protected
+                    # can not dump any data as they like, we restrict them
+                    # to their own datas.
+                    if self.options["data"] not in ["printers", "pmembers", "groups", "gpquotas"] :
+                        self.arguments.append("username=%s" % remuser)
+                    
                 if self.options["format"] in ("csv", "ssv") :
-                    #ctype = "application/vnd.sun.xml.calc"
+                    #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
                     ctype = "text/comma-separated-values"
                     fname = "dump.csv"
                 elif self.options["format"] == "tsv" :
-                    #ctype = "application/vnd.sun.xml.calc"
+                    #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
                     ctype = "text/tab-separated-values"
                     fname = "dump.tsv"
                 elif self.options["format"] == "xml" :
@@ -166,7 +188,7 @@ class PyKotaDumperGUI(DumPyKota) :
                 print "Content-disposition: attachment; filename=%s" % fname 
                 print
                 try :
-                    self.main(self.arguments, self.options)
+                    self.main(self.arguments, self.options, restricted=0)
                 except PyKotaToolError, msg :    
                     print msg
             else :        

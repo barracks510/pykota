@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2005/01/19 08:49:41  jalet
+# Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
+# variables if the script is username+password protected.
+# Small fix in printquota.cgi wrt ldap auth with Apache : the workaround was
+# not used everywhere.
+#
 # Revision 1.43  2005/01/17 08:44:24  jalet
 # Modified copyright years
 #
@@ -254,6 +260,12 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiAction(self) :
         """Main function"""
         printers = ugmask = isgroup = None
+        remuser = os.environ.get("REMOTE_USER", "root")    
+        # special hack to accomodate mod_auth_ldap Apache module
+        try :
+            remuser = remuser.split("=")[1].split(",")[0]
+        except IndexError :    
+            pass
         self.body = "<p>%s</p>\n" % _("Please click on the above button")
         if self.form.has_key("report") :
             if self.form.has_key("printers") :
@@ -263,14 +275,6 @@ class PyKotaReportGUI(PyKotaTool) :
                 printers = [self.storage.getPrinter(p.value) for p in printersfield]
             else :    
                 printers = self.storage.getMatchingPrinters("*")
-            remuser = os.environ.get("REMOTE_USER", "root")    
-            
-            # special hack to accomodate mod_auth_ldap Apache module
-            try :
-                remuser = remuser.split("=")[1].split(",")[0]
-            except IndexError :    
-                pass
-            
             if remuser == "root" :
                 if self.form.has_key("ugmask") :     
                     ugmask = self.form["ugmask"].value
@@ -299,7 +303,6 @@ class PyKotaReportGUI(PyKotaTool) :
                 self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
                 self.body += "%s" % self.reportingtool.generateReport()
         else :        
-            remuser = os.environ.get("REMOTE_USER", "root")    
             if remuser != "root" :
                 username = remuser
             elif self.form.has_key("username") :    
