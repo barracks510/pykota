@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2004/05/17 11:46:05  jalet
+# First try at cupspykota's main loop rewrite
+#
 # Revision 1.42  2004/05/10 11:22:28  jalet
 # Typo
 #
@@ -170,6 +173,7 @@
 
 import sys
 import os
+import fcntl
 import popen2
 import cStringIO
 import shlex
@@ -183,15 +187,15 @@ from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
 from pykota.requester import PyKotaRequesterError
     
-class PyKotaPopen3(popen2.Popen3) :
+class PyKotaPopen4(popen2.Popen4) :
     """Our own class to execute real backends.
     
        Their first argument is different from their path so using
        native popen2.Popen3 would not be feasible.
     """
-    def __init__(self, cmd, capturestderr=0, bufsize=-1, arg0=None) :
+    def __init__(self, cmd, bufsize=-1, arg0=None) :
         self.arg0 = arg0
-        popen2.Popen3.__init__(self, cmd, capturestderr, bufsize)
+        popen2.Popen4.__init__(self, cmd, bufsize)
         
     def _run_child(self, cmd):
         for i in range(3, 256): # TODO : MAXFD in original popen2 module
@@ -290,7 +294,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.posthook(userpquota)
             
         return retcode    
-                    
+               
+    def setNonBlocking(self, fno) :
+        """Sets a file handle to be non-blocking."""
+        flags = fcntl.fcntl(fno, fcntl.F_GETFL, 0)
+        fcntl.fcntl(fno, fcntl.F_SETFL, flags | os.O_NONBLOCK)
+
     def unregisterFileNo(self, pollobj, fileno) :                
         """Removes a file handle from the polling object."""
         try :
@@ -300,187 +309,147 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         else :    
             self.logdebug("File number %s unregistered from polling object." % fileno)
             
+    def formatFileEvent(self, fd, mask, ins, outs) :        
+        """Formats file debug info."""
+        try :
+            name = ins.get(fd, outs.get(fd))["name"]
+        except KeyError :    
+            self.logdebug("File %s not found in %s or %s" % (fd, repr(ins), repr(outs)))
+        else :    
+            maskval = []
+            if mask & select.POLLIN :
+                maskval.append("POLLIN")
+            if mask & select.POLLOUT :
+                maskval.append("POLLOUT")
+            if mask & select.POLLPRI :
+                maskval.append("POLLPRI")
+            if mask & select.POLLERR :
+                maskval.append("POLLERR")
+            if mask & select.POLLHUP :
+                maskval.append("POLLHUP")
+            if mask & select.POLLNVAL :
+                maskval.append("POLLNVAL")
+            return "%s (%s)" % (name, " | ".join(maskval))
+        
     def handleData(self) :                    
         """Pass the job's data to the real backend."""
-        # Now it becomes tricky...
-        # We must pass the unmodified job to the original backend
-        # First ensure that we have a file object as input
-        mustclose = 0    
-        if self.inputfile is not None :    
-            if hasattr(self.inputfile, "read") :
-                infile = self.inputfile
-            else :    
-                infile = open(self.inputfile, "rb")
-            mustclose = 1
-        else :    
-            infile = sys.stdin
-            
         # Find the real backend pathname    
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], self.originalbackend)
         
         # And launch it
         self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + sys.argv[1:])])))
-        subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, bufsize=0, arg0=os.environ["DEVICE_URI"])
+        subprocess = PyKotaPopen4([realbackend] + sys.argv[1:], bufsize=0, arg0=os.environ["DEVICE_URI"])
         
         # Save file descriptors, we will need them later.
-        stdoutfno = sys.stdout.fileno()
         stderrfno = sys.stderr.fileno()
         fromcfno = subprocess.fromchild.fileno()
-        tocfno = subprocess.tochild.fileno()
-        cerrfno = subprocess.childerr.fileno()
+        self.setNonBlocking(fromcfno)
         
         # We will have to be careful when dealing with I/O 
         # So we use a poll object to know when to read or write
         pollster = select.poll()
         pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
-        pollster.register(cerrfno, select.POLLIN | select.POLLPRI)
-        pollster.register(stdoutfno, select.POLLOUT)
-        pollster.register(stderrfno, select.POLLOUT)
-        pollster.register(tocfno, select.POLLOUT)
         
-        # Initialize our buffers
-        indata = ""
-        outdata = ""
-        errdata = ""
-        endinput = endoutput = enderr = 0
-        inputclosed = outputclosed = errclosed = 0
-        
+        instreams = { \
+                      fromcfno : { "file" : subprocess.fromchild, "out" : stderrfno, "done" : 0, "name" : "real backend's stdout+stderr" },\
+                    }
+                      
+        outstreams = { \
+                       stderrfno : { "file" : sys.stderr, "done" : 0, "in" : fromcfno, "name" : "stderr" }, \
+                     }
+                       
         if self.preserveinputfile is None :
-            # this is not a real file, we read the job's data
-            # from stdin 
-            infno = infile.fileno()
-            pollster.register(infno, select.POLLIN | select.POLLPRI)
+            # this is not a real file, we read the job's data 
+            # from stdin and send it on our stdout
+            tocfno = subprocess.tochild.fileno()
+            stdinfno = sys.stdin.fileno()
+            self.setNonBlocking(stdinfno)
+            pollster.register(stdinfno, select.POLLIN | select.POLLPRI)
+            instreams.update({ stdinfno : { "file": sys.stdin, "out" : tocfno, "done" : 0, "name" : "stdin" }})
+            outstreams.update({ tocfno : { "file" : subprocess.tochild, "done" : 0, "in" : stdinfno, "name" : "real backend's stdin" }})
         else :    
             # job's data is in a file, no need to pass the data
             # to the real backend
-            self.logdebug("Job's data is in %s" % self.preserveinputfile)
-            infno = None
-            endinput = 1
-        
-        killed = 0
-        self.logdebug("Entering streams polling loop...")
-        status = -1
-        while status == -1 :
-            # First check if original backend is still alive
-            status = subprocess.poll()
+            self.logdebug("Job's data is in file %s" % self.preserveinputfile)
             
-            # Now if we got SIGTERM, we have 
-            # to kill -TERM the original backend
-            if self.gotSigTerm and not killed :
-                try :
+        killed = 0
+        status = -1
+        self.logdebug("Entering streams polling loop...")
+        while status == -1 :
+            # Catches IOErrors caused by interrupted system calls
+            try :
+                # First check if original backend is still alive
+                status = subprocess.poll()
+                
+                # Now if we got SIGTERM, we have 
+                # to kill -TERM the original backend
+                if self.gotSigTerm and not killed :
                     os.kill(subprocess.pid, signal.SIGTERM)
                     self.logger.log_message(_("SIGTERM was sent to real backend %s (pid: %s)") % (realbackend, subprocess.pid), "info")
                     killed = 1
-                except : # ignore if process was already killed.
-                    pass
-            
-            # In any case, deal with any remaining I/O
-            availablefds = pollster.poll(5000)
-            for (fd, mask) in availablefds :
-                # self.logdebug("file: %i    mask: %04x" % (fd, mask))
-                try :
-                    if mask & select.POLLOUT :
-                        # We can write
-                        if fd == tocfno :
-                            if indata :
-                                os.write(fd, indata)    
-                                try :
-                                    os.fsync(fd)
-                                except OSError :
-                                    pass
-                                indata = ""
-                            if endinput :    
-                                self.unregisterFileNo(pollster, tocfno)        
-                                self.logdebug("Closing real backend's stdin.")
-                                os.close(tocfno)
-                                inputclosed = 1
-                        elif fd == stdoutfno :
-                            if outdata :
-                                os.write(fd, outdata)
-                                try :
-                                    os.fsync(fd)
-                                except OSError :    
-                                    pass
-                                outdata = ""
-                            if endoutput :    
-                                self.unregisterFileNo(pollster, stdoutfno)        
-                                outputclosed = 1
-                        elif fd == stderrfno :
-                            if errdata :
-                                os.write(fd, errdata)
-                                try :
-                                    os.fsync(fd)
-                                except OSError :    
-                                    pass
-                                errdata = ""
-                            if enderr :    
-                                self.unregisterFileNo(pollster, stderrfno)        
-                                errclosed = 1
-                    if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
-                        # We have something to read
-                        try :
-                            data = os.read(fd, 256 * 1024)
-                        except OSError, msg :    
-                            self.logdebug("Error while reading file %s : %s" % (fd, msg))
-                        else :
-                            if fd == infno :
-                                indata += data
-                                if not data :    # If yes, then no more input data
-                                    self.unregisterFileNo(pollster, infno)
-                                    self.logdebug("Input data ends.")
-                                    endinput = 1 # this happens with real files.
-                            elif fd == fromcfno :
-                                outdata += data
-                            elif fd == cerrfno :    
-                                errdata += data
-                    if (mask & select.POLLHUP) or (mask & select.POLLERR) :
-                        # I've never seen POLLERR myself, but this probably
-                        # can't hurt to treat an error condition just like 
-                        # an EOF.
-                        # 
-                        # Some standard I/O stream has no more datas
-                        self.unregisterFileNo(pollster, fd)
-                        if fd == infno :
-                            # Here we are in the case where the input file is stdin.
-                            # which has no more data to be read.
-                            self.logdebug("Input data ends.")
-                            endinput = 1
-                        elif fd == fromcfno :    
-                            # This should never happen, since
-                            # CUPS backends don't send anything on their
-                            # standard output.
-                            # We are no more interested in this file descriptor        
-                            self.logdebug("Closing real backend's stdout.")
-                            os.close(fromcfno)
-                            endoutput = 1
-                        elif fd == cerrfno :    
-                            # Original CUPS backend has finished 
-                            # to write informations on its standard error.
-                            # We are no more interested in this file descriptor        .
-                            self.logdebug("Closing real backend's stderr.")
-                            os.close(cerrfno)
-                            enderr = 1
-                except IOError :            
-                    pass # we got signalled during an I/O it seems
-            if killed or (inputclosed and outputclosed and errclosed) :
-                break
                 
-        # We must close the real backend's input stream
-        if killed and not inputclosed :
-            self.logdebug("Forcing close of real backend's stdin.")
-            os.close(tocfno)
-        
-        # Input file was a real file, we have to close it.    
-        if mustclose :
-            infile.close()
-            
+                # In any case, deal with any remaining I/O
+                availablefds = pollster.poll(5000)
+                if not availablefds :
+                    self.logdebug("Nothing to do, sleeping a bit...")
+                    time.sleep(0.01) # nothing to do, give time to CPU
+                else :    
+                    for (fd, mask) in availablefds :
+                        # self.logdebug(self.formatFileEvent(fd, mask, instreams, outstreams))
+                        try :
+                            if mask & (select.POLLIN | select.POLLPRI) :     
+                                # We have something to read
+                                try :
+                                    fobj = instreams[fd]
+                                except KeyError :    
+                                    self.logdebug("READ : %s" % self.formatFileEvent(fd, mask, instreams, outstreams))
+                                else :    
+                                    data = fobj["file"].read()
+                                    if not data :
+                                        self.logdebug("No more data to read on %s (read returned nothing)" % fobj["name"])
+                                        if not fobj["done"] :
+                                            self.unregisterFileNo(pollster, fd)
+                                            fobj["done"] = 1
+                                    else :    
+                                        # self.logdebug("%s -- DATA[%i] <= : %s ..." % (self.formatFileEvent(fd, mask, instreams, outstreams), len(data), data[:50]))
+                                        fout = outstreams[fobj["out"]]["file"]
+                                        fout.write(data)
+                                        fout.flush()
+                                            
+                            if mask & (select.POLLHUP | select.POLLERR) :
+                                # Some pipe has no more datas so we don't
+                                # want to continue to poll this file
+                                toclose = None
+                                try :
+                                    fobj = instreams[fd]
+                                    if fobj["name"] == "stdin" :
+                                        toclose = outstreams[fobj["out"]]
+                                    self.logdebug("No more data to read from %s (POLLUP or POLLERR received)" % fobj["name"])
+                                except KeyError :    
+                                    fobj = outstreams[fd]
+                                    if fobj["name"] == "stderr" :
+                                        toclose = instreams[fobj["in"]]
+                                    self.logdebug("No more data to write to %s (POLLUP or POLLERR received)" % fobj["name"])
+                                    
+                                if not fobj["done"] :
+                                    self.unregisterFileNo(pollster, fd)
+                                    fobj["done"] = 1
+                                    if toclose is not None :
+                                        self.logdebug("Closing %s" % toclose["name"])
+                                        toclose["file"].close()
+                                        
+                            if mask & select.POLLNVAL :            
+                                self.logdebug("CLOSED : %s" % self.formatFileEvent(fd, mask, instreams, outstreams))
+                                
+                        except IOError, msg :                
+                            self.logdebug("IOError : %s -- %s" % (msg, self.formatFileEvent(fd, mask, instreams, outstreams)))
+                            time.sleep(0.01) # give some time to the CPU
+            except IOError, msg :
+                self.logdebug("IOError : %s" % msg)
+                time.sleep(0.01) # give some time to the CPU
+                
         self.logdebug("Exiting streams polling loop...")
-            
-        # Check exit code of original CUPS backend.    
-        if status == -1 :
-            # we exited the loop before the real backend exited
-            # now we have to wait for it to finish and get its status
-            status = subprocess.wait()
+        status = subprocess.wait()      # just in case
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
         elif not killed :    
@@ -488,6 +457,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             retcode = -1
         else :    
             retcode = self.removeJob()
+        self.logdebug("Real backend exited with status %s" % status)    
         return retcode    
     
 if __name__ == "__main__" :    
