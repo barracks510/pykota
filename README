@@ -47,6 +47,9 @@ Actual working features :
         
         - Command line print quota automated warning sender : warnpykota
         
+        - Command line print quote maker, to learn how much a print job 
+          will cost in advance : pykotme
+        
         - Command line tools mimic the disk quota utilities for
           easier mastering.
         
