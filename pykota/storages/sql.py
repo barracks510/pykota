@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/02/07 22:13:13  jalet
+# Perhaps edpykota is now able to add printers !!! Oh, stupid me !
+#
 # Revision 1.13  2003/02/07 00:08:52  jalet
 # Typos
 #
@@ -77,6 +80,10 @@ class SQLStorage :
                     printerslist.append(printer["printername"])
         return printerslist        
             
+    def addPrinter(self, printername) :        
+        """Adds a printer to the quota storage."""
+        self.doQuery("INSERT INTO printers (printername) VALUES (%s);" % self.doQuote(printername))
+        
     def getPrinterUsers(self, printername) :        
         """Returns the list of usernames which uses a given printer."""
         result = self.doQuery("SELECT DISTINCT username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid IN (SELECT printerid FROM printers WHERE printername=%s));" % self.doQuote(printername))
@@ -126,7 +133,7 @@ class SQLStorage :
     def addUserPQuota(self, username, printername) :
         (userid, printerid) = self.getUPIds(username, printername)
         if printerid is None :    
-            self.doQuery("INSERT INTO printers (printername) VALUES (%s);" % self.doQuote(printername))
+            self.addPrinter(printername)        # should we still add it ?
         if userid is None :    
             self.doQuery("INSERT INTO users (username) VALUES (%s);" % self.doQuote(username))
         (userid, printerid) = self.getUPIds(username, printername)
