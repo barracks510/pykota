@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2004/01/14 15:52:01  jalet
+# Small fix for job cancelling code.
+#
 # Revision 1.23  2004/01/13 10:48:28  jalet
 # Small streams polling loop modification.
 #
@@ -113,20 +116,13 @@ import cStringIO
 import shlex
 import select
 import signal
+import time
 
 from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
 from pykota.requester import PyKotaRequesterError
-
-gotSigTerm = 0
-def sigterm_handler(signum, frame) :
-    """Sets a global variable whenever SIGTERM is received."""
-    # SIGTERM will be ignore most of the time, but during
-    # the call to the real backend, we have to pass it through.
-    global gotSigTerm
-    gotSigTerm = 1
     
 class PyKotaPopen3(popen2.Popen3) :
     """Our own class to execute real backends.
@@ -151,6 +147,28 @@ class PyKotaPopen3(popen2.Popen3) :
     
 class PyKotaBackend(PyKotaFilterOrBackend) :        
     """A class for the pykota backend."""
+    def __init__(self) :
+        """Does normal initialization then installs signal handler."""
+        # Normal init
+        PyKotaFilterOrBackend.__init__(self)
+        
+        # then deal with signals
+        # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
+        # Fortunately SIGPIPE is already ignored by Python
+        # It's there just in case this changes in the future.
+        # Here we have to handle SIGTERM correctly, and pass
+        # it to the original backend if needed.
+        self.gotSigTerm = 0
+        signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
+        
+    def sigterm_handler(self, signum, frame) :
+        """Sets a global variable whenever SIGTERM is received."""
+        # SIGTERM will be ignore most of the time, but during
+        # the call to the real backend, we have to pass it through.
+        self.gotSigTerm = 1
+        self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
+        
     def acceptJob(self) :        
         """Returns the appropriate exit code to tell CUPS all is OK."""
         return 0
@@ -164,7 +182,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         
     def doWork(self, policy, printer, user, userpquota) :    
         """Most of the work is done here."""
-        global gotSigTerm
         # Two different values possible for policy here :
         # ALLOW means : Either printer, user or user print quota doesn't exist,
         #               but the job should be allowed anyway.
@@ -180,7 +197,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
         # pass the job's data to the real backend    
         if action in ["ALLOW", "WARN"] :
-            if gotSigTerm :
+            if self.gotSigTerm :
                 retcode = self.removeJob()
             else :    
                 retcode = self.handleData()        
@@ -210,9 +227,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         """Pass the job's data to the real backend."""
         # Now it becomes tricky...
         # We must pass the unmodified job to the original backend
-        
-        global gotSigTerm
-        
         # First ensure that we have a file object as input
         mustclose = 0    
         if self.inputfile is not None :    
@@ -255,6 +269,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         errdata = ""
         endinput = endoutput = enderr = 0
         inputclosed = outclosed = errclosed = 0
+        killed = 0
         self.logdebug("Entering streams polling loop...")
         status = -1
         while status == -1 :
@@ -263,16 +278,16 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # Now if we got SIGTERM, we have 
             # to kill -TERM the original backend
-            if gotSigTerm :
+            if self.gotSigTerm and not killed :
                 try :
                     os.kill(subprocess.pid, signal.SIGTERM)
+                    self.logger.log_message(_("SIGTERM was sent to real backend %s (pid: %s)") % (realbackend, subprocess.pid), "info")
+                    killed = 1
                 except : # ignore if process was already killed.
                     pass
             
             # In any case, deal with any remaining I/O
             availablefds = pollster.poll(5000)
-            if (not availablefds) and inputclosed and outputclosed and errclosed :
-                break
             for (fd, mask) in availablefds :
                 # self.logdebug("file: %i    mask: %04x" % (fd, mask))
                 if mask & select.POLLOUT :
@@ -283,8 +298,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                             indata = ""
                         if endinput :    
                             pollster.unregister(tocfno)        
-                            os.close(tocfno)
                             self.logdebug("Closing real backend's stdin.")
+                            os.close(tocfno)
                             inputclosed = 1
                     elif fd == stdoutfno :
                         if outdata :
@@ -330,17 +345,24 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                         # CUPS backends don't send anything on their
                         # standard output.
                         # We are no more interested in this file descriptor        
+                        self.logdebug("Closing real backend's stdout.")
                         os.close(fromcfno)
-                        self.logdebug("Real backend's stdout ends.")
                         endoutput = 1
                     elif fd == cerrfno :    
                         # Original CUPS backend has finished 
                         # to write informations on its standard error.
                         # We are no more interested in this file descriptor        .
+                        self.logdebug("Closing real backend's stderr.")
                         os.close(cerrfno)
-                        self.logdebug("Real backend's stderr ends.")
                         enderr = 1
+            if killed or (inputclosed and outputclosed and errclosed) :
+                break
                 
+        # We must close the real backend's input stream
+        if killed and not inputclosed :
+            self.logdebug("Forcing close of real backend's stdin.")
+            os.close(tocfno)
+        
         # Input file was a real file, we have to close it.    
         if mustclose :
             infile.close()
@@ -350,25 +372,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         # Check exit code of original CUPS backend.    
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
-        else :    
+        elif not killed :    
             self.logger.log_message(_("CUPS backend %s died abnormally.") % realbackend, "error")
             retcode = -1
+        else :    
+            retcode = self.removeJob()
         return retcode    
     
 if __name__ == "__main__" :    
     # This is a CUPS backend, we should act and die like a CUPS backend
-    
-    # first deal with signals
-    # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
-    # Fortunately SIGPIPE is already ignored by Python
-    # It's there just in case this changes in the future.
-    # Here we have to handle SIGTERM correctly, and pass
-    # it to the original backend if needed.
-    global gotSigTerm
-    gotSigTerm = 0
-    signal.signal(signal.SIGPIPE, signal.SIG_IGN)
-    signal.signal(signal.SIGTERM, sigterm_handler)
-    
     if len(sys.argv) == 1 :
         # we will execute each existing backend in device enumeration mode
         # and generate their PyKota accounting counterpart

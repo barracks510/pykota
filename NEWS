@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16beta2 :
+    
+        - Small fix for job cancelling code while job already
+          printing in CUPS backend.
+        
     - 1.16beta1 :
     
         - Manpages upgraded.
