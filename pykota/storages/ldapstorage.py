@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2004/03/02 14:39:02  jalet
+# Final fix for printers searching
+#
 # Revision 1.59  2004/03/02 14:35:46  jalet
 # Missing test when searching printer objects when these objects were manually
 # created and don't contain the pykotaPrinterName attribute
@@ -652,7 +655,7 @@ class Storage(BaseStorage) :
         result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
-                printername = fields["pykotaPrinterName"][0]
+                printername = fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0]
                 printer = StoragePrinter(self, printername)
                 printer.ident = printerid
                 printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
