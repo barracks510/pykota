@@ -455,7 +455,7 @@ policy: deny
 # directives.
 #
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
-# PYKOTACTION : ALLOW or DENY or WARN for current print job
+# PYKOTAACTION : ALLOW or DENY or WARN for current print job
 # PYKOTAUSERNAME : user's name
 # PYKOTAPRINTERNAME : printer's name
 # PYKOTAJOBID : job's id
