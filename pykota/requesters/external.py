@@ -1,6 +1,6 @@
-#! /usr/bin/env python
-
-# PyKota - Print Quotas for CUPS
+# PyKota
+#
+# PyKota - Print Quotas for CUPS and LPRng
 #
 # (c) 2003 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/04/23 22:13:57  jalet
+# Preliminary support for LPRng added BUT STILL UNTESTED.
+#
 # Revision 1.6  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.

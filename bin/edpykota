@@ -2,7 +2,7 @@
 
 # PyKota Print Quota Editor 
 #
-# PyKota - Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
 # (c) 2003 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2003/04/23 22:13:56  jalet
+# Preliminary support for LPRng added BUT STILL UNTESTED.
+#
 # Revision 1.42  2003/04/17 13:38:47  jalet
 # Docstring corrected for better manual page
 #
@@ -251,9 +254,10 @@ examples :
   on the Quota Storage Server they are automatically added. Also
   user jerome is put into the groups "coders" and "it" which must
   already exist in the Quota Storage.
-  WARNING : the CUPS PPD file for this printer must still be modified
-            manually, as well as pykota's configuration file for a
-            new printer to be managed successfully.
+  WARNING : the CUPS PPD file for this printer or the /etc/printcap
+            file (depending on your printing backend)  must still be 
+            modified manually, as well as pykota's configuration file
+            for a new printer to be managed successfully.
             
   $ edpykota -g -S 500 -H 550 financial support            
   
@@ -473,6 +477,8 @@ class EdPyKota(PyKotaTool) :
                                 groupid = self.storage.getGroupId(groupname)
                                 if groupid is not None :
                                     self.storage.addUserToGroup(ident, groupid)
+                                else :
+                                    self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
                             self.warnUserPQuota(name, printer)    
                      
 if __name__ == "__main__" : 

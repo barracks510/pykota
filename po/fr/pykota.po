@@ -1,6 +1,6 @@
 # PyKota
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
 # (c) 2003 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/04/23 22:13:57  jalet
+# Preliminary support for LPRng added BUT STILL UNTESTED.
+#
 # Revision 1.19  2003/04/23 09:58:17  jalet
 # Prices per page/job are now displayed
 #
@@ -286,8 +289,8 @@ msgstr "L'option mailto dans la section %s supporte seulement les valeurs %s"
 msgid "Configuration file %s not found."
 msgstr "Fichier de configuration %s non trouvé."
 
-msgid "User %s not registered in the PyKota system"
-msgstr "Utilisateur %s non enregistré dans le système PyKota"
+msgid "User %s not registered in the PyKota system, applying default policy (%s) for printer %s"
+msgstr "Utilisateur %s non enregistré dans le système PyKota, action par défaut (%s) appliquée sur l'imprimante %s"
 
 msgid "Invalid charge amount value %s"
 msgstr "Montant à comptabiliser %s invalide"
@@ -335,3 +338,6 @@ msgstr "Prix par job: %.3f"
 
 msgid "Price per page: %.3f"
 msgstr "Prix par page: %.3f"
+
+msgid "Group %s not found in the PyKota Storage."
+msgstr "Groupe %s non trouvé dans le Quota Storage."

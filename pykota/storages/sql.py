@@ -1,6 +1,6 @@
 # PyKota
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
 # (c) 2003 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/04/23 22:13:57  jalet
+# Preliminary support for LPRng added BUT STILL UNTESTED.
+#
 # Revision 1.28  2003/04/17 09:26:21  jalet
 # repykota now reports account balances too.
 #

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# PyKota - Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
 # (c) 2003 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2003/04/23 22:13:57  jalet
+# Preliminary support for LPRng added BUT STILL UNTESTED.
+#
 # Revision 1.34  2003/04/17 09:26:21  jalet
 # repykota now reports account balances too.
 #
@@ -182,8 +185,49 @@ class PyKotaTool :
         self.config = config.PyKotaConfig("/etc")
         self.logger = logger.openLogger(self.config)
         self.storage = storage.openConnection(self.config, asadmin=asadmin)
-        self.printername = os.environ.get("PRINTER", None)
         self.smtpserver = self.config.getSMTPServer()
+        
+    def extractInfoFromCupsOrLprng(self) :    
+        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename) depending on the printing system in use (as seen by the print filter).
+        
+           Returns (None, None, None, None, None, None) if no printing system is recognized.
+        """
+        # Try to detect CUPS
+        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
+            if len(sys.argv) == 7 :
+                inputfile = sys.argv[6]
+            else :    
+                inputfile = None
+                
+            device_uri = os.environ.get("DEVICE_URI", "")
+            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
+            try :
+                (backend, destination) = device_uri.split(":", 1) 
+            except ValueError :    
+                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
+            while destination.startswith("/") :
+                destination = destination[1:]
+            printerhostname = destination.split("/")[0].split(":")[0]
+            return ("CUPS", printerhostname, os.environ.get("PRINTER"), sys.argv[2].strip(), sys.argv[1].strip(), inputfile)
+        else :    
+            # Try to detect LPRng
+            jseen = Jseen = Pseen = nseen = rseen = None
+            for arg in sys.argv :
+                if arg.startswith("-j") :
+                    jseen = arg[2:].strip()
+                elif arg.startswith("-J") :    
+                    Jseen = arg[2:].strip()
+                    if Jseen == "(STDIN)" :
+                        Jseen = None
+                elif arg.startswith("-n") :     
+                    nseen = arg[2:].strip()
+                elif arg.startswith("-P") :    
+                    Pseen = arg[2:].strip()
+                elif arg.startswith("-r") :    
+                    rseen = arg[2:].strip()
+            if jseen and Jseen and Pseen and nseen and rseen :        
+                return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen)
+        return (None, None, None, None, None, None)   # Unknown printing system          
         
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
@@ -295,12 +339,12 @@ class PyKotaTool :
     def checkGroupPQuota(self, groupname, printername) :    
         """Checks the group quota on a printer and deny or accept the job."""
         printerid = self.storage.getPrinterId(printername)
+        policy = self.config.getPrinterPolicy(printername)
         groupid = self.storage.getGroupId(groupname)
         limitby = self.storage.getGroupLimitBy(groupid)
         if limitby == "balance" : 
             balance = self.storage.getGroupBalance(groupid)
             if balance is None :
-                policy = self.config.getPrinterPolicy(printername)
                 if policy in [None, "ALLOW"] :
                     action = "POLICY_ALLOW"
                 else :    
@@ -317,7 +361,6 @@ class PyKotaTool :
             quota = self.storage.getGroupPQuota(groupid, printerid)
             if quota is None :
                 # Unknown group or printer or combination
-                policy = self.config.getPrinterPolicy(printername)
                 if policy in [None, "ALLOW"] :
                     action = "POLICY_ALLOW"
                 else :    
@@ -372,11 +415,11 @@ class PyKotaTool :
                 
         # then we check the user's own quota
         printerid = self.storage.getPrinterId(printername)
+        policy = self.config.getPrinterPolicy(printername)
         limitby = self.storage.getUserLimitBy(userid)
         if limitby == "balance" : 
             balance = self.storage.getUserBalance(userid)
             if balance is None :
-                policy = self.config.getPrinterPolicy(printername)
                 if policy in [None, "ALLOW"] :
                     action = "POLICY_ALLOW"
                 else :    
@@ -393,7 +436,6 @@ class PyKotaTool :
             quota = self.storage.getUserPQuota(userid, printerid)
             if quota is None :
                 # Unknown user or printer or combination
-                policy = self.config.getPrinterPolicy(printername)
                 if policy in [None, "ALLOW"] :
                     action = "POLICY_ALLOW"
                 else :    
@@ -437,55 +479,53 @@ class PyKotaTool :
                         action = "ALLOW"
         return action
     
-    def warnGroupPQuota(self, groupname, printername=None) :
+    def warnGroupPQuota(self, groupname, printername) :
         """Checks a group quota and send messages if quota is exceeded on current printer."""
-        pname = printername or self.printername
-        admin = self.config.getAdmin(pname)
-        adminmail = self.config.getAdminMail(pname)
-        mailto = self.config.getMailTo(pname)
-        action = self.checkGroupPQuota(groupname, pname)
+        admin = self.config.getAdmin(printername)
+        adminmail = self.config.getAdminMail(printername)
+        mailto = self.config.getMailTo(printername)
+        action = self.checkGroupPQuota(groupname, printername)
         groupmembers = self.storage.getGroupMembersNames(groupname)
         if action.startswith("POLICY_") :
             action = action[7:]
         if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for group %s on printer %s") % (groupname, pname)
+            adminmessage = _("Print Quota exceeded for group %s on printer %s") % (groupname, printername)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             for username in groupmembers :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour group Print Quota is exceeded on printer %s.") % pname)
+                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour group Print Quota is exceeded on printer %s.") % printername)
         elif action == "WARN" :    
-            adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (groupname, pname)
+            adminmessage = _("Print Quota soft limit exceeded for group %s on printer %s") % (groupname, printername)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             for username in groupmembers :
                 if mailto in [ "BOTH", "USER" ] :
-                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour group Print Quota is almost reached on printer %s.") % pname)
+                    self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour group Print Quota is almost reached on printer %s.") % printername)
         return action        
         
-    def warnUserPQuota(self, username, printername=None) :
+    def warnUserPQuota(self, username, printername) :
         """Checks a user quota and send him a message if quota is exceeded on current printer."""
-        pname = printername or self.printername
-        admin = self.config.getAdmin(pname)
-        adminmail = self.config.getAdminMail(pname)
-        mailto = self.config.getMailTo(pname)
-        action = self.checkUserPQuota(username, pname)
+        admin = self.config.getAdmin(printername)
+        adminmail = self.config.getAdminMail(printername)
+        mailto = self.config.getMailTo(printername)
+        action = self.checkUserPQuota(username, printername)
         if action.startswith("POLICY_") :
             action = action[7:]
         if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, pname)
+            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (username, printername)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % pname)
+                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s.") % printername)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
-            adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, pname)
+            adminmessage = _("Print Quota soft limit exceeded for user %s on printer %s") % (username, printername)
             self.logger.log_message(adminmessage)
             if mailto in [ "BOTH", "USER" ] :
-                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % pname)
+                self.sendMessageToUser(admin, adminmail, username, _("Print Quota Exceeded"), _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printername)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        
