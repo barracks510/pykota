@@ -255,8 +255,11 @@ utolower: No
 #         An example using the contributed pagecount.pl script which does 
 #         the same as above, but should work on more printers : 
 #         
-#             accounter: hardware(/usr/share/pykota/pagecount.pl %(printer)s 9100)
+#             accounter: hardware(LC_ALL=C /usr/share/pykota/pagecount.pl %(printer)s 9100)
 #         
+#         NB : the LC_ALL=C is used because sometimes Perl can correctly set locale and is verbose
+#              about it, causing PyKota to miss the correct answer.
+#
 #         WARNING : In any case, when using an hardware accounter, please test the command line outside
 #                   of PyKota before. This will save you some headaches in case it doesn't work as expected.
 #         
