@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2003/04/15 13:06:39  jalet
+# Allow to add a printer without any user
+#
 # Revision 1.34  2003/04/11 16:51:11  jalet
 # Bug fix for edpykota --add with users who already had a quota on the printer.
 #
@@ -237,6 +240,7 @@ class EdPyKota(PyKotaTool) :
     """A class for edpykota."""
     def main(self, names, options) :
         """Edit user or group quotas."""
+        printeradded = 0
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
             pname = options["printer"]
@@ -244,6 +248,7 @@ class EdPyKota(PyKotaTool) :
                 if self.isValidName(pname) :
                     printerid = self.storage.addPrinter(pname)
                     printers = [ (printerid, pname) ]
+                    printeradded = 1
                 else :    
                     raise PyKotaToolError, _("Invalid printer name %s") % pname
             else :
@@ -264,7 +269,7 @@ class EdPyKota(PyKotaTool) :
             self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
             (softlimit, hardlimit) = (hardlimit, softlimit)
         if not names :    
-            if options["add"] :
+            if options["add"] and not printeradded :
                 raise PyKotaToolError, _("You have to pass user names on the command line")
             else :    
                 names = [ "*" ] # all users
