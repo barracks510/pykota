@@ -531,6 +531,7 @@ policy: deny
 # of external commands defined in the accounter and mailto 
 # directives.
 #
+# PYKOTAMD5SUM : Contains an hexadecimal digest of the md5 sum of the job's datas
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
 # PYKOTAACTION : ALLOW or DENY or WARN for current print job
 # PYKOTAUSERNAME : user's name
@@ -552,8 +553,8 @@ policy: deny
 # PYKOTASTATUS : contains "CANCELLED" when SIGTERM was received by PyKota
 #                else is not set.
 # PYKOTAJOBSIZEBYTES : contains the job's size in bytes. Always available.
-# PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size
-# PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price
+# PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size (with enforcement: strict)
+# PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price (with enforcement: strict)
 # PYKOTAJOBORIGINATINGHOSTNAME : contains the client's hostname if 
 #                                it is possible to retrieve it.
 # PYKOTAPRINTERHOSTNAME : the printer's hostname or IP address for network
@@ -580,7 +581,7 @@ policy: deny
 # PYKOTAPHASE contains 'AFTER' during execution of posthook.
 #
 # uncomment the line below to see what environment variables are available
-#posthook: /usr/bin/printenv >/tmp/after
+posthook: /usr/bin/printenv >/tmp/after
 
 # How should enforcement be done for this printer ?
 #
