@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.102  2005/02/25 14:31:07  jalet
+# Improved robustness
+#
 # Revision 1.101  2005/02/13 22:48:37  jalet
 # Added the md5sum to the history
 #
@@ -634,7 +637,7 @@ class Storage(BaseStorage) :
             ldapfilter = "(&(%s)(pykotaUserName=%s))" % (ldapfilter, username)
         result = self.doSearch(ldapfilter, ["pykotaUserName"], base=self.info["userbase"])
         if result :
-            usernames = [record[1]["pykotaUserName"][0] for record in result]
+            usernames = filter(None, [record[1].get("pykotaUserName", [None])[0] for record in result])
         return usernames
         
     def getAllGroupsNames(self, groupname=None) :    
