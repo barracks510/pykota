@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2003/07/04 09:06:32  jalet
+# Small bug fix wrt undefined "LimitBy" field.
+#
 # Revision 1.42  2003/06/30 12:46:15  jalet
 # Extracted reporting code.
 #
@@ -330,7 +333,7 @@ class PyKotaTool :
         """Checks the group quota on a printer and deny or accept the job."""
         group = grouppquota.Group
         printer = grouppquota.Printer
-        if group.LimitBy.lower() == "balance" : 
+        if group.LimitBy and (group.LimitBy.lower() == "balance") : 
             # TODO : there's no warning (no account balance soft limit)
             if float(group.AccountBalance) <= 0.0 :
                 action = "DENY"
@@ -388,7 +391,7 @@ class PyKotaTool :
                 
         # then we check the user's own quota
         policy = self.config.getPrinterPolicy(printer.Name)
-        if user.LimitBy.lower() == "balance" : 
+        if user.LimitBy and (user.LimitBy.lower() == "balance") : 
             if user.AccountBalance is None :
                 if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
