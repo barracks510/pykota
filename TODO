@@ -23,7 +23,10 @@ TODO, in no particular order :
 
         - Add an MD5 checksum of the job's datas to the
           history, to be able to discover duplicate print
-          jobs.
+          jobs. This is partially done : the checksum 
+          is now computed and exported into the environment
+          variable PYKOTAMD5SUM, but it is not yet saved 
+          into the database.
           
         - Maybe put "gracedelay" in the database.
         
