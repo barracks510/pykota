@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2004/01/12 14:52:03  jalet
+# Cuts the date string
+#
 # Revision 1.23  2004/01/12 14:35:01  jalet
 # Printing history added to CGI script.
 #
@@ -267,7 +270,7 @@ class PyKotaReportGUI(PyKotaTool) :
                         oddevenclass = "deny"
                     elif job.JobAction == "WARN" :    
                         oddevenclass = "warn"
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate, job.User.Name, job.Printer.Name, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobAction)])))
+                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (job.JobDate[:19], job.User.Name, job.Printer.Name, job.PrinterPageCounter, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobTitle, job.JobFileName, job.JobOptions, job.JobAction)])))
                 self.report.append('</table>')
                 dico = { "history" : 1,
                          "datelimit" : job.JobDate,
