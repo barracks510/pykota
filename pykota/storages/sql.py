@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2004/10/02 13:33:13  jalet
+# Some work done of user's charset handling in database dumps.
+#
 # Revision 1.48  2004/10/02 05:48:56  jalet
 # Should now correctly deal with charsets both when storing into databases and when
 # retrieving datas. Works with both PostgreSQL and LDAP.
@@ -77,6 +80,7 @@
 #
 #
 
+from types import StringType
 from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 class SQLStorage :
@@ -85,6 +89,17 @@ class SQLStorage :
         if result.ntuples() > 0 :
             entries = [result.listfields()]
             entries.extend(result.getresult())
+            #nbfields = len(entries[0])
+            #for i in range(1, len(entries)) :
+            #    fields = list(entries[i])
+            #    for j in range(nbfields) :
+            #        field = fields[j]
+            #        if type(field) == StringType :
+            #            try :
+            #                fields[j] = field.decode("UTF-8").encode(self.tool.getCharset()) 
+            #            except UnicodeEncodeError : # takes care of old jobs in history not stored as UTF-8    
+            #                pass
+            #    entries[i] = tuple(fields)    
             return entries
         
     def extractPrinters(self) :
