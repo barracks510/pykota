@@ -616,14 +616,10 @@ msgid "You have to pass printer names on the command line"
 msgstr "Vous devez passer des noms d'imprimantes sur la ligne de commande"
 
 msgid "Software accounting already done in first pass. Exiting."
-msgstr "Décompte logiciel déjà effectué durant la première passe. Sortie."
+msgstr "Décompte logiciel déjà effectué durant la première phase. Sortie."
 
-msgid ""
-"Hardware accounting already finished ! This should be impossible, please "
-"report this problem ASAP."
-msgstr ""
-"Décompte matériel déjà fini ! Cela devrait être impossible, merci de "
-"rapporter ce problème dès que possible."
+msgid "Hardware accounting already done in first pass. Exiting."
+msgstr "Décompte matériel déjà effectué durant la première phase. Sortie."
 
 #, python-format
 msgid "Invalid DeviceURI : %s"
