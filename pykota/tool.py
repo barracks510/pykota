@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/04/16 08:53:14  jalet
+# Printing can now be limited either by user's account balance or by
+# page quota (the default). Quota report doesn't include account balance
+# yet, though.
+#
 # Revision 1.31  2003/04/15 11:30:57  jalet
 # More work done on money print charging.
 # Minor bugs corrected.
@@ -285,51 +290,68 @@ class PyKotaTool :
         """Checks the user quota on a printer and deny or accept the job."""
         printerid = self.storage.getPrinterId(printername)
         userid = self.storage.getUserId(username)
-        quota = self.storage.getUserPQuota(userid, printerid)
-        if quota is None :
-            # Unknown user or printer or combination
-            policy = self.config.getPrinterPolicy(printername)
-            if policy in [None, "ALLOW"] :
-                action = "POLICY_ALLOW"
-            else :    
-                action = "POLICY_DENY"
-            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action))
-        else :    
-            pagecounter = quota["pagecounter"]
-            softlimit = quota["softlimit"]
-            hardlimit = quota["hardlimit"]
-            datelimit = quota["datelimit"]
-            if softlimit is not None :
-                if pagecounter < softlimit :
-                    action = "ALLOW"
+        limitby = self.storage.getUserLimitBy(userid)
+        if limitby == "balance" : 
+            balance = self.storage.getUserBalance(userid)
+            if balance is None :
+                policy = self.config.getPrinterPolicy(printername)
+                if policy in [None, "ALLOW"] :
+                    action = "POLICY_ALLOW"
                 else :    
-                    if hardlimit is None :
-                        # only a soft limit, this is equivalent to having only a hard limit
-                        action = "DENY"
-                    else :    
-                        if softlimit <= pagecounter < hardlimit :    
-                            now = DateTime.now()
-                            if datelimit is not None :
-                                datelimit = DateTime.ISO.ParseDateTime(datelimit)
-                            else :
-                                datelimit = now + self.config.getGraceDelay(printername)
-                                self.storage.setUserDateLimit(userid, printerid, datelimit)
-                            if now < datelimit :
-                                action = "WARN"
-                            else :    
-                                action = "DENY"
-                        else :         
-                            action = "DENY"
-            else :        
-                if hardlimit is not None :
-                    # no soft limit, only a hard one.
-                    if pagecounter < hardlimit :
-                        action = "ALLOW"
-                    else :      
-                        action = "DENY"
-                else :
-                    # Both are unset, no quota, i.e. accounting only
+                    action = "POLICY_DENY"
+                self.logger.log_message(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (username, action, printername))
+            else :    
+                # TODO : there's no warning (no account balance soft limit)
+                if balance <= 0.0 :
+                    action = "DENY"
+                else :    
                     action = "ALLOW"
+        else :
+            quota = self.storage.getUserPQuota(userid, printerid)
+            if quota is None :
+                # Unknown user or printer or combination
+                policy = self.config.getPrinterPolicy(printername)
+                if policy in [None, "ALLOW"] :
+                    action = "POLICY_ALLOW"
+                else :    
+                    action = "POLICY_DENY"
+                self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action))
+            else :    
+                pagecounter = quota["pagecounter"]
+                softlimit = quota["softlimit"]
+                hardlimit = quota["hardlimit"]
+                datelimit = quota["datelimit"]
+                if softlimit is not None :
+                    if pagecounter < softlimit :
+                        action = "ALLOW"
+                    else :    
+                        if hardlimit is None :
+                            # only a soft limit, this is equivalent to having only a hard limit
+                            action = "DENY"
+                        else :    
+                            if softlimit <= pagecounter < hardlimit :    
+                                now = DateTime.now()
+                                if datelimit is not None :
+                                    datelimit = DateTime.ISO.ParseDateTime(datelimit)
+                                else :
+                                    datelimit = now + self.config.getGraceDelay(printername)
+                                    self.storage.setUserDateLimit(userid, printerid, datelimit)
+                                if now < datelimit :
+                                    action = "WARN"
+                                else :    
+                                    action = "DENY"
+                            else :         
+                                action = "DENY"
+                else :        
+                    if hardlimit is not None :
+                        # no soft limit, only a hard one.
+                        if pagecounter < hardlimit :
+                            action = "ALLOW"
+                        else :      
+                            action = "DENY"
+                    else :
+                        # Both are unset, no quota, i.e. accounting only
+                        action = "ALLOW"
         return action
     
     def warnGroupPQuota(self, username, printername=None) :

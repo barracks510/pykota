@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/04/16 08:53:14  jalet
+# Printing can now be limited either by user's account balance or by
+# page quota (the default). Quota report doesn't include account balance
+# yet, though.
+#
 # Revision 1.25  2003/04/15 21:58:33  jalet
 # edpykota now accepts a --delete option.
 # Preparation to allow edpykota to accept much more command line options
@@ -230,6 +235,22 @@ class SQLStorage :
         result = self.doQuery("SELECT balance FROM users WHERE id=%s" % self.doQuote(userid))
         try :
             return self.doParseResult(result)[0]["balance"]
+        except TypeError :      # Not found    
+            return
+        
+    def getUserLimitBy(self, userid) :    
+        """Returns the way in which user printing is limited."""
+        result = self.doQuery("SELECT limitby FROM users WHERE id=%s" % self.doQuote(userid))
+        try :
+            return self.doParseResult(result)[0]["limitby"]
+        except TypeError :      # Not found    
+            return
+        
+    def getGroupLimitBy(self, groupid) :    
+        """Returns the way in which group printing is limited."""
+        result = self.doQuery("SELECT limitby FROM groups WHERE id=%s" % self.doQuote(groupid))
+        try :
+            return self.doParseResult(result)[0]["limitby"]
         except TypeError :      # Not found    
             return
         

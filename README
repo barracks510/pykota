@@ -68,6 +68,19 @@ Actual working features :
         - Complete job history is saved. This will allow more
           complex reports in the future.
           
+        - Price per page and price per job can be defined for  
+          every printers. A job's price is the sum of the
+          price per job for this printer plus the number of
+          pages multiplied by the price per page for this
+          printer.
+          
+        - User's account balance and lifetime paid money are now
+          stored in the Quota Storage, and account balance can be
+          used to limit the user printing instead of a print quota.
+          Actually you can limit either by account balance OR by
+          print quota, but maybe both should be checked at the 
+          same time. Tell me what you prefer.
+          
 All the command line tools accept the -h | --help command line option
 which prints all the available options and show usage examples.
         

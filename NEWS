@@ -67,7 +67,7 @@ PyKota NEWS :
           4L/5L/6L, not perfect, but better than nothing.
           See http://web.mit.edu/source/third/lprng/doc/LPRng-HOWTO-15.html
           For a more accurate accounting, never switch your HP printers
-          off.
+          off. This is untested, please report any problem.
           
         - A bug was fixed when edpykota --add was used with users who already
           had a quota on the specified printer.
@@ -79,6 +79,9 @@ PyKota NEWS :
         
         - Support for AppleTalk printers was added, see sample configuration
           file for details.
+          
+        - Users and group printing can now be controlled (limited) either by  
+          print quota or by account balance.
         
     - 1.02 :
     

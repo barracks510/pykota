@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/04/16 08:53:14  jalet
+# Printing can now be limited either by user's account balance or by
+# page quota (the default). Quota report doesn't include account balance
+# yet, though.
+#
 # Revision 1.16  2003/04/16 08:22:09  jalet
 # More strict error detection.
 # Minor code rewrite to avoid some repetitive tests.
@@ -269,4 +274,7 @@ msgid "Invalid balance value %s"
 msgstr ""
 
 msgid "Invalid limitby value %s"
+msgstr ""
+
+msgid "Unable to find user %s's account balance, applying default policy (%s) for printer %s"
 msgstr ""
