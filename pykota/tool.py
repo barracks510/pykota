@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2003/10/24 21:52:46  jalet
+# Now can force language when coming from CGI script.
+#
 # Revision 1.53  2003/10/08 21:41:38  jalet
 # External policies for printers works !
 # We can now auto-add users on first print, and do other useful things if needed.
@@ -234,14 +237,15 @@ class PyKotaToolError(Exception):
     
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, lang=None, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
         try :
-            locale.setlocale(locale.LC_ALL, "")
+            locale.setlocale(locale.LC_ALL, lang)
             gettext.install("pykota")
         except (locale.Error, IOError) :
             gettext.NullTranslations().install()
+            sys.stderr.write("PyKota : Error while loading translations\n")
     
         # pykota specific stuff
         self.documentation = doc
