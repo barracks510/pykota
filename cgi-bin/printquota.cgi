@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2004/10/02 13:47:46  jalet
+# The CGI script doesn't depend anymore on what is in the submit button
+# to display the print quota report.
+#
 # Revision 1.37  2004/10/02 05:48:56  jalet
 # Should now correctly deal with charsets both when storing into databases and when
 # retrieving datas. Works with both PostgreSQL and LDAP.
@@ -153,7 +157,7 @@ from pykota.reporter import PyKotaReporterError, openReporter
 
 header = """Content-type: text/html
 
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="%s"?>
 <html>
   <head>
     <title>%s</title>
@@ -176,7 +180,7 @@ header = """Content-type: text/html
         </tr>
         <tr>
           <td colspan="3" align="center">
-            <input type="submit" name="action" value="%s" />
+            <input type="submit" name="report" value="%s" />
           </td>
         </tr>
       </table>"""
@@ -185,7 +189,7 @@ footer = """
       <table>
         <tr>
           <td colspan="3" align="center">
-            <input type="submit" name="action" value="%s" />
+            <input type="submit" name="report" value="%s" />
           </td>
         </tr>
       </table>  
@@ -210,7 +214,7 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (_("PyKota Reports"), version.__version__, _("PyKota Reports"), _("Report"))
+        print header % (self.getCharset(), _("PyKota Reports"), version.__version__, _("PyKota Reports"), _("Report"))
         print self.body
         print footer % _("Report")
         
@@ -247,44 +251,40 @@ class PyKotaReportGUI(PyKotaTool) :
         """Main function"""
         printers = ugmask = isgroup = None
         self.body = "<p>Please click on the button above</p>\n"
-        if self.form.has_key("action") :
-            action = self.form["action"].value
-            if action == _("Report") :
-                if self.form.has_key("printers") :
-                    printersfield = self.form["printers"]
-                    if type(printersfield) != type([]) :
-                        printersfield = [ printersfield ]
-                    printers = [self.storage.getPrinter(p.value) for p in printersfield]
-                else :    
-                    printers = self.storage.getMatchingPrinters("*")
-                remuser = os.environ.get("REMOTE_USER", "root")    
-                
-                # special hack to accomodate mod_auth_ldap Apache module
-                try :
-                    remuser = remuser.split("=")[1].split(",")[0]
-                except IndexError :    
-                    pass
-                
-                if remuser == "root" :
-                    if self.form.has_key("ugmask") :     
-                        ugmask = self.form["ugmask"].value
-                    else :     
-                        ugmask = "*"
-                else :        
-                    if self.form.has_key("isgroup") :    
-                        user = self.storage.getUser(remuser)
-                        if user.Exists :
-                            ugmask = " ".join([ g.Name for g in self.storage.getUserGroups(user) ])
-                        else :    
-                            ugmask = remuser # result will probably be empty, we don't care
-                    else :    
-                        ugmask = remuser
+        if self.form.has_key("report") :
+            if self.form.has_key("printers") :
+                printersfield = self.form["printers"]
+                if type(printersfield) != type([]) :
+                    printersfield = [ printersfield ]
+                printers = [self.storage.getPrinter(p.value) for p in printersfield]
+            else :    
+                printers = self.storage.getMatchingPrinters("*")
+            remuser = os.environ.get("REMOTE_USER", "root")    
+            
+            # special hack to accomodate mod_auth_ldap Apache module
+            try :
+                remuser = remuser.split("=")[1].split(",")[0]
+            except IndexError :    
+                pass
+            
+            if remuser == "root" :
+                if self.form.has_key("ugmask") :     
+                    ugmask = self.form["ugmask"].value
+                else :     
+                    ugmask = "*"
+            else :        
                 if self.form.has_key("isgroup") :    
-                    isgroup = 1
+                    user = self.storage.getUser(remuser)
+                    if user.Exists :
+                        ugmask = " ".join([ g.Name for g in self.storage.getUserGroups(user) ])
+                    else :    
+                        ugmask = remuser # result will probably be empty, we don't care
                 else :    
-                    isgroup = 0
-            else :
-                self.error("Invalid action [%s]" % action)
+                    ugmask = remuser
+            if self.form.has_key("isgroup") :    
+                isgroup = 1
+            else :    
+                isgroup = 0
         self.body += self.htmlListPrinters(printers or [])            
         self.body += "<br />"
         self.body += self.htmlUGNamesInput(ugmask)
