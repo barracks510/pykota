@@ -158,9 +158,9 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.21 NAME 'pykotaCopies'
 # pykotaOptions        
 attributetype ( 1.3.6.1.4.1.16868.1.1.22 NAME 'pykotaOptions'
         DESC 'Print job options'
-        EQUALITY caseExactIA5Match
-        SUBSTR caseExactIA5SubstringsMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
         
 # pykotaJobPrice
 attributetype ( 1.3.6.1.4.1.16868.1.1.23 NAME 'pykotaJobPrice'

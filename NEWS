@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha9 :
        
+        - pykotaOptions LDAP attribute now accepts non-ascii characters
+          too.
+          
         - First try at cupspykota main loop rewrite
         
     - 1.19alpha8 :
