@@ -66,7 +66,8 @@ msgstr ""
 
 #, python-format
 msgid "Option enforcement in section %s only supports values in %s"
-msgstr "L'option enforcement pour l'imprimante %s supporte seulement les valeurs %s"
+msgstr ""
+"L'option enforcement pour l'imprimante %s supporte seulement les valeurs %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -240,7 +241,9 @@ msgstr "Système d'impression %s, args=%s"
 
 #, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "Impossible de pré-calculer la taille du travail d'impression avec l'analyzeur générique de PDL : %s"
+msgstr ""
+"Impossible de pré-calculer la taille du travail d'impression avec "
+"l'analyzeur générique de PDL : %s"
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
@@ -365,7 +368,8 @@ msgstr "Impossible de calculer la taille du job avec le compteur %s"
 
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "Problème détecté en attendant que le compteur software pid %s se termine : %s"
+msgstr ""
+"Problème détecté en attendant que le compteur software pid %s se termine : %s"
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
@@ -376,8 +380,8 @@ msgid ""
 "Search base %s doesn't seem to exist. Probable misconfiguration. Please "
 "double check /etc/pykota/pykota.conf : %s"
 msgstr ""
-"La base de recherche %s semble être inexistante. Probablement une mauvaise configuration. "
-"Merci de vérifier /etc/pykota/pykota.conf : %s"
+"La base de recherche %s semble être inexistante. Probablement une mauvaise "
+"configuration. Merci de vérifier /etc/pykota/pykota.conf : %s"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
@@ -400,12 +404,14 @@ msgid ""
 "Unable to find an existing objectClass %s entry with %s=%s to attach "
 "pykotaAccount objectClass"
 msgstr ""
-"Impossible de trouver une entrée existante ayant pour objectClass %s avec %s=%s à laquelle attacher "
-"une objectClass pykotaAccount"
+"Impossible de trouver une entrée existante ayant pour objectClass %s avec %s="
+"%s à laquelle attacher une objectClass pykotaAccount"
 
 #, python-format
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr "Impossible de trouver une entrée existante à laquelle attacher l'objectClass pykotaGroup %s"
+msgstr ""
+"Impossible de trouver une entrée existante à laquelle attacher l'objectClass "
+"pykotaGroup %s"
 
 msgid "PyKota Reports"
 msgstr "Rapports de Quotas d'Impression PyKota"
@@ -468,7 +474,8 @@ msgid "Options"
 msgstr "Options"
 
 msgid "Job contains no data. Printing is denied."
-msgstr "Le travail d'impression ne contient aucune donnée. L'impression est rejetée."
+msgstr ""
+"Le travail d'impression ne contient aucune donnée. L'impression est rejetée."
 
 msgid "Job accounting begins."
 msgstr "Début du décompte pour le travail d'impression"
@@ -477,7 +484,8 @@ msgid "Job accounting ends."
 msgstr "Fin du décompte pour le travail d'impression"
 
 msgid "Job size forced to 0 because printing is denied."
-msgstr "Taille du travail d'impression forcée à 0 car l'impression est rejetée."
+msgstr ""
+"Taille du travail d'impression forcée à 0 car l'impression est rejetée."
 
 #, python-format
 msgid "Job size : %i"
@@ -601,7 +609,8 @@ msgid "in"
 msgstr "dans"
 
 msgid "You have to pass printer groups names on the command line"
-msgstr "Vous devez passer des noms de groupes d'imprimantes sur la ligne de commande"
+msgstr ""
+"Vous devez passer des noms de groupes d'imprimantes sur la ligne de commande"
 
 msgid "You have to pass printer names on the command line"
 msgstr "Vous devez passer des noms d'imprimantes sur la ligne de commande"
@@ -613,8 +622,8 @@ msgid ""
 "Hardware accounting already finished ! This should be impossible, please "
 "report this problem ASAP."
 msgstr ""
-"Décompte matériel déjà fini ! Cela devrait être impossible, merci "
-"de rapporter ce problème dès que possible."
+"Décompte matériel déjà fini ! Cela devrait être impossible, merci de "
+"rapporter ce problème dès que possible."
 
 #, python-format
 msgid "Invalid DeviceURI : %s"
@@ -625,12 +634,12 @@ msgid ""
 "Please wait while pkhint analyzes your printing system's configuration..."
 msgstr ""
 "\n"
-"Merci de patienter pendant que pkhint analyse la configuration de votre système d'impression..."
+"Merci de patienter pendant que pkhint analyse la configuration de votre "
+"système d'impression..."
 
 #, python-format
 msgid "Unknown device %s for printer %s"
 msgstr "Périphérique %s inconnu pour l'imprimante %s"
-
 
 msgid ""
 "\n"
@@ -640,13 +649,18 @@ msgstr ""
 "Mettez les lignes suivantes dans votre fichier /etc/pykota/pykota.conf :\n"
 
 msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
-msgstr "# ATTENTION : si le décompte software est suggéré, cela ne veut pas dire"
+msgstr ""
+"# ATTENTION : si le décompte software est suggéré, cela ne veut pas dire"
 
 msgid "# that hardware accounting wouldn't work, this only means that PyKota"
-msgstr "# que le décompte hardware ne fonctionnerait pas, cela veut seulement dire que PyKota"
+msgstr ""
+"# que le décompte hardware ne fonctionnerait pas, cela veut seulement dire "
+"que PyKota"
 
 msgid "# wasn't able to autodetect which hardware accounting method to use."
-msgstr "# n'a pas été capable de détecter automatiquement quelle méthode de décompte hardware utiliser."
+msgstr ""
+"# n'a pas été capable de détecter automatiquement quelle méthode de décompte "
+"hardware utiliser."
 
 #, python-format
 msgid "Invalid duration option %s"
@@ -687,4 +701,3 @@ msgstr "Taille du job : %i pages"
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr "Coût sur l'imprimante %s : %.2f"
-
