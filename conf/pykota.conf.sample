@@ -222,12 +222,13 @@ utolower: No
 #
 #    - hardware : asks the printer for its lifetime page counter
 #                 via either SNMP, AppleTalk, or any external
-#                 command. This method is the method used by
-#                 default in PyKota since its beginning.
+#                 command. This method is the recommended one
+#                 in PyKota since its beginning.
 #
 #                 In the lines below "%(printer)s" is automatically replaced
 #                 at run time with your printer's Fully Qualified Domain Name
-#                 for network printers.
+#                 for network printers, if PyKota can extract it from its 
+#                 environment.
 #                 e.g. myprinter.example.com
 #
 #         Recommended values :
@@ -358,6 +359,9 @@ accounter: software(/usr/bin/pkpgcounter)
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
+#
+# NB : This directive shouldn't do much now because in case
+# of external accounter error, PyKota just loops.
 #
 # onaccountererror: continue
 onaccountererror: stop
