@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.93  2004/06/02 21:51:02  jalet
+# Moved the sigterm capturing elsewhere
+#
 # Revision 1.92  2004/06/02 13:21:38  jalet
 # Debug message added
 #
@@ -809,6 +812,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.accounter = accounter.openAccounter(self)
         self.exportJobInfo()
         self.jobdatastream = self.openJobDataStream()
+        self.logdebug("Capturing SIGTERM events.")
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
         
     def openJobDataStream(self) :    
         """Opens the file which contains the job's datas."""

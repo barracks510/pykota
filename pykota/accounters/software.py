@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/06/02 21:51:14  jalet
+# Moved the sigterm capturing elsewhere
+#
 # Revision 1.3  2004/05/24 22:45:49  jalet
 # New 'enforcement' directive added
 # Polling loop improvements
@@ -70,7 +73,7 @@ class Accounter(AccounterBase) :
         try :
             retcode = child.wait()
         except OSError, msg :    
-            self.filter.logger.log_message(_("Problem while waiting for software accounter pid %s to exit") % child.pid)
+            self.filter.logger.log_message(_("Problem while waiting for software accounter pid %s to exit : %s") % (child.pid, msg))
         else :    
             if os.WIFEXITED(retcode) :
                 status = os.WEXITSTATUS(retcode)

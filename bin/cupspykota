@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2004/06/02 21:50:56  jalet
+# Moved the sigterm capturing elsewhere
+#
 # Revision 1.55  2004/06/02 14:25:07  jalet
 # Should correctly capture ALL errors now
 #
@@ -462,9 +465,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             infno = None
             endinput = 1
         
-        self.logdebug("Capturing SIGTERM events.")
-        signal.signal(signal.SIGTERM, self.sigterm_handler)
-        
         self.logdebug("Entering streams polling loop...")
         MEGABYTE = 1024*1024
         killed = 0
@@ -479,7 +479,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 try :
                     os.kill(subprocess.pid, signal.SIGTERM)
                 except OSError, msg : # ignore but logs if process was already killed.
-                    self.logdebug("Error while sending signal to pid %s" % subprocess.pid)
+                    self.logdebug("Error while sending signal to pid %s : %s" % (subprocess.pid, msg))
                 else :    
                     self.logger.log_message(_("SIGTERM was sent to real backend %s (pid: %s)") % (realbackend, subprocess.pid), "info")
                     killed = 1
@@ -590,9 +590,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         
         self.logdebug("Exiting streams polling loop...")
         
-        self.logdebug("Ignoring SIGTERM again.")
-        signal.signal(signal.SIGTERM, signal.SIG_IGN)
-            
         # Check exit code of original CUPS backend.    
         if status == -1 :
             # we exited the loop before the real backend exited
