@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha16 :
+    
+        - fixed several recently introduced bugs in LDAP backend code,
+          thanks to Matt Hyclak.
+          
     - 1.21alpha15 :
       
         - Normalized field names between LDAP and PostgreSQL backends

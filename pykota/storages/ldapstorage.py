@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.93  2004/12/31 16:10:57  jalet
+# Fixed recently introduced bugs due to extended userquotabase and groupquotabase
+# directives.
+#
 # Revision 1.92  2004/12/26 14:50:51  jalet
 # Normalized fields names in dumpykota's output so that an LDAP or PostgreSQL
 # dump is parseable the same way.
@@ -701,9 +705,10 @@ class Storage(BaseStorage) :
         userpquota = StorageUserPQuota(self, user, printer)
         if printer.Exists and user.Exists :
             if self.info["userquotabase"].lower() == "user" :
-                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=user.ident)
+                base = user.ident
             else :    
-                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
+                base = self.info["userquotabase"]
+            result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=base)
             if result :
                 fields = result[0][1]
                 userpquota.ident = result[0][0]
@@ -735,9 +740,10 @@ class Storage(BaseStorage) :
         grouppquota = StorageGroupPQuota(self, group, printer)
         if group.Exists :
             if self.info["groupquotabase"].lower() == "group" :
-                result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=group.ident)
+                base = group.ident
             else :    
-                result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["groupquotabase"])
+                base = self.info["groupquotabase"]
+            result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=base)
             if result :
                 fields = result[0][1]
                 grouppquota.ident = result[0][0]
@@ -764,7 +770,11 @@ class Storage(BaseStorage) :
                 usernamesfilter = "".join(["(pykotaUserName=%s)" % member.Name for member in self.getGroupMembers(group)])
                 if usernamesfilter :
                     usernamesfilter = "(|%s)" % usernamesfilter
-                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)%s)" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=self.info["userquotabase"])
+                if self.info["userquotabase"].lower() == "user" :
+                    base = self.info["userbase"]
+                else :
+                    base = self.info["userquotabase"]
+                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)%s)" % (printer.Name, usernamesfilter), ["pykotaPageCounter", "pykotaLifePageCounter"], base=base)
                 if result :
                     for userpquota in result :    
                         grouppquota.PageCounter += int(userpquota[1].get("pykotaPageCounter", [0])[0] or 0)
@@ -884,7 +894,11 @@ class Storage(BaseStorage) :
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
-        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaUserName=%s)" % uname for uname in names])), ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
+        if self.info["userquotabase"].lower() == "user" :
+           base = self.info["userbase"]
+        else :
+           base = self.info["userquotabase"]
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaUserName=%s)" % uname for uname in names])), ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=base)
         if result :
             for (userquotaid, fields) in result :
                 user = self.getUser(fields.get("pykotaUserName")[0])
@@ -919,7 +933,11 @@ class Storage(BaseStorage) :
     def getPrinterGroupsAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of groups which uses a given printer, along with their quotas."""
         groupsandquotas = []
-        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaGroupName=%s)" % gname for gname in names])), ["pykotaGroupName"], base=self.info["groupquotabase"])
+        if self.info["groupquotabase"].lower() == "group" :
+           base = self.info["groupbase"]
+        else :
+           base = self.info["groupquotabase"]
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaGroupName=%s)" % gname for gname in names])), ["pykotaGroupName"], base=base)
         if result :
             for (groupquotaid, fields) in result :
                 group = self.getGroup(fields.get("pykotaGroupName")[0])
@@ -1327,8 +1345,11 @@ class Storage(BaseStorage) :
         result = self.doSearch("(&(objectClass=pykotaJob)(pykotaUserName=%s))" % user.Name, base=self.info["jobbase"])
         for (ident, fields) in result :
             todelete.append(ident)
-            
-        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s))" % user.Name, ["pykotaPrinterName", "pykotaUserName"], base=self.info["userquotabase"])
+        if self.info["userquotabase"].lower() == "user" :
+            base = self.info["userbase"]
+        else :
+            base = self.info["userquotabase"]
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s))" % user.Name, ["pykotaPrinterName", "pykotaUserName"], base=base)
         for (ident, fields) in result :
             # ensure the user print quota entry will be deleted
             todelete.append(ident)
@@ -1368,7 +1389,11 @@ class Storage(BaseStorage) :
         
     def deleteGroup(self, group) :    
         """Completely deletes a group from the Quota Storage."""
-        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s))" % group.Name, ["pykotaGroupName"], base=self.info["groupquotabase"])
+        if self.info["groupquotabase"].lower() == "group" :
+            base = self.info["groupbase"]
+        else :
+            base = self.info["groupquotabase"]
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s))" % group.Name, ["pykotaGroupName"], base=base)
         for (ident, fields) in result :
             self.doDelete(ident)
         result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)    
@@ -1399,10 +1424,18 @@ class Storage(BaseStorage) :
         result = self.doSearch("(&(objectClass=pykotaJob)(pykotaPrinterName=%s))" % printer.Name, base=self.info["jobbase"])
         for (ident, fields) in result :
             self.doDelete(ident)
-        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s))" % printer.Name, base=self.info["groupquotabase"])
+        if self.info["groupquotabase"].lower() == "group" :
+            base = self.info["groupbase"]
+        else :
+            base = self.info["groupquotabase"]
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s))" % printer.Name, base=base)
         for (ident, fields) in result :
             self.doDelete(ident)
-        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s))" % printer.Name, base=self.info["userquotabase"])
+        if self.info["userquotabase"].lower() == "user" :
+            base = self.info["userbase"]
+        else :
+            base = self.info["userquotabase"]
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s))" % printer.Name, base=base)
         for (ident, fields) in result :
             self.doDelete(ident)
         for parent in self.getParentPrinters(printer) :  
