@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/06/10 22:42:06  jalet
+# Better messages in logs
+#
 # Revision 1.4  2004/05/24 22:45:49  jalet
 # New 'enforcement' directive added
 # Polling loop improvements
@@ -102,13 +105,15 @@ class Accounter(AccounterBase) :
         commandline = self.arguments.strip() % locals()
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
+        self.filter.logger.log_message(_("Launching HARDWARE(%s)...") % commandline, "info")
         error = 1
         pagecounter = None
         child = popen2.Popen4(commandline)    
         try :
-            pagecounter = int(child.fromchild.readline().strip())
+            line = child.fromchild.readline()
+            pagecounter = int(line.strip())
         except ValueError :    
-            pass
+            self.filter.logger.log_message(_("Incorrect answer : %s") % repr(line), "error")
         except IOError :    
             # we were interrupted by a signal, certainely a SIGTERM
             # caused by the user cancelling the current job

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/06/10 22:42:06  jalet
+# Better messages in logs
+#
 # Revision 1.4  2004/06/02 21:51:14  jalet
 # Moved the sigterm capturing elsewhere
 #
@@ -45,7 +48,7 @@ from pykota.accounter import AccounterBase, PyKotaAccounterError
 class Accounter(AccounterBase) :
     def computeJobSize(self) :    
         """Feeds an external command with our datas to let it compute the job size, and return its value."""
-        self.filter.logdebug("Launching software accounter %s" % self.arguments)
+        self.filter.logger.log_message(_("Launching SOFTWARE(%s)...") % self.arguments, "info")
         MEGABYTE = 1024*1024
         self.filter.jobdatastream.seek(0)
         child = popen2.Popen4(self.arguments)
