@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.66  2004/05/28 20:56:45  jalet
+# Extended syntax for LDAP specific newuser and newgroup directives. Untested.
+#
 # Revision 1.65  2004/05/27 12:52:12  jalet
 # More useful error message in case of misconfiguration of an LDAP  search base
 # in pykota.conf
@@ -761,13 +764,23 @@ class Storage(BaseStorage) :
             newfields.update({self.info["usermail"]: user.Email})
         mustadd = 1
         if self.info["newuser"].lower() != 'below' :
-            result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (self.info["newuser"], self.info["userrdn"], user.Name), None, base=self.info["userbase"])
+            try :
+                (where, action) = [s.strip() for s in self.info["newuser"].split(",")]
+            except ValueError :
+                (where, action) = (self.info["newuser"].strip(), "fail")
+            result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (where, self.info["userrdn"], user.Name), None, base=self.info["userbase"])
             if result :
                 (dn, fields) = result[0]
                 fields["objectClass"].extend(["pykotaAccount", "pykotaAccountBalance"])
                 fields.update(newfields)
                 self.doModify(dn, fields)
                 mustadd = 0
+            else :
+                message = _("Unable to find an existing entry to attach pykotaAccount objectclass %s") % user.Name
+                if action.lower() == "warn" :    
+                    self.tool.logger.log_message("%s. A new entry will be created instead." % message, "warn")
+                else : # 'fail' or incorrect setting
+                    raise PyKotaStorageError, "%s. Action aborted. Please check your configuration." % message
                 
         if mustadd :
             fields = { self.info["userrdn"] : user.Name,
@@ -787,13 +800,23 @@ class Storage(BaseStorage) :
                     } 
         mustadd = 1
         if self.info["newgroup"].lower() != 'below' :
-            result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (self.info["newgroup"], self.info["grouprdn"], group.Name), None, base=self.info["groupbase"])
+            try :
+                (where, action) = [s.strip() for s in self.info["newgroup"].split(",")]
+            except ValueError :
+                (where, action) = (self.info["newgroup"].strip(), "fail")
+            result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (where, self.info["grouprdn"], group.Name), None, base=self.info["groupbase"])
             if result :
                 (dn, fields) = result[0]
                 fields["objectClass"].extend(["pykotaGroup"])
                 fields.update(newfields)
                 self.doModify(dn, fields)
                 mustadd = 0
+            else :
+                message = _("Unable to find an existing entry to attach pykotaGroup objectclass %s") % group.Name
+                if action.lower() == "warn" :    
+                    self.tool.logger.log_message("%s. A new entry will be created instead." % message, "warn")
+                else : # 'fail' or incorrect setting
+                    raise PyKotaStorageError, "%s. Action aborted. Please check your configuration." % message
                 
         if mustadd :
             fields = { self.info["grouprdn"] : group.Name,

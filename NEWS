@@ -24,6 +24,12 @@ PyKota NEWS :
 
     - 1.19alpha16 :
     
+        - the newuser and newgroup LDAP specific directives now accept
+          a second parameter to attach(), "fail" or "warn". If no entry
+          is found to attach PyKota attributes to, and "fail" was used,
+          then action is aborted and program exits in error. If "warn"
+          is used, a new entry is created but a warning message is logged.
+          
         - The job's originating hostname is now stored in the database,
           and exported as PYKOTAJOBORIGINATINGHOSTNAME in the environment.
         
