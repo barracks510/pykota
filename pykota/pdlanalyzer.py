@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2004/06/27 22:59:37  jalet
+# More work on PCLXL parser
+#
 # Revision 1.17  2004/06/26 23:20:01  jalet
 # Additionnal speedup for GhostScript generated PCL5 files
 #
@@ -262,18 +265,30 @@ class PCLXLAnalyzer :
                 break
             if line[1:12] == " HP-PCL XL;" :
                 found = 1
-                if line[0] == ")" :
+                endian = ord(line[0])
+                if endian == 0x29 :
                     self.littleendian()
-                elif line[0] == "(" :    
+                elif endian == 0x28 :    
                     self.bigendian()
+                else :    
+                    raise PDLAnalyzerError, "No endianness marker 0x%02x at start !" % endian
         if not found :
             raise PDLAnalyzerError, "This file doesn't seem to be PCLXL (aka PCL6)"
         else :    
             self.tags = [ self.skipped ] * 256    
-            self.tags[0x28] = self.bigendian    # big endian
-            self.tags[0x29] = self.littleendian # big endian
+            self.tags[0x27] = lambda: self.debug("%08x : ASCII Binding" % self.infile.tell())
+            self.tags[0x28] = self.bigendian 
+            self.tags[0x29] = self.littleendian
+            
+            self.tags[0x41] = lambda: self.debug("%08x : BeginSession" % self.infile.tell())
+            self.tags[0x42] = lambda: self.debug("%08x : EndSession" % self.infile.tell())
+            
             self.tags[0x43] = self.beginPage    # BeginPage
             self.tags[0x44] = self.endPage      # EndPage
+            
+            self.tags[0x47] = lambda: self.debug("%08x : Comment" % self.infile.tell())
+            self.tags[0x48] = lambda: self.debug("%08x : OpenDataSource" % self.infile.tell())
+            self.tags[0x49] = lambda: self.debug("%08x : CloseDataSource" % self.infile.tell())
             
             self.tags[0xc0] = lambda: self.debug("%08x : ubyte" % self.infile.tell()) or 1 # ubyte
             self.tags[0xc1] = lambda: self.debug("%08x : uint16" % self.infile.tell()) or 2 # uint16
@@ -384,8 +399,17 @@ class PCLXLAnalyzer :
         else :    
             fmt = ">I"
         pos = self.infile.tell()
-        val = struct.unpack(fmt, self.infile.read(4))[0]
-        self.debug("%08x : Large datablock length : 0x%04x" % (self.infile.tell()-4, val))
+        data = self.infile.read(4)
+        val = struct.unpack(fmt, data)[0]
+        if val & 0xff000000 : # tries to detect possible errors when we missed an indianness tag maybe
+            if fmt == "<I" :
+                fmt = ">I"
+            else :    
+                fmt = "<I"
+            val = struct.unpack(fmt, data)[0]
+        self.debug("%08x : Large datablock length : 0x%08x" % (self.infile.tell()-4, val))
+        self.debug("Endian : %i" % self.islittleendian) 
+        self.debug("Data read : %s" % str(["0x%02x" % ord(x) for x in data]))
         return val
         
     def littleendian(self) :        
