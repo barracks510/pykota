@@ -188,6 +188,16 @@ NB :
   
     http://webcrossing.macosxlabs.org/webx?14@30.QAu3a5k0c4z.7@.26bf4661
 
+  You may also find the following document interesting :
+  
+    http://es.tldp.org/Tutoriales/doc-openldap-samba-cups-python/
+    
+  This document, written in Spanish by Sergio Gonzalez Gonzalez,  
+  describes the integration of PyKota into an OpenLDAP + Samba
+  + CUPS installation. Even for people who can't read spanish 
+  this document is really interesting, and contains lots of
+  screenshots.
+  
 Prerequisite : 
 --------------
    
