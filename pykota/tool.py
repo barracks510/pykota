@@ -561,7 +561,6 @@ import tempfile
 import md5
 import ConfigParser
 import popen2
-import cStringIO
 
 from mx import DateTime
 
