@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/02/06 23:20:03  jalet
+# warnpykota doesn't need any user/group name argument, mimicing the
+# warnquota disk quota tool.
+#
 # Revision 1.11  2003/02/06 15:05:13  jalet
 # self was forgotten
 #
@@ -70,6 +74,24 @@ class SQLStorage :
                     printerslist.append(printer["printername"])
         return printerslist        
             
+    def getPrinterUsers(self, printername) :        
+        """Returns the list of usernames which uses a given printer."""
+        result = self.doQuery("SELECT DISTINCT username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid IN (SELECT printerid FROM printers WHERE printername=%s));" % self.doQuote(printername))
+        result = result.doParseResult(result)
+        if result is None :
+            return []
+        else :    
+            return [record["username"] for record in result]
+        
+    def getPrinterGroups(self, printername) :        
+        """Returns the list of groups which uses a given printer."""
+        result = self.doQuery("SELECT DISTINCT groupname FROM groups WHERE id IN (SELECT groupid FROM grouppquota WHERE printerid IN (SELECT printerid FROM printers WHERE printername=%s));" % self.doQuote(printername))
+        result = result.doParseResult(result)
+        if result is None :
+            return []
+        else :    
+            return [record["groupname"] for record in result]
+        
     def getUserId(self, username) :
         """Returns a userid given a username."""
         result = self.doQuery("SELECT id FROM users WHERE username=%s;" % self.doQuote(username))

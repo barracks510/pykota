@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/02/06 23:20:02  jalet
+# warnpykota doesn't need any user/group name argument, mimicing the
+# warnquota disk quota tool.
+#
 # Revision 1.11  2003/02/06 22:54:33  jalet
 # warnpykota should be ok
 #
@@ -93,7 +97,7 @@ class PyKotaTool :
         print self.documentation
         sys.exit(0)
         
-    def parseCommandline(self, argv, short, long) :
+    def parseCommandline(self, argv, short, long, allownothing=0) :
         """Parses the command line, controlling options."""
         # split options in two lists: those which need an argument, those which don't need any
         withoutarg = []
@@ -145,7 +149,7 @@ class PyKotaTool :
                     else :
                         # should never occur
                         raise PyKotaToolError, "Unexpected problem when parsing command line"
-            elif (not args) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
+            elif (not args) and (not allownothing) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
                 self.display_usage_and_quit()
         except getopt.error, msg :
             sys.stderr.write("%s\n" % msg)
