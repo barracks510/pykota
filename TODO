@@ -21,11 +21,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in order of importance :
 
+        - Add full support for printer groups, now that we know
+          how simple it is to do so :-)
+          
+        - Documentation...
+          
+        - Find a way to fill the 'email' field in the PgStorage.
+          Should we write to it too in the LDAPStorage ?
+          
         - Complete web administrative interface with graphical reports.
        
         - Group administrators (think quotagrpdmins for disk quotas).
+          Won't be implemented for now.
         
-        - Documentation...
         
 ============================================================
 
