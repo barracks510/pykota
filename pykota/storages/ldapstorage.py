@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2003/11/26 23:35:32  jalet
+# Added a bit of code to support the setting of the user's email address
+# which was ignored during writes for now.
+#
 # Revision 1.38  2003/11/24 09:54:06  jalet
 # Small fix for LDAP when pykotaOptions attribute wasn't present.
 #
@@ -557,6 +561,8 @@ class Storage(BaseStorage) :
                        "pykotaBalance" : str(user.AccountBalance or 0.0),
                        "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),
                     }   
+        if user.Email :
+            newfields.update({self.info["usermail"]: user.Email})
         mustadd = 1
         if self.info["newuser"].lower() != 'below' :
             result = self.doSearch("(&(objectClass=%s)(%s=%s))" % (self.info["newuser"], self.info["userrdn"], user.Name), None, base=self.info["userbase"])
