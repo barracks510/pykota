@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2004/09/02 23:30:05  jalet
+# Comments
+#
 # Revision 1.38  2004/09/02 22:08:37  jalet
 # First draft of PCL3GUI analyzer.
 #
@@ -319,7 +322,7 @@ class PCLAnalyzer :
                      ")s" : "W", 
                      "&p" : "X", 
                      "&l" : "XH",
-                     "&a" : "G",
+                     "&a" : "G", # TODO : 0 means next side, 1 front side, 2 back side
                      "*g" : "W",
                      # "*b" : "VW", # treated specially because it occurs very often
                    }  
@@ -429,7 +432,7 @@ class PCL3GUIAnalyzer :
            definitely lacks.
         """
         data = self.infile.read()
-        pagecount = data.count("\033*r1A")
+        pagecount = data.count("\033*r1A") # TODO : Allowed values 0, 1, 2, 3 after *r
         return pagecount
         
 class PCLXLAnalyzer :
