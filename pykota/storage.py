@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/03/24 15:15:24  jalet
+# Began integration of Henrik Janhagen's work on quota-then-balance
+# and balance-then-quota
+#
 # Revision 1.50  2004/03/09 08:05:27  jalet
 # Small fix : only keeps existing quota entries when searching parents
 #
@@ -234,7 +238,7 @@ class StorageUser(StorageObject) :
             limitby = limitby.lower()
         except AttributeError :    
             limitby = "quota"
-        if limitby in ["quota", "balance"] :
+        if limitby in ["quota", "balance", "quota-then-balance", "balance-then-quota"] :
             self.parent.writeUserLimitBy(self, limitby)
             self.LimitBy = limitby
         

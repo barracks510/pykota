@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.71  2004/03/24 15:15:24  jalet
+# Began integration of Henrik Janhagen's work on quota-then-balance
+# and balance-then-quota
+#
 # Revision 1.70  2004/02/27 09:23:21  jalet
 # Minor code reorganisation
 #
@@ -319,7 +323,8 @@ options :
   -l | --limitby l     Choose if the user/group is limited in printing                     
                        by its account balance or by its page quota.
                        The default value is 'quota'. Allowed values
-                       are 'quota' and 'balance'.
+                       are 'quota' 'balance' 'quota-then-balance' and
+                       'balance-then-quota'.
                        
   -b | --balance b     Sets the user's account balance to b.                     
                        Account balance may be increase or decreased
@@ -466,7 +471,7 @@ class EdPyKota(PyKotaTool) :
         limitby = options["limitby"]
         if limitby :
             limitby = limitby.strip().lower()
-        if limitby and (limitby not in ('quota', 'balance')) :    
+        if limitby and (limitby not in ('quota', 'balance', 'quota-then-balance', 'balance-then-quota')) :    
             raise PyKotaToolError, _("Invalid limitby value %s") % options["limitby"]
             
         if options["ingroups"] :    

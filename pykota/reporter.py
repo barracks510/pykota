@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/03/24 15:15:24  jalet
+# Began integration of Henrik Janhagen's work on quota-then-balance
+# and balance-then-quota
+#
 # Revision 1.7  2004/01/08 14:10:32  jalet
 # Copyright year changed.
 #
@@ -95,7 +99,8 @@ class BaseReporter :
         pagecounter = int(quota.PageCounter or 0)
         balance = float(entry.AccountBalance or 0.0)
         lifetimepaid = float(entry.LifeTimePaid or 0.0)
-        
+	
+        #balance
         if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
             if balance <= 0 :
                 datelimit = "DENY"
@@ -106,6 +111,68 @@ class BaseReporter :
             else :    
                 datelimit = ""
                 reached = "-B"
+
+        #balance-then-quota
+        elif entry.LimitBy and (entry.LimitBy.lower() == "balance-then-quota") :
+            if balance <= 0 :
+                if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :
+                    datelimit = "DENY"
+                elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
+                    datelimit = "DENY"
+                elif quota.DateLimit is not None :
+                    now = DateTime.now()
+                    datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
+                    if now >= datelimit :
+                        datelimit = "QUOTA_DENY"
+                else :
+                    datelimit = ""
+                reached = ( ((datelimit == "DENY" ) and "+B") or "-Q")
+                datelimit = ( ((datelimit == "QUOTA_DENY") and "DENY") or datelimit)
+            elif balance <= self.tool.config.getPoorMan() :
+                if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :
+                    datelimit = "WARNING"
+                elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
+                    datelimit = "WARNING"
+                elif quota.DateLimit is not None :
+                    now = DateTime.now()
+                    datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
+                    if now >= datelimit :
+                        datelimit = "QUOTA_DENY"
+                else :
+                    datelimit = ""
+                reached = ( ((datelimit == "WARNING" ) and "?B") or "+Q")
+                datelimit = ( ((datelimit == "QUOTA_DENY") and "WARNING") or datelimit)
+            else :
+                datelimit = ""
+                reached = "-B"
+
+        #Quota-then-balance
+        elif entry.LimitBy and (entry.LimitBy.lower() == "quota-then-balance") :
+            if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :
+                datelimit = "DENY"
+            elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
+                datelimit = "DENY"
+            elif quota.DateLimit is not None :
+                now = DateTime.now()
+                datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
+                if now >= datelimit :
+                    datelimit = "DENY"
+            else :
+                datelimit = ""
+                
+            reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
+
+            if (datelimit == "DENY") and (reached == "-Q") and (balance > self.tool.config.getPoorMan()) :
+                datelimit = ""
+                reached = "-B"
+            else :
+                reached = (((datelimit == "DENY") and (self.tool.config.getPoorMan() < balance ) and "-B") or reached)
+                if (datelimit == "DENY") and (self.tool.config.getPoorMan() < balance) :
+                    datelimit = ""
+                reached = (((datelimit == "DENY") and (0.0 < balance <= self.tool.config.getPoorMan()) and "?B") or reached)
+                datelimit = (((datelimit == "DENY") and (0.0 < balance <= self.tool.config.getPoorMan()) and "WARNING") or datelimit)
+
+        #Quota
         else :
             if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
                 datelimit = "DENY"
