@@ -62,8 +62,6 @@ TODO, in no particular order :
           to allow/deny accounting of the banner itself
           (not sure because may be VERY DIFFICULT !)
           
-        - Improve waitprinter.sh
-        
         - Think about some possible client <=> PyKota dialog
           possibilities, like embedding a small web server in
           PyKota for example, or something like that.
