@@ -22,6 +22,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 Documentation for the pykota-postgresql.sql script :
 ----------------------------------------------------
 
+This script is to be used to create an empty Quota Storage
+DataBase using PostgreSQL as a backend.
+
+If you have already installed PyKota, and have datas in your
+Quota Storage DataBase, you may prefer to  skip this section
+and read the next one.
+
         - Launch the psql frontend and connect to the
           database template1 as a PostgreSQL administrator
           (i.e. the postgres user) :
@@ -40,3 +47,25 @@ Documentation for the pykota-postgresql.sql script :
           for use.
         
 ============================================================
+
+Upgrade script :
+
+  An sql script to upgrade a pre-1.01 PyKota Quota Storage 
+  DataBase is included, if you want to keep your datas from
+  a pre-1.01 PyKota version, then please launch the above
+  procedure but with the pykota-upgrade-postgresql.sql script
+  instead of the pykota-postgresql.sql script.
+  
+  If you already run PyKota v1.01 or above, you don't need
+  to run this upgrade script.
+  
+IMPORTANT :
+
+  Because the modifications are just about Group Print Quotas
+  and because Group Print Quotas are currently not fully   
+  implemented, you can delay the launch of this upgrade
+  script until you really need Group Print Quotas.
+  In other terms, running this script is not mandatory
+  for PyKota to continue to work correctly, at least
+  until Group Print Quotas will be fully implemented.
+  
