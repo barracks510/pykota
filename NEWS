@@ -23,7 +23,8 @@ PyKota NEWS :
 
     - 1.16alpha23 :
     
-        - Fixed concurrent access potential accounting accuracy problem.
+        - Fixed potential accuracy problem if a user printed on
+          several printers at the very same time.
         
     - 1.16alpha22 :
     
