@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2004/01/12 14:44:47  jalet
+# Missing space in SQL query
+#
 # Revision 1.32  2004/01/12 14:35:02  jalet
 # Printing history added to CGI script.
 #
@@ -546,7 +549,7 @@ class Storage(BaseStorage) :
         if datelimit is not None :    
             where.append("jobdate<=%s" % self.doQuote(datelimit))
         if where :    
-            query += "WHERE %s" % " AND ".join(where)
+            query += " WHERE %s" % " AND ".join(where)
         query += " ORDER BY id DESC"
         if limit :
             query += " LIMIT %s" % self.doQuote(int(limit))
