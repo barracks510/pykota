@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/10/02 20:23:18  jalet
+# Storage caching mechanism added.
+#
 # Revision 1.25  2003/08/20 15:56:24  jalet
 # Better user and group deletion
 #
@@ -115,8 +118,7 @@
 import time
 import md5
 
-from pykota.storage import PyKotaStorageError
-from pykota.storage import StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 try :
     import ldap
@@ -126,13 +128,11 @@ except ImportError :
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the python-ldap module installed correctly." % sys.version.split()[0]
     
-class Storage :
+class Storage(BaseStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the LDAP connection."""
         # raise PyKotaStorageError, "Sorry, the LDAP backend for PyKota is not yet implemented !"
-        self.closed = 1
-        self.tool = pykotatool
-        self.debug = pykotatool.config.getDebug()
+        BaseStorage.__init__(self, pykotatool)
         self.info = pykotatool.config.getLDAPInfo()
         try :
             self.database = ldap.initialize(host) 
@@ -144,20 +144,14 @@ class Storage :
             raise PyKotaStorageError, "Unable to connect to LDAP server %s as %s." % (host, user) # TODO : translate
         else :    
             self.closed = 0
-            if self.debug :
-                self.tool.logger.log_message("Database opened (host=%s, dbname=%s, user=%s)" % (host, dbname, user), "debug")
+            self.tool.logdebug("Database opened (host=%s, dbname=%s, user=%s)" % (host, dbname, user))
             
-    def __del__(self) :        
-        """Ensures that the database connection is closed."""
-        self.close()
-        
     def close(self) :    
         """Closes the database connection."""
         if not self.closed :
             del self.database
             self.closed = 1
-            if self.debug :
-                self.tool.logger.log_message("Database closed.", "debug")
+            self.tool.logdebug("Database closed.")
         
     def genUUID(self) :    
         """Generates an unique identifier.
@@ -168,38 +162,32 @@ class Storage :
         
     def beginTransaction(self) :    
         """Starts a transaction."""
-        if self.debug :
-            self.tool.logger.log_message("Transaction begins... WARNING : No transactions in LDAP !", "debug")
+        self.tool.logdebug("Transaction begins... WARNING : No transactions in LDAP !")
         
     def commitTransaction(self) :    
         """Commits a transaction."""
-        if self.debug :
-            self.tool.logger.log_message("Transaction committed. WARNING : No transactions in LDAP !", "debug")
+        self.tool.logdebug("Transaction committed. WARNING : No transactions in LDAP !")
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
-        if self.debug :
-            self.tool.logger.log_message("Transaction aborted. WARNING : No transaction in LDAP !", "debug")
+        self.tool.logdebug("Transaction aborted. WARNING : No transaction in LDAP !")
         
     def doSearch(self, key, fields=None, base="", scope=ldap.SCOPE_SUBTREE) :
         """Does an LDAP search query."""
         try :
             base = base or self.basedn
-            if self.debug :
-                self.tool.logger.log_message("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields), "debug")
+            self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
             result = self.database.search_s(base or self.basedn, scope, key, fields)
         except ldap.LDAPError :    
             raise PyKotaStorageError, _("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)
         else :     
-            if self.debug :
-                self.tool.logger.log_message("QUERY : Result : %s" % result, "debug")
+            self.tool.logdebug("QUERY : Result : %s" % result)
             return result
             
     def doAdd(self, dn, fields) :
         """Adds an entry in the LDAP directory."""
         try :
-            if self.debug :
-                self.tool.logger.log_message("QUERY : ADD(%s, %s)" % (dn, str(fields)), "debug")
+            self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
             self.database.add_s(dn, modlist.addModlist(fields))
         except ldap.LDAPError :
             raise PyKotaStorageError, _("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))
@@ -209,8 +197,7 @@ class Storage :
     def doDelete(self, dn) :
         """Deletes an entry from the LDAP directory."""
         try :
-            if self.debug :
-                self.tool.logger.log_message("QUERY : Delete(%s)" % dn, "debug")
+            self.tool.logdebug("QUERY : Delete(%s)" % dn)
             self.database.delete_s(dn)
         except ldap.LDAPError :
             raise PyKotaStorageError, _("Problem deleting LDAP entry (%s)") % dn
@@ -219,15 +206,14 @@ class Storage :
         """Modifies an entry in the LDAP directory."""
         try :
             oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)
-            if self.debug :
-                self.tool.logger.log_message("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields), "debug")
+            self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry[0][1], fields))
             self.database.modify_s(dn, modlist.modifyModlist(oldentry[0][1], fields, ignore_oldexistent=ignoreold))
         except ldap.LDAPError :
             raise PyKotaStorageError, _("Problem modifying LDAP entry (%s, %s)") % (dn, fields)
         else :
             return dn
             
-    def getUser(self, username) :    
+    def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
         result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaLimitBy", self.info["usermail"]], base=self.info["userbase"])
@@ -261,7 +247,7 @@ class Storage :
             user.Exists = 1
         return user
        
-    def getGroup(self, groupname) :    
+    def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
         result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaLimitBy"], base=self.info["groupbase"])
@@ -281,7 +267,7 @@ class Storage :
             group.Exists = 1
         return group
        
-    def getPrinter(self, printername) :        
+    def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
         printer = StoragePrinter(self, printername)
         result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
@@ -293,26 +279,8 @@ class Storage :
             printer.LastJob = self.getPrinterLastJob(printer)
             printer.Exists = 1
         return printer    
-            
-    def getUserGroups(self, user) :        
-        """Returns the user's groups list."""
-        groups = []
-        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"]], base=self.info["groupbase"])
-        if result :
-            for (groupid, fields) in result :
-                groups.append(self.getGroup(fields.get(self.info["grouprdn"])[0]))
-        return groups        
         
-    def getGroupMembers(self, group) :        
-        """Returns the group's members list."""
-        groupmembers = []
-        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (group.Name, self.info["grouprdn"], group.Name), [self.info["groupmembers"]], base=self.info["groupbase"])
-        if result :
-            for username in result[0][1].get(self.info["groupmembers"], []) :
-                groupmembers.append(self.getUser(username))
-        return groupmembers        
-        
-    def getUserPQuota(self, user, printer) :        
+    def getUserPQuotaFromBackend(self, user, printer) :        
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
         if user.Exists :
@@ -343,7 +311,7 @@ class Storage :
                 userpquota.Exists = 1
         return userpquota
         
-    def getGroupPQuota(self, group, printer) :        
+    def getGroupPQuotaFromBackend(self, group, printer) :        
         """Extracts a group print quota."""
         grouppquota = StorageGroupPQuota(self, group, printer)
         if group.Exists :
@@ -382,7 +350,7 @@ class Storage :
                 grouppquota.Exists = 1
         return grouppquota
         
-    def getPrinterLastJob(self, printer) :        
+    def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
         lastjob = StorageLastJob(self, printer)
         result = self.doSearch("(&(objectClass=pykotaLastjob)(|(pykotaPrinterName=%s)(%s=%s)))" % (printer.Name, self.info["printerrdn"], printer.Name), ["pykotaLastJobIdent"], base=self.info["lastjobbase"])
@@ -408,6 +376,24 @@ class Storage :
                 lastjob.JobDate = "%04i-%02i-%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
                 lastjob.Exists = 1
         return lastjob
+        
+    def getUserGroups(self, user) :        
+        """Returns the user's groups list."""
+        groups = []
+        result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], user.Name), [self.info["grouprdn"]], base=self.info["groupbase"])
+        if result :
+            for (groupid, fields) in result :
+                groups.append(self.getGroup(fields.get(self.info["grouprdn"])[0]))
+        return groups        
+        
+    def getGroupMembers(self, group) :        
+        """Returns the group's members list."""
+        groupmembers = []
+        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (group.Name, self.info["grouprdn"], group.Name), [self.info["groupmembers"]], base=self.info["groupbase"])
+        if result :
+            for username in result[0][1].get(self.info["groupmembers"], []) :
+                groupmembers.append(self.getUser(username))
+        return groupmembers        
         
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers for which name matches a certain pattern."""

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2003/10/02 20:23:18  jalet
+# Storage caching mechanism added.
+#
 # Revision 1.19  2003/07/16 21:53:07  jalet
 # Really big modifications wrt new configuration file's location and content.
 #
@@ -297,6 +300,86 @@ class StorageLastJob(StorageObject) :
         self.parent.writeLastJobSize(self, jobsize)
         self.JobSize = jobsize
     
+class BaseStorage :
+    def __init__(self, pykotatool) :
+        """Opens the LDAP connection."""
+        # raise PyKotaStorageError, "Sorry, the LDAP backend for PyKota is not yet implemented !"
+        self.closed = 1
+        self.tool = pykotatool
+        self.usecache = pykotatool.config.getCaching()
+        if self.usecache :
+            self.tool.logdebug("Caching enabled.")
+            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }
+        
+    def __del__(self) :        
+        """Ensures that the database connection is closed."""
+        self.close()
+        
+    def getFromCache(self, cachetype, key) :
+        """Tries to extract something from the cache."""
+        if self.usecache :
+            entry = self.caches[cachetype].get(key)
+            if entry is not None :
+                self.tool.logdebug("Cache hit (%s->%s)" % (cachetype, key))
+            else :    
+                self.tool.logdebug("Cache miss (%s->%s)" % (cachetype, key))
+            return entry    
+            
+    def cacheEntry(self, cachetype, key, value) :        
+        """Puts an entry in the cache."""
+        if self.usecache :
+            self.caches[cachetype][key] = value
+            
+    def getUser(self, username) :        
+        """Returns the user from cache."""
+        user = self.getFromCache("USERS", username)
+        if user is None :
+            user = self.getUserFromBackend(username)
+            self.cacheEntry("USERS", username, user)
+        return user    
+        
+    def getGroup(self, groupname) :        
+        """Returns the group from cache."""
+        group = self.getFromCache("GROUPS", groupname)
+        if group is None :
+            group = self.getGroupFromBackend(groupname)
+            self.cacheEntry("GROUPS", groupname, group)
+        return group    
+        
+    def getPrinter(self, printername) :        
+        """Returns the printer from cache."""
+        printer = self.getFromCache("PRINTERS", printername)
+        if printer is None :
+            printer = self.getPrinterFromBackend(printername)
+            self.cacheEntry("PRINTERS", printername, printer)
+        return printer    
+        
+    def getUserPQuota(self, user, printer) :        
+        """Returns the user quota information from cache."""
+        useratprinter = "%s@%s" % (user.Name, printer.Name)
+        upquota = self.getFromCache("USERPQUOTAS", useratprinter)
+        if upquota is None :
+            upquota = self.getUserPQuotaFromBackend(user, printer)
+            self.cacheEntry("USERPQUOTAS", useratprinter, upquota)
+        return upquota    
+        
+    def getGroupPQuota(self, group, printer) :        
+        """Returns the group quota information from cache."""
+        groupatprinter = "%s@%s" % (group.Name, printer.Name)
+        gpquota = self.getFromCache("GROUPPQUOTAS", groupatprinter)
+        if gpquota is None :
+            gpquota = self.getGroupPQuotaFromBackend(group, printer)
+            self.cacheEntry("GROUPPQUOTAS", groupatprinter, gpquota)
+        return gpquota    
+        
+    def getPrinterLastJob(self, printer) :        
+        """Extracts last job information for a given printer from cache."""
+        lastjob = self.getFromCache("LASTJOBS", printer.Name)
+        if lastjob is None :
+            lastjob = self.getPrinterLastJobFromBackend(printer)
+            self.cacheEntry("LASTJOBS", printer.Name, lastjob)
+        return lastjob    
+        
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
     backendinfo = pykotatool.config.getStorageBackend()

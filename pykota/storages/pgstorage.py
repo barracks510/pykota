@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2003/10/02 20:23:18  jalet
+# Storage caching mechanism added.
+#
 # Revision 1.12  2003/08/17 14:20:25  jalet
 # Bug fix by Oleg Biteryakov
 #
@@ -63,8 +66,7 @@
 #
 #
 
-from pykota.storage import PyKotaStorageError
-from pykota.storage import StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
 
 try :
     import pg
@@ -73,12 +75,10 @@ except ImportError :
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PygreSQL module installed correctly." % sys.version.split()[0]
 
-class Storage :
+class Storage(BaseStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the PostgreSQL database connection."""
-        self.tool = pykotatool
-        self.debug = pykotatool.config.getDebug()
-        self.closed = 1
+        BaseStorage.__init__(self, pykotatool)
         try :
             (host, port) = host.split(":")
             port = int(port)
@@ -91,38 +91,29 @@ class Storage :
             raise PyKotaStorageError, msg
         else :    
             self.closed = 0
-            if self.debug :
-                self.tool.logger.log_message("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user), "debug")
+            self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
             
-    def __del__(self) :        
-        """Ensures that the database connection is closed."""
-        self.close()
-        
     def close(self) :    
         """Closes the database connection."""
         if not self.closed :
             self.database.close()
             self.closed = 1
-            if self.debug :
-                self.tool.logger.log_message("Database closed.", "debug")
+            self.tool.logdebug("Database closed.")
         
     def beginTransaction(self) :    
         """Starts a transaction."""
         self.database.query("BEGIN;")
-        if self.debug :
-            self.tool.logger.log_message("Transaction begins...", "debug")
+        self.tool.logdebug("Transaction begins...")
         
     def commitTransaction(self) :    
         """Commits a transaction."""
         self.database.query("COMMIT;")
-        if self.debug :
-            self.tool.logger.log_message("Transaction committed.", "debug")
+        self.tool.logdebug("Transaction committed.")
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.database.query("ROLLBACK;")
-        if self.debug :
-            self.tool.logger.log_message("Transaction aborted.", "debug")
+        self.tool.logdebug("Transaction aborted.")
         
     def doSearch(self, query) :
         """Does a search query."""
@@ -130,8 +121,7 @@ class Storage :
         if not query.endswith(';') :    
             query += ';'
         try :
-            if self.debug :
-                self.tool.logger.log_message("QUERY : %s" % query, "debug")
+            self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
         except pg.error, msg :    
             raise PyKotaStorageError, msg
@@ -145,8 +135,7 @@ class Storage :
         if not query.endswith(';') :    
             query += ';'
         try :
-            if self.debug :
-                self.tool.logger.log_message("QUERY : %s" % query, "debug")
+            self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
         except pg.error, msg :    
             raise PyKotaStorageError, msg
@@ -163,7 +152,7 @@ class Storage :
             typ = "text"
         return pg._quote(field, typ)
         
-    def getUser(self, username) :    
+    def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
         result = self.doSearch("SELECT * FROM users WHERE username=%s LIMIT 1" % self.doQuote(username))
@@ -177,7 +166,7 @@ class Storage :
             user.Exists = 1
         return user
        
-    def getGroup(self, groupname) :    
+    def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
         result = self.doSearch("SELECT * FROM groups WHERE groupname=%s LIMIT 1" % self.doQuote(groupname))
@@ -193,7 +182,7 @@ class Storage :
             group.Exists = 1
         return group
        
-    def getPrinter(self, printername) :        
+    def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
         printer = StoragePrinter(self, printername)
         result = self.doSearch("SELECT * FROM printers WHERE printername=%s LIMIT 1" % self.doQuote(printername))
@@ -205,6 +194,57 @@ class Storage :
             printer.LastJob = self.getPrinterLastJob(printer)
             printer.Exists = 1
         return printer    
+        
+    def getUserPQuotaFromBackend(self, user, printer) :        
+        """Extracts a user print quota."""
+        userpquota = StorageUserPQuota(self, user, printer)
+        if user.Exists :
+            result = self.doSearch("SELECT id, lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
+            if result :
+                fields = result[0]
+                userpquota.ident = fields.get("id")
+                userpquota.PageCounter = fields.get("pagecounter")
+                userpquota.LifePageCounter = fields.get("lifepagecounter")
+                userpquota.SoftLimit = fields.get("softlimit")
+                userpquota.HardLimit = fields.get("hardlimit")
+                userpquota.DateLimit = fields.get("datelimit")
+                userpquota.Exists = 1
+        return userpquota
+        
+    def getGroupPQuotaFromBackend(self, group, printer) :        
+        """Extracts a group print quota."""
+        grouppquota = StorageGroupPQuota(self, group, printer)
+        if group.Exists :
+            result = self.doSearch("SELECT id, softlimit, hardlimit, datelimit FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
+            if result :
+                fields = result[0]
+                grouppquota.ident = fields.get("id")
+                grouppquota.SoftLimit = fields.get("softlimit")
+                grouppquota.HardLimit = fields.get("hardlimit")
+                grouppquota.DateLimit = fields.get("datelimit")
+                result = self.doSearch("SELECT SUM(lifepagecounter) AS lifepagecounter, SUM(pagecounter) AS pagecounter FROM userpquota WHERE printerid=%s AND userid IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % (self.doQuote(printer.ident), self.doQuote(group.ident)))
+                if result :
+                    fields = result[0]
+                    grouppquota.PageCounter = fields.get("pagecounter")
+                    grouppquota.LifePageCounter = fields.get("lifepagecounter")
+                grouppquota.Exists = 1
+        return grouppquota
+        
+    def getPrinterLastJobFromBackend(self, printer) :        
+        """Extracts a printer's last job information."""
+        lastjob = StorageLastJob(self, printer)
+        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobdate FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
+        if result :
+            fields = result[0]
+            lastjob.ident = fields.get("id")
+            lastjob.JobId = fields.get("jobid")
+            lastjob.User = self.getUser(fields.get("username"))
+            lastjob.PrinterPageCounter = fields.get("pagecounter")
+            lastjob.JobSize = fields.get("jobsize")
+            lastjob.JobAction = fields.get("action")
+            lastjob.JobDate = fields.get("jobdate")
+            lastjob.Exists = 1
+        return lastjob
             
     def getUserGroups(self, user) :        
         """Returns the user's groups list."""
@@ -230,57 +270,6 @@ class Storage :
                 user.Exists = 1
                 groupmembers.append(user)
         return groupmembers        
-        
-    def getUserPQuota(self, user, printer) :        
-        """Extracts a user print quota."""
-        userpquota = StorageUserPQuota(self, user, printer)
-        if user.Exists :
-            result = self.doSearch("SELECT id, lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
-            if result :
-                fields = result[0]
-                userpquota.ident = fields.get("id")
-                userpquota.PageCounter = fields.get("pagecounter")
-                userpquota.LifePageCounter = fields.get("lifepagecounter")
-                userpquota.SoftLimit = fields.get("softlimit")
-                userpquota.HardLimit = fields.get("hardlimit")
-                userpquota.DateLimit = fields.get("datelimit")
-                userpquota.Exists = 1
-        return userpquota
-        
-    def getGroupPQuota(self, group, printer) :        
-        """Extracts a group print quota."""
-        grouppquota = StorageGroupPQuota(self, group, printer)
-        if group.Exists :
-            result = self.doSearch("SELECT id, softlimit, hardlimit, datelimit FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
-            if result :
-                fields = result[0]
-                grouppquota.ident = fields.get("id")
-                grouppquota.SoftLimit = fields.get("softlimit")
-                grouppquota.HardLimit = fields.get("hardlimit")
-                grouppquota.DateLimit = fields.get("datelimit")
-                result = self.doSearch("SELECT SUM(lifepagecounter) AS lifepagecounter, SUM(pagecounter) AS pagecounter FROM userpquota WHERE printerid=%s AND userid IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % (self.doQuote(printer.ident), self.doQuote(group.ident)))
-                if result :
-                    fields = result[0]
-                    grouppquota.PageCounter = fields.get("pagecounter")
-                    grouppquota.LifePageCounter = fields.get("lifepagecounter")
-                grouppquota.Exists = 1
-        return grouppquota
-        
-    def getPrinterLastJob(self, printer) :        
-        """Extracts a printer's last job information."""
-        lastjob = StorageLastJob(self, printer)
-        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobdate FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
-        if result :
-            fields = result[0]
-            lastjob.ident = fields.get("id")
-            lastjob.JobId = fields.get("jobid")
-            lastjob.User = self.getUser(fields.get("username"))
-            lastjob.PrinterPageCounter = fields.get("pagecounter")
-            lastjob.JobSize = fields.get("jobsize")
-            lastjob.JobAction = fields.get("action")
-            lastjob.JobDate = fields.get("jobdate")
-            lastjob.Exists = 1
-        return lastjob
         
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers for which name matches a certain pattern."""

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/10/02 20:23:18  jalet
+# Storage caching mechanism added.
+#
 # Revision 1.35  2003/07/29 09:54:03  jalet
 # Added configurable LDAP mail attribute support
 #
@@ -397,6 +400,14 @@ class PyKotaConfig :
         """Returns 1 if debugging is activated, else 0."""
         debug = self.getGlobalOption("debug", ignore=1)
         if (debug is not None) and (debug.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
+            return 1
+        else :    
+            return 0
+            
+    def getCaching(self) :          
+        """Returns 1 if database caching is enabled, else 0."""
+        caching = self.getGlobalOption("storagecaching", ignore=1)
+        if (caching is not None) and (caching.upper().strip() in ['Y', 'YES', '1', 'ON', 'O']) :
             return 1
         else :    
             return 0

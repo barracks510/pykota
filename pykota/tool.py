@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.50  2003/10/02 20:23:18  jalet
+# Storage caching mechanism added.
+#
 # Revision 1.49  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #
@@ -233,8 +236,14 @@ class PyKotaTool :
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc/pykota")
         self.logger = logger.openLogger(self)
+        self.debug = self.config.getDebug()
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
+        
+    def logdebug(self, message) :    
+        """Logs something to debug output if debug is enabled."""
+        if self.debug :
+            self.logger.log_message(message, "debug")
         
     def clean(self) :    
         """Ensures that the database is closed."""
