@@ -88,11 +88,16 @@ gracedelay: 7
 
 # How to query the lp printer for its page counter
 # Only snmp(community, oid) and external(command) are supported
-# e.g. : 
-# requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
+#
+# Example : 
+#     requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
 # and :
-# requester: snmp(public, 43.10.2.1.4.1.1)
+#     requester: snmp(public, 43.10.2.1.4.1.1)
 # are equivalent
+#
+# Another untested example, using npadmin :
+#     requester: external(npadmin --pagecount %(printer)s)
+#
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
 #
