@@ -1,3 +1,9 @@
+#
+# PyKota sample LDAP directory tree
+# 
+# $Id$
+#
+# 
 dn: ou=People,dc=librelogiciel,dc=com
 ou: People
 objectClass: organizationalUnit

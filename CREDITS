@@ -39,10 +39,10 @@ Contributors :
 
   The following people contributed code or ideas to PyKota :
   
-    - Joël Collet (made the PyKota logo)
-    - Stefan Wold - Stockholm University
-    - John Flynn - University of Belize
-    - Wayne Godoy - University of Belize
+    - Joël Collet : made the PyKota logo
+    - Stefan Wold - Stockholm University : code
+    - John Flynn - University of Belize : LDAP support
+    - Wayne Godoy - University of Belize : LDAP support
 
 ============================================================
 

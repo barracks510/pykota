@@ -23,20 +23,25 @@ This directory contains scripts to initialise the PyKota
 storage database. Use the one which best suits your need
 depending on the storage backend you want to use.
 
+There's one subdirectory per backend type supported.
 
 Files :
 =======
 
-  * pykota-postgresql.sql :
+  * postgresql/pykota-postgresql.sql :
   
     This file creates an empty Quota Storage Database, using PostgreSQL
     as a backend. You have to use it the first time you install PyKota
     if you want to use PostgreSQL as the Quota Storage Backend.
     
-  * pykota.schema :  
+  * ldap/pykota.schema :  
   
     This file adds the necessary classes and attributes to an existing
     LDAP directory for use with PyKota. Read this file for details.
+    
+    
+Old files, kept to allow people to upgrade from very old versions of PyKota :   
+=============================================================================
     
   * VERYOLDpykota-upgrade-postgresql.sql :
   

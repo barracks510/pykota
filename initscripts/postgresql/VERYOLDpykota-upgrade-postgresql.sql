@@ -19,11 +19,8 @@
 -- $Id$
 --
 -- $Log$
--- Revision 1.2  2003/04/23 22:13:56  jalet
--- Preliminary support for LPRng added BUT STILL UNTESTED.
---
--- Revision 1.1  2003/04/17 21:33:16  jalet
--- Version 1.03 is out.
+-- Revision 1.1  2003/06/05 07:12:31  jalet
+-- Reorganization of directories
 --
 --
 --

@@ -19,12 +19,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ============================================================
 
-Documentation for the pykota.schema file :
-------------------------------------------
+Documentation :
+---------------
 
-This file can be used to modify an existing LDAP directory
-to add the necessary attributes for use with PyKota.
+pykota.schema :
 
+    This file can be used to modify an existing LDAP directory
+    to add the necessary attributes for use with PyKota.
+
+pykota.ldif :
+
+    This file represents a sample LDAP directory tree with
+    PyKota functionnalities.
+    
 More help will be available in the future, when this schema        
 will be completed and LDAP support will be finalized.
 
