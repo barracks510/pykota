@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2004/01/30 16:35:03  jalet
+# Fixes stupid software accounting bug in CUPS backend
+#
 # Revision 1.25  2004/01/16 17:51:46  jalet
 # Fuck Fuck Fuck !!!
 #
@@ -213,7 +216,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.logdebug("Job accounting ends.")
                 
             # retrieve the job size    
-            jobsize = self.accounter.getJobSize()
+            if action == "DENY" :
+                jobsize = 0
+                self.logdebug("Job size forced to 0 because printing is denied.")
+            else :    
+                jobsize = self.accounter.getJobSize()
             self.logdebug("Job size : %i" % jobsize)
             
             # update the quota for the current user on this printer 
