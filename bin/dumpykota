@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2004/10/11 22:53:05  jalet
+# Postponed string interpolation to help message's output method
+#
 # Revision 1.13  2004/10/11 12:49:06  jalet
 # Renders help translatable
 #
@@ -156,7 +159,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-Please e-mail bugs to: %s""") % (version.__version__, version.__author__)
+Please e-mail bugs to: %s""")
         
 class DumPyKota(PyKotaTool) :        
     """A class for dumpykota."""
@@ -232,7 +235,7 @@ class DumPyKota(PyKotaTool) :
     def dumpXml(self, entries, datatype) :    
         """Dumps datas as XML."""
         x = jaxml.XML_document(encoding="UTF-8")
-        x.pykota(version=version.__version__)
+        x.pykota(version=version.__version__, author=version.__author__)
         x.dump(storage=self.config.getStorageBackend()["storagebackend"], type=datatype)
         headers = entries[0]
         for entry in entries[1:] :

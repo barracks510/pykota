@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/10/11 22:53:05  jalet
+# Postponed string interpolation to help message's output method
+#
 # Revision 1.31  2004/10/11 12:49:06  jalet
 # Renders help translatable
 #
@@ -129,7 +132,6 @@ import sys
 import os
 import pwd
 
-from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
@@ -195,7 +197,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
-Please e-mail bugs to: %s""") % (version.__version__, version.__author__)
+Please e-mail bugs to: %s""")
         
 class WarnPyKota(PyKotaTool) :        
     """A class for warnpykota."""

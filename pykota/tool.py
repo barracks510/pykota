@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.128  2004/10/11 22:53:06  jalet
+# Postponed string interpolation to help message's output method
+#
 # Revision 1.127  2004/10/11 12:48:38  jalet
 # Adds fake translation marker
 #
@@ -581,7 +584,7 @@ class PyKotaTool :
     def display_usage_and_quit(self) :
         """Displays command line usage, then exists successfully."""
         self.clean()
-        print _(self.documentation)
+        print _(self.documentation) % (version.__version__, version.__author__)
         sys.exit(0)
         
     def crashed(self, message) :    
