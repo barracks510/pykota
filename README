@@ -238,9 +238,13 @@ Add printers and users to the quota system and set their quota values :
     launching edpykota without any argument or with the --help
     command line option will show you all the possibilities.
 
-Restart CUPS, for example under Debian GNU/Linux systems :          
+Restart CUPS or LPRng, for example under Debian GNU/Linux systems :          
 
     $ /etc/init.d/cupsys restart
+    
+  or :
+  
+    $ /etc/init.d/lprng restart
         
 Your users now should be able to print but not exceed their 
 printing quota.
@@ -256,6 +260,9 @@ or :
     which will print quota usage for all users on all printers,
     along with totals.
     
+Quota reports are also available remotely by using the CGI scripts
+provided in the cgi-bin/ subdirectory.
+
 For different security concerns, please give a look at the SECURITY
 file which is part of this software.
            
