@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/11/12 09:33:34  jalet
+# New CUPS backend supports device enumeration
+#
 # Revision 1.1  2003/11/08 16:05:31  jalet
 # CUPS backend added for people to experiment.
 #
@@ -32,6 +35,8 @@
 import sys
 import os
 import time
+import cStringIO
+import shlex
 
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.config import PyKotaConfigError
@@ -224,7 +229,35 @@ def main(thebackend) :
 if __name__ == "__main__" :    
     # This is a CUPS backend, we should act and die like a CUPS backend
     if len(sys.argv) == 1 :
-        print 'direct cupspykota "PyKota" "Print Quota and Accounting Backend"' 
+        # we will execute each existing backend in device enumeration mode
+        # and generate their PyKota accounting counterpart
+        (directory, myname) = os.path.split(sys.argv[0])
+        for backend in [os.path.join(directory, b) for b in os.listdir(directory) if os.path.isfile(os.path.join(directory, b)) and (b != myname)] :
+            answer = os.popen(backend, "r")
+            try :
+                devices = [line.strip() for line in answer.readlines()]
+            except :    
+                devices = []
+            status = answer.close()
+            if status is None :
+                for d in devices :
+                    fdevice = cStringIO.StringIO("%s" % d)
+                    tokenizer = shlex.shlex(fdevice)
+                    tokenizer.wordchars = tokenizer.wordchars + r".:,?!~/\_$*-+={}[]()#"
+                    arguments = []
+                    while 1 :
+                        token = tokenizer.get_token()
+                        if token :
+                            arguments.append(token)
+                        else :
+                            break
+                    fdevice.close()
+                    (devicetype, device, name, fullname) = arguments
+                    if name.startswith('"') and name.endswith('"') :
+                        name = name[1:-1]
+                    if fullname.startswith('"') and fullname.endswith('"') :
+                        fullname = fullname[1:-1]
+                    print '%s cupspykota:%s "PyKota+%s" "PyKota managed %s"' % (devicetype, device, name, fullname)    
         retcode = 0
     elif len(sys.argv) not in (6, 7) :    
         sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])

@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha5 :
+    
+        - New CUPS backend supports device enumeration !
+          This means that NO manual CUPS configuration has to
+          be done. All can now be done from CUPS web interface.
+        
     - 1.16alpha4 :
     
         - New CUPS backend added. 
