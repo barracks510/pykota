@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2004/11/17 15:10:31  jalet
+# Fixed Epson Stylus Photo problem in software accounting
+#
 # Revision 1.43  2004/11/13 20:52:26  jalet
 # Heavy work done on PCL3/4/5 and PCLXL job analyzis
 #
@@ -1002,7 +1005,8 @@ class PDLAnalyzer :
         """Returns 1 if data is ESC/P2, else 0."""
         if sdata.startswith("\033@") or \
            sdata.startswith("\033*") or \
-           sdata.startswith("\n\033@") :
+           sdata.startswith("\n\033@") or \
+           sdata.startswith("\0\0\0\033\1@EJL") : # ESC/P Raster ??? Seen on Stylus Photo 1284
             return 1
         else :    
             return 0

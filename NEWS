@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.21alpha5 :
     
+        - Improved ESC/P2 miniparser for Stylus Photo printers.
+        
         - Implemented the --savetoner command line option to pkbanner.
         
         - Improved pkbanner's help and messages.
