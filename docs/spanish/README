@@ -1,0 +1,39 @@
+# $Id$
+
+PyKota - Print Quota for CUPS
+
+(c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+====================================================================
+
+This directory contains some PyKota documentation in Spanish.
+
+Files :
+
+        - README : This file
+        
+        - instalacion.sxw : Complete installation guide for PyKota
+          with CUPS and PostgreSQL under SuSe GNU/Linux.
+          This file was generously contributed to this project 
+          by Dennis Romero L. I've added two paragraphs in
+          Helvetica 12 Italic, one describing the warning below.
+          
+          WARNING : This file only describes installation for 
+          PyKota v1.15, and not PyKota v1.16 or above, which is a bit
+          different. Please refer to the toplevel README file for
+          v1.16 specific instructions.
+          
+====================================================================
