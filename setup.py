@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/03/29 09:47:00  jalet
+# More powerful installation script.
+#
 # Revision 1.3  2003/03/26 17:48:36  jalet
 # First shot at trying to detect the availability of the needed software
 # during the installation.
@@ -37,25 +40,63 @@ from distutils.core import setup
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
 
-if "install" in sys.argv :
-    sys.stderr.write("PygreSQL availability : ")
+ACTION_CONTINUE = 0
+ACTION_ABORT = 1
+
+def checkModule(module) :
+    """Checks if a Python module is available or not."""
     try :
-        import pg
+        exec "import %s" % module
     except ImportError :    
-        sys.stderr.write("No ! Installation aborted.\n")
-        sys.exit(-1)
+        return 0
     else :    
-        del pg
-        sys.stderr.write("OK.\n")
-        sys.stderr.write("snmpget availability : ")
-        result = os.popen("type snmpget")
-        snmpget = result.read().strip()
-        result.close()
-        if not snmpget :
-            sys.stderr.write("No ! Installation aborted.\n")
+        return 1
+        
+def checkCommand(command) :
+    """Checks if a command is available or not."""
+    input = os.popen("type %s 2>/dev/null" % command)
+    result = input.read().strip()
+    input.close()
+    return result
+    
+def checkWithPrompt(prompt, module=None, command=None) :
+    """Tells the user what will be checked, and asks him what to do if something is absent."""
+    sys.stdout.write("Checking for %s availability : " % prompt)
+    sys.stdout.flush()
+    if command is not None :
+        result = checkCommand(command)
+    elif module is not None :    
+        result = checkModule(module)
+    if result :    
+        sys.stdout.write("OK\n")
+        return ACTION_CONTINUE
+    else :    
+        sys.stdout.write("NO.\n")
+        sys.stderr.write("ERROR : %s not available !\n" % prompt)
+        answer = raw_input("%s is missing. Do you want to continue anyway (y/N) ? " % prompt)
+        if answer[0:1].upper() == 'Y' :
+            return ACTION_CONTINUE
+        else :
+            return ACTION_ABORT
+    
+if "install" in sys.argv :
+    if not (sys.version > "2.1") :
+        sys.stderr.write("PyKota needs at least Python v2.1 !\nYour version seems to be older than that, please update.\nAborted !\n")
+        sys.exit(-1)
+        
+    modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
+    commandstocheck = [("SNMP Tools", "snmpget")]
+    for (name, module) in modulestocheck :
+        action = checkWithPrompt(name, module=module)
+        if action == ACTION_ABORT :
+            sys.stderr.write("Aborted !\n")
             sys.exit(-1)
-        else :    
-            sys.stderr.write("OK.\n")
+            
+    for (name, command) in commandstocheck :
+        action = checkWithPrompt(name, command=command)
+        if action == ACTION_ABORT :
+            sys.stderr.write("Aborted !\n")
+            sys.exit(-1)
             
 data_files = []
 mofiles = glob.glob(os.sep.join(["po", "*", "*.mo"]))
