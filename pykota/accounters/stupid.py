@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/05/27 23:00:21  jalet
+# Big rewrite of external accounting methods.
+# Should work well now.
+#
 # Revision 1.2  2003/04/30 13:40:47  jalet
 # Small fix
 #
@@ -43,7 +47,7 @@ class Accounter(AccounterBase) :
         self.filter.logger.log_message(_("Using the 'stupid' accounting method is unreliable."), "warn")
         
         # get the job size    
-        jobsize = self.getJobSize()
+        jobsize = self.getJobSize() * self.filter.copies
             
         # get last job information for this printer
         pgc = self.filter.storage.getPrinterPageCounter(printerid)    
@@ -85,8 +89,7 @@ class Accounter(AccounterBase) :
             
         pagecount = 0
         for line in infile.xreadlines() :
-            if line.startswith("showpage") :
-                pagecount += 1
+            pagecount += line.count("showpage")
             if temporary is not None :    
                 temporary.write(line)    
                 

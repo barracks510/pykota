@@ -67,6 +67,11 @@ smtpserver: localhost
 #                 shows what this command may be is :
 #
 #                   accounter: external(/bin/grep -c showpage)
+#
+#                 Another one, which should work with all DSC
+#                 compliant Postscript files :
+#
+#                   accounter: external(/bin/grep -c "%%Page:")
 # 
 #    - stupid : counts the occurences of the 'showpage' postscript
 #               statement in the document to be printed, only at
@@ -82,7 +87,8 @@ smtpserver: localhost
 # A script which seems to be accurate, copy it from the
 # untested/postscript directory to another place.
 # accounter: external(/usr/local/bin/pagecount.sh)
-# WARNING : it may produce broken pipes, I don't know why yet. YMMV.
+# WARNING : it may not work when multiple copies are asked.
+#           this breaks ghostscript, I don't know why yet.
 #
 # default value 
 accounter: querying

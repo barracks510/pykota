@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/05/27 23:00:20  jalet
+# Big rewrite of external accounting methods.
+# Should work well now.
+#
 # Revision 1.31  2003/04/30 13:36:39  jalet
 # Stupid accounting method was added.
 #
@@ -149,7 +153,7 @@ class PyKotaFilter(PyKotaTool) :
     """Class for the PyKota filter."""
     def __init__(self) :
         PyKotaTool.__init__(self)
-        (self.printingsystem, self.printerhostname, self.printername, self.username, self.jobid, self.inputfile) = self.extractInfoFromCupsOrLprng()
+        (self.printingsystem, self.printerhostname, self.printername, self.username, self.jobid, self.inputfile, self.copies) = self.extractInfoFromCupsOrLprng()
         self.accounter = openAccounter(self)
     
     def extractInfoFromCupsOrLprng(self) :    
@@ -173,10 +177,10 @@ class PyKotaFilter(PyKotaTool) :
             while destination.startswith("/") :
                 destination = destination[1:]
             printerhostname = destination.split("/")[0].split(":")[0]
-            return ("CUPS", printerhostname, os.environ.get("PRINTER"), sys.argv[2].strip(), sys.argv[1].strip(), inputfile)
+            return ("CUPS", printerhostname, os.environ.get("PRINTER"), sys.argv[2].strip(), sys.argv[1].strip(), inputfile, int(sys.argv[4].strip()))
         else :    
             # Try to detect LPRng
-            jseen = Jseen = Pseen = nseen = rseen = None
+            jseen = Jseen = Pseen = nseen = rseen = Kseen = None
             for arg in sys.argv :
                 if arg.startswith("-j") :
                     jseen = arg[2:].strip()
@@ -190,9 +194,13 @@ class PyKotaFilter(PyKotaTool) :
                     Pseen = arg[2:].strip()
                 elif arg.startswith("-r") :    
                     rseen = arg[2:].strip()
+                elif arg.startswith("-K") or arg.startswith("-#") :    
+                    Kseen = int(arg[2:].strip())
+            if Kseen is None :        
+                Kseen = 1       # we assume the user wants at least one copy...
             if jseen and Pseen and nseen and rseen :        
-                return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen)
-        return (None, None, None, None, None, None)   # Unknown printing system          
+                return ("LPRNG", rseen, Pseen, nseen, jseen, Jseen, Kseen)
+        return (None, None, None, None, None, None, None)   # Unknown printing system          
         
     def acceptJob(self) :        
         """Returns the exit code needed by the printing backend to accept the job and print it."""

@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2003/05/27 23:00:21  jalet
+# Big rewrite of external accounting methods.
+# Should work well now.
+#
 # Revision 1.26  2003/04/30 19:53:58  jalet
 # 1.05
 #
@@ -204,10 +208,10 @@ class PyKotaConfig :
         """   
         validaccounters = [ "querying", "stupid", "external" ]     
         try :
-            fullaccounter = self.getPrinterOption(printer, "accounter").strip().lower()
+            fullaccounter = self.getPrinterOption(printer, "accounter").strip()
         except PyKotaConfigError :    
             fullaccounter = "querying"
-        if fullaccounter.startswith("external") :    
+        if fullaccounter.lower().startswith("external") :    
             try :
                 (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
             except ValueError :    
@@ -216,11 +220,11 @@ class PyKotaConfig :
                 args = args[:-1]
             if not args :
                 raise PyKotaConfigError, _("Invalid external accounter %s for printer %s") % (fullaccounter, printer)
-            return (accounter, args)    
-        elif fullaccounter not in validaccounters :
+            return (accounter.lower(), args)    
+        elif fullaccounter.lower() not in validaccounters :
             raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printer, str(validaccounters))
         else :    
-            return (fullaccounter, None)
+            return (fullaccounter.lower(), None)
         
     def getRequesterBackend(self, printer) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
@@ -241,6 +245,7 @@ class PyKotaConfig :
             if not args :
                 raise PyKotaConfigError, _("Invalid requester %s for printer %s") % (fullrequester, printer)
             validrequesters = [ "snmp", "external" ] # TODO : add more requesters
+            requester = requester.lower()
             if requester not in validrequesters :
                 raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
             return (requester, args)

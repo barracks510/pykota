@@ -21,11 +21,29 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.08alpha3 :
+    
+        - External accounting methods were partly rewritten :
+         
+          - No more "broken pipe" should happen.
+          
+          - They now take care of the number of copies
+            This may be unneeded though, if the postscript
+            file already does this, because this would
+            overcharge users (number of copies counted
+            two times). NEEDS MORE TESTING.
+            
+          - The sample configuration file now contains  
+            an external accounting method example which should
+            work with all DSC compliant Postscript files.
+            
+        - Some small bugs were fixed.    
+        
     - 1.08alpha2 :
     
         - Now works with net-snmp v5.0 and above.
           It already worked, but the sample configuration 
-	  file didn't contain appropriate values...
+          file didn't contain appropriate values...
         
     - 1.07 : Release of the Shame !
     
