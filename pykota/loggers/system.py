@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 23:47:54  jalet
+# Forgotten default argument
+#
 # Revision 1.1  2003/02/05 23:09:20  jalet
 # Name conflict
 #
@@ -33,7 +36,7 @@ class Logger :
         """Ensures the logging subsystem is closed."""
         syslog.closelog()
         
-    def log_message(self, message, level) :
+    def log_message(self, message, level="info") :
         """Sends the message to syslog."""
         try :
             priority = getattr(syslog, "LOG_%s" % level.upper())
