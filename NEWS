@@ -33,7 +33,8 @@ PyKota NEWS :
           to activate it. It is suggested that you activate it.
           
         - New PYKOTAJOBSIZEBYTES environment variable exported,  
-          which contains the job's size in bytes.
+          which contains the job's size in bytes. Empty jobs
+          are now denied.
           
     - 1.19alpha16 :
     

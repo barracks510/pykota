@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2004/06/03 22:12:53  jalet
+# Now denies empty jobs
+#
 # Revision 1.58  2004/06/03 21:50:33  jalet
 # Improved error logging.
 # crashrecipient directive added.
@@ -339,14 +342,23 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # enters first phase
             os.environ["PYKOTAPHASE"] = "BEFORE"
             
-            # checks the user's quota
+            # do we want strict or laxist quota enforcement ?
             if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
                 self.softwareJobSize = self.precomputeJobSize()
                 self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
                 self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
             os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
             os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
+            
+            # checks the user's quota
             action = self.warnUserPQuota(userpquota)
+            
+            # if no data to pass to real backend, probably a filter
+            # higher in the chain failed because of a misconfiguration.
+            # we deny the job in this case (nothing to print anyway)
+            if not self.jobSizeBytes :
+                self.logger.log_message(_("Job contains no data. Printing is denied."), "warn")
+                action = "DENY"
             
             # exports some new environment variables
             os.environ["PYKOTAACTION"] = action
