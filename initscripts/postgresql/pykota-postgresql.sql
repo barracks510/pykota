@@ -19,6 +19,12 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.10  2004/06/03 23:14:09  jalet
+-- Now stores the job's size in bytes in the database.
+-- Preliminary work on payments storage : database schemas are OK now,
+-- but no code to store payments yet.
+-- Removed schema picture, not relevant anymore.
+--
 -- Revision 1.9  2004/05/13 11:15:29  jalet
 -- Added hostname field in job history
 --
@@ -120,8 +126,8 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         jobid TEXT,
                         userid INT4,
                         printerid INT4,
-                        hostname TEXT,
                         pagecounter INT4 DEFAULT 0,
+                        jobsizebytes INT8,
                         jobsize INT4,
                         jobprice FLOAT,
                         action TEXT,
@@ -129,10 +135,12 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         title TEXT,
                         copies INT4,
                         options TEXT,
+                        hostname TEXT,
                         jobdate TIMESTAMP DEFAULT now(),
                         CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid));
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
+CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
                         
 --
 -- Create the print quota table for groups
@@ -158,14 +166,22 @@ CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
 CREATE TABLE printergroupsmembers(groupid INT4 REFERENCES printers(id),
                            printerid INT4 REFERENCES printers(id),
                            PRIMARY KEY (groupid, printerid));
+--
+-- Create the table for payments
+-- 
+CREATE TABLE payments (id SERIAL PRIMARY KEY NOT NULL,
+                       userid INT4 REFERENCES users(id),
+                       amount FLOAT,
+                       date TIMESTAMP DEFAULT now());
+CREATE INDEX payments_date_ix ON payments (date);
 
 --                        
 -- Set some ACLs                        
 --
-REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory FROM public;                        
-REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq FROM public;
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments FROM public;                        
+REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq FROM public;
 
-GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory TO pykotaadmin;
-GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq TO pykotaadmin;
-GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory TO pykotauser;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments TO pykotaadmin;
+GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq TO pykotaadmin;
+GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments TO pykotauser;
 

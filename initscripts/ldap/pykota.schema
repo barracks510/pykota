@@ -174,6 +174,18 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.24 NAME 'pykotaHostName'
         EQUALITY caseIgnoreMatch
         SUBSTR caseIgnoreSubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{256} )
+        
+# pykotaJobSizeBytes
+attributetype ( 1.3.6.1.4.1.16868.1.1.25 NAME 'pykotaJobSizeBytes'
+        DESC 'Current job size in number of bytes in the history'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+# pykotaPayments
+attributetype ( 1.3.6.1.4.1.16868.1.1.26 NAME 'pykotaPayments'
+        DESC 'Stores all payments made by an user, encoded to store both date and amount'
+        EQUALITY caseExactIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 #        
 # PyKota Object Classes
@@ -213,12 +225,12 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
         DESC 'An entry in the job history for a printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName $ pykotaJobId )
-        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName ) )
+        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes ) )
         
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY
         DESC 'PyKota User account balance'
-        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid ) )
+        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid $ pykotaPayments ) )
         
 # pykotaLastJob        
 objectclass ( 1.3.6.1.4.1.16868.1.2.8 NAME 'pykotaLastJob' SUP top AUXILIARY

@@ -23,6 +23,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2004/06/03 23:14:08  jalet
+# Now stores the job's size in bytes in the database.
+# Preliminary work on payments storage : database schemas are OK now,
+# but no code to store payments yet.
+# Removed schema picture, not relevant anymore.
+#
 # Revision 1.59  2004/06/03 22:12:53  jalet
 # Now denies empty jobs
 #
@@ -402,7 +408,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             jobprice = userpquota.increasePagesUsage(jobsize)
             
             # adds the current job to history    
-            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost)
+            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
             self.logdebug("Job added to history.")
             
             # exports some new environment variables

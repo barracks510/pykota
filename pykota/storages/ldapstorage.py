@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.67  2004/06/03 23:14:10  jalet
+# Now stores the job's size in bytes in the database.
+# Preliminary work on payments storage : database schemas are OK now,
+# but no code to store payments yet.
+# Removed schema picture, not relevant anymore.
+#
 # Revision 1.66  2004/05/28 20:56:45  jalet
 # Extended syntax for LDAP specific newuser and newgroup directives. Untested.
 #
@@ -602,7 +608,7 @@ class Storage(BaseStorage) :
         if result :
             lastjob.lastjobident = result[0][0]
             lastjobident = result[0][1]["pykotaLastJobIdent"][0]
-            result = self.doSearch("objectClass=pykotaJob", ["pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+            result = self.doSearch("objectClass=pykotaJob", ["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
             if result :
                 fields = result[0][1]
                 lastjob.ident = result[0][0]
@@ -617,6 +623,7 @@ class Storage(BaseStorage) :
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
                 lastjob.JobOptions = fields.get("pykotaOptions", [""])[0]
                 lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
+                lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])
@@ -944,7 +951,7 @@ class Storage(BaseStorage) :
                  }
         self.doModify(lastjob.ident, fields)         
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None) :
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
@@ -965,6 +972,7 @@ class Storage(BaseStorage) :
                    "pykotaCopies" : str(copies), 
                    "pykotaOptions" : str(options), 
                    "pykotaHostName" : str(clienthost), 
+                   "pykotaJobSizeBytes" : str(jobsizebytes),
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         
@@ -1045,7 +1053,7 @@ class Storage(BaseStorage) :
         else :    
             where = precond
         jobs = []    
-        result = self.doSearch(where, fields=["pykotaHostName", "pykotaUserName", "pykotaPrinterName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaAction", "pykotaJobSize", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base=self.info["jobbase"])
+        result = self.doSearch(where, fields=["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaPrinterName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaAction", "pykotaJobSize", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base=self.info["jobbase"])
         if result :
             for (ident, fields) in result :
                 job = StorageJob(self)
@@ -1060,6 +1068,7 @@ class Storage(BaseStorage) :
                 job.JobCopies = int(fields.get("pykotaCopies", [0])[0])
                 job.JobOptions = fields.get("pykotaOptions", [""])[0]
                 job.JobHostName = fields.get("pykotaHostName", [""])[0]
+                job.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])

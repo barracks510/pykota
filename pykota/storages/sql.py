@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.40  2004/06/03 23:14:11  jalet
+# Now stores the job's size in bytes in the database.
+# Preliminary work on payments storage : database schemas are OK now,
+# but no code to store payments yet.
+# Removed schema picture, not relevant anymore.
+#
 # Revision 1.39  2004/05/26 14:50:12  jalet
 # First try at saving the job-originating-hostname in the database
 #
@@ -161,6 +167,7 @@ class SQLStorage :
             lastjob.JobOptions = fields.get("options")
             lastjob.JobDate = fields.get("jobdate")
             lastjob.JobHostName = fields.get("hostname")
+            lastjob.JobSizeBytes = fields.get("jobsizebytes")
             lastjob.Exists = 1
         return lastjob
             
@@ -338,16 +345,16 @@ class SQLStorage :
         """Sets the last job's size permanently."""
         self.doModify("UPDATE jobhistory SET jobsize=%s, jobprice=%s WHERE id=%s" % (self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(lastjob.ident)))
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None) :    
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :    
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes)))
             else :    
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options, hostname) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options, hostname, jobsizebytes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes)))
         else :        
             # here we explicitly want to reset jobsize to NULL if needed
-            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(printer.LastJob.ident)))
+            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobsizebytes=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes), self.doQuote(printer.LastJob.ident)))
             
     def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota."""
@@ -405,6 +412,7 @@ class SQLStorage :
                 job.JobOptions = fields.get("options")
                 job.JobDate = fields.get("jobdate")
                 job.JobHostName = fields.get("hostname")
+                job.JobSizeBytes = fields.get("jobsizebytes")
                 job.UserName = fields.get("username")
                 job.PrinterName = fields.get("printername")
                 job.Exists = 1

@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/06/03 23:14:11  jalet
+# Now stores the job's size in bytes in the database.
+# Preliminary work on payments storage : database schemas are OK now,
+# but no code to store payments yet.
+# Removed schema picture, not relevant anymore.
+#
 # Revision 1.35  2004/02/02 22:44:16  jalet
 # Preliminary work on Relationnal Database Independance via DB-API 2.0
 #
@@ -221,6 +227,8 @@ class Storage(BaseStorage, SQLStorage) :
         if type(field) == type(0.0) : 
             typ = "decimal"
         elif type(field) == type(0) :    
+            typ = "int"
+        elif type(field) == type(0L) :    
             typ = "int"
         else :    
             typ = "text"

@@ -21,6 +21,12 @@
 # $Id$
 #
 # $Log$
+# Revision 1.53  2004/06/03 23:14:10  jalet
+# Now stores the job's size in bytes in the database.
+# Preliminary work on payments storage : database schemas are OK now,
+# but no code to store payments yet.
+# Removed schema picture, not relevant anymore.
+#
 # Revision 1.52  2004/05/26 14:49:57  jalet
 # First try at saving the job-originating-hostname in the database
 #
@@ -302,9 +308,9 @@ class StoragePrinter(StorageObject) :
         else :
             raise AttributeError, name
             
-    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None) :
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None) :
         """Adds a job to the printer's history."""
-        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost)
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost, jobsizebytes)
         # TODO : update LastJob object ? Probably not needed.
         
     def addPrinterToGroup(self, printer) :    
@@ -448,6 +454,7 @@ class StorageJob(StorageObject) :
         self.PrinterName = None
         self.JobId = None
         self.PrinterPageCounter = None
+        self.JobSizeBytes = None
         self.JobSize = None
         self.JobAction = None
         self.JobDate = None

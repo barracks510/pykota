@@ -19,6 +19,12 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.2  2004/06/03 23:14:10  jalet
+-- Now stores the job's size in bytes in the database.
+-- Preliminary work on payments storage : database schemas are OK now,
+-- but no code to store payments yet.
+-- Removed schema picture, not relevant anymore.
+--
 -- Revision 1.1  2004/05/13 11:15:29  jalet
 -- Added hostname field in job history
 --
@@ -38,5 +44,18 @@
 --                         
 -- Modify the old database schema
 --
+ALTER TABLE jobhistory ADD COLUMN jobsizebytes INT8;
 ALTER TABLE jobhistory ADD COLUMN hostname TEXT;
+CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
 
+CREATE TABLE payments (id SERIAL PRIMARY KEY NOT NULL,
+                       userid INT4 REFERENCES users(id),
+                       amount FLOAT,
+                       date TIMESTAMP DEFAULT now());
+CREATE INDEX payments_date_ix ON payments (date);
+
+REVOKE ALL ON payments FROM public;                        
+REVOKE ALL ON payments_id_seq FROM public;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON payments TO pykotaadmin;
+GRANT SELECT, UPDATE ON payments_id_seq TO pykotaadmin;
+GRANT SELECT ON payments TO pykotauser;
