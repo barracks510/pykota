@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/05/19 07:15:32  jalet
+# Could the 'misterious' bug in my loop be finally fixed ???
+#
 # Revision 1.44  2004/05/18 14:48:47  jalet
 # Big code changes to completely remove the need for "requester" directives,
 # jsut use "hardware(... your previous requester directive's content ...)"
@@ -392,7 +395,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     killed = 1
                 
                 # In any case, deal with any remaining I/O
-                availablefds = pollster.poll(5000)
+                try :
+                    availablefds = pollster.poll(5000)
+                except select.error : # we probably got a signal
+                    availablefds = []   
                 if not availablefds :
                     self.logdebug("Nothing to do, sleeping a bit...")
                     time.sleep(0.01) # nothing to do, give time to CPU
