@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/01/12 18:20:45  jalet
+# Denied jobs weren't added to the history anymore, this is now fixed.
+#
 # Revision 1.50  2004/01/11 23:22:42  jalet
 # Major code refactoring, it's way cleaner, and now allows automated addition
 # of printers on first print.
@@ -242,30 +245,31 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         if policy == "OK" :
             self.logdebug("Does accounting for user %s on printer %s." % (user.Name, printer.Name))
             action = self.accounter.doAccounting(userpquota)
-            if action == "DENY" :
-                # Just die.
-                self.logdebug("Printing is denied.")
-                return self.removeJob()
+        else :        
+            action = "ALLOW"
             
         # pass the job's data to the next filter
-        self.logdebug("Passing input data to next filter.")
-        mustclose = 0    
-        if self.inputfile is not None :    
-            if hasattr(self.inputfile, "read") :
-                infile = self.inputfile
+        if action in ["ALLOW", "WARN"] :
+            self.logdebug("Passing input data to next filter.")
+            mustclose = 0    
+            if self.inputfile is not None :    
+                if hasattr(self.inputfile, "read") :
+                    infile = self.inputfile
+                else :    
+                    infile = open(self.inputfile, "rb")
+                mustclose = 1
             else :    
-                infile = open(self.inputfile, "rb")
-            mustclose = 1
-        else :    
-            infile = sys.stdin
-        data = infile.read(256*1024)    
-        while data :
-            sys.stdout.write(data)
-            data = infile.read(256*1024)
-        if mustclose :    
-            infile.close()
-        
-        return self.acceptJob()
+                infile = sys.stdin
+            data = infile.read(256*1024)    
+            while data :
+                sys.stdout.write(data)
+                data = infile.read(256*1024)
+            if mustclose :    
+                infile.close()
+            return self.acceptJob()
+        else :
+            self.logdebug("Printing is denied.")
+            return self.removeJob()
         
     def mainWork(self) :    
         # If this is a CUPS filter, we should act and die like a CUPS filter when needed
