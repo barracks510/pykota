@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/10/12 17:08:32  jalet
+# alreadydone mapping was reset in each iteration, this is fixed.
+#
 # Revision 1.35  2004/10/12 09:14:03  jalet
 # Ensures that warnpykota still test other quota entries for each user if
 # he has not been warned, even if limited by his account balance.
@@ -238,12 +241,12 @@ class WarnPyKota(PyKotaTool) :
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
+        alreadydone = {}
         for printer in printers :
             if options["groups"] :
                 for (group, grouppquota) in self.storage.getPrinterGroupsAndQuotas(printer, ugnames) :
                     self.warnGroupPQuota(grouppquota)
             else :
-                alreadydone = {}
                 for (user, userpquota) in self.storage.getPrinterUsersAndQuotas(printer, ugnames) :
                     # we only want to warn users who have ever printed something
                     # and don't want to warn users who have never printed
