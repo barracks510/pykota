@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha14 :
     
+        - Belgian translations added (copy of the french ones).
+        
         - External hardware accounter now loops until
           a result can be read correctly.
           
