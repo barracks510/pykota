@@ -19,13 +19,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ====================================================================
 
-This directory contains a PostScript file, master.ps, obtained by 
-printing to a file a part of the SlashDot.org website from the 
-Galeon web browser on July 2nd 2004. 
+This directory contains a gzipped PostScript file, master.ps.gz, 
+obtained by printing to a file a part of the SlashDot.org website 
+from the Galeon web browser on July 2nd 2004. 
 
-This 16 pages file can be used to test the accuracy of the generic
-Page Description Language analyzer included in PyKota for different
-conversion outputs of gs.
+When uncompressed, this 16 pages file can be used to test the 
+accuracy of the generic Page Description Language analyzer included 
+in PyKota for different conversion outputs of gs. 
 
 To see if it works, simply launch :
 
