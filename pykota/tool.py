@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/02/10 01:02:17  jalet
+# External requester is about to work, but I must sleep
+#
 # Revision 1.17  2003/02/09 13:05:43  jalet
 # Internationalization continues...
 #
@@ -76,7 +79,7 @@ import os
 import getopt
 import smtplib
 import gettext
-from locale import setlocale, LC_ALL
+import locale
 
 from mx import DateTime
 
@@ -96,7 +99,10 @@ class PyKotaTool :
     def __init__(self, isfilter=0, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
-        setlocale(LC_ALL, "")
+	try :
+            locale.setlocale(locale.LC_ALL, "")
+	except locale.Error :
+	    pass
         gettext.install("pykota")
     
         # pykota specific stuff
