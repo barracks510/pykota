@@ -162,12 +162,11 @@ disablehistory: No
 logger: system
 
 # Enable debugging ? Put YES or NO there.
-# From now on, YES is the default in this sample
-# configuration file, so that debugging is activated
+# debug is set to yes in this sample
+# configuration file, so debugging is activated
 # when configuring PyKota. After all works, just
 # put NO instead to save some disk space in your
 # logs.
-# Actually only database queries are logged.
 debug : Yes
 
 # Mail server to use to warn users
@@ -745,11 +744,11 @@ enforcement : strict
 
 # Should we trust the job size on this printer ?
 #
-# "yes" is the default, the jobsize, either computed
+# "trustjobsize : yes" is the default, the jobsize, either computed
 # by the hardware or by software is trusted.
 #
-# ">N:precomputed" : uses the precomputed value if jobsize > N pages
-# ">N:25" : uses 25 if jobsize is >N pages
+# "trustjobsize : >N:precomputed" : uses the precomputed value if jobsize > N pages
+# "trustjobsize : >N:25" : uses 25 if jobsize is >N pages
 #
 # General form : ">n:m" where n is a positive integer, and m is 
 # either the word 'precomputed' or a positive integer.
