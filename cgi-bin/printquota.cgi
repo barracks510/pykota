@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/10/24 22:06:42  jalet
+# Initial support for browser's language preference added.
+#
 # Revision 1.14  2003/10/10 19:48:07  jalet
 # Now displays version number
 #
@@ -110,14 +113,21 @@ footer = """
   </body>
 </html>"""  
 
+def getLanguagePreference() :
+    """Returns the preferred language."""
+    languages = os.environ.get("HTTP_ACCEPT_LANGUAGE", "")
+    langs = [l.strip().split(';')[0] for l in languages.split(",")]
+    return "%s_%s" % (langs[0], langs[0].upper())
 
 class PyKotaReportGUI(PyKotaTool) :
     """PyKota Administrative GUI"""
+        
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
         print header % version.__version__
         print self.body
+        print "<!-- %s -->" % str(getLanguagePreference())
         print footer
         
     def error(self, message) :
@@ -192,13 +202,13 @@ class PyKotaReportGUI(PyKotaTool) :
         if printers and ugmask :
             self.reportingtool = openReporter(admin, "text", printers, ugmask.split(), isgroup)
             self.body += "<pre>%s</pre>" % self.reportingtool.generateReport()
-    
+            
 if __name__ == "__main__" :
-    admin = PyKotaReportGUI()
+    os.environ["LC_ALL"] = getLanguagePreference()
+    admin = PyKotaReportGUI(lang=os.environ["LC_ALL"])
     admin.form = cgi.FieldStorage()
     admin.guiAction()
     admin.guiDisplay()
-
     try :
         admin.storage.close()
     except (TypeError, NameError, AttributeError) :    
