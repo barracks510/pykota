@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/09/06 15:42:34  jalet
+# Fix missing import statement for the signal module
+#
 # Revision 1.11  2004/08/31 23:29:53  jalet
 # Introduction of the new 'onaccountererror' configuration directive.
 # Small fix for software accounter's return code which can't be None anymore.
@@ -69,6 +72,7 @@
 
 import sys
 import os
+import signal
 import popen2
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
