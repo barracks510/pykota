@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/07/21 13:32:02  jalet
+# All messages should be translatable now.
+#
 # Revision 1.30  2004/07/01 17:45:48  jalet
 # Added code to handle the description field for printers
 #
@@ -133,7 +136,7 @@ header = """Content-type: text/html
 <?xml version="1.0" encoding="iso-8859-1"?>
 <html>
   <head>
-    <title>PyKota Reports</title>
+    <title>%s</title>
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
@@ -144,21 +147,28 @@ header = """Content-type: text/html
             <p>
               <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/pykota.png" alt="PyKota's Logo" /></a>
               <br />
-              <a href="http://www.librelogiciel.com/software/">PyKota version %s</a>
+              <a href="http://www.librelogiciel.com/software/">PyKota v%s</a>
             </p>
           </td>
           <td colspan="2">
-            <h1>PyKota Reports</h1>
+            <h1>%s</h1>
           </td>
         </tr>
         <tr>
           <td colspan="3" align="center">
-            <input type="submit" name="action" value="Report" />
+            <input type="submit" name="action" value="%s" />
           </td>
         </tr>
       </table>"""
     
 footer = """
+      <table>
+        <tr>
+          <td colspan="3" align="center">
+            <input type="submit" name="action" value="%s" />
+          </td>
+        </tr>
+      </table>  
     </form>
   </body>
 </html>"""  
@@ -175,9 +185,9 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % version.__version__
+        print header % (_("PyKota Reports"), version.__version__, _("PyKota Reports"), _("Report"))
         print self.body
-        print footer
+        print footer % _("Report")
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""
@@ -199,14 +209,14 @@ class PyKotaReportGUI(PyKotaTool) :
         
     def htmlUGNamesInput(self, value="*") :    
         """Input field for user/group names wildcard."""
-        return 'User / Group names mask : <input type="text" name="ugmask" size="20" value="%s" /> <em>e.g. <strong>jo*</strong></em>' % (value or "*")
+        return _("User / Group names mask") + (' : <input type="text" name="ugmask" size="20" value="%s" /> <em>e.g. <strong>jo*</strong></em>' % (value or "*"))
         
     def htmlGroupsCheckbox(self, isgroup=0) :
         """Groups checkbox."""
         if isgroup :
-            return 'Groups report : <input type="checkbox" checked="checked" name="isgroup" />'
+            return _("Groups report") + ' : <input type="checkbox" checked="checked" name="isgroup" />'
         else :    
-            return 'Groups report : <input type="checkbox" name="isgroup" />'
+            return _("Groups report") + ' : <input type="checkbox" name="isgroup" />'
             
     def guiAction(self) :
         """Main function"""
@@ -214,7 +224,7 @@ class PyKotaReportGUI(PyKotaTool) :
         self.body = "<p>Please click on the button above</p>\n"
         if self.form.has_key("action") :
             action = self.form["action"].value
-            if action == "Report" :
+            if action == _("Report") :
                 if self.form.has_key("printers") :
                     printersfield = self.form["printers"]
                     if type(printersfield) != type([]) :
@@ -276,13 +286,13 @@ class PyKotaReportGUI(PyKotaTool) :
                 hostname = self.form["hostname"].value
             else :    
                 hostname = None
-            self.report = ["<h2>History</h2>"]    
+            self.report = ["<h2>%s</h2>" % _("History")]    
             history = self.storage.retrieveHistory(user, printer, datelimit, hostname)
             if not history :
-                self.report.append("<h3>Empty</h3>")
+                self.report.append("<h3>%s</h3>" % _("Empty"))
             else :
                 self.report.append('<table class="pykotatable" border="1">')
-                headers = ["Date", "Action", "User", "Printer", "Hostname", "JobId", "JobSize", "JobPrice", "Copies", "JobBytes", "PageCounter", "Title", "Filename", "Options"]
+                headers = [_("Date"), _("Action"), _("User"), _("Printer"), _("Hostname"), _("JobId"), _("JobSize"), _("JobPrice"), _("Copies"), _("JobBytes"), _("PageCounter"), _("Title"), _("Filename"), _("Options")]
                 self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
                 oddeven = 0
                 for job in history :
