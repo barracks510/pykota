@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/27 09:08:39  jalet
+# Updated translations.
+#
 # Revision 1.7  2003/02/10 12:12:08  jalet
 # Translation added for total number of pages for printer in repykota
 #
@@ -223,4 +226,10 @@ msgid "Total : %9i"
 msgstr ""
 
 msgid "Real : %9i"
+msgstr ""
+
+msgid "You have to pass user names on the command line"
+msgstr ""
+
+msgid "unknown"
 msgstr ""
