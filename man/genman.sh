@@ -16,11 +16,17 @@
 for prog in pkmail pkbanner autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pkhint pykosd ; do 
     echo $prog ;
     help2man --no-info --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
-    for loc in *_* ; do
-        echo "  $loc" ;
-        cd $loc ;
-        help2man --no-info --locale=$loc --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
-        cd .. ;
-    done ;
+    cd ../po ;
+    for dir in * ; do 
+        if [ -d $dir ] ; then
+            if [ -e $dir/pykota.po ] ; then
+                echo "  $dir" ;
+                cd ../man/$dir ;
+                help2man --no-info --locale=$dir --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
+                cd .. ;
+            fi ;    
+        fi ;     
+    done
+    cd ../man ;
     echo ;
 done
