@@ -26,6 +26,11 @@ PyKota NEWS :
         - Small bugfix wrt Python v2.1
         
         - If username is an empty string, user root is assumed.
+        
+        - 'postgresql' is not recognized anymore as a storage backend,
+          you have to use 'pgstorage' instead. 'postgresql' used to
+          be supported for compatibility with very old PyKota versions,
+          this is not the case anymore.
           
     - 1.16alpha12 :
     
