@@ -89,11 +89,11 @@ Then :
  
 Download the latest PyKota version from the CVS tree on :
 
-        http://savannah.nongnu.org/projects/pykota
+    http://savannah.nongnu.org/projects/pykota
 
 Just type :
 
-        python setup.py install
+    python setup.py install
 
 You may need to be logged in with sufficient privileges (e.g. root)
 
@@ -124,14 +124,14 @@ to enable quota on every printer.
           
 Add printers and users to the quota system and set their quota values : 
 
-        $ edpykota -P printer -S softlimit -H hardlimit user1 ... userN
+    $ edpykota --add -P printer -S softlimit -H hardlimit user1 ... userN
         
-        launching edpykota without any argument or with the --help
-        command line option will show you all the possibilities.
+    launching edpykota without any argument or with the --help
+    command line option will show you all the possibilities.
 
 Restart CUPS, for example under Debian GNU/Linux systems :          
 
-        $ /etc/init.d/cupsys restart
+    $ /etc/init.d/cupsys restart
         
 Your users now should be able to print but not exceed their 
 printing quota.
