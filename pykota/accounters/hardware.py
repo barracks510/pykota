@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2005/02/20 22:58:55  jalet
+# Added some informations from RFC3805 and RFC2790
+#
 # Revision 1.35  2005/01/12 22:44:06  jalet
 # Tried to fix a problem with printers which are slow to pass into printing mode.
 #
@@ -161,15 +164,29 @@ except ImportError :
     hasSNMP = 0
 else :    
     hasSNMP = 1
-    pageCounterOID = ".1.3.6.1.2.1.43.10.2.1.4.1.1"
-    hrPrinterStatusOID = ".1.3.6.1.2.1.25.3.5.1.1.1"
+    pageCounterOID = ".1.3.6.1.2.1.43.10.2.1.4.1.1"  # SNMPv2-SMI::mib-2.43.10.2.1.4.1.1
+    hrPrinterStatusOID = ".1.3.6.1.2.1.25.3.5.1.1.1" # SNMPv2-SMI::mib-2.25.3.5.1.1.1
     printerStatusValues = { 1 : 'other',
                             2 : 'unknown',
                             3 : 'idle',
                             4 : 'printing',
                             5 : 'warmup',
                           }
+    hrDeviceStatusOID = ".1.3.6.1.2.1.25.3.2.1.5.1" # SNMPv2-SMI::mib-2.25.3.2.1.5.1
+    deviceStatusValues = { 1 : 'unknown',
+                           2 : 'running',
+                           3 : 'warning',
+                           4 : 'testing',
+                           5 : 'down',
+                         }  
+    hrPrinterDetectedErrorStateOID = ".1.3.6.1.2.1.25.3.5.1.2.1" # SNMPv2-SMI::mib-2.25.3.5.1.2.1
+    prtConsoleDisplayBufferTextOID = ".1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
                           
+    #                      
+    # Documentation taken from RFC 3805 (Printer MIB v2) and RFC 2790 (Host Resource MIB)
+    #
+    # TODO : if hrDeviceStatus==2 and hrPrinterStatus==1 then it's powersave mode.
+    #
     class SNMPAccounter :
         """A class for SNMP print accounting."""
         def __init__(self, parent, printerhostname) :
@@ -183,7 +200,8 @@ else :
             req = ver.Message()
             req.apiAlphaSetCommunity('public')
             req.apiAlphaSetPdu(ver.GetRequestPdu())
-            req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), (hrPrinterStatusOID, ver.Null()))
+            req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), \
+                                                        (hrPrinterStatusOID, ver.Null()))
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
