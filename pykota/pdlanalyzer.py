@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/08/27 08:58:50  jalet
+# Relax checks for PCL5 header to accomodate strange printer drivers
+#
 # Revision 1.31  2004/08/22 08:25:33  jalet
 # Improved ESC/P2 miniparser thanks to Paulo Silva
 #
@@ -636,6 +639,8 @@ class PDLAnalyzer :
             self.mustclose = 1
             return
             
+        debugfile = open("/tmp/jerome_debugs_pykota.prn", "w")
+        
         # Use a temporary file, always seekable contrary to standard input.
         self.infile = tempfile.TemporaryFile(mode="w+b")
         while 1 :
@@ -643,8 +648,12 @@ class PDLAnalyzer :
             if not data :
                 break
             self.infile.write(data)
+            debugfile.write(data)
         self.infile.flush()    
         self.infile.seek(0)
+        
+        debugfile.flush()
+        debugfile.close()
             
     def closeFile(self) :        
         """Closes the job's data stream if we can close it."""
@@ -687,10 +696,7 @@ class PDLAnalyzer :
     def isPCL(self, data) :    
         """Returns 1 if data is PCL, else 0."""
         if data.startswith("\033E\033") or \
-           ((data[:128].find("\033%-12345X") != -1) and \
-             ((data.find("LANGUAGE=PCL") != -1) or \
-              (data.find("LANGUAGE = PCL") != -1) or \
-              (data.find("LANGUAGE = Pcl") != -1))) :
+           (data[:128].find("\033%-12345X") != -1) :
             return 1
         else :    
             return 0
@@ -727,10 +733,10 @@ class PDLAnalyzer :
             return PostScriptAnalyzer
         elif self.isPCLXL(firstblock) :    
             return PCLXLAnalyzer
-        elif self.isPCL(firstblock) :    
-            return PCLAnalyzer
         elif self.isPDF(firstblock) :    
             return PDFAnalyzer
+        elif self.isPCL(firstblock) :    
+            return PCLAnalyzer
         elif self.isESCP2(firstblock) :    
             return ESCP2Analyzer
         else :    

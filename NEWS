@@ -23,8 +23,15 @@ PyKota NEWS :
 
     - 1.20alpha3 :
        
+        - Relax checks for PCL5 header to accomodate some strange
+          printer drivers.
+          
         - Now hardware accounting method works like software
           accounting method wrt the subprocess' output.
+          
+        - Hardware and Software accounting stop the print queue  
+          when the accounting subprocess didn't work. This will
+          be configurable in the near future.
           
     - 1.20alpha2 :
     
