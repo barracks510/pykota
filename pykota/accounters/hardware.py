@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.20  2004/09/22 19:22:27  jalet
+# Just loop in case a network error occur
+#
 # Revision 1.19  2004/09/22 14:29:01  jalet
 # Fixed nasty typo
 #
@@ -100,6 +103,7 @@ import popen2
 from pykota.accounter import AccounterBase, PyKotaAccounterError
 
 try :
+    from pysnmp.mapping.udp import SnmpOverUdpError
     from pysnmp.mapping.udp.role import Manager
     from pysnmp.proto.api import alpha
 except ImportError :
@@ -134,8 +138,8 @@ else :
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
-            except pysnmp.mapping.udp.SnmpOverUdpError, msg :    
-                raise PyKotaAccounterError, _("Network error while doing SNMP queries : %s") % msg
+            except SnmpOverUdpError, msg :    
+                self.parent.filter.printInfo(_("Network error while doing SNMP queries : %s") % msg, "warn")
             tsp.close()
     
         def handleAnswer(self, wholeMsg, transportAddr, req):
