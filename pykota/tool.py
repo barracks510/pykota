@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.85  2004/05/11 08:26:27  jalet
+# Now catches connection problems to SMTP server
+#
 # Revision 1.84  2004/04/21 08:36:32  jalet
 # Exports the PYKOTASTATUS environment variable when SIGTERM is received.
 #
@@ -326,6 +329,7 @@ import smtplib
 import gettext
 import locale
 import signal
+import socket
 
 from mx import DateTime
 
@@ -467,13 +471,17 @@ class PyKotaTool :
         """Sends an email message containing headers to some user."""
         if "@" not in touser :
             touser = "%s@%s" % (touser, self.maildomain or self.smtpserver)
-        server = smtplib.SMTP(self.smtpserver)
-        try :
-            server.sendmail(adminmail, [touser], "From: %s\nTo: %s\n%s" % (adminmail, touser, fullmessage))
-        except smtplib.SMTPException, answer :    
-            for (k, v) in answer.recipients.items() :
-                self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
-        server.quit()
+        try :    
+            server = smtplib.SMTP(self.smtpserver)
+        except socket.error, msg :    
+            self.logger.log_message(_("Impossible to connect to SMTP server : %s") % msg, "error")
+        else :
+            try :
+                server.sendmail(adminmail, [touser], "From: %s\nTo: %s\n%s" % (adminmail, touser, fullmessage))
+            except smtplib.SMTPException, answer :    
+                for (k, v) in answer.recipients.items() :
+                    self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
+            server.quit()
         
     def sendMessageToUser(self, admin, adminmail, user, subject, message) :
         """Sends an email message to a user."""
