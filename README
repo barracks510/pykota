@@ -43,21 +43,52 @@ more.
 INSTALLATION:
 =============
 
+Prerequisite : 
+--------------
+   
+  You need to have the following tools installed on the CUPS Server :
+  
+    - CUPS
+    - Python
+    - eGenix' mxDateTime Python extension
+    - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
+      libraries.
+    - SNMP tools (specifically the snmpget command)
+    
+  You need to have the following tools installed on the Quota Storage  
+  Server :
+  
+    - PostgreSQL
+    
+  PygreSQL and the PostgreSQL client libraries's versions on the CUPS 
+  Server must match the PostgreSQL version used on the Quota Storage 
+  Server.
+  
+  Of course the CUPS Server and the Quota Storage Server can be the  
+  very same machine. 
+  
+  This list of prerequisite software may change in the future, when
+  PyKota will support more functionnalities you will be given 
+  alternatives.
+  
+Then :   
+------
+ 
 Download the latest PyKota version from :
 
         http://www.librelogiciel.com/software/
 
-Extract it:
+Extract it and install it on the CUPS Server :
 
         gzip -d pykota-x.xx.tar.gz | tar -xf -
 
         where x.xx is PyKota's latest version number.
 
-Go to PyKota's directory:
+Go to PyKota's directory :
 
         cd pykota-x.xx
 
-Just type:
+Just type :
 
         python setup.py install
 
@@ -70,9 +101,8 @@ to create an empty PyKota Storage.
 
 Copy the conf/pykota.conf.sample sample configuration file to
 CUPS' configuration directory, usually /etc/cups, under the
-name pykota.conf.
-
-Adapt this file to your own needs and configuration.
+name pykota.conf, and adapt this file to your own needs and 
+configuration.
 
 Modify the PPD files for each printer on which you want to manage
 print quotas, for example /etc/cups/ppd/lp.ppd :
@@ -82,7 +112,9 @@ print quotas, for example /etc/cups/ppd/lp.ppd :
 --- Add the line above exactly as-is somewhere near the top  ---
 
 Modify the path to pykota if needed, unfortunately you have to
-supply the correct absolute path here due to CUPS internals.
+supply the correct absolute path here due to CUPS internals, or
+put the pykota executable into /usr/lib/cups/filter instead of
+into /usr/bin.
 
 Do this in each ppd file present in this directory if you want
 to enable quota on every printer.
