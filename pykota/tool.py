@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.118  2004/08/06 20:46:45  jalet
+# Finished group quota fix for balance when no user in group has a balance
+#
 # Revision 1.117  2004/08/06 13:45:51  jalet
 # Fixed french translation problem.
 # Fixed problem with group quotas and strict enforcement.
@@ -707,7 +710,7 @@ class PyKotaTool :
         enforcement = self.config.getPrinterEnforcement(printer.Name)
         self.logdebug("Checking group %s's quota on printer %s" % (group.Name, printer.Name))
         if group.LimitBy and (group.LimitBy.lower() == "balance") : 
-            val = group.AccountBalance
+            val = group.AccountBalance or 0.0
             if enforcement == "STRICT" : 
                 val -= self.softwareJobPrice # use precomputed size.
             if val <= 0.0 :
