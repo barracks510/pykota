@@ -455,6 +455,7 @@ policy: deny
 # directives.
 #
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
+# PYKOTACTION : ALLOW or DENY or WARN for current print job
 # PYKOTAUSERNAME : user's name
 # PYKOTAPRINTERNAME : printer's name
 # PYKOTAJOBID : job's id
@@ -471,8 +472,9 @@ policy: deny
 # PYKOTADATELIMIT : user's soft to hard limit date limit on this printer
 
 # PreHook : gets executed after being sure the user, printer and user quota
-# entry on the printer both exist in the PyKota database, but just before
-# checking if the user is allowed to print or not.
+# entry on the printer both exist in the PyKota database, and after
+# checking if the user is allowed to print or not, but just before
+# the job is sent to the printer (if allowed)
 # prehook has access to many environment variables :
 #
 # PYKOTAACTION contains either "ALLOW", "WARN" or "DENY" and 
