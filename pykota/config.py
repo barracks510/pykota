@@ -20,6 +20,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/04/24 11:53:48  jalet
+# Default policy for unknown users/groups is to DENY printing instead
+# of the previous default to ALLOW printing. This is to solve an accuracy
+# problem. If you set the policy to ALLOW, jobs printed by in nexistant user
+# (from PyKota's POV) will be charged to the next user who prints on the
+# same printer.
+#
 # Revision 1.22  2003/04/23 22:13:57  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -212,7 +219,7 @@ class PyKotaConfig :
         try :
             policy = self.getPrinterOption(printer, "policy").upper()
         except PyKotaConfigError :    
-            policy = "ALLOW"
+            policy = "DENY"
         if policy not in validpolicies :
             raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
         return policy

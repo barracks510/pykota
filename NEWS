@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.04pre4 :
+    
+        - Default print policy for users/groups unknown from 
+          the print quota system is now DENY instead of ALLOW,
+          since ALLOW can generate inaccurate results
+          (incorrect job sizes charged to the wrong persons)
+          
     - 1.04pre3 :
     
         - LPRng support works !

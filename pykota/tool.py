@@ -20,6 +20,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.38  2003/04/24 11:53:48  jalet
+# Default policy for unknown users/groups is to DENY printing instead
+# of the previous default to ALLOW printing. This is to solve an accuracy
+# problem. If you set the policy to ALLOW, jobs printed by in nexistant user
+# (from PyKota's POV) will be charged to the next user who prints on the
+# same printer.
+#
 # Revision 1.37  2003/04/24 08:08:27  jalet
 # Debug message forgotten
 #
@@ -351,7 +358,7 @@ class PyKotaTool :
         if limitby == "balance" : 
             balance = self.storage.getGroupBalance(groupid)
             if balance is None :
-                if policy in [None, "ALLOW"] :
+                if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
@@ -367,7 +374,7 @@ class PyKotaTool :
             quota = self.storage.getGroupPQuota(groupid, printerid)
             if quota is None :
                 # Unknown group or printer or combination
-                if policy in [None, "ALLOW"] :
+                if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
@@ -426,7 +433,7 @@ class PyKotaTool :
         if limitby == "balance" : 
             balance = self.storage.getUserBalance(userid)
             if balance is None :
-                if policy in [None, "ALLOW"] :
+                if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
@@ -442,7 +449,7 @@ class PyKotaTool :
             quota = self.storage.getUserPQuota(userid, printerid)
             if quota is None :
                 # Unknown user or printer or combination
-                if policy in [None, "ALLOW"] :
+                if policy == "ALLOW" :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
