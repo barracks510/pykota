@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.48  2004/07/27 07:14:24  jalet
+# Now warns the user if pyosd is not present
+#
 # Revision 1.47  2004/07/16 12:22:45  jalet
 # LPRng support early version
 #
@@ -408,7 +411,8 @@ if ("install" in sys.argv) and not ("help" in sys.argv) :
     # checks if some needed Python modules are there or not.
     modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend."),                                            
                        ("mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work."), 
-                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.")
+                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend."),
+                       ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
                      ]
     commandstocheck = [("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")]
     for (name, module, helper) in modulestocheck :
