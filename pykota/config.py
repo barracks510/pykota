@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2003/02/07 22:00:09  jalet
+# Bad cut&paste
+#
 # Revision 1.5  2003/02/06 23:58:05  jalet
 # repykota should be ok
 #
@@ -86,7 +89,7 @@ class PyKotaConfig :
                     
             validpolicies = [ "ALLOW", "DENY" ]     
             if self.config.get(printer, "policy").upper() not in validpolicies :
-                raise PyKotaConfigError, "Option policy in section %s only supports values in %s" % (printer, str(validrequesters))
+                raise PyKotaConfigError, "Option policy in section %s only supports values in %s" % (printer, str(validpolicies))
             
             validrequesters = [ "snmp" ] # TODO : add more requesters
             requester = self.config.get(printer, "requester").lower()
