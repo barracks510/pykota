@@ -39,6 +39,9 @@ Supporters :
     - Pablo Acchiardio
     - Peter Allmaker - Massachusetts College of Liberal Arts
     - Nigel Pallett - Optimus UK Ltd
+    - Joby Mathew
+    - Alejandra Rodriguez
+    - Matt Hyclak - Ohio University
 
 Contributors :
 --------------
@@ -52,6 +55,7 @@ Contributors :
     - Leif Johansson - Stockholm University : LDAP support
     - Bob Martel - Cleveland State University : SNMP examples
     - Michael Stuebiger : Non-postscript printers support documentation
+    - Oleg Biteryakov - University of Michigan : Bug fix in SQL code
 
 ==============================================================
 

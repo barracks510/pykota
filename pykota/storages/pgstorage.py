@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/08/17 14:20:25  jalet
+# Bug fix by Oleg Biteryakov
+#
 # Revision 1.11  2003/07/29 20:55:17  jalet
 # 1.14 is out !
 #
@@ -384,11 +387,11 @@ class Storage :
         
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
         """Sets the date limit permanently for a user print quota."""
-        self.doModify("UPDATE userpquota SET datelimit::TIMESTAMP=%s WHERE id=%s" % (self.doQuote(datelimit), self.doQuote(userpquota.ident)))
+        self.doModify("UPDATE userpquota SET datelimit=%s WHERE id=%s" % (self.doQuote(datelimit), self.doQuote(userpquota.ident)))
             
     def writeGroupPQuotaDateLimit(self, grouppquota, datelimit) :    
         """Sets the date limit permanently for a group print quota."""
-        self.doModify("UPDATE grouppquota SET datelimit::TIMESTAMP=%s WHERE id=%s" % (self.doQuote(datelimit), self.doQuote(grouppquota.ident)))
+        self.doModify("UPDATE grouppquota SET datelimit=%s WHERE id=%s" % (self.doQuote(datelimit), self.doQuote(grouppquota.ident)))
         
     def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
        """Sets the new page counters permanently for a user print quota."""
