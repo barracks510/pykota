@@ -1,0 +1,47 @@
+.TH PKPGCOUNTER "1" "April 2004" "C@LL - Conseil Internet & Logiciels Libres" "User Commands"
+.SH NAME
+pkpgcounter \- PyKota script to count pages in PostScript or PCL documents
+.SH SYNOPSIS
+.B pkpgcounter
+.RI file1
+.RI file2
+.RI ...
+.SH DESCRIPTION
+This manual page documents briefly the
+.B pkpgcounter
+command.
+.PP
+\fBpkpgcounter\fP is a convenience script provided by pykota that attempts
+to count the number of pages in a PostScript or PCL document. This may be of use
+as an external accounter as defined in /etc/pykota/pykota.conf, since currently
+\fBpkpgcounter\fP is the smarter software accounter included with PyKota.
+
+\fBpkpgcounter\fP with no argument reads the job's data from stdin, and prints
+the number of pages on stdout. 
+
+\fBpkpgcounter\fP accepts any number of filenames as its arguments, and also the
+special argument '-' in place of stdin. With multiple arguments it prints
+the total number of pages of all the documents.
+
+For further information, see the HTML documentation that came with the pykota
+package, found in /usr/share/doc/pykota/html/.
+
+.PP
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+.PP
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+.PP
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+.PP
+Please e-mail bugs to: Jerome Alet - alet@librelogiciel.com
+
+.SH AUTHOR
+This manual page was written by Jerome Alet.
