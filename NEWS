@@ -22,10 +22,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 PyKota NEWS :
 
     - 1.18alpha15 :
+
+        - waitprinter.sh replaced by a new and possibly faster
+	  and more powerful one.
     
         - Names can now begin with a digit.
         
-        - Small fix for quotas set on printers groups.
+        - Stability improvement for quotas set on printers groups.
         
     - 1.18alpha14 :
     
