@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/06/25 08:10:08  jalet
+# Another fix for PCL5 parser
+#
 # Revision 1.12  2004/06/24 23:09:53  jalet
 # Fix for number of copies in PCL5 parser
 #
@@ -172,7 +175,7 @@ class PCLAnalyzer :
                    }  
         self.data = []             
         self.pos = self.len = 0
-        pagecount = resets = 0
+        pagecount = resets = ejects = backsides = 0
         tag = None
         copies = {}
         while 1 :
@@ -222,9 +225,9 @@ class PCLAnalyzer :
                         if (tag == "&l") and (char == "X") : # copies for current page
                             copies[pagecount] = size
                         elif (tag == "&l") and (char == "H") and (size == 0) :    
-                            pagecount += 1      # Eject if NumPlanes > 1
+                            ejects += 1         # Eject 
                         elif (tag == "&a") and (size == 2) :
-                            pagecount += 1      # Back side in duplex mode
+                            backsides += 1      # Back side in duplex mode
                         else :    
                             # doing a read will prevent the seek 
                             # for unseekable streams. 
@@ -235,7 +238,7 @@ class PCLAnalyzer :
                                 size += 1
                             self.skip(size)
                             
-        # if pagecount is still 0, we will return the number
+        # if pagecount is still 0, we will use the number
         # of resets instead of the number of form feed characters.
         # but the number of resets is always at least 2 with a valid
         # pcl file : one at the very start and one at the very end
@@ -243,10 +246,13 @@ class PCLAnalyzer :
         # resets. And since on our test data we needed to substract
         # 1 more, we finally substract 3, and will test several
         # PCL files with this. If resets < 2, then the file is
-        # probably not a valid PCL file, so we return 0
-        # TODO : this code is probably not needed anymore
-        # TODO : since we added more page ejections detections
-        pagecount = (pagecount or ((resets - 3) * (resets > 2)))
+        # probably not a valid PCL file, so we use 0
+        if not pagecount :
+            pagecount = (pagecount or ((resets - 3) * (resets > 2)))
+        else :    
+            # here we add counters for other ways new pages may have
+            # been printed and ejected by the printer
+            pagecount += ejects + backsides
         
         # now handle number of copies for each page (may differ).
         # in duplex mode, number of copies may be sent only once.
