@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.78  2004/03/08 20:13:25  jalet
+# Allow names to begin with a digit
+#
 # Revision 1.77  2004/03/03 13:10:35  jalet
 # Now catches all smtplib exceptions when there's a problem sending messages
 #
@@ -425,13 +428,11 @@ class PyKotaTool :
         # unfortunately Python 2.1 string modules doesn't define ascii_letters...
         asciiletters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         digits = '0123456789'
-        if name[0] in asciiletters :
-            validchars = asciiletters + digits + "-_."
-            for c in name[1:] :
-                if c not in validchars :
-                    return 0
-            return 1        
-        return 0
+        validchars = asciiletters + digits + "-_."
+        for c in name :
+            if c not in validchars :
+                return 0
+        return 1        
         
     def matchString(self, s, patterns) :
         """Returns 1 if the string s matches one of the patterns, else 0."""
