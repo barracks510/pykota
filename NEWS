@@ -25,6 +25,8 @@ PyKota NEWS :
     
         - Small fix for job cancelling code while job already
           printing in CUPS backend.
+          
+        - Big fix wrt printing policies for unknown users.  
         
     - 1.16beta1 :
     
