@@ -37,12 +37,9 @@ TODO, in no particular order :
         
         - Web enabled pykotme.
         
-        - Add an MD5 checksum of the job's datas to the
-          history, to be able to discover duplicate print
-          jobs. This is partially done : the checksum 
-          is now computed and exported into the environment
-          variable PYKOTAMD5SUM, but it is not yet saved 
-          into the database.
+        - Uses the MD5 checksum of the job's datas which is now
+          saved into the database to be able to forbid duplicate
+          jobs.
           
         - Maybe put "gracedelay" in the database.
         
