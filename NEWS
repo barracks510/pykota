@@ -23,7 +23,10 @@ PyKota NEWS :
 
     - 1.03beta2 :
     
-        -  repykota now reports account balances too.
+        - repykota now reports account balances too.
+        
+        - PyKota now has a nice logo, see the logos
+          subdirectory.
         
     - 1.03beta :
     
