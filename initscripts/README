@@ -21,14 +21,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 This directory contains scripts to initialise the PyKota
 storage database. Use the one which best suits your need
-depending on the storage backend you want to use. Each
-script has an associated README file, be sure to read 
-this as well :
+depending on the storage backend you want to use.
 
-        File                            Backend
-        --------------------------------------------------
-         pykota-posgresql.sql | PostgreSQL storage
-pykota-upgrade-postgresql.sql | Upgrade database schema from pre 1.01
-                              |
-        
-============================================================
+
+Files :
+=======
+
+  * pykota-postgresql.sql :
+  
+    This file creates an empty Quota Storage Database, using PostgreSQL
+    as a backend. You have to use it the first time you install PyKota
+    if you want to use PostgreSQL as the Quota Storage Backend.
+    
+  * pykota-upgrade-postgresql.sql :
+  
+    This files upgrades the PostgreSQL Quota Storage Database schema
+    from versions before 1.01 to version 1.01.
+    
+  * upgrade-1.01-to-1.03.sh :
+  
+    This shell script upgrades the PostgreSQL Quota Storage Database schema
+    from versions 1.01 or 1.02 to version 1.03.
+    PLEASE DO A BACKUP OF YOUR PYKOTA DATABASE BEFORE RUNNING THIS SCRIPT !
+    Also this script will try to connect to PostgreSQL as the postgres user
+    (i.e. PostgreSQL's administrator), on the local machine (PyKota Storage 
+    Server), without prompting for a password. Please read this script and 
+    adapt it to your own configuration before running it. THIS IS IMPORTANT.
+  

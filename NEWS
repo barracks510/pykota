@@ -23,6 +23,11 @@ PyKota NEWS :
 
     - 1.03alpha :
     
+        - IMPORTANT : DataBase schema has changed, YOU HAVE TO
+          UPGRADE using the upgrade-1.01-to-1.03.sh script.
+          Please read initscripts/README first and then 
+          read initscripts/README.postgresql
+          
         - The installation script now allows to install the sample
           configuration file during first installation.
         

@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/04/08 20:38:08  jalet
+# The last job Id is saved now for each printer, this will probably
+# allow other accounting methods in the future.
+#
 # Revision 1.15  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -130,6 +134,10 @@ def main() :
         inputfile = None
         
     #    
+    # According to CUPS documentation, the job id is the second command line argument
+    jobid = sys.argv[1].strip()
+    
+    #    
     # According to CUPS documentation, the username is the third command line argument
     username = sys.argv[2].strip()    
     
@@ -154,7 +162,7 @@ def main() :
         kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "warn")
     else :    
         # get last values from Quota Storage
-        (lastpagecounter, lastusername) = (pgc["pagecounter"], pgc["lastusername"])
+        (lastpagecounter, lastjobid, lastusername) = (pgc["pagecounter"], pgc["lastjobid"], pgc["lastusername"])
         
         # if printer is off then we assume the correct counter value is the last one
         if printerIsOff :
@@ -162,7 +170,7 @@ def main() :
             
         # Update the last page counter and last username in the Quota Storage backend
         # set them to current user and 
-        kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob)
+        kotafilter.storage.updatePrinterPageCounter(kotafilter.printername, username, counterbeforejob, jobid)
         
         # Was the printer ever used ?
         if (lastpagecounter is None) or (lastusername is None) :

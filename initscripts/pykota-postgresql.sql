@@ -19,6 +19,10 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.7  2003/04/08 20:38:08  jalet
+-- The last job Id is saved now for each printer, this will probably
+-- allow other accounting methods in the future.
+--
 -- Revision 1.6  2003/03/29 13:45:27  jalet
 -- GPL paragraphs were incorrectly (from memory) copied into the sources.
 -- Two README files were added.
@@ -83,6 +87,7 @@ CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
 --
 CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
                       printername TEXT UNIQUE NOT NULL,
+                      lastjobid TEXT,
                       lastusername TEXT,
                       pagecounter INT4 DEFAULT 0);
                     

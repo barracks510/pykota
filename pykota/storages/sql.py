@@ -20,6 +20,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/04/08 20:38:08  jalet
+# The last job Id is saved now for each printer, this will probably
+# allow other accounting methods in the future.
+#
 # Revision 1.20  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -147,15 +151,15 @@ class SQLStorage :
             
     def getPrinterPageCounter(self, printername) :
         """Returns the last page counter value for a printer given its name."""
-        result = self.doQuery("SELECT pagecounter, lastusername FROM printers WHERE printername=%s;" % self.doQuote(printername))
+        result = self.doQuery("SELECT pagecounter, lastjobid, lastusername FROM printers WHERE printername=%s;" % self.doQuote(printername))
         try :
             return self.doParseResult(result)[0]
         except TypeError :      # Not found
             return
         
-    def updatePrinterPageCounter(self, printername, username, pagecount) :
-        """Updates the last page counter information for a printer given its name, last username and pagecount."""
-        return self.doQuery("UPDATE printers SET pagecounter=%s, lastusername=%s WHERE printername=%s;" % (self.doQuote(pagecount), self.doQuote(username), self.doQuote(printername)))
+    def updatePrinterPageCounter(self, printername, username, pagecount, jobid) :
+        """Updates the last page counter information for a printer given its name, last username, pagecount and jobid."""
+        return self.doQuery("UPDATE printers SET pagecounter=%s, lastusername=%s, lastjobid=%s WHERE printername=%s;" % (self.doQuote(pagecount), self.doQuote(username), self.doQuote(jobid), self.doQuote(printername)))
         
     def addUserPQuota(self, username, printername) :
         """Initializes a user print quota on a printer, adds the printer and the user to the quota storage if needed."""

@@ -26,7 +26,7 @@ This script is to be used to create an empty Quota Storage
 DataBase using PostgreSQL as a backend.
 
 If you have already installed PyKota, and have datas in your
-Quota Storage DataBase, you may prefer to  skip this section
+Quota Storage DataBase, you may prefer to skip this section
 and read the next one.
 
         - Launch the psql frontend and connect to the
@@ -48,12 +48,17 @@ and read the next one.
         
 ============================================================
 
-Upgrade script :
+Upgrade scripts :
 
-  An sql script to upgrade a pre-1.01 PyKota Quota Storage 
-  DataBase is included, if you want to keep your datas from
-  a pre-1.01 PyKota version, then please launch the following
-  commands :
+  Some scripts to upgrade old PyKota databases to the new
+  database schema are included. You may have to run all
+  of them or only some of them, depending on your 
+  version of PyKota.
+  
+* An sql script to upgrade a pre-1.01 PyKota Quota Storage DataBase to 
+  1.01 is included. If your PyKota version is equal or higher than 1.01 then
+  you can skip to the next section. Otherwise, if you want to keep your datas
+  from a pre-1.01 PyKota version, then please launch the following commands : 
   
         - Launch the psql frontend and connect to the
           database pykota as a PostgreSQL administrator
@@ -75,7 +80,7 @@ Upgrade script :
   If you already run PyKota v1.01 or above, you don't need
   to run this upgrade script.
   
-WARNING :  
+  WARNING :  
 
   This script requires a recent version of PostgreSQL to run
   successfully, because it requires the ALTER TABLE DROP COLUMN
@@ -84,13 +89,8 @@ WARNING :
   have two unused fields in the grouppquota table, these
   fields are pagecounter and lifepagecounter, just forgot them.
   
-IMPORTANT :
-
-  Because the modifications are just about Group Print Quotas
-  and because Group Print Quotas are currently not fully   
-  implemented, you can delay the launch of this upgrade
-  script until you really need Group Print Quotas.
-  In other terms, running this script is not mandatory
-  for PyKota to continue to work correctly, at least
-  until Group Print Quotas will be fully implemented.
-  
+* If you are already running PyKota 1.01 or 1.02 and want to upgrade to 
+  1.03, YOU HAVE TO RUN the upgrade-1.01-to-1.03.sh shell script.
+  NOT LAUNCHING THIS SCRIPT WILL CAUSE PYKOTA TO STOP WORKING !
+  Please don't run this script if your version of PyKota is already
+  1.03 or higher.
