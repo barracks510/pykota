@@ -215,10 +215,11 @@ the associated README file and execute the initialization script
 to create an empty PyKota Storage. Upgrade scripts may be 
 provided as well.
 
-Copy the conf/pykota.conf.sample sample configuration file to
-/etc/pykota/pykota.conf. The installation script tries to do this for
-you if needed and you agreed to this action.
-You need to adapt the /etc/pykota/pykota.conf file to your own needs.
+Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample
+sample configuration files to /etc/pykota/pykota.conf and 
+/etc/pykota/pykotadmin.conf. The installation script tries to do this 
+for you if needed and you agreed to this action.
+You need to adapt these files to your own needs.
 Especially you have to create sections named after your own
 printers, and change the administrator's email address.
 
@@ -270,7 +271,7 @@ Add printers and users to the quota system and set their quota values :
     by default, each user is limited by "quota", this means that on
     each printer he can have a different soft and hard limit.
     You may want to limit the user by his account balance value, 
-    in which case, the print quota is shared between all pinters
+    in which case, the print quota is shared between all printers
     instead of being different. To do this, use the following :
     
     $ edpykota --add -P hp2100 --limitby balance --balance 10 user1 ... userN
@@ -281,7 +282,9 @@ Add printers and users to the quota system and set their quota values :
     decreased by an amount which depends on the particular price per page
     and per job that you may have defined on the printer with edpykota's
     --charge command line option.
-    Soft and Hard limits are not used if "--limitby balance" is used.
+    Soft and Hard limits are not used if "--limitby balance" is used,
+    but you can define a "poorman"'s threshold in /etc/pykota/pykota.conf
+    to obtain a similar result (warning message when quota is low).
 
 Restart CUPS or LPRng, for example under Debian GNU/Linux systems :          
 
@@ -303,10 +306,11 @@ or :
     $ repykota
     
     which will print quota usage for all users on all printers,
-    along with totals.
+    along with totals, if you are the root user. If you are
+    a regular user, only your own quota report will be produced.
     
-Quota reports are also available remotely by using the CGI scripts
-provided in the cgi-bin/ subdirectory.
+Quota reports are also available remotely by using the CGI script
+printquota.cgi provided in the cgi-bin/ subdirectory.
 
 For different security concerns, please give a look at the SECURITY
 file which is part of this software.
@@ -323,4 +327,5 @@ Mailing list :
     
 ============================================================
     
-Please e-mail bugs to: alet@librelogiciel.com (Jerome Alet)
+Please e-mail bugs to the mailing list at : pykota@librelogiciel.com
+or to the main author at : alet@librelogiciel.com (Jerome Alet)
