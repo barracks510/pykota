@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/05/17 16:32:30  jalet
+# Also outputs the original import error message.
+#
 # Revision 1.14  2003/05/17 16:31:38  jalet
 # Dies gracefully if DistUtils is not present.
 #
@@ -80,7 +83,8 @@ import shutil
 import ConfigParser
 try :
     from distutils.core import setup
-except ImportError :    
+except ImportError, msg :    
+    sys.stderr.write("%s\n" % msg)
     sys.stderr.write("You need the DistUtils Python module.\nunder Debian, you may have to install the python-dev package.\nOf course, YMMV.\n")
     sys.exit(-1)
 
