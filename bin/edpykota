@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.72  2004/04/16 16:20:19  jalet
+# Note about not implemented limitby values
+#
 # Revision 1.71  2004/03/24 15:15:24  jalet
 # Began integration of Henrik Janhagen's work on quota-then-balance
 # and balance-then-quota
@@ -325,6 +328,8 @@ options :
                        The default value is 'quota'. Allowed values
                        are 'quota' 'balance' 'quota-then-balance' and
                        'balance-then-quota'.
+                       WARNING : quota-then-balance and balance-then-quota
+                       are not yet implemented.
                        
   -b | --balance b     Sets the user's account balance to b.                     
                        Account balance may be increase or decreased
