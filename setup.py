@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2003/04/17 13:47:28  jalet
+# Help added during installation.
+#
 # Revision 1.8  2003/04/15 17:49:29  jalet
 # Installation script now checks the presence of Netatalk
 #
@@ -83,7 +86,7 @@ def checkCommand(command) :
     input.close()
     return result
     
-def checkWithPrompt(prompt, module=None, command=None) :
+def checkWithPrompt(prompt, module=None, command=None, help=None) :
     """Tells the user what will be checked, and asks him what to do if something is absent."""
     sys.stdout.write("Checking for %s availability : " % prompt)
     sys.stdout.flush()
@@ -97,6 +100,8 @@ def checkWithPrompt(prompt, module=None, command=None) :
     else :    
         sys.stdout.write("NO.\n")
         sys.stderr.write("ERROR : %s not available !\n" % prompt)
+        if help is not None :
+            sys.stout.write("%s\n" % help)
         answer = raw_input("%s is missing. Do you want to continue anyway (y/N) ? " % prompt)
         if answer[0:1].upper() == 'Y' :
             return ACTION_CONTINUE
@@ -142,7 +147,7 @@ if "install" in sys.argv :
     
     # checks if some needed Python modules are there or not.
     modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
-    commandstocheck = [("SNMP Tools", "snmpget"), ("Netatalk", "pap")]
+    commandstocheck = [("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")]
     for (name, module) in modulestocheck :
         action = checkWithPrompt(name, module=module)
         if action == ACTION_ABORT :
@@ -150,8 +155,8 @@ if "install" in sys.argv :
             sys.exit(-1)
             
     # checks if some software are there or not.
-    for (name, command) in commandstocheck :
-        action = checkWithPrompt(name, command=command)
+    for (name, command, help) in commandstocheck :
+        action = checkWithPrompt(name, command=command, help=help)
         if action == ACTION_ABORT :
             sys.stderr.write("Aborted !\n")
             sys.exit(-1)
