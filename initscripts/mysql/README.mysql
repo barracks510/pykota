@@ -1,0 +1,33 @@
+# $Id$
+
+PyKota - Print Quota for CUPS and LPRng
+
+(c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+============================================================
+
+Documentation for the pykota-mysql.sql script :
+-----------------------------------------------
+
+This script is to be used to create an empty Quota Storage
+DataBase using MySQL as a backend.
+
+FOR NOW MYSQL SUPPORT IS ONLY A WORK IN PROGRESS. THIS DOESN'T WORK. 
+DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU ARE DOING OR WANT TO HELP. 
+
+IF YOU REALLY WANT MYSQL SUPPORT, BE PATIENT, OR USE POSTGRESQL
+INSTEAD WHICH IS MUCH MUCH BETTER ANYWAY.
+
