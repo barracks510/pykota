@@ -1,0 +1,188 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Print Quota Data Dumper
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2004/07/01 19:22:37  jalet
+# First draft of dumpykota
+#
+#
+#
+
+import sys
+import os
+import pwd
+
+from pykota import version
+from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
+
+__doc__ = """dumpykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+
+Dumps PyKota database's content.
+
+command line usage :
+
+  dumpykota [options] 
+
+options :
+
+  -v | --version       Prints repykota's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -d | --data type     Dumps 'type' datas. When not specified, the
+                       default is to dump the jobs history data.
+                       Allowed types are :
+                       
+                         - history : dumps the jobs history.
+                         - users : dumps users.
+                         - groups : dumps user groups.
+                         - printers : dump printers.
+                         - uquotas : dump user quotas.
+                         - gquotas : dump user groups quotas.
+  
+  -f | --format fmt    Dumps datas in the 'fmt' format. When not specified,
+                       the format is to dump datas in the csv format (comma
+                       separated values). All data dumped is between double
+                       quotes. Allowed formats are :
+                       
+                         - csv : separate datas with commas
+                         - ssv : separate datas with semicolons
+                         - tsv : separate datas with tabs
+  
+  -p | --printer p     Only dumps datas concerning printer 'p'.
+                       Actually 'p' can use wildcards characters to select
+                       only some printers. The default value is *, meaning
+                       all printers.
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
+                       
+  -u | --user u        Only dumps datas concerning user 'u'.
+                       Actually 'u' can use wildcards characters to select
+                       only some users. The default value is *, meaning
+                       all users.
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
+                       
+  -g | --group g       Only dumps datas concerning group 'g'.
+                       Actually 'g' can use wildcards characters to select
+                       only some groups. The default value is *, meaning
+                       all groups.
+                       You can specify several names or wildcards, 
+                       by separating them with commas.
+  
+  If launched by a non-root user, additionnal arguments representing
+  users or groups names are ignored, and only the current user/group
+  is reported.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+        
+class DumPyKota(PyKotaTool) :        
+    """A class for dumpykota."""
+    def main(self, ugnames, options) :
+        """Print Quota Data Dumper."""
+        uid = os.geteuid()
+        if not uid :
+            # root user
+            if not ugnames :
+                # no username, means all usernames
+                ugnames = [ "*" ]
+        else :        
+            # not the root user
+            # reports only the current user
+            username = pwd.getpwuid(uid)[0]
+            if options["data"] == "groups" :
+                user = self.storage.getUser(username)
+                if user.Exists :
+                    ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
+                else :    
+                    ugnames = [ ]
+            else :
+                ugnames = [ username ]
+        
+        printers = self.storage.getMatchingPrinters(options["printer"])
+        if not printers :
+            raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
+            
+        # TODO : insert code here !    
+        raise PyKotaToolError, "Not implemented"
+                    
+if __name__ == "__main__" : 
+    try :
+        defaults = { \
+                     "printer" : "*", \
+                   }
+        short_options = "vhd:f:p:u:g:"
+        long_options = ["help", "version", "data=", "format=", "printer=", "user=", "group="]
+        
+        # Initializes the command line tool
+        dumper = DumPyKota(doc=__doc__)
+        
+        # parse and checks the command line
+        (options, args) = dumper.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["users"] = options["u"] or options["users"]
+        options["groups"] = options["g"] or options["groups"]
+        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
+        
+        if options["help"] :
+            dumper.display_usage_and_quit()
+        elif options["version"] :
+            dumper.display_version_and_quit()
+        elif options["users"] and options["groups"] :    
+            raise PyKotaToolError, _("incompatible options, see help.")
+        else :
+            retcode = dumper.main(args, options)
+    except SystemExit :        
+        pass
+    except :
+        try :
+            dumper.crashed("repykota failed")
+        except :    
+            pass
+        retcode = -1
+
+    try :
+        dumper.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    
