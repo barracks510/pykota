@@ -34,7 +34,12 @@ PyKota NEWS :
           
         - New PYKOTAJOBSIZEBYTES environment variable exported,  
           which contains the job's size in bytes. Empty jobs
-          are now denied.
+          are now denied. This value is now stored in the job
+          history (but not yet displayed from the web interface)
+          
+        - Preliminary work on payments storage : the PostgreSQL  
+          and LDAP schemas should be OK now, but no code is written
+          yet to support this functionnality.
           
     - 1.19alpha16 :
     
