@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2004/02/25 19:09:24  jalet
+# Fix for LDAP problem when job price was 0.
+#
 # Revision 1.43  2004/02/25 12:36:34  jalet
 # Avoids a database query even if caching was disabled.
 #
@@ -362,7 +365,8 @@ class StorageUserPQuota(StorageObject) :
         if jobsize :
             self.parent.beginTransaction()
             try :
-                self.User.consumeAccountBalance(jobprice)
+                if jobprice :
+                    self.User.consumeAccountBalance(jobprice)
                 for upq in [ self ] + self.ParentPrintersUserPQuota :
                     self.parent.increaseUserPQuotaPagesCounters(upq, jobsize)
                     upq.PageCounter = int(upq.PageCounter or 0) + jobsize
