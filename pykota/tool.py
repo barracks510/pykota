@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.92  2004/06/02 13:21:38  jalet
+# Debug message added
+#
 # Revision 1.91  2004/05/25 05:17:52  jalet
 # Now precomputes the job's size only if current printer's enforcement
 # is "STRICT"
@@ -849,7 +852,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # we finally ignore it and return 0 since this
             # computation is just an indication of what the
             # job's size MAY be.
-            self.logger.log_message(_("Unable to precompute the job's size with the generic PDL analyzer."), "warn")
+            self.logger.log_message(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
             return 0
         else :    
             if ((self.printingsystem == "CUPS") \
