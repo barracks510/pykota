@@ -292,7 +292,8 @@ sections named after your own printers, and change the
 administrator's email address which by default is root@localhost.
 Read and try to understand these two very well commented files,
 so that you'll encounter less problems later.
-Also be sure to double check that commands to query printers
+
+Also be sure to double check that commands that query printers
 for their internal page counter work from the command line
 before using them in PyKota's configuration.
 

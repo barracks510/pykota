@@ -23,13 +23,54 @@ PyKota's FAQ :
     allows you to bill differently per color, and to bill depending
     on the percent of the ink covered part of the pages.
     
+  * What is a 'dumb printer' ?
+  
+    In PyKota, the term 'dumb printer' defines a printer which doesn't 
+    understand PostScript AND doesn't have an internal page counter, AND 
+    for which you don't know how to compute a job's size in number of 
+    pages by analyzing its content. Any printer which is not a
+    'dumb printer' according to the above definition is supported 
+    with PyKota.
+
   * How can I make PyKota work with my non-postscript printer under 
     CUPS ?  
   
     From version 1.16alpha7, PyKota includes a CUPS backend which
-    allows you to use any type of printer and any driver.
+    allows you to use any type of printer and any driver, provided
+    your printer is not a 'dumb printer' (see above).
     
-  * How can I diagnose the problem when something goes wrong ?  
+  * How can I use my 'dumb printer' with CUPS and PyKota.  
+  
+    The solution is to plug the pykota filter into the
+    filtering chain when the print job is still in 
+    PostScript format, before being converted to the
+    dumb printer's native format. You can't use the
+    cupspykota CUPS backend with 'dumb printers'.
+    
+    Here's how to do :
+    
+        - Disable raw mode by modifying *.convs and
+          *.types files in /etc/cups, then restart
+          CUPS.
+          
+        - If you print from Windows through Samba, 
+          don't put '-o raw' in the print command 
+          definition in smb.conf
+          
+        - Under Windows, use a PostScript driver  
+          set to maximum compatibility mode.
+          
+        - Modify *.convs and *.types files to  
+          insert the pykota filter into the
+          filtering chain, as described
+          here (url should be on a single line) :
+          
+          http://cgi.librelogiciel.com/pipermail/  ...
+             ... pykota/attachments/20030721/753239b5/attachment.eml
+          
+          and restart CUPS.
+          
+  * How can I diagnose the problem when something goes wrong ?
   
     Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
     Then put "logger: system" and "debug: yes" in 
@@ -48,7 +89,9 @@ PyKota's FAQ :
     From version 1.16alpha7, you can now use the cupspykota
     CUPS backend, which ensures that all print jobs will be
     accounted for. The use of the old pykota filter is deprecated
-    with CUPS. It remains the filter of choice for LPRng though.
+    with CUPS. It remains the filter of choice for LPRng though,
+    or when you absolutely need to support a 'dumb printer' (see
+    definition above).
     
   * When printing from Windows, the jobs are never accounted for,
     but from *nix they are. Could you explain the reason for this ?
