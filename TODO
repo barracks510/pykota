@@ -31,13 +31,8 @@ TODO, in no particular order :
           Maybe add a new command line option to force/not force
           modification of existing entries.
           
-        - Maintain a list of payments.
-        
         - Finish implementation of quota-then-balance and 
           balance-then-quota.
-          
-        - Finish correct handling of child processes when a job  
-          is cancelled by the user.
           
         - Test and document a possible workaround for knowing
           if the job is a banner (embed a postscript comment
