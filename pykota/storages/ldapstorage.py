@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.57  2004/02/26 14:18:07  jalet
+# Should fix the remaining bugs wrt printers groups and users groups.
+#
 # Revision 1.56  2004/02/25 16:52:39  jalet
 # Small fix wrt empty user groups
 #
@@ -382,7 +385,13 @@ class Storage(BaseStorage) :
             fields = self.normalizeFields(fields)
             self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry, fields))
             entry = ldap.modlist.modifyModlist(oldentry, fields, ignore_oldexistent=ignoreold)
-            self.database.modify_s(dn, entry)
+            modentry = []
+            for (mop, mtyp, mval) in entry :
+                if mtyp != "createTimestamp" :
+                    modentry.append((mop, mtyp, mval))
+            self.tool.logdebug("MODIFY : %s ==> %s ==> %s" % (fields, entry, modentry))
+            if modentry :
+                self.database.modify_s(dn, modentry)
         except ldap.LDAPError, msg :
             raise PyKotaStorageError, (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % str(msg)
         else :

@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.18alpha10 :
+    
+        - Fixed nested printer groups accounting.
+        
+        - Fixed user groups + printer groups problem.
+        
     - 1.18alpha9 :
     
         - Fix for LDAP problem when job price was 0.

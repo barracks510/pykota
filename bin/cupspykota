@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2004/02/26 14:18:07  jalet
+# Should fix the remaining bugs wrt printers groups and users groups.
+#
 # Revision 1.27  2004/02/04 23:41:27  jalet
 # Should fix the incorrect "backend died abnormally" problem.
 #
@@ -197,7 +200,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         # OK means : Both printer, user and user print quota exist, job should
         #            be allowed if current user is allowed to print on this printer
         if policy == "OK" :
-            self.logdebug("Checking user %s's quota on printer %s" % (user.Name, printer.Name))
             action = self.warnUserPQuota(userpquota)
             self.logdebug("Job accounting begins.")
             self.accounter.beginJob(userpquota)

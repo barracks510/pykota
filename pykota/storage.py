@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2004/02/26 14:18:07  jalet
+# Should fix the remaining bugs wrt printers groups and users groups.
+#
 # Revision 1.45  2004/02/26 10:40:40  jalet
 # Fixed nested printer groups accounting.
 #
@@ -393,6 +396,14 @@ class StorageGroupPQuota(StorageObject) :
         self.HardLimit = None
         self.DateLimit = None
         
+    def __getattr__(self, name) :    
+        """Delays data retrieval until it's really needed."""
+        if name == "ParentPrintersGroupPQuota" : 
+            self.ParentPrintersGroupPQuota = (self.Group.Exists and self.Printer.Exists and self.parent.getParentPrintersGroupPQuota(self)) or []
+            return self.ParentPrintersGroupPQuota
+        else :
+            raise AttributeError, name
+        
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
         date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)
@@ -554,7 +565,6 @@ class BaseStorage :
             printer.Parents = self.getParentPrintersFromBackend(printer)
         for parent in printer.Parents[:] :    
             printer.Parents.extend(self.getParentPrinters(parent))
-        self.tool.logdebug("=== %i ===> %s" % (len(printer.Parents), [p.Name for p in printer.Parents]))
         return printer.Parents
         
     def getGroupMembers(self, group) :        
@@ -585,11 +595,17 @@ class BaseStorage :
         
     def getParentPrintersUserPQuota(self, userpquota) :     
         """Returns all user print quota on the printer and all its parents recursively."""
-        upquotas = []
+        upquotas = [ ]
         for printer in self.getParentPrinters(userpquota.Printer) :
             upquotas.append(self.getUserPQuota(userpquota.User, printer))
-        self.tool.logdebug("UPQUOTAS : %i ===> %s" % (len(upquotas), ["%s/%s" % (upq.User.Name, upq.Printer.Name) for upq in upquotas]))
         return upquotas        
+        
+    def getParentPrintersGroupPQuota(self, grouppquota) :     
+        """Returns all group print quota on the printer and all its parents recursively."""
+        gpquotas = [ ]
+        for printer in self.getParentPrinters(grouppquota.Printer) :
+            gpquotas.append(self.getGroupPQuota(grouppquota.Group, printer))
+        return gpquotas        
         
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""
