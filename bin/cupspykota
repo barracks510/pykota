@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/03/18 14:03:18  jalet
+# Added fsync() calls
+#
 # Revision 1.35  2004/03/16 12:05:01  jalet
 # Small fix for new waitprinter.sh : when job was denied, would wait forever
 # for printer being in printing mode.
@@ -362,6 +365,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     if fd == tocfno :
                         if indata :
                             os.write(fd, indata)    
+                            os.fsync(fd)
                             indata = ""
                         if endinput :    
                             pollster.unregister(tocfno)        
@@ -371,6 +375,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     elif fd == stdoutfno :
                         if outdata :
                             os.write(fd, outdata)
+                            os.fsync(fd)
                             outdata = ""
                         if endoutput :    
                             pollster.unregister(stdoutfno)        
@@ -378,6 +383,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     elif fd == stderrfno :
                         if errdata :
                             os.write(fd, errdata)
+                            os.fsync(fd)
                             errdata = ""
                         if enderr :    
                             pollster.unregister(stderrfno)        
