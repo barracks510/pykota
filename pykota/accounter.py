@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2004/01/11 23:43:31  jalet
+# Bug wrt number of copies with CUPS should be fixed.
+#
 # Revision 1.11  2004/01/11 23:22:42  jalet
 # Major code refactoring, it's way cleaner, and now allows automated addition
 # of printers on first print.
@@ -85,6 +88,10 @@ class AccounterBase :
         """Saves the computed job size."""
         # computes job's size
         self.JobSize = self.computeJobSize()
+        if ((self.filter.printingsystem == "CUPS") \
+            and (self.filter.preserveinputfile is not None)) \
+            or (self.filter.printingsystem != "CUPS") :
+                self.JobSize *= self.filter.copies
         
         # get last job information for this printer
         if not userpquota.Printer.LastJob.Exists :
@@ -108,15 +115,8 @@ class AccounterBase :
             return 0
         
     def doAccounting(self, userpquota) :
-        """Delegates the computation of the job size to an external command.
-        
-           The command must print the job size on its standard output and exit successfully.
-        """
+        """Does accounting for current job."""
         self.beginJob(userpquota)
-        
-        # get the job size, which is real job size * number of copies.
-        # TODO : Double check with CUPS documentation : this is not always correct
-        jobsize = self.getJobSize() * self.filter.copies
             
         # Is the current user allowed to print at all ?
         action = self.filter.warnUserPQuota(userpquota)
@@ -125,6 +125,8 @@ class AccounterBase :
         if action == "DENY" :
             jobsize = 0
         else :    
+            # get the job size
+            jobsize = self.getJobSize()
             userpquota.increasePagesUsage(jobsize)
         
         # adds the current job to history    

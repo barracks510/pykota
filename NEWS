@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.16alpha24 :
     
+        - Bug wrt number of copies should be fixed.
+        
         - Major code refactoring => It is now possible to
           automatically add printers on first print.
         
