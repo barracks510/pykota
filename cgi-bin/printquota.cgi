@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2004/07/24 20:10:10  jalet
+# Incorrect number of parameters in error method
+#
 # Revision 1.34  2004/07/24 20:07:13  jalet
 # Added special Python comment to remove warning at runtime
 #
@@ -191,7 +194,6 @@ def getLanguagePreference() :
 
 class PyKotaReportGUI(PyKotaTool) :
     """PyKota Administrative GUI"""
-        
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
@@ -262,7 +264,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 else :    
                     isgroup = 0
             else :
-                self.error(body, "Invalid action [%s]" % action)
+                self.error("Invalid action [%s]" % action)
         self.body += self.htmlListPrinters(printers or [])            
         self.body += "<br />"
         self.body += self.htmlUGNamesInput(ugmask)
