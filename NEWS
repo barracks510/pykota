@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha17 :
+    
+        - Fixed problem with accented chars in title, filename
+          or options and LDAP backend.
+          
     - 1.20alpha16 :
     
         - Internal handling of socket based PJL queries over
