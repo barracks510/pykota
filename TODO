@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Try to talk to education based distribution coordinators
+          (SambaEdu, SkoleLinux, K12LTSP, ...) to see how to
+          better integrate PyKota with these.
+          
         - Allow soft and hard limits to be increased/decreased.
         
         - Web enabled pykotme and dumpykota.
