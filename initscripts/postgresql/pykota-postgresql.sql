@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.13  2005/01/10 23:23:25  jalet
+-- Added the billing code to the history
+--
 -- Revision 1.12  2004/12/23 18:40:18  jalet
 -- Added the coefficient table, and many columns to existing tables
 --
@@ -147,6 +150,7 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         hostname TEXT,
                         md5sum TEXT,
                         pages TEXT,
+                        billingcode TEXT,
                         jobdate TIMESTAMP DEFAULT now(),
                         CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid));
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);

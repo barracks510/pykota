@@ -219,6 +219,13 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.31 NAME 'pykotaPrinterCoefficient'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
+# pykotaBillingCode
+attributetype ( 1.3.6.1.4.1.16868.1.1.32 NAME 'pykotaBillingCode'
+        DESC 'Optional billing code for the print job'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+        
 
 #        
 # PyKota Object Classes
@@ -258,7 +265,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
         DESC 'An entry in the job history for a printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName $ pykotaJobId )
-        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes $ pykotaMD5Sum $ pykotaPages ) )
+        MAY  ( pykotaBillingCode $ pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes $ pykotaMD5Sum $ pykotaPages ) )
         
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY
