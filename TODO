@@ -27,9 +27,6 @@ TODO, in no particular order :
         - Finish correct handling of child processes when a job  
           is cancelled by the user.
           
-        - Modify software accounting so that user could never be over
-          quota.
-          
         - newuser: attach(posixAccount | inetOrgPerson | ..., fail|warn)
           same for newgroup
           
