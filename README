@@ -138,9 +138,14 @@ PyKota features :
         - Automated low quota or balance remainder can be 
           scheduled regularly or launched manually.
           
+    User Interface :          
+    
         - All the command line tools accept the -h | --help 
           command line option which prints all the available 
           options and show usage examples.
+          
+        - Completely internationalized. Actually supports the  
+          English and French languages. More to come.
 
 ====================================================================
         
