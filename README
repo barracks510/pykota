@@ -91,8 +91,8 @@ PyKota features :
         - Page quotas and account balance can be set/reset
           independantly.
           
-        - Page quotas and account balances can be set on 
-          a per user or per group basis.
+        - Page quotas can be set on a per user or per group basis
+          for a particular printer.
           
         - Price per page and per job can be set differently  
           on any printer.
@@ -106,13 +106,14 @@ PyKota features :
         - Possibility to disable quota enforcement for any user
           or group, while still keeping page accounting.
           
-        - Starting and Ending personalized dynamic banners can be
-          generated on the fly, and accounted for or not, depending 
-          on some configuration settings.
-          NB : Banners are a CUPS only feature for now.
-              
+        - Each user can have an overcharging (or undercharging) factor,  
+          which is applied whenever PyKota computes the cost of a 
+          print job.
+          
     Administration :        
     
+        - Powerful delegation of administrative priviledges.
+        
         - Powerful administration tools can be used to
           automate setting or resetting of quotas or
           account balances at specific intervals.
@@ -123,6 +124,9 @@ PyKota features :
           
         - Account balances can be set, incremented, or  
           decremented. History of payments is kept.
+          
+        - Number of pages used can be set, incremented, or  
+          decremented.
           
         - Both printers and users can be automatically added on 
           first print in a completely configurable way.
@@ -155,6 +159,14 @@ PyKota features :
           
         - Automated low quota or balance remainder can be 
           scheduled regularly or launched manually.
+          
+        - Starting and Ending personalized dynamic banners can be
+          generated on the fly, and accounted for or not, depending 
+          on some configuration settings.
+          Banners can still be enabled even if the print job is denied.
+          NB : Banners are a CUPS only feature for now.
+          
+        - Duplicate print jobs can be forbidden automatically.  
           
         - Powerful data dumper to export datas to other
           software (spreadsheets for example). Actually
