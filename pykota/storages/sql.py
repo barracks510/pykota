@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/05 23:00:12  jalet
+# Forgotten import
+# Bad datetime conversion
+#
 # Revision 1.2  2003/02/05 22:28:38  jalet
 # More robust storage
 #
@@ -96,7 +100,7 @@ class SQLStorage :
             elif hardlimit is not None :
                  if softlimit <= pagecounter < hardlimit :    
                      if datelimit is None :
-                         self.doQuery("UPDATE userpquota SET datelimit=%s WHERE userid=%s AND printerid=%s;" % ('%04i-%02i-%02i' % (now.year, now.month, now.day), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
+                         self.doQuery("UPDATE userpquota SET datelimit=%s::DATETIME WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i" % (now.year, now.month, now.day, now.hour, now.minute), self.doQuote(self.getUserId(username)), self.doQuote(self.getPrinterId(printername))))
                          datelimit = now
                      if (now - datelimit) <= GRACEDELAY :
                          action = "WARN"

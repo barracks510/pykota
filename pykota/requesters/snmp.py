@@ -16,12 +16,17 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/02/05 23:00:12  jalet
+# Forgotten import
+# Bad datetime conversion
+#
 # Revision 1.1  2003/02/05 21:28:17  jalet
 # Initial import into CVS
 #
 #
 #
 
+import os
 from pykota.requester import PyKotaRequesterError
 
 class Requester :
