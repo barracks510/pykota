@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha30 :
     
+        - Introduction of preliminary version of the pykosd command
+        
         - Usernames, Groupnames and Printernames can now contain
           ANY character, expected '/' and '@'.
         

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.46  2004/07/07 13:21:26  jalet
+# Introduction of the pykosd command
+#
 # Revision 1.45  2004/07/06 09:37:01  jalet
 # Integrated most of the Debian packaging work made by Sergio González González
 #
@@ -458,7 +461,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
+      scripts = [ "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
 
 if ("install" in sys.argv) and not ("help" in sys.argv) :

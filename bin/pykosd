@@ -1,0 +1,64 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Print Quota Editor 
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2004/07/07 13:21:27  jalet
+# Introduction of the pykosd command
+#
+#
+#
+
+import sys
+import os
+import pwd
+import time
+import pyosd
+
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed
+
+if __name__ == "__main__" :
+    retcode = -1
+    try :
+        cmd = PyKotaTool(doc="A tool to display remaining print units")
+    except :    
+        crashed("Initialization problem.")
+    else :    
+        try :
+            uid = os.geteuid()
+            uname = pwd.getpwuid(uid)[0]
+            user = cmd.storage.getUser(uname)
+            if not user.Exists :
+                raise PyKotaToolError, "User %s doesn't exist in PyKota's database." % uname
+            display = pyosd.osd(colour="#FF0000", timeout=5, shadow=2)
+            display.display("PyKota Units left : %.2f" % user.AccountBalance, type=pyosd.TYPE_STRING)    
+            time.sleep(6)
+        except :
+            cmd.crashed("Strange problem : please report it ASAP to alet@librelogiciel.com")
+        else :
+            retcode = 0
+        try :
+            cmd.storage.close()
+        except :    
+            pass
+    sys.exit(retcode)
