@@ -11,7 +11,11 @@ You can read the complete GNU GPL in the file COPYING
 which should come along with this software, or visit
 the Free Software Foundation's WEB site http://www.fsf.org
 
-============================================================
+====================================================================
+
+READ SPECIAL LICENSING AND REDISTRBUTION TERMS IN THE FILE 'LICENSE'
+
+====================================================================
 
 PyKota is a complete Print Quota system for the Common Unix Printing
 System (aka CUPS), which works by directly querying the printers

@@ -1,0 +1,89 @@
+# $Id : $
+
+PyKota - Print Quota for CUPS
+
+(c) 2003 Jerome Alet <alet@librelogiciel.com>
+You're welcome to redistribute this software under the
+terms of the GNU General Public Licence version 2.0
+or, at your option, any higher version.
+
+You can read the complete GNU GPL in the file COPYING
+which should come along with this software, or visit
+the Free Software Foundation's WEB site http://www.fsf.org
+
+============================================================
+
+  * PyKota is distributed under the GNU General Public License
+
+  * You can access to PyKota's source code by using CVS from :
+  
+        http://savannah.nongnu.org/projects/pykota/
+
+  * The CVS version will always be labelled as **unofficial** and the 
+    word **unofficial** will appear whenever you run PyKota command line 
+    tools with the --version command line argument, and so I have to 
+    make a restriction : 
+
+    YOU ARE NOT ALLOWED IN ANY CIRCUMSTANCE TO LABEL A VERSION OF 
+    PyKota DOWNLOADED FROM CVS AS BEING THE 'OFFICIAL' ONE.
+
+  * A PyKota version obtained from CVS, i.e. which version number 
+    looks like *x.xx-unofficial*, IS FREELY REDISTRIBUTABLE, AT NO COST, 
+    UNDER THE TERMS OF THE GNU GENERAL PUBLIC LICENSE, BUT CAN'T BE 
+    LABELLED 'OFFICIAL'. THIS MEANS THAT YOU ARE NOT ALLOWED, UNDER ANY 
+    CIRCUMSTANCES, TO DELETE THE 'UNOFFICIAL' WORD FROM THE VERSION 
+    NUMBER. 
+
+  * Version number excepted, **THERE'S NO DIFFERENCE BETWEEN 
+    'OFFICIAL' and 'UNOFFICIAL' VERSIONS OF PyKota.** It should be clear 
+    that I'll answer to all questions, and try to help as much as I can, 
+    even if you don't want to buy an **'OFFICIAL'** version. But it 
+    should also be clear to you that the latest version you can find in 
+    CVS may be somewhat unstable or unfinished, since this software is a 
+    work in progress, and that it's up to you to download working 
+    revisions from the CVS tree. That's why I suggest that you purchase 
+    an 'OFFICIAL' version, because it will be simpler for you. 
+
+  * You can obtain an **'OFFICIAL'** version of PyKota in two forms :
+
+    * Electronic form :
+
+      * You pay me any amount of money starting at **15$ (US Dollars)**
+
+      * Then I send you the latest **PyKota 'OFFICIAL'** tarball, 
+        including the latest version of the electronic documentation in 
+        SGML, HTML and PDF formats, by email. 
+
+    * CDROM + Paper documentation (not yet available, documentation 
+      still under works) : 
+
+      * You pay me any amount of money starting at **30$ (US Dollars)**
+
+      * Then I send you the latest **PyKota 'OFFICIAL'** tarball, 
+        including the latest version of the electronic documentation in 
+        SGML, HTML and PDF formats, on CDROM, accompanied with the latest 
+        version of the printed documentation. No additionnal shipping costs 
+        will be asked to you, unless you require a specific delivery mode. 
+
+  * The "purchase":/software/PyKota/Purchase of an **'OFFICIAL'** 
+    version entitles you to : 
+
+    * Redistribute the **'OFFICIAL'** version you purchased. But if you 
+      modify this version before redistribution then I ask you to also 
+      modify the version number present in the pykota/version.py file to 
+      label any package you would redistribute as **'UNOFFICIAL'**. 
+      Unmodified **'OFFICIAL'** packages can be redistributed freely under 
+      the **'OFFICIAL'** label. 
+
+    * Obtain free technical support for a year starting at your purchase 
+      date (bug fixes and new official versions) 
+
+    * Obtain half of **your money back** in case you contribute source 
+      code or documentation which I accept in the source tree. If you're a 
+      motivated developper, you've got strong chances to get half of your 
+      money back. *NB : You will have to send me a signed copyright 
+      assignment on paper in order for me to be able to accept your 
+      patches on PyKota.* 
+
+I sincerely hope that you will find this proposition as fair as I do 
+think it is. 
