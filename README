@@ -215,22 +215,27 @@ Prerequisite :
    
   You need to have the following tools installed on the CUPS Server :
   
-    - CUPS or LPRng
-    - Python v2.1 or above
-    - eGenix' mxDateTime Python extension
+    - CUPS (http://www.cups.org) or LPRng (http://www.lprng.com)
+    - Python v2.1 or above (http://www.python.org)
+    - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The JAXML Python module to be able to dump datas in the XML format.
+      (http://www.librelogiciel.com/software/)
     - The Python-SNMP module to query printers for their page counter.
+      (http://pysnmp.sourceforge.net)
     - The Python-OSD module to use the graphical print quota reminder.
     - SNMP tools (specifically the snmpget command) if you prefer to
       use your own script to request query printers.
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
+      (http://netatalk.sourceforge.net)
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
       libraries if you plan to use PostgreSQL as the Quota Storage
       backend.
+      (http://www.postgresql.org and http://www.pygreql.org)
  or     
     - python-ldap Python module and the OpenLDAP client libraries  
       if you plan to use an LDAP server as the Quota Storage backend.
+      (http://www.openldap.org and http://python-ldap.sourceforge.net)
     
   On Intel i386 architecture, and for performance reasons, it is
   strongly suggested that you install the Python accelerator Psyco, 
@@ -263,11 +268,11 @@ Prerequisite :
   You need to have the following tools installed on the Quota Storage  
   Server :
   
-    - PostgreSQL
+    - PostgreSQL (http://www.postgresql.org)
     
   or  
   
-    - OpenLDAP (or any other LDAP server)
+    - OpenLDAP, or any other LDAP server (http://www.openldap.org)
     
 NB :    
 
@@ -290,6 +295,15 @@ or
   multiple Print Servers all storing their quotas on the same Quota 
   Storage Server if you've got a bigger network. 
   
+Hint :  
+------
+
+  - The Debian GNU/Linux distribution is to our knowledge the 
+    easiest distribution to install PyKota on, because all
+    of PyKota dependencies are already included, excepted
+    for the PySNMP (http://pysnmp.sourceforge.net) module
+    which for now has to be downloaded separately.
+
 Then :   
 ------
  
