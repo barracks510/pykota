@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2003/02/10 00:42:17  jalet
+# External requester should be ok (untested)
+# New syntax for configuration file wrt requesters
+#
 # Revision 1.7  2003/02/09 13:05:43  jalet
 # Internationalization continues...
 #
@@ -94,14 +98,15 @@ class PyKotaConfig :
             if self.config.get(printer, "policy").upper() not in validpolicies :
                 raise PyKotaConfigError, _("Option policy in section %s only supports values in %s") % (printer, str(validpolicies))
             
-            validrequesters = [ "snmp" ] # TODO : add more requesters
-            requester = self.config.get(printer, "requester").lower()
-            if requester not in validrequesters :
-                raise PyKotaConfigError, _("Option requester in section %s only supports values in %s") % (printer, str(validrequesters))
-            if requester == "snmp" :
-                for poption in [ "snmpcmnty", "snmpoid" ] : 
-                    if not self.config.has_option(printer, poption) :
-                        raise PyKotaConfigError, _("Option %s not found in section %s of %s") % (option, printer, self.filename)
+            validrequesters = [ "snmp", "external" ] # TODO : add more requesters
+            fullrequester = self.config.get(printer, "requester")
+            try :
+                (requester, args) = [x.strip() for x in fullrequester.split('('))]
+            except ValueError :    
+                raise PyKotaConfigError, _("Invalid requester for printer %s") % printer
+            else :
+                if requester not in validrequesters :
+                    raise PyKotaConfigError, _("Option requester for printer %s only supports values in %s") % (printer, str(validrequesters))
                         
     def getPrinterNames(self) :    
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
@@ -127,8 +132,15 @@ class PyKotaConfig :
         return self.config.get("global", "logger").lower()
         
     def getRequesterBackend(self, printer) :    
-        """Returns the requester backend to use for a given printer."""
-        return self.config.get(printer, "requester").lower()
+        """Returns the requester backend to use for a given printer, with its arguments."""
+        fullrequester = self.config.get(printer, "requester")
+        (requester, args) = [x.strip() for x in fullrequester.split('('))]
+        if args.endswith(')') :
+            args = args[:-1]
+        args = [x.strip() for x in args.split(',')]
+        if not args :
+            raise PyKotaConfigError, _("Invalid requester for printer %s") % printer
+        return (requester, args)
         
     def getPrinterPolicy(self, printer) :    
         """Returns the default policy for the current printer."""

@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/10 00:42:17  jalet
+# External requester should be ok (untested)
+# New syntax for configuration file wrt requesters
+#
 # Revision 1.4  2003/02/09 13:05:43  jalet
 # Internationalization continues...
 #
@@ -35,11 +39,11 @@ from pykota.requester import PyKotaRequesterError
 
 class Requester :
     """A class to send queries to printers via SNMP."""
-    def __init__(self, config, printername) :
+    def __init__(self, config, printername, arguments) :
         """Sets instance vars depending on the current printer."""
         self.printername = printername
-        self.community = config.config.get(printername, "snmpcmnty")
-        self.oid = config.config.get(printername, "snmpoid")
+        self.community = arguments[0]
+        self.oid = arguments[1]
         
     def getPrinterPageCounter(self, hostname) :
         """Returns the page counter from the hostname printer via SNMP.

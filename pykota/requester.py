@@ -14,6 +14,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/10 00:42:17  jalet
+# External requester should be ok (untested)
+# New syntax for configuration file wrt requesters
+#
 # Revision 1.4  2003/02/09 13:05:43  jalet
 # Internationalization continues...
 #
@@ -40,7 +44,7 @@ class PyKotaRequesterError(Exception):
     
 def openRequester(config, printername) :
     """Returns a connection handle to the appropriate requester."""
-    backend = config.getRequesterBackend(printername)
+    (backend, args) = config.getRequesterBackend(printername)
     try :
         if not backend.isalpha() :
             # don't trust user input
@@ -49,4 +53,4 @@ def openRequester(config, printername) :
     except ImportError :
         raise PyKotaRequesterError, _("Unsupported requester backend %s") % backend
     else :    
-        return getattr(requesterbackend, "Requester")(config, printername)
+        return getattr(requesterbackend, "Requester")(config, printername, args)
