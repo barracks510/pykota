@@ -2,6 +2,20 @@ PyKota's FAQ :
 
   # $Id$
   
+  * How can I diagnose the problem when something goes wrong ?
+  
+    Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
+    Then put "logger: stderr", "debug: yes" and 
+    "crashrecipient: youremailaddress" in /etc/pykota/pykota.conf.
+    Finally restart CUPS.
+    CUPS' error_log file will now contain many informations which
+    will help diagnose your problem. You will receive failure
+    notices by email, and you can send all this to us for
+    diagnostic.
+    
+    For LPRng, better to put "logger: system" in pykota.conf so
+    that all debug messages for PyKota will go to syslog.
+  
   * Nothing prints when my printer is in PowerSave mode, what
     can I do ?
     This happens if you use hardware accounting with SNMP, because
@@ -32,20 +46,6 @@ PyKota's FAQ :
     or use an Unix-like version of CVS, download again and
     reinstall the software. It should work.
     
-  * How can I diagnose the problem when something goes wrong ?
-  
-    Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
-    Then put "logger: stderr", "debug: yes" and 
-    "crashrecipient: youremailaddress" in /etc/pykota/pykota.conf.
-    Finally restart CUPS.
-    CUPS' error_log file will now contain many informations which
-    will help diagnose your problem. You will receive failure
-    notices by email, and you can send all this to us for
-    diagnostic.
-    
-    For LPRng, better to put "logger: system" in pykota.conf so
-    that all debug messages for PyKota will go to syslog.
-  
   * Why doesn't CUPS under Debian Woody automatically
     detects PyKota managed devices ?
     
