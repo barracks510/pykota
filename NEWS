@@ -27,6 +27,8 @@ PyKota NEWS :
           DON'T TRY TO UPGRADE AN EXISTING PYKOTA INSTALLATION !
           The upgrade script will be finalized ASAP, be patient,
           or drop your old quota database to start anew.
+          Upgrade script will be provided when 1.03final will
+          be out.
           
         - The new database schema allows to keep an history of all
           jobs as well as charge users per page and/or per job, 

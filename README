@@ -69,7 +69,7 @@ Actual working features :
           complex reports in the future.
           
         - Price per page and price per job can be defined for  
-          every printers. A job's price is the sum of the
+          every printer. A job's price is the sum of the
           price per job for this printer plus the number of
           pages multiplied by the price per page for this
           printer.
