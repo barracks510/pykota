@@ -33,8 +33,6 @@ TODO, in no particular order :
           
         - Maintain a list of payments.
         
-        - Extract and store the job-originating-hostname information. 
-        
         - Finish implementation of quota-then-balance and 
           balance-then-quota.
           
