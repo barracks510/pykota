@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/02/08 22:39:46  jalet
+# --reset command line option added
+#
 # Revision 1.15  2003/02/08 22:12:09  jalet
 # Life time counter for users and groups added.
 #
@@ -134,6 +137,7 @@ class SQLStorage :
         return self.doQuery("UPDATE printers SET pagecounter=%s, lastusername=%s WHERE printername=%s;" % (self.doQuote(pagecount), self.doQuote(username), self.doQuote(printername)))
         
     def addUserPQuota(self, username, printername) :
+        """Initializes a user print quota on a printer, adds the printer and the user to the quota storage if needed."""
         (userid, printerid) = self.getUPIds(username, printername)
         if printerid is None :    
             self.addPrinter(printername)        # should we still add it ?
@@ -151,7 +155,7 @@ class SQLStorage :
         """Returns the Print Quota information for a given (username, printername)."""
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
-            result = self.doQuery("SELECT pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
+            result = self.doQuery("SELECT lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
             try :
                 return self.doParseResult(result)[0]
             except TypeError :      # Not found    
@@ -162,6 +166,12 @@ class SQLStorage :
         (userid, printerid) = self.getUPIds(username, printername)
         if (userid is not None) and (printerid is not None) :
             self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userid), self.doQuote(printerid)))
+        
+    def resetUserPQuota(self, username, printername) :    
+        """Resets the page counter to zero. Life time page counter is kept unchanged."""
+        (userid, printerid) = self.getUPIds(username, printername)
+        if (userid is not None) and (printerid is not None) :
+            self.doQuery("UPDATE userpquota SET pagecounter=0 WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
         
     def setDateLimit(self, username, printername, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (username, printername)."""

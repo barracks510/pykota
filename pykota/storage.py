@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2003/02/08 22:39:46  jalet
+# --reset command line option added
+#
 # Revision 1.4  2003/02/08 09:59:59  jalet
 # Added preliminary base class for all storages
 #
@@ -65,7 +68,7 @@ class BaseStorage :
         pass
         
     def addUserPQuota(self, username, printername) :
-        """Adds a tuple (user, printer) to the Quota Storage, both are also added individually if needed."""
+        """Initializes a user print quota on a printer, adds the printer and the user to the quota storage if needed."""
         pass
         
     def getUPIds(self, username, printername) :    
@@ -78,6 +81,10 @@ class BaseStorage :
         
     def setUserPQuota(self, username, printername, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota on a specific printer given (username, printername)."""
+        pass
+        
+    def resetUserPQuota(self, username, printername) :    
+        """Resets the page counter to zero. Life time page counter is kept unchanged."""
         pass
         
     def setDateLimit(self, username, printername, datelimit) :

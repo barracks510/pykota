@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/02/08 22:39:46  jalet
+# --reset command line option added
+#
 # Revision 1.15  2003/02/08 22:20:01  jalet
 # Clarification on why we don't check with /etc/passwd to see if the user
 # name is valid or not.
@@ -97,6 +100,10 @@ options :
                           
   -p | --prototype u|g Uses user u or group g as a prototype to set
                        print quotas
+                       
+  -r | --reset         Resets the printed page counter for the user
+                       or group to zero. The life time page counter 
+                       is kept unchanged.
                        
   -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
   
@@ -222,8 +229,12 @@ class EdPyKota(PyKotaTool) :
                 else :    
                     if options["users"] :
                         self.storage.setUserPQuota(name, printer, softlimit, hardlimit)
+                        if options["reset"] :
+                            self.storage.resetUserPQuota(name, printer)
                     else :
                         self.storage.setGroupPQuota(name, printer, softlimit, hardlimit)
+                        if options["reset"] :
+                            self.storage.resetGroupPQuota(name, printer)
                      
 if __name__ == "__main__" : 
     try :
@@ -232,8 +243,8 @@ if __name__ == "__main__" :
                      "groups" : 0, \
                      "printer" : "*", \
                    }
-        short_options = "vhaugp:P:S:H:"
-        long_options = ["help", "version", "add", "users", "groups", "prototype=", "printer=", "softlimit=", "hardlimit="]
+        short_options = "vhaugrp:P:S:H:"
+        long_options = ["help", "version", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -251,6 +262,7 @@ if __name__ == "__main__" :
         options["printer"] = options["P"] or options["printer"] or defaults["printer"]
         options["softlimit"] = options["S"] or options["softlimit"]
         options["hardlimit"] = options["H"] or options["hardlimit"] 
+        options["reset"] = options["r"] or options["reset"] 
         
         if options["help"] :
             editor.display_usage_and_quit()
