@@ -283,8 +283,8 @@ utolower: No
 #
 #                 pkpgcounter is a command line tool which is
 #                 part of PyKota and which can handle both
-#                 DSC compliant PostScript documents and PCL5
-#                 documents. More file formats will be added
+#                 DSC compliant PostScript, PCL5, PCL6 (aka PCLXL)
+#                 and PDF documents. More file formats will be added
 #                 in the future, as time permits.
 #
 #                 while pkpgcounter is the recommended value

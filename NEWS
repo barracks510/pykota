@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha28 :
+    
+        - First working PCL6 (aka PCLXL) parser !
+          Doesn't handle copies yet.
+        
     - 1.19alpha27 :
     
         - Additionnal 10% speed increase in PCL5 parser for GhostScript
