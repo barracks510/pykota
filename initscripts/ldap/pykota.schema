@@ -186,6 +186,39 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.26 NAME 'pykotaPayments'
         DESC 'Stores all payments made by an user, encoded to store both date and amount, separated by a # between two spaces'
         EQUALITY caseExactIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+        
+# pykotaUserCoefficient
+attributetype ( 1.3.6.1.4.1.16868.1.1.27 NAME 'pykotaUserCoefficient'
+        DESC 'Coefficient for a particular user, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+# pykotaWarnCount
+attributetype ( 1.3.6.1.4.1.16868.1.1.28 NAME 'pykotaWarnCount'
+        DESC 'Number of times the user was warned'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+        
+# pykotaMD5Sum        
+attributetype ( 1.3.6.1.4.1.16868.1.1.29 NAME 'pykotaMD5Sum'
+        DESC 'MD5 Sum of the job's datas'
+        EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+# pykotaPages        
+attributetype ( 1.3.6.1.4.1.16868.1.1.30 NAME 'pykotaPages'
+        DESC 'Descriptor for each page's settings in the history'
+        EQUALITY caseExactIA5Match
+        SUBSTR caseExactIA5SubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26)
+        
+# pykotaPrinterCoefficient
+attributetype ( 1.3.6.1.4.1.16868.1.1.31 NAME 'pykotaPrinterCoefficient'
+        DESC 'Coefficient for a particular page format. Contains label # coeff, e.g. A3 # 2.0'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
 
 #        
 # PyKota Object Classes
@@ -207,13 +240,13 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.2 NAME 'pykotaGroup' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top AUXILIARY
         DESC 'PyKota Printer'
         MUST ( cn )
-        MAY  ( description $ pykotaPrinterName $ pykotaPricePerPage $ pykotaPricePerJob $ uniqueMember ) )
+        MAY  ( description $ pykotaPrinterName $ pykotaPricePerPage $ pykotaPricePerJob $ pykotaPrinterCoefficient $ uniqueMember ) )
         
 # pykotaUserPQuota        
 objectclass ( 1.3.6.1.4.1.16868.1.2.4 NAME 'pykotaUserPQuota' SUP top AUXILIARY
         DESC 'PyKota User Quota on a Printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName )
-        MAY  ( pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit ) )
+        MAY  ( pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit $ pykotaWarnCount ) )
         
 # pykotaGroupPQuota        
 objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
@@ -225,12 +258,12 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
         DESC 'An entry in the job history for a printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName $ pykotaJobId )
-        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes ) )
+        MAY  ( pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes $ pykotaMD5Sum $ pykotaPages ) )
         
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY
         DESC 'PyKota User account balance'
-        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid $ pykotaPayments ) )
+        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid $ pykotaUserCoefficient $ pykotaPayments ) )
         
 # pykotaLastJob        
 objectclass ( 1.3.6.1.4.1.16868.1.2.8 NAME 'pykotaLastJob' SUP top AUXILIARY
