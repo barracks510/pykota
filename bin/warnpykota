@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2003/04/17 13:32:17  jalet
+# bad documentation string
+#
 # Revision 1.16  2003/04/16 12:35:49  jalet
 # Groups quota work now !
 #
@@ -94,8 +97,7 @@ options :
   -u | --users         Warns users over their print quota, this is the 
                        default.
   
-  -g | --groups        Warns group administrators instead of users,
-                       for each group over its print quota.
+  -g | --groups        Warns users whose groups quota are over limit.
   
   -P | --printer p     Verify quotas on this printer only. Actually p can
                        use wildcards characters to select only
@@ -116,7 +118,7 @@ examples :
 
   $ warnpykota --groups --printer "laserjet*"
   
-  This will warn all group administrators of groups which have exceeded 
+  This will warn all users of groups which have exceeded 
   their print quota on any printer which name begins with "laserjet"
 
 This program is free software; you can redistribute it and/or modify
