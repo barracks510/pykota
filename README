@@ -279,36 +279,63 @@ You need to adapt these files to your own needs.
 Especially you have to create sections named after your own
 printers, and change the administrator's email address.
 
-  - CUPS Print Backend :
+  - CUPS Printing System :
   
-    Modify the PPD files for each printer on which you want to manage
-    print quotas, for example /etc/cups/ppd/lp.ppd :
+    Once and for all :
     
-    --- Add the line below exactly as-is somewhere near the top ---
-    *cupsFilter:  "application/vnd.cups-postscript 0 /usr/bin/pykota"
-    --- Add the line above exactly as-is somewhere near the top  ---
+        Create a symbolic link to the cupspykota backend 
+        in CUPS's backend directory :
+        
+          $ cd /usr/lib/cups/backend
+          $ ln -s /usr/bin/cupspykota cupspykota
+          
+        Restart CUPS so that the new backend can be detected.
+        
+          $ /etc/init.d/cupsys restart
+          
+    For new printers :
     
-    Modify the path to the pykota executable if needed, unfortunately 
-    you have to supply the correct absolute path here due to CUPS 
-    internals, or put the pykota executable into /usr/lib/cups/filter 
-    instead of into /usr/bin. 
+        Go to CUPS management interface (http://localhost:631) 
+        and choose the appropriate PyKota managed device depending
+        on the type of printer you use. For example, if your
+        printer is waiting on :
+        
+            socket://myprinter.domain.com:9100
+            
+        Then choose :    
+        
+            cupspykota:socket://myprinter.domain.com:9100
+            
+        Configure your printer as usual.    
+        
+        That's all.
     
-    Do this for each ppd file present in this directory if you want
-    to enable quota on every printer.
-              
-    WARNING : In the case you've got a non-postscript printer, chances
-              are that the *cupsFilter is already filled-in and points
-              to cupsomatic or such a print filter. In this case please
-              check if you can switch your printer to PostScript mode
-              or if there's a way to make it accept PostScript jobs.
-              If yes then ensure that your workstations uses a PostScript
-              printer driver, and replace the *cupsFilter line with the
-              one pointing to the pykota filter. This should work, but
-              is currently untested.
-              If your printer really needs the original *cupsFilter line
-              then you may not be able to use PyKota easily for now.
+    For existing printers :
+    
+        If you had already installed PyKota, then remove
+        the *cupsFilter lines in your PPD files for each
+        printer already managed printers. Each line to
+        remove is of the form :
+        
+          *cupsFilter: "application/vnd.cups-postscript 0 /usr/bin/pykota"
+        
+        Don't touch anything else, especially any other *cupsFilter line.
+        Then save each of these files and restart CUPS.
+        
+        Then, the easiest is to directly modify the DeviceURI lines 
+        in /etc/cups/printers.conf, you just have to put 
+        'cupspykota:' in front of what is already on these lines. 
+        For example, replace :
+    
+            DeviceURI socket://myprinter.domain.com:9100
+        
+        with :    
+    
+            DeviceURI cupspykota:socket://myprinter.domain.com:9100
+        
+        Save the file and restart CUPS.
 
-  - LPRng Print Backend :
+  - LPRng Printing System :
   
     Modify the /etc/printcap file to add two lines identical to these ones :
     

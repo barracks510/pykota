@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha7 :
+    
+        - The CUPS backend is now fully functionnal (it seems).
+        
+        - From now on, the use of the pykota filter with CUPS 
+          is deprecated. The pykota filter still has to be
+          used with LPRng though.
+        
     - 1.16alpha6 :
     
         - Bug fixed : when edpykota was used to add a printer

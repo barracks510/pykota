@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/11/14 22:05:12  jalet
+# New CUPS backend fully functionnal.
+# Old CUPS configuration method is now officially deprecated.
+#
 # Revision 1.6  2003/11/14 20:13:11  jalet
 # We exit the loop too soon.
 #
@@ -146,19 +150,17 @@ def format_commandline(prt, usr, cmdline) :
     # want to keep its standard error
     return "%s >/dev/null" % (cmdline % locals())
 
-def sigterm_handler(signum, frame) :
-    """Handler for SIGTERM."""
-    sys.stderr.write("INFO: PyKota backend aborted.")
-    sys.exit(1)
-    
 def main(thebackend) :    
     """Do it, and do it right !"""
     # first deal with signals
     # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
     # Fortunately SIGPIPE is already ignored by Python
-    # It's there just in case this changes in the future
+    # It's there just in case this changes in the future.
+    # But here we will IGNORE SIGTERM for now, and see
+    # if we shouldn't pass it to the original backend
+    # instead.
     signal.signal(signal.SIGPIPE, signal.SIG_IGN)
-    signal.signal(signal.SIGTERM, sigterm_handler)
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
     
     #
     # Get the last page counter and last username from the Quota Storage backend
@@ -225,7 +227,9 @@ def main(thebackend) :
         # and starts accounting at the same time
         thebackend.accounter.beginJob(printer, user)
         
-        # executes original backend
+        # Now it becomes tricky...
+        
+        # First ensure that we have a file object as input
         mustclose = 0    
         if thebackend.inputfile is not None :    
             if hasattr(thebackend.inputfile, "read") :
@@ -235,71 +239,134 @@ def main(thebackend) :
             mustclose = 1
         else :    
             infile = sys.stdin
+            
+        # Find the real backend pathname    
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
-        subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, arg0=os.environ["DEVICE_URI"])
-        pollster = select.poll()
+        
+        # And launch it
+        subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, bufsize=0, arg0=os.environ["DEVICE_URI"])
+        
+        # Save file descriptors, we will need them later.
         infno = infile.fileno()
         stdoutfno = sys.stdout.fileno()
         stderrfno = sys.stderr.fileno()
         fromcfno = subprocess.fromchild.fileno()
         tocfno = subprocess.tochild.fileno()
         cerrfno = subprocess.childerr.fileno()
+        
+        # We will have to be careful when dealing with I/O 
+        # So we use a poll object to know when to read or write
+        pollster = select.poll()
         pollster.register(infno, select.POLLIN | select.POLLPRI)
         pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
         pollster.register(cerrfno, select.POLLIN | select.POLLPRI)
         pollster.register(stdoutfno, select.POLLOUT)
         pollster.register(stderrfno, select.POLLOUT)
         pollster.register(tocfno, select.POLLOUT)
+        
+        # Initialize our buffers
         indata = ""
         outdata = ""
         errdata = ""
-        end = 0
-        while not end :
-            availablefds = pollster.poll(500)
-            if not availablefds :
-                end = 1
-            else :    
-                for (fd, mask) in availablefds :
-                    thebackend.logdebug("Stream: %02i  Mask: %02x" % (fd, mask))
-                    if mask & select.POLLHUP :
-                        if fd == infno :
-                            end = 1 # this happens with real stdin
-                    if mask & select.POLLOUT :
-                        if fd == tocfno :
-                            if indata :
-                                os.write(fd, indata)    
-                                indata = ""
-                        elif fd == stdoutfno :
-                            if outdata :
-                                os.write(fd, outdata)
+        endinput = 0
+        status = -1
+        while status == -1 :
+            # First check if original backend is still alive
+            status = subprocess.poll()
+            
+            # In any case, deal with any remaining I/O
+            availablefds = pollster.poll()
+            for (fd, mask) in availablefds :
+                if mask & select.POLLOUT :
+                    # We can write
+                    if fd == tocfno :
+                        if indata :
+                            os.write(fd, indata)    
+                            indata = ""
+                    elif fd == stdoutfno :
+                        if outdata :
+                            os.write(fd, outdata)
+                            outdata = ""
+                    elif fd == stderrfno :
+                        if errdata :
+                            os.write(fd, errdata)
+                            errdata = ""
+                if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
+                    # We have something to read
+                    data = os.read(fd, 256 * 1024)
+                    if fd == infno :
+                        indata += data
+                        if not data :    # If yes, then no more input data
+                            endinput = 1 # this happens with real files.
+                    elif fd == fromcfno :
+                        outdata += data
+                    elif fd == cerrfno :    
+                        errdata += data
+                if mask & select.POLLHUP :
+                    # Some standard I/O stream has no more datas
+                    if fd == infno :
+                        # Here we are in the case where the input file is stdin.
+                        # which has no more data to be read.
+                        endinput = 1
+                    elif fd == fromcfno :    
+                        # This should never happen, since
+                        # CUPS backends don't send anything on their
+                        # standard output
+                        if outdata :                
+                            try :
+                                os.write(stdoutfno, outdata)
                                 outdata = ""
-                        elif fd == stderrfno :
-                            if errdata :
-                                os.write(fd, errdata)
+                            except :    
+                                pass
+                        try :        
+                            pollster.unregister(fromcfno)        
+                        except KeyError :    
+                            pass
+                        else :    
+                            os.close(fromcfno)
+                    elif fd == cerrfno :    
+                        # Original CUPS backend has finished 
+                        # to write informations on its standard error
+                        if errdata :                
+                            # Try to write remaining info (normally "Ready to print.")
+                            try :
+                                os.write(stderrfno, errdata)
                                 errdata = ""
-                    if (mask & select.POLLIN) or (mask & select.POLLPRI) :     
-                        data = os.read(fd, 256 * 1024)
-                        if fd == infno :
-                            indata += data
-                            if not data :
-                                end = 1 # this happens with real files
-                        elif fd == fromcfno :
-                            outdata += data
-                        elif fd == cerrfno :    
-                            errdata += data
-        if indata :                
-            try :
-                os.write(tocfno, indata)
-            except :    
-                pass
-        sys.stdout.flush()                
-        sys.stderr.flush()
-        subprocess.fromchild.close()
-        subprocess.childerr.close()
-        subprocess.tochild.close()
+                            except :    
+                                pass
+                        # We are no more interested in this file descriptor        
+                        try :        
+                            pollster.unregister(cerrfno)        
+                        except KeyError :    
+                            pass
+                        else :    
+                            os.close(cerrfno)
+                        
+            if endinput :            
+                # We deal with remaining input datas here
+                # because EOF can happen in two different
+                # situations and I don't want to duplicate
+                # code, nor making functions.
+                if indata :                
+                    try :
+                        os.write(tocfno, indata)
+                        indata = ""
+                    except :    
+                        pass
+                # Again, we're not interested in this file descriptor        
+                # anymore.
+                try :        
+                    pollster.unregister(tocfno)        
+                except KeyError :    
+                    pass
+                else :    
+                    os.close(tocfno)
+            
+        # Input file was a real file, we have to close it.    
         if mustclose :
             infile.close()
-        status = subprocess.wait()
+            
+        # Check exit code of original CUPS backend.    
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
         else :    
