@@ -1,0 +1,247 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# CUPSPyKota accounting backend
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2003/11/08 16:05:31  jalet
+# CUPS backend added for people to experiment.
+#
+#
+#
+
+import sys
+import os
+import time
+
+from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
+from pykota.accounter import openAccounter, PyKotaAccounterError
+from pykota.requester import openRequester, PyKotaRequesterError
+
+class PyKotaBackend(PyKotaTool) :    
+    """Class for the PyKota backend."""
+    def __init__(self) :
+        PyKotaTool.__init__(self)
+        (self.printingsystem, \
+         self.printerhostname, \
+         self.printername, \
+         self.username, \
+         self.jobid, \
+         self.inputfile, \
+         self.copies, \
+         self.title, \
+         self.options, \
+         self.originalbackend) = self.extractCUPSInfo()
+        self.accounter = openAccounter(self)
+    
+    def extractCUPSInfo(self) :    
+        """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
+        
+           Returns (None, None, None, None, None, None, None, None, None, None) if no printing system is recognized.
+        """
+        # Try to detect CUPS
+        if os.environ.has_key("CUPS_SERVERROOT") and os.path.isdir(os.environ.get("CUPS_SERVERROOT", "")) :
+            if len(sys.argv) == 7 :
+                inputfile = sys.argv[6]
+            else :    
+                inputfile = None
+                
+            # the DEVICE_URI environment variable's value is 
+            # prefixed with "cupspykota:" otherwise we wouldn't
+            # be called. We have to remove this from the environment 
+            # before launching the real backend.
+            fulldevice_uri = os.environ.get("DEVICE_URI", "")
+            device_uri = fulldevice_uri[len("cupspykota:"):]
+            os.environ["DEVICE_URI"] = device_uri
+            # TODO : check this for more complex urls than ipp://myprinter.dot.com:631/printers/lp
+            try :
+                (backend, destination) = device_uri.split(":", 1) 
+            except ValueError :    
+                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
+            while destination.startswith("/") :
+                destination = destination[1:]
+            printerhostname = destination.split("/")[0].split(":")[0]
+            return ("CUPS", \
+                    printerhostname, \
+                    os.environ.get("PRINTER"), \
+                    sys.argv[2].strip(), \
+                    sys.argv[1].strip(), \
+                    inputfile, \
+                    int(sys.argv[4].strip()), \
+                    sys.argv[3], \
+                    sys.argv[5], \
+                    backend)
+        else :    
+            self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
+            return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system          
+        
+def format_commandline(prt, usr, cmdline) :            
+    """Passes printer and user names on the command line."""
+    printer = prt.Name
+    user = usr.Name
+    # we don't want the external command's standard 
+    # output to break the print job's data, but we
+    # want to keep its standard error
+    return "%s >/dev/null" % (cmdline % locals())
+
+def main(thebackend) :    
+    """Do it, and do it right !"""
+    #
+    # Get the last page counter and last username from the Quota Storage backend
+    printer = thebackend.storage.getPrinter(thebackend.printername)
+    if not printer.Exists :
+        # The printer is unknown from the Quota Storage perspective
+        # we let the job pass through, but log a warning message
+        thebackend.logger.log_message(_("Printer %s not registered in the PyKota system") % thebackend.printername, "warn")
+    else :    
+        for dummy in range(2) :
+            user = thebackend.storage.getUser(thebackend.username)
+            if user.Exists :
+                break
+            else :    
+                # The user is unknown from the Quota Storage perspective
+                # Depending on the default policy for this printer, we
+                # either let the job pass through or reject it, but we
+                # log a message in any case.
+                (policy, args) = thebackend.config.getPrinterPolicy(thebackend.printername)
+                if policy == "ALLOW" :
+                    action = "POLICY_ALLOW"
+                elif policy == "EXTERNAL" :    
+                    commandline = format_commandline(printer, user, args)
+                    thebackend.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (thebackend.username, commandline, thebackend.printername), "info")
+                    if os.system(commandline) :
+                        # if an error occured, we die without error,
+                        # so that the job doesn't stop the print queue.
+                        thebackend.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, thebackend.printername), "error")
+                        return 0
+                    else :    
+                        # here we try a second time, because the goal
+                        # of the external action was to add the user
+                        # in the database.
+                        continue 
+                else :    
+                    action = "POLICY_DENY"
+                thebackend.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (thebackend.username, action, thebackend.printername), "warn")
+                if action == "POLICY_DENY" :
+                    # if not allowed to print then die, else proceed.
+                    # we die without error, so that the job doesn't 
+                    # stop the print queue.
+                    return 0
+                # when we get there, the printer policy allows the job to pass 
+                break    
+                    
+        # if user exists, do accounting
+        if user.Exists :
+            # Is the current user allowed to print at all ?
+            action = thebackend.warnUserPQuota(thebackend.storage.getUserPQuota(user, printer))
+        elif policy == "EXTERNAL" :                
+            # if the extenal policy produced no error, but the 
+            # user still doesn't exist, we die without error,
+            # so that the job doesn't stop the print queue.
+            thebackend.logger.log_message(_("External policy %s for printer %s couldn't add user %s. Job rejected.") % (commandline, thebackend.printername, thebackend.username), "error")
+            return 0
+        
+    MAXTRIES = 12    # maximum number of tries to get the printer's internal page counter
+    TIMETOSLEEP = 10 # number of seconds to sleep between two tries to get the printer's internal page counter
+    requester = openRequester(thebackend.config, thebackend.printername)
+    def getPPC(requester, backend) :
+        for i in range(MAXTRIES) :
+            try :
+                counterbeforejob = requester.getPrinterPageCounter(backend.printerhostname)
+            except PyKotaRequesterError, msg :
+                # can't get actual page counter, assume printer is off or warming up
+                # log the message anyway.
+                backend.logger.log_message("%s" % msg, "warn")
+                counterbeforejob = None
+            else :    
+                # printer answered, it is on so we can exit the loop
+                break
+            time.sleep(TIMETOSLEEP)    
+        return counterbeforejob    
+        
+    if action not in ["ALLOW", "WARN"] :    
+        # if not allowed to print then die, else proceed.
+        # we die without error, so that the job doesn't 
+        # stop the print queue.
+        retcode = 0
+    else :
+        # pass the job untouched to the underlying layer
+        # but get printer page counter before and after
+        # print job is submitted to the hardware.
+        
+        # get page counter before job
+        before = getPPC(requester, thebackend)
+        
+        # executes backend
+        # TODO : use correct original backend.
+        realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
+        retcode = os.spawnve(os.P_WAIT, realbackend, [os.environ["DEVICE_URI"]] + sys.argv[1:], os.environ)
+    
+    # get page counter after job
+    after = getPPC(requester, thebackend)
+    
+    # Computes the last job size as the difference between internal page
+    # counter in the printer and last page counter taken from the Quota
+    # Storage database for this particular printer
+    try :
+        jobsize = (after - before)    
+    except :    
+        jobsize = 0
+        
+    # update the quota for the current user on this printer 
+    if printer.Exists :
+        if jobsize :
+            userquota = thebackend.storage.getUserPQuota(user, printer)
+            if userquota.Exists :
+                userquota.increasePagesUsage(jobsize)
+        
+        # adds the current job to history    
+        printer.addJobToHistory(thebackend.jobid, user, after, action, jobsize)
+    
+    return retcode
+
+if __name__ == "__main__" :    
+    # This is a CUPS backend, we should act and die like a CUPS backend
+    if len(sys.argv) == 1 :
+        print 'direct cupspykota "PyKota" "Print Quota and Accounting Backend"' 
+        retcode = 0
+    elif len(sys.argv) not in (6, 7) :    
+        sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
+        retcode = 1
+    else :    
+        try :
+            # Initializes the backend
+            kotabackend = PyKotaBackend()    
+            retcode = main(kotabackend)
+        except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
+            sys.stderr.write("ERROR : cupspykota backend failed (%s)\n" % msg)
+            sys.stderr.flush()
+            retcode = 1
+        
+        try :
+            kotabackend.storage.close()
+        except (TypeError, NameError, AttributeError) :    
+            pass
+        
+    sys.exit(retcode)    

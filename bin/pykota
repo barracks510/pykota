@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.44  2003/11/08 16:05:31  jalet
+# CUPS backend added for people to experiment.
+#
 # Revision 1.43  2003/11/06 22:33:25  jalet
 # French variable name
 #
@@ -341,7 +344,10 @@ if __name__ == "__main__" :
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, TypeError, IOError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
-        retcode = -1
+        try :
+            retcode = kotafilter.removeJob()
+        except :
+            retcode = -1
 
     try :
         kotafilter.storage.close()
