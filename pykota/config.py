@@ -14,6 +14,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.19  2003/03/16 09:56:52  jalet
+# Mailto option now accepts some additional values which all mean that
+# nobody will receive any email message.
+# Mailto option now works. Version 1.01 is now officially out.
+#
 # Revision 1.18  2003/03/16 08:00:50  jalet
 # Default hard coded options are now used if they are not set in the
 # configuration file.
@@ -213,7 +218,7 @@ class PyKotaConfig :
         
     def getMailTo(self, printer) :    
         """Returns the recipient of email messages."""
-        validmailtos = [ "DEVNULL", "BOTH", "USER", "ADMIN" ]
+        validmailtos = [ "NOBODY", "NONE", "NOONE", "BITBUCKET", "DEVNULL", "BOTH", "USER", "ADMIN" ]
         try :
             mailto = self.getPrinterOption(printer, "mailto").upper()
         except PyKotaConfigError :    
