@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.126  2004/10/05 09:41:13  jalet
+# Small fix for errors caused by unknown locale
+#
 # Revision 1.125  2004/10/04 11:18:10  jalet
 # Now exports the MD5 sum of the job's datas as an hexadecimal digest
 #
@@ -512,7 +515,12 @@ class PyKotaTool :
         # The CHARSET environment variable is set by CUPS when printing.
         # Else we use the current locale's one.
         # If nothing is set, we use ISO-8859-15 widely used in western Europe.
-        self.charset = charset or os.environ.get("CHARSET") or locale.getlocale()[1] or locale.getdefaultlocale()[1] or "ISO-8859-15"
+        localecharset = locale.getlocale()[1]
+        try :
+            localecharset = localecharset or locale.getdefaultlocale()[1]
+        except ValueError :    
+            pass        # Unknown locale, strange...
+        self.charset = charset or os.environ.get("CHARSET") or localecharset or "ISO-8859-15"
     
         # pykota specific stuff
         self.documentation = doc
