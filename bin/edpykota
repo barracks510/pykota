@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2003/04/15 13:55:28  jalet
+# Options --limitby and --balance added to edpykota
+#
 # Revision 1.35  2003/04/15 13:06:39  jalet
 # Allow to add a printer without any user
 #
@@ -174,6 +177,20 @@ options :
                        or group to zero. The life time page counter 
                        is kept unchanged.
                        
+  -l | --limitby l     Choose if the user/group is limited in printing                     
+                       by its account balance or by its page quota.
+                       The default value is 'quota'. Allowed values
+                       are 'quota' and 'balance'.
+                       
+  -b | --balance b     Sets the user's account balance to b.                     
+                       Account balance may be increase or decreased
+                       if b is prefixed with + or -.
+                       WARNING : when decreasing account balance,
+                       the total paid so far by the user is decreased
+                       too.
+                       Groups don't have a real balance, but the
+                       sum of their users' account balance.
+                       
   -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
   
   -H | --hardlimit hl  Sets the quota hard limit to hl pages.
@@ -219,6 +236,17 @@ examples :
   hpcolor printer. All his jobs will be allowed on this printer, but 
   accounting of the pages he prints will still be kept.
   Print Quotas for jerome on other printers are unchanged.
+  
+  $ edpykota --limitby balance jerome
+  
+  This will tell PyKota to limit jerome by his account's balance
+  when printing.
+  
+  $ edpykota --balance +10.0 jerome
+  
+  This will increase jerome's account balance by 10.0 (in your
+  own currency). You can decrease the account balance with a
+  dash prefix, and set it to a fixed amount with no prefix.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -293,7 +321,7 @@ class EdPyKota(PyKotaTool) :
                 softlimit = hardlimit
                 if softlimit is not None :
                     self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer))
-            if (not options["reset"] and not options["noquota"] and not options["prototype"]) and ((hardlimit is None) or (softlimit is None)) :
+            if (not options["reset"] and not options["noquota"] and not options["prototype"] and not options["limitby"] and not options["balance"]) and ((hardlimit is None) or (softlimit is None)) :
                 raise PyKotaToolError, _("Both hard and soft limits must be set ! Aborting.")
             if options["add"] :    
                 allidnames = [(self.storage.getUserId(n), n) for n in names]
@@ -329,17 +357,38 @@ class EdPyKota(PyKotaTool) :
                 if quota is None :     
                     self.logger.log_message(_("Quota not found for object %s on printer %s.") % (name, printer))
                 else :    
+                    limitby = options["limitby"]
+                    if limitby :
+                        limitby = limitby.lower()
+                    if limitby and (limitby not in ('quota', 'balance')) :    
+                        limitby = 'quota'
                     if options["groups"] :
                         if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
                             self.storage.setGroupPQuota(ident, printerid, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetGroupPQuota(ident, printerid)
+                        if limitby :
+                            self.storage.limitGroupBy(ident, limitby)
                         self.warnGroupPQuota(name, printer)    
                     else :
                         if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
                             self.storage.setUserPQuota(ident, printerid, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetUserPQuota(ident, printerid)
+                        if limitby :
+                            self.storage.limitUserBy(ident, limitby)
+                        balance = options["balance"]    
+                        if balance :
+                            balance = balance.strip()
+                            try :
+                                balancevalue = float(balance)
+                            except ValueError :    
+                                pass # TODO : log something when incorrect balance value
+                            else :    
+                                if balance.startswith("+") or balance.startswith("-") :
+                                    self.storage.increaseUserBalance(ident, balancevalue)
+                                else :
+                                    self.storage.setUserBalance(ident, balancevalue)
                         self.warnUserPQuota(name, printer)    
                      
 if __name__ == "__main__" : 
@@ -347,8 +396,8 @@ if __name__ == "__main__" :
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhnaugrp:P:S:H:"
-        long_options = ["help", "version", "noquota", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
+        short_options = "vhl:b:naugrp:P:S:H:"
+        long_options = ["help", "version", "limitby=", "balance=", "noquota", "add", "users", "groups", "reset", "prototype=", "printer=", "softlimit=", "hardlimit="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -368,6 +417,8 @@ if __name__ == "__main__" :
         options["hardlimit"] = options["H"] or options["hardlimit"] 
         options["reset"] = options["r"] or options["reset"] 
         options["noquota"] = options["n"] or options["noquota"]
+        options["limitby"] = options["l"] or options["limitby"]
+        options["balance"] = options["b"] or options["balance"] 
         
         if options["help"] :
             editor.display_usage_and_quit()
@@ -378,6 +429,8 @@ if __name__ == "__main__" :
         elif (options["softlimit"] or options["hardlimit"]) and options["prototype"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
+            raise PyKotaToolError, _("incompatible options, see help.")
+        elif options["groups"] and options["balance"] :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["groups"] :    
             raise PyKotaToolError, _("option --groups is currently not implemented.")

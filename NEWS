@@ -32,6 +32,10 @@ PyKota NEWS :
           jobs as well as charge users per page and/or per job, 
           and track users' account balance.
           
+        - edpykota now accepts much more command line options to  
+          use the new functionnalities. See edpykota --help for
+          details.
+          
         - The installation script now allows to install the sample
           configuration file during first installation.
           

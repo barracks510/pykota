@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/04/15 13:55:28  jalet
+# Options --limitby and --balance added to edpykota
+#
 # Revision 1.23  2003/04/15 11:30:57  jalet
 # More work done on money print charging.
 # Minor bugs corrected.
@@ -231,13 +234,13 @@ class SQLStorage :
         difference = balance - current
         self.increaseUserBalance(userid, difference)
         
-    def limitUserByQuota(self, userid) :    
-        """Limits a given user based on print quota."""
-        self.doQuery("UPDATE users SET limitby='quota' WHERE id=%s" % self.doQuote(userid))
+    def limitUserBy(self, userid, limitby) :    
+        """Limits a given user based either on print quota or on account balance."""
+        self.doQuery("UPDATE users SET limitby=%s WHERE id=%s" % (self.doQuote(limitby), self.doQuote(userid)))
         
-    def limitUserByBalance(self, userid) :    
-        """Limits a given user based on account balance."""
-        self.doQuery("UPDATE users SET limitby='balance' WHERE id=%s" % self.doQuote(userid))
+    def limitGroupBy(self, groupid, limitby) :    
+        """Limits a given group based either on print quota or on sum of its users' account balances."""
+        self.doQuery("UPDATE groups SET limitby=%s WHERE id=%s" % (self.doQuote(limitby), self.doQuote(groupid)))
         
     def setUserPQuota(self, userid, printerid, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota on a specific printer given (userid, printerid)."""
