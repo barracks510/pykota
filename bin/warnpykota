@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.22  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.21  2003/07/07 12:19:52  jalet
 # Now repykota and warnpykota --groups check the groups the user is a member of
 # in the print quota database, not in the system passwd/group files
@@ -198,6 +201,7 @@ class WarnPyKota(PyKotaTool) :
                     self.warnUserPQuota(userpquota)
                      
 if __name__ == "__main__" : 
+    retcode = 0
     try :
         defaults = { \
                      "printer" : "*", \
@@ -225,9 +229,15 @@ if __name__ == "__main__" :
         elif options["users"] and options["groups"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
-            sys.exit(sender.main(args, options))
+            retcode = sender.main(args, options)
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()
-        sys.exit(-1)
-
+        retcode = -1
+        
+    try :
+        sender.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    

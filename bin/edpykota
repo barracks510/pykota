@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.56  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.55  2003/07/28 09:11:12  jalet
 # PyKota now tries to add its attributes intelligently in existing LDAP
 # directories.
@@ -537,6 +540,7 @@ class EdPyKota(PyKotaTool) :
                         # getattr(self, "warn%sPQuota" % suffix)(entrypquota)    
                      
 if __name__ == "__main__" : 
+    retcode = 0
     try :
         defaults = { \
                      "printer" : "*", \
@@ -583,9 +587,15 @@ if __name__ == "__main__" :
         elif options["groups"] and (options["balance"] or options["ingroups"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
-            sys.exit(editor.main(args, options))
+            retcode = editor.main(args, options)
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()
-        sys.exit(-1)
+        retcode = -1
 
+    try :
+        editor.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    

@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.2  2003/07/25 10:41:29  jalet
 # Better documentation.
 # pykotme now displays the current user's account balance.
@@ -149,6 +152,7 @@ class PyKotMe(PyKotaTool) :
             return max(nbpages)
         
 if __name__ == "__main__" : 
+    retcode = 0
     try :
         defaults = { \
                      "printer" : "*", \
@@ -172,9 +176,15 @@ if __name__ == "__main__" :
         elif options["version"] :
             sender.display_version_and_quit()
         else :
-            sys.exit(sender.main(args, options))
+            retcode = sender.main(args, options)
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError), msg :            
         sys.stderr.write("%s\n" % msg)
         sys.stderr.flush()
-        sys.exit(-1)
+        retcode = -1
 
+    try :
+        sender.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    

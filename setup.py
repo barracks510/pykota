@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.22  2003/07/29 09:54:03  jalet
 # Added configurable LDAP mail attribute support
 #
@@ -270,6 +273,7 @@ if "install" in sys.argv :
     sys.stdout.write("AND USE THE POSTGRESQL BACKEND, THEN YOU HAVE TO MODIFY YOUR\n")
     sys.stdout.write("DATABASE SCHEMA USING initscripts/postgresql/upgrade-to-1.14.sql\n")
     sys.stdout.write("PLEASE READ DOCUMENTATION IN initscripts/postgresql/ TO LEARN HOW TO DO.\n")
+    sys.stdout.write("YOU CAN DO THAT AFTER THE INSTALLATION IS FINISHED, OR PRESS CTRL+C NOW.\n")
     sys.stdout.write("\n\nYOU DON'T HAVE ANYTHING SPECIAL TO DO IF THIS IS YOUR FIRST INSTALLATION.\n\n")
     dummy = raw_input("Please press ENTER when you have read the message above. ")
     

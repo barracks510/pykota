@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.48  2003/07/21 23:01:56  jalet
 # Modified some messages aout soft limit
 #
@@ -233,13 +236,22 @@ class PyKotaTool :
         self.storage = storage.openConnection(self)
         self.smtpserver = self.config.getSMTPServer()
         
+    def clean(self) :    
+        """Ensures that the database is closed."""
+        try :
+            self.storage.close()
+        except (TypeError, NameError, AttributeError) :    
+            pass
+            
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
+        self.clean()
         print version.__version__
         sys.exit(0)
     
     def display_usage_and_quit(self) :
         """Displays command line usage, then exists successfully."""
+        self.clean()
         print self.documentation
         sys.exit(0)
         

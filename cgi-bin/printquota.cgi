@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.11  2003/07/01 12:37:31  jalet
 # Nicer UI
 #
@@ -178,3 +181,10 @@ if __name__ == "__main__" :
     admin.form = cgi.FieldStorage()
     admin.guiAction()
     admin.guiDisplay()
+
+    try :
+        admin.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(0)

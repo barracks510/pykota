@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.24  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.23  2003/07/29 19:52:32  jalet
 # Forgot to read the email field from LDAP
 #
@@ -142,6 +145,10 @@ class Storage :
                 self.tool.logger.log_message("Database opened (host=%s, dbname=%s, user=%s)" % (host, dbname, user), "debug")
             
     def __del__(self) :        
+        """Ensures that the database connection is closed."""
+        self.close()
+        
+    def close(self) :    
         """Closes the database connection."""
         if not self.closed :
             del self.database

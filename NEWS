@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.14 : 
+    
+        - The PostgreSQL database connection is now always closed before
+          exit. The LDAP database connection too, but it didn't suffer
+          from the problem anyway, AFAICT.
+        
     - 1.14beta2 :
     
         - An LDAP-specific configuration field was introduced, usermail.

@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.10  2003/07/16 21:53:08  jalet
 # Really big modifications wrt new configuration file's location and content.
 #
@@ -89,6 +92,10 @@ class Storage :
                 self.tool.logger.log_message("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user), "debug")
             
     def __del__(self) :        
+        """Ensures that the database connection is closed."""
+        self.close()
+        
+    def close(self) :    
         """Closes the database connection."""
         if not self.closed :
             self.database.close()

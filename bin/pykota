@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2003/07/29 20:55:17  jalet
+# 1.14 is out !
+#
 # Revision 1.36  2003/07/10 06:09:52  jalet
 # Incorrect documentation string
 #
@@ -231,59 +234,64 @@ class PyKotaFilter(PyKotaTool) :
             # UNKNOWN
             return -1
             
-def main() :    
+def main(thefilter) :    
     """Do it, and do it right !"""
-    # Initializes the current tool
-    kotafilter = PyKotaFilter()    
-    
     #
     # If this is a CUPS filter, we should act and die like a CUPS filter when needed
-    if kotafilter.printingsystem == "CUPS" :
+    if thefilter.printingsystem == "CUPS" :
         if len(sys.argv) not in (6, 7) :    
             sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
-            return kotafilter.removeJob()
+            return thefilter.removeJob()
     
     # Get the last page counter and last username from the Quota Storage backend
-    printer = kotafilter.storage.getPrinter(kotafilter.printername)
+    printer = thefilter.storage.getPrinter(thefilter.printername)
     if not printer.Exists :
         # The printer is unknown from the Quota Storage perspective
         # we let the job pass through, but log a warning message
-        kotafilter.logger.log_message(_("Printer %s not registered in the PyKota system") % kotafilter.printername, "warn")
+        thefilter.logger.log_message(_("Printer %s not registered in the PyKota system") % thefilter.printername, "warn")
     else :    
-        user = kotafilter.storage.getUser(kotafilter.username)
+        user = thefilter.storage.getUser(thefilter.username)
         if not user.Exists :
             # The user is unknown from the Quota Storage perspective
             # Depending on the default policy for this printer, we
             # either let the job pass through or reject it, but we
             # log a message in any case.
-            policy = kotafilter.config.getPrinterPolicy(kotafilter.printername)
+            policy = thefilter.config.getPrinterPolicy(thefilter.printername)
             if policy == "ALLOW" :
                 action = "POLICY_ALLOW"
             else :    
                 action = "POLICY_DENY"
-            kotafilter.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (kotafilter.username, action, kotafilter.printername), "warn")
+            thefilter.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (thefilter.username, action, thefilter.printername), "warn")
             if action == "POLICY_DENY" :
-                return kotafilter.removeJob()
+                return thefilter.removeJob()
         else :
             # Now does the accounting and act depending on the result
-            action = kotafilter.accounter.doAccounting(printer, user)
+            action = thefilter.accounter.doAccounting(printer, user)
             
             # if not allowed to print then die, else proceed.
             if action == "DENY" :
                 # No, just die cleanly
-                return kotafilter.removeJob()
+                return thefilter.removeJob()
         
     # pass the job untouched to the underlying layer
-    kotafilter.accounter.filterInput(kotafilter.inputfile)      
+    thefilter.accounter.filterInput(thefilter.inputfile)      
     
-    return kotafilter.acceptJob()
+    return thefilter.acceptJob()
 
 if __name__ == "__main__" :    
     retcode = -1
     try :
-        retcode = main()
+        # Initializes the current tool
+        kotafilter = PyKotaFilter()    
+        retcode = main(kotafilter)
     except (PyKotaToolError, PyKotaConfigError, PyKotaStorageError, PyKotaAccounterError, AttributeError, KeyError, IndexError, ValueError, IOError), msg :
         sys.stderr.write("ERROR : PyKota filter failed (%s)\n" % msg)
         sys.stderr.flush()
+        retcode = -1
+
+    try :
+        kotafilter.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
     sys.exit(retcode)    
-    
