@@ -24,9 +24,6 @@ TODO, in no particular order :
         - Add precomputed job size (and price) to the history for
           controlling purpose.
           
-        - Improve the SECURITY document to include good PostgreSQL 
-          and OpenLDAP default settings.
-          
         - Try to talk to education based distribution coordinators
           (SambaEdu, SkoleLinux, K12LTSP, ...) to see how to
           better integrate PyKota with these.
@@ -55,11 +52,6 @@ TODO, in no particular order :
         - CUPS accepts the "STATE: ..." message as backchannel
           data : use this to tell CUPS what action has been taken
           for current job.
-          
-        - Add a "printDenyBanner: once(/path/to/banner)" directive
-                "printDenyBanner: always(/path/to/banner)"
-                "printDenyBanner: never"
-          This requires a database schema change. 
           
         - Think about some possible client <=> PyKota dialog
           possibilities, like embedding a small web server in
