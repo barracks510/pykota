@@ -94,6 +94,11 @@ PyKota features :
           
         - Possibility to disable quota enforcement for any user
           or group, while still keeping page accounting.
+          
+        - Starting and Ending personalized dynamic banners can be
+          generated on the fly, and accounted for or not, depending 
+          on some configuration settings.
+          NB : Banners are a CUPS only feature for now.
               
     Administration :        
     
