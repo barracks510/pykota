@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/07/01 07:30:32  jalet
+# Message changed.
+#
 # Revision 1.9  2003/06/30 13:47:26  jalet
 # Allows multiple user / group names masks in the input field
 #
@@ -137,7 +140,7 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiAction(self) :
         """Main function"""
         printers = ugmask = isgroup = None
-        self.body = "<p>Please click on the menu above</p>\n"
+        self.body = "<p>Please click on the button above</p>\n"
         if self.form.has_key("action") :
             action = self.form["action"].value
             if action == "Report" :
