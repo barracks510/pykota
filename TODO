@@ -23,9 +23,6 @@ TODO, in order of importance :
 
         - Documentation...
           
-        - Find a way to fill the 'email' field in the PgStorage.
-          Should we write to it too in the LDAPStorage ?
-          
         - Complete web administrative interface with graphical reports.
        
         - Group administrators (think quotagrpdmins for disk quotas).
