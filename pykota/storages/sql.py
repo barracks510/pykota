@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.55  2004/10/07 09:37:53  jalet
+# Fixes recently introduced bug wrt users groups (was it three days ago ?)
+#
 # Revision 1.54  2004/10/05 10:05:04  jalet
 # UnicodeEncodeError isn't defined in Python2.1
 #
@@ -196,14 +199,17 @@ class SQLStorage :
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
-        result = self.doSearch("SELECT groups.*,sum(balance) AS balance, sum(lifetimepaid) AS lifetimepaid FROM groups,users WHERE groupname=%s AND users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby LIMIT 1" % self.doQuote(groupname))
+        result = self.doSearch("SELECT * FROM groups WHERE groupname=%s LIMIT 1" % self.doQuote(groupname))
         if result :
             fields = result[0]
             group.ident = fields.get("id")
             group.Name = fields.get("groupname", groupname)
             group.LimitBy = fields.get("limitby")
-            group.AccountBalance = fields.get("balance")
-            group.LifeTimePaid = fields.get("lifetimepaid")
+            result = self.doSearch("SELECT SUM(balance) AS balance, SUM(lifetimepaid) AS lifetimepaid FROM users WHERE id IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % self.doQuote(group.ident))
+            if result :
+                fields = result[0]
+                group.AccountBalance = fields.get("balance") or 0.0
+                group.LifeTimePaid = fields.get("lifetimepaid") or 0.0
             group.Exists = 1
         return group
        
@@ -241,15 +247,18 @@ class SQLStorage :
         """Extracts a group print quota."""
         grouppquota = StorageGroupPQuota(self, group, printer)
         if group.Exists :
-            result = self.doSearch("SELECT grouppquota.*,sum(pagecounter) AS pagecounter,sum(lifepagecounter) AS lifepagecounter FROM grouppquota,userpquota WHERE groupid=%s AND grouppquota.printerid=%s AND userpquota.printerid=%s AND userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit" % (self.doQuote(group.ident), self.doQuote(printer.ident), self.doQuote(printer.ident)))
+            result = self.doSearch("SELECT id, softlimit, hardlimit, datelimit FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
             if result :
                 fields = result[0]
                 grouppquota.ident = fields.get("id")
                 grouppquota.SoftLimit = fields.get("softlimit")
                 grouppquota.HardLimit = fields.get("hardlimit")
                 grouppquota.DateLimit = fields.get("datelimit")
-                grouppquota.PageCounter = fields.get("pagecounter")
-                grouppquota.LifePageCounter = fields.get("lifepagecounter")
+                result = self.doSearch("SELECT SUM(lifepagecounter) AS lifepagecounter, SUM(pagecounter) AS pagecounter FROM userpquota WHERE printerid=%s AND userid IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % (self.doQuote(printer.ident), self.doQuote(group.ident)))
+                if result :
+                    fields = result[0]
+                    grouppquota.PageCounter = fields.get("pagecounter") or 0
+                    grouppquota.LifePageCounter = fields.get("lifepagecounter") or 0
                 grouppquota.Exists = 1
         return grouppquota
         
