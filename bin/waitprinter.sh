@@ -18,11 +18,6 @@
 # If ending phase, after the job has been fully transmitted to the printer
 # we have to wait for the printer being in printing mode before checking
 # if it is idle, otherwise we could have problems with slow printers.
-# When using the pykota filter, PYKOTAPHASE is not defined at the
-# first requesting stage (which is the ending phase of the previous
-# job), because waiting for the printer being printing wouldn't be OK :
-# the printer would effectively never print again if the previous job
-# was already fully printed.
 PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/opt/bin
 if [ x$PYKOTAACTION != "xDENY" ] && [ x$PYKOTAPHASE = "xAFTER" ] ; then
   until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i printing >/dev/null; do
