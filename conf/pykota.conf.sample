@@ -121,6 +121,9 @@ disablehistory: No
 # Activate low-level LDAP cache yes/no
 # Nothing to do with "storagecaching" which is higher level
 # and database independant.
+# This saves some search queries and may help with heavily
+# loaded LDAP servers.
+# This is EXPERIMENTAL.
 ldapcache: no
 
 # Where to log ?

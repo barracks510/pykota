@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.54  2004/02/20 16:38:39  jalet
+# ldapcache directive marked as experimental
+#
 # Revision 1.53  2004/02/20 14:42:21  jalet
 # Experimental ldapcache directive added
 #
@@ -860,7 +863,7 @@ class Storage(BaseStorage) :
                  }
         if newlifetimepaid is not None :
             fields.update({ "pykotaLifeTimePaid" : str(newlifetimepaid) })
-        return self.doModify(user.idbalance, fields, flushcache=1)         
+        return self.doModify(user.idbalance, fields)         
             
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
