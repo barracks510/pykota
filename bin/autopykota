@@ -1,0 +1,149 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# autopykota : script to automate user creation in PyKota
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2004/09/30 09:52:45  jalet
+# Initial release of autopykota. Reading help or manpage is greatly
+# encouraged !
+#
+#
+#
+
+import sys
+import os
+
+from pykota import version
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed
+
+__doc__ = """autopykota v%s (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
+A tool to automate user account creation and initial balance setting.
+
+THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !
+
+command line usage :
+
+  THIS TOOL MUST NOT BE USED FROM THE COMMAND LINE BUT ONLY AS PART
+  OF AN external policy IN pykota.conf
+  
+  THIS TOOL IS STILL EXPERIMENTAL. USE AT YOUR OWN RISK !!!
+  
+  autopykota { -i | --initbalance value } 
+
+options :
+
+  -v | --version       Prints edpykota's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -i | --initbalance b Sets the user's account initial balance value to b.
+                       If the user already exists, actual balance is left
+                       unmodified.
+                       
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+
+Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
+
+class AutoPyKota(PyKotaTool) :
+    """A class for the automat."""
+    def main(self, arguments, options) :
+        """Main entry point."""
+        username = os.environ.get("PYKOTAUSERNAME")
+        printername = os.environ.get("PYKOTAPRINTERNAME")
+        if (username is None) or (printername is None) :
+            raise PyKotaToolError, "Either the username or the printername is undefined. Fatal Error."
+        else :
+            user = self.storage.getUser(username)
+            if user.Exists :
+                printer = self.storage.getPrinter(printername)
+                if printer.Exists :
+                    userpquota = self.storage.getUserPQuota(user, printer)
+                    if userpquota.Exists :
+                        self.logdebug("User %s's quota entry on printer %s already exists. Nothing to do." % (username, printername))
+                        return 0
+                    else :    
+                        self.logdebug("User %s already exists. Creating a quota entry for user %s on printer %s." % (username, username, printername))
+                        return os.system('/usr/bin/edpykota --add --printer "%s" "%s"' % (printername, username))
+                else :
+                    self.logdebug("User %s already exists. Printer %s doesn't exist. Creating printer %s and a quota entry for user %s on printer %s." % (username, printername, printername, username, printername))
+                    return os.system('/usr/bin/edpykota --add --printer "%s" "%s"' % (printername, username))
+            else :
+                if options["initbalance"] is None :
+                    raise PyKotaToolError, "User %s doesn't exist yet, but no initial balance value is given. Fatal Error." % username
+                else :
+                    self.logdebug("User %s doesn't exist yet. Creating user %s's account and quota entries on all existing printers." % (username, username))
+                    return os.system('/usr/bin/edpykota --add --limitby balance --balance "%s" "%s"' % (options["initbalance"], username))
+    
+if __name__ == "__main__" :    
+    retcode = 0
+    try :
+        defaults = { \
+                   }
+        short_options = "vhi:"
+        long_options = ["help", "version", "initbalance="]
+        
+        # Initializes the command line tool
+        automat = AutoPyKota(doc=__doc__)
+        
+        # parse and checks the command line
+        (options, args) = automat.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["initbalance"] = options["i"] or options["initbalance"] 
+        
+        if options["help"] :
+            automat.display_usage_and_quit()
+        elif options["version"] :
+            automat.display_version_and_quit()
+        elif args :    
+            raise PyKotaToolError, "autopykota doesn't accept non option arguments !"
+        else :
+            retcode = automat.main(args, options)
+    except SystemExit :        
+        pass
+    except :
+        try :
+            automat.crashed("autopykota failed")
+        except :    
+            crashed("autopykota failed")
+        retcode = -1
+
+    try :
+        automat.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    

@@ -23,6 +23,10 @@ PyKota NEWS :
 
     - 1.20alpha18 :
     
+        - Experimental autopykota command to initialize user
+          account and quota entries on first print while not 
+          resetting the balance value if not needed.
+          
         - Added the new "winbind_separator" directive to strip
           out the Samba/Winbind domain name while printing if
           needed (Off by default).

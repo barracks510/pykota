@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2004/09/30 09:52:45  jalet
+# Initial release of autopykota. Reading help or manpage is greatly
+# encouraged !
+#
 # Revision 1.51  2004/09/21 21:31:35  jalet
 # Installation script now checks for availability of Python-SNMP (http://pysnmp.sf.net)
 #
@@ -480,7 +484,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
+      scripts = [ "bin/autopykota", "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)
 
 if ("install" in sys.argv) and not ("help" in sys.argv) :
