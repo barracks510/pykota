@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.77  2004/03/03 13:10:35  jalet
+# Now catches all smtplib exceptions when there's a problem sending messages
+#
 # Revision 1.76  2004/03/01 14:34:15  jalet
 # PYKOTAPHASE wasn't set at the right time at the end of data transmission
 # to underlying layer (real backend)
@@ -444,7 +447,7 @@ class PyKotaTool :
         server = smtplib.SMTP(self.smtpserver)
         try :
             server.sendmail(adminmail, [touser], "From: %s\nTo: %s\n%s" % (adminmail, touser, fullmessage))
-        except smtplib.SMTPRecipientsRefused, answer :    
+        except smtplib.SMTPException, answer :    
             for (k, v) in answer.recipients.items() :
                 self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
         server.quit()

@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.18alpha14 :
     
+        - Catches more (all ?) problems with SMTP servers instead
+          of breaking.
+          
         - Italian translation added.
         
     - 1.18alpha13 :
