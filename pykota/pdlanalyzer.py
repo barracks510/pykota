@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.36  2004/09/01 22:31:49  jalet
+# Some more work on ESC/P2 analyzer to avoid missing \r\n sequences. Not
+# exactly optimal though...
+#
 # Revision 1.35  2004/08/30 23:10:24  jalet
 # Improved the ESC/P2 analyzer so that more GhostScript devices are supported
 #
@@ -242,33 +246,26 @@ class ESCP2Analyzer :
         # with Gimpprint, at least, for each page there
         # are two Reset Printer sequences (ESC + @)
         marker1 = "\033@"
-        pagecount1 = 0
         
         # with other software or printer driver, we
         # may prefer to search for "\r\n\fESCAPE"
         # or "\r\fESCAPE"
         marker2r = "\r\f\033"
         marker2rn = "\r\n\f\033"
-        pagecount2 = 0
         
         # and ghostscript's stcolor for example seems to
         # output ESC + @ + \f for each page plus one
         marker3 = "\033@\f"
-        pagecount3 = 0
         
         # while ghostscript's escp driver outputs instead
         # \f + ESC + @
         marker4 = "\f\033@"
-        pagecount4 = 0
         
-        for line in self.infile.xreadlines() : 
-            pagecount1 += line.count(marker1)
-            generic = line.count(marker2r)
-            if not generic :
-                generic = line.count(marker2rn)
-            pagecount2 += generic    
-            pagecount3 += line.count(marker3)
-            pagecount4 += line.count(marker4)
+        data = self.infile.read()
+        pagecount1 = data.count(marker1)
+        pagecount2 = max(data.count(marker2r), data.count(marker2rn))
+        pagecount3 = data.count(marker3)
+        pagecount4 = data.count(marker4)
             
         if pagecount2 :    
             return pagecount2
@@ -278,7 +275,6 @@ class ESCP2Analyzer :
             return pagecount4
         else :    
             return int(pagecount1 / 2)       
-        
         
 class PCLAnalyzer :
     def __init__(self, infile) :
