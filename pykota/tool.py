@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.133  2004/10/19 22:24:00  jalet
+# Should fix the printer's hostname or IP address detection code.
+#
 # Revision 1.132  2004/10/19 21:45:25  jalet
 # Now correctly logs command line arguments
 #
@@ -1236,8 +1239,13 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             if Kseen is None :        
                 Kseen = 1       # we assume the user wants at least one copy...
             if (rseen is None) and jseen and Pseen and nseen :    
-                self.printInfo(_("Printer hostname undefined, set to 'localhost'"), "warn")
-                rseen = "localhost"
+                lparg = [arg for arg in "".join(os.environ.get("PRINTCAP_ENTRY", "").split()).split(":") if arg.startswith("rm=") or arg.startswith("lp=")]
+                try :
+                    rseen = lparg[0].split("=")[-1].split("@")[-1].split("%")[0]
+                except :    
+                    # Not found
+                    self.printInfo(_("Printer hostname undefined, set to 'localhost'"), "warn")
+                    rseen = "localhost"
                 
             spooldir = os.environ.get("SPOOL_DIR", ".")    
             try :    
