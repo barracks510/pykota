@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/03/10 00:11:27  jalet
+# Cleaner example.
+#
 # Revision 1.25  2003/03/09 23:56:21  jalet
 # Option noquota added to do accounting only.
 #
@@ -175,11 +178,12 @@ examples :
   well as every user whose name begins with 'jo'.
   Their life time page counter on each printer will be kept unchanged.
   
-  $ edpykota --noquota jerome
+  $ edpykota --printer hpcolor --noquota jerome
   
-  This will tell PyKota to not limit jerome when printing. All his
-  jobs will be allowed, but accounting of the pages he used will
-  still be kept.
+  This will tell PyKota to not limit jerome when printing on the 
+  hpcolor printer. All his jobs will be allowed on this printer, but 
+  accounting of the pages he prints will still be kept.
+  Print Quotas for jerome on other printers is unchanged.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
