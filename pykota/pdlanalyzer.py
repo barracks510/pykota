@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2005/02/13 21:26:34  jalet
+# Better detection of number of copies in PostScript parser
+#
 # Revision 1.51  2005/01/12 14:44:27  jalet
 # Fixed a fuckingly strange exception by cleverly ignoring it entirely :-)
 #
@@ -251,6 +254,14 @@ class PostScriptAnalyzer :
         for line in self.infile.xreadlines() : 
             if line.startswith("%%Page: ") :
                 pagecount += 1
+            elif line.startswith("%%Requirements: numcopies(") :    
+                try :
+                    number = int(line.strip().split('(')[1].split(')')[0])
+                except :     
+                    pass
+                else :    
+                    if number > self.copies :
+                        self.copies = number
             elif line.startswith("%%BeginNonPPDFeature: NumCopies ") :
                 # handle # of copies set by some Windows printer driver
                 try :
