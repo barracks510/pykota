@@ -65,7 +65,9 @@ PyKota features :
             
     Quota systems :        
     
-        - Supports user and groups quotas.
+        - Supports printers and printers groups quotas.
+        
+        - Supports users and users groups quotas.
         
         - Supports page quotas.
           Page quotas can be set differently on a per printer
@@ -75,10 +77,6 @@ PyKota features :
           Account balance quotas can be set on a per user 
           basis. The account balance is shared amongst
           all printers.
-          
-        - Experimental support for printer groups, so that
-          you can share quota between printers of the same
-          type but in different locations.
           
         - Page quota and account balance can be set/reset
           independantly.
