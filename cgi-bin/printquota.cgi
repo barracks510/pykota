@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/04/08 21:20:25  jalet
+# CGI Script now displays a link to PyKota's website.
+#
 # Revision 1.3  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -48,10 +51,15 @@ header = """Content-type: text/html
   </head>
   <body>
     <h2>Print Quota Report</h2>
-    <pre>"""
+    <p>
+      <pre>"""
 
 footer = """
-    </pre>
+      </pre>
+    </p>  
+    <p>
+      Report generated with <a href="http://www.librelogiciel.com/software/">PyKota</a>
+    </p>
   </body>
 </html>"""  
 
