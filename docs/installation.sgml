@@ -101,7 +101,8 @@
       <title>MySQL</title>
       
       <para>
-        TODO.
+        A <application>MySQL</application> Storage Backend is planned, but it actually
+        doesn't exist.
       </para>
     </sect2>  
     
@@ -109,7 +110,8 @@
       <title>LDAP</title>
       
       <para>
-        TODO.
+        An <application>LDAP</application> Storage Backend is planned, but it actually
+        doesn't exist. Some people may already be working on this, though. 
       </para>
     </sect2>  
     
@@ -117,7 +119,10 @@
       <title>Berkeley DB</title>
       
       <para>
-        TODO.
+        A <application>Berkeley DB</application> Storage Backend is planned, but it actually
+        doesn't exist. It seems that remote storage won't be possible with such a backend,
+        so in other terms this means that you will have a different quota database on
+        each print server. This may still prove to be useful for small configurations.
       </para>
     </sect2>  
   </sect1>  
@@ -142,6 +147,10 @@
 <!--
 
 $Log$
+Revision 1.3  2003/03/18 22:18:25  jalet
+The documentation will only be a sequence of chapters in a single part, not
+multiple parts each including chapters.
+
 Revision 1.2  2003/03/18 22:10:54  jalet
 Documentation improvements.
 

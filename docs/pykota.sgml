@@ -77,29 +77,15 @@
 
   </bookinfo>
 
-  <part id="installation">
-    <title id="installation-title">Installation</title>
+  &INSTALLATION;
 
-    <toc></toc>
-
-    &INSTALLATION;
-
-  </part>
-
-  <part id="commandline">
-    <title id="commandline-title">Command Line tools</title>
-
-    <toc></toc>
-
-    &EDPYKOTA;
+  &EDPYKOTA;
     
-    &REPYKOTA;
+  &REPYKOTA;
     
-    &WARNPYKOTA;
+  &WARNPYKOTA;
     
-    &FILTERPYKOTA;
-
-  </part>
+  &FILTERPYKOTA;
 
   &GNUFDL;
 
@@ -108,6 +94,10 @@
 <!--
 
 $Log$
+Revision 1.3  2003/03/18 22:18:25  jalet
+The documentation will only be a sequence of chapters in a single part, not
+multiple parts each including chapters.
+
 Revision 1.2  2003/02/08 00:13:49  jalet
 What is the tag for the zip code ?
 
