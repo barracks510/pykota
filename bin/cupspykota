@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.68  2004/07/20 22:19:44  jalet
+# Sanitized a bit + use of gettext
+#
 # Revision 1.67  2004/07/16 12:22:45  jalet
 # LPRng support early version
 #
@@ -347,7 +350,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                         matchingline = line # no break, because we read forward
             pagelog.close()        
             if matchingline is None :
-                self.logdebug("No matching line found in page_log")
+                self.logdebug("No matching line found in %s" % pagelogpath)
                 return # correct line not found, job-originating-hostname unknown
             else :    
                 return matchingline.split()[-1]
@@ -375,12 +378,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
                 self.softwareJobSize = self.precomputeJobSize()
                 self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
-                self.sendBackChannelData("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
+                self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
             os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
             os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
-            
-            # checks the user's quota
-            action = self.warnUserPQuota(userpquota)
             
             # if no data to pass to real backend, probably a filter
             # higher in the chain failed because of a misconfiguration.
@@ -388,6 +388,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             if not self.jobSizeBytes :
                 self.printInfo(_("Job contains no data. Printing is denied."), "warn")
                 action = "DENY"
+            else :    
+                # checks the user's quota
+                action = self.warnUserPQuota(userpquota)
             
             # exports some new environment variables
             os.environ["PYKOTAACTION"] = action
@@ -395,7 +398,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # launches the pre hook
             self.prehook(userpquota)
             
-            self.sendBackChannelData("Job accounting begins.")
+            self.printInfo(_("Job accounting begins."))
             self.accounter.beginJob(userpquota)
         else :    
             action = "ALLOW"
@@ -416,23 +419,23 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # stops accounting. 
             self.accounter.endJob(userpquota)
-            self.sendBackChannelData("Job accounting ends.")
+            self.printInfo(_("Job accounting ends."))
                 
             # retrieve the job size    
             if action == "DENY" :
                 jobsize = 0
-                self.sendBackChannelData("Job size forced to 0 because printing is denied.")
+                self.printInfo(_("Job size forced to 0 because printing is denied."))
             else :    
                 jobsize = self.accounter.getJobSize()
-            self.sendBackChannelData("Job size : %i" % jobsize)
+            self.printInfo(_("Job size : %i") % jobsize)
             
             # update the quota for the current user on this printer 
-            self.sendBackChannelData("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
+            self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))
             jobprice = userpquota.increasePagesUsage(jobsize)
             
             # adds the current job to history    
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
-            self.sendBackChannelData("Job added to history.")
+            self.printInfo(_("Job added to history."))
             
             # exports some new environment variables
             os.environ["PYKOTAJOBSIZE"] = str(jobsize)
@@ -480,7 +483,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], self.originalbackend)
         
         # And launch it
-        self.sendBackChannelData("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + sys.argv[1:])])))
+        self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + sys.argv[1:])])))
         subprocess = PyKotaPopen4([realbackend] + sys.argv[1:], bufsize=0, arg0=os.environ["DEVICE_URI"])
         
         # Save file descriptors, we will need them later.
@@ -510,11 +513,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         else :    
             # job's data is in a file, no need to pass the data
             # to the real backend
-            self.sendBackChannelData("Job's data is in %s" % self.preserveinputfile)
+            self.logdebug("Job's data is in %s" % self.preserveinputfile)
             infno = None
             endinput = 1
         
-        self.sendBackChannelData("Entering streams polling loop...")
+        self.logdebug("Entering streams polling loop...")
         MEGABYTE = 1024*1024
         killed = 0
         status = -1
@@ -530,7 +533,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 except OSError, msg : # ignore but logs if process was already killed.
                     self.logdebug("Error while sending signal to pid %s : %s" % (subprocess.pid, msg))
                 else :    
-                    self.sendBackChannelData(_("SIGTERM was sent to real backend %s (pid: %s)") % (realbackend, subprocess.pid))
+                    self.printInfo(_("SIGTERM was sent to real backend %s (pid: %s)") % (realbackend, subprocess.pid))
                     killed = 1
             
             # In any case, deal with any remaining I/O
@@ -540,7 +543,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 self.logdebug("Interrupted poll : %s" % msg)
                 availablefds = []
             if not availablefds :
-                self.sendBackChannelData("Nothing to do, sleeping a bit...")
+                self.logdebug("Nothing to do, sleeping a bit...")
                 time.sleep(0.01) # give some time to the system
             else :
                 for (fd, mask) in availablefds :
@@ -557,12 +560,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                     else :    
                                         indata = ""
                                 else :        
-                                    self.sendBackChannelData("No data to send to real backend yet, sleeping a bit...")
+                                    self.logdebug("No data to send to real backend yet, sleeping a bit...")
                                     time.sleep(0.01)
                                     
                                 if endinput :    
                                     self.unregisterFileNo(pollster, tocfno)        
-                                    self.sendBackChannelData("Closing real backend's stdin.")
+                                    self.logdebug("Closing real backend's stdin.")
                                     os.close(tocfno)
                                     inputclosed = 1
                             elif fd == stderrfno :
@@ -594,13 +597,13 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 if fd == infno :
                                     if not data :    # If yes, then no more input data
                                         self.unregisterFileNo(pollster, infno)
-                                        self.sendBackChannelData("Input data ends.")
+                                        self.logdebug("Input data ends.")
                                         endinput = 1 # this happens with real files.
                                     else :    
                                         indata += data
                                 elif fd == fromcfno :
                                     if not data :
-                                        self.sendBackChannelData("No back channel data to read from real backend yet, sleeping a bit...")
+                                        self.logdebug("No back channel data to read from real backend yet, sleeping a bit...")
                                         time.sleep(0.01)
                                     else :
                                         outdata += data
@@ -615,11 +618,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                             if fd == infno :
                                 # Here we are in the case where the input file is stdin.
                                 # which has no more data to be read.
-                                self.sendBackChannelData("Input data ends.")
+                                self.logdebug("Input data ends.")
                                 endinput = 1
                             elif fd == fromcfno :    
                                 # We are no more interested in this file descriptor        
-                                self.sendBackChannelData("Closing real backend's stdout+stderr.")
+                                self.logdebug("Closing real backend's stdout+stderr.")
                                 os.close(fromcfno)
                                 endoutput = 1
                             else :    
@@ -627,23 +630,23 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                                 time.sleep(0.01)
                                 
                         if mask & select.POLLNVAL :        
-                            self.sendBackChannelData("File %s was closed. Unregistering from polling object." % fd)
+                            self.logdebug("File %s was closed. Unregistering from polling object." % fd)
                             self.unregisterFileNo(pollster, fd)
                     except IOError, msg :            
                         self.logdebug("Got an IOError : %s" % msg) # we got signalled during an I/O
                 
         # We must close the real backend's input stream
         if killed and not inputclosed :
-            self.sendBackChannelData("Forcing close of real backend's stdin.")
+            self.logdebug("Forcing close of real backend's stdin.")
             os.close(tocfno)
         
-        self.sendBackChannelData("Exiting streams polling loop...")
+        self.logdebug("Exiting streams polling loop...")
         
         # Check exit code of original CUPS backend.    
         if status == -1 :
             # we exited the loop before the real backend exited
             # now we have to wait for it to finish and get its status
-            self.sendBackChannelData("Waiting for real backend to exit...")
+            self.logdebug("Waiting for real backend to exit...")
             try :
                 status = subprocess.wait()
             except OSError : # already dead    
@@ -651,7 +654,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
         elif not killed :    
-            self.printInfo(_("CUPS backend %s died abnormally.") % realbackend, "error")
+            self.sendBackChannelData(_("CUPS backend %s died abnormally.") % realbackend, "error")
             retcode = -1
         else :    
             retcode = self.removeJob()

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.114  2004/07/20 22:19:45  jalet
+# Sanitized a bit + use of gettext
+#
 # Revision 1.113  2004/07/17 20:37:27  jalet
 # Missing file... Am I really stupid ?
 #
@@ -939,9 +942,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.logdebug("Capturing SIGTERM events.")
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         
-    def sendBackChannelData(self, message) :    
+    def sendBackChannelData(self, message, level="info") :    
         """Sends an informational message to CUPS via back channel stream (stderr)."""
-        self.printInfo("PyKota (PID %s) : %s" % (os.getpid(), message.strip()))
+        sys.stderr.write("%s: PyKota (PID %s) : %s\n" % (level.upper(), os.getpid(), message.strip()))
+        sys.stderr.flush()
         
     def openJobDataStream(self) :    
         """Opens the file which contains the job's datas."""
@@ -949,7 +953,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # Job comes from sys.stdin, but this is not
             # seekable and complexifies our task, so create
             # a temporary file and use it instead
-            self.sendBackChannelData("Duplicating data stream from stdin to temporary file")
+            self.logdebug("Duplicating data stream from stdin to temporary file")
             dummy = 0
             MEGABYTE = 1024*1024
             self.jobSizeBytes = 0
@@ -960,22 +964,22 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     break
                 self.jobSizeBytes += len(data)    
                 if not (dummy % 10) :
-                    self.sendBackChannelData("%s bytes read..." % self.jobSizeBytes)
+                    self.logdebug("%s bytes read..." % self.jobSizeBytes)
                 dummy += 1    
                 infile.write(data)
-            self.sendBackChannelData("%s bytes read total." % self.jobSizeBytes)
+            self.logdebug("%s bytes read total." % self.jobSizeBytes)
             infile.flush()    
             infile.seek(0)
             return infile
         else :    
             # real file, just open it
-            self.sendBackChannelData("Opening data stream %s" % self.preserveinputfile)
+            self.logdebug("Opening data stream %s" % self.preserveinputfile)
             self.jobSizeBytes = os.stat(self.preserveinputfile)[6]
             return open(self.preserveinputfile, "rb")
         
     def closeJobDataStream(self) :    
         """Closes the file which contains the job's datas."""
-        self.sendBackChannelData("Closing data stream.")
+        self.logdebug("Closing data stream.")
         try :
             self.jobdatastream.close()
         except :    
@@ -1099,8 +1103,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     backend)
         else :    
             # Try to detect LPRng
-            # TODO : try to extract filename, job's title, and options if available
-            jseen = Pseen = nseen = rseen = Kseen = None
+            # TODO : try to extract filename, options if available
+            jseen = Jseen = Pseen = nseen = rseen = Kseen = None
             for arg in sys.argv :
                 if arg.startswith("-j") :
                     jseen = arg[2:].strip()
@@ -1110,6 +1114,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     Pseen = arg[2:].strip()
                 elif arg.startswith("-r") :    
                     rseen = arg[2:].strip()
+                elif arg.startswith("-J") :    
+                    Jseen = arg[2:].strip()
                 elif arg.startswith("-K") or arg.startswith("-#") :    
                     Kseen = int(arg[2:].strip())
             if Kseen is None :        
@@ -1124,7 +1130,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             else :    
                 inputfile = os.path.join(os.environ.get("SPOOL_DIR", "."), df_name)
             if jseen and Pseen and nseen and rseen :        
-                return ("LPRNG", rseen, Pseen, nseen, jseen, inputfile, Kseen, None, None, None)
+                options = os.environ.get("HF", "")
+                return ("LPRNG", rseen, Pseen, nseen, jseen, inputfile, Kseen, Jseen, options, None)
         self.printInfo(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
         return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system
         

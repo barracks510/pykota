@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.5  2004/07/20 22:19:45  jalet
+# Sanitized a bit + use of gettext
+#
 # Revision 1.4  2004/07/19 22:37:13  jalet
 # pykosd is now a very good tool
 #
@@ -100,24 +103,24 @@ class PyKOSD(PyKotaTool) :
         try :    
             duration = int(options["duration"])
         except :    
-            raise PyKotaToolError, "Invalid duration option %s" % str(options["duration"])
+            raise PyKotaToolError, _("Invalid duration option %s") % str(options["duration"])
             
         try :    
             loop = int(options["loop"])
         except :    
-            raise PyKotaToolError, "Invalid loop option %s" % str(options["loop"])
+            raise PyKotaToolError, _("Invalid loop option %s") % str(options["loop"])
             
         try :    
             sleep = float(options["sleep"])
         except :    
-            raise PyKotaToolError, "Invalid sleep option %s" % str(options["sleep"])
+            raise PyKotaToolError, _("Invalid sleep option %s") % str(options["sleep"])
             
         uid = os.geteuid()
         uname = pwd.getpwuid(uid)[0]
         while 1 :
             user = cmd.storage.getUserFromBackend(uname)        # don't use cache
             if not user.Exists :
-                raise PyKotaToolError, "User %s doesn't exist in PyKota's database." % uname
+                raise PyKotaToolError, _("User %s doesn't exist in PyKota's database") % uname
             if user.LimitBy == "quota" :    
                 printers = cmd.storage.getMatchingPrinters("*")
                 upquotas = [ cmd.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2004/07/20 22:19:45  jalet
+# Sanitized a bit + use of gettext
+#
 # Revision 1.14  2004/07/01 19:56:40  jalet
 # Better dispatching of error messages
 #
@@ -195,7 +198,7 @@ class PKHint(PyKotaTool) :
         try :
             (backend, destination) = device.split(":", 1) 
         except ValueError :    
-            raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device
+            raise PyKotaToolError, _("Invalid DeviceURI : %s") % device
         while destination.startswith("/") :
             destination = destination[1:]
         checkauth = destination.split("@", 1)    
@@ -219,7 +222,7 @@ class PKHint(PyKotaTool) :
     def main(self, args, options) :
         """Main work is done here."""
         sys.stderr.write("BEWARE : This tool doesn't support LPRng's printcap files yet.\n")
-        print "\nPlease wait while pkhint analyzes your printing system's configuration..."
+        print _("\nPlease wait while pkhint analyzes your printing system's configuration...")
         printers = self.extractPrintersInformation()
         devicestypes = self.extractDevices() # TODO : IT'S CUPS ONLY FOR NOW
         configuration = []
@@ -253,10 +256,10 @@ class PKHint(PyKotaTool) :
         if not configuration :            
             print "\nSorry, pkhint can't help you for now. Please configure PyKota manually."
         else :
-            print "\nPut the following lines into your /etc/pykota/pykota.conf file :\n"
-            print "# BEWARE : if software accounting is suggested, this doesn't mean"
-            print "# that hardware accounting wouldn't work, this only means that PyKota"
-            print "# wasn't able to autodetect which hardware accounting method to use."
+            print _("\nPut the following lines into your /etc/pykota/pykota.conf file :\n")
+            print _("# BEWARE : if software accounting is suggested, this doesn't mean")
+            print _("# that hardware accounting wouldn't work, this only means that PyKota")
+            print _("# wasn't able to autodetect which hardware accounting method to use.")
             for (printer, accounter) in configuration :
                 print "[%s]" % printer
                 print "accounter: %s" % accounter
