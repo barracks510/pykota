@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/03/09 23:58:16  jalet
+# Comment
+#
 # Revision 1.25  2003/03/07 22:56:14  jalet
 # 0.99 is out with some bug fixes.
 #
@@ -294,7 +297,7 @@ class PyKotaTool :
                     else :      
                         action = "DENY"
                 else :
-                    # Both are unset, no quota
+                    # Both are unset, no quota, i.e. accounting only
                     action = "ALLOW"
         return action
     
