@@ -1,7 +1,7 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title id="filter">The pykota filter</title>
+  <title id="filter">PyKota's internals</title>
   
   <para>Last modified on $Date$</para>
   
@@ -48,13 +48,11 @@
   </para>
   
   <para>
-    Currently with a <application>CUPS</application> backend, the <application>pykota</application> filter is used at the very last stage of the print mechanism,
-    just before the final data is sent to the printer, but it may eventually be used earlier with some
-    modifications to <application>CUPS</application>'s filtering configuration. 
-    You can find in the mailing list archives of July 2003 an explanation on how to do this.
-    This may allow you to use PyKota with a not-PostScript printer or with a PostScript printer
-    which really needs to have
-    a specific filter like <application>magicfilter</application> or <application>cupsomatic</application>.
+    Currently with a <application>CUPS</application> backend, the <application>pykota</application> filter is 
+    deprecated. You have to use the <application>cupspykota</application> CUPS backend instead.
+    This CUPS backend ensures that jobs can't bypass the filtering mechanism, so you can use
+    any printer with any driver and any command line option, and you can be sure that your
+    print job will be correctly accounted for.
   </para>
   
   <para>
@@ -65,7 +63,7 @@
   </para>
   
   <para>
-    When you submit a print job, <application>pykota</application> is automatically launched by your printing system,
+    When you submit a print job, <application>cupspykota</application> (with CUPS) or <application>pykota</application> (with LPRng) is automatically launched by your printing system,
     so it has to detect which system you are using (<application>CUPS</application> or <application>LPRng</application>)
     and behave like if it was specifically designed for your printing system. Fortunately there's not a lot
     of differences, the more important one is the exit codes used to tell the printing environment if a job
@@ -74,12 +72,16 @@
   
   <para>
     When using the <literal>querying</literal> accounting method,
-    <application>pykota</application> then asks the printer for its internal page counter, read from the Quota DataBase the internal
+    <application>pykota</application> asks the printer for its internal page counter, reads from the Quota DataBase the internal
     page counter for this printer when the previous job was launched, computes the difference, and report it as the 
     previous job's size in the Quota DataBase. It then updates the last user's print quota and account balance, and
     warn him if he is over quota or if his account balance is below 0. Finally it checks if the user who launched the 
     current job is below or above his print quota, and either allows or denies the job's datas to pass to the underlying 
-    layer (the printer itself).
+    layer (the printer itself). The <application>cupspykota</application> CUPS backend on the other hand,
+    asks the printer for its internal page counter at the start and at the end of the print job, and
+    computes the values' difference so accounting is done immediately. This way it doesn't let open a window for abuse in the case
+    several printers are managed. That's why the use of <application>cupspykota</application>
+    instead of <application>pykota</application> is recommanded with CUPS.
   </para>
   
   <para>
@@ -105,6 +107,9 @@
 <!--
 
 $Log$
+Revision 1.8  2003/11/15 14:59:53  jalet
+Documentation wrt the new CUPS backend.
+
 Revision 1.7  2003/10/14 20:26:53  jalet
 Better documentation.
 1.15 is out !

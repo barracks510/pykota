@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.15_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.15_official
-jerome@nordine:~/pykota-1.15_official$
+jerome@nordine:~$ tar -zxf pykota-1.16_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.16_official
+jerome@nordine:~/pykota-1.16_official$
     </screen>
   </para>
   
@@ -164,8 +164,8 @@ jerome@nordine:~/pykota-1.15_official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.15_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.15_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.16_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.16_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -196,7 +196,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.15_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.16_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -581,21 +581,17 @@ $ chmod 640 /etc/pykota/pykotadmin.conf
       <title>With CUPS</title>
       
       <para>
-        The easiest way to configure PyKota to be used for a particular <application>CUPS</application> print queue, 
-        is to modify the <literal>PPD</literal> file associated with this print queue.
-        Say you want to set quotas on the <literal>HPLaser</literal> print queue. You
-        then just have to modify the file <filename>/etc/cups/ppd/HPLaser.ppd</filename>.
-        You will have to add the following lines somewhere near the beginning of this file :
-        <screen>
-*% Print Quota System
-*cupsFilter: "application/vnd.cups-postscript    0    /usr/bin/pykota"
-        </screen>
-      </para>  
+        From version 1.16alpha7 on, configuring PyKota to integrate
+        within CUPS is more than easy.
+      </para>
       
       <para>
-        The first line is a comment. The second one tells <application>CUPS</application>
-        to launch PyKota's accounting filter just before sending the print job to 
-        the printer's hardware.
+        You just have to create a symbolic link to the <filename>cupspykota</filename>
+        command in CUPS' backend directory :
+        <screen>        
+$ cd /usr/lib/cups/backend        
+$ ln -s /usr/bin/cupspykota cupspykota
+        </screen>
       </para>
       
       <para>
@@ -607,6 +603,20 @@ $ /etc/init.d/cupsys restart
       </para>
       
       <para>
+        Now point your web browser to CUPS configuration page, usually at 
+        <ulink url="http://localhost:631">http://localhost:631</ulink> on
+        your print server.
+      </para>
+      
+      <para>
+        Then when creating new printers or reconfiguring existing ones, just
+        choose devices which are <literal>PyKota managed</literal> instead of
+        normal devices. You've got one <literal>PyKota managed</literal> device
+        for each regular device available from CUPS, so just choose the appropriate
+        one.
+      </para>
+      
+      <para>
         Repeat the above procedure for each print queue on which you want to use
         PyKota. That's all !
       </para>
@@ -614,23 +624,20 @@ $ /etc/init.d/cupsys restart
       <sect3>
         <title>Troubleshooting</title>
         <para>
-          NB : the above procedure only works with <literal>PPD</literal> files which
-          don't already contain an <literal>*cupsFilter</literal> line. PostScript
-          printers usually don't need this line, but other types of printers may need
-          it. A different procedure exists for such printers, but it is not actually
-          documented. Search the mailing list archives at
-          <ulink url="http://cgi.librelogiciel.com/mailman/listinfo/pykota">
-            http://cgi.librelogiciel.com/mailman/listinfo/pykota
-          </ulink> to learn how to do.
-        </para>
-        
-        <para>
           In case of problem, the simplest way to solve it is currently
           to ask on PyKota's mailing list, describing the symptoms, as
           well as the hardware and software you use.
           In a future release of this document, a section dedicated to 
           Frequently Asked Questions will be included.
         </para>
+        
+        <para>
+          You can now also ask us questions on IRC :
+          <screen>
+/server irc.freenode.net          
+/join #pykota
+          </screen>
+        </para>  
       </sect3>  
       
     </sect2>
@@ -670,6 +677,14 @@ $ /etc/init.d/lprng restart
           In a future release of this document, a section dedicated to 
           Frequently Asked Questions will be included.
         </para>
+        
+        <para>
+          You can now also ask us questions on IRC :
+          <screen>
+/server irc.freenode.net          
+/join #pykota
+          </screen>
+        </para>
       </sect3>  
       
     </sect2>
@@ -680,6 +695,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.22  2003/11/15 14:59:53  jalet
+Documentation wrt the new CUPS backend.
+
 Revision 1.21  2003/10/14 20:26:53  jalet
 Better documentation.
 1.15 is out !
