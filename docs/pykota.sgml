@@ -12,6 +12,7 @@
   <!entity PYKOSD system "pykosd.sgml">
   <!entity DUMPYKOTA system "dumpykota.sgml">
   <!entity AUTOPYKOTA system "autopykota.sgml">
+  <!entity PKMAIL system "pkmail.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -128,6 +129,8 @@
   
   &PYKOSD;
   
+  &PKMAIL;
+  
   &SCRIPTS;
     
   &GNUGPL;
@@ -137,6 +140,12 @@
 <!--
 
 $Log$
+Revision 1.17  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.16  2005/01/17 08:44:24  jalet
 Modified copyright years
 

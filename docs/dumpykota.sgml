@@ -5,23 +5,34 @@
   <para>Last modified on $Date$</para>
   
   <para>
-    If you want to reuse <application>PyKota</application> datas in another
+    If you want to reuse <application>PyKota</application> datas from another
     software, but don't want to modify your existing application to
     have it connect to <application>PyKota</application>'s database, your
-    best option is the new <application>dumpykota</application> command.
+    best option is the new <command>dumpykota</command> command.
   </para>
   
   <para>
-    <application>dumpykota</application> can export <application>PyKota</application>
+    <command>dumpykota</command> can export <application>PyKota</application>
     datas in a number of formats. The supported output formats are
     comma separated values, semicolon separated values, tab separated values, and <acronym>XML</acronym>.
+  </para>  
+  
+  <para>
+    For the print job history's datas, a special format identical to <application>CUPS</application>' <literal>page_log</literal>
+    format is also supported.
+    This allows you to interface <application>PyKota</application> with third party tools like
+    <application>phpPrintAnalyzer</application> which is a logfile analyzer for <application>CUPS</application>,
+    even in the case where you use <application>LPRng</application> instead of <application>CUPS</application>.
+  </para>  
+  
+  <para>
     More formats may be added in the future. In particular, 
     <acronym>SQL</acronym> and <acronym>LDIF</acronym> are planned, but 
     are currently not implemented. 
   </para>
   
   <para>
-    <application>dumpykota</application> can't dump all datas at once though, you have
+    <command>dumpykota</command> can't dump all datas at once though, you have
     to specify which type of datas you want. The possible types are :
     <itemizedlist>
       <listitem><para>Users</para></listitem>
@@ -44,10 +55,16 @@
   
   <para>
     This command could also be used if you plan to write your own management
-    tools : just write wrappers around the <application>pkprinters</application>,
-    <application>edpykota</application>, and <application>dumpykota</application>
+    tools : just write wrappers around the <command>pkprinters</command>,
+    <command>edpykota</command>, and <command>dumpykota</command>
     tools, and your own tools will automatically benefit from <application>PyKota</application>
     database backend independance layer.
+    This is exactly what the third party software <application>phpPykotaAdmin</application> does.
+  </para>
+  
+  <para>
+    Finally, <command>dumpykota</command>'s functionnality is now also available remotely through
+    the use of the <filename>dumpykota.cgi</filename> <acronym>CGI</acronym> script.
   </para>
   
   <warning>
@@ -84,6 +101,12 @@
 <!--
 
 $Log$
+Revision 1.3  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.2  2004/10/06 10:03:16  jalet
 Improved documentation
 

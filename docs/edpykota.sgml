@@ -5,7 +5,7 @@
   <para>Last modified on $Date$</para>
   
   <para>
-    <application>edpykota</application> is the command line tool with which you will 
+    <command>edpykota</command> is the command line tool with which you will 
     maintain your print quota database.
   </para>
   
@@ -15,7 +15,7 @@
     <itemizedlist>
       <listitem>
         <para>
-          Add printers (it's preferable to use the <application>pkprinters</application> command for this though) ;
+          Add printers (it's preferable to use the <command>pkprinters</command> command for this though) ;
         </para>
       </listitem>
       <listitem>

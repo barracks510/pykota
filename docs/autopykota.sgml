@@ -12,7 +12,7 @@
   </para>
   
   <para>
-    <application>autopykota</application> was designed to automatically set
+    <command>autopykota</command> was designed to automatically set
     an initial account balance value to newly added users, while taking
     care of not resetting the balance value if the user already exists 
     but doesn't have a quota entry on the current printer. 
@@ -20,13 +20,13 @@
   
   <para>
     If you want to limit your users by page quota then you must not use
-    this command. Just use some form of the <application>edpykota</application>
+    this command. Just use some form of the <command>edpykota</command>
     command and it will work just fine. On the other hand, if you want
     to limit your users by their account balance, this command was
     made to ease your life : you don't have to design a complex shell
     script to check if user already exists or have a quota entry on
     the current printer before deciding if you have to set the initial
-    balance value or not : <application>autopykota</application> takes
+    balance value or not : <command>autopykota</command> takes
     care of all this automagically.
   </para>
   
@@ -49,6 +49,12 @@
 <!--
 
 $Log$
+Revision 1.2  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.1  2004/10/06 10:03:16  jalet
 Improved documentation
 

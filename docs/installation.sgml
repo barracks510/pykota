@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.20_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.20_official
-jerome@nordine:~/pykota-1.20_official$
+jerome@nordine:~$ tar -zxf pykota-1.21_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.21_official
+jerome@nordine:~/pykota-1.21_official$
     </screen>
   </para>
   
@@ -159,15 +159,15 @@ jerome@nordine:~/pykota-1.20_official$
       </para>
       
       <para>
-        To run this script, you can use the <application>psql</application> frontend to
+        To run this script, you can use the <command>psql</command> frontend to
         <application>PostgreSQL</application>, but your priviledges must be sufficient
-        to be allowed to create users and databases. You can launch <application>psql</application>
+        to be allowed to create users and databases. You can launch <command>psql</command>
         as the <literal>postgres</literal> user which is <application>PostgreSQL</application>'s
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.20_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.20_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.21_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.21_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -201,18 +201,18 @@ pykota=#
       </para>
       
       <para>
-        To do so, just type the following lines while still being at the <application>psql</application>
+        To do so, just type the following lines while still being at the <command>psql</command>
         prompt (replace the password values by your own, and do the same for the <literal>pykotauser</literal> user) :
         <screen>
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.20_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.21_official/initscripts/postgresql$
         </screen>
       </para>
       
       <para>
-        The <literal>\q</literal> command above will quit the <application>psql</application>
+        The <literal>\q</literal> command above will quit the <command>psql</command>
         program and return you to the shell's command line prompt.
       </para>
       
@@ -359,8 +359,8 @@ $ /etc/init.d/slapd restart
         Actually PyKota doesn't create these <literal>ou</literal>s for you, because it's
         difficult to guess what is the best configuration for you. So you have to
         create them by yourself, either directly with a text editor and the
-        <application>ldapadd</application> command, or with some specialized tool
-        like <application>gq</application>. You can look at the <filename>initscripts/ldap/pykota-sample.ldif</filename>
+        <command>ldapadd</command> command, or with some specialized tool
+        like <command>gq</command>. You can look at the <filename>initscripts/ldap/pykota-sample.ldif</filename>
         file to see what minimal branches are necessary.
         <note>
           <title>Note</title>
@@ -380,7 +380,7 @@ $ /etc/init.d/slapd restart
         probably to give a look at 
         <filename>pykota/conf/pykota.conf.sample</filename> to see all the options that are
         needed. Adapt the values to your own configuration, and finally initialize your 
-        Quota Storage with the help of the <application>edpykota</application> command.
+        Quota Storage with the help of the <command>edpykota</command> command.
       </para>
     </sect2>  
     
@@ -500,7 +500,7 @@ $ /etc/init.d/slapd restart
         <listitem>
           <para>
             <application>ucd-snmp</application> or <application>net-snmp</application> tools, version 4.2.5 or above. You only need
-            the <application>snmpget</application> command.
+            the <command>snmpget</command> command.
             You can download this software from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>.
             You only need this if you plan to query your printers for their internal page counter via SNMP.
           </para>
@@ -508,7 +508,7 @@ $ /etc/init.d/slapd restart
         <listitem>
           <para>
             <application>netatalk</application> version 1.6.1 or above. You only need
-            the <application>pap</application> command.
+            the <command>pap</command> command.
             You can download this software from <ulink url="http://netatalk.sourceforge.net/">http://netatalk.sourceforge.net/</ulink>.
             You only need this if you plan to query your printers for their internal page counter via AppleTalk.
           </para>
@@ -762,6 +762,12 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.30  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.29  2004/11/10 22:35:23  jalet
 Changes to the installation documentation
 

@@ -1,11 +1,11 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title id="pykotme">Get print quotes before printing for real with <application>pykotme</application></title>
+  <title id="pykotme">Get print quotes before printing for real with <command>pykotme</command></title>
   <para>Last modified on $Date$</para>
   
   <para>
-    PyKota features a print quote generator, named <application>pykotme</application>.
+    PyKota features a print quote generator, named <command>pykotme</command>.
     This command line tool can be used to learn in advance how much a print job
     will cost to you if you really send it to a printer.
     You can then decide if printing your document is a good idea or not, and do it
@@ -13,19 +13,19 @@
   </para>
   
   <para>
-    To get a print quote, you have to launch <application>pykotme</application>
+    To get a print quote, you have to launch <command>pykotme</command>
     from the command line, passing your print job's content in the PostScript
     format, either in the form of one or more file names on the command line,
     or on its standard input (i.e. in a shell pipe or redirection).
   </para>
   
   <para>
-    Without any command line argument, <application>pykotme</application>
+    Without any command line argument, <command>pykotme</command>
     automatically reads your job's data from its standard input.
   </para>
   
   <para>
-    By default, <application>pykotme</application>
+    By default, <command>pykotme</command>
     will display a quote for your job on all printers. You can restrict
     this by using the <literal>-p | --printer</literal> command line
     option followed with either a printer's name or a wildcard
@@ -37,7 +37,7 @@
   <sect1>
     <title>Examples</title>
     <para>
-      Here are some examples of <application>pykotme</application> usage.
+      Here are some examples of <command>pykotme</command> usage.
     </para>
     
     <para>
@@ -90,6 +90,12 @@ port50-2:~$
 <!--
 
 $Log$
+Revision 1.6  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.5  2003/10/12 20:47:51  jalet
 Doc enhanced.
 

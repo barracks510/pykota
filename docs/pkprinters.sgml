@@ -19,6 +19,10 @@
         <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
         <group choice="opt"><arg>-a</arg><arg>--add</arg></group>
         <group choice="opt"><arg>-d</arg><arg>--delete</arg></group>
+        <group choice="opt">
+          <arg>-D <replaceable>desc</replaceable></arg>
+          <arg>--description <replaceable>desc</replaceable></arg>
+        </group>
         <group choice="opt"><arg>-r</arg><arg>--remove</arg></group>
         <group choice="opt">
           <arg>-c <replaceable>p</replaceable>,<replaceable>j</replaceable></arg>
@@ -28,6 +32,9 @@
           <arg>-g <replaceable>pgroup1</replaceable>,<replaceable>pgroup2</replaceable>,<replaceable>...</replaceable></arg>
           <arg>--groups <replaceable>pgroup1</replaceable>,<replaceable>pgroup2</replaceable>,<replaceable>...</replaceable></arg>
         </group>  
+        <group choice="opt"><arg>-l</arg><arg>--list</arg></group>
+        <group choice="opt"><arg>-r</arg><arg>--remove</arg></group>
+        <group choice="opt"><arg>-s</arg><arg>--skipexisting</arg></group>
       </cmdsynopsis>
     </para>
   </sect1>
@@ -36,6 +43,12 @@
 <!--
 
 $Log$
+Revision 1.2  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.1  2004/03/16 14:42:31  jalet
 Improved documentation
 

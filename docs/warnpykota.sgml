@@ -16,21 +16,21 @@
   <para>
     However this may not be sufficient, and you may want to warn users who
     have reached their print quota at
-    regular intervals, like every day, for example in a <application>cron</application> job.
+    regular intervals, like every day, for example from a <application>cron</application> job.
   </para>
   
   <para>
     This may be useful if the user has reached his print quota, and have received an email message telling him so,
-    but then he doesn't print for some days and may forget to solve the problem, by buying more
+    but then he doesn't print for some days and may forget to fix the problem, by buying more
     paper for example.
   </para>
   
   <para>
-    The <application>warnpykota</application> command was written with this in mind. 
+    The <command>warnpykota</command> command was written with this in mind. 
     If you put this command in your <filename>crontab</filename>, launching it for example
     every day, then you'll be sure that all your users who are above their print quota
     will not forget it ! Of course they may delete the messages without having read them,
-    but at least they won't be able to say that they didn't received them ;-)
+    but at least they won't be able to say that they didn't receive them ;-)
   </para>
   
   <para>
@@ -39,7 +39,7 @@
     on specific printers. If a normal user uses the <literal>--groups</literal> command line
     argument, then for each group he is a member of in the Quota Storage, each
     group member may receive a warning message. You can take care of this if this
-    becomes annoying by forbidding normal users to launch the <application>warnpykota</application>
+    becomes annoying by forbidding normal users to launch the <command>warnpykota</command>
     command.
   </para>
   
@@ -75,6 +75,12 @@
 <!--
 
 $Log$
+Revision 1.7  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.6  2004/10/06 10:03:16  jalet
 Improved documentation
 

@@ -14,12 +14,12 @@
     <title>Command line based Print Quota reports</title>
     
     <para>
-      PyKota features a quota report generator, named <application>repykota</application>,
+      PyKota features a quota report generator, named <command>repykota</command>,
       with which you can print the current state of the quota database.
     </para>
     
     <para>
-      <application>repykota</application> behaves differently when it is launched by a
+      <command>repykota</command> behaves differently when it is launched by a
       <application>PyKota</application> administrator, compared to when it is launched by a normal user.
     </para>  
     
@@ -31,7 +31,7 @@
     </para>
     
     <para>
-      In the second case, i.e. when <application>repykota</application> is launched by
+      In the second case, i.e. when <command>repykota</command> is launched by
       a normal user, the user will only be allowed to see informations about himself or 
       the groups he his a member of.
     </para>
@@ -44,7 +44,7 @@
     </para>
     
     <para>
-      Launching <application>repykota</application> with no arguments will generate
+      Launching <command>repykota</command> with no arguments will generate
       a complete print quota report, depending on what you are allowed to see.
     </para>
     
@@ -117,10 +117,10 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
     <para>
       If you install the CGI script as described above, any user will be allowed to view the complete print
       quota report, for all users, groups and printers. This is then a different behavior compared to when
-      a normal user wants a print quota report from the command line through <application>repykota</application>.
-      If you find this disturbing, then the best is to ask for user authentication whenever the <application>printquota.cgi</application>
+      a normal user wants a print quota report from the command line through <command>repykota</command>.
+      If you find this disturbing, then the best is to ask for user authentication whenever the <command>printquota.cgi</command>
       CGI script is accessed. This CGI script will then automatically behave as expected, showing in the print quota
-      report only what the authenticated user is allowed to see, just like when he launches <application>repykota</application>
+      report only what the authenticated user is allowed to see, just like when he launches <command>repykota</command>
       from the command line. As a special case, if the user authenticates using the <literal>root</literal> username,
       then there's no restriction on what may appear on the print quota report.
     </para>
@@ -128,8 +128,8 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
     <para>
       To automatically ask for an authentication dialog whenever the CGI script is accessed, you have to configure
       your web server to do so. If your webserver is <ulink url="http://httpd.apache.org"><application>Apache</application></ulink>, then it's relatively easy. First you have to put 
-      <application>printquota.cgi</application> in its own subdirectory below your web server's <filename>cgi-bin</filename>
-      directory, for example in <filename>cgi-bin/PyKota/</filename>. Then use the <application>htpasswd</application>
+      <command>printquota.cgi</command> in its own subdirectory below your web server's <filename>cgi-bin</filename>
+      directory, for example in <filename>cgi-bin/PyKota/</filename>. Then use the <command>htpasswd</command>
       command line tool to create a file which contains usernames and passwords for all your users allowed to see
       the print quota report from a web browser, and put this file outside of the directories served by <application>Apache</application>
       so that nobody could retrieve it. Finally create a file named <filename>.htaccess</filename> in
@@ -151,6 +151,12 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
 <!--
 
 $Log$
+Revision 1.9  2005/02/28 00:07:37  jalet
+Added pkmail's doc.
+Used the <command> tag instead of <application> for commands.
+Fixed some typos.
+Added some missing command line options in the commands reference.
+
 Revision 1.8  2004/10/06 10:03:16  jalet
 Improved documentation
 
