@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2004/11/16 23:23:40  jalet
+# Fixed internal PJL handling wrt the 35078 PowerSave mode.
+#
 # Revision 1.31  2004/11/01 14:32:26  jalet
 # Fix for unneeded out of band status in pjl_over_tcp/9100
 #
@@ -238,6 +241,7 @@ pjlStatusValues = {
                     "10004" : "Self Test",
                     "10005" : "Reset",
                     "10023" : "Printing",
+                    "35078" : "Powersave Mode",         # 10000 is ALSO powersave !!!
                   }
 class PJLAccounter :
     """A class for PJL print accounting."""
@@ -294,7 +298,7 @@ class PJLAccounter :
         """Waits for printer status being 'printing'."""
         while 1:
             self.retrievePJLValues()
-            if self.printerStatus in ('10000', '10001', '10023') :
+            if self.printerStatus in ('10000', '10001', '10023', '35078') :
                 break
             self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)
             time.sleep(ITERATIONDELAY)
@@ -305,7 +309,7 @@ class PJLAccounter :
         while 1 :
             self.retrievePJLValues()
             idle_flag = 0
-            if self.printerStatus in ('10000', '10001',) :
+            if self.printerStatus in ('10000', '10001', '35078') :
                 idle_flag = 1
             if idle_flag :    
                 idle_num += 1
