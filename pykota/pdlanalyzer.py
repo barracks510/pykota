@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/06/18 20:49:46  jalet
+# "ERROR:" prefix added
+#
 # Revision 1.7  2004/06/18 17:48:04  jalet
 # Added native fast PDF parsing method
 #
@@ -559,7 +562,7 @@ def main() :
             parser = PDLAnalyzer(arg)
             totalsize += parser.getJobSize()
         except PDLAnalyzerError, msg :    
-            sys.stderr.write("%s\n" % msg)
+            sys.stderr.write("ERROR: %s\n" % msg)
             sys.stderr.flush()
     print "%s" % totalsize
     
