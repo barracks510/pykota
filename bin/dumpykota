@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/09/15 18:28:41  jalet
+# Updated help for dumpykota
+#
 # Revision 1.5  2004/09/15 07:38:05  jalet
 # Fix for uninitialized variable
 #
@@ -72,8 +75,8 @@ options :
                          - users : dumps users.
                          - groups : dumps user groups.
                          - printers : dump printers.
-                         - uquotas : dump user quotas.
-                         - gquotas : dump user groups quotas.
+                         - upquotas : dump user quotas.
+                         - gpquotas : dump user groups quotas.
                          - payments : dumps user payments.
                          - pmembers : dumps printer groups members.
                          - umembers : dumps user groups members.
