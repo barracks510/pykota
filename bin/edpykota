@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2003/07/05 12:32:07  jalet
+# Ensure that the user don't pass more than two prices for a printer.
+#
 # Revision 1.48  2003/06/25 19:52:30  jalet
 # Should be ready for testing :-)
 #
@@ -369,8 +372,8 @@ class EdPyKota(PyKotaTool) :
             except ValueError :    
                 raise PyKotaToolError, _("Invalid charge amount value %s" % options["charge"])
             else :    
-                if len(charges) < 2 :
-                    charges.append(None)
+                if len(charges) != 2 :
+                    charges = [charges[0], None]
                     
         limitby = options["limitby"]
         if limitby :
