@@ -465,6 +465,7 @@ policy: deny
 # PYKOTAOPTIONS : job's options
 # PYKOTABALANCE : user's account balance
 # PYKOTALIFETIMEPAID : user's grand total paid 
+# PYKOTALIMITBY : user print limiting factor, for example 'quota' or 'balance'
 # PYKOTAPAGECOUNTER : user's page counter on this printer
 # PYKOTALIFEPAGECOUNTER : user's life time page counter on this printer
 # PYKOTASOFTLIMIT : user's soft page limit on this printer

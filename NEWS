@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha1 : 
     
+        - PYKOTALIMITBY environment variable is now exported too.
+        
         - Inclusion of Michele Baldessari's work on autotools.
         
     - 1.18 :

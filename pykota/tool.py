@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.79  2004/03/28 21:01:29  jalet
+# PYKOTALIMITBY environment variable is now exported too
+#
 # Revision 1.78  2004/03/08 20:13:25  jalet
 # Allow names to begin with a digit
 #
@@ -746,6 +749,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
     
     def exportUserInfo(self, userpquota) :
         """Exports user information to the environment."""
+        os.putenv("PYKOTALIMITBY", userpquota.User.LimitBy)
         os.putenv("PYKOTABALANCE", str(userpquota.User.AccountBalance or 0.0))
         os.putenv("PYKOTALIFETIMEPAID", str(userpquota.User.LifeTimePaid or 0.0))
         os.putenv("PYKOTAPAGECOUNTER", str(userpquota.PageCounter or 0))
