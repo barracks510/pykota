@@ -754,3 +754,23 @@ enforcement : strict
 # AND THE JOB SIZE AS COMPUTED BY PYKOTA EITHER USING HARDWARE OR
 # SOFTWARE.
 trustjobsize : yes
+
+# Should we deny duplicate jobs ?
+#
+# A duplicate is a job sent twice (or more) in a row to the same printer
+# by the same user.
+#
+# This can be defined either globally or on a per printer basis
+# The default value is 'no', meaning that duplicate jobs are
+# allowed.
+#
+# NB : if an user prints a job, a second user prints another
+#      job, and the first user prints the first job again,
+#      this is NOT considered as a duplicate since the two
+#      identical jobs printed by the first user are not
+#      one just after the other.
+#
+# Possible values are 'yes' and 'no'
+#
+denyduplicates : no
+

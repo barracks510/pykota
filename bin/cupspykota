@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.89  2005/02/16 00:29:33  jalet
+# Fixed the maxdenybanners directive.
+# Introduced the denyduplicates directive.
+# Fixed some database related glitches.
+#
 # Revision 1.88  2005/02/14 23:39:50  jalet
 # Introduces the new 'trustjobsize' directive to workaround some printers
 # generating unstable internal page counter values when queried through SNMP.
@@ -533,12 +538,18 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
             self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
             
-            # if no data to pass to real backend, probably a filter
-            # higher in the chain failed because of a misconfiguration.
-            # we deny the job in this case (nothing to print anyway)
             if not self.jobSizeBytes :
+                # if no data to pass to real backend, probably a filter
+                # higher in the chain failed because of a misconfiguration.
+                # we deny the job in this case (nothing to print anyway)
                 self.printMoreInfo(user, printer, _("Job contains no data. Printing is denied."), "warn")
                 action = "DENY"
+            elif self.config.getDenyDuplicates(printer.Name) \
+                 and printer.LastJob.Exists \
+                 and (printer.LastJob.UserName == user.Name) \
+                 and (printer.LastJob.JobMD5Sum == self.checksum) :
+                self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied."), "warn")
+                action = "DENY" 
             else :    
                 # checks the user's quota
                 action = self.warnUserPQuota(userpquota)
@@ -556,11 +567,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # handle starting banner pages before accounting
             accountbanner = self.config.getAccountBanner(printer.Name)
             if accountbanner in ["ENDING", "NONE"] :
-                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
                     self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
                 else :
                     if action == 'DENY' :
-                        userpquota.warn() # increments the warning counter
+                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
+                        userpquota.incDenyBannerCounter() # increments the warning counter
                         self.exportUserInfo(userpquota)
                     banner = self.startingBanner(printer.Name)
                     if banner :
@@ -572,11 +584,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # handle starting banner pages during accounting
             if accountbanner in ["STARTING", "BOTH"] :
-                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
                     self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
                 else :
                     if action == 'DENY' :
-                        userpquota.warn() # increments the warning counter
+                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
+                        userpquota.incDenyBannerCounter() # increments the warning counter
                         self.exportUserInfo(userpquota)
                     banner = self.startingBanner(printer.Name)
                     if banner :
@@ -603,11 +616,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # handle ending banner pages during accounting
             if accountbanner in ["ENDING", "BOTH"] :
-                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
                     self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
                 else :
                     if action == 'DENY' :
-                        userpquota.warn() # increments the warning counter
+                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
+                        userpquota.incDenyBannerCounter() # increments the warning counter
                         self.exportUserInfo(userpquota)
                     banner = self.endingBanner(printer.Name)
                     if banner :
@@ -625,6 +639,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 jobsize = 0
                 self.printMoreInfo(user, printer, _("Job size forced to 0 because printing is denied."))
             else :    
+                userpquota.resetDenyBannerCounter()
                 jobsize = self.accounter.getJobSize(printer)
                 if self.softwareJobSize and (jobsize != self.softwareJobSize) :
                     self.printInfo(_("Beware : computed job size (%s) != precomputed job size (%s)") % (jobsize, self.softwareJobSize), "error")
@@ -663,11 +678,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # handle ending banner pages after accounting ends
             if accountbanner in ["STARTING", "NONE"] :
-                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
                     self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
                 else :
                     if action == 'DENY' :
-                        userpquota.warn() # increments the warning counter
+                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
+                        userpquota.incDenyBannerCounter() # increments the warning counter
                         self.exportUserInfo(userpquota)
                     banner = self.endingBanner(printer.Name)
                     if banner :

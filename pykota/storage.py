@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.70  2005/02/16 00:29:33  jalet
+# Fixed the maxdenybanners directive.
+# Introduced the denyduplicates directive.
+# Fixed some database related glitches.
+#
 # Revision 1.69  2005/02/13 22:48:37  jalet
 # Added the md5sum to the history
 #
@@ -486,10 +491,15 @@ class StorageUserPQuota(StorageObject) :
         self.DateLimit = None
         self.WarnCount = 0
 
-    def warn(self) :
-        """Increases the warn counter for this user quota."""
+    def incDenyBannerCounter(self) :
+        """Increment the deny banner counter for this user quota."""
         self.parent.increaseUserPQuotaWarnCount(self)
         self.WarnCount = (self.WarnCount or 0) + 1
+        
+    def resetDenyBannerCounter(self) :
+        """Resets the deny banner counter for this user quota."""
+        self.parent.writeUserPQuotaWarnCount(self, 0)
+        self.WarnCount = 0
         
     def reset(self) :    
         """Resets page counter to 0."""

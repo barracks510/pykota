@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2005/02/16 00:29:33  jalet
+# Fixed the maxdenybanners directive.
+# Introduced the denyduplicates directive.
+# Fixed some database related glitches.
+#
 # Revision 1.60  2005/02/14 23:39:50  jalet
 # Introduces the new 'trustjobsize' directive to workaround some printers
 # generating unstable internal page counter values when queried through SNMP.
@@ -602,6 +607,13 @@ class PyKotaConfig :
     def getRejectUnknown(self) :          
         """Returns 1 if we want to reject the creation of unknown users or groups, else 0."""
         return self.isTrue(self.getGlobalOption("reject_unknown", ignore=1))
+        
+    def getDenyDuplicates(self, printername) :          
+        """Returns 1 if we want to deny duplicate jobs, else 0."""
+        try : 
+            return self.isTrue(self.getPrinterOption(printername, "denyduplicates"))
+        except PyKotaConfigError :    
+            return 0
         
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""

@@ -23,6 +23,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.17  2005/02/16 00:29:33  jalet
+# Fixed the maxdenybanners directive.
+# Introduced the denyduplicates directive.
+# Fixed some database related glitches.
+#
 # Revision 1.16  2005/02/14 23:39:50  jalet
 # Introduces the new 'trustjobsize' directive to workaround some printers
 # generating unstable internal page counter values when queried through SNMP.
@@ -155,6 +160,12 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         if not self.jobSizeBytes :
             self.printMoreInfo(user, printer, _("Job contains no data. Printing is denied."), "warn")
             action = "DENY"
+        elif self.config.getDenyDuplicates(printer.Name) \
+             and printer.LastJob.Exists \
+             and (printer.LastJob.UserName == user.Name) \
+             and (printer.LastJob.JobMD5Sum == self.checksum) :
+            self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied."), "warn")
+            action = "DENY" 
         else :    
             # checks the user's quota
             action = self.warnUserPQuota(userpquota)

@@ -37,10 +37,6 @@ TODO, in no particular order :
         
         - Web enabled pykotme.
         
-        - Uses the MD5 checksum of the job's datas which is now
-          saved into the database to be able to forbid duplicate
-          jobs.
-          
         - Maybe put "gracedelay" in the database.
         
         - Ink accounting ala PrintBill.

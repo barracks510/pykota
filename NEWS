@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.21alpha26 :
+    
+        - Fixed the handling of the 'maxdenybanners' directive.
+        
+        - Introduced the 'denyduplicates' directive.
+        
+        - Fixed some database related glitches.
+        
     - 1.21alpha25 :
     
         - The job's size is now always precomputed, even when

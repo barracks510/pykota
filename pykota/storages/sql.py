@@ -21,6 +21,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.67  2005/02/16 00:29:33  jalet
+# Fixed the maxdenybanners directive.
+# Introduced the denyduplicates directive.
+# Fixed some database related glitches.
+#
 # Revision 1.66  2005/02/13 22:48:38  jalet
 # Added the md5sum to the history
 #
@@ -318,7 +323,7 @@ class SQLStorage :
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
         if printer.Exists and user.Exists :
-            result = self.doSearch("SELECT id, lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
+            result = self.doSearch("SELECT * FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
             if result :
                 fields = result[0]
                 userpquota.ident = fields.get("id")
@@ -335,7 +340,7 @@ class SQLStorage :
         """Extracts a group print quota."""
         grouppquota = StorageGroupPQuota(self, group, printer)
         if group.Exists :
-            result = self.doSearch("SELECT id, softlimit, hardlimit, datelimit FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
+            result = self.doSearch("SELECT * FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
             if result :
                 fields = result[0]
                 grouppquota.ident = fields.get("id")
@@ -353,7 +358,7 @@ class SQLStorage :
     def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
         lastjob = StorageLastJob(self, printer)
-        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate, md5sum, pages, billingcode FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
         if result :
             fields = result[0]
             lastjob.ident = fields.get("id")
