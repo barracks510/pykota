@@ -91,4 +91,15 @@ WARNING :
         but last time I checked, the LDAP attributes accessible from
         OpenOffice.org were limited to what one usually finds in 
         address books, unfortunately.
+
+Windows Users :
+
+	You'll find information on how to use the PostgreSQL ODBC
+	driver with OpenOffice.org for Windows at :
+
+        en: http://www.openoffice.org/nonav/issues/showattachment.cgi/3481/postgresql.sxw
+        de: http://de.openoffice.org/doc/howto/datenquelle/tech_pgsql.html
+        es: http://es.openoffice.org/files/documents/73/799/pgsql-win.sxw
+	
+	Thanks to Johannes Lämmermann for this information.
 ====================================================================
