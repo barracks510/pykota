@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.19alpha6 :
     
+        - problems connecting to SMTP servers are now catched.
+        
         - pykotme now uses pkpgcounter to compute the size of the
           job. This modification adds PCL5 and soon PCLXL (PCL6)
           support. You can now get quotes for PCL in addition to 
