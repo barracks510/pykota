@@ -28,6 +28,10 @@ PyKota NEWS :
           to the database backend. The storageuser configuration
           field, and its associated passwords storageuserpw, are 
           not used anymore.
+        - You can now set PyKota in debug mode, see sample configuration  
+          file for details. 
+          WARNING : only Quota Storage backend queries are logged in 
+          debug mode, for now.
         
     - 1.08alpha7 :
     
