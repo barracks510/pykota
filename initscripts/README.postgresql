@@ -1,0 +1,36 @@
+# $Id$
+
+PyKota - Print Quota for CUPS
+
+(c) 2003 Jerome Alet <alet@librelogiciel.com>
+You're welcome to redistribute this software under the
+terms of the GNU General Public Licence version 2.0
+or, at your option, any higher version.
+
+You can read the complete GNU GPL in the file COPYING
+which should come along with this software, or visit
+the Free Software Foundation's WEB site http://www.fsf.org
+
+============================================================
+
+Documentation for the pykota-postgresql.sql script :
+----------------------------------------------------
+
+        - Launch the psql frontend and connect to the
+          database template1 as a PostgreSQL administrator
+          (i.e. the postgres user) :
+          
+            $ psql -h localhost -U postgres template1
+          
+        - Executes the pykota-postgresql.sql script :  
+        
+            template1=# \i pykota-postgresql.sql
+            
+        - Quit the psql frontend :    
+        
+            template1=# \q
+            
+        - Your PostgreSQL PyKota storage is now ready
+          for use.
+        
+============================================================

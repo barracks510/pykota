@@ -1,0 +1,64 @@
+# PyKota sample configuration file
+#
+# Copy this file in cups' configuration directory
+# usually /etc/cups under the name pykota.conf
+#
+# PyKota - Print Quotas for CUPS
+#
+# (c) 2003 Jerome Alet <alet@librelogiciel.com>
+# You're welcome to redistribute this software under the
+# terms of the GNU General Public Licence version 2.0
+# or, at your option, any higher version.
+#
+# You can read the complete GNU GPL in the file COPYING
+# which should come along with this software, or visit
+# the Free Software Foundation's WEB site http://www.fsf.org
+#
+# $Id$
+#
+
+[global]
+# Storage backend for quotas
+# only PostgreSQL is supported
+# Ldap, MySQL, Berkeley are planned
+storagebackend: postgresql
+storageserver: localhost
+storagename: pykota
+storageadmin: pykotaadmin
+storageuser: pykotauser
+# storageadminpw: NOT YET SUPPORTED
+# storageuserpw: NOT YET SUPPORTED
+
+# Where to log ?
+# supported values : stderr, syslog
+logger: stderr
+
+# Print Quota administrator
+admin: Jerome Alet
+adminmail: alet@unice.fr
+#
+# Mail server to use to warn users
+smtpserver: localhost
+#
+# Accounting method
+# Only LAZY is currently supported, see documentation
+method: lazy
+#
+# Grace delay in days
+gracedelay: 7
+
+# one section per printer
+[lp]
+#
+# How to query the lp printer for its page counter
+# Only SNMP is currently supported
+requester: snmp
+# SNMP Community
+snmpcmnty: public
+# SNMP oid to query
+snmpoid: 43.10.2.1.4.1.1
+#
+# Default policy for inexistant users (e.g. root)
+# either accept or deny
+policy: accept
+

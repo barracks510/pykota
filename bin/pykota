@@ -1,0 +1,113 @@
+#! /usr/bin/env python
+
+# PyKota accounting filter
+#
+# PyKota - Print Quotas for CUPS
+#
+# (c) 2003 Jerome Alet <alet@librelogiciel.com>
+# You're welcome to redistribute this software under the
+# terms of the GNU General Public Licence version 2.0
+# or, at your option, any higher version.
+#
+# You can read the complete GNU GPL in the file COPYING
+# which should come along with this software, or visit
+# the Free Software Foundation's WEB site http://www.fsf.org
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2003/02/05 21:28:17  jalet
+# Initial import into CVS
+#
+#
+#
+
+import sys
+
+from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota import requester
+
+class PyKotaFiler(PyKotaTool) :    
+    """Class for the PyKota filter."""
+    def __init__(self, username)
+        PyKotaTool.__init__(self, isfilter=1)
+        self.username = username
+        self.requester = requester.openRequester(self.config, self.printername)
+    
+    def filterInput(self, inputfile) :
+        """Transparent filter."""
+        mustclose = 0    
+        if inputfile is not None :    
+            infile = open(inputfile, "rb")
+            mustclose = 1
+        else :    
+            infile = sys.stdin
+        data = infile.read(65536)    
+        while data :
+            sys.stdout.write(data)
+            data = infile.read(65536)
+        if mustclose :    
+            infile.close()
+            
+def main() :    
+    """Do it, and do it right !"""
+    #
+    # This is a CUPS filter, so we should act and die like a CUPS filter when needed
+    narg = len(sys.argv)
+    if narg not in (6, 7) :    
+        sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
+        return 1
+    elif narg == 7 :    
+        # input file
+        inputfile = sys.argv[6]
+    else :    
+        # stdin
+        inputfile = None
+        
+    #    
+    # According to CUPS documentation, the username is the third command line argument
+    username = sys.argv[2].strip()    
+    
+    # Initializes the current tool
+    tool = PyKotaFilter(username)    
+    
+    # Get the page counter directly from the printer itself
+    counterbeforejob = tool.requester.getPrinterPageCounter(tool.printerhostname) # TODO use printername instead, make them match from CUPS' config files
+    
+    # Get the last page counter and last username from the Quota Storage backend
+    pgc = tool.storage.getPrinterPageCounter(tool.printername)    
+    if pgc is None :
+        # The printer is unknown from the Quota Storage perspective
+        # we let the job pass through, but log a warning message
+        tool.logger.log_message("Printer %s not registered in the PyKota system" % tool.printername, "warn")
+    else :    
+        (lastpagecounter, lastusername) = (pgc["pagecounter"], pgc["lastusername"])
+        
+        # Update the last page counter and last username in the Quota Storage backend
+        # set them to current user and 
+        tool.storage.updatePrinterPageCounter(tool.printername, username, counterbeforejob) # TODO : allow or deny users not in quota system, and die cleanly if needed
+        
+        # Is the current user allowed to print at all ?
+        action = tool.warnQuotaPrinter(username)
+        if action == "DENY" :
+            # No, just die cleanly
+            return 1
+            
+        # Yes     
+        if (lastpagecounter is None) or (lastusername is None) :
+            lastusername = username
+            lastpagecounter = counterbeforejob
+        jobsize = (counterbeforejob - lastpagecounter)    
+        if jobsize >= 0:
+            tool.storage.updateUserPQuota(lastusername, tool.printername, jobsize)
+            tool.warnQuotaPrinter(lastusername)
+        else :    
+            tool.logger.log_message("Error in page count value %i for user %s on printer %s" % (jobsize, tool.printername, lastusername), "error")
+        
+    # pass the job untouched to the underlying layer
+    tool.filterInput(inputfile)      
+    
+    return 0
+
+if __name__ == "__main__" :    
+    sys.exit(main() or 0)

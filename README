@@ -1,0 +1,100 @@
+# $Id$
+
+PyKota - Print Quota for CUPS
+
+(c) 2003 Jerome Alet <alet@librelogiciel.com>
+You're welcome to redistribute this software under the
+terms of the GNU General Public Licence version 2.0
+or, at your option, any higher version.
+
+You can read the complete GNU GPL in the file COPYING
+which should come along with this software, or visit
+the Free Software Foundation's WEB site http://www.fsf.org
+
+============================================================
+
+PyKota is a complete Print Quota system for the Common Unix Printing
+System (aka CUPS), which works by directly querying the printers
+for the number of pages they have printed.
+
+Current or planned features are :
+
+        - Easy installation.
+        
+        - Per printer User and Group quotas. Currently Group
+          quotas are only at skeleton stage.
+        
+        - Centralized configurable storage : currently
+          only a PostgreSQL database backend is supported,
+          but at least LDAP and MySQL are planned.
+          
+        - Automated mailing of warning or error messages to  
+          users and print administrator when print quota is 
+          exceeded.
+          
+        - Configurable printer querying methods. Currently
+          only SNMP method is supported.
+
+Look at the documentation in the docs subdirectory to learn
+more.
+
+============================================================
+
+INSTALLATION:
+=============
+
+Download the latest PyKota version from :
+
+        http://www.librelogiciel.com/software/
+
+Extract it:
+
+        gzip -d pykota-x.xx.tar.gz | tar -xf -
+
+        where x.xx is PyKota's latest version number.
+
+Go to PyKota's directory:
+
+        cd pykota-x.xx
+
+Just type:
+
+        python setup.py install
+
+You may need to be logged in with sufficient privileges (e.g. root)
+
+Go to the initscripts subdirectory of PyKota's sources, and choose
+the appropriate storage backend for your configuration. Read
+the associated README file and execute the initialization script
+to create an empty PyKota Storage.
+
+Copy the conf/pykota.conf.sample sample configuration file to
+CUPS' configuration directory, usually /etc/cups, under the
+name pykota.conf.
+
+Adapt this file to your own needs and configuration.
+
+Modify the PPD files for each printer on which you want to manage
+print quotas, for example /etc/cups/ppd/lp.ppd :
+
+--- Add the line below exactly as-is somewhere near the top ---
+*cupsFilter:  "application/vnd.cups-postscript 0 pykota"
+--- Add the line above exactly as-is somewhere near the top  ---
+
+Do this in each ppd file present in this directory if you want
+to enable quota on every printer.
+          
+Add users to the quota system and set their quota values : 
+
+        $ edpykota username printer softlimit hardlimit
+
+Restart CUPS, for example under Debian GNU/Linux systems :          
+
+        $ /etc/init.d/cupsys restart
+        
+Your users now should be able to print but not exceed their 
+printing quota.
+
+============================================================
+
+Please e-mail bugs to: alet@librelogiciel.com (Jerome Alet)
