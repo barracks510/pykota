@@ -41,7 +41,7 @@ PyKota features :
         - Supports PostgreSQL as the Quota Storage backend.
           Complete database creation script in SQL is included.
         
-        - Supports OpenLDAP as the Quota Storage backend.
+        - Supports any LDAP server as the Quota Storage backend.
           Complete LDAP schema and sample empty tree are included.
           Plugging PyKota into your existing LDAP infrastructure
           is really easy thanks to PyKota's great configurability.
@@ -230,7 +230,7 @@ Prerequisite :
       backend.
  or     
     - python-ldap Python module and the OpenLDAP client libraries  
-      if you plan to use OpenLDAP as the Quota Storage backend.
+      if you plan to use an LDAP server as the Quota Storage backend.
     
   On Intel i386 architecture, and for performance reasons, it is
   strongly suggested that you install the Python accelerator Psyco, 
@@ -267,7 +267,7 @@ Prerequisite :
     
   or  
   
-    - OpenLDAP
+    - OpenLDAP (or any other LDAP server)
     
 NB :    
 
@@ -278,8 +278,8 @@ NB :
 or  
 
   python-ldap must be linked with the OpenLDAP client libraries on the 
-  Print Server. The OpenLDAP client libraries' version must match the 
-  OpenLDAP version used on the Quota Storage Server. 
+  Print Server. The OpenLDAP client libraries' version should match the 
+  OpenLDAP version used on the Quota Storage Server, if applicable.
   
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
