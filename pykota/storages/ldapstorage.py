@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.73  2004/07/17 20:37:27  jalet
+# Missing file... Am I really stupid ?
+#
 # Revision 1.72  2004/07/01 19:56:43  jalet
 # Better dispatching of error messages
 #
@@ -636,8 +639,14 @@ class Storage(BaseStorage) :
                 lastjob.JobId = fields.get("pykotaJobId")[0]
                 lastjob.UserName = fields.get("pykotaUserName")[0]
                 lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
-                lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
-                lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
+                try :
+                    lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
+                except ValueError :    
+                    lastjob.JobSize = None
+                try :    
+                    lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
+                except ValueError :    
+                    lastjob.JobPrice = None
                 lastjob.JobAction = fields.get("pykotaAction", [""])[0]
                 lastjob.JobFileName = fields.get("pykotaFileName", [""])[0]
                 lastjob.JobTitle = fields.get("pykotaTitle", [""])[0]
@@ -1100,8 +1109,14 @@ class Storage(BaseStorage) :
                 job.ident = ident
                 job.JobId = fields.get("pykotaJobId")[0]
                 job.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
-                job.JobSize = int(fields.get("pykotaJobSize", [0])[0])
-                job.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
+                try :
+                    job.JobSize = int(fields.get("pykotaJobSize", [0])[0])
+                except ValueError :    
+                    job.JobSize = None
+                try :    
+                    job.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
+                except ValueError :
+                    job.JobPrice = None
                 job.JobAction = fields.get("pykotaAction", [""])[0]
                 job.JobFileName = fields.get("pykotaFileName", [""])[0]
                 job.JobTitle = fields.get("pykotaTitle", [""])[0]

@@ -1,0 +1,213 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# LPRngPyKota accounting filter
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# $Log$
+# Revision 1.1  2004/07/17 20:37:27  jalet
+# Missing file... Am I really stupid ?
+#
+#
+#
+
+import sys
+import os
+
+from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError, crashed
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
+from pykota.accounter import PyKotaAccounterError
+    
+# Exit codes
+JSUCC = 0       # filter succeeded
+JFAIL = 1       # filter failed, print server should retry later
+JABORT = 2      # filter failed, print server should suspend the queue
+JREMOVE = 3     # job will be removed from print queue
+JHOLD = 6       # job will be prevented from printing until lpc release
+
+# Environment variables
+# PRINTER = printer name
+# PRINTCAP_ENTRY = complete printcap entry for this printer
+# HF = job hold file contents
+# SPOOL_DIR = spool directory
+
+# HF contains df_name which is DataFile_Name created in SPOOL_DIR
+
+class PyKotaFilter(PyKotaFilterOrBackend) :        
+    """A class for the pykota filter for LPRng."""
+    def acceptJob(self) :        
+        """Returns the appropriate exit code to tell LPRng all is OK."""
+        return JSUCC
+            
+    def removeJob(self) :            
+        """Returns the appropriate exit code to tell LPRng job has to be removed."""   
+        return JREMOVE
+        
+    def getJobOriginatingHostname(self, printername, username, jobid) :
+        """Retrieves the job-originating-hostname if possible."""
+        try :
+            return [line[11:] for line in os.environ.get("HF", "").split() if line.startswith("remotehost=")][0]
+        except IndexError :    
+            return None
+                
+    def doWork(self, policy, printer, user, userpquota) :    
+        """Most of the work is done here."""
+        # Two different values possible for policy here :
+        # ALLOW means : Either printer, user or user print quota doesn't exist,
+        #               but the job should be allowed anyway.
+        # OK means : Both printer, user and user print quota exist, job should
+        #            be allowed if current user is allowed to print on this printer
+        if policy == "ALLOW" :
+            # nothing to do, just accept the job
+            return self.acceptJob()
+        else :    
+            # exports user information with initial values
+            self.exportUserInfo(userpquota)
+            
+            if (not printer.LastJob.Exists) or (printer.LastJob.JobId != self.jobid) :
+                # Last job for current printer has a different JobId than
+                # the current job, so we know we are in the first pass
+                # tries to extract job-originating-hostname 
+                clienthost = self.getJobOriginatingHostname(printer.Name, user.Name, self.jobid)
+                self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
+                os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
+                
+                # indicates first pass
+                os.environ["PYKOTAPHASE"] = "BEFORE"
+                
+                # do we want strict or laxist quota enforcement ?
+                if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
+                    self.softwareJobSize = self.precomputeJobSize()
+                    self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
+                    self.sendBackChannelData("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
+                os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
+                os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
+                
+                # checks the user's quota
+                action = self.warnUserPQuota(userpquota)
+                
+                # if no data to pass to real backend, probably a filter
+                # higher in the chain failed because of a misconfiguration.
+                # we deny the job in this case (nothing to print anyway)
+                if not self.jobSizeBytes :
+                    self.printInfo(_("Job contains no data. Printing is denied."), "warn")
+                    action = "DENY"
+                
+                # exports some new environment variables
+                os.environ["PYKOTAACTION"] = action
+                
+                # launches the pre hook
+                self.prehook(userpquota)
+                
+                self.sendBackChannelData("Job accounting begins.")
+                self.accounter.beginJob(userpquota)
+                
+                jobsize = None
+                if self.accounter.isSoftware :
+                    self.accounter.endJob(userpquota)
+                    jobsize = self.accounter.getJobSize()
+                    self.sendBackChannelData("Job accounting ends.")
+                    
+                if action == "DENY" :   
+                    jobsize = 0
+                    self.sendBackChannelData("Job size forced to 0 because printing was denied.")
+                    
+                if jobsize is not None :    
+                    # update the quota for the current user on this printer 
+                    self.sendBackChannelData("Job size : %i" % jobsize)
+                    self.sendBackChannelData("Updating user %s's quota on printer %s" % (user.Name, printer.Name))
+                    jobprice = userpquota.increasePagesUsage(jobsize)
+                    
+                    printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, jobsize, jobprice, self.preserveinputfile, self.title, self.copies, self.options, clienthost, self.jobSizeBytes)
+                    self.sendBackChannelData("Job added to history.")
+                    
+                    # exports some new environment variables
+                    os.environ["PYKOTAPHASE"] = "AFTER"
+                    os.environ["PYKOTAJOBSIZE"] = str(jobsize)
+                    os.environ["PYKOTAJOBPRICE"] = str(jobprice)
+                    
+                    # then re-export user information with new value
+                    self.exportUserInfo(userpquota)
+                    
+                    # Launches the post hook
+                    self.posthook(userpquota)
+                    
+                    # here software accounting was completed.
+                else :
+                    printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, filename=self.preserveinputfile, title=self.title, copies=self.copies, options=self.options, clienthost=clienthost, jobsizebytes=self.jobSizeBytes)
+                    self.sendBackChannelData("Job added to history during first pass : Job's size and price are still unknown.")
+                    
+                if action == "DENY" :
+                    return self.removeJob()
+                else :    
+                    return self.acceptJob()
+            else :    
+                # Last job for current printer has the same JobId than
+                # the current job, so we know we are in the second pass
+                if self.accounter.isSoftware :
+                    # Software accounting method was used, and we are
+                    # in second pass, so all work is already done, 
+                    # now we just have to exit successfully
+                    self.printInfo("Software accounting already done in first pass. Exiting.")
+                else :    
+                    # Now we have to check if accounting was completely finished :
+                    # if it is, then a big problem occured because with hardware
+                    # accounting, only the second pass can know the job's size.
+                    if (printer.LastJob.JobSize is not None) :
+                        raise PyKotaToolError, "Hardware accounting already finished ! This should be impossible, please report this problem ASAP."
+                        
+                    # indicate phase change
+                    os.environ["PYKOTAPHASE"] = "AFTER"
+                    
+                    # stops accounting. 
+                    self.accounter.endJob(userpquota)
+                    self.sendBackChannelData("Job accounting ends.")
+                        
+                    # retrieve the job size    
+                    jobsize = self.accounter.getJobSize()
+                    self.sendBackChannelData("Job size : %i" % jobsize)
+                    raise PyKotaToolError, "Not implemented !"
+                return self.acceptJob()
+            
+if __name__ == "__main__" :    
+    retcode = JSUCC
+    try :
+        try :
+            # Initializes the backend
+            kotabackend = PyKotaFilter()    
+        except SystemExit :    
+            retcode = JABORT
+        except :    
+            crashed("lprngpykota filter initialization failed")
+            retcode = JABORT
+        else :    
+            retcode = kotabackend.mainWork()
+            kotabackend.storage.close()
+            kotabackend.closeJobDataStream()    
+    except :
+        try :
+            kotabackend.crashed("lprngpykota filter failed")
+        except :    
+            crashed("lprngpykota filter failed")
+        retcode = JABORT
+        
+    sys.exit(retcode)    

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.113  2004/07/17 20:37:27  jalet
+# Missing file... Am I really stupid ?
+#
 # Revision 1.112  2004/07/16 12:22:47  jalet
 # LPRng support early version
 #
@@ -917,6 +920,9 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.title, \
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
+         
+        self.logdebug(_("Printing system %s, args=%s") % (str(self.printingsystem), " ".join(sys.argv)))
+        
         self.username = self.username or 'root' # when printing test page from CUPS web interface, username is empty
         if self.config.getUserNameToLower() :
             self.username = self.username.lower()
@@ -1112,7 +1118,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                 self.printInfo(_("Printer hostname undefined, set to 'localhost'"), "warn")
                 rseen = "localhost"
             try :    
-                df_name = [line[8:] for line in os.environ.get("HF").split() if line.startswith("df_name=")][0]
+                df_name = [line[8:] for line in os.environ.get("HF", "").split() if line.startswith("df_name=")][0]
             except IndexError :
                 inputfile = None        
             else :    
