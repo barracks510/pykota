@@ -19,61 +19,84 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ====================================================================
 
-  These recommendations are there because as of April 28th 2003 
-  PyKota doesn't enforce them. You may or may not follow them,
-  depending on your user's IT knowledge, how much your trust them,
-  etc...
-  
-====================================================================
-
 How to improve PyKota's security :
 ----------------------------------
 
-  - Most of the stuff which was there was deleted because PyKota's
-    configuration files permissions should take care of most
-    security problems. BUT of course, you have to set them correctly !
-    
-  - Secure your printer :  
+  - Secure your printers :  
   
-    Tell it to refuse any print job not coming from your print
-    server.
+    Tell them to refuse any print job not coming from your print server. 
+    Do this with telnet to set ACLs based on incoming IP addresses if 
+    possible, or through any other way. 
+        
+    Put all your printers on a private unroutable subnet, different from 
+    the subnet on which your client hosts will reside. Ensure that the 
+    only machine allowed to access to this subnet is your print server. 
     
-    Don't give shell access to your users on your print server,
-    or don't let them execute unauthorized commands : they could
-    very well compile and execute tools like NetCat, and send 
-    datas directly to the printer in the case the printer is
-    networked, thus bypassing the printing system and PyKota.
     
-  - Ensure that no regular user can read PyKota administrator's 
-    configuration file, but that both the print quota administrator and 
-    the user the printing system is run as can read it. Depending on 
-    your system's configuration, this may give something like : 
+  - Secure your print servers :  
+  
+    Don't give shell access to your users on your print servers, and 
+    don't let them execute unauthorized commands : they could very well 
+    compile and/or execute tools like NetCat, and send datas directly to 
+    the printer in the case the printer is networked, thus bypassing the 
+    printing system and PyKota. 
+        
+    Ensure that no regular user can read PyKota administrator's 
+    configuration file, but that both the PyKota Administrator and the 
+    user the printing system is run as can read it. With CUPS under 
+    Debian you may want to do : 
     
-      $ chown lp.lpadmin /etc/pykota/pykotadmin.conf
-      $ chmod 640 /etc/pykota/pykotadmin.conf
+        $ chown pykota.pykota pykota.conf pykotadmin.conf    
+        $ chmod 640 pykota.conf
+        $ chmod 600 pykotadmin.conf
+        
+    Depending on your needs, you may want to put the user the printing 
+    system is run as in the group 'pykota', and relax permissions a bit 
+    so that this user can read the pykotadmin.conf file while printing. 
+    For example : 
     
-    If the print quota administrator is root then he will always be
-    able to read PyKota's configuration file.
+        $ chmod 640 pykotadmin.conf
+        $ adduser lp pykota
+          (this makes user 'lp' a member of group 'pykota')
     
     Letting any user read PyKota administrator's configuration file may 
-    expose passwords or database information which would allow write
-    access to the database, and so may transform your print quota
-    management in a nightmare.
+    expose passwords or database information which would allow write 
+    access to the database, and so may transform your print quota 
+    management in a nightmare. 
   
     If you want to let users generate their own print quota reports, 
-    then ensure that /etc/pykota/pykota.conf is readable by
-    everyone, but writeable only by the root user :
-    
-      $ chown root.root /etc/pykota/pykota.conf
-      $ chmod 644 /etc/pykota/pykota.conf
+    then ensure that /etc/pykota/pykota.conf is readable by these users. 
+    To do this you can either put this users in the group 'pykota' while 
+    ensuring they can't read pykotadmin.conf with 'chmod 600 pykotadmin.conf'
+    or simply allow everyone to read pykota.conf with 'chmod 644 pykota.conf'
       
-    NB : If you use the printquota.cgi CGI script, ensure that
-         the user this script is run as (e.g. nobody or www-data)
-         can read PyKota's configuration file /etc/pykota/pykota.conf
-         BUT can't read PyKota administrator's configuration file
-         /etc/pykota/pykotadmin.conf
-         Refer to Apache's documentation for details.
+  - Secure your CGI scripts :    
   
+    If you use printquota.cgi or dumpykota.cgi, ensure that the user 
+    they are run as can read the pykota.conf file but NOT the 
+    pykotadmin.conf file. 
+        
+    The particular user they will be run as depends on your web server's 
+    settings. 
+        
+    If you want to further restrict the access to these CGI scripts, 
+    please read your web server's documentation to add either 
+    encryption, authentication or both. 
+        
+    The CGI scripts will honor the content of the REMOTE_USER CGI 
+    environment variable which is set by your web server if an 
+    authentication took place. If REMOTE_USER contains 'root' then, even 
+    if you didn't authenticate using the real root account and password, 
+    the scripts will consider they have been run by a PyKota 
+    administrator and will report all datas if asked to do so. If 
+    REMOTE_USER is not present, which means that you didn't chose to 
+    secure access to your CGI scripts, the same will happen. If 
+    REMOTE_USER contains something else, only datas pertaining to this 
+    user will be made available through the web. 
+    
+    NB : In any case, the CGI scripts actually included in PyKota only
+    do readonly accesses to PyKota's database.
+    
   - Secure your database connection :
   
     Depending on the database backend used, either PostgreSQL or
@@ -92,7 +115,7 @@ How to improve PyKota's security :
     for these users though, but doing it is recommended, and 
     explained elsewhere in PyKota's documentation.
     
-    For the OpenLDAP backend, YOU have to ensure that no regular
+    For the LDAP backend, you have to ensure that no regular
     user can write to any PyKota specific attribute or objectClass.
     Otherwise they could modify their quota at will.
     
