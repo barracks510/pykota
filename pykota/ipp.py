@@ -108,6 +108,10 @@ class IPPMessage :
                 value = value[0]
         return value        
     get = __getitem__    
+    
+    def keys(self) :
+        """Fakes a dictionnary .keys() method."""
+        return self._attributes.keys()
         
     def parseTag(self) :    
         """Extracts information from an IPP tag."""
@@ -175,4 +179,5 @@ if __name__ == "__main__" :
         infile = open(sys.argv[1])
         message = IPPMessage(infile.read())
         infile.close()
-        print "Client hostname : %s" % message["job-originating-host-name"]
+        for key in message.keys() :
+            print "%s : %s" % (key, message[key])
