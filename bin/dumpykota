@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2004/10/12 15:37:00  jalet
+# Now outputs the name of the offending user if a mere mortal tries to use
+# one of these commands !!!
+#
 # Revision 1.14  2004/10/11 22:53:05  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -166,7 +170,7 @@ class DumPyKota(PyKotaTool) :
     def main(self, arguments, options) :
         """Print Quota Data Dumper."""
         if not self.config.isAdmin :
-            raise PyKotaToolError, _("You're not allowed to use this command.")
+            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         datatype = options["data"]
         if datatype not in [ "history",

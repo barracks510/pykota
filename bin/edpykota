@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.81  2004/10/12 15:37:00  jalet
+# Now outputs the name of the offending user if a mere mortal tries to use
+# one of these commands !!!
+#
 # Revision 1.80  2004/10/11 22:53:05  jalet
 # Postponed string interpolation to help message's output method
 #
@@ -283,7 +287,8 @@
 #
 
 import sys
-
+import os
+import pwd
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
@@ -467,7 +472,7 @@ class EdPyKota(PyKotaTool) :
     def main(self, names, options) :
         """Edit user or group quotas."""
         if not self.config.isAdmin :
-            raise PyKotaToolError, _("You're not allowed to use this command.")
+            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
         
         suffix = (options["groups"] and "Group") or "User"        
         
