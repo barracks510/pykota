@@ -1,13 +1,13 @@
 # PyKota
-#
+# 
 # PyKota : Print Quotas for CUPS and LPRng
-#
+# 
 # (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,13 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-#
+# 
 # $Id$
-#
+# 
 # PyKota translation master file.
 # Copyright (c) 2003-2004 Conseil Internet & Logiciels Libres
 # Jerome Alet <alet@librelogiciel.com>, 2003-2004.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: PyKota v1.19\n"
@@ -105,7 +105,7 @@ msgid ""
 "You are not allowed to print anymore because\n"
 "your Print Quota is exceeded on printer %s."
 msgstr ""
-"ขออภัย! คุณไม่สามารถทำการพิมพ์สิ่งไดได้เนื่องจาก\n"
+"ขออภัย! คุณไม่สามารถทำการพิมพ์สิ่งใดได้เนื่องจาก\n"
 "สิทธิ์ในการพิมพ์ของคุณเกินกำหนดบนเครื่องพิมพ์ %s."
 
 #, python-format
@@ -113,7 +113,7 @@ msgid ""
 "You will soon be forbidden to print anymore because\n"
 "your Print Quota is almost reached on printer %s."
 msgstr ""
-"ขออภัย! คุณจะไม่ได้รับอรญาตให้ทำการพิมพ์ใดๆได้อีกเพราะ\n"
+"ขออภัย! คุณจะไม่ได้รับอนุญาตให้ทำการพิมพ์ใดๆได้อีกเพราะ\n"
 "โควต้าในการพิมพ์ของคุณใกล้หมดบนเครื่องพิมพ์ %s."
 
 #, python-format
@@ -169,7 +169,7 @@ msgstr "ระบบสิทธิ์ในการใช้พื้นที่ไม่สนับสนุน %s"
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"
-msgstr "ไม่สารมารถติดต่อกับ SMTP เซิร์ฟเวอร์ได้"
+msgstr "ไม่สามารถติดต่อกับ SMTP เซิร์ฟเวอร์ได้"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
@@ -314,14 +314,14 @@ msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
 msgstr ""
-"ผู้ใช้ %s ยังคงไม่มีโคงต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,งานที่สั่งจะถูกยกเลิก "
+"ผู้ใช้ %s ยังคงไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,งานที่สั่งจะถูกยกเลิก "
 
 msgid "Totals may be inaccurate if some users are members of several groups."
 msgstr "จำนวนรวมอาจไม่ถูกต้อง หากผู้ใช้บางท่านเป็นสมาชิกของกลุ่มหลายกลุ่ม."
 
 #, python-format
 msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "ไม่พบทีอยู่ของเครื่องพิมพ์ในอุปกรณ์ (%s) สำหรับเครื่องพิมพ์ %s"
+msgstr "ไม่พบที่อยู่ของเครื่องพิมพ์ในอุปกรณ์ (%s) สำหรับเครื่องพิมพ์ %s"
 
 #, python-format
 msgid "Launching HARDWARE(%s)..."
@@ -333,11 +333,11 @@ msgstr "คำตอบไม่ถูกต้อง : %s"
 
 #, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "สัญญาณ SIGTERM ถูฏส่งไปยังอุปกรณ์ระบบบัญชีสมาชิกr %s (pid: %s)"
+msgstr "สัญญาณ SIGTERM ถูกส่งไปยังอุปกรณ์ระบบบัญชีสมาชิก %s (pid: %s)"
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "ไม่สามารค้นหาเครื่องพิมพ์ %s โดยผ่ายอุปกรณ์(%s)"
+msgstr "ไม่สามารค้นหาเครื่องพิมพ์ %s โดยผ่านอุปกรณ์(%s)"
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
@@ -349,11 +349,11 @@ msgstr "ไม่สามารถคำนวณขนาดงานได้ด้วยระบบสมาชิก %s"
 
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "เกิดปัญหาจากการคอยซอฟท์แวร์ระบบสมาชิก pid %s เพื่อออก : %s"
+msgstr "เกิดปัญหาจากการคอยซอฟต์แวร์ระบบสมาชิก pid %s เพื่อออก : %s"
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
-msgstr "ซอฟท์แวร์ระบบสมาชิก %s ที่สั่งการออกคือ %s"
+msgstr "ซอฟต์แวร์ระบบสมาชิก %s ที่สั่งการออกคือ %s"
 
 #, python-format
 msgid ""
@@ -369,7 +369,7 @@ msgstr "ผลการค้นหา %s(%s) จาก %s(scope=%s) คือ ไม่พบสิ่งที่ค้น."
 
 #, python-format
 msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "เกิดปัญหาในการเพิ่มข้อมูลเข้าสุ่ LDAP (%s, %s)"
+msgstr "เกิดปัญหาในการเพิ่มข้อมูลเข้าสู่ LDAP (%s, %s)"
 
 #, python-format
 msgid "Problem deleting LDAP entry (%s)"
@@ -461,7 +461,7 @@ msgid "Job accounting ends."
 msgstr "จบการทำงานของสมาชิก"
 
 msgid "Job size forced to 0 because printing is denied."
-msgstr "ขนาดของงานถุกเปลี่ยนเป็น 0 เพราะปฏิเสธการพิมพ์"
+msgstr "ขนาดของงานถูกเปลี่ยนเป็น 0 เพราะปฏิเสธการพิมพ์"
 
 #, python-format
 msgid "Job size : %i"
@@ -476,7 +476,7 @@ msgstr "ส่งงานเข้าสู่ประวัติ"
 
 #, python-format
 msgid "File number %s unregistered twice from polling object, ignored."
-msgstr "แฟ้มข้อมูลหมายเลข %s ไม่ได้รับการลงทะเบียน 2 ครั้งจากขั้นเตรียมการ"
+msgstr "แฟ้มข้อมูลหมายเลข %s ไม่ได้รับการลงทะเบียน 2 ครั้งจากขั้นเตรียมการ ,ข้ามไป"
 
 #, python-format
 msgid "SIGTERM was sent to real backend %s (pid: %s)"
@@ -539,7 +539,7 @@ msgstr "ไม่ได้ทำการตั้งค่า hard limit ถึง soft limit (%s) บนเครื่องพิมพ์ %s"
 
 #, python-format
 msgid "Undefined soft limit set to hard limit (%s) on printer %s."
-msgstr ""
+msgstr "ไม่ได้ทำการตั้งค่า soft limit ถึง hard limit (%s) บนเครื่องพิมพ์ %s"
 
 #, python-format
 msgid "Invalid email address %s"
@@ -551,7 +551,7 @@ msgstr "ชื่อกลุ่มผู้ใช้ %s ไม่ถูกต้อง"
 
 #, python-format
 msgid "Invalid user name %s"
-msgstr "ชื่อผู้ใช้ %s ไม่ถูฏต้อง"
+msgstr "ชื่อผู้ใช้ %s ไม่ถูกต้อง"
 
 #, python-format
 msgid "Quota not found for object %s on printer %s."
@@ -559,7 +559,7 @@ msgstr "ไม่พบโควต้าในการพิมพ์สำหรับ %s บนเครื่องพิมพ์ %s"
 
 #, python-format
 msgid "Group %s not found in the PyKota Storage."
-msgstr ""
+msgstr "ไม่พบกลุ่มผู้ใช้ %s ในส่วนเก็บข้อมูลของ PyKota"
 
 msgid "incompatible options, see help."
 msgstr "ตัวเลือกไม่เหมาะสม, กรุณาดูจากส่วนช่วยเหลือ"
@@ -570,7 +570,7 @@ msgstr "เครื่องพิมพ์ %s ได้ถูกติดตั้งแล้ว, ข้ามไป"
 
 #, python-format
 msgid "Printer %s already exists, will be modified."
-msgstr "เครื่องพิมพ์ %s ได้ถูกติดตั้งแล้ว, ทำการแก้ใข"
+msgstr "เครื่องพิมพ์ %s ได้ถูกติดตั้งแล้ว, ทำการแก้ใขหรือไม่"
 
 msgid "in"
 msgstr "ใน"
@@ -600,7 +600,7 @@ msgstr ""
 
 #, python-format
 msgid "Unknown device %s for printer %s"
-msgstr "ไม่รุ้จักอุปกรณ์ %s สำหรับเครื่องพิมพ์ %s"
+msgstr "ไม่รู้จักอุปกรณ์ %s สำหรับเครื่องพิมพ์ %s"
 
 msgid ""
 "\n"
