@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2005/02/13 22:22:03  jalet
+# Added missing fields
+#
 # Revision 1.44  2005/01/19 08:49:41  jalet
 # Now dumpykota.cgi behaves like printquota.cgi wrt the REMOTE_USER environment
 # variables if the script is username+password protected.
@@ -331,7 +334,12 @@ class PyKotaReportGUI(PyKotaTool) :
                 self.report.append("<h3>%s</h3>" % _("Empty"))
             else :
                 self.report.append('<table class="pykotatable" border="1">')
-                headers = [_("Date"), _("Action"), _("User"), _("Printer"), _("Hostname"), _("JobId"), _("JobSize"), _("JobPrice"), _("Copies"), _("JobBytes"), _("PageCounter"), _("Title"), _("Filename"), _("Options")]
+                headers = [_("Date"), _("Action"), _("User"), _("Printer"), \
+                           _("Hostname"), _("JobId"), _("JobSize"), \
+                           _("JobPrice"), _("Copies"), _("JobBytes"), \
+                           _("PageCounter"), _("Title"), _("Filename"), \
+                           _("Options"), _("MD5Sum"), _("BillingCode"), \
+                           _("Pages")]
                 self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
                 oddeven = 0
                 for job in history :
@@ -350,7 +358,7 @@ class PyKotaReportGUI(PyKotaTool) :
                         hostname_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "hostname" : job.JobHostName}), job.JobHostName)
                     else :    
                         hostname_url = None
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % (h or "&nbsp;") for h in (job.JobDate[:19], job.JobAction, username_url, printername_url, hostname_url, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobSizeBytes, job.PrinterPageCounter, job.JobTitle, job.JobFileName, job.JobOptions)])))
+                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % (h or "&nbsp;") for h in (job.JobDate[:19], job.JobAction, username_url, printername_url, hostname_url, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobSizeBytes, job.PrinterPageCounter, job.JobTitle, job.JobFileName, job.JobOptions, job.JobMD5Sum, job.JobBillingCode, job.JobPages)])))
                 self.report.append('</table>')
                 dico = { "history" : 1,
                          "datelimit" : job.JobDate,
