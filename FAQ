@@ -1,0 +1,75 @@
+PyKota's FAQ :
+
+  # $Id$
+  
+  * Is print accounting ever exact ?
+  
+    No. Print accounting is **never** exact, because it depends
+    on external factors like the presence of paper in the printer,
+    the quantity of remaining ink in the print cartridge, paper
+    jams, etc... All these things are very difficult to account
+    for correctly, and no print accounting package deals with
+    these artefacts correctly in all situations.
+    We are however confident that PyKota is one of the more
+    exact print accounting software, because by default it
+    asks the printers for how many pages they have really printed.
+    
+  * Can PyKota account for ink usage ?  
+  
+    No. Actually PyKota doesn't account for ink usage, but this
+    may come in a future release. PyKota only accounts for pages
+    printed and/or money spent.  If ink accounting is a necessity
+    for you, PrintBill is recommended instead of PyKota. PrintBill
+    allows you to bill differently per color, and to bill depending
+    on the percent of the ink covered part of the pages.
+    
+  * How can I make PyKota work with my non-postscript printer under 
+    CUPS ?  
+  
+    You have to define a new filtering chain for this, because most
+    probably your printer's PPD file already contain a *cupsFilter
+    line and only one is allowed. So it's impossible to plug PyKota
+    there. Search the mailing list archives to learn how to do.
+    
+  * How can I diagnose the problem when something goes wrong ?  
+  
+    Put "LogLevel debug2" in cupsd.conf (usually in /etc/cups/).
+    Then put "logger: system" and "debug: yes" in 
+    /etc/pykota/pykota.conf.
+    Finally restart CUPS.
+    CUPS' error_log file will now contain many informations which
+    will help diagnose your problem. Also your syslog's output for 
+    the LPR facility (usually /var/log/lpr.log) will contain 
+    PyKota's debug messages, notably all database related queries
+    and their result, be your database PostgreSQL or OpenLDAP.
+    With these two files the problem can usually be diagnosed within
+    minutes. Send them to the mailing list and wait for an answer.
+    
+  * Some, not all, print jobs are never accounted for, why ?
+  
+    Probably because some jobs were printed in raw mode.
+    Job printed this way are never filtered, and so PyKota
+    doesn't see them.
+    If you print to a CUPS server through Samba, delete the
+    "-o raw" command line option in smb.conf's print command 
+    entry, and restart Samba. Gimp also sets the "-o raw"
+    command line option some times. Be sure to disable
+    raw mode in CUPS configuration. Eventually recompile
+    CUPS without raw mode support at all.
+    
+  * When printing from Windows, the jobs are never accounted for,
+    but from *nix they are. Could you explain the reason for this ?
+    
+    First refer to the point above. If this doesn't solve your
+    problem, try to set your print driver to PostScript mode
+    and check the "maximum compatibility" box in its configuration,
+    instead of "maximum speed". Often HP printers come with both
+    a PCL and a PostScript driver under Windows. Don't install the 
+    PCL one.
+    
+  * My question isn't answered there, can you help ?  
+  
+    Sure. Ask your question to the mailing list. If this is a
+    frequently asked question, or if your problem is on the contrary
+    very specific, it will probably be added to this document.
+    
