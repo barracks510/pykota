@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/04/15 11:30:57  jalet
+# More work done on money print charging.
+# Minor bugs corrected.
+# All tools now access to the storage as priviledged users, repykota excepted.
+#
 # Revision 1.6  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -81,10 +86,20 @@ class Storage(sql.SQLStorage) :
         
     def doQuery(self, query) :
         """Does a query."""
+        if type(query) in (type([]), type(())) :
+            query = ";".join(query)
+        query = query.strip()    
+        if not query.endswith(';') :    
+            query += ';'
+        self.database.query("BEGIN;")
         try :
-            return self.database.query(query)
+            result = self.database.query(query)
         except pg.error, msg :    
+            self.database.query("ROLLBACK;")
             raise PyKotaStorageError, msg
+        else :    
+            self.database.query("COMMIT;")
+            return result
         
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""

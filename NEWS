@@ -70,6 +70,8 @@ PyKota NEWS :
           
         - A small display bug in repykota was introduced in preliminary 
           1.03 versions, and fixed later on.
+          
+        - Some minor bugs which happened in rare situations were fixed.
         
     - 1.02 :
     

@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2003/04/15 11:30:57  jalet
+# More work done on money print charging.
+# Minor bugs corrected.
+# All tools now access to the storage as priviledged users, repykota excepted.
+#
 # Revision 1.30  2003/04/10 21:47:20  jalet
 # Job history added. Upgrade script neutralized for now !
 #
@@ -152,7 +157,7 @@ class PyKotaToolError(Exception):
     
 class PyKotaTool :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, isfilter=0, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, asadmin=1, doc="PyKota %s (c) 2003 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool."""
         # locale stuff
         try :
@@ -165,7 +170,7 @@ class PyKotaTool :
         self.documentation = doc
         self.config = config.PyKotaConfig("/etc")
         self.logger = logger.openLogger(self.config)
-        self.storage = storage.openConnection(self.config, asadmin=(not isfilter))
+        self.storage = storage.openConnection(self.config, asadmin=asadmin)
         self.printername = os.environ.get("PRINTER", None)
         self.smtpserver = self.config.getSMTPServer()
         

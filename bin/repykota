@@ -22,6 +22,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.25  2003/04/15 11:30:57  jalet
+# More work done on money print charging.
+# Minor bugs corrected.
+# All tools now access to the storage as priviledged users, repykota excepted.
+#
 # Revision 1.24  2003/04/14 20:05:20  jalet
 # Reversed test.
 #
@@ -155,6 +160,10 @@ Please e-mail bugs to: %s""" % (version.__version__, version.__author__)
         
 class RePyKota(PyKotaTool) :        
     """A class for repykota."""
+    def __init__(self, doc) :
+        """Initializes the tool as a non-priviledged storage user."""
+        PyKotaTool.__init__(self, asadmin=0, doc=doc)
+        
     def main(self, options) :
         """Print Quota reports generator."""
         printers = self.storage.getMatchingPrinters(options["printer"])
@@ -180,10 +189,10 @@ class RePyKota(PyKotaTool) :
             if total :        
                 print (" " * 43) + (_("Total : %9i") % total)
             printerpagecounter = self.storage.getPrinterPageCounter(printerid)
-            if printerpagecounter is None :    
-                msg = _("unknown")
-            else :
+            try :
                 msg = "%9i" % printerpagecounter["pagecounter"]
+            except TypeError :     
+                msg = _("unknown")
             print (" " * 44) + (_("Real : %s") % msg)
             print        
                         

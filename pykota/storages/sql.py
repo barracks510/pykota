@@ -20,6 +20,11 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/04/15 11:30:57  jalet
+# More work done on money print charging.
+# Minor bugs corrected.
+# All tools now access to the storage as priviledged users, repykota excepted.
+#
 # Revision 1.22  2003/04/10 21:47:20  jalet
 # Job history added. Upgrade script neutralized for now !
 #
@@ -106,7 +111,7 @@ class SQLStorage :
         # We 'could' do a SELECT printername FROM printers WHERE printername LIKE ...
         # but we don't because other storages semantics may be different, so every
         # storage should use fnmatch to match patterns and be storage agnostic
-        result = self.doQuery("SELECT id, printername FROM printers;")
+        result = self.doQuery("SELECT id, printername FROM printers")
         result = self.doParseResult(result)
         if result is not None :
             for printer in result :
@@ -116,15 +121,28 @@ class SQLStorage :
             
     def getPrinterId(self, printername) :        
         """Returns a printerid given a printername."""
-        result = self.doQuery("SELECT id FROM printers WHERE printername=%s;" % self.doQuote(printername))
+        result = self.doQuery("SELECT id FROM printers WHERE printername=%s" % self.doQuote(printername))
         try :
             return self.doParseResult(result)[0]["id"]
         except TypeError :      # Not found    
             return
             
+    def getPrinterPrices(self, printerid) :        
+        """Returns a printer prices per page and per job given a printerid."""
+        result = self.doQuery("SELECT priceperpage, priceperjob FROM printers WHERE id=%s" % self.doQuote(printerid))
+        try :
+            printerprices = self.doParseResult(result)[0]
+            return (printerprices["priceperpage"], printerprices["priceperjob"])
+        except TypeError :      # Not found    
+            return
+            
+    def setPrinterPrices(self, printerid, perpage, perjob) :
+        """Sets prices per job and per page for a given printer."""
+        self.doQuery("UPDATE printers SET priceperpage=%s, priceperjob=%s WHERE id=%s" % (self.doQuote(perpage), self.doQuote(perjob), self.doQuote(printerid)))
+    
     def getUserId(self, username) :
         """Returns a userid given a username."""
-        result = self.doQuery("SELECT id FROM users WHERE username=%s;" % self.doQuote(username))
+        result = self.doQuery("SELECT id FROM users WHERE username=%s" % self.doQuote(username))
         try :
             return self.doParseResult(result)[0]["id"]
         except TypeError :      # Not found
@@ -132,7 +150,7 @@ class SQLStorage :
             
     def getGroupId(self, groupname) :
         """Returns a groupid given a grupname."""
-        result = self.doQuery("SELECT id FROM groups WHERE groupname=%s;" % self.doQuote(groupname))
+        result = self.doQuery("SELECT id FROM groups WHERE groupname=%s" % self.doQuote(groupname))
         try :
             return self.doParseResult(result)[0]["id"]
         except TypeError :      # Not found
@@ -140,7 +158,7 @@ class SQLStorage :
             
     def getJobHistoryId(self, jobid, userid, printerid) :        
         """Returns the history line's id given a (jobid, userid, printerid)."""
-        result = self.doQuery("SELECT id FROM jobhistory WHERE jobid=%s AND userid=%s AND printerid=%s;" % (self.doQuote(jobid), self.doQuote(userid), self.doQuote(printerid)))
+        result = self.doQuery("SELECT id FROM jobhistory WHERE jobid=%s AND userid=%s AND printerid=%s" % (self.doQuote(jobid), self.doQuote(userid), self.doQuote(printerid)))
         try :
             return self.doParseResult(result)[0]["id"]
         except TypeError :      # Not found    
@@ -148,7 +166,7 @@ class SQLStorage :
             
     def getPrinterUsers(self, printerid) :        
         """Returns the list of usernames which uses a given printer."""
-        result = self.doQuery("SELECT DISTINCT id, username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid=%s) ORDER BY username;" % self.doQuote(printerid))
+        result = self.doQuery("SELECT DISTINCT id, username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid=%s) ORDER BY username" % self.doQuote(printerid))
         result = self.doParseResult(result)
         if result is None :
             return []
@@ -157,7 +175,7 @@ class SQLStorage :
         
     def getPrinterGroups(self, printerid) :        
         """Returns the list of groups which uses a given printer."""
-        result = self.doQuery("SELECT DISTINCT id, groupname FROM groups WHERE id IN (SELECT groupid FROM grouppquota WHERE printerid=%s);" % self.doQuote(printerid))
+        result = self.doQuery("SELECT DISTINCT id, groupname FROM groups WHERE id IN (SELECT groupid FROM grouppquota WHERE printerid=%s)" % self.doQuote(printerid))
         result = self.doParseResult(result)
         if result is None :
             return []
@@ -166,17 +184,17 @@ class SQLStorage :
         
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns its id."""
-        self.doQuery("INSERT INTO printers (printername) VALUES (%s);" % self.doQuote(printername))
+        self.doQuery("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(printername))
         return self.getPrinterId(printername)
         
     def addUser(self, username) :        
         """Adds a user to the quota storage, returns its id."""
-        self.doQuery("INSERT INTO users (username) VALUES (%s);" % self.doQuote(username))
+        self.doQuery("INSERT INTO users (username) VALUES (%s)" % self.doQuote(username))
         return self.getUserId(username)
         
     def addGroup(self, groupname) :        
         """Adds a group to the quota storage, returns its id."""
-        self.doQuery("INSERT INTO groups (groupname) VALUES (%s);" % self.doQuote(groupname))
+        self.doQuery("INSERT INTO groups (groupname) VALUES (%s)" % self.doQuote(groupname))
         return self.getGroupId(groupname)
         
     def addUserPQuota(self, username, printerid) :
@@ -184,7 +202,7 @@ class SQLStorage :
         userid = self.getUserId(username)     
         if userid is None :    
             userid = self.addUser(username)
-        self.doQuery("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s);" % (self.doQuote(userid), self.doQuote(printerid)))
+        self.doQuery("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s)" % (self.doQuote(userid), self.doQuote(printerid)))
         return (userid, printerid)
         
     def addGroupPQuota(self, groupname, printerid) :
@@ -192,24 +210,54 @@ class SQLStorage :
         groupid = self.getGroupId(groupname)     
         if groupid is None :    
             groupid = self.addUser(groupname)
-        self.doQuery("INSERT INTO grouppquota (groupid, printerid) VALUES (%s, %s);" % (self.doQuote(groupid), self.doQuote(printerid)))
+        self.doQuery("INSERT INTO grouppquota (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(groupid), self.doQuote(printerid)))
         return (groupid, printerid)
+        
+    def increaseUserBalance(self, userid, amount) :    
+        """Increases (or decreases) an user's account balance by a given amount."""
+        self.doQuery("UPDATE users SET balance=balance+(%s), lifetimepaid=lifetimepaid+(%s) WHERE id=%s" % (self.doQuote(amount), self.doQuote(amount), self.doQuote(userid)))
+        
+    def getUserBalance(self, userid) :    
+        """Returns the current account balance for a given user."""
+        result = self.doQuery("SELECT balance FROM users WHERE id=%s" % self.doQuote(userid))
+        try :
+            return self.doParseResult(result)[0]["balance"]
+        except TypeError :      # Not found    
+            return
+        
+    def setUserBalance(self, userid, balance) :    
+        """Sets the account balance for a given user to a fixed value."""
+        current = self.getUserBalance(userid)
+        difference = balance - current
+        self.increaseUserBalance(userid, difference)
+        
+    def limitUserByQuota(self, userid) :    
+        """Limits a given user based on print quota."""
+        self.doQuery("UPDATE users SET limitby='quota' WHERE id=%s" % self.doQuote(userid))
+        
+    def limitUserByBalance(self, userid) :    
+        """Limits a given user based on account balance."""
+        self.doQuery("UPDATE users SET limitby='balance' WHERE id=%s" % self.doQuote(userid))
         
     def setUserPQuota(self, userid, printerid, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota on a specific printer given (userid, printerid)."""
-        self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userid), self.doQuote(printerid)))
+        self.doQuery("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE userid=%s AND printerid=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userid), self.doQuote(printerid)))
         
     def resetUserPQuota(self, userid, printerid) :    
         """Resets the page counter to zero for a user on a printer. Life time page counter is kept unchanged."""
-        self.doQuery("UPDATE userpquota SET pagecounter=0, datelimit=NULL WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
+        self.doQuery("UPDATE userpquota SET pagecounter=0, datelimit=NULL WHERE userid=%s AND printerid=%s" % (self.doQuote(userid), self.doQuote(printerid)))
         
     def updateUserPQuota(self, userid, printerid, pagecount) :
         """Updates the used user Quota information given (userid, printerid) and a job size in pages."""
-        self.doQuery("UPDATE userpquota SET lifepagecounter=lifepagecounter+(%s), pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s;" % (self.doQuote(pagecount), self.doQuote(pagecount), self.doQuote(userid), self.doQuote(printerid)))
+        jobprice = self.computePrinterJobPrice(printerid, pagecount)
+        queries = []    
+        queries.append("UPDATE userpquota SET lifepagecounter=lifepagecounter+(%s), pagecounter=pagecounter+(%s) WHERE userid=%s AND printerid=%s" % (self.doQuote(pagecount), self.doQuote(pagecount), self.doQuote(userid), self.doQuote(printerid)))
+        queries.append("UPDATE users SET balance=balance-(%s) WHERE id=%s" % (self.doQuote(jobprice), self.doQuote(userid)))
+        self.doQuery(queries)
         
     def getUserPQuota(self, userid, printerid) :
         """Returns the Print Quota information for a given (userid, printerid)."""
-        result = self.doQuery("SELECT lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(userid), self.doQuote(printerid)))
+        result = self.doQuery("SELECT lifepagecounter, pagecounter, softlimit, hardlimit, datelimit FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(userid), self.doQuote(printerid)))
         try :
             return self.doParseResult(result)[0]
         except TypeError :      # Not found    
@@ -217,11 +265,11 @@ class SQLStorage :
         
     def setUserDateLimit(self, userid, printerid, datelimit) :
         """Sets the limit date for a soft limit to become an hard one given (userid, printerid)."""
-        self.doQuery("UPDATE userpquota SET datelimit=%s::TIMESTAMP WHERE userid=%s AND printerid=%s;" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(userid), self.doQuote(printerid)))
+        self.doQuery("UPDATE userpquota SET datelimit=%s::TIMESTAMP WHERE userid=%s AND printerid=%s" % (self.doQuote("%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)), self.doQuote(userid), self.doQuote(printerid)))
         
     def addJobToHistory(self, jobid, userid, printerid, pagecounter, action) :
         """Adds a job to the history: (jobid, userid, printerid, last page counter taken from requester)."""
-        self.doQuery("INSERT INTO jobhistory (jobid, userid, printerid, pagecounter, action) VALUES (%s, %s, %s, %s, %s);" % (self.doQuote(jobid), self.doQuote(userid), self.doQuote(printerid), self.doQuote(pagecounter), self.doQuote(action)))
+        self.doQuery("INSERT INTO jobhistory (jobid, userid, printerid, pagecounter, action) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(jobid), self.doQuote(userid), self.doQuote(printerid), self.doQuote(pagecounter), self.doQuote(action)))
         return self.getJobHistoryId(jobid, userid, printerid) # in case jobid is not sufficient
     
     def updateJobSizeInHistory(self, historyid, jobsize) :
@@ -230,9 +278,17 @@ class SQLStorage :
     
     def getPrinterPageCounter(self, printerid) :
         """Returns the last page counter value for a printer given its id, also returns last username, last jobid and history line id."""
-        result = self.doQuery("SELECT jobhistory.id, jobid, userid, username, pagecounter FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1;" % self.doQuote(printerid))
+        result = self.doQuery("SELECT jobhistory.id, jobid, userid, username, pagecounter FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printerid))
         try :
             return self.doParseResult(result)[0]
         except TypeError :      # Not found
             return
         
+    def computePrinterJobPrice(self, printerid, jobsize) :    
+        """Returns the price for a job on a given printer."""
+        prices = self.getPrinterPrices(printerid)
+        if prices is None :
+            perpage = perjob = 0.0
+        else :    
+            (perpage, perjob) = prices
+        return perjob + (perpage * jobsize)

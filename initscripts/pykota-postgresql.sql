@@ -19,6 +19,11 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.13  2003/04/15 11:30:57  jalet
+-- More work done on money print charging.
+-- Minor bugs corrected.
+-- All tools now access to the storage as priviledged users, repykota excepted.
+--
 -- Revision 1.12  2003/04/14 20:01:02  jalet
 -- Typo
 --
@@ -98,7 +103,8 @@ CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
 -- Create the groups table
 --
 CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
-                    groupname TEXT UNIQUE NOT NULL);
+                    groupname TEXT UNIQUE NOT NULL,
+                    limitby TEXT DEFAULT 'quota');
                     
 --
 -- Create the printers table
