@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.58  2003/10/03 12:27:01  jalet
+# Several optimizations, especially with LDAP backend
+#
 # Revision 1.57  2003/08/20 16:01:19  jalet
 # Comment added.
 #
@@ -472,9 +475,9 @@ class EdPyKota(PyKotaTool) :
                     entrypquota = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
                     allentries.append((entry, entrypquota))
             else :   
-                allentries = getattr(self.storage, "getPrinter%ssAndQuotas" % suffix)(printer)
+                allentries = getattr(self.storage, "getPrinter%ssAndQuotas" % suffix)(printer, names)
                 
-            for (entry, entrypquota) in [(e, q) for (e, q) in allentries if self.matchString(e.Name, names)] :
+            for (entry, entrypquota) in allentries :
                 if not changed.has_key(entry.Name) :
                     changed[entry.Name] = {}
                     if not options["groups"] :

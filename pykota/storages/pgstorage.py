@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.15  2003/10/03 12:27:03  jalet
+# Several optimizations, especially with LDAP backend
+#
 # Revision 1.14  2003/10/03 08:57:55  jalet
 # Caching mechanism now caches all that's cacheable.
 #
@@ -301,8 +304,8 @@ class Storage(BaseStorage) :
         result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,email,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                user = StorageUser(self, record.get("username"))
-                if (names is None) or self.tool.matchString(user.Name, names) :
+                if (names is None) or self.tool.matchString(record.get("username"), names) :
+                    user = StorageUser(self, record.get("username"))
                     user.ident = record.get("uid")
                     user.LimitBy = record.get("limitby")
                     user.AccountBalance = record.get("balance")
@@ -328,8 +331,8 @@ class Storage(BaseStorage) :
         result = self.doSearch("SELECT groupname FROM groups JOIN grouppquota ON groups.id=grouppquota.groupid AND printerid=%s ORDER BY groupname ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                group = self.getGroup(record.get("groupname"))
-                if (names is None) or self.tool.matchString(group.Name, names) :
+                if (names is None) or self.tool.matchString(record.get("groupname"), names) :
+                    group = self.getGroup(record.get("groupname"))
                     grouppquota = self.getGroupPQuota(group, printer)
                     groupsandquotas.append((group, grouppquota))
         return groupsandquotas

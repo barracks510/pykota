@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/10/03 12:27:02  jalet
+# Several optimizations, especially with LDAP backend
+#
 # Revision 1.27  2003/10/03 08:57:55  jalet
 # Caching mechanism now caches all that's cacheable.
 #
@@ -402,67 +405,64 @@ class Storage(BaseStorage) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
         # see comment at the same place in pgstorage.py
-        result = self.doSearch("objectClass=pykotaPrinter", ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)" % pname for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
                 printername = fields["pykotaPrinterName"][0]
-                if self.tool.matchString(printername, [ printerpattern ]) :
-                    printer = StoragePrinter(self, printername)
-                    printer.ident = printerid
-                    printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
-                    printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
-                    printer.LastJob = self.getPrinterLastJob(printer)
-                    printer.Exists = 1
-                    printers.append(printer)
-                    self.cacheEntry("PRINTERS", printer.Name, printer)
+                printer = StoragePrinter(self, printername)
+                printer.ident = printerid
+                printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
+                printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
+                printer.LastJob = self.getPrinterLastJob(printer)
+                printer.Exists = 1
+                printers.append(printer)
+                self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
         
-    def getPrinterUsersAndQuotas(self, printer, names=None) :        
+    def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
-        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s))" % printer.Name, ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaUserName=%s)" % uname for uname in names])), ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
         if result :
             for (userquotaid, fields) in result :
-                user = self.getUser(fields["pykotaUserName"][0])
-                if (names is None) or self.tool.matchString(user.Name, names) :
-                    userpquota = StorageUserPQuota(self, user, printer)
-                    userpquota.ident = userquotaid
-                    userpquota.PageCounter = int(fields.get("pykotaPageCounter")[0] or 0)
-                    userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter")[0] or 0)
-                    userpquota.SoftLimit = fields.get("pykotaSoftLimit")
-                    if userpquota.SoftLimit is not None :
-                        if userpquota.SoftLimit[0].upper() == "NONE" :
-                            userpquota.SoftLimit = None
-                        else :    
-                            userpquota.SoftLimit = int(userpquota.SoftLimit[0])
-                    userpquota.HardLimit = fields.get("pykotaHardLimit")
-                    if userpquota.HardLimit is not None :
-                        if userpquota.HardLimit[0].upper() == "NONE" :
-                            userpquota.HardLimit = None
-                        elif userpquota.HardLimit is not None :    
-                            userpquota.HardLimit = int(userpquota.HardLimit[0])
-                    userpquota.DateLimit = fields.get("pykotaDateLimit")
-                    if userpquota.DateLimit is not None :
-                        if userpquota.DateLimit[0].upper() == "NONE" : 
-                            userpquota.DateLimit = None
-                        else :    
-                            userpquota.DateLimit = userpquota.DateLimit[0]
-                    userpquota.Exists = 1
-                    usersandquotas.append((user, userpquota))
-                    self.cacheEntry("USERPQUOTAS", "%s@%s" % (user.Name, printer.Name), userpquota)
+                user = self.getUser(fields.get("pykotaUserName")[0])
+                userpquota = StorageUserPQuota(self, user, printer)
+                userpquota.ident = userquotaid
+                userpquota.PageCounter = int(fields.get("pykotaPageCounter")[0] or 0)
+                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter")[0] or 0)
+                userpquota.SoftLimit = fields.get("pykotaSoftLimit")
+                if userpquota.SoftLimit is not None :
+                    if userpquota.SoftLimit[0].upper() == "NONE" :
+                        userpquota.SoftLimit = None
+                    else :    
+                        userpquota.SoftLimit = int(userpquota.SoftLimit[0])
+                userpquota.HardLimit = fields.get("pykotaHardLimit")
+                if userpquota.HardLimit is not None :
+                    if userpquota.HardLimit[0].upper() == "NONE" :
+                        userpquota.HardLimit = None
+                    elif userpquota.HardLimit is not None :    
+                        userpquota.HardLimit = int(userpquota.HardLimit[0])
+                userpquota.DateLimit = fields.get("pykotaDateLimit")
+                if userpquota.DateLimit is not None :
+                    if userpquota.DateLimit[0].upper() == "NONE" : 
+                        userpquota.DateLimit = None
+                    else :    
+                        userpquota.DateLimit = userpquota.DateLimit[0]
+                userpquota.Exists = 1
+                usersandquotas.append((user, userpquota))
+                self.cacheEntry("USERPQUOTAS", "%s@%s" % (user.Name, printer.Name), userpquota)
         usersandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return usersandquotas
                 
-    def getPrinterGroupsAndQuotas(self, printer, names=None) :        
+    def getPrinterGroupsAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of groups which uses a given printer, along with their quotas."""
         groupsandquotas = []
-        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s))" % printer.Name, ["pykotaGroupName"], base=self.info["groupquotabase"])
+        result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaGroupName=%s)" % gname for gname in names])), ["pykotaGroupName"], base=self.info["groupquotabase"])
         if result :
             for (groupquotaid, fields) in result :
                 group = self.getGroup(fields.get("pykotaGroupName")[0])
-                if (names is None) or self.tool.matchString(group.Name, names) :
-                    grouppquota = self.getGroupPQuota(group, printer)
-                    groupsandquotas.append((group, grouppquota))
+                grouppquota = self.getGroupPQuota(group, printer)
+                groupsandquotas.append((group, grouppquota))
         groupsandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return groupsandquotas
         
