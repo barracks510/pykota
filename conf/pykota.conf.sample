@@ -219,7 +219,7 @@ adminmail: root@localhost
 #       '%(printername)s'       will contain the printer's name
 #       '%(email)s'             will contain the user's email address
 #       '%(message)s'           will contain the message if you want 
-#                               use it.
+#                               to use it.
 #
 #   On your command line, to pass arguments to your command.
 #   Example :
