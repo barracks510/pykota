@@ -33,6 +33,11 @@ Files :
     as a backend. You have to use it the first time you install PyKota
     if you want to use PostgreSQL as the Quota Storage Backend.
     
+  * pykota.schema :  
+  
+    This file adds the necessary classes and attributes to an existing
+    LDAP directory for use with PyKota. Read this file for details.
+    
   * VERYOLDpykota-upgrade-postgresql.sql :
   
     This file upgrades the PostgreSQL Quota Storage Database schema

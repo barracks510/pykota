@@ -1,0 +1,70 @@
+# $Id$
+#
+# pykota.schema
+#
+# LDAP Schema for Pykota Quota System
+# Version 0.2
+#
+# Written 2003-05-28 by Wayne Godoy and John Flynn <wgodoy =AT= ub -DOT- edu -DOT- bz>
+#
+# Modified by Jerome Alet 2003-06-01
+#
+# 16868.x       => Conseil Internet & Logiciels Libres
+# 16868.1.x     => Pykota
+# 16868.1.1.x   => attributes
+# 16868.1.2.x   => classes
+#
+#
+# THIS IS WORK UNDER HEAVY DEVELOPPMENT !
+#
+# USE AT YOUR OWN RISK, AND ONLY IF YOU PERFECTLY KNOW
+# WHAT YOU ARE DOING.
+#
+# WHEN LDAP SUPPORT WILL BE FINALIZED, YOU'LL KNOW IT !
+#
+
+## Pykota related LDAP attributes
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.1 NAME 'pykotaLimitBy'
+        DESC 'How to limit the user : quota or balance'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.2 NAME 'pykotaBalance'
+        DESC 'Current account balance for the user, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.3 NAME 'pykotaLifeTimePaid'
+        DESC 'Total money paid by the user to fill his account balance, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.4 NAME 'pykotaPricePerPage'
+        DESC 'Price per page for a printer, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.16868.1.1.3 NAME 'pykotaPricePerJob'
+        DESC 'Price per job for a printer, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+
+## New Pykota User object type
+objectclass ( 1.3.6.1.4.1.16868.1.2.1 NAME 'pykotaUser' SUP top AUXILIARY
+        DESC 'PyKota Auxiliary User Account'
+        MUST ( uid )
+        MAY  ( pykotaLimitBy $ pykotaBalance $ pykotaLifeTimePaid )
+        
+## New Pykota Group object type
+objectclass ( 1.3.6.1.4.1.16868.1.2.2 NAME 'pykotaGroup' SUP top AUXILIARY
+        DESC 'PyKota Auxiliary Group'
+        MUST ( cn )
+        MAY  ( pykotaLimitBy )
+        
+## New Pykota Printer object type
+objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top AUXILIARY
+        DESC 'PyKota Auxiliary Printer'
+        MUST ( cn )
+        MAY  ( pykotaPricePerPage $ pykotaPricePerJob )
