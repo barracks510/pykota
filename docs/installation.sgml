@@ -90,7 +90,7 @@ jerome@nordine:~/pykota-1.02-official$
       
       <para>
         One thing you have to check, though, is that every Print Server on which you
-        want to install the print quota mechanism, i.e. the print servers, must be able to connect to the
+        want to install the print quota mechanism, must be able to connect to the
         <application>PostgreSQL</application> server. In the default installation of
         <application>PostgreSQL</application> this may not be the case for security reasons, except if both
         servers are in fact the same machine. In any case, it is recommended that you
@@ -356,6 +356,9 @@ jerome@nordine:~/pykota-1.02-official/initscripts$
 <!--
 
 $Log$
+Revision 1.9  2003/03/23 17:57:20  jalet
+Deleted a repetition.
+
 Revision 1.8  2003/03/22 15:34:50  jalet
 More complete installation documentation.
 
