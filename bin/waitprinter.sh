@@ -15,18 +15,25 @@
 #
 # Fix by Matt Hyclak & Jerome Alet
 
+trap "KILLED=1" TERM
+
 # If ending phase, after the job has been fully transmitted to the printer
 # we have to wait for the printer being in printing mode before checking
 # if it is idle, otherwise we could have problems with slow printers.
 PATH=$PATH:/bin:/usr/bin:/usr/local/bin:/opt/bin
 if [ x$PYKOTAACTION != "xDENY" ] && [ x$PYKOTAPHASE = "xAFTER" ] ; then
   until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i printing >/dev/null; do
-   sleep 1 ;
+    if [ "$KILLED" = 1 ]; then
+      break ;
+    fi 
+    sleep 1 ;
   done
 fi
 
 # In any case, wait until the printer is idle again.
 until snmpget -v1 -c public -Ov $1 HOST-RESOURCES-MIB::hrPrinterStatus.1 | grep -i idle >/dev/null ; do 
+  if [ "$KILLED" = 1 ]; then
+    break ;
+  fi 
   sleep 1 ;
 done
-
