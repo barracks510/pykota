@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.17_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.17_official
-jerome@nordine:~/pykota-1.17_official$
+jerome@nordine:~$ tar -zxf pykota-1.18_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.18_official
+jerome@nordine:~/pykota-1.18_official$
     </screen>
   </para>
   
@@ -164,8 +164,8 @@ jerome@nordine:~/pykota-1.17_official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.17_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.17_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.18_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.18_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -196,7 +196,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.17_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.18_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -590,7 +590,7 @@ $ chmod 640 /etc/pykota/pykotadmin.conf
         command in CUPS' backend directory :
         <screen>        
 $ cd /usr/lib/cups/backend        
-$ ln -s /usr/bin/cupspykota cupspykota
+$ ln -s /usr/share/pykota/cupspykota cupspykota
         </screen>
       </para>
       
@@ -651,7 +651,7 @@ $ /etc/init.d/cupsys restart
         which you want to use PyKota :
         <screen>
   :achk=true
-  :as=|/usr/bin/pykota
+  :as=|/usr/share/pykota/pykota
         </screen>
       </para>
       
@@ -695,6 +695,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.24  2004/02/13 08:46:32  jalet
+Fixed documentation wrt installation paths changed
+
 Revision 1.23  2004/01/30 17:13:56  jalet
 1.17
 
