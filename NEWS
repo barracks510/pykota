@@ -21,6 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha5 :
+    
+        - Implemented the --savetoner command line option to pkbanner.
+        
+        - Improved pkbanner's help and messages.
+        
     - 1.21alpha4 :
     
         - Fixed job's data file detection code for LPRng.
