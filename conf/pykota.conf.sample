@@ -720,10 +720,22 @@ maxdenybanners: 0
 # accept PostScript as an input format.
 # NB : pkbanner's default page size is A4
 #
+# A static banner page
 # endingbanner: /home/joe/mystaticbanner.ps
+#
+# A banner with personnalized logo and url
 # endingbanner: /usr/bin/pkbanner --pagesize=A4 --logo="/home/joe/mylogo.jpeg" --url="http://tech.example.com"
+#
+# A banner in the format accepted by the printer
 # endingbanner: /usr/bin/pkbanner | gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sOutputFile=- -sDEVICE=lj5mono -
-# endingbanner: /usr/bin/pkbanner
+#
+# A banner with more info on it, extracted from the yellow pages.
+# the string "Phone 111222333444" will be added to the banner page
+# if extractphone.sh returns 111222333444 for the current user.
+# endingbanner: /usr/bin/pkbanner Phone `extractphone.sh $PYKOTAUSERNAME`
+#
+# Default PyKota banner
+# endingbanner: /usr/bin/pkbanner 
 
 # How should enforcement be done for this printer ?
 #

@@ -54,7 +54,7 @@ Generates banners.
 
 command line usage :
 
-  pkbanner  [options] 
+  pkbanner  [options]  [more info]
 
 options :
 
@@ -143,9 +143,8 @@ class PyKotaBanner(Tool) :
         canvas.restoreState()
         return (size + 4)
     
-    def genPDF(self, pagesize, logo, url, savetoner) :
+    def genPDF(self, pagesize, logo, url, text, savetoner) :
         """Generates the banner in PDF format, return the PDF document as a string."""
-        
         document = cStringIO.StringIO()
         c = canvas.Canvas(document, pagesize=pagesize, pageCompression=1)
         
@@ -182,6 +181,10 @@ class PyKotaBanner(Tool) :
         
         # Outputs the username
         ypos -= self.printVar(c, xcenter, ypos, _("Username"), username, 20, savetoner) 
+        
+        # Text    
+        if text :
+            ypos -= self.printVar(c, xcenter, ypos, _("More Info"), text, 20, savetoner) 
         
         # Printer and Job Id
         job = "%s - %s" % (printername, self.getVar("PYKOTAJOBID"))
@@ -238,7 +241,7 @@ class PyKotaBanner(Tool) :
         c.save()
         return document.getvalue()
         
-    def main(self, files, options) :
+    def main(self, arguments, options) :
         """Generates a banner."""
         if not hasRL :
             raise PyKotaToolError, "The ReportLab module is missing. Download it from http://www.reportlab.org"
@@ -260,16 +263,23 @@ class PyKotaBanner(Tool) :
             self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options["pagesize"], "warn")
             
         self.logdebug("Generating the banner in PDF format...")    
-        doc = self.genPDF(pagesize, options["logo"].strip(), options["url"].strip(), savetoner)
+        doc = self.genPDF(pagesize, 
+                          options["logo"].strip(), 
+                          options["url"].strip(), 
+                          " ".join(arguments).strip(), 
+                          savetoner)
         
         self.logdebug("Converting the banner to PostScript...")    
         os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
-        child = popen2.Popen3("gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sDEVICE=pswrite -sOutputFile=- - 2>/tmp/errgs")
-        child.tochild.write(doc)
-        child.tochild.close()
-        sys.stdout.write(child.fromchild.read())
-        sys.stdout.flush()
-        child.fromchild.close()
+        child = popen2.Popen3("gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sDEVICE=pswrite -sOutputFile=- -")
+        try :
+            child.tochild.write(doc)
+            child.tochild.close()
+            sys.stdout.write(child.fromchild.read())
+            sys.stdout.flush()
+            child.fromchild.close()
+        except IOError, msg :    
+            self.printInfo("I/O Error %s" % msg, "error")
         status = child.wait()
         if os.WIFEXITED(status) :
             status = os.WEXITSTATUS(status)

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.22alpha4 :
+    
+        - Allows pkbanner to accept more info to display on its 
+          command line.
+          
     - 1.22alpha3 :
     
         - Fixes some case related problems with some LDAP backends.
