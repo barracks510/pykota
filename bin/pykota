@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.26  2003/04/25 08:23:23  jalet
+# Multiple tries to get the printer's internal page counter, waits for
+# one minute maximum for the printer to warm up, actually.
+#
 # Revision 1.25  2003/04/24 11:53:48  jalet
 # Default policy for unknown users/groups is to DENY printing instead
 # of the previous default to ALLOW printing. This is to solve an accuracy
@@ -118,9 +122,13 @@
 
 import sys
 import os
+import time
 
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.requester import openRequester, PyKotaRequesterError
+
+MAXTRIES = 6     # maximum number of tries to get the printer's internal page counter
+TIMETOSLEEP = 10 # number of seconds to sleep between two tries to get the printer's internal page counter
 
 class PyKotaFilter(PyKotaTool) :    
     """Class for the PyKota filter."""
@@ -166,7 +174,8 @@ class PyKotaFilter(PyKotaTool) :
             
 def main() :    
     """Do it, and do it right !"""
-        
+    global MAXTRIES, TIMETOSLEEP
+    
     # Initializes the current tool
     kotafilter = PyKotaFilter()    
     
@@ -178,15 +187,23 @@ def main() :
             return kotafilter.removeJob()
     
     # Get the page counter directly from the printer itself
-    try :
-        counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname)
-    except PyKotaRequesterError, msg :
-        # can't get actual page counter, assume printer is off, but warns in log
-        kotafilter.logger.log_message("%s" % msg, "warn")
-        counterbeforejob = None
-        printerIsOff = 1
-    else :    
-        printerIsOff = 0
+    # Tries MAXTRIES times, sleeping two seconds each time, in case the printer is sleeping.
+    # This was seen with my Apple LaserWriter 16/600 PS which doesn't answer before having warmed up.
+    for i in range(MAXTRIES) :
+        try :
+            counterbeforejob = kotafilter.requester.getPrinterPageCounter(kotafilter.printerhostname)
+        except PyKotaRequesterError, msg :
+            # can't get actual page counter, assume printer is off or warming up
+            # log the message anyway.
+            kotafilter.logger.log_message("%s" % msg, "warn")
+            counterbeforejob = None
+            printerIsOff = 1
+        else :    
+            # printer answered, it is on so we can exit the loop
+            printerIsOff = 0
+            kotafilter.logger.log_message("GOT PAGE COUNTER !", "warn")
+            break
+        time.sleep(TIMETOSLEEP)    
         
     # Get the last page counter and last username from the Quota Storage backend
     printerid = kotafilter.storage.getPrinterId(kotafilter.printername)
