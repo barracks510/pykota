@@ -18,20 +18,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 ============================================================
+Download :
 
-  * PyKota is distributed under the GNU General Public License
-    which you can read in the file named COPYING.
+  * PyKota is distributed under the "GNU General Public License":/GPL
 
   * You can access to PyKota's source code by using CVS from :
   
-      http://savannah.nongnu.org/projects/pykota/
+      "http://savannah.nongnu.org/cvs/?group=pykota":http://savannah.nongnu.org/cvs/?group=pykota
 
-    Follow the "CVS Repository" link then follow the instructions in
-    the section labeled "Getting a Copy of the CVS Repository". 
+    Then follow the instructions in the section labeled "Getting a Copy of the CVS Repository". 
 
-  * The CVS version will always be labelled as **unofficial** and the 
-    word **unofficial** will appear whenever you run PyKota command line 
-    tools with the *--version* command line argument. 
+  * Clients who purchased an **Official PyKota Package** can directly access to "the tarballs HERE":/software/PyKota/tarballs .
+               
+Why no tarball is available for free :
+
+  * The CVS version will always be labelled as **unofficial** and the word **unofficial**
+    will appear whenever you run PyKota command line tools with the *--version* command line
+    argument.
 
   * I ask you to not label or present a version of PyKota downloaded 
     from CVS as being the 'OFFICIAL' one. 
