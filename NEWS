@@ -25,6 +25,9 @@ PyKota NEWS :
     
         - Preliminary support for LPRng added (still untested)
         
+        - A bug was introduced some time ago wrt printers' default
+          policy for unknown users. It is now corrected.
+        
     - 1.04pre1 :
     
         - repykota now displays prices per job and per page for each
