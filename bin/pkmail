@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/11/21 22:16:11  jalet
+# Added some kind of protection against bad guys
+#
 # Revision 1.1  2004/11/21 21:50:03  jalet
 # Introduced the new pkmail command as a simple email gateway
 #
@@ -107,9 +110,19 @@ class PKMail(PyKotaTool) :
         except IndexError :    
             raise PyKotaToolError, "No command found !"
         
-        self.logdebug("Launching internal command '%s' with arguments %s" % (command, arguments))
-        cmdfunc = getattr(self, "cmd%s" % command, self.cmdDefault)
-        result = cmdfunc(arguments)
+        badchars = """/<>&"'#!%*$,;\\"""
+        cheatmeonce = 0
+        for c in "".join(arguments) :
+            if c in badchars :
+                cheatmeonce = 1
+            
+        if cheatmeonce :    
+            self.logdebug("Possible intruder at %s : %s" % (useremail, str(arguments)))
+            result = "Either you mistyped your command, or you're a bad guy !"
+        else :
+            self.logdebug("Launching internal command '%s' with arguments %s" % (command, str(arguments)))
+            cmdfunc = getattr(self, "cmd%s" % command, self.cmdDefault)
+            result = cmdfunc(arguments)
         
         self.logdebug("Sending answer to : %s" % useremail)
         server = smtplib.SMTP(self.smtpserver)
