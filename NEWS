@@ -22,7 +22,7 @@ PyKota NEWS :
           
               $ edpykota --printer lp --softlimit 50 --hardlimit 100 "jer*"
               
-          If no user name is passed at all, then a default wildcard of "*"
+        - If no user name is passed at all, then a default wildcard of "*"
           which means apply the command on ALL users for this printer is used.
           
         - Small bug fixes.
