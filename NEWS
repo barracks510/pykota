@@ -31,6 +31,8 @@ PyKota NEWS :
           which don't answer when they are sleeping (my Apple 
           LaserWriter 16/600 PS is in this case, maybe others too)
           
+        - Small display bug fixed in repykota
+          
     - 1.04 :
     
         - Default print policy for users/groups unknown from 

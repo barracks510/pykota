@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.33  2003/04/28 08:25:48  jalet
+# Small display bug in repykota was fixed.
+#
 # Revision 1.32  2003/04/23 22:13:56  jalet
 # Preliminary support for LPRng added BUT STILL UNTESTED.
 #
@@ -195,13 +198,13 @@ class RePyKota(PyKotaTool) :
             print _("Pages grace time: %i days") % self.config.getGraceDelay(printer)
             prices = self.storage.getPrinterPrices(printerid)
             if prices is None :
-                (perpage, perjob) = None
+                (perpage, perjob) = (None, None)
             else :    
                 (perpage, perjob) = prices
-                if perjob is not None :
-                    print _("Price per job: %.3f") % perjob
-                if perpage is not None :    
-                    print _("Price per page: %.3f") % perpage
+            if perjob is not None :
+                print _("Price per job: %.3f") % perjob
+            if perpage is not None :    
+                print _("Price per page: %.3f") % perpage
             total = 0
             totalmoney = 0.0
             if options["groups"] :
