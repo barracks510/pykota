@@ -109,8 +109,8 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.13 NAME 'pykotaJobSize'
 
 # pykotaAction
 attributetype ( 1.3.6.1.4.1.16868.1.1.14 NAME 'pykotaAction'
-        DESC 'Was the job allowed, or denied'
-        EQUALITY caseIgnoreIA5Match
+        DESC 'Was the job allowed, or denied : ( "ALLOW" |  "DENY" )'
+        EQUALITY caseExactIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
 # pykotaPrinterName        
@@ -131,9 +131,9 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.17 NAME 'pykotaGroupName'
         EQUALITY caseExactIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
-# pykotaLastJobUUID        
-attributetype ( 1.3.6.1.4.1.16868.1.1.18 NAME 'pykotaLastJobUUID'
-        DESC 'Last job uuid in the history'
+# pykotaLastJobIdent        
+attributetype ( 1.3.6.1.4.1.16868.1.1.18 NAME 'pykotaLastJobIdent'
+        DESC 'Identifies the last job in the history'
         EQUALITY caseExactIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
@@ -144,20 +144,20 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.18 NAME 'pykotaLastJobUUID'
 # pykotaUser
 objectclass ( 1.3.6.1.4.1.16868.1.2.1 NAME 'pykotaAccount' SUP top AUXILIARY
         DESC 'PyKota Auxiliary User Account'
-        MUST ( uid $ pykotaUserName )
-        MAY  ( pykotaLimitBy ) )
+        MUST ( uid )
+        MAY  ( pykotaUserName $ pykotaLimitBy ) )
         
 # pykotaGroup        
 objectclass ( 1.3.6.1.4.1.16868.1.2.2 NAME 'pykotaGroup' SUP top AUXILIARY
         DESC 'PyKota Auxiliary Group'
-        MUST ( cn $ pykotaGroupName )
-        MAY  ( pykotaLimitBy $ memberUid ) )
+        MUST ( cn )
+        MAY  ( pykotaGroupName $ pykotaLimitBy $ memberUid $ uniqueMember $ member ) )
         
 # pykotaPrinter        
 objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top AUXILIARY
         DESC 'PyKota Printer'
-        MUST ( cn $ pykotaPrinterName )
-        MAY  ( pykotaPricePerPage $ pykotaPricePerJob ) )
+        MUST ( cn )
+        MAY  ( pykotaPrinterName $ pykotaPricePerPage $ pykotaPricePerJob ) )
         
 # pykotaUserPQuota        
 objectclass ( 1.3.6.1.4.1.16868.1.2.4 NAME 'pykotaUserPQuota' SUP top AUXILIARY
@@ -180,17 +180,17 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY
         DESC 'PyKota User account balance'
-        MUST ( pykotaUserName )
-        MAY  ( pykotaBalance $ pykotaLifeTimePaid ) )
+        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid ) )
         
 # pykotaLastJob        
 objectclass ( 1.3.6.1.4.1.16868.1.2.8 NAME 'pykotaLastJob' SUP top AUXILIARY
         DESC 'Last job information for a printer'
-        MUST ( pykotaPrinterName $ pykotaLastJobUUID ) )
+        MUST ( pykotaLastJobIdent )
+        MAY ( pykotaPrinterName ) ) 
         
-# pykotaNamed - Use it if you have to 
-objectclass ( 1.3.6.1.4.1.16868.1.2.9 NAME 'pykotaNamed' SUP top STRUCTURAL
-        DESC 'PyKota Named Object'
+# pykotaObject - Use it if you have to 
+objectclass ( 1.3.6.1.4.1.16868.1.2.9 NAME 'pykotaObject' SUP top STRUCTURAL
+        DESC 'PyKota Object'
         MUST ( cn ) )
         
         

@@ -71,7 +71,7 @@ pykotaGroupName: devel
 pykotaLimitBy: quota
 
 dn: cn=apple,ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaNamed
+objectClass: pykotaObject
 objectClass: pykotaPrinter
 cn: apple
 pykotaPrinterName: apple
@@ -79,7 +79,7 @@ pykotaPricePerPage: 0.1
 pykotaPricePerJob: 0.25
 
 dn: cn=uniqueidentifier01,ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaNamed
+objectClass: pykotaObject
 objectClass: pykotaUserPQuota
 cn: uniqueidentifier01
 pykotaUserName: jerome
@@ -91,7 +91,7 @@ pykotaHardLimit: 110
 pykotaDateLimit: None
 
 dn: cn=uniqueidentifier02,ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaNamed
+objectClass: pykotaObject
 objectClass: pykotaGroupPQuota
 cn: uniqueidentifier02
 pykotaGroupName: devel
@@ -101,7 +101,7 @@ pykotaHardLimit: 450
 pykotaDateLimit: None
 
 dn: cn=uniqueidentifier03,ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaNamed
+objectClass: pykotaObject
 objectClass: pykotaJob
 cn: uniqueidentifier03
 pykotaUserName: jerome
@@ -112,8 +112,8 @@ pykotaJobSize: 5
 pykotaAction: ALLOW
 
 dn: cn=uniqueidentifier04,ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
-objectClass: pykotaNamed
+objectClass: pykotaObject
 objectClass: pykotaLastJob
 cn: uniqueidentifier04
 pykotaPrinterName: apple
-pykotaLastJobUUID: uniqueidentifier03
+pykotaLastJobIdent: uniqueidentifier03

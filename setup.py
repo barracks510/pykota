@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2003/06/06 20:49:15  jalet
+# Very latest schema. UNTESTED.
+#
 # Revision 1.15  2003/05/17 16:32:30  jalet
 # Also outputs the original import error message.
 #
@@ -110,7 +113,7 @@ def checkCommand(command) :
     input.close()
     return result
     
-def checkWithPrompt(prompt, module=None, command=None, help=None) :
+def checkWithPrompt(prompt, module=None, command=None, helper=None) :
     """Tells the user what will be checked, and asks him what to do if something is absent."""
     sys.stdout.write("Checking for %s availability : " % prompt)
     sys.stdout.flush()
@@ -124,8 +127,8 @@ def checkWithPrompt(prompt, module=None, command=None, help=None) :
     else :    
         sys.stdout.write("NO.\n")
         sys.stderr.write("ERROR : %s not available !\n" % prompt)
-        if help is not None :
-            sys.stdout.write("%s\n" % help)
+        if helper is not None :
+            sys.stdout.write("%s\n" % helper)
             sys.stdout.write("You may continue safely if you don't need this functionnality.\n")
         answer = raw_input("%s is missing. Do you want to continue anyway (y/N) ? " % prompt)
         if answer[0:1].upper() == 'Y' :
@@ -189,17 +192,20 @@ if "install" in sys.argv :
             pass
     
     # checks if some needed Python modules are there or not.
-    modulestocheck = [("PygreSQL", "pg"), ("mxDateTime", "mx.DateTime")]
+    modulestocheck = [ ("PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend."),                                            
+                       ("mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work."), 
+                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.")
+                     ]
     commandstocheck = [("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")]
-    for (name, module) in modulestocheck :
-        action = checkWithPrompt(name, module=module)
+    for (name, module, helper) in modulestocheck :
+        action = checkWithPrompt(name, module=module, helper=helper)
         if action == ACTION_ABORT :
             sys.stderr.write("Aborted !\n")
             sys.exit(-1)
             
     # checks if some software are there or not.
-    for (name, command, help) in commandstocheck :
-        action = checkWithPrompt(name, command=command, help=help)
+    for (name, command, helper) in commandstocheck :
+        action = checkWithPrompt(name, command=command, helper=helper)
         if action == ACTION_ABORT :
             sys.stderr.write("Aborted !\n")
             sys.exit(-1)
