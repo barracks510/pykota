@@ -1,0 +1,1661 @@
+# PyKota
+#
+# PyKota : Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#
+# $Id$
+#
+# PyKota translation master file.
+# Copyright (c) 2003, 2004, 2005 Conseil Internet & Logiciels Libres
+# Jerome Alet <alet@librelogiciel.com>, 2003, 2004, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PyKota v1.20\n"
+"Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
+"POT-Creation-Date: 2005-01-25 09:03+0800\n"
+"PO-Revision-Date: 2005-01-25 09:03+0800\n"
+"Last-Translator: Tsang Yu Pong, Teddy, Wing Kwong College in Hong Kong,"
+"<oops_teddy@yahoo.com.hk>\n"
+"Language-Team: Hong Kong, Traditional Chinese <oops_teddy@yahoo.com.hk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#, python-format
+msgid ""
+"pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Generates banners.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pkbanner  [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pkbanner's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -l | --logo img      Use the image as the banner's logo. The logo will\n"
+"                       be drawn at the center top of the page. The default\n"
+"                       logo is /usr/share/pykota/logos/pykota.jpeg\n"
+"                       \n"
+"  -p | --pagesize sz   Sets sz as the page size. Most well known\n"
+"                       page sizes are recognized, like 'A4' or 'Letter'\n"
+"                       to name a few. The default size is A4.\n"
+"  \n"
+"  -s | --savetoner s   Sets the text luminosity factor to s%%. This can be \n"
+"                       used to save toner. The default value is 0, which\n"
+"                       means that no toner saving will be done.\n"
+"  \n"
+"  -u | --url u         Uses u as an url to be written at the bottom of \n"
+"                       the banner page. The default url is :\n"
+"                       http://www.librelogiciel.com/software/\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  Using pkbanner directly from the command line is not recommended,\n"
+"  excepted for testing purposes. You should use pkbanner in the\n"
+"  'startingbanner' or 'endingbanner' directives in pykota.conf\n"
+"  \n"
+"    startingbanner: /usr/bin/pkbanner --logo=\"\" --savetoner=75\n"
+"  \n"
+"      With such a setting in pykota.conf, all print jobs will be \n"
+"      prefixed with an A4 banner with no logo, and text luminosity will\n"
+"      be increased by 75%%. The PostScript output will be directly sent\n"
+"      to your printer.\n"
+"      \n"
+"  You'll find more examples in the sample configuration file included    \n"
+"  in PyKota.\n"
+"      \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+msgid "Unknown"
+msgstr "未能確認"
+
+msgid "Username"
+msgstr "使用者名稱"
+
+msgid "Job"
+msgstr "列印工作"
+
+msgid "Date"
+msgstr "日期"
+
+msgid "Allowed"
+msgstr "允許"
+
+msgid "Denied"
+msgstr "禁止"
+
+msgid "Allowed with Warning"
+msgstr "允許但帶有警告"
+
+msgid "Result"
+msgstr "結果"
+
+msgid "Title"
+msgstr "檔案標題"
+
+msgid "Filename"
+msgstr "檔案名稱"
+
+#, python-format
+msgid "Pages printed so far on %s"
+msgstr "現正列印第 %s 頁"
+
+msgid "Account balance"
+msgstr "賬戶結餘"
+
+msgid "Soft Limit"
+msgstr "警告配額"
+
+msgid "Hard Limit"
+msgstr "有效配額"
+
+msgid "Date Limit"
+msgstr "需要在此日期前増加配額"
+
+msgid "Allowed range is (0..99)"
+msgstr "有效範圍是 (0..99)"
+
+#, python-format
+msgid "Invalid 'savetoner' option %s : %s"
+msgstr "不正確的'savetoner'選項 %s : %s"
+
+#, python-format
+msgid "Invalid 'pagesize' option %s, defaulting to A4."
+msgstr "%s 是不正確的'pagesize'設定，改為使用預設的A4"
+
+#, python-format
+msgid ""
+"pkhint v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"A tool to give hints on what accounting method is best for each printer.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pkhint [options] [printer1 printer2 printer3 ... printerN] <file.conf\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pkhint's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pkhint \"hp*\" printer103 </etc/cups/printers.conf\n"
+"  \n"
+"  Will analyze your printing system to test which accounter\n"
+"  is the best for each of the defined printer which\n"
+"  name matches one of the parameters.\n"
+"  \n"
+"  If you don't pass any argument on the command line, all\n"
+"  printers will be analyzed.\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid DeviceURI : %s"
+msgstr "不正確的DeviceURI : %s"
+
+msgid ""
+"\n"
+"Please wait while pkhint analyzes your printing system's configuration..."
+msgstr ""
+"\n"
+"pkhint正分析你的列印系統設定，請稍候"
+
+#, python-format
+msgid "Unknown device %s for printer %s"
+msgstr "不知名裝置 %s 對應列印機 %s"
+
+msgid ""
+"\n"
+"Put the following lines into your /etc/pykota/pykota.conf file :\n"
+msgstr ""
+"\n"
+"請把以下的設定放到/etc/pykota/pykota.conf內 :\n"
+
+msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
+msgstr "# 請注意 : 假若軟件記帳是建議使用，這並不表示"
+
+msgid "# that hardware accounting wouldn't work, this only means that PyKota"
+msgstr "# 硬體記帳不能使用，這只代表PyKota"
+
+msgid "# wasn't able to autodetect which hardware accounting method to use."
+msgstr "未能自動偵測哪一個硬體記帳方法能夠使用"
+
+#, python-format
+msgid ""
+"pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Email gateway for PyKota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pkmail  [options]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pkmail's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"    \n"
+"  This command is meant to be used from your mail server's aliases file,\n"
+"  as a pipe. It will then accept commands send to it in email messages,\n"
+"  and will send the answer to the command's originator.\n"
+"  \n"
+"  To use this command, create an email alias in /etc/aliases with\n"
+"  the following format :\n"
+"  \n"
+"    pykotacmd: \"|/usr/bin/pkmail\"\n"
+"    \n"
+"  Then run the 'newaliases' command to regenerate the aliases database.\n"
+"  \n"
+"  You can now send commands by email to 'pykotacmd@yourdomain.com', with\n"
+"  the command in the subject.\n"
+"  \n"
+"  List of supported commands :\n"
+"  \n"
+"        report [username]\n"
+"  \n"
+"  NB : For pkmail to work correctly, you may have to put the 'mail'\n"
+"  system user in the 'lpadmin' system group to ensure this user can\n"
+"  read the /etc/pykota/pykotadmin.conf file, and restart your\n"
+"  mail server (e.g. /etc/init.d/exim restart). It is strongly advised\n"
+"  that you think at least twice before doing this though.\n"
+"  \n"
+"  Use at your own risk !\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"pkprinters v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"A Printers Manager for PyKota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pkprinters [options] printer1 printer2 printer3 ... printerN\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pkprinters's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -a | --add           Adds printers if they don't exist on the Quota \n"
+"                       Storage Server. If they exist, they are modified\n"
+"                       unless -s|--skipexisting is also used.\n"
+"                       \n"
+"  -d | --delete        Deletes printers from the quota storage.\n"
+"  \n"
+"  -D | --description d Adds a textual description to printers.\n"
+"                       \n"
+"  -c | --charge p[,j]  Sets the price per page and per job to charge.\n"
+"                       Job price is optional.\n"
+"                       If both are to be set, separate them with a comma.\n"
+"                       Floating point and negative values are allowed.\n"
+"  \n"
+"  -g | --groups pg1[,pg2...] Adds or Remove the printer(s) to the printer \n"
+"                       groups pg1, pg2, etc... which must already exist.\n"
+"                       A printer group is just like a normal printer,\n"
+"                       only that it is usually unknown from the printing\n"
+"                       system. Create printer groups exactly the same\n"
+"                       way that you create printers, then add other \n"
+"                       printers to them with this option.\n"
+"                       Accounting is done on a printer and on all\n"
+"                       the printer groups it belongs to, quota checking\n"
+"                       is done on a printer and on all the printer groups\n"
+"                       it belongs to.\n"
+"                       If the --remove option below is not used, the \n"
+"                       default action is to add printers to the specified\n"
+"                       printer groups.\n"
+"                       \n"
+"  -l | --list          List informations about the printer(s) and the\n"
+"                       printers groups it is a member of.\n"
+"                       \n"
+"  -r | --remove        In combination with the --groups option "
+"above,                       \n"
+"                       remove printers from the specified printers groups.\n"
+"                       \n"
+"  -s | --skipexisting  In combination with the --add option above, tells\n"
+"                       pkprinters to not modify existing printers.\n"
+"  \n"
+"  printer1 through printerN can contain wildcards if the --add option \n"
+"  is not set.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pkprinters --add -D \"HP Printer\" --charge 0.05,0.1 hp2100 hp2200 "
+"hp8000\n"
+"  \n"
+"  Will create three printers named hp2100, hp2200 and hp8000.\n"
+"  Their price per page will be set at 0.05 unit, and their price\n"
+"  per job will be set at 0.1 unit. Units are in your own currency,\n"
+"  or whatever you want them to mean.\n"
+"  All of their descriptions will be set to the string \"HP Printer\".\n"
+"  If any of these printers already exists, it will also be modified \n"
+"  unless the -s|--skipexisting command line option is also used.\n"
+"            \n"
+"  $ pkprinters --delete \"*\"\n"
+"  \n"
+"This will completely delete all printers and associated quota "
+"information,\n"
+"  as well as their job history. USE WITH CARE !\n"
+"  \n"
+"  $ pkprinters --groups Laser,HP \"hp*\"\n"
+"  \n"
+"  This will put all printers which name matches \"hp*\" into printers "
+"groups \n"
+"  Laser and HP, which MUST already exist.\n"
+"  \n"
+"  $ pkprinters --groups LexMark --remove hp2200\n"
+"  \n"
+"  This will remove the hp2200 printer from the LexMark printer group.\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+msgid "You're not allowed to use this command."
+msgstr "你沒有權限執行這個指令"
+
+#, python-format
+msgid "There's no printer matching %s"
+msgstr "沒有列印機能對應 %s"
+
+#, python-format
+msgid "Invalid charge amount value %s"
+msgstr "%s 是不正確的charge數值"
+
+#, python-format
+msgid "Printer %s already exists, skipping."
+msgstr "列印機 %s 經已存在，指令被跳過"
+
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr "列印機 %s 經已存在，列印機將會被變更"
+
+#, python-format
+msgid "Impossible to add printer %s"
+msgstr "不能加入列印機 %s"
+
+#, python-format
+msgid "Invalid printer name %s"
+msgstr "%s 是不正確的列印機名稱"
+
+msgid "in"
+msgstr "在"
+
+msgid "incompatible options, see help."
+msgstr "不兼容的選項，請參閱說明文件"
+
+msgid "You have to pass printer groups names on the command line"
+msgstr "你必須需入列印機群組名稱"
+
+msgid "You have to pass printer names on the command line"
+msgstr "你必須需入列印機名稱"
+
+#, python-format
+msgid ""
+"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"An OSD quota monitor for PyKota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pykosd [options]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pykosd's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -c | --color #rrggbb Sets the color to use for display as an hexadecimal\n"
+"                       triplet, for example #FF0000 is 100%% red.\n"
+"                       Defaults to 100%% green (#00FF00).\n"
+"                       \n"
+"  -d | --duration d    Sets the duration of the display in seconds. \n"
+"                       Defaults to 3 seconds.\n"
+"                       \n"
+"  -f | --font f        Sets the font to use for "
+"display.                      \n"
+"                       Defaults to the Python OSD library's default.\n"
+"  \n"
+"  -l | --loop n        Sets the number of times the info will be displayed.\n"
+"                       Defaults to 0, which means loop forever.\n"
+"                       \n"
+"  -s | --sleep s       Sets the sleeping duration between two displays \n"
+"                       in seconds. Defaults to 180 seconds (3 minutes).\n"
+"                       \n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pykosd -s 60 --loop 5\n"
+"  \n"
+"  Will launch pykosd. Display will be refreshed every 60 seconds,\n"
+"  and will last for 3 seconds (the default) each time. After five\n"
+"  iterations, the program will exit.\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid duration option %s"
+msgstr "%s 是錯誤的duration設定"
+
+#, python-format
+msgid "Invalid loop option %s"
+msgstr "%s 是錯誤的loop設定"
+
+#, python-format
+msgid "Invalid sleep option %s"
+msgstr "%s 是錯誤的sleep設定"
+
+#, python-format
+msgid "Invalid color option %s"
+msgstr "%s是錯誤的color選項"
+
+#, python-format
+msgid "User %s doesn't exist in PyKota's database"
+msgstr "使用者 %s 並沒有存在於PyKota的資料庫內"
+
+#, python-format
+msgid "Pages used on %s : %s"
+msgstr "於列印機 %s 共使列印了 %s 頁"
+
+#, python-format
+msgid "PyKota Units left : %.2f"
+msgstr "PyKota 配額還剩 : %.2f"
+
+#, python-format
+msgid ""
+"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Gives print quotes to users.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  pykotme  [options]  [files]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints pykotme's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -P | --printer p     Gives a quote for this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ pykotme --printer apple file1.ps file2.ps\n"
+"  \n"
+"  This will give a print quote to the current user. The quote will show\n"
+"  the price and size of a job consisting in file1.ps and file2.ps \n"
+"  which would be sent to the apple printer.\n"
+"  \n"
+"  $ pykotme --printer apple,hplaser <file1.ps\n"
+"  \n"
+"  This will give a print quote to the current user. The quote will show\n"
+"  the price and size of a job consisting in file1.ps as read from\n"
+"  standard input, which would be sent to the apple or hplaser\n"
+"  printer.\n"
+"\n"
+"  $ pykotme \n"
+"  \n"
+"  This will give a quote for a job consisting of what is on standard \n"
+"  input. The quote will list the job size, and the price the job\n"
+"  would cost on each printer.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid "Your account balance : %.2f"
+msgstr "你的帳目結餘為 : %.2f"
+
+#, python-format
+msgid "Job size : %i pages"
+msgstr "列印總頁數 : %i 頁"
+
+#, python-format
+msgid "Cost on printer %s : %.2f"
+msgstr "於 %s 列印，你所需要的費用為 %.2f"
+
+#, python-format
+msgid ""
+"autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"A tool to automate user account creation and initial balance setting.\n"
+"\n"
+"THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  THIS TOOL MUST NOT BE USED FROM THE COMMAND LINE BUT ONLY AS PART\n"
+"  OF AN external policy IN pykota.conf\n"
+"  \n"
+"  autopykota { -i | --initbalance value } \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints autopykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -i | --initbalance b Sets the user's account initial balance value to b.\n"
+"                       If the user already exists, actual balance is left\n"
+"                       unmodified. If unset, the default value is 0.\n"
+"                       \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+msgid "Job contains no data. Printing is denied."
+msgstr "列印工作並沒有資料存在，列印中止"
+
+msgid "Job accounting begins."
+msgstr "列印計算開始"
+
+msgid "Job accounting ends."
+msgstr "列印計算結束"
+
+msgid "Job size forced to 0 because printing is denied."
+msgstr "因為列印被拒，列印總頁數被強制性設定為0"
+
+#, python-format
+msgid "Job size : %i"
+msgstr "列印總頁數 : %i"
+
+#, python-format
+msgid "Updating user %s's quota on printer %s"
+msgstr "更新使用者 %s 的配額於列印機 %s"
+
+msgid "Job added to history."
+msgstr "列印工作已被加入到列印工作紀錄"
+
+#, python-format
+msgid "File number %s unregistered twice from polling object, ignored."
+msgstr "檔案編號 %s 在polling object上已兩次未能成功註冊，因此被忽略"
+
+#, python-format
+msgid "SIGTERM was sent to real backend %s (pid: %s)"
+msgstr "中斷信號被傳送到 %s (pid: %s)"
+
+#, python-format
+msgid "CUPS backend %s died abnormally."
+msgstr "CUPS %s 不正常的停止運作"
+
+#, python-format
+msgid ""
+"dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Dumps PyKota database's content.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  dumpykota [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints dumpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -d | --data type     Dumps 'type' datas. Allowed types are :\n"
+"                       \n"
+"                         - history : dumps the jobs history.\n"
+"                         - users : dumps users.\n"
+"                         - groups : dumps user groups.\n"
+"                         - printers : dump printers.\n"
+"                         - upquotas : dump user quotas.\n"
+"                         - gpquotas : dump user groups quotas.\n"
+"                         - payments : dumps user payments.\n"
+"                         - pmembers : dumps printer groups members.\n"
+"                         - umembers : dumps user groups members.\n"
+"                         \n"
+"                       NB : the -d | --data command line option   \n"
+"                       is MANDATORY.\n"
+"  \n"
+"  -f | --format fmt    Dumps datas in the 'fmt' format. When not specified,\n"
+"                       the format is to dump datas in the csv format (comma\n"
+"                       separated values). All data dumped is between double\n"
+"                       quotes. Allowed formats are :\n"
+"                       \n"
+"                         - csv : separate datas with commas\n"
+"                         - ssv : separate datas with semicolons\n"
+"                         - tsv : separate datas with tabs\n"
+"                         - xml : dump data as XML\n"
+"                         \n"
+"  -o | --output fname  All datas will be dumped to the file instead of\n"
+"                       to the standard output. The special '-' filename\n"
+"                       is the default value and means stdout.\n"
+"                       WARNING : existing files are truncated !\n"
+"  \n"
+"Examples :\n"
+"\n"
+"  $ dumpykota --data history --format csv >myfile.csv\n"
+"  \n"
+"  This dumps the history in a comma separated values file, for possible\n"
+"  use in a spreadsheet.\n"
+"  \n"
+"  $ dumpykota --data users --format xml -o users.xml\n"
+"  \n"
+"  Dumps all users datas to the users.xml file.\n"
+"  \n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr "不正確的修改參數 [%s] 給 --data 指令選項，請參閱說明文件"
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr "不正確的修改參數 [%s] 給 --format 指令選項，請參閱說明文件"
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr "因為jaxml模組尙未安裝，XML輸出已停用"
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr "PyKota data dumper失敗 : I/O 錯誤 "
+
+msgid "The -d | --data command line option is mandatory, see help."
+msgstr "-d | --data是強制的指令選項，請參閱說明文件"
+
+msgid "Too many arguments, see help."
+msgstr "太多arguments，請參閱說明文件"
+
+#, python-format
+msgid ""
+"edpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"A Print Quota editor for PyKota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  edpykota [options] user1 user2 ... userN\n"
+"  \n"
+"  edpykota [options] group1 group2 ... groupN\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints edpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -a | --add           Adds users and/or printers if they don't \n"
+"                       exist on the Quota Storage Server.\n"
+"                       \n"
+"  -d | --delete        Deletes users/groups from the quota storage.\n"
+"                       Printers are never deleted.\n"
+"                       \n"
+"  -c | --charge p[,j]  Sets the price per page and per job to charge\n"
+"                       for a particular printer. Job price is optional.\n"
+"                       If both are to be set, separate them with a comma.\n"
+"                       Floating point values are allowed.\n"
+"  \n"
+"  -i | --ingroups g1[,g2...]  Puts the users into each of the groups\n"
+"                              listed, separated by commas. The groups\n"
+"                              must already exist in the Quota Storage.\n"
+"  \n"
+"  -u | --users         Edit users print quotas, this is the default.\n"
+"  \n"
+"  -P | --printer p     Edit quotas on printer p only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers. \n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"  -G | --pgroups pg1[,pg2...] Adds the printer(s) to the printer groups\n"
+"                       pg1, pg2, etc... which must already exist.\n"
+"                       A printer group is just like a normal printer,\n"
+"                       only that it is usually unknown from the printing\n"
+"                       system. Create printer groups exactly the same\n"
+"                       way that you create printers, then add other \n"
+"                       printers to them with this option.\n"
+"                       Accounting is done on a printer and on all\n"
+"                       the printer groups it belongs to, quota checking\n"
+"                       is done on a printer and on all the printer groups\n"
+"                       it belongs to.\n"
+"  \n"
+"  -g | --groups        Edit users groups print quotas instead of users.\n"
+"                          \n"
+"  -p | --prototype u|g Uses user u or group g as a prototype to set\n"
+"                       print quotas\n"
+"                       \n"
+"  -n | --noquota       Doesn't set a quota but only does accounting.\n"
+"  \n"
+"  -r | --reset         Resets the actual page counter for the user\n"
+"                       or group to zero on the specified printers. \n"
+"                       The life time page counter is kept unchanged.\n"
+"                       \n"
+"  -R | --hardreset     Resets the actual and life time page counters\n"
+"                       for the user or group to zero on the specified \n"
+"                       printers. \n"
+"                       \n"
+"  -l | --limitby l     Choose if the user/group is limited in "
+"printing                     \n"
+"                       by its account balance or by its page quota.\n"
+"                       The default value is 'quota'. Allowed values\n"
+"                       are 'quota' 'balance' 'quota-then-balance' and\n"
+"                       'balance-then-quota'.\n"
+"                       WARNING : quota-then-balance and balance-then-quota\n"
+"                       are not yet implemented.\n"
+"                       \n"
+"  -b | --balance b     Sets the user's account balance to "
+"b.                     \n"
+"                       Account balance may be increase or decreased\n"
+"                       if b is prefixed with + or -.\n"
+"                       WARNING : when decreasing account balance,\n"
+"                       the total paid so far by the user is decreased\n"
+"                       too.\n"
+"                       Groups don't have a real balance, but the\n"
+"                       sum of their users' account balance.\n"
+"                       \n"
+"  -S | --softlimit sl  Sets the quota soft limit to sl "
+"pages.                       \n"
+"  \n"
+"  -H | --hardlimit hl  Sets the quota hard limit to hl pages.\n"
+"  \n"
+"  user1 through userN and group1 through groupN can use wildcards\n"
+"  if the --add option is not set.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ edpykota --add -p jerome john paul george ringo/ringo@example.com\n"
+"  \n"
+"  This will add users john, paul, george and ringo to the quota\n"
+"  database, and set their print quotas to the same values than user \n"
+"  jerome. User jerome must already exist.\n"
+"  User ringo's email address will also be set to 'ringo@example.com'\n"
+"  \n"
+"  $ edpykota --printer lp -S 50 -H 60 jerome\n"
+"  \n"
+"  This will set jerome's print quota on the lp printer to a soft limit\n"
+"  of 50 pages, and a hard limit of 60 pages. If either user jerome or\n"
+"  printer lp doesn't exist on the Quota Storage Server then nothing is "
+"done.\n"
+"\n"
+"  $ edpykota --add --printer lp --ingroups coders,it -S 50 -H 60 jerome\n"
+"  \n"
+"  Same as above, but if either user jerome or printer lp doesn't exist \n"
+"  on the Quota Storage Server they are automatically added. Also\n"
+"  user jerome is put into the groups \"coders\" and \"it\" which must\n"
+"  already exist in the Quota Storage.\n"
+"            \n"
+"  $ edpykota -g -S 500 -H 550 financial support            \n"
+"  \n"
+"  This will set print quota soft limit to 500 pages and hard limit\n"
+"  to 550 pages for groups financial and support on all printers.\n"
+"  \n"
+"  $ edpykota --reset jerome \"jo*\"\n"
+"  \n"
+"  This will reset jerome's page counter to zero on all printers, as\n"
+"  well as every user whose name begins with 'jo'.\n"
+"  Their life time page counter on each printer will be kept unchanged.\n"
+"  You can also reset the life time page counters by using the\n"
+"  --hardreset | -R command line option.\n"
+"  \n"
+"  $ edpykota --printer hpcolor --noquota jerome\n"
+"  \n"
+"  This will tell PyKota to not limit jerome when printing on the \n"
+"  hpcolor printer. All his jobs will be allowed on this printer, but \n"
+"  accounting of the pages he prints will still be kept.\n"
+"  Print Quotas for jerome on other printers are unchanged.\n"
+"  \n"
+"  $ edpykota --limitby balance jerome\n"
+"  \n"
+"  This will tell PyKota to limit jerome by his account's balance\n"
+"  when printing.\n"
+"  \n"
+"  $ edpykota --balance +10.0 jerome\n"
+"  \n"
+"  This will increase jerome's account balance by 10.0 (in your\n"
+"  own currency). You can decrease the account balance with a\n"
+"  dash prefix, and set it to a fixed amount with no prefix.\n"
+"  \n"
+"  $ edpykota --delete jerome rachel\n"
+"  \n"
+"  This will completely delete jerome and rachel from the Quota Storage\n"
+"  database. All their quotas and jobs will be deleted too.\n"
+"  \n"
+"  $ edpykota --printer lp --charge 0.1\n"
+"  \n"
+"  This will set the page price for printer lp to 0.1. Job price\n"
+"  will not be changed.\n"
+"  \n"
+"  $ edpykota --printer hplj1,hplj2 --pgroups Laser,HP\n"
+"  \n"
+"  This will put printers hplj1 and hplj2 in printers groups Laser and HP.\n"
+"  When printing either on hplj1 or hplj2, print quota will also be \n"
+"  checked and accounted for on virtual printers Laser and HP.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid softlimit value %s."
+msgstr "%s 是不正確的softlimit設定值"
+
+#, python-format
+msgid "Invalid hardlimit value %s."
+msgstr "%s 是不正確的hardlimit設定值"
+
+#, python-format
+msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
+msgstr "由於hard limit %i 少於soft limit %i，因此數值將會被倒置"
+
+#, python-format
+msgid "Invalid balance value %s"
+msgstr "%s 是不正確的balance數值"
+
+#, python-format
+msgid "Invalid limitby value %s"
+msgstr "%s 是不正確的limitby數值"
+
+msgid "You have to pass user or group names on the command line"
+msgstr "你必須於指令摸式下成功通過確認使用者或群組名稱"
+
+#, python-format
+msgid "Prototype %s not found in Quota Storage for printer %s."
+msgstr "在配額資料庫內未能找到類別 %s 用於列印機 %s"
+
+#, python-format
+msgid "Prototype object %s not found in Quota Storage."
+msgstr "在配額資料庫內未能找到物件類別 %s"
+
+#, python-format
+msgid "Undefined hard limit set to soft limit (%s) on printer %s."
+msgstr "未能確認的hard limit用於已設定soft limit (%s) 的列印機 %s上"
+
+#, python-format
+msgid "Undefined soft limit set to hard limit (%s) on printer %s."
+msgstr "未能確認的soft limit用於已設定hard limit (%s) 的列印機 %s上"
+
+#, python-format
+msgid "Invalid email address %s"
+msgstr "%s 是不正確的電郵地址"
+
+#, python-format
+msgid "Unknown group %s"
+msgstr "未能確認的群組 %s"
+
+#, python-format
+msgid "Unknown user %s"
+msgstr "未能確認的使用者 %s"
+
+#, python-format
+msgid "Invalid group name %s"
+msgstr "%s 是不正確的群組名稱"
+
+#, python-format
+msgid "Invalid user name %s"
+msgstr "%s 是不正確的使用者名稱"
+
+#, python-format
+msgid "Quota not found for object %s on printer %s."
+msgstr "%s 在印表機 %s 沒有列印配額"
+
+#, python-format
+msgid "Group %s not found in the PyKota Storage."
+msgstr "群組 %s 未能夠於配額資料庫內找到"
+
+msgid "Software accounting already done in first pass. Ignoring."
+msgstr "軟體記帳通過第一階段的運作，閒置中"
+
+msgid "Hardware accounting already done in first pass. Ignoring."
+msgstr "硬體記帳通過第一階段的運作，閒置中"
+
+msgid "Job size and price now set in history."
+msgstr "列印總頁數及列印費用已於列印紀錄中設定"
+
+#, python-format
+msgid ""
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Generates print quota reports.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  repykota [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints repykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Generates a report on users quota, this is \n"
+"                       the default.\n"
+"  \n"
+"  -g | --groups        Generates a report on group quota instead of users.\n"
+"  \n"
+"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ repykota --printer lp\n"
+"  \n"
+"  This will print the quota status for all users who use the lp printer.\n"
+"\n"
+"  $ repykota \n"
+"  \n"
+"  This will print the quota status for all users on all printers.\n"
+"  \n"
+"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
+"  \n"
+"  This will print the quota status for user jerome and all users\n"
+"  whose name begins with \"jo\" on all printers which name begins\n"
+"  with \"laser\" or ends with \"pson\".\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"\n"
+"Sends mail to users over print quota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  warnpykota  [options]  [names]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints warnpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Warns users over their print quota, this is the \n"
+"                       default.\n"
+"  \n"
+"  -g | --groups        Warns users whose groups quota are over limit.\n"
+"  \n"
+"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  This will warn all users of the lp printer who have exceeded their\n"
+"  print quota.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  This will warn all users  who have exceeded their print quota on\n"
+"  any printer.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  This will warn all users of groups which names begins with \"dev\" and\n"
+"  who have exceeded their print quota on any printer which name begins \n"
+"  with \"laserjet\"\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "%s 是暫時未能夠支援的計算器"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "未能尋找設定檔 %s"
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "%s 這個設定未能於 %s 內的section global找到"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "%s 這個設定未能在 %s section附屬於 %s 內找到"
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "logger只支援數值在 %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "%s 是不正確的計算器用於列印機 %s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "accounter於 %s 部份只支援數值在 %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "enforcement於 %s 部份只支援數值在 %s"
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr "onaccountererror於 %s 部份只支援數值在 %s"
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "%s 是不正確的政策設定用於列印機 %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "政策設定在 %s 只能夠支援的數值在 %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "%s 是不正確的mailto選項用於列印機 %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "mailto 於 %s 的部份只支援數值在 %s"
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "%s 是不正確的寬限時間"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "%s 是不正確的poor man's threshold"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"你的列印配額經已很低，\n"
+"假若你不增加配額，在不久的時間後，你將不能再列印，\n"
+"請你聯絡負責列印配額的管理人員，以解決這個問題。"
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"你不能再列印任何文件，\n"
+"因為你在列印機 %s 已沒有列印配額。"
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"在不久的時間内，你將會被禁止作任何列印，\n"
+"因為你在印表機 %s 的列印配額，差不多用完。"
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr "accountbanner內的 %s 只能支援數值在 %s"
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "%s 暫時不支援的紀錄系統"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "使用者 %s 的列印配額於印表機%s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "寬限日期: %i 日"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "毎次列印工作所需費用: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "列印毎頁所需費用: %.3f"
+
+msgid ""
+"Group           used    soft    hard    balance grace         total       "
+"paid"
+msgstr ""
+"群組           已列印    警告限制    有效限制    結餘 寬限日期        付款總計       "
+"已繳付"
+
+
+msgid ""
+"User            used    soft    hard    balance grace         total       "
+"paid"
+msgstr ""
+"群組           已列印    警告限制    有效限制    結餘 寬限日期         付款總計       "
+"已繳付"
+
+msgid "unknown"
+msgstr "未能確認"
+
+#, python-format
+msgid "Real : %s"
+msgstr "硬體/軟體內部計算的數值 : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "總計 : %9i"
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "%s 是不能支援的reporter backend"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "%s 是不能支援的配額資料庫"
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "不能夠連線至SMTP伺服器 : %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "未能成功發送電郵到 %s，錯誤 %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"請聯絡系統管理員 :\n"
+"\t%s - <%S>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr "未能尋找使用者 %s 於印表機 %s，因此採用預設的政策(%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+"未能尋找使用者 %s 的帳目結算，因此採用預設的政策(%s)於"
+"列印機 %s"
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "群組 %s 超出列印配額於列印機 %s"
+
+msgid "Print Quota"
+msgstr "列印配額"
+
+msgid "Print Quota Exceeded"
+msgstr "超出列印配額"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "羣組 %s 的列印配額於列印機 %s 經已很低"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "使用者 %s 的列印配額於列印機 %s 經已超出配額"
+
+#, python
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "使用者 %s 的列印配額於列印機 %s經已很低"
+
+msgid "Print Quota Low"
+msgstr "列印配額經已很低"
+
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "列印系統 %s，args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "未能運用通用的PDL分析器 %s 計算列印工作的數量"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "收到信號中止信息，列印工作 %s 中斷"
+
+#, python-format
+msgid "Banner generator %s exit code is %s"
+msgstr "標題產生器 %s 中斷，代碼為 %s"
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "列印機主機名稱未能確認，設定為'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "未能確認列系統，args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"列印機 %s 在PyKota系統內沒有登記，因此這台列印機"
+"套用external policy (%s) "
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"使用者 %s 在PyKota內沒有登記，因此這個使用者將會套用external policy(%s) "
+"於列印機 %s "
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"使用者沒有列印配額於列印機 %s ，套用對外政策 (%s)"
+" 於列印機 %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"對外政策 %s 於列印機 %s 產生錯誤，列印工作被拒，請撿查PyKota的設定檔案"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"列印機 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"使用者 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
+"於列印機 %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"使用者 %s 沒有列印配額於列印機 %s，套用預設的政策 (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr ""
+"列印機 %s 依然沒有於PyKota系統內登記，列印工作要求被拒"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"使用者 %s 依然沒有於PyKota系統內登記，列印工作要求被拒於"
+"列印機 %s"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"使用者 %s 依然沒有列印配額於列印機 %s 在PyKota系統，列印工作被拒"
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr "當列印機 %s : %s 進行SNMP查詢時出現網絡錯誤"
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr "SNMP信息解讀錯誤於列印機 %s : %s"
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr "當在列印機 %s 進行SNMP查詢時出現問題 : %s"
+
+#, python-format
+msgid "Waiting for printer %s to be idle or printing..."
+msgstr "正等待列印機 %s 致閒置或列印狀態..."
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr "正等待列印機 %s 閒置狀況達到穩定..."
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr "連線到 %s:%s : %s 時出現問題"
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr "傳送查詢到 %s:%s : %s 出現問題"
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr "在讀取列印機 %s 的內存頁面計算器時出現問題"
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr "從資料庫讀取，恢復列印機 %s 的頁面計算器的計算值"
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr ""
+"不能恢復列印機 %s 的內存頁面計算器不論在列印的之前或之後"
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr "列印機 %s 被強制設定列印總頁數為 1 頁"
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr "資料庫沒有紀錄列印機 %s 上一次的列印紀錄"
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr "列印機 %s 的內存頁面計算器的數值不一致"
+
+msgid ""
+"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
+"download it from http://pysnmp.sourceforge.net"
+msgstr ""
+"要求內存的SNMP計算器，但找不到Python-SNMP"
+"請到http://pysnmp.sourceforge.net下載"
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "不明的列印機地址在硬體(%s)用於列印機 %s 上"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "正在執行硬體(%s)..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "中止信號傳送到硬體計算器 %s (pid: %s)"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr "計算器輸出的第 [%s] 行被跳過，請再試一次..."
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr "硬件計算器 %s 中止，代碼為 %s"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "未能夠查詢列印機 %s 透過硬件(%s)"
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+"SNMP查詢被中斷，使用最更新的數值來計算頁數"
+"計算器 (%s) 在列印機 %s 上"
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+"PJL查詢被中斷，使用最更新的數值來計算頁數"
+"計算器 (%s) 在列印機 %s 上"
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "正在執行軟件(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "未能夠使用記帳器計算列印總頁數 %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr "等待軟件記帳時出現問題，pid為 %s : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "軟件記帳器 %s 終止，代碼為 %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr "假若有些使用者是屬於幾個不同組別，總計數值有機會不準確"
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"%s 不存在，很可能是錯誤設定所致"
+"請撿查 /etc/pykota/pykota.conf : %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "搜尋不到 %s(%s) 從 %s(scope=%s)"
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "新增LDAP紀錄 (%s, %s) 時出現問題"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "刪除LDAP紀錄 (%s) 時出現問題"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "修改LDAP紀錄出現問題 (%s, %s)"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr "未能為使用者 %s 尋找pkotaAccountBalance object，請問你是否已手動建立LDAP 紀錄?  "
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr "未能尋找現存的objectclass %s 紀錄帶有 %s=%s"
+" 連繫到pykotaAccount objectClass "
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr "未能尋找現存的紀錄連繫到pykotaGroup objectclass %s"
+
+msgid "PyKota Reports"
+msgstr "PyKota 列印配額報告"
+
+msgid "Report"
+msgstr "報告"
+
+msgid "Printer"
+msgstr "列印機"
+
+msgid "User / Group names mask"
+msgstr "使用者/群組 名稱篩選"
+
+msgid "Groups report"
+msgstr "群組報告"
+
+msgid "Please click on the above button"
+msgstr "請按以上按鈕"
+
+msgid "History"
+msgstr "列印紀錄"
+
+msgid "Empty"
+msgstr "沒有紀錄"
+
+msgid "Action"
+msgstr "允許/禁止 列印"
+
+msgid "User"
+msgstr "使用者"
+
+msgid "Hostname"
+msgstr "列印使用電腦"
+
+msgid "JobId"
+msgstr "列印工作識別碼"
+
+msgid "JobSize"
+msgstr "列印總頁數"
+
+msgid "JobPrice"
+msgstr "列印費用"
+
+msgid "Copies"
+msgstr "複製數量"
+
+msgid "JobBytes"
+msgstr "列印工作容量"
+
+msgid "PageCounter"
+msgstr "列印總計"
+
+msgid "Options"
+msgstr "其他選項"
+
+msgid "Previous page"
+msgstr "上一頁"
