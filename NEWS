@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha8 :
+    
+        - The documentation is now licensed under the terms of the
+          GNU GPL too.
+          
     - 1.16alpha7 :
     
         - The CUPS backend is now fully functionnal (it seems).
