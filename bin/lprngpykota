@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2004/10/25 15:14:59  jalet
+# Fixed typo in code added to debug LPRng problem
+#
 # Revision 1.10  2004/10/24 09:06:46  jalet
 # Added debug messages for LPRng support possible problem ???
 #
@@ -103,7 +106,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
     def firstPass(self, policy, printer, user, userpquota) :            
         """First pass done here."""
         # first we have to check if previous job was correctly accounted for
-        self.logdebug("First pass begins : POLICY_%s => %s => %s" % (policy, getattr(printer, "Name"), getattr(user, "Name)))
+        self.logdebug("First pass begins : POLICY_%s => %s => %s" % (policy, getattr(printer, "Name"), getattr(user, "Name")))
         if printer.LastJob.Exists and not printer.LastJob.JobSize :
             # here we know that previous job wasn't accounted for correctly
             # we are sure (?) that it was hardware accounting which was used
@@ -186,7 +189,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), action, filename=self.preserveinputfile, title=self.title, copies=self.copies, options=self.options, clienthost=clienthost, jobsizebytes=self.jobSizeBytes)
             self.logdebug("Job added to history during first pass : Job's size and price are still unknown.")
             
-        self.logdebug("First pass ends : ACTION_%s => %s => %s" % (action, getattr(printer, "Name"), getattr(user, "Name)))
+        self.logdebug("First pass ends : ACTION_%s => %s => %s" % (action, getattr(printer, "Name"), getattr(user, "Name")))
         if action == "DENY" :
             return self.removeJob()
         else :    
@@ -196,7 +199,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
         """Second pass done here."""
         # Last job for current printer has the same JobId than
         # the current job, so we know we are in the second pass
-        self.logdebug("Second pass begins : POLICY_%s => %s => %s" % (policy, getattr(printer, "Name"), getattr(user, "Name)))
+        self.logdebug("Second pass begins : POLICY_%s => %s => %s" % (policy, getattr(printer, "Name"), getattr(user, "Name")))
         if self.accounter.isSoftware :
             # Software accounting method was used, and we are
             # in second pass, so all work is already done, 
@@ -252,7 +255,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             self.posthook(userpquota)
             
             # here hardware accounting was completed.
-        self.logdebug("Second pass ends : POLICY_%s => %s => %s" % (policy, getattr(printer, "Name"), getattr(user, "Name)))
+        self.logdebug("Second pass ends : POLICY_%s => %s => %s" % (policy, getattr(printer, "Name"), getattr(user, "Name")))
         return self.acceptJob()
         
     def doWork(self, policy, printer, user, userpquota) :    
