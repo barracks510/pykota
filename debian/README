@@ -22,16 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 This directory contains scripts you may find interesting to
 use on a Debian GNU/Linux system.
 
-They try to mimic the disk quota tools configuration on
-Debian :
-
-        - /etc/default/printquota -- defines if the 
-          print quota warning sender is to be launched in
-          cron.daily
-          
-        - /etc/cron.daily/printquota -- warns users above  
-          their print quota, using /usr/bin/warnpykota
-          
 ============================================================
 
 Please e-mail bugs to: alet@librelogiciel.com (Jerome Alet)
