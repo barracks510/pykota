@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.55  2004/11/15 15:14:06  jalet
+# Preliminary integration of Matt's patch for banners.
+#
 # Revision 1.54  2004/10/25 14:12:25  jalet
 # For URGENT legal reasons (Italy), a new "privacy" directive was added to pykota.conf
 # to hide print jobs' title, filename, and options.
@@ -489,7 +492,7 @@ class PyKotaConfig :
         try :
             gd = self.getPrinterOption(printername, "gracedelay")
         except PyKotaConfigError :    
-            gd = 7
+            gd = 7      # default value of 7 days
         try :
             return int(gd)
         except (TypeError, ValueError) :    
@@ -500,7 +503,7 @@ class PyKotaConfig :
         try :
             pm = self.getGlobalOption("poorman")
         except PyKotaConfigError :    
-            pm = 1.0
+            pm = 1.0    # default value of 1 unit
         try :
             return float(pm)
         except (TypeError, ValueError) :    
@@ -554,3 +557,30 @@ class PyKotaConfig :
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""
         return self.getGlobalOption("winbind_separator", ignore=1)
+
+    def getAccountBanner(self, printername) :
+        """Returns which banner(s) to account for: NONE, BOTH, STARTING, ENDING."""
+        validvalues = [ "NONE", "BOTH", "STARTING", "ENDING" ]     
+        try :
+            value = self.getPrinterOption(printername, "accountbanner")
+        except PyKotaConfigError :    
+            return "BOTH"       # Default value of BOTH
+        else :    
+            value = value.upper()
+            if value not in validvalues :
+                raise PyKotaConfigError, _("Option onaccountererror in section %s only supports values in %s") % (printername, str(validvalues))
+            return value  
+
+    def getStartingBanner(self, printername) :
+        """Returns the startingbanner value if set, else None."""
+        try :
+            return self.getPrinterOption(printername, "startingbanner")
+        except PyKotaConfigError :
+            return None
+
+    def getEndingBanner(self, printername) :
+        """Returns the endingbanner value if set, else None."""
+        try :
+            return self.getPrinterOption(printername, "endingbanner")
+        except PyKotaConfigError :
+            return None

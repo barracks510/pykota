@@ -599,6 +599,58 @@ policy: deny
 # uncomment the line below to see what environment variables are available
 # posthook: /usr/bin/printenv >/tmp/after
 
+# AccountBanner : how should banner accounting be done ?
+# 
+# If enabled, banner pages printed from StartingBanner and/or EndingBanner 
+# (depending on the value) will be included in the accounting for the
+# print job
+#
+# If disabled, banner pages printed from StartingBanner and EndingBanner will
+# *not* be included in the accounting for the print job
+#
+# IMPORTANT : CUPS generated banners are ALWAYS accounted for, although you
+#             can refund them by using negative prices on printers.
+#
+# Allowed values : Starting | Ending | None | Both
+#
+#       - Starting : only the starting banner will be accounted for.
+#       - Ending : only the ending banner will be accounted for.
+#       - Both : both starting and ending banners will be accounted for.
+#       - None : banners will not be accounted for.
+#
+# Default value :
+# accountbanner: Both
+
+# StartingBanner : if defined will print a banner before the rest of the job 
+# is printed. The argument can be a printable file, or an executable file.
+# If not executable, the file will be printed as is. If executable, the 
+# file will be executed and its output will be printed.
+# 
+# In any case, the banner content which will be sent to the printer
+# MUST be in a format your printer will accept !!!
+#
+# The pkbanner command included in PyKota can automatically generate
+# starting and ending banners in the PostScript format. You can use
+# this command in a pipe through GhostScript if your printer doesn't 
+# accept PostScript as an input format.
+#
+# startingbanner: /usr/share/pykota/banner-page.sh
+
+# EndingBanner : if defined will print a banner before the rest of the job 
+# is printed. The argument can be a printable file, or an executable file.
+# If not executable, the file will be printed as is. If executable, the 
+# file will be executed and its output will be printed.
+#
+# In any case, the banner content which will be sent to the printer
+# MUST be in a format your printer will accept !!!
+#
+# The pkbanner command included in PyKota can automatically generate
+# starting and ending banners in the PostScript format. You can use
+# this command in a pipe through GhostScript if your printer doesn't 
+# accept PostScript as an input format.
+#
+# endingbanner: /usr/share/pykota/banner-page.sh
+
 # How should enforcement be done for this printer ?
 #
 # "laxist" is the default if value is not set, and allows users
