@@ -1,15 +1,42 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title>TODO : Title here</title>
+  <title>Print Quota usage reports</title>
+  <subtitle><application>repykota</application></subtitle>
+  
   <para>
-    TODO : blah
+    To account for print usage is good, however there must be a way to easily
+    query the <emphasis>Quota Storage Server</emphasis> and generate
+    reports describing current usage for every user on every printer.
   </para>
+  
+  <para>
+    PyKota features a quota report generator, named <application>repykota</application>,
+    with which you can print the current state of the quota database.
+  </para>
+  
+  <sect1>
+    <title><application>repykota</application> commmand line options</title>
+    <para>
+      Here's a decription of each of <application>repykota</application>
+      command line options.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>examples</title>
+    <para>
+      Here are some examples of <application>repykota</application> usage.
+    </para>
+  </sect1>
 </chapter>
 
 <!--
 
 $Log$
+Revision 1.2  2003/03/08 22:22:40  jalet
+First bit of documentation
+
 Revision 1.1  2003/02/08 00:03:35  jalet
 Documentation skeleton added
 
