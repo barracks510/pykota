@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/02/06 00:00:45  jalet
+# Now includes the printer name in email messages
+#
 # Revision 1.6  2003/02/05 23:55:02  jalet
 # Cleaner email messages
 #
@@ -120,12 +123,12 @@ class PyKotaTool :
         if action == "DENY" :
             adminmessage = "Print Quota exceeded for user %s on printer %s" % (username, self.printername)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(username, "Print Quota Exceeded", "You are not allowed to print anymore because\nyour Print Quota is exceeded.")
+            self.sendMessageToUser(username, "Print Quota Exceeded", "You are not allowed to print anymore because\nyour Print Quota is exceeded on printer %s." % self.printername)
             self.sendMessageToAdmin("Print Quota", adminmessage)
         elif action == "WARN" :    
             adminmessage = "Print Quota soft limit exceeded for user %s on printer %s" % (username, self.printername)
             self.logger.log_message(adminmessage)
-            self.sendMessageToUser(username, "Print Quota Exceeded", "You will soon be forbidden to print anymore because\nyour Print Quota is almost reached.")
+            self.sendMessageToUser(username, "Print Quota Exceeded", "You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s." % self.printername)
             self.sendMessageToAdmin("Print Quota", adminmessage)
         return action        
     
