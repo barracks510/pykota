@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha9 :
+    
+        - Now searches the configuration files in system user pykota's
+          home directory. The 'pykota' system user and group have
+          to be created by the system administrator, and given 
+          sufficient permissions to PyKota's configuration files.
+          
     - 1.21alpha8 :
     
         - Added the new reject_unknown directive to reject the
