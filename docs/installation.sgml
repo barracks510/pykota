@@ -94,11 +94,11 @@ jerome@nordine:~/pykota-1.02-official$
         <application>PostgreSQL</application> server. In the default installation of
         <application>PostgreSQL</application> this may not be the case for security reasons, except if both
         servers are in fact the same machine. In any case, it is recommended that you
-        check the <filename>/etc/postgresql/pg_hba.conf</filename> and modify it if
+        check the <filename>/etc/postgresql/pg_hba.conf</filename> file and modify it if
         needed. This file is self documented and its modification is straightforward.
         You also have to make sure that <application>PostgreSQL</application> accepts <acronym>TCP/IP</acronym> connections.
         To do so you either have to launch it with the <option>-i</option> option or
-        modify the <filename>/etc/postgresql/postgresql.conf</filename>, which is
+        modify the <filename>/etc/postgresql/postgresql.conf</filename> file, which is
         self documented and easy to modify too.
         <tip>
           <title>Tip</title>
@@ -132,7 +132,22 @@ jerome@nordine:~/pykota-1.02-official$
         <filename>pykota-x.xx/initscripts/pykota-postgresql.sql</filename> file.
         This file will create a Quota DataBase administrator and a Quota DataBase user
         in the <application>PostgreSQL</application> system, then create an empty
-        Quota DataBase and set some permissions on it.
+        Quota DataBase and set some permissions on it. The Quota DataBase administrator
+        will be able to add printers, users and groups to the Quota DataBase, while
+        the Quota DataBase user will be used to update the print quota usage
+        in the Quota DataBase. None of these two users is present in the Quota Database
+        itself, they are only defined in <application>PostgreSQL</application> and don't
+        have to exist on any system, nor in the Quota DataBase. Their default names
+        are <literal>pykotaadmin</literal> for the administrator and <literal>pykotauser</literal>
+        for the user. The database which will be created will be named <literal>pykota</literal>.
+        <note>
+          <title>Note</title>
+          <para>
+            You can choose other names if you want, just modify the 
+            <filename>initscripts/pykota-postgresql.sql</filename> file
+            accordingly. 
+          </para>
+        </note>  
       </para>
       
       <para>
@@ -155,8 +170,53 @@ Type:  \copyright for distribution terms
 
 template1=# \i pykota-postgresql.sql 
             ... a lot of output lines
-template1=# \q      
+pykota=#       
         </screen>
+      </para>
+      
+      <para>
+        For security reasons, you may want to set passwords in 
+        <application>PostgreSQL</application> for the 
+        <literal>pykotaadmin</literal> and <literal>pykotauser</literal> 
+        users. Otherwise any user able to connect to 
+        <application>PostgreSQL</application> on your Quota Storage Server 
+        could connect to the quota database as one of them and modify it without problem. 
+      </para>
+      
+      <para>
+        To do so, just type the following lines while still being at the <application>psql</application>
+        prompt (replace the passwords values by your own) :
+        <screen>
+pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
+ALTER USER
+pykota=# ALTER USER pykotauser PASSWORD 'anotherpassword';
+ALTER USER
+pykota=# \q
+jerome@nordine:~/pykota-1.02-official/initscripts$
+        </screen>
+      </para>
+      
+      <para>
+        The <literal>\q</literal> command above will quit the <application>psql</application>
+        program and return you to the shell's command line prompt.
+      </para>
+      
+      <para>
+        To improve security further, you could encrypt your database connections, or
+        take any other step as needed. Please refer to <application>PostgreSQL</application>'s
+        documentation for details.
+        <warning>
+          <title>Warning</title>
+          <para>
+            Defining passwords may not be sufficient if your database access rule is
+            set to <literal>trust</literal> in the <filename>/etc/postgresql/pg_hba.conf</filename>.
+            Again, please refer to <application>PostgreSQL</application>'s documentation
+            for details. Also, passwords will fly unencrypted over the network by default,
+            so be sure to take any necessary step to secure your database server from
+            unauthorized use. This has nothing to do with <application>PyKota</application>
+            though, it is just a general rule to keep in mind.
+          </para>
+        </warning>  
       </para>
       
       <para>
@@ -173,6 +233,7 @@ template1=# \q
           </para>
         </tip>  
       </para>
+      
     </sect2>  
     
     <sect2>
@@ -217,7 +278,77 @@ template1=# \q
     </para>
     
     <para>
-      TODO
+      Here's the list of software you have to install on each Print Server :
+      <itemizedlist>
+        <listitem>
+          <para>
+            CUPS version 1.1 or above.
+            You can download it from <ulink url="http://www.cups.org">http://www.cups.org</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            Python version 2.1 or above.
+            You can download it from <ulink url="http://www.python.org">http://www.python.org</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            Quota Storage client libraries, depending on your Quota Storage Backend :
+            <itemizedlist>
+              <listitem>
+                <para>
+                  PostgreSQL backend :
+                  <itemizedlist>
+                    <listitem>
+                      <para>
+                        <application>PostgreSQL</application> client libraries. They must match the <application>PostgreSQL</application>
+                        version used on your Quota Storage Server.
+                      </para>
+                    </listitem>  
+                    <listitem>
+                      <para>
+                        The <application>PygreSQL</application> python module. 
+                        It must match the 
+                        <application>PostgreSQL</application> client libraries'
+                        version, as well as Python's version.
+                      </para>
+                    </listitem>  
+                  </itemizedlist>  
+                </para>
+              </listitem>  
+              <listitem>
+                <para>
+                  MySQL backend : TODO
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  LDAP backend : TODO
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Berkeley DB backend : TODO
+                </para>
+              </listitem>
+            </itemizedlist>  
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            <application>ucd-snmp</application> or <application>net-snmp</application> tools, version 4.2.5 or above. You only need
+            the <application>snmpget</application> command.
+            You can download them from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            eGenix' mxDateTime Python module. It must match your default Python version.
+            You can download it from <ulink url="http://www.egenix.com">http://www.egenix.com</ulink>.
+          </para>
+        </listitem>  
+      </itemizedlist>  
     </para>
   </sect1>  
 </chapter>
@@ -225,6 +356,9 @@ template1=# \q
 <!--
 
 $Log$
+Revision 1.8  2003/03/22 15:34:50  jalet
+More complete installation documentation.
+
 Revision 1.7  2003/03/22 14:26:45  jalet
 Download instructions added.
 
