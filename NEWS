@@ -22,7 +22,7 @@ PyKota NEWS :
           now fixed.
           
         - When an user wasn't allowed to print, the quota for
-          the previous user wasn't updated.
+          the previous user wasn't updated. This is now fixed.
           
     - 0.98 :
     
