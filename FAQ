@@ -2,6 +2,17 @@ PyKota's FAQ :
 
   # $Id$
   
+  * Why doesn't CUPS under Debian Woody automatically
+    detects PyKota managed devices ?
+    
+    The CUPS version in Debian Woody is 1.1.14 which is a bit
+    too old. To use PyKota with this version, just install
+    your printers as usual in CUPS web interface, and ensure
+    they work fine, then save your changes, and modify
+    /etc/cups/printers.conf manually as explained in
+    PyKota's toplevel README file. Finally restart CUPS,
+    and your printers should be managed by PyKota.
+    
   * Is print accounting ever exact ?
   
     No. Print accounting is **never** exact, because it depends
