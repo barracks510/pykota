@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2003/11/14 17:04:15  jalet
+# More (untested) work on the CUPS backend.
+#
 # Revision 1.3  2003/11/12 23:27:44  jalet
 # More work on new backend. This commit may be unstable.
 #
@@ -37,9 +40,12 @@
 
 import sys
 import os
+import popen2
 import time
 import cStringIO
 import shlex
+import select
+import signal
 
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.config import PyKotaConfigError
@@ -47,6 +53,27 @@ from pykota.storage import PyKotaStorageError
 from pykota.accounter import openAccounter, PyKotaAccounterError
 from pykota.requester import openRequester, PyKotaRequesterError
 
+class PyKotaPopen3(popen2.Popen3) :
+    """Our own class to execute real backends.
+    
+       Their first argument is different from their path so using
+       native popen2.Popen3 would not be feasible.
+    """
+    def __init__(self, cmd, capturestderr=False, bufsize=-1, arg0=None) :
+        self.arg0 = arg0
+        popen2.Popen3.__init__(self, cmd, capturestderr, bufsize)
+        
+    def _run_child(self, cmd):
+        for i in range(3, MAXFD):
+            try:
+                os.close(i)
+            except OSError:
+                pass
+        try:
+            os.execvpe(cmd[0], [self.arg0 or cmd[0]] + cmd[1:], os.environ)
+        finally:
+            os._exit(1)
+    
 class PyKotaBackend(PyKotaTool) :    
     """Class for the PyKota backend."""
     def __init__(self) :
@@ -113,8 +140,19 @@ def format_commandline(prt, usr, cmdline) :
     # want to keep its standard error
     return "%s >/dev/null" % (cmdline % locals())
 
+def sigterm_handler(signum, frame) :
+    """Handler for SIGTERM."""
+    sys.exit(1)
+    
 def main(thebackend) :    
     """Do it, and do it right !"""
+    # first deal with signals
+    # CUPS backends ignore SIGPIPE and exit(1) on SIGTERM
+    # Fortunately SIGPIPE is already ignored by Python
+    # It's there just in case this changes in the future
+    signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+    signal.signal(signal.SIGTERM, sigterm_handler)
+    
     #
     # Get the last page counter and last username from the Quota Storage backend
     printer = thebackend.storage.getPrinter(thebackend.printername)
@@ -181,18 +219,50 @@ def main(thebackend) :
         thebackend.accounter.beginJob(printer, user)
         
         # executes original backend
-        #mustclose = 0    
-        #if thebackend.inputfile is not None :    
-        #    if hasattr(thebackend.inputfile, "read") :
-        #        infile = thebackend.inputfile
-        #    else :    
-        #        infile = open(thebackend.inputfile, "rb")
-        #    mustclose = 1
-        #else :    
-        #    infile = sys.stdin
-            
-        realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
-        retcode = os.spawnve(os.P_WAIT, realbackend, [os.environ["DEVICE_URI"]] + sys.argv[1:], os.environ)
+        mustclose = 0    
+        if thebackend.inputfile is not None :    
+            if hasattr(thebackend.inputfile, "read") :
+                infile = thebackend.inputfile
+            else :    
+                infile = open(thebackend.inputfile, "rb")
+            mustclose = 1
+        else :    
+            infile = sys.stdin
+        subprocess = PyKotaPopen3([realbackend] + sys.argv[1:], capturestderr=1, arg0=os.environ["DEVICE_URI"])
+        pollster = select.poll()
+        pollster.register(subprocess.fromchild, select.POLLIN)
+        pollster.register(subprocess.childerr, select.POLLIN)
+        pollster.register(subprocess.tochild, select.POLLOUT)
+        end = 0
+        while not end :
+            availablestreams = pollster.poll()
+            for (stream, mask) in availablestreams :
+                if mask & select.POLLOUT :
+                    data = infile.read(256 * 1024)
+                    if data :
+                        os.write(stream, data)    
+                    else :    
+                        end = 1
+                if mask & select.POLLIN :     
+                    data = os.read(stream, 256 * 1024)
+                    if stream == pollster.fromchild.fileno() :
+                        sys.stdout.write(data)
+                    elif stream == pollster.childerr.fileno() :    
+                        sys.stderr.write(data)
+        subprocess.fromchild.close()
+        subprocess.childerr.close()
+        subprocess.tochild.close()
+        if mustclose :
+            infile.close()
+        status = subprocess.wait()
+        if os.WIFEXITED(status) :
+            retcode = os.WEXITSTATUS(status)
+        else :    
+            thebackend.logger.log_message(_("CUPS backend %s died abnormally.") % realbackend, "error")
+            retcode = -1
+        
+        #realbackend = os.path.join(os.path.split(sys.argv[0])[0], thebackend.originalbackend)
+        #retcode = os.spawnve(os.P_WAIT, realbackend, [os.environ["DEVICE_URI"]] + sys.argv[1:], os.environ)
     
     # stops accounting. 
     thebackend.accounter.endJob(printer, user)
