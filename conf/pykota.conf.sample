@@ -481,6 +481,18 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # 
 #   policy: external(/usr/bin/edpykota --add --printer %(printername)s --softlimit 50 --hardlimit 60 %(username)s >/dev/null) 
 #
+# NB : If you want to limit users by their account balance value, it is preferable to
+# use the following policy to automate user account creation on first print :
+#
+#   policy: external(/usr/bin/autopykota --initbalance 25.0 >/dev/null) 
+#
+#   This will automatically add the user if he doesn't already exist, and
+#   set his initial balance value to 25.0 (for example). If the user already 
+#   exists then his balance value will not be modified. 
+#   Please don't use autopykota if you want to limit your users by page
+#   quota, and in any case, carefully read autopykota's help or manpage
+#   and understand its goal before using it in your own configuration.
+#
 # Of course you can launch any command of your choice with this, e.g. :
 #
 #   policy: external(/usr/local/bin/myadminscript.sh %(username)s >/dev/null)

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2004/09/30 11:22:30  jalet
+# Extends the PATH and doesn't use absolute path anymore to launch edpykota.
+#
 # Revision 1.1  2004/09/30 09:52:45  jalet
 # Initial release of autopykota. Reading help or manpage is greatly
 # encouraged !
@@ -79,6 +82,7 @@ class AutoPyKota(PyKotaTool) :
     """A class for the automat."""
     def main(self, arguments, options) :
         """Main entry point."""
+        os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin" % os.environ.get("PATH", "")
         username = os.environ.get("PYKOTAUSERNAME")
         printername = os.environ.get("PYKOTAPRINTERNAME")
         if (username is None) or (printername is None) :
@@ -94,16 +98,16 @@ class AutoPyKota(PyKotaTool) :
                         return 0
                     else :    
                         self.logdebug("User %s already exists. Creating a quota entry for user %s on printer %s." % (username, username, printername))
-                        return os.system('/usr/bin/edpykota --add --printer "%s" "%s"' % (printername, username))
+                        return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
                 else :
                     self.logdebug("User %s already exists. Printer %s doesn't exist. Creating printer %s and a quota entry for user %s on printer %s." % (username, printername, printername, username, printername))
-                    return os.system('/usr/bin/edpykota --add --printer "%s" "%s"' % (printername, username))
+                    return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
             else :
                 if options["initbalance"] is None :
                     raise PyKotaToolError, "User %s doesn't exist yet, but no initial balance value is given. Fatal Error." % username
                 else :
                     self.logdebug("User %s doesn't exist yet. Creating user %s's account and quota entries on all existing printers." % (username, username))
-                    return os.system('/usr/bin/edpykota --add --limitby balance --balance "%s" "%s"' % (options["initbalance"], username))
+                    return os.system('edpykota --add --limitby balance --balance "%s" "%s"' % (options["initbalance"], username))
     
 if __name__ == "__main__" :    
     retcode = 0
