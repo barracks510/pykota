@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.60  2005/02/14 23:39:50  jalet
+# Introduces the new 'trustjobsize' directive to workaround some printers
+# generating unstable internal page counter values when queried through SNMP.
+#
 # Revision 1.59  2005/02/13 22:02:29  jalet
 # Big database structure changes. Upgrade script is now included as well as
 # the new LDAP schema.
@@ -629,3 +633,28 @@ class PyKotaConfig :
             return self.getPrinterOption(printername, "endingbanner").strip()
         except PyKotaConfigError :
             return None
+            
+    def getTrustJobSize(self, printername) :
+        """Returns the normalized value of the trustjobsize's directive."""
+        try :
+            value = self.getPrinterOption(printername, "trustjobsize").strip().upper()
+        except PyKotaConfigError :
+            return (None, "YES")
+        else :    
+            if value == "YES" :
+                return (None, "YES")
+            try :    
+                (limit, replacement) = [p.strip() for p in value.split(">")[1].split(":")]
+                limit = int(limit)
+                try :
+                    replacement = int(replacement) 
+                except ValueError :    
+                    if replacement != "PRECOMPUTED" :
+                        raise
+                if limit < 0 :
+                    raise ValueError
+                if (replacement != "PRECOMPUTED") and (replacement < 0) :
+                    raise ValueError
+            except (IndexError, ValueError, TypeError) :
+                raise PyKotaConfigError, _("Option trustjobsize for printer %s is incorrect") % printername
+            return (limit, replacement)    

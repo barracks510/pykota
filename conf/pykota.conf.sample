@@ -602,8 +602,8 @@ policy: deny
 # PYKOTASTATUS : contains "CANCELLED" when SIGTERM was received by PyKota
 #                else is not set.
 # PYKOTAJOBSIZEBYTES : contains the job's size in bytes. Always available.
-# PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size (with enforcement: strict)
-# PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price (with enforcement: strict)
+# PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size
+# PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price
 # PYKOTAJOBORIGINATINGHOSTNAME : contains the client's hostname if 
 #                                it is possible to retrieve it.
 # PYKOTAPRINTERHOSTNAME : the printer's hostname or IP address for network
@@ -729,3 +729,28 @@ maxdenybanners: 0
 # default value
 # enforcement : laxist
 enforcement : strict
+
+# Should we trust the job size on this printer ?
+#
+# "yes" is the default, the jobsize, either computed
+# by the hardware or by software is trusted.
+#
+# ">N:precomputed" : uses the precomputed value if jobsize > N pages
+# ">N:25" : uses 25 if jobsize is >N pages
+#
+# General form : ">n:m" where n is a positive integer, and m is 
+# either the word 'precomputed' or a positive integer.
+# The special form "yes" is also accepted and is the default.
+#
+# This directive can be set either globally or on a per printer
+# basis. Use this directive when hardware accounting for a particular
+# printer produces some glitches due to the printer returning 
+# incorrect answers.
+#
+# NB : DON'T MODIFY THIS IF YOU DON'T NEED TO. THIS IS ONLY TO BE USED
+# AS A WORKAROUND FOR SOME PRINTERS. IT'S PROBABLY BETTER TO ALWAYS
+# SET THIS DIRECTIVE TO 'yes'. THIS DIRECTIVE WILL ONLY BE HONORED 
+# IF PYKOTA DETECTS A DIFFERENCE BETWEEN THE PRECOMPUTED JOB SIZE
+# AND THE JOB SIZE AS COMPUTED BY PYKOTA EITHER USING HARDWARE OR
+# SOFTWARE.
+trustjobsize : yes

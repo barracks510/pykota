@@ -21,6 +21,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.21alpha25 :
+    
+        - The job's size is now always precomputed, even when
+          'enforcement' is not set to 'strict'.
+          
+        - Introduction of the new 'trustjobsize' configuration directive
+          to workaround some problematic printers. See the sample
+          configuration file for details.
+          
     - 1.21alpha24 :
     
         - Big database structure changes. An upgrade script

@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2005/02/14 23:39:50  jalet
+# Introduces the new 'trustjobsize' directive to workaround some printers
+# generating unstable internal page counter values when queried through SNMP.
+#
 # Revision 1.15  2005/02/14 22:53:44  jalet
 # Now always precomputes the job's size with the internal PDL parser, and not
 # only when 'enforcement: strict' was set in pykota.conf
@@ -253,6 +257,18 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             jobsize = self.accounter.getJobSize(printer)
             if self.softwareJobSize and (jobsize != self.softwareJobSize) :
                 self.printInfo(_("Beware : computed job size (%s) != precomputed job size (%s)") % (jobsize, self.softwareJobSize), "error")
+                (limit, replacement) = self.config.getTrustJobSize(printer.Name)
+                if limit is None :
+                    self.printInfo(_("The job size will be trusted anyway according to the 'trustjobsize' directive"), "warn")
+                else :
+                    if jobsize <= limit :
+                        self.printInfo(_("The job size will be trusted because it is inferior to the 'trustjobsize' directive's limit %s") % limit, "warn")
+                    else :
+                        self.printInfo(_("The job size will be modified according to the 'trustjobsize' directive : %s") % replacement, "warn")
+                        if replacement == "PRECOMPUTED" :
+                            jobsize = self.softwareJobSize
+                        else :    
+                            jobsize = replacement
             
             self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
             self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))
