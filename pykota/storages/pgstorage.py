@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.39  2005/01/19 08:56:30  jalet
+# Convert PygreSQL's new exception into a string before re-raising it
+#
 # Revision 1.38  2005/01/19 08:48:17  jalet
 # Fix exception's name wrt newer versions of PygreSQL
 #
@@ -180,7 +183,7 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
         except PGError, msg :
-            raise PyKotaStorageError, msg
+            raise PyKotaStorageError, str(msg)
         else :    
             self.closed = 0
             self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
@@ -216,7 +219,7 @@ class Storage(BaseStorage, SQLStorage) :
             self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
         except PGError, msg :    
-            raise PyKotaStorageError, msg
+            raise PyKotaStorageError, str(msg)
         else :    
             return result
             
@@ -235,7 +238,7 @@ class Storage(BaseStorage, SQLStorage) :
             self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
         except PGError, msg :    
-            raise PyKotaStorageError, msg
+            raise PyKotaStorageError, str(msg)
         else :    
             return result
             
