@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.65  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.64  2005/01/18 19:47:50  jalet
 # Big bug fix wrt the datelimit attribute
 #
@@ -272,6 +279,7 @@ class SQLStorage :
             user.AccountBalance = fields.get("balance")
             user.LifeTimePaid = fields.get("lifetimepaid")
             user.Email = fields.get("email")
+            user.OverCharge = fields.get("overcharge", 1.0)
             user.Exists = 1
         return user
        
@@ -316,6 +324,7 @@ class SQLStorage :
                 userpquota.SoftLimit = fields.get("softlimit")
                 userpquota.HardLimit = fields.get("hardlimit")
                 userpquota.DateLimit = fields.get("datelimit")
+                userpquota.WarnCount = fields.get("warncount")
                 userpquota.Exists = 1
         return userpquota
         
@@ -358,6 +367,9 @@ class SQLStorage :
             lastjob.JobDate = fields.get("jobdate")
             lastjob.JobHostName = fields.get("hostname")
             lastjob.JobSizeBytes = fields.get("jobsizebytes")
+            lastjob.JobMD5Sum = fields.get("md5sum")
+            lastjob.JobPages = fields.get("pages")
+            lastjob.JobBillingCode = fields.get("billingcode")
             lastjob.Exists = 1
         return lastjob
             
@@ -373,6 +385,7 @@ class SQLStorage :
                 user.AccountBalance = record.get("balance")
                 user.LifeTimePaid = record.get("lifetimepaid")
                 user.Email = record.get("email")
+                user.OverCharge = record.get("overcharge")
                 user.Exists = 1
                 groupmembers.append(user)
                 self.cacheEntry("USERS", user.Name, user)
@@ -422,7 +435,7 @@ class SQLStorage :
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
-        result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,email,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,email,overcharge,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit,warncount FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
                 if self.tool.matchString(record.get("username"), names) :
@@ -432,6 +445,7 @@ class SQLStorage :
                     user.AccountBalance = record.get("balance")
                     user.LifeTimePaid = record.get("lifetimepaid")
                     user.Email = record.get("email") 
+                    user.OverCharge = record.get("overcharge")
                     user.Exists = 1
                     userpquota = StorageUserPQuota(self, user, printer)
                     userpquota.ident = record.get("id")
@@ -440,6 +454,7 @@ class SQLStorage :
                     userpquota.SoftLimit = record.get("softlimit")
                     userpquota.HardLimit = record.get("hardlimit")
                     userpquota.DateLimit = record.get("datelimit")
+                    userpquota.WarnCount = record.get("warncount")
                     userpquota.Exists = 1
                     usersandquotas.append((user, userpquota))
                     self.cacheEntry("USERS", user.Name, user)
@@ -465,7 +480,7 @@ class SQLStorage :
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns its id."""
-        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email) VALUES (%s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email)))
+        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email), self.doQuote(user.OverCharge)))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
@@ -502,6 +517,10 @@ class SQLStorage :
         description = self.userCharsetToDatabase(printer.Description)
         self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(description), self.doQuote(printer.ident)))
         
+    def writeUserOverCharge(self, user, factor) :
+        """Sets the user's overcharging coefficient."""
+        self.doModify("UPDATE users SET overcharge=%s WHERE id=%s" % (self.doQuote(factor), self.doQuote(user.ident)))
+        
     def writeUserLimitBy(self, user, limitby) :    
         """Sets the user's limiting factor."""
         self.doModify("UPDATE users SET limitby=%s WHERE id=%s" % (self.doQuote(limitby), self.doQuote(user.ident)))
@@ -520,15 +539,15 @@ class SQLStorage :
         
     def increaseUserPQuotaPagesCounters(self, userpquota, nbpages) :    
         """Increase page counters for a user print quota."""
-        self.doModify("UPDATE userpquota SET pagecounter=pagecounter+%s,lifepagecounter=lifepagecounter+%s WHERE id=%s" % (self.doQuote(nbpages), self.doQuote(nbpages), self.doQuote(userpquota.ident)))
+        self.doModify("UPDATE userpquota SET pagecounter=pagecounter + %s,lifepagecounter=lifepagecounter + %s WHERE id=%s" % (self.doQuote(nbpages), self.doQuote(nbpages), self.doQuote(userpquota.ident)))
        
     def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
         """Sets the new page counters permanently for a user print quota."""
-        self.doModify("UPDATE userpquota SET pagecounter=%s, lifepagecounter=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
+        self.doModify("UPDATE userpquota SET pagecounter=%s, lifepagecounter=%s, warncount=0, datelimit=NULL WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
        
     def decreaseUserAccountBalance(self, user, amount) :    
         """Decreases user's account balance from an amount."""
-        self.doModify("UPDATE users SET balance=balance-%s WHERE id=%s" % (self.doQuote(amount), self.doQuote(user.ident)))
+        self.doModify("UPDATE users SET balance=balance - %s WHERE id=%s" % (self.doQuote(amount), self.doQuote(user.ident)))
        
     def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
         """Sets the new account balance and eventually new lifetime paid."""
@@ -564,7 +583,15 @@ class SQLStorage :
             
     def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a user quota."""
-        self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userpquota.ident)))
+        self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=0, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userpquota.ident)))
+        
+    def writeUserPQuotaWarnCount(self, userpquota, warncount) :
+        """Sets the warn counter value for a user quota."""
+        self.doModify("UPDATE userpquota SET warncount=%s WHERE id=%s" % (self.doQuote(warncount), self.doQuote(userpquota.ident)))
+        
+    def increaseUserPQuotaWarnCount(self, userpquota) :
+        """Increases the warn counter value for a user quota."""
+        self.doModify("UPDATE userpquota SET warncount=warncount+1 WHERE id=%s" % self.doQuote(userpquota.ident))
         
     def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a group quota on a specific printer."""
@@ -619,6 +646,9 @@ class SQLStorage :
                 job.JobDate = fields.get("jobdate")
                 job.JobHostName = fields.get("hostname")
                 job.JobSizeBytes = fields.get("jobsizebytes")
+                job.JobMD5Sum = fields.get("md5sum")
+                job.JobPages = fields.get("pages")
+                job.JobBillingCode = fields.get("billingcode")
                 job.UserName = fields.get("username")
                 job.PrinterName = fields.get("printername")
                 job.Exists = 1

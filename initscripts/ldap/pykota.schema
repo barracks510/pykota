@@ -186,9 +186,9 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.26 NAME 'pykotaPayments'
         EQUALITY caseExactIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
         
-# pykotaUserCoefficient
-attributetype ( 1.3.6.1.4.1.16868.1.1.27 NAME 'pykotaUserCoefficient'
-        DESC 'Coefficient for a particular user, float'
+# pykotaOverCharge
+attributetype ( 1.3.6.1.4.1.16868.1.1.27 NAME 'pykotaOverCharge'
+        DESC 'OverCharging factor for a particular user, float'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
@@ -269,7 +269,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY
         DESC 'PyKota User account balance'
-        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid $ pykotaUserCoefficient $ pykotaPayments ) )
+        MAY  ( pykotaUserName $ pykotaBalance $ pykotaLifeTimePaid $ pykotaOverCharge $ pykotaPayments ) )
         
 # pykotaLastJob        
 objectclass ( 1.3.6.1.4.1.16868.1.2.8 NAME 'pykotaLastJob' SUP top AUXILIARY

@@ -18,6 +18,9 @@ PyKota's FAQ :
     For LPRng, better to put "logger: system" in pykota.conf so
     that all debug messages for PyKota will go to syslog's
     destination for the LPR syslog facility.
+    
+    IMPORTANT : please don't send log files to the mailing list
+    unless they are very small of unless someone asked for this.
   
   * How can I limit my users to N pages per day (month/year) ?
   
@@ -46,6 +49,12 @@ PyKota's FAQ :
       each printer. If you want to do this only on some printers, just
       use the --printer command line argument as well. See
       edpykota's documentation for details.
+      
+    Another way to do this when you limit your users by balance, is  
+    to set an overcharging factor of zero for every user you want to
+    print with no limitation :
+    
+      $ edpykota --add --limitby balance --overcharge 0 user1 user2 ...
   
   * Nothing prints when my printer is in PowerSave mode, what
     can I do ?

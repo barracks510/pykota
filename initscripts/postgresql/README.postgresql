@@ -58,6 +58,17 @@ Upgrade scripts :
   of them or only some of them, depending on your 
   version of PyKota.
   
+  * An SQL script to upgrade a 1.20 PyKota Storage DataBase to
+    1.21 is included. Launch it this way on the Quota Storage Server :
+    
+        $ psql -U postgres pykota
+        pykota=# \i upgrade-to-1.21.sql
+        pykota=# \q
+        $
+        
+    This script adds many fields to existing tables, and also adds
+    some tables in indexes.
+    
   * An SQL script to upgrade a 1.18 PyKota Storage DataBase to
     1.19 is included. Launch it this way on the Quota Storage Server :
     

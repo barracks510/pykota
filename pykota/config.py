@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.58  2004/12/02 22:01:58  jalet
 # TLS is now supported with the LDAP backend
 #
@@ -506,6 +513,21 @@ class PyKotaConfig :
                 raise PyKotaConfigError, _("Option mailto in section %s only supports values in %s") % (printername, str(validmailtos))
             return (mailto, args)
         
+    def getMaxDenyBanners(self, printername) :    
+        """Returns the maximum number of deny banners to be printed for a particular user on a particular printer."""
+        try :
+            maxdb = self.getPrinterOption(printername, "maxdenybanners")
+        except PyKotaConfigError :    
+            return 0 # default value is to forbid printing a deny banner.
+        try :
+            value = int(maxdb.strip())
+            if value < 0 :
+                raise ValueError
+        except (TypeError, ValueError) :    
+            raise PyKotaConfigError, _("Invalid maximal deny banners counter %s") % maxdb
+        else :    
+            return value
+            
     def getGraceDelay(self, printername) :    
         """Returns the grace delay in days."""
         try :

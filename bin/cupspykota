@@ -23,6 +23,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.85  2005/02/13 22:02:28  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.84  2005/01/17 08:44:23  jalet
 # Modified copyright years
 #
@@ -500,22 +507,34 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # handle starting banner pages before accounting
             accountbanner = self.config.getAccountBanner(printer.Name)
             if accountbanner in ["ENDING", "NONE"] :
-                banner = self.startingBanner(printer.Name)
-                if banner :
-                    self.logdebug("Printing starting banner before accounting begins.")
-                    self.handleData(banner)
+                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
+                else :
+                    if action == 'DENY' :
+                        userpquota.warn() # increments the warning counter
+                        self.exportUserInfo(userpquota)
+                    banner = self.startingBanner(printer.Name)
+                    if banner :
+                        self.logdebug("Printing starting banner before accounting begins.")
+                        self.handleData(banner)
  
             self.printMoreInfo(user, printer, _("Job accounting begins."))
             self.accounter.beginJob(printer)
             
             # handle starting banner pages during accounting
             if accountbanner in ["STARTING", "BOTH"] :
-                banner = self.startingBanner(printer.Name)
-                if banner :
-                    self.logdebug("Printing starting banner during accounting.")
-                    self.handleData(banner)
-                    if self.accounter.isSoftware :
-                        bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
+                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
+                else :
+                    if action == 'DENY' :
+                        userpquota.warn() # increments the warning counter
+                        self.exportUserInfo(userpquota)
+                    banner = self.startingBanner(printer.Name)
+                    if banner :
+                        self.logdebug("Printing starting banner during accounting.")
+                        self.handleData(banner)
+                        if self.accounter.isSoftware :
+                            bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
         else :    
             action = "ALLOW"
             os.environ["PYKOTAACTION"] = action
@@ -535,12 +554,18 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # handle ending banner pages during accounting
             if accountbanner in ["ENDING", "BOTH"] :
-                banner = self.endingBanner(printer.Name)
-                if banner :
-                    self.logdebug("Printing ending banner during accounting.")
-                    self.handleData(banner)
-                    if self.accounter.isSoftware :
-                        bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
+                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
+                else :
+                    if action == 'DENY' :
+                        userpquota.warn() # increments the warning counter
+                        self.exportUserInfo(userpquota)
+                    banner = self.endingBanner(printer.Name)
+                    if banner :
+                        self.logdebug("Printing ending banner during accounting.")
+                        self.handleData(banner)
+                        if self.accounter.isSoftware :
+                            bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
  
             # stops accounting. 
             self.accounter.endJob(printer)
@@ -574,11 +599,17 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # handle ending banner pages after accounting ends
             if accountbanner in ["STARTING", "NONE"] :
-                banner = self.endingBanner(printer.Name)
-                if banner :
-                    self.logdebug("Printing ending banner after accounting ends.")
-                    self.handleData(banner)
-            
+                if (action == 'DENY') and (userpquota.WarnCount < self.config.getMaxDenyBanners()) :
+                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
+                else :
+                    if action == 'DENY' :
+                        userpquota.warn() # increments the warning counter
+                        self.exportUserInfo(userpquota)
+                    banner = self.endingBanner(printer.Name)
+                    if banner :
+                        self.logdebug("Printing ending banner after accounting ends.")
+                        self.handleData(banner)
+                        
             # Launches the post hook
             self.posthook(userpquota)
             
@@ -822,7 +853,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.logdebug("Waiting for real backend to exit...")
             try :
                 status = subprocess.wait()
-            except OSError : # already dead    
+            except OSError : # already dead : TODO : detect when abnormal
                 status = 0
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)

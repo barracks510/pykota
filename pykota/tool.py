@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.149  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.148  2005/01/06 23:24:21  jalet
 # Regain priviledge the time to open the job's data file when printing in
 # raw mode with CUPS.
@@ -1011,18 +1018,22 @@ class PyKotaTool(Tool) :
                 self.printInfo(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (user.Name, action, printer.Name))
                 return action        
             else :    
-                val = float(user.AccountBalance or 0.0)
-                enforcement = self.config.getPrinterEnforcement(printer.Name)
-                if enforcement == "STRICT" : 
-                    val -= self.softwareJobPrice # use precomputed size.
-                if val <= 0.0 :
-                    action = "DENY"
-                elif val <= self.config.getPoorMan() :    
-                    action = "WARN"
-                else :
+                if user.OverCharge == 0.0 :
+                    self.printInfo(_("User %s will not be charged for printing.") % user.Name)
                     action = "ALLOW"
-                if (enforcement == "STRICT") and (val == 0.0) :
-                    action = "WARN" # we can still print until account is 0
+                else :
+                    val = float(user.AccountBalance or 0.0)
+                    enforcement = self.config.getPrinterEnforcement(printer.Name)
+                    if enforcement == "STRICT" : 
+                        val -= self.softwareJobPrice # use precomputed size.
+                    if val <= 0.0 :
+                        action = "DENY"
+                    elif val <= self.config.getPoorMan() :    
+                        action = "WARN"
+                    else :
+                        action = "ALLOW"
+                    if (enforcement == "STRICT") and (val == 0.0) :
+                        action = "WARN" # we can still print until account is 0
                 return action    
         else :
             # Then check the user quota on current printer and all its parents.                
@@ -1105,6 +1116,7 @@ class PyKotaTool(Tool) :
         action = self.checkUserPQuota(userpquota)
         if action.startswith("POLICY_") :
             action = action[7:]
+            
         if action == "DENY" :
             adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
             self.printInfo(adminmessage)
@@ -1285,6 +1297,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
     
     def exportUserInfo(self, userpquota) :
         """Exports user information to the environment."""
+        os.environ["PYKOTAOVERCHARGE"] = str(userpquota.User.OverCharge)
         os.environ["PYKOTALIMITBY"] = str(userpquota.User.LimitBy)
         os.environ["PYKOTABALANCE"] = str(userpquota.User.AccountBalance or 0.0)
         os.environ["PYKOTALIFETIMEPAID"] = str(userpquota.User.LifeTimePaid or 0.0)
@@ -1293,6 +1306,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         os.environ["PYKOTASOFTLIMIT"] = str(userpquota.SoftLimit)
         os.environ["PYKOTAHARDLIMIT"] = str(userpquota.HardLimit)
         os.environ["PYKOTADATELIMIT"] = str(userpquota.DateLimit)
+        os.environ["PYKOTAWARNCOUNT"] = str(userpquota.WarnCount)
         
         # not really an user information, but anyway
         # exports the list of printers groups the current

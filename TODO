@@ -35,7 +35,7 @@ TODO, in no particular order :
         
         - Better --prototype option in edpykota
         
-        - Web enabled pykotme and dumpykota.
+        - Web enabled pykotme.
         
         - Add an MD5 checksum of the job's datas to the
           history, to be able to discover duplicate print
@@ -46,9 +46,6 @@ TODO, in no particular order :
           
         - Maybe put "gracedelay" in the database.
         
-        - Price multiplier/divisor which can be set on a per
-          user or per user group basis.
-
         - Ink accounting ala PrintBill.
         
         - Price and statistics per page format.
@@ -91,7 +88,8 @@ TODO, in no particular order :
           
         - Documentation...
           
-        - Complete web administrative interface with graphical reports.
+        - Learn more bits of PHP to help with phpPyKotaAdmin, which
+          is a GREAT tool !
        
         - Group administrators (think quotagrpdmins for disk quotas).
           Won't be implemented for now.

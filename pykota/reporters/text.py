@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.9  2004/01/08 14:10:33  jalet
 # Copyright year changed.
 #
@@ -77,15 +84,15 @@ class Reporter(BaseReporter) :
             self.report.append(header)
             self.report.append('-' * len(header))
             for (entry, entrypquota) in getattr(self.tool.storage, "getPrinter%ssAndQuotas" % prefix)(printer, self.ugnames) :
-                (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(entry, entrypquota)
-                self.report.append("%-9.9s %s %7i %7s %7s %10s %-10.10s %8i %10s" % (name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid))
+                (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid, overcharge, warncount) = self.getQuota(entry, entrypquota)
+                self.report.append("%-15.15s %s %5s %7i %7s %7s %10s %-10.10s %8i %10s %4s" % (name, reached, overcharge, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid, warncount))
                 total += pages
                 totalmoney += money
                 
             if total or totalmoney :        
                 (tpage, tmoney) = self.getTotals(total, totalmoney)
-                self.report.append((" " * 50) + tpage + tmoney)
-            self.report.append((" " * 51) + self.getPrinterRealPageCounter(printer))
+                self.report.append((" " * 62) + tpage + tmoney)
+            self.report.append((" " * 63) + self.getPrinterRealPageCounter(printer))
             self.report.append("")        
         if self.isgroup :    
             self.report.append(_("Totals may be inaccurate if some users are members of several groups."))

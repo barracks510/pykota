@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.8  2004/01/12 15:28:45  jalet
 # Now can output the user's history on several printers at the same time.
 #
@@ -80,7 +87,7 @@ class Reporter(BaseReporter) :
                     oddevenclass = "odd"
                 else :    
                     oddevenclass = "even"
-                (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid) = self.getQuota(entry, entrypquota)
+                (pages, money, name, reached, pagecounter, soft, hard, balance, datelimit, lifepagecounter, lifetimepaid, overcharge, warncount) = self.getQuota(entry, entrypquota)
                 if datelimit :
                     if datelimit == "DENY" :
                         oddevenclass = "deny"
@@ -88,14 +95,14 @@ class Reporter(BaseReporter) :
                         oddevenclass = "warn"
                 if (not self.tool.config.getDisableHistory()) and (not self.isgroup) :
                     name = '<a href="%s?username=%s&printername=%s&history=1">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), name, printer.Name, name)
-                self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid)])))
+                self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % h for h in (name, reached, overcharge, pagecounter, soft, hard, balance, datelimit or "&nbsp;", lifepagecounter, lifetimepaid, warncount)])))
                 total += pages
                 totalmoney += money
                 
             if total or totalmoney :        
                 (tpage, tmoney) = self.getTotals(total, totalmoney)
-                self.report.append('<tr class="totals"><td colspan="7">&nbsp;</td><td align="right">%s</td><td align="right">%s</td></tr>' % (tpage, tmoney))
-            self.report.append('<tr class="realpagecounter"><td colspan="7">&nbsp;</td><td align="right">%s</td></tr>' % self.getPrinterRealPageCounter(printer))
+                self.report.append('<tr class="totals"><td colspan="8">&nbsp;</td><td align="right">%s</td><td align="right">%s</td><td>&nbsp;</td></tr>' % (tpage, tmoney))
+            self.report.append('<tr class="realpagecounter"><td colspan="8">&nbsp;</td><td align="right">%s</td><td>&nbsp;</td></tr>' % self.getPrinterRealPageCounter(printer))
             self.report.append('</table>')
         if self.isgroup :    
             self.report.append('<p class="warning">%s</p>' % _("Totals may be inaccurate if some users are members of several groups."))

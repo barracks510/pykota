@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyKota v1.20\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
-"POT-Creation-Date: 2005-01-25 09:03+0800\n"
+"POT-Creation-Date: 2004-11-25 10:16+0100\n"
 "PO-Revision-Date: 2005-01-25 09:03+0800\n"
 "Last-Translator: Tsang Yu Pong, Teddy, Wing Kwong College in Hong Kong,"
 "<oops_teddy@yahoo.com.hk>\n"
@@ -38,7 +38,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "\n"
 "Generates banners.\n"
 "\n"
@@ -291,7 +292,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkprinters v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkprinters v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "A Printers Manager for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -359,7 +361,7 @@ msgid ""
 "            \n"
 "  $ pkprinters --delete \"*\"\n"
 "  \n"
-"This will completely delete all printers and associated quota "
+"  This will completely delete all printers and associated quota "
 "information,\n"
 "  as well as their job history. USE WITH CARE !\n"
 "  \n"
@@ -588,7 +590,8 @@ msgstr "於 %s 列印，你所需要的費用為 %.2f"
 
 #, python-format
 msgid ""
-"autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "A tool to automate user account creation and initial balance setting.\n"
 "\n"
 "THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !\n"
@@ -663,7 +666,8 @@ msgstr "CUPS %s 不正常的停止運作"
 
 #, python-format
 msgid ""
-"dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "\n"
 "Dumps PyKota database's content.\n"
 "\n"
@@ -756,7 +760,8 @@ msgstr "太多arguments，請參閱說明文件"
 
 #, python-format
 msgid ""
-"edpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"edpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "A Print Quota editor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -1013,7 +1018,8 @@ msgstr "列印總頁數及列印費用已於列印紀錄中設定"
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "\n"
 "Generates print quota reports.\n"
 "\n"
@@ -1077,7 +1083,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
 "\n"
 "Sends mail to users over print quota.\n"
 "\n"
@@ -1254,16 +1261,15 @@ msgid ""
 "Group           used    soft    hard    balance grace         total       "
 "paid"
 msgstr ""
-"群組           已列印    警告限制    有效限制    結餘 寬限日期        付款總計       "
-"已繳付"
-
+"群組           已列印    警告限制    有效限制    結餘 寬限日期        付款總"
+"計       已繳付"
 
 msgid ""
 "User            used    soft    hard    balance grace         total       "
 "paid"
 msgstr ""
-"群組           已列印    警告限制    有效限制    結餘 寬限日期         付款總計       "
-"已繳付"
+"群組           已列印    警告限制    有效限制    結餘 寬限日期         付款總"
+"計       已繳付"
 
 msgid "unknown"
 msgstr "未能確認"
@@ -1313,9 +1319,7 @@ msgstr "未能尋找使用者 %s 於印表機 %s，因此採用預設的政策(%
 msgid ""
 "Unable to find user %s's account balance, applying default policy (%s) for "
 "printer %s"
-msgstr ""
-"未能尋找使用者 %s 的帳目結算，因此採用預設的政策(%s)於"
-"列印機 %s"
+msgstr "未能尋找使用者 %s 的帳目結算，因此採用預設的政策(%s)於列印機 %s"
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
@@ -1335,15 +1339,12 @@ msgstr "羣組 %s 的列印配額於列印機 %s 經已很低"
 msgid "Print Quota exceeded for user %s on printer %s"
 msgstr "使用者 %s 的列印配額於列印機 %s 經已超出配額"
 
-#, python
-
 #, python-format
 msgid "Print Quota low for user %s on printer %s"
 msgstr "使用者 %s 的列印配額於列印機 %s經已很低"
 
 msgid "Print Quota Low"
 msgstr "列印配額經已很低"
-
 
 #, python-format
 msgid "Printing system %s, args=%s"
@@ -1373,73 +1374,61 @@ msgid ""
 "Printer %s not registered in the PyKota system, applying external policy (%"
 "s) for printer %s"
 msgstr ""
-"列印機 %s 在PyKota系統內沒有登記，因此這台列印機"
-"套用external policy (%s) "
+"列印機 %s 在PyKota系統內沒有登記，因此這台列印機套用external policy (%s) "
 
 #, python-format
 msgid ""
 "User %s not registered in the PyKota system, applying external policy (%s) "
 "for printer %s"
 msgstr ""
-"使用者 %s 在PyKota內沒有登記，因此這個使用者將會套用external policy(%s) "
-"於列印機 %s "
+"使用者 %s 在PyKota內沒有登記，因此這個使用者將會套用external policy(%s) 於列"
+"印機 %s "
 
 #, python-format
 msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "external policy (%s) for printer %s"
-msgstr ""
-"使用者沒有列印配額於列印機 %s ，套用對外政策 (%s)"
-" 於列印機 %s"
+msgstr "使用者沒有列印配額於列印機 %s ，套用對外政策 (%s) 於列印機 %s"
 
 #, python-format
 msgid ""
 "External policy %s for printer %s produced an error. Job rejected. Please "
 "check PyKota's configuration files."
-msgstr ""
-"對外政策 %s 於列印機 %s 產生錯誤，列印工作被拒，請撿查PyKota的設定檔案"
+msgstr "對外政策 %s 於列印機 %s 產生錯誤，列印工作被拒，請撿查PyKota的設定檔案"
 
 #, python-format
 msgid ""
 "Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
-"列印機 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
+msgstr "列印機 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
 
 #, python-format
 msgid ""
 "User %s not registered in the PyKota system, applying default policy (%s) "
 "for printer %s"
-msgstr ""
-"使用者 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
-"於列印機 %s"
+msgstr "使用者 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)於列印機 %s"
 
 #, python-format
 msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "default policy (%s)"
-msgstr ""
-"使用者 %s 沒有列印配額於列印機 %s，套用預設的政策 (%s)"
+msgstr "使用者 %s 沒有列印配額於列印機 %s，套用預設的政策 (%s)"
 
 #, python-format
 msgid ""
 "Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr ""
-"列印機 %s 依然沒有於PyKota系統內登記，列印工作要求被拒"
+msgstr "列印機 %s 依然沒有於PyKota系統內登記，列印工作要求被拒"
 
 #, python-format
 msgid ""
 "User %s still not registered in the PyKota system, job will be rejected on "
 "printer %s"
-msgstr ""
-"使用者 %s 依然沒有於PyKota系統內登記，列印工作要求被拒於"
-"列印機 %s"
+msgstr "使用者 %s 依然沒有於PyKota系統內登記，列印工作要求被拒於列印機 %s"
 
 #, python-format
 msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
-msgstr ""
-"使用者 %s 依然沒有列印配額於列印機 %s 在PyKota系統，列印工作被拒"
+msgstr "使用者 %s 依然沒有列印配額於列印機 %s 在PyKota系統，列印工作被拒"
 
 #, python-format
 msgid "Network error while doing SNMP queries on printer %s : %s"
@@ -1481,8 +1470,7 @@ msgstr "從資料庫讀取，恢復列印機 %s 的頁面計算器的計算值"
 msgid ""
 "Couldn't retrieve printer %s's internal page counter either before or after "
 "printing."
-msgstr ""
-"不能恢復列印機 %s 的內存頁面計算器不論在列印的之前或之後"
+msgstr "不能恢復列印機 %s 的內存頁面計算器不論在列印的之前或之後"
 
 #, python-format
 msgid "Job's size forced to 1 page for printer %s."
@@ -1500,8 +1488,8 @@ msgid ""
 "Internal SNMP accounting asked, but Python-SNMP is not available. Please "
 "download it from http://pysnmp.sourceforge.net"
 msgstr ""
-"要求內存的SNMP計算器，但找不到Python-SNMP"
-"請到http://pysnmp.sourceforge.net下載"
+"要求內存的SNMP計算器，但找不到Python-SNMP請到http://pysnmp.sourceforge.net下"
+"載"
 
 #, python-format
 msgid "Unknown printer address in HARDWARE(%s) for printer %s"
@@ -1531,17 +1519,13 @@ msgstr "未能夠查詢列印機 %s 透過硬件(%s)"
 msgid ""
 "SNMP querying stage interrupted. Using latest value seen for internal page "
 "counter (%s) on printer %s."
-msgstr ""
-"SNMP查詢被中斷，使用最更新的數值來計算頁數"
-"計算器 (%s) 在列印機 %s 上"
+msgstr "SNMP查詢被中斷，使用最更新的數值來計算頁數計算器 (%s) 在列印機 %s 上"
 
 #, python-format
 msgid ""
 "PJL querying stage interrupted. Using latest value seen for internal page "
 "counter (%s) on printer %s."
-msgstr ""
-"PJL查詢被中斷，使用最更新的數值來計算頁數"
-"計算器 (%s) 在列印機 %s 上"
+msgstr "PJL查詢被中斷，使用最更新的數值來計算頁數計算器 (%s) 在列印機 %s 上"
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
@@ -1566,9 +1550,7 @@ msgstr "假若有些使用者是屬於幾個不同組別，總計數值有機會
 msgid ""
 "Search base %s doesn't seem to exist. Probable misconfiguration. Please "
 "double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-"%s 不存在，很可能是錯誤設定所致"
-"請撿查 /etc/pykota/pykota.conf : %s"
+msgstr "%s 不存在，很可能是錯誤設定所致請撿查 /etc/pykota/pykota.conf : %s"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
@@ -1590,14 +1572,16 @@ msgstr "修改LDAP紀錄出現問題 (%s, %s)"
 msgid ""
 "No pykotaAccountBalance object found for user %s. Did you create LDAP "
 "entries manually ?"
-msgstr "未能為使用者 %s 尋找pkotaAccountBalance object，請問你是否已手動建立LDAP 紀錄?  "
+msgstr ""
+"未能為使用者 %s 尋找pkotaAccountBalance object，請問你是否已手動建立LDAP 紀"
+"錄?  "
 
 #, python-format
 msgid ""
 "Unable to find an existing objectClass %s entry with %s=%s to attach "
 "pykotaAccount objectClass"
-msgstr "未能尋找現存的objectclass %s 紀錄帶有 %s=%s"
-" 連繫到pykotaAccount objectClass "
+msgstr ""
+"未能尋找現存的objectclass %s 紀錄帶有 %s=%s 連繫到pykotaAccount objectClass "
 
 #, python-format
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"

@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.68  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.67  2005/01/18 19:47:50  jalet
 # Big bug fix wrt the datelimit attribute
 #
@@ -275,6 +282,7 @@ class StorageUser(StorageObject) :
         self.AccountBalance = None
         self.LifeTimePaid = None
         self.Email = None
+        self.OverCharge = 1.0
         self.Payments = [] # TODO : maybe handle this smartly for SQL, for now just don't retrieve them
         
     def consumeAccountBalance(self, amount) :     
@@ -306,6 +314,11 @@ class StorageUser(StorageObject) :
         if limitby in ["quota", "balance", "quota-then-balance", "balance-then-quota"] :
             self.parent.writeUserLimitBy(self, limitby)
             self.LimitBy = limitby
+        
+    def setOverChargeFactor(self, factor) :    
+        """Sets the user's overcharging coefficient."""
+        self.parent.writeUserOverCharge(self, factor)
+        self.OverCharge = factor
         
     def delete(self) :    
         """Deletes an user from the Quota Storage."""
@@ -356,6 +369,7 @@ class StoragePrinter(StorageObject) :
         self.PricePerPage = None
         self.PricePerJob = None
         self.Description = None
+        self.Coefficients = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
@@ -423,6 +437,7 @@ class StorageUserPQuota(StorageObject) :
         self.SoftLimit = None
         self.HardLimit = None
         self.DateLimit = None
+        self.WarnCount = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
@@ -444,6 +459,7 @@ class StorageUserPQuota(StorageObject) :
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
         self.DateLimit = None
+        self.WarnCount = 0
         
     def setUsage(self, used) :
         """Sets the PageCounter and LifePageCounter to used, or if used is + or - prefixed, changes the values of {Life,}PageCounter by that amount."""
@@ -453,6 +469,7 @@ class StorageUserPQuota(StorageObject) :
             try :
                 self.parent.increaseUserPQuotaPagesCounters(self, vused)
                 self.parent.writeUserPQuotaDateLimit(self, None)
+                self.parent.writeUserPQuotaWarnCount(self, 0)
             except PyKotaStorageError, msg :    
                 self.parent.rollbackTransaction()
                 raise PyKotaStorageError, msg
@@ -464,7 +481,13 @@ class StorageUserPQuota(StorageObject) :
             self.parent.writeUserPQuotaPagesCounters(self, vused, vused)
             self.PageCounter = self.LifePageCounter = vused
         self.DateLimit = None
+        self.WarnCount = 0
 
+    def warn(self) :
+        """Increases the warn counter for this user quota."""
+        self.parent.increaseUserPQuotaWarnCount(self)
+        self.WarnCount = (self.WarnCount or 0) + 1
+        
     def reset(self) :    
         """Resets page counter to 0."""
         self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))
@@ -481,10 +504,16 @@ class StorageUserPQuota(StorageObject) :
         """Computes the job price as the sum of all parent printers' prices + current printer's ones."""
         totalprice = 0.0    
         if jobsize :
-            for upq in [ self ] + self.ParentPrintersUserPQuota :
-                price = (float(upq.Printer.PricePerPage or 0.0) * jobsize) + float(upq.Printer.PricePerJob or 0.0)
-                totalprice += price
-        return totalprice    
+            if self.User.OverCharge != 0.0 :    # optimization, but TODO : beware of rounding errors
+                for upq in [ self ] + self.ParentPrintersUserPQuota :
+                    price = (float(upq.Printer.PricePerPage or 0.0) * jobsize) + float(upq.Printer.PricePerJob or 0.0)
+                    totalprice += price
+        if self.User.OverCharge != 1.0 : # TODO : beware of rounding errors
+            overcharged = totalprice * self.User.OverCharge        
+            self.parent.tool.printInfo("Overcharging %s by a factor of %s ===> User %s will be charged for %s units." % (totalprice, self.User.OverCharge, self.User.Name, overcharged))
+            return overcharged
+        else :    
+            return totalprice
             
     def increasePagesUsage(self, jobsize) :
         """Increase the value of used pages and money."""
@@ -588,6 +617,9 @@ class StorageJob(StorageObject) :
         self.JobCopies = None
         self.JobOptions = None
         self.JobHostName = None
+        self.JobMD5Sum = None
+        self.JobPages = None
+        self.JobBillingCode = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""

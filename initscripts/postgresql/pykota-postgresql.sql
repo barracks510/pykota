@@ -19,6 +19,13 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.16  2005/02/13 22:02:29  jalet
+-- Big database structure changes. Upgrade script is now included as well as
+-- the new LDAP schema.
+-- Introduction of the -o | --overcharge command line option to edpykota.
+-- The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+-- Introduction of the new 'maxdenybanners' directive.
+--
 -- Revision 1.15  2005/01/23 10:58:22  jalet
 -- Added a few indexes for the database
 --
@@ -105,7 +112,7 @@ CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
                    balance FLOAT DEFAULT 0.0,
                    lifetimepaid FLOAT DEFAULT 0.0,
                    limitby TEXT DEFAULT 'quota',
-                   coefficient FLOAT NOT NULL DEFAULT 1.0);
+                   overcharge FLOAT NOT NULL DEFAULT 1.0);
                    
 --
 -- Create the groups table
@@ -134,7 +141,7 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         softlimit INT4,
                         hardlimit INT4,
                         datelimit TIMESTAMP,
-                        warned INT4 DEFAULT 0); -- not a boolean, will help stats
+                        warncount INT4 DEFAULT 0); 
 CREATE INDEX userpquota_u_id_ix ON userpquota (userid);
 CREATE INDEX userpquota_p_id_ix ON userpquota (printerid);
 CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
@@ -175,6 +182,8 @@ CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
                          softlimit INT4,
                          hardlimit INT4,
                          datelimit TIMESTAMP);
+CREATE INDEX grouppquota_g_id_ix ON grouppquota (groupid);
+CREATE INDEX grouppquota_p_id_ix ON grouppquota (printerid);
 CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
                         
 --                         
@@ -205,14 +214,14 @@ CREATE INDEX payments_date_ix ON payments (date);
 CREATE TABLE coefficients (id SERIAL PRIMARY KEY NOT NULL, 
                            printerid INTEGER NOT NULL REFERENCES printers(id), 
                            label TEXT NOT NULL, 
-                           coefficient FLOAT NOT NULL DEFAULT 1.0, 
+                           coefficient FLOAT DEFAULT 1.0, 
                            CONSTRAINT coeffconstraint UNIQUE (printerid, label));
 
 --                        
 -- Set some ACLs                        
 --
-REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments FROM public;                        
-REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq FROM public;
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients FROM public;                        
+REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq, coefficients_id_seq FROM public;
 
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients TO pykotaadmin;
 GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq, coefficients_id_seq TO pykotaadmin;

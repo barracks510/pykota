@@ -21,6 +21,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.21alpha24 :
+    
+        - Big database structure changes. An upgrade script
+          is now included for PostgreSQL. LDAP users may just
+          want to copy the new schema in place.
+          
+        - edpykota now recognizes the -o | --overcharge command line
+          option to set an overcharging or undercharging factor
+          on each print job's cost for a particular user.
+          
+        - repykota's output format has changed an is not limited to  
+          80 characters wide anymore. People who used to parse 
+          repykota's output in their own tools are strongly advised
+          to parse dumpykota's output instead.
+          
+        - Introduction of the new 'maxdenybanners' configuration directive
+          to allow up to N (the directive's value) deny banners to be
+          printed even if the print account is forbidden to print.
+          
+        - Better detection of the number of copies in the PostScript parser.
+        
     - 1.21alpha23 :
     
         - Traditional Chinese translation added.

@@ -1121,14 +1121,14 @@ msgstr ""
 #, python-format
 msgid "Invalid modifier [%s] for --data command line option, see help."
 msgstr ""
-"Le modifier [%s] pour l'option de ligne de commande --data est invalide, "
+"Le modificateur [%s] pour l'option de ligne de commande --data est invalide, "
 "voir l'aide."
 
 #, python-format
 msgid "Invalid modifier [%s] for --format command line option, see help."
 msgstr ""
-"Le modifier [%s] pour l'option de ligne de commande --format est invalide, "
-"voir l'aide."
+"Le modificateur [%s] pour l'option de ligne de commande --format est "
+"invalide, voir l'aide."
 
 msgid "XML output is disabled because the jaxml module is not available."
 msgstr "La sortie XML est désactivée car le module jaxml n'est pas disponible."

@@ -609,6 +609,10 @@ policy: deny
 # PYKOTAPRINTERHOSTNAME : the printer's hostname or IP address for network
 #                         printers, or "localhost" if not defined or not
 #                         meaningful.
+# PYKOTAWARNCOUNT : the number of times the user was forbidden to print but a banner
+#                   page was still printed on the current printer.                   
+# PYKOTAOVERCHARGE : user's overcharging factor.
+#
 
 # PreHook : gets executed after being sure the user, printer and user quota
 # entry on the printer both exist in the PyKota database, and after
@@ -655,6 +659,17 @@ policy: deny
 #
 # Default value :
 # accountbanner: Both
+
+# Maximal number of times the banner will still be printed if
+# the user is forbidden to print.
+#
+# NB : CUPS ONLY FOR NOW !
+# 
+# This option can be set either globally or on a per printer basis.
+# Allowed values are 0 or any positive integer.
+# Default value is 0, which means that the banner won't be printed
+# at all if the user is forbidden to print.
+maxdenybanners: 0
 
 # StartingBanner : if defined will print a banner before the rest of the job 
 # is printed. The argument can be a printable file, or an executable file.

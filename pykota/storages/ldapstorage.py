@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.100  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.99  2005/01/24 17:44:17  jalet
 # Same fix for group print quota entries wrt LDAP performance
 #
@@ -646,19 +653,14 @@ class Storage(BaseStorage) :
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
-        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"]], base=self.info["userbase"])
+        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge"], base=self.info["userbase"])
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
             user.Name = fields.get("pykotaUserName", [username])[0] 
-            user.Email = fields.get(self.info["usermail"])
-            if user.Email is not None :
-                user.Email = user.Email[0]
-            user.LimitBy = fields.get("pykotaLimitBy")
-            if user.LimitBy is not None :
-                user.LimitBy = user.LimitBy[0]
-            else :    
-                user.LimitBy = "quota"
+            user.Email = fields.get(self.info["usermail"], [None])[0]
+            user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+            user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], base=self.info["balancebase"])
             if not result :
                 raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
@@ -694,11 +696,7 @@ class Storage(BaseStorage) :
             fields = result[0][1]
             group.ident = result[0][0]
             group.Name = fields.get("pykotaGroupName", [groupname])[0] 
-            group.LimitBy = fields.get("pykotaLimitBy")
-            if group.LimitBy is not None :
-                group.LimitBy = group.LimitBy[0]
-            else :    
-                group.LimitBy = "quota"
+            group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
             for member in self.getGroupMembers(group) :
@@ -716,8 +714,8 @@ class Storage(BaseStorage) :
             fields = result[0][1]       # take only first matching printer, ignore the rest
             printer.ident = result[0][0]
             printer.Name = fields.get("pykotaPrinterName", [printername])[0] 
-            printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
-            printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
+            printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0])
+            printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0])
             printer.uniqueMember = fields.get("uniqueMember", [])
             printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
             printer.Exists = 1
@@ -731,12 +729,13 @@ class Storage(BaseStorage) :
                 base = user.ident
             else :    
                 base = self.info["userquotabase"]
-            result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=base)
+            result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaWarnCount"], base=base)
             if result :
                 fields = result[0][1]
                 userpquota.ident = result[0][0]
-                userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0] or 0)
-                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter", [0])[0] or 0)
+                userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
+                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter", [0])[0])
+                userpquota.WarnCount = int(fields.get("pykotaWarnCount", [0])[0])
                 userpquota.SoftLimit = fields.get("pykotaSoftLimit")
                 if userpquota.SoftLimit is not None :
                     if userpquota.SoftLimit[0].upper() == "NONE" :
@@ -814,7 +813,7 @@ class Storage(BaseStorage) :
             lastjobident = result[0][1]["pykotaLastJobIdent"][0]
             result = None
             try :
-                result = self.doSearch("objectClass=pykotaJob", ["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+                result = self.doSearch("objectClass=pykotaJob", ["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "pykotaBillingCode", "pykotaPages", "pykotaMD5Sum", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
             except PyKotaStorageError :    
                 pass # Last job entry exists, but job probably doesn't exist anymore. 
             if result :
@@ -822,7 +821,7 @@ class Storage(BaseStorage) :
                 lastjob.ident = result[0][0]
                 lastjob.JobId = fields.get("pykotaJobId")[0]
                 lastjob.UserName = fields.get("pykotaUserName")[0]
-                lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
+                lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0])
                 try :
                     lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
                 except ValueError :    
@@ -838,6 +837,9 @@ class Storage(BaseStorage) :
                 lastjob.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
                 lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
+                lastjob.JobBillingCode = fields.get("pykotaMD5Sum", [None])[0]
+                lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
+                lastjob.JobPages = fields.get("pykotaPages", [""])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])
@@ -923,14 +925,15 @@ class Storage(BaseStorage) :
            base = self.info["userbase"]
         else :
            base = self.info["userquotabase"]
-        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaUserName=%s)" % uname for uname in names])), ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=base)
+        result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % (printer.Name, "".join(["(pykotaUserName=%s)" % uname for uname in names])), ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaWarnCount"], base=base)
         if result :
             for (userquotaid, fields) in result :
                 user = self.getUser(fields.get("pykotaUserName")[0])
                 userpquota = StorageUserPQuota(self, user, printer)
                 userpquota.ident = userquotaid
-                userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0] or 0)
-                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter", [0])[0] or 0)
+                userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
+                userpquota.LifePageCounter = int(fields.get("pykotaLifePageCounter", [0])[0])
+                userpquota.WarnCount = int(fields.get("pykotaWarnCount", [0])[0])
                 userpquota.SoftLimit = fields.get("pykotaSoftLimit")
                 if userpquota.SoftLimit is not None :
                     if userpquota.SoftLimit[0].upper() == "NONE" :
@@ -989,6 +992,7 @@ class Storage(BaseStorage) :
         newfields = {
                        "pykotaUserName" : user.Name,
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
+                       "pykotaOverCharge" : str(user.OverCharge),
                     }   
                        
         if user.Email :
@@ -1047,7 +1051,7 @@ class Storage(BaseStorage) :
         """Adds a group to the quota storage, returns it."""
         newfields = { 
                       "pykotaGroupName" : group.Name,
-                      "pykotaLimitBY" : (group.LimitBy or "quota"),
+                      "pykotaLimitBy" : (group.LimitBy or "quota"),
                     } 
         mustadd = 1
         if self.info["newgroup"].lower() != 'below' :
@@ -1101,6 +1105,7 @@ class Storage(BaseStorage) :
                    "pykotaDateLimit" : "None",
                    "pykotaPageCounter" : "0",
                    "pykotaLifePageCounter" : "0",
+                   "pykotaWarnCount" : "0",
                  } 
         if self.info["userquotabase"].lower() == "user" :
             dn = "cn=%s,%s" % (uuid, user.ident)
@@ -1139,6 +1144,13 @@ class Storage(BaseStorage) :
                    "description" : self.userCharsetToDatabase(str(printer.Description)), 
                  }
         self.doModify(printer.ident, fields)
+        
+    def writeUserOverCharge(self, user, factor) :
+        """Sets the user's overcharging coefficient."""
+        fields = {
+                   "pykotaOverCharge" : str(factor),
+                 }
+        self.doModify(user.ident, fields)
         
     def writeUserLimitBy(self, user, limitby) :    
         """Sets the user's limiting factor."""
@@ -1182,6 +1194,7 @@ class Storage(BaseStorage) :
                    "pykotaPageCounter" : str(newpagecounter),
                    "pykotaLifePageCounter" : str(newlifepagecounter),
                    "pykotaDateLimit" : None,
+                   "pykotaWarnCount" : "0",
                  }  
         return self.doModify(userpquota.ident, fields)         
        
@@ -1245,6 +1258,7 @@ class Storage(BaseStorage) :
                    "pykotaOptions" : ((options is None) and "None") or self.userCharsetToDatabase(options), 
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
+                   # TODO : add the 3 missing fields
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         
@@ -1277,8 +1291,23 @@ class Storage(BaseStorage) :
                    "pykotaSoftLimit" : str(softlimit),
                    "pykotaHardLimit" : str(hardlimit),
                    "pykotaDateLimit" : "None",
+                   "pykotaWarnCount" : "0",
                  }
         self.doModify(userpquota.ident, fields)
+        
+    def writeUserPQuotaWarnCount(self, userpquota, warncount) :
+        """Sets the warn counter value for a user quota."""
+        fields = { 
+                   "pykotaWarnCount" : str(warncount or 0),
+                 }
+        self.doModify(userpquota.ident, fields)
+        
+    def increaseUserPQuotaWarnCount(self, userpquota) :
+        """Increases the warn counter value for a user quota."""
+        fields = {
+                   "pykotaWarnCount" : { "operator" : "+", "value" : 1, "convert" : int },
+                 }
+        return self.doModify(userpquota.ident, fields)         
         
     def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
         """Sets soft and hard limits for a group quota on a specific printer."""

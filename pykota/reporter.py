@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2005/02/13 22:02:29  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.10  2004/09/02 10:09:30  jalet
 # Fixed bug in LDAP user deletion code which didn't correctly delete the user's
 # pykotaLastJob entries.
@@ -86,9 +93,9 @@ class BaseReporter :
             
     def getReportHeader(self) :        
         if self.isgroup :
-            return _("Group           used    soft    hard    balance grace         total       paid")
+            return _("Group          overcharge   used    soft    hard    balance grace         total       paid warn")
         else :    
-            return _("User            used    soft    hard    balance grace         total       paid")
+            return _("User           overcharge   used    soft    hard    balance grace         total       paid warn")
             
     def getPrinterRealPageCounter(self, printer) :        
         msg = _("unknown")
@@ -108,6 +115,14 @@ class BaseReporter :
         pagecounter = int(quota.PageCounter or 0)
         balance = float(entry.AccountBalance or 0.0)
         lifetimepaid = float(entry.LifeTimePaid or 0.0)
+        if not hasattr(entry, "OverCharge") :
+            overcharge = _("N/A")       # Not available for groups
+        else :    
+            overcharge = float(entry.OverCharge or 0.0)
+        if not hasattr(quota, "WarnCount") :    
+            warncount = _("N/A")        # Not available for groups
+        else :    
+            warncount = int(quota.WarnCount or 0)
         
         #balance
         if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
@@ -198,7 +213,12 @@ class BaseReporter :
             
         strbalance = ("%5.2f" % balance)[:10]
         strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]
-        return (lifepagecounter, lifetimepaid, entry.Name, reached, pagecounter, str(quota.SoftLimit), str(quota.HardLimit), strbalance, str(datelimit)[:10], lifepagecounter, strlifetimepaid)
+        strovercharge = ("%5s" % overcharge)[:5]
+        strwarncount = ("%4s" % warncount)[:4]
+        return (lifepagecounter, lifetimepaid, entry.Name, reached, \
+                pagecounter, str(quota.SoftLimit), str(quota.HardLimit), \
+                strbalance, str(datelimit)[:10], lifepagecounter, \
+                strlifetimepaid, strovercharge, strwarncount)
         
 def openReporter(tool, reporttype, printers, ugnames, isgroup) :
     """Returns a reporter instance of the proper reporter."""

@@ -249,7 +249,7 @@ NB :
 
   You may learn more about PyKota, if it fits your own organization,
   its internal working, and some potential performance drawbacks and
-  how to avoid them, in a WiKi administered by Ryan Suarez at :
+  how to avoid them, in a document created by Ryan Suarez at :
   
     http://archive.macosxlabs.org/forum/webcrossing_archive/documentation/Pykota_and_CUPS/Pykota_and_CUPS.html
 
@@ -609,7 +609,7 @@ or :
     $ repykota
     
     which will print quota usage for all users on all printers,
-    along with totals, if you are the root user. If you are
+    along with totals, if you are a PyKota Administator. If you are
     a regular user, only your own quota report will be produced.
     
 Quota reports are also available remotely by using the CGI script
@@ -630,7 +630,7 @@ Some people have developped tools around PyKota, and make
 them available under the GNU General Public License :
 
   - Kanakorn Horsiritham developped phpPykotaAdmin which is 
-    a web based administrative GUI :
+    a web based database independant administrative GUI :
   
       http://opensource.psu.ac.th/~kanakorn/mambo/
   

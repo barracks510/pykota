@@ -23,6 +23,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.87  2005/02/13 22:02:28  jalet
+# Big database structure changes. Upgrade script is now included as well as
+# the new LDAP schema.
+# Introduction of the -o | --overcharge command line option to edpykota.
+# The output of repykota is more complete, but doesn't fit in 80 columns anymore.
+# Introduction of the new 'maxdenybanners' directive.
+#
 # Revision 1.86  2005/01/21 14:40:01  jalet
 # edpykota's --delete command line tool doesn't use "*" as its default argument
 # anymore when the user doesn't pass any real argument :-)
@@ -336,6 +343,16 @@ options :
                        for a particular printer. Job price is optional.
                        If both are to be set, separate them with a comma.
                        Floating point values are allowed.
+                       
+  -o | --overcharge f  Sets the overcharging factor applied to the user 
+                       when computing the cost of a print job. Positive or 
+                       negative floating point values are allowed,
+                       this allows you to do some really creative
+                       things like giving money to an user whenever
+                       he prints. The number of pages in a print job
+                       is not modified by this coefficient, only the
+                       cost of the job for a particular user.
+                       Only users have a coefficient.
   
   -i | --ingroups g1[,g2...]  Puts the users into each of the groups
                               listed, separated by commas. The groups
@@ -479,6 +496,20 @@ examples :
   This will put printers hplj1 and hplj2 in printers groups Laser and HP.
   When printing either on hplj1 or hplj2, print quota will also be 
   checked and accounted for on virtual printers Laser and HP.
+  
+  $ edpykota --overcharge 2.5 poorstudent
+  
+  This will overcharge the poorstudent user by a factor of 2.5.
+  
+  $ edpykota --overcharge -1 jerome
+  
+  User jerome will actually earn money whenever he prints.
+  
+  $ edpykota --overcharge 0 boss
+  
+  User boss can print at will, it won't cost him anything because the
+  cost of each print job will be multiplied by zero before charging
+  his account.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -531,6 +562,13 @@ class EdPyKota(PyKotaTool) :
                 self.printInfo(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
                 (softlimit, hardlimit) = (hardlimit, softlimit)
             
+        overcharge = options["overcharge"]
+        if overcharge :
+            try :
+                overcharge = float(overcharge.strip())
+            except (ValueError, AttributeError) :    
+                raise PyKotaToolError, _("Invalid overcharge value %s") % options["overcharge"]
+                
         balance = options["balance"]
         if balance :
             balance = balance.strip()
@@ -709,6 +747,11 @@ class EdPyKota(PyKotaTool) :
                         if options["used"] :
                             entrypquota.setUsage(used)
                             
+                        if overcharge is not None :    
+                            if changed[entry.Name].get("overcharge") is None :
+                                entry.setOverChargeFactor(overcharge)
+                                changed[entry.Name]["overcharge"] = overcharge
+                                
                         if balance :
                             if changed[entry.Name].get("balance") is None :
                                 if balance.startswith("+") or balance.startswith("-") :
@@ -741,8 +784,8 @@ if __name__ == "__main__" :
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhdc:l:b:i:naugrp:P:S:H:G:RU:"
-        long_options = ["help", "version", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "hardreset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups=", "used="]
+        short_options = "vhdo:c:l:b:i:naugrp:P:S:H:G:RU:"
+        long_options = ["help", "version", "overcharge=", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "hardreset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups=", "used="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -770,6 +813,7 @@ if __name__ == "__main__" :
         options["pgroups"] = options["G"] or options["pgroups"]
         options["hardreset"] = options["R"] or options["hardreset"] 
         options["used"] = options["U"] or options["used"]
+        options["overcharge"] = options["o"] or options["overcharge"]
         
         if options["help"] :
             editor.display_usage_and_quit()
@@ -783,7 +827,7 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
-        elif options["groups"] and (options["balance"] or options["ingroups"] or options["used"]) :
+        elif options["groups"] and (options["balance"] or options["ingroups"] or options["used"] or options["overcharge"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = editor.main(args, options)
