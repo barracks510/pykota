@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha17 :
+     
+        - Fixed PCL3/4/5 parser for some drivers' output.
+        
     - 1.21alpha16 :
     
         - fixed several recently introduced bugs in LDAP backend code,
