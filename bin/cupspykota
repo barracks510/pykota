@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.31  2004/03/01 14:35:56  jalet
+# PYKOTAPHASE wasn't set soon enough at the start of the job
+#
 # Revision 1.30  2004/03/01 14:34:15  jalet
 # PYKOTAPHASE wasn't set at the right time at the end of data transmission
 # to underlying layer (real backend)
@@ -211,11 +214,13 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # exports user information with initial values
             self.exportUserInfo(userpquota)
             
+            # enters first phase
+            os.putenv("PYKOTAPHASE", "BEFORE")
+            
             # checks the user's quota
             action = self.warnUserPQuota(userpquota)
             
             # exports some new environment variables
-            os.putenv("PYKOTAPHASE", "BEFORE")
             os.putenv("PYKOTAACTION", action)
             
             # launches the pre hook
