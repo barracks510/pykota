@@ -28,9 +28,9 @@
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.19_official.tar.gz    
-jerome@nordine:~$ cd pykota-1.19_official
-jerome@nordine:~/pykota-1.19_official$
+jerome@nordine:~$ tar -zxf pykota-1.20_official.tar.gz    
+jerome@nordine:~$ cd pykota-1.20_official
+jerome@nordine:~/pykota-1.20_official$
     </screen>
   </para>
   
@@ -142,7 +142,9 @@ jerome@nordine:~/pykota-1.19_official$
         is <literal>pykotaadmin</literal>. 
         A Quota Storage read-only user is also created under the name of <literal>pykotauser</literal>.
         This read-only user is used by <application>PyKota</application> to connect to the 
-        Quota Storage when a non-root user launches a pykota command. This prevents normal
+        Quota Storage when an user who is not a <application>PyKota</application> administrator 
+        <footnote><para>a <application>PyKota</application> administrator is an user who can read the <filename>/etc/pykota/pykotadmin.conf</filename> file.</para></footnote>
+        launches a pykota command. This prevents normal
         users from being able to modify their own, or other users', quota information.
         The database which will be created will be named <literal>pykota</literal> by default.
         <note>
@@ -164,8 +166,8 @@ jerome@nordine:~/pykota-1.19_official$
         default administrator, and connect to the default database named <literal>template1</literal>.
         From a command line interpreter (i.e. shell), type the following commands :
         <screen>
-jerome@nordine:~$ cd pykota-1.19_official/initscripts/postgresql
-jerome@nordine:~/pykota-1.19_official/initscripts$ psql -h localhost -U postgres template1
+jerome@nordine:~$ cd pykota-1.20_official/initscripts/postgresql
+jerome@nordine:~/pykota-1.20_official/initscripts$ psql -h localhost -U postgres template1
 Welcome to psql, the PostgreSQL interactive terminal.
 
 Type:  \copyright for distribution terms
@@ -196,7 +198,7 @@ pykota=#
 pykota=# ALTER USER pykotaadmin PASSWORD 'somepassword';
 ALTER USER
 pykota=# \q
-jerome@nordine:~/pykota-1.19_official/initscripts/postgresql$
+jerome@nordine:~/pykota-1.20_official/initscripts/postgresql$
         </screen>
       </para>
       
@@ -584,7 +586,17 @@ $ chmod 644 /etc/pykota/pykota.conf
 $ chown lp.lpadmin /etc/pykota/pykotadmin.conf      
 $ chmod 640 /etc/pykota/pykotadmin.conf      
       </screen>
+      
+      <warning>
+        <title>Warning</title>
+        <para>
+          All the users allowed to read the <filename>/etc/pykota/pykotadmin.conf</filename> 
+          are considered to be <application>PyKota</application> administrators. So be
+          careful with these files permissions.
+        </para>
+      </warning>
     </para>
+    
     
     <para>
       Now depending on your printing system, the configuration to do is particular.
@@ -724,6 +736,9 @@ $ /etc/init.d/lprng restart
 <!--
 
 $Log$
+Revision 1.28  2004/10/06 10:03:16  jalet
+Improved documentation
+
 Revision 1.27  2004/07/21 09:39:03  jalet
 LPRng documentation
 

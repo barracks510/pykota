@@ -19,8 +19,8 @@
     </para>
     
     <para>
-      <application>repykota</application> behaves differently when it is launched by the 
-      <literal>root</literal> user, compared to when it is launched by a normal user.
+      <application>repykota</application> behaves differently when it is launched by a
+      <application>PyKota</application> administrator, compared to when it is launched by a normal user.
     </para>  
     
     <para>
@@ -151,6 +151,9 @@ port50-2:/home/jerome/pykota$ chmod 755 /usr/lib/cgi-bin/printquota.cgi
 <!--
 
 $Log$
+Revision 1.8  2004/10/06 10:03:16  jalet
+Improved documentation
+
 Revision 1.7  2004/01/12 23:10:35  jalet
 PyKota 1.16beta1 is finally out.
 

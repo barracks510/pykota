@@ -34,9 +34,9 @@
   </para>
   
   <para>
-    When a non-root user launches this command, only him can receive a warning
+    When an user who is not a <application>PyKota</application> administrator launches this command, only him can receive a warning
     message. He can specify a printer name's filter to check his quota only
-    on specific printers. If a non-root users uses the <literal>--groups</literal> command line
+    on specific printers. If a normal user uses the <literal>--groups</literal> command line
     argument, then for each group he is a member of in the Quota Storage, each
     group member may receive a warning message. You can take care of this if this
     becomes annoying by forbidding normal users to launch the <application>warnpykota</application>
@@ -44,7 +44,7 @@
   </para>
   
   <para>
-    The <literal>root</literal> user can pass additionnal user or group names 
+    <application>PyKota</application> administrators can pass additionnal user or group names 
     (or wildcard filters) to only check the users or groups whose name matches.
   </para>  
   
@@ -75,6 +75,9 @@
 <!--
 
 $Log$
+Revision 1.6  2004/10/06 10:03:16  jalet
+Improved documentation
+
 Revision 1.5  2003/07/25 13:10:58  jalet
 Improved documentation
 

@@ -11,6 +11,7 @@
   <!entity PKHINT system "pkhint.sgml">
   <!entity PYKOSD system "pykosd.sgml">
   <!entity DUMPYKOTA system "dumpykota.sgml">
+  <!entity AUTOPYKOTA system "autopykota.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -111,6 +112,8 @@
   &PKPRINTERS;
 
   &EDPYKOTA;
+  
+  &AUTOPYKOTA;
     
   &REPYKOTA;
     
@@ -133,6 +136,9 @@
 <!--
 
 $Log$
+Revision 1.15  2004/10/06 10:03:16  jalet
+Improved documentation
+
 Revision 1.14  2004/09/27 08:19:14  jalet
 Wrote some doc for dumpykota
 
