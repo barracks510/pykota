@@ -21,6 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.20alpha14 :
+    
+        - External hardware accounter now loops until
+          a result can be read correctly.
+          
+        - pkhint now suggest the internal snmp handling instead
+          of the external one.
+          
     - 1.20alpha13 :
      
         - Hardware accounter now accepts the special
