@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha6 :
+    
+        - pykotme now uses pkpgcounter to compute the size of the
+          job. This modification adds PCL5 and soon PCLXL (PCL6)
+          support. You can now get quotes for PCL in addition to 
+          PostScript.
+          
     - 1.19alpha5 :
     
         - cupspykota polling loop fix for MacOSX (at least)

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.9  2004/05/10 07:23:21  jalet
+# pykotme now uses pkpgcounter to compute the job's size.
+#
 # Revision 1.8  2004/05/08 15:12:23  jalet
 # Improved PCL6 support
 #
@@ -395,7 +398,7 @@ def smartpagecounter(filename) :
     return size
     
 if __name__ == "__main__" :    
-    if len(sys.argv) < 2 :
+    if (len(sys.argv) < 2) or ((not sys.stdin.isatty()) and ("-" not in sys.argv[1:])) :
         sys.argv.append("-")
         
     totalsize = 0    

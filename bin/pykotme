@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/05/10 07:23:21  jalet
+# pykotme now uses pkpgcounter to compute the job's size.
+#
 # Revision 1.7  2004/01/12 22:43:40  jalet
 # New formula to compute a job's price
 #
@@ -122,60 +125,37 @@ class PyKotMe(PyKotaTool) :
     """A class for pykotme."""
     def main(self, files, options) :
         """Gives print quotes."""
-        if not files :
-            files = [ sys.stdin ]
-            
-        nbpages = 0    
-        for filename in files :
-            if filename is sys.stdin :
-                stream = filename
-            else :
-                if filename == "-" :
-                    stream = sys.stdin
-                else :    
-                    try :
-                        stream = open(filename, "rb")
-                    except IOError, msg :    
-                        sys.stderr.write("%s\n" % msg)
-                        continue
-            nb = self.getNbPages(stream)
-            if nb is None :
-                sys.stderr.write(_("Unable to compute size of %s in number of pages.\n") % filename)
-            else :
-                nbpages += nb
-            if not (filename is sys.stdin) :        
-                stream.close()
+        if (not sys.stdin.isatty()) and ("-" not in files) :
+            files.append("-")
+        pipe = os.popen("pkpgcounter %s" % " ".join([' "%s"' % f for f in files]))
+        answer = pipe.readline().strip()
+        status = pipe.close()
+        try :
+            if status is None :
+                nbpages = int(answer)
+            else :        
+                raise ValueError, "ERROR in pkpgcounter" 
+        except ValueError, msg :    
+            sys.stderr.write(_("Unable to compute size of %s in number of pages.\n") % files)
+            sys.stderr.write("%s\n" % msg)
+        else :    
+            # get current user
+            uid = os.geteuid()
+            username = pwd.getpwuid(uid)[0]
+            user = self.storage.getUser(username)
+            if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
+                print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
                 
-        # get current user
-        uid = os.geteuid()
-        username = pwd.getpwuid(uid)[0]
-        user = self.storage.getUser(username)
-        if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
-            print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
+            printers = self.storage.getMatchingPrinters(options["printer"])
+            if not printers :
+                raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
+                
+            print _("Job size : %i pages") % nbpages    
+            for printer in printers :
+                userpquota = self.storage.getUserPQuota(user, printer)
+                cost = userpquota.computeJobPrice(nbpages)
+                print _("Cost on printer %s : %.2f") % (printer.Name, cost)
             
-        printers = self.storage.getMatchingPrinters(options["printer"])
-        if not printers :
-            raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
-            
-        print _("Job size : %i pages") % nbpages    
-        for printer in printers :
-            userpquota = self.storage.getUserPQuota(user, printer)
-            cost = userpquota.computeJobPrice(nbpages)
-            print _("Cost on printer %s : %.2f") % (printer.Name, cost)
-            
-    def getNbPages(self, stream) :        
-        """Tries to compute the file's size in number of pages, the best we can."""
-        nbpages = [] # in case some user wants to put several %%Pages: entries in the file
-        for line in stream.xreadlines() :
-            line = line.strip()
-            if line.startswith("%%Pages: ") :
-                try :
-                    nbpages.append(int(line[9:]))
-                except ValueError :    
-                    pass
-        if nbpages :            
-            return max(nbpages)
-        
 if __name__ == "__main__" : 
     retcode = 0
     try :
