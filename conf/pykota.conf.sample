@@ -230,7 +230,7 @@ adminmail: root@localhost
 #
 #   To automatically send a WinPopup message :
 #
-#       mailto: external(echo "%(message)s" | /usr/bin/smbclient -M "%(username)s" 2>&1 >/dev/null)
+#       mailto: external(echo "%(message)s"  | /usr/bin/iconv --to-code utf-8 --from-code iso-8859-15 | /usr/bin/smbclient -M "%(username)s" 2>&1 >/dev/null)
 #
 #   NB : Don't forget to redirect your command's standard output somewhere 
 #        (e.g. >/dev/null) so that there's no perturbation to the underlying
