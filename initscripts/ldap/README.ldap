@@ -25,9 +25,30 @@ Documentation :
 pykota.schema :
 
     This file can be used to modify an existing LDAP directory
-    to add the necessary attributes for use with PyKota.
+    to add the necessary object classes and attributes for use 
+    with PyKota.
+    
+    Include it in your LDAP server's configuration.
+    For example, with OpenLDAP 2.1.17 under Debian :
+    
+        $ cp pykota.schema /etc/ldap/schema
+        
+    Then edit /etc/ldap/slapd.conf and add a line to    
+    include the PyKota schema. You should have something
+    like :
+    
+        # Schema and objectClass definitions
+        include         /etc/ldap/schema/core.schema
+        include         /etc/ldap/schema/cosine.schema
+        include         /etc/ldap/schema/nis.schema
+        include         /etc/ldap/schema/inetorgperson.schema
+        include         /etc/ldap/schema/pykota.schema
+        
+    Finally, restart the OpenLDAP server :    
+    
+        $ /etc/init.d/slapd restart
 
-pykota.ldif :
+pykota-sample.ldif :
 
     This file represents a sample LDAP directory tree with
     PyKota functionnalities.

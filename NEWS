@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.08alpha5 :
+    
+        More good work on LDAP storage.
+        repykota now works reasonably well with the sample LDAP directory.
+        
     - 1.08alpha4 :
     
         - LDAP schema included. 

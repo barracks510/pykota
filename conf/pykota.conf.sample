@@ -43,6 +43,15 @@ storageuser: pykotauser
 # storageadminpw: Comment out if unused, or set to Quota Storage admin password
 # storageuserpw: Comment out if unused, or set to Quota Storage user password
 
+# LDAP example :
+#storagebackend: ldapstorage
+#storageserver: ldap://ldap.librelogiciel.com:389
+#storagename: dc=librelogiciel,dc=com
+#storageadmin: cn=admin,dc=librelogiciel,dc=com
+#storageuser: cn=admin,dc=librelogiciel,dc=com
+#storageadminpw: abc.123
+#storageuserpw: xyz.345
+
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)
 # if the value is not set then the default SYSTEM applies.

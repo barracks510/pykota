@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.32  2003/06/05 11:19:13  jalet
+# More good work on LDAP storage.
+#
 # Revision 1.31  2003/04/30 13:36:40  jalet
 # Stupid accounting method was added.
 #
@@ -193,7 +196,7 @@ class SQLStorage :
             return
             
     def getPrinterUsers(self, printerid) :        
-        """Returns the list of usernames which uses a given printer."""
+        """Returns the list of userids and usernames which uses a given printer."""
         result = self.doQuery("SELECT DISTINCT id, username FROM users WHERE id IN (SELECT userid FROM userpquota WHERE printerid=%s) ORDER BY username" % self.doQuote(printerid))
         result = self.doParseResult(result)
         if result is None :
