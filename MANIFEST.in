@@ -3,3 +3,4 @@ recursive-include po *.po *.mo *.pot
 recursive-include docs *.xml
 recursive-include conf README *.sample
 recursive-include initscripts README README.* pykota-*
+recursive-include debian README printquota
