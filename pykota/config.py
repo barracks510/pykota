@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.45  2004/03/01 10:22:30  jalet
+# Can now extract per printer pre and post hooks from the configuration file
+#
 # Revision 1.44  2004/02/20 14:42:21  jalet
 # Experimental ldapcache directive added
 #
@@ -303,10 +306,7 @@ class PyKotaConfig :
            for its internal lifetime page counter.
         """   
         validaccounters = [ "querying", "stupid", "external" ]     
-        try :
-            fullaccounter = self.getPrinterOption(printername, "accounter").strip()
-        except PyKotaConfigError :    
-            fullaccounter = "querying"
+        fullaccounter = self.getPrinterOption(printername, "accounter").strip()
         if fullaccounter.lower().startswith("external") :    
             try :
                 (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
@@ -322,6 +322,20 @@ class PyKotaConfig :
         else :    
             return (fullaccounter.lower(), None)
         
+    def getPreHook(self, printername) :    
+        """Returns the prehook command line to launch, or None if unset."""
+        try :
+            return self.getPrinterOption(printername, "prehook").strip()
+        except PyKotaConfigError :    
+            return      # No command to launch in the pre-hook
+            
+    def getPostHook(self, printername) :    
+        """Returns the posthook command line to launch, or None if unset."""
+        try :
+            return self.getPrinterOption(printername, "posthook").strip()
+        except PyKotaConfigError :    
+            return      # No command to launch in the post-hook
+            
     def getRequesterBackend(self, printername) :    
         """Returns the requester backend to use for a given printer, with its arguments."""
         try :
