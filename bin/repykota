@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/07 00:08:52  jalet
+# Typos
+#
 # Revision 1.2  2003/02/06 23:58:05  jalet
 # repykota should be ok
 #
@@ -90,13 +93,13 @@ class RePyKota(PyKotaTool) :
             print "Page grace time: %idays" % self.config.getGraceDelay()
             if options["users"] :
                 print "User            used    soft    hard  grace"
-                print "-------------------------------------------"
+                print "-----------------------------------------------------------"
                 for name in self.storage.getPrinterUsers(printer) :
                     quota = self.storage.getUserPQuota(name, printer)
                     self.printQuota(name, quota)
             else :
                 print "Group           used    soft    hard  grace"
-                print "-------------------------------------------"
+                print "-----------------------------------------------------------"
                 for name in self.storage.getPrinterGroups(printer) :
                     quota = self.storage.getGroupPQuota(name, printer) 
                     self.printQuota(name, quota)
