@@ -28,6 +28,8 @@ PyKota NEWS :
           
         - Translation files fixed because of fuzzy matching problem.  
         
+        - Fixed path to Swedish translation: 'sv' instead of 'se'
+        
     - 1.19alpha35 :
     
         - Generic PDL analyzer now supports Binary PostScript documents
