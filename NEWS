@@ -23,6 +23,8 @@ PyKota NEWS :
 
     - 1.20alpha19 :
     
+        - Finished implementation of LDAP support in dumpykota.
+        
         - The md5 sum of the job's datas is now available as an 
           hexadecimal digest in the PYKOTAMD5SUM environment variable.
           

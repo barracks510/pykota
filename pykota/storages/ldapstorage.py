@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.81  2004/10/04 11:27:57  jalet
+# Finished LDAP support for dumpykota.
+#
 # Revision 1.80  2004/10/03 19:57:57  jalet
 # Dump of payments should work with LDAP backend now.
 #
@@ -1336,17 +1339,21 @@ class Storage(BaseStorage) :
         """Extracts all userpquota records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
+            result = [ ("pykotaUserName", "pykotaPrinterName", "dn", "userdn", "printerdn", "pykotaLifePageCounter", "pykotaPageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit") ]
             for entry in entries :
-                userpquotas = [ upq for (u, upq) in self.getPrinterUsersAndQuotas(entry) ]
-            pass    
+                for (user, userpquota) in self.getPrinterUsersAndQuotas(entry) :
+                    result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
+            return result
         
     def extractGpquotas(self) :
         """Extracts all grouppquota records."""
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames()] if p.Exists]
         if entries :
+            result = [ ("pykotaGroupName", "pykotaPrinterName", "dn", "groupdn", "printerdn", "pykotaLifePageCounter", "pykotaPageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit") ]
             for entry in entries :
-                grouppquotas = [ gpq for (g, gpq) in self.getPrinterGroupsAndQuotas(entry) ]
-            pass
+                for (group, grouppquota) in self.getPrinterGroupsAndQuotas(entry) :
+                    result.append((group.Name, entry.Name, grouppquota.ident, group.ident, entry.ident, grouppquota.LifePageCounter, grouppquota.PageCounter, grouppquota.SoftLimit, grouppquota.HardLimit, grouppquota.DateLimit))
+            return result
         
     def extractUmembers(self) :
         """Extracts all user groups members."""
