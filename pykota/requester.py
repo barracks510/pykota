@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/11/25 23:46:40  jalet
+# Don't try to verify if module name is valid, Python does this better than us.
+#
 # Revision 1.9  2003/10/07 09:07:28  jalet
 # Character encoding added to please latest version of Python
 #
@@ -67,10 +70,7 @@ def openRequester(config, printername) :
     """Returns a connection handle to the appropriate requester."""
     (backend, args) = config.getRequesterBackend(printername)
     try :
-        if not backend.isalpha() :
-            # don't trust user input
-            raise ImportError
-        exec "from pykota.requesters import %s as requesterbackend" % backend.lower()    
+        exec "from pykota.requesters import %s as requesterbackend" % backend.lower()
     except ImportError :
         raise PyKotaRequesterError, _("Unsupported requester backend %s") % backend
     else :    

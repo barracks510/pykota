@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.28  2003/11/25 23:46:40  jalet
+# Don't try to verify if module name is valid, Python does this better than us.
+#
 # Revision 1.27  2003/11/23 19:01:36  jalet
 # Job price added to history
 #
@@ -442,15 +445,7 @@ def openConnection(pykotatool) :
     backendinfo = pykotatool.config.getStorageBackend()
     backend = backendinfo["storagebackend"]
     try :
-        if not backend.isalpha() :
-            # don't trust user input
-            raise ImportError
-        #    
-        # TODO : descending compatibility
-        # 
-        if backend == "postgresql" :
-            backend = "pgstorage"       # TODO : delete, this is for descending compatibility only
-        exec "from pykota.storages import %s as storagebackend" % backend.lower()    
+        exec "from pykota.storages import %s as storagebackend" % backend.lower()
     except ImportError :
         raise PyKotaStorageError, _("Unsupported quota storage backend %s") % backend
     else :    

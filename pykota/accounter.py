@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2003/11/25 23:46:40  jalet
+# Don't try to verify if module name is valid, Python does this better than us.
+#
 # Revision 1.6  2003/11/12 23:28:55  jalet
 # More work on new backend. This commit may be unstable.
 #
@@ -93,10 +96,7 @@ def openAccounter(kotafilter) :
     """Returns a connection handle to the appropriate accounter."""
     (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.printername)
     try :
-        if not backend.isalpha() :
-            # don't trust user input
-            raise ImportError
-        exec "from pykota.accounters import %s as accounterbackend" % backend.lower()    
+        exec "from pykota.accounters import %s as accounterbackend" % backend.lower()
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
     else :    
