@@ -15,6 +15,9 @@
 #
 for dir in br en es fr it pt se ; do 
     cd $dir ;
+    msgmerge pykota.po ../pykota.pot >pykota.po.new
+    mv pykota.po.new pykota.po
+    rm pykota.mo
     msgfmt -o pykota.mo pykota.po ;
     cd .. ;
 done

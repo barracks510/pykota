@@ -27,126 +27,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyKota v1.19\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
-"POT-Creation-Date: 2004-01-15 11:51+0100\n"
+"POT-Creation-Date: 2004-07-21 15:35:00+0100\n"
 "PO-Revision-Date: 2004-01-15 12:00+0100\n"
 "Last-Translator: Jerome Alet <alet@librelogiciel.com>\n"
 "Language-Team: Swedish <alet@librelogiciel.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "Mottog SIGTERM, utskrift %s avbröts."
-
-#, python-format
-msgid "SIGTERM was sent to real backend %s (pid: %s)"
-msgstr "SIGTERM sändes till bakgrundsprocess %s (pid: %s)"
-
-#, python-format
-msgid "CUPS backend %s died abnormally."
-msgstr "CUPS bakgrundsprocess %s avbröts oväntat."
-
-#, python-format
-msgid "Invalid softlimit value %s."
-msgstr "Ogiltigt mjukgränsvärde %s."
-
-#, python-format
-msgid "Invalid hardlimit value %s."
-msgstr "Ogiltigt hårdgränsvärde %s."
-
-#, python-format
-msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
-msgstr "Hårdgränsvärdet %i är mindre än mjukgränsvärdet %i, värdena kommer bytas."
-
-#, python-format
-msgid "Invalid balance value %s"
-msgstr "Ogiltigt saldovärde %s. "
-
-#, python-format
-msgid "Invalid charge amount value %s"
-msgstr "Ogiltigt värde %s på pris."
-
-#, python-format
-msgid "Invalid limitby value %s"
-msgstr "Ogiltigt värde %s på variabeln limitby"
-
-#, python-format
-msgid "Impossible to add printer %s"
-msgstr "Omöjligt att lägga till skrivare %s"
-
-#, python-format
-msgid "Invalid printer name %s"
-msgstr "Ogiltigt skrivarnamn %s"
-
-#, python-format
-msgid "There's no printer matching %s"
-msgstr "Det finns ingen matchande skrivare till %s"
-
-msgid "You have to pass user or group names on the command line"
-msgstr "Du måste skicka med användare- eller gruppnamn på kommandoraden"
-
-msgid "You have to pass printer names on the command line"
-msgstr "Du måste skicka med skrivarnamn på kommandoraden"
-
-#, python-format
-msgid "Prototype %s not found in Quota Storage for printer %s."
-msgstr "Prototypen %s hittas inte i PyKotasystemet för skrivaren %s."
-
-#, python-format
-msgid "Prototype object %s not found in Quota Storage."
-msgstr "Prototypen för objektet %s hittas inte i PyKotasystemet"
-
-#, python-format
-msgid "Undefined hard limit set to soft limit (%s) on printer %s."
-msgstr "Odefinerat hårdgränsvärde satt till mjukgränsvärde (%s) på printer %s."
-
-#, python-format
-msgid "Undefined soft limit set to hard limit (%s) on printer %s."
-msgstr "Odefinerat mjukgränsvärde satt till hårdgränsvärde (%s) på printer %s."
-
-#, python-format
-msgid "Invalid email address %s"
-msgstr "Ogiltig epostadress %s"
-
-#, python-format
-msgid "Invalid group name %s"
-msgstr "Ogiltigt gruppnamn %s"
-
-#, python-format
-msgid "Invalid user name %s"
-msgstr "Ogiltigt användarnamn %s"
-
-#, python-format
-msgid "Quota not found for object %s on printer %s."
-msgstr "Utskriftssaldo hittades inte för objekt %s på printer %s."
-
-#, python-format
-msgid "Group %s not found in the PyKota Storage."
-msgstr "Gruppen %s hittades inte i PyKotasystemet."
-
-msgid "incompatible options, see help."
-msgstr "Oförenliga val, se manualerna"
-
-#, python-format
-msgid "Printer %s not registered in the PyKota system"
-msgstr "Skrivaren %s är inte registrerad i PyKotasystemet"
-
-#, python-format
-msgid "Printer %s was never used"
-msgstr "Skrivare %s aldrig använd"
-
-#, python-format
-msgid "Your account balance : %.2f"
-msgstr "Ditt utskriftssaldo : %.2f"
-
-#, python-format
-msgid "Job size : %i pages"
-msgstr "Utskriftsstorlek : %i sidor"
-
-#, python-format
-msgid "Cost on printer %s : %.2f"
-msgstr "Kostnad på skrivare %s : %.2f"
 
 #, python-format
 msgid "Unsupported accounter backend %s"
@@ -175,6 +62,10 @@ msgstr "Ogiltig redovisningsmetod %s för printern %s"
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
 msgstr "Variabeln 'accounter' i sektion '%s' stödjer bara värden i %s"
+
+#, fuzzy, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "Variabeln 'policy' i sektion '%s' stödjer bara värden i %s"
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
@@ -279,6 +170,10 @@ msgid "Unsupported quota storage backend %s"
 msgstr "Ej understödd metod %s för att lagra data"
 
 #, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr ""
+
+#, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
 msgstr "Kunde inte sända epost till %s, felmeddelande %s : %s"
 
@@ -297,16 +192,17 @@ msgstr ""
 "\t%s - <%s>\n"
 
 #, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"Kunde inte matcha användare %s på skrivare %s, tillämpar standardpolicyn (%s)"
+
+#, python-format
 msgid ""
 "Unable to find user %s's account balance, applying default policy (%s) for "
 "printer %s"
 msgstr ""
-"Kunde inte hitta utskriftssaldo för användare %s, tillämpar standardpolicyn (%s) för "
-"skrivare %s"
-
-#, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr "Kunde inte matcha användare %s på skrivare %s, tillämpar standardpolicyn (%s)"
+"Kunde inte hitta utskriftssaldo för användare %s, tillämpar standardpolicyn "
+"(%s) för skrivare %s"
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
@@ -333,6 +229,18 @@ msgstr "Utskriftssaldot är lågt användare %s på skrivare %s"
 msgid "Print Quota Low"
 msgstr "Utskriftssaldo lågt"
 
+#, fuzzy, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Utskriftsystem okänt, args=%s"
+
+#, fuzzy, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "Mottog SIGTERM, utskrift %s avbröts."
+
 msgid "Printer hostname undefined, set to 'localhost'"
 msgstr "Skrivarens värdnamn ej definerat, sätts till 'localhost'"
 
@@ -345,8 +253,8 @@ msgid ""
 "Printer %s not registered in the PyKota system, applying external policy (%"
 "s) for printer %s"
 msgstr ""
-"Skrivare %s inte registrerad i PyKotasystemet, tillämpar extern policy (%"
-"s) för skrivare %s"
+"Skrivare %s inte registrerad i PyKotasystemet, tillämpar extern policy (%s) "
+"för skrivare %s"
 
 #, python-format
 msgid ""
@@ -361,38 +269,39 @@ msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "external policy (%s) for printer %s"
 msgstr ""
-"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, tillämpar"
-"extern policy (%s) för skrivare %s"
+"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, "
+"tillämparextern policy (%s) för skrivare %s"
 
 #, python-format
 msgid ""
 "External policy %s for printer %s produced an error. Job rejected. Please "
 "check PyKota's configuration files."
 msgstr ""
-"Extern policy %s för skrivare %s lämnade ett felmeddelande. Utskrift avbruten. "
-"Vänligen kontrollera PyKotas konfigurationsfiler."
+"Extern policy %s för skrivare %s lämnade ett felmeddelande. Utskrift "
+"avbruten. Vänligen kontrollera PyKotas konfigurationsfiler."
 
 #, python-format
 msgid ""
 "Printer %s not registered in the PyKota system, applying default policy (%s)"
 msgstr ""
-"Skrivare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy (%s)"
+"Skrivare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy (%"
+"s)"
 
 #, python-format
 msgid ""
 "User %s not registered in the PyKota system, applying default policy (%s) "
 "for printer %s"
 msgstr ""
-"Användare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy (%s) "
-"för skrivare %s"
+"Användare %s är inte registrerad i PyKotasystemet, tillämpar standardpolicy "
+"(%s) för skrivare %s"
 
 #, python-format
 msgid ""
 "User %s doesn't have quota on printer %s in the PyKota system, applying "
 "default policy (%s)"
 msgstr ""
-"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, tillämpar "
-"standardpolicy (%s)"
+"Användare %s har inget utskriftssaldo på skrivare %s i PyKotasystemet, "
+"tillämpar standardpolicy (%s)"
 
 #, python-format
 msgid ""
@@ -413,34 +322,54 @@ msgid ""
 "User %s still doesn't have quota on printer %s in the PyKota system, job "
 "will be rejected"
 msgstr ""
-"Användare %s har fortfarande inget utskriftssaldo på skrivare %s i PyKotasystemet,"
-"utskriften avbryts"
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
-
-msgid "Using the 'stupid' accounting method is unreliable."
-msgstr "Användande av metoden 'puckad' ('stupid') för utskriftsberäkning är inte tillförlitligt"
+"Användare %s har fortfarande inget utskriftssaldo på skrivare %s i "
+"PyKotasystemet,utskriften avbryts"
 
 msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr "Summor kan vara felaktiga om vissa användare är medlemmar i flera grupper."
+msgstr ""
+"Summor kan vara felaktiga om vissa användare är medlemmar i flera grupper."
 
 #, python-format
 msgid "Unknown printer address in HARDWARE(%s) for printer %s"
 msgstr "Okänd skrivaradress i HARDWARE(%s) för skrivare %s"
 
 #, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr ""
+
+#, python-format
+msgid "Incorrect answer : %s"
+msgstr ""
+
+#, fuzzy, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "SIGTERM sändes till bakgrundsprocess %s (pid: %s)"
+
+#, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
 msgstr "Kunde inte hämta information från skrivare %s via HARDWARE(%s)"
 
 #, python-format
-msgid "Unknown printer address in SNMP(%s, %s) for printer %s"
-msgstr "Okänd skrivaradress i SNMP(%s, %s) för skrivare %s"
+msgid "Launching SOFTWARE(%s)..."
+msgstr ""
 
 #, python-format
-msgid "Unable to query printer %s via SNMP(%s, %s)"
-msgstr "Kunde inte hämta information från skrivare %s via SNMP(%s, %s)"
+msgid "Unable to compute job size with accounter %s"
+msgstr "Kunde inte beräkna utskriftsstorlek med metod %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr ""
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
@@ -459,11 +388,96 @@ msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problem med att modifiera LDAP post (%s, %s)"
 
 #, python-format
-msgid "Printer %s already exists, skipping."
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
 msgstr ""
 
 #, python-format
-msgid "Printer %s already exists, will be modified."
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+
+msgid "PyKota Reports"
+msgstr ""
+
+msgid "Report"
+msgstr ""
+
+msgid "User / Group names mask"
+msgstr ""
+
+msgid "Groups report"
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "Empty"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Printer"
+msgstr ""
+
+msgid "Hostname"
+msgstr ""
+
+msgid "JobId"
+msgstr ""
+
+msgid "JobSize"
+msgstr ""
+
+msgid "JobPrice"
+msgstr ""
+
+msgid "Copies"
+msgstr ""
+
+msgid "JobBytes"
+msgstr ""
+
+msgid "PageCounter"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Filename"
+msgstr ""
+
+msgid "Options"
+msgstr ""
+
+msgid "Job contains no data. Printing is denied."
+msgstr ""
+
+msgid "Job accounting begins."
+msgstr ""
+
+msgid "Job accounting ends."
+msgstr ""
+
+msgid "Job size forced to 0 because printing is denied."
+msgstr ""
+
+#, fuzzy, python-format
+msgid "Job size : %i"
+msgstr "Utskriftsstorlek : %i sidor"
+
+#, fuzzy, python-format
+msgid "Updating user %s's quota on printer %s"
+msgstr "Rapport för %s utskriftssaldo på skrivare %s"
+
+msgid "Job added to history."
 msgstr ""
 
 #, python-format
@@ -471,6 +485,181 @@ msgid "File number %s unregistered twice from polling object, ignored."
 msgstr ""
 
 #, python-format
-msgid "Impossible to connect to SMTP server : %s"
+msgid "SIGTERM was sent to real backend %s (pid: %s)"
+msgstr "SIGTERM sändes till bakgrundsprocess %s (pid: %s)"
+
+#, python-format
+msgid "CUPS backend %s died abnormally."
+msgstr "CUPS bakgrundsprocess %s avbröts oväntat."
+
+#, python-format
+msgid "Invalid softlimit value %s."
+msgstr "Ogiltigt mjukgränsvärde %s."
+
+#, python-format
+msgid "Invalid hardlimit value %s."
+msgstr "Ogiltigt hårdgränsvärde %s."
+
+#, python-format
+msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
+msgstr ""
+"Hårdgränsvärdet %i är mindre än mjukgränsvärdet %i, värdena kommer bytas."
+
+#, python-format
+msgid "Invalid balance value %s"
+msgstr "Ogiltigt saldovärde %s. "
+
+#, python-format
+msgid "Invalid charge amount value %s"
+msgstr "Ogiltigt värde %s på pris."
+
+#, python-format
+msgid "Invalid limitby value %s"
+msgstr "Ogiltigt värde %s på variabeln limitby"
+
+#, python-format
+msgid "Impossible to add printer %s"
+msgstr "Omöjligt att lägga till skrivare %s"
+
+#, python-format
+msgid "Invalid printer name %s"
+msgstr "Ogiltigt skrivarnamn %s"
+
+#, python-format
+msgid "There's no printer matching %s"
+msgstr "Det finns ingen matchande skrivare till %s"
+
+msgid "You have to pass user or group names on the command line"
+msgstr "Du måste skicka med användare- eller gruppnamn på kommandoraden"
+
+#, python-format
+msgid "Prototype %s not found in Quota Storage for printer %s."
+msgstr "Prototypen %s hittas inte i PyKotasystemet för skrivaren %s."
+
+#, python-format
+msgid "Prototype object %s not found in Quota Storage."
+msgstr "Prototypen för objektet %s hittas inte i PyKotasystemet"
+
+#, python-format
+msgid "Undefined hard limit set to soft limit (%s) on printer %s."
+msgstr "Odefinerat hårdgränsvärde satt till mjukgränsvärde (%s) på printer %s."
+
+#, python-format
+msgid "Undefined soft limit set to hard limit (%s) on printer %s."
+msgstr "Odefinerat mjukgränsvärde satt till hårdgränsvärde (%s) på printer %s."
+
+#, python-format
+msgid "Invalid email address %s"
+msgstr "Ogiltig epostadress %s"
+
+#, python-format
+msgid "Invalid group name %s"
+msgstr "Ogiltigt gruppnamn %s"
+
+#, python-format
+msgid "Invalid user name %s"
+msgstr "Ogiltigt användarnamn %s"
+
+#, python-format
+msgid "Quota not found for object %s on printer %s."
+msgstr "Utskriftssaldo hittades inte för objekt %s på printer %s."
+
+#, python-format
+msgid "Group %s not found in the PyKota Storage."
+msgstr "Gruppen %s hittades inte i PyKotasystemet."
+
+msgid "incompatible options, see help."
+msgstr "Oförenliga val, se manualerna"
+
+#, python-format
+msgid "Printer %s already exists, skipping."
 msgstr ""
 
+#, python-format
+msgid "Printer %s already exists, will be modified."
+msgstr ""
+
+msgid "in"
+msgstr ""
+
+#, fuzzy
+msgid "You have to pass printer groups names on the command line"
+msgstr "Du måste skicka med skrivarnamn på kommandoraden"
+
+msgid "You have to pass printer names on the command line"
+msgstr "Du måste skicka med skrivarnamn på kommandoraden"
+
+msgid "Software accounting already done in first pass. Exiting."
+msgstr ""
+
+msgid ""
+"Hardware accounting already finished ! This should be impossible, please "
+"report this problem ASAP."
+msgstr ""
+
+#, fuzzy, python-format
+msgid "Invalid DeviceURI : %s"
+msgstr "Ogiltigt uppskovsvärde (grace delay) %s"
+
+msgid ""
+"\n"
+"Please wait while pkhint analyzes your printing system's configuration..."
+msgstr ""
+
+#, fuzzy, python-format
+msgid "Unknown device %s for printer %s"
+msgstr "Ogiltig policy %s för skrivare %s"
+
+msgid ""
+"\n"
+"Put the following lines into your /etc/pykota/pykota.conf file :\n"
+msgstr ""
+
+msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
+msgstr ""
+
+msgid "# that hardware accounting wouldn't work, this only means that PyKota"
+msgstr ""
+
+msgid "# wasn't able to autodetect which hardware accounting method to use."
+msgstr ""
+
+#, fuzzy, python-format
+msgid "Invalid duration option %s"
+msgstr "Ogiltigt skrivarnamn %s"
+
+#, fuzzy, python-format
+msgid "Invalid loop option %s"
+msgstr "Ogiltigt gruppnamn %s"
+
+#, fuzzy, python-format
+msgid "Invalid sleep option %s"
+msgstr "Ogiltigt användarnamn %s"
+
+#, fuzzy, python-format
+msgid "Invalid color option %s"
+msgstr "Ogiltig policy %s för skrivare %s"
+
+#, python-format
+msgid "User %s doesn't exist in PyKota's database"
+msgstr ""
+
+#, python-format
+msgid "Pages used on %s : %s"
+msgstr ""
+
+#, python-format
+msgid "PyKota Units left : %.2f"
+msgstr ""
+
+#, python-format
+msgid "Your account balance : %.2f"
+msgstr "Ditt utskriftssaldo : %.2f"
+
+#, python-format
+msgid "Job size : %i pages"
+msgstr "Utskriftsstorlek : %i sidor"
+
+#, python-format
+msgid "Cost on printer %s : %.2f"
+msgstr "Kostnad på skrivare %s : %.2f"
