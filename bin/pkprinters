@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.7  2004/05/06 12:51:58  jalet
+# Documentation
+#
 # Revision 1.6  2004/05/06 12:37:29  jalet
 # pkpgcounter : comments
 # pkprinters : when --add is used, existing printers are now skipped.
@@ -65,7 +68,8 @@ options :
   -h | --help          Prints this message then exits.
   
   -a | --add           Adds printers if they don't exist on the Quota 
-                       Storage Server.
+                       Storage Server. Doesn't modify any already
+                       existing printer.
                        
   -d | --delete        Deletes printers from the quota storage.
                        
@@ -102,11 +106,12 @@ examples :
 
   $ pkprinters --add --charge 0.05,0.1 hp2100 hp2200 hp8000
   
-  Will create three printers named hp2100, hp2200 and hp8000
-  or modify them if they already exist.
+  Will create three printers named hp2100, hp2200 and hp8000.
   Their price per page will be set at 0.05 unit, and their price
   per job will be set at 0.1 unit. Units are in your own currency,
   or whatever you want them to mean.
+  If any of these printers already exists, it is not modified at
+  all.
             
   $ pkprinters --delete "*"
   
