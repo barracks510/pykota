@@ -21,6 +21,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.21beta2 :
+    
+        - Fixed an LPRng specific bug.
+        
+        - Several improvements on stability issues with manually modified
+          LDAP trees.
+          
+        - Documentation improvements.  
+        
     - 1.21beta :
     
         - Prepared translation files for next release.

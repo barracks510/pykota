@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2005/03/02 17:00:03  jalet
+# Fixed a bad copy&paste
+#
 # Revision 1.17  2005/02/16 00:29:33  jalet
 # Fixed the maxdenybanners directive.
 # Introduced the denyduplicates directive.
@@ -217,7 +220,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
                                     action, filename=self.preserveinputfile, title=self.title, \
                                     copies=self.copies, options=self.options, clienthost=clienthost, \
-                                    jobsizebytes=self.jobSizeBytes, self.checksum)
+                                    jobsizebytes=self.jobSizeBytes, jobmd5sum=self.checksum)
             self.logdebug("Job added to history during first pass : Job's size and price are still unknown.")
             
         self.logdebug("First pass ends : ACTION_%s => %s => %s" % (action, getattr(printer, "Name", None), getattr(user, "Name", None)))
