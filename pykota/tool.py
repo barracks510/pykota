@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/02/27 22:55:20  jalet
+# WARN log priority doesn't exist.
+#
 # Revision 1.22  2003/02/27 09:09:20  jalet
 # Added a method to match strings against wildcard patterns
 #
@@ -250,7 +253,7 @@ class PyKotaTool :
                 action = "ALLOW"
             else :    
                 action = "DENY"
-            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action), "warn")
+            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (username, printername, action), "info")
             return (action, None, None)
         else :    
             pagecounter = quota["pagecounter"]

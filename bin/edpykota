@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.23  2003/02/27 22:55:20  jalet
+# WARN log priority doesn't exist.
+#
 # Revision 1.22  2003/02/27 09:37:02  jalet
 # Wildcards seem to work now
 #
@@ -208,7 +211,7 @@ class EdPyKota(PyKotaTool) :
                 raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
         if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
             # error, exchange them
-            self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit), "warn")
+            self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit), "info")
             (softlimit, hardlimit) = (hardlimit, softlimit)
         if not names :    
             if options["add"] :

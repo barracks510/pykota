@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2003/02/27 22:55:20  jalet
+# WARN log priority doesn't exist.
+#
 # Revision 1.2  2003/02/05 23:47:54  jalet
 # Forgotten default argument
 #
@@ -38,9 +41,5 @@ class Logger :
         
     def log_message(self, message, level="info") :
         """Sends the message to syslog."""
-        try :
-            priority = getattr(syslog, "LOG_%s" % level.upper())
-        except AttributeError :    
-            # Bad priority name, we log this as a DEBUG message
-            priority = syslog.LOG_DEBUG
+        priority = getattr(syslog, "LOG_%s" % level.upper(), syslog.LOG_DEBUG)
         syslog.syslog(priority, message)
