@@ -13,6 +13,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.5  2003/03/12 19:06:08  jalet
+-- Initial support for groups added.
+--
 -- Revision 1.4  2003/02/27 08:40:14  jalet
 -- DATETIME is not supported anymore in PostgreSQL 7.3 it seems, but
 -- TIMESTAMP is.
@@ -90,18 +93,23 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
 CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
                          groupid INT4 REFERENCES groups(id),
                          printerid INT4 REFERENCES printers(id),
-                         lifepagecounter INT4 DEFAULT 0,
-                         pagecounter INT4 DEFAULT 0,
                          softlimit INT4,
                          hardlimit INT4,
                          datelimit TIMESTAMP);
                         
+--                         
+-- Create the groups/members relationship
+--
+CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
+                           userid INT4 REFERENCES users(id),
+                           PRIMARY KEY (groupid, userid));
+
 --                        
 -- Set some ACLs                        
 --
-REVOKE ALL ON users, groups, printers, userpquota, grouppquota FROM public;                        
-GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota TO pykotaadmin;
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers FROM public;                        
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers TO pykotaadmin;
 GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq TO pykotaadmin;
 GRANT SELECT, UPDATE ON printers, userpquota, grouppquota TO pykotauser;
-GRANT SELECT ON users, groups TO pykotauser;
+GRANT SELECT ON users, groups, groupsmembers TO pykotauser;
 
