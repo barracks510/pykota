@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.43  2003/11/06 22:33:25  jalet
+# French variable name
+#
 # Revision 1.42  2003/10/08 21:41:38  jalet
 # External policies for printers works !
 # We can now auto-add users on first print, and do other useful things if needed.
@@ -280,7 +283,7 @@ def main(thefilter) :
         # we let the job pass through, but log a warning message
         thefilter.logger.log_message(_("Printer %s not registered in the PyKota system") % thefilter.printername, "warn")
     else :    
-        for compteur in range(2) :
+        for dummy in range(2) :
             user = thefilter.storage.getUser(thefilter.username)
             if user.Exists :
                 break
