@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.51  2004/10/04 16:11:38  jalet
+# Now outputs page counters when dumping user groups quotas
+#
 # Revision 1.50  2004/10/04 16:01:15  jalet
 # More complete dumps for groups and groups quotas
 #
@@ -132,7 +135,7 @@ class SQLStorage :
         
     def extractGpquotas(self) :
         """Extracts all grouppquota records."""
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.* FROM groups,printers,grouppquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid ORDER BY grouppquota.id ASC")
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,sum(pagecounter) AS pagecounter,sum(lifepagecounter) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY grouppquota.id")
         return self.prepareRawResult(result)
         
     def extractUmembers(self) :
