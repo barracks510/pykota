@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.108  2004/06/24 23:09:30  jalet
+# Also prints read size on last block
+#
 # Revision 1.107  2004/06/23 13:03:28  jalet
 # Catches accounter configuration errors earlier
 #
@@ -938,6 +941,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                     self.sendBackChannelData("%s bytes read..." % self.jobSizeBytes)
                 dummy += 1    
                 infile.write(data)
+            self.sendBackChannelData("%s bytes read total." % self.jobSizeBytes)
             infile.flush()    
             infile.seek(0)
             return infile
