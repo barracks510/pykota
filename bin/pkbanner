@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.4  2004/11/15 19:59:34  jalet
+# PyKota banners now basically work !
+#
 # Revision 1.3  2004/11/12 23:46:44  jalet
 # Heavy work on pkbanner. Not finished yet though, but mostly works.
 #
@@ -38,6 +41,7 @@
 import sys
 import os
 import cStringIO
+import popen2
 
 try :
     from reportlab.pdfgen import canvas
@@ -197,8 +201,23 @@ class PyKotaBanner(Tool) :
             pagesize = self.getPageSize("a4")
             self.printInfo("Unknown page size %s, defaulting to A4." % options["pagesize"], "warn")
             
+        self.logdebug("Generating the banner in PDF format...")    
         doc = self.genPDF(pagesize, options["logo"], options["url"].strip())
-        print doc
+        
+        self.logdebug("Converting the banner to PostScript...")    
+        os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
+        child = popen2.Popen3("gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sDEVICE=pswrite -sOutputFile=- - 2>/tmp/errgs")
+        child.tochild.write(doc)
+        child.tochild.close()
+        sys.stdout.write(child.fromchild.read())
+        sys.stdout.flush()
+        child.fromchild.close()
+        status = child.wait()
+        if os.WIFEXITED(status) :
+            status = os.WEXITSTATUS(status)
+        self.logdebug("PDF to PostScript converter exit code is %s" % str(status))
+        self.logdebug("Banner completed.")
+        return status
 
 def getInfo(name) :
     """Extracts some information from the environment."""

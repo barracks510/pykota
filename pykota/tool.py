@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.140  2004/11/15 19:59:34  jalet
+# PyKota banners now basically work !
+#
 # Revision 1.139  2004/11/15 15:54:03  jalet
 # Continued integration of Matt's patch for banners
 #
@@ -1220,14 +1223,14 @@ class PyKotaFilterOrBackend(PyKotaTool) :
            Returns the banner's content in a format which MUST be accepted
            by the printer.
         """
-        banner = "" # no banner by default
         if bannerfileorcommand :
+            banner = "" # no banner by default
             if (os.access(bannerfileorcommand, os.X_OK)) :
                 self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
                 child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
+                banner = child.fromchild.read()
                 child.tochild.close()
                 child.childerr.close()
-                banner = child.fromchild.read()
                 child.fromchild.close()
                 status = child.wait()
                 if os.WIFEXITED(status) :
@@ -1242,7 +1245,8 @@ class PyKotaFilterOrBackend(PyKotaTool) :
                 else :    
                     banner = fh.read()
                     fh.close()
-        return cStringIO.StringIO(banner)
+            if banner :        
+                return cStringIO.StringIO(banner)
     
     def startingBanner(self, printername) :
         """Retrieves a starting banner for current printer and returns its content."""

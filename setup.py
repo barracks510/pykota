@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.59  2004/11/15 19:59:34  jalet
+# PyKota banners now basically work !
+#
 # Revision 1.58  2004/11/12 23:46:43  jalet
 # Heavy work on pkbanner. Not finished yet though, but mostly works.
 #
@@ -300,5 +303,5 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/autopykota", "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
+      scripts = [ "bin/pkbanner", "bin/autopykota", "bin/dumpykota", "bin/pkpgcounter", "bin/snmpprinterstatus", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
       data_files = data_files)

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.78  2004/11/15 19:59:34  jalet
+# PyKota banners now basically work !
+#
 # Revision 1.77  2004/11/06 22:40:57  jalet
 # Safer code
 #
@@ -468,9 +471,30 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # launches the pre hook
             self.prehook(userpquota)
+
+            # saves the size of banners which have to be accounted for
+            # this is needed in the case of software accounting
+            bannersize = 0
             
+            # handle starting banner pages before accounting
+            accountbanner = self.config.getAccountBanner(printer.Name)
+            if accountbanner in ["ENDING", "NONE"] :
+                banner = self.startingBanner(printer.Name)
+                if banner :
+                    self.logdebug("Printing starting banner before accounting begins.")
+                    self.handleData(banner)
+ 
             self.printMoreInfo(user, printer, _("Job accounting begins."))
             self.accounter.beginJob(printer)
+            
+            # handle starting banner pages during accounting
+            if accountbanner in ["STARTING", "BOTH"] :
+                banner = self.startingBanner(printer.Name)
+                if banner :
+                    self.logdebug("Printing starting banner during accounting.")
+                    self.handleData(banner)
+                    if self.accounter.isSoftware :
+                        bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
         else :    
             action = "ALLOW"
             os.environ["PYKOTAACTION"] = action
@@ -488,16 +512,32 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # indicate phase change
             os.environ["PYKOTAPHASE"] = "AFTER"
             
+            # handle ending banner pages during accounting
+            if accountbanner in ["ENDING", "BOTH"] :
+                banner = self.endingBanner(printer.Name)
+                if banner :
+                    self.logdebug("Printing ending banner during accounting.")
+                    self.handleData(banner)
+                    if self.accounter.isSoftware :
+                        bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
+ 
             # stops accounting. 
             self.accounter.endJob(printer)
             self.printMoreInfo(user, printer, _("Job accounting ends."))
                 
+            # handle ending banner pages after accounting ends
+            if accountbanner in ["STARTING", "NONE"] :
+                banner = self.endingBanner(printer.Name)
+                if banner :
+                    self.logdebug("Printing ending banner after accounting ends.")
+                    self.handleData(banner)
+ 
             # retrieve the job size    
             if action == "DENY" :
                 jobsize = 0
                 self.printMoreInfo(user, printer, _("Job size forced to 0 because printing is denied."))
             else :    
-                jobsize = self.accounter.getJobSize(printer)
+                jobsize = self.accounter.getJobSize(printer) + bannersize
             self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
             
             # update the quota for the current user on this printer 
@@ -548,7 +588,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             maskval.append("POLLNVAL")
         return "%s (%s)" % (fd, " | ".join(maskval))
         
-    def handleData(self) :                    
+    def handleData(self, filehandle=None) :
         """Pass the job's data to the real backend."""
         # Find the real backend pathname    
         realbackend = os.path.join(os.path.split(sys.argv[0])[0], self.originalbackend)
@@ -577,18 +617,25 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         totaltochild = totalfromcups = 0
         totalfromchild = totaltocups = 0
         
-        if self.preserveinputfile is None :
-            # this is not a real file, we read the job's data
-            # from our temporary file which is a copy of stdin 
-            infno = self.jobdatastream.fileno()
-            self.jobdatastream.seek(0)
-            pollster.register(infno, select.POLLIN | select.POLLPRI)
-        else :    
-            # job's data is in a file, no need to pass the data
-            # to the real backend
-            self.logdebug("Job's data is in %s" % self.preserveinputfile)
+        if filehandle is None:
+            if self.preserveinputfile is None :
+               # this is not a real file, we read the job's data
+                # from our temporary file which is a copy of stdin 
+                infno = self.jobdatastream.fileno()
+                self.jobdatastream.seek(0)
+                pollster.register(infno, select.POLLIN | select.POLLPRI)
+            else :    
+                # job's data is in a file, no need to pass the data
+                # to the real backend
+                self.logdebug("Job's data is in %s" % self.preserveinputfile)
+                infno = None
+                endinput = 1
+        else:
+            self.logdebug("Printing data passed from filehandle")
+            indata = filehandle.read()
             infno = None
             endinput = 1
+            filehandle.close()
         
         self.logdebug("Entering streams polling loop...")
         MEGABYTE = 1024*1024
