@@ -16,7 +16,7 @@
 for prog in autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pkhint pykosd ; do 
     echo $prog ;
     help2man --no-info --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
-    for loc in be br de el en es fr it pt sv th ; do
+    for loc in *_* ; do
         echo "  $loc" ;
         cd $loc ;
         help2man --no-info --locale=$loc --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
