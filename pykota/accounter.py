@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2004/10/24 12:49:02  jalet
+# Fixed bad indentation
+#
 # Revision 1.20  2004/09/13 16:02:45  jalet
 # Added fix for incorrect job's size when hardware accounting fails
 #
@@ -122,7 +125,7 @@ class AccounterBase :
         if ((self.filter.printingsystem == "CUPS") \
             and (self.filter.preserveinputfile is not None)) \
             or (self.filter.printingsystem != "CUPS") :
-                self.JobSize *= self.filter.copies
+            self.JobSize *= self.filter.copies
         
         # get last job information for this printer
         if not printer.LastJob.Exists :
