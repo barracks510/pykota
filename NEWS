@@ -28,7 +28,11 @@ PyKota NEWS :
           
         - Translation files fixed because of fuzzy matching problem.  
         
-        - Fixed path to Swedish translation: 'sv' instead of 'se'
+        - Fixed path to Swedish translation: 'sv' instead of 'se'.
+        
+        - Added first draft of Thai translation.
+        
+        - Fixed some minor bugs with Pychecker.
         
     - 1.19alpha35 :
     
