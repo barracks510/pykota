@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.101  2004/06/16 20:56:34  jalet
+# Smarter initialisation code
+#
 # Revision 1.100  2004/06/11 08:16:03  jalet
 # More exceptions catched in case of very early failure.
 #
@@ -420,10 +423,10 @@ class PyKotaTool :
             sys.stderr.write("ERROR: Problem encountered while parsing configuration file : %s\n" % msg)
             sys.stderr.flush()
             sys.exit(-1)
-        self.debug = self.config.getDebug()
-        self.smtpserver = self.config.getSMTPServer()
-        self.maildomain = self.config.getMailDomain()
         try :
+            self.debug = self.config.getDebug()
+            self.smtpserver = self.config.getSMTPServer()
+            self.maildomain = self.config.getMailDomain()
             self.logger = logger.openLogger(self.config.getLoggingBackend())
             self.storage = storage.openConnection(self)
         except (config.PyKotaConfigError, logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
@@ -465,9 +468,9 @@ class PyKotaTool :
         msg = "ERROR : ".join(["%s\n" % l for l in ([message] + lines)])
         sys.stderr.write(msg)
         sys.stderr.flush()
-        crashrecipient = self.config.getCrashRecipient()
-        if crashrecipient :
-            try :
+        try :
+            crashrecipient = self.config.getCrashRecipient()
+            if crashrecipient :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
                 fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
                                 (msg, \
@@ -476,8 +479,8 @@ class PyKotaTool :
                 server = smtplib.SMTP(self.smtpserver)
                 server.sendmail(admin, [admin, crashrecipient], "From: %s\nTo: %s\nCc: %s\nSubject: PyKota crash traceback !\n\n%s" % (admin, crashrecipient, admin, fullmessage))
                 server.quit()
-            except :
-                pass
+        except :
+            pass
         
     def parseCommandline(self, argv, short, long, allownothing=0) :
         """Parses the command line, controlling options."""

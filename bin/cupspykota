@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.62  2004/06/16 20:56:34  jalet
+# Smarter initialisation code
+#
 # Revision 1.61  2004/06/08 09:00:04  jalet
 # Fixed problem when username was passed in uppercase from Samba and we
 # tried to find correct line in CUPS page_log to extract the hostname.
@@ -697,6 +700,11 @@ if __name__ == "__main__" :
         except (TypeError, NameError, AttributeError) :    
             pass
             
-        kotabackend.closeJobDataStream()    
+        try :
+            kotabackend.closeJobDataStream()    
+        except NameError, msg :    
+            sys.stderr.write("ERROR: PyKota's CUPS backend wrapper didn't initialize correctly : %s\n" % msg)
+            sys.stderr.flush()
+            retcode = 1
         
     sys.exit(retcode)    
