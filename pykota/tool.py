@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.137  2004/11/01 16:21:17  jalet
+# Little change for locale+gettext
+#
 # Revision 1.136  2004/10/24 09:06:46  jalet
 # Added debug messages for LPRng support possible problem ???
 #
@@ -543,10 +546,12 @@ class PyKotaTool :
         defaultToCLocale = 0
         try :
             locale.setlocale(locale.LC_ALL, lang)
-            gettext.install("pykota")
         except (locale.Error, IOError) :
             locale.setlocale(locale.LC_ALL, "C")
             defaultToCLocale = 1
+        try :
+            gettext.install("pykota")
+        except :
             gettext.NullTranslations().install()
             
         # We can force the charset.    
