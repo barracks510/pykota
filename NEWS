@@ -31,6 +31,7 @@ PyKota NEWS :
           Pluggable accounting methods work, but I advise
           you TO NOT USE THIS ONE WHICH IS JUST AN EXAMPLE.
           It is not reliable enough to be used.
+          Use the 'querying' accounting method instead.
           
     - 1.05alpha2 :
     
