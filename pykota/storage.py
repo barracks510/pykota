@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2004/02/23 22:53:21  jalet
+# Don't retrieve data when it's not needed, to avoid database queries
+#
 # Revision 1.41  2004/02/04 17:12:33  jalet
 # Removing a printer from a printers group should work now.
 #
@@ -256,8 +259,15 @@ class StoragePrinter(StorageObject) :
         self.Name = name
         self.PricePerPage = None
         self.PricePerJob = None
-        self.LastJob = None
         
+    def __getattr__(self, name) :    
+        """Delays data retrieval until it's really needed."""
+        if name == "LastJob" : 
+            self.LastJob = self.parent.getPrinterLastJob(self)
+            return self.LastJob
+        else :
+            raise AttributeError, name
+            
     def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None) :
         """Adds a job to the printer's history."""
         self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options)
@@ -308,7 +318,14 @@ class StorageUserPQuota(StorageObject) :
         self.SoftLimit = None
         self.HardLimit = None
         self.DateLimit = None
-        self.ParentPrintersUserPQuota = (user.Exists and printer.Exists and parent.getParentPrintersUserPQuota(self)) or []
+        
+    def __getattr__(self, name) :    
+        """Delays data retrieval until it's really needed."""
+        if name == "ParentPrintersUserPQuota" : 
+            self.ParentPrintersUserPQuota = (self.User.Exists and self.Printer.Exists and self.parent.getParentPrintersUserPQuota(self)) or []
+            return self.ParentPrintersUserPQuota
+        else :
+            raise AttributeError, name
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
@@ -382,8 +399,8 @@ class StorageJob(StorageObject) :
     """Printer's Last Job class."""
     def __init__(self, parent) :
         StorageObject.__init__(self, parent)
-        self.User = None
-        self.Printer = None
+        self.UserName = None
+        self.PrinterName = None
         self.JobId = None
         self.PrinterPageCounter = None
         self.JobSize = None
@@ -395,11 +412,31 @@ class StorageJob(StorageObject) :
         self.JobCopies = None
         self.JobOptions = None
         
+    def __getattr__(self, name) :    
+        """Delays data retrieval until it's really needed."""
+        if name == "User" : 
+            self.User = self.parent.getUser(self.UserName)
+            return self.User
+        elif name == "Printer" :    
+            self.Printer = self.parent.getPrinter(self.PrinterName)
+            return self.Printer
+        else :
+            raise AttributeError, name
+        
 class StorageLastJob(StorageJob) :
     """Printer's Last Job class."""
     def __init__(self, parent, printer) :
         StorageJob.__init__(self, parent)
         self.Printer = printer
+        self.UserName = None
+        
+    def __getattr__(self, name) :    
+        """Delays data retrieval until it's really needed."""
+        if name == "User" : 
+            self.User = self.parent.getUser(self.UserName)
+            return self.User
+        else :    
+            raise AttributeError, name
         
     def setSize(self, jobsize) :
         """Sets the last job's size."""

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.37  2004/02/23 22:53:21  jalet
+# Don't retrieve data when it's not needed, to avoid database queries
+#
 # Revision 1.36  2004/02/04 13:24:41  jalet
 # pkprinters can now remove printers from printers groups.
 #
@@ -91,7 +94,6 @@ class SQLStorage :
             printer.ident = fields.get("id")
             printer.PricePerJob = fields.get("priceperjob")
             printer.PricePerPage = fields.get("priceperpage")
-            printer.LastJob = self.getPrinterLastJob(printer)
             printer.Exists = 1
         return printer    
         
@@ -138,7 +140,7 @@ class SQLStorage :
             fields = result[0]
             lastjob.ident = fields.get("id")
             lastjob.JobId = fields.get("jobid")
-            lastjob.User = self.getUser(fields.get("username"))
+            lastjob.UserName = fields.get("username")
             lastjob.PrinterPageCounter = fields.get("pagecounter")
             lastjob.JobSize = fields.get("jobsize")
             lastjob.JobPrice = fields.get("jobprice")
@@ -203,7 +205,6 @@ class SQLStorage :
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob")
                     printer.PricePerPage = record.get("priceperpage")
-                    printer.LastJob = self.getPrinterLastJob(printer)
                     printer.Exists = 1
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -390,8 +391,8 @@ class SQLStorage :
                 job.JobCopies = fields.get("copies")
                 job.JobOptions = fields.get("options")
                 job.JobDate = fields.get("jobdate")
-                job.User = self.getUser(fields.get("username"))
-                job.Printer = self.getPrinter(fields.get("printername"))
+                job.UserName = fields.get("username")
+                job.PrinterName = fields.get("printername")
                 job.Exists = 1
                 jobs.append(job)
         return jobs

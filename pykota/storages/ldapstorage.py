@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.55  2004/02/23 22:53:21  jalet
+# Don't retrieve data when it's not needed, to avoid database queries
+#
 # Revision 1.54  2004/02/20 16:38:39  jalet
 # ldapcache directive marked as experimental
 #
@@ -471,7 +474,6 @@ class Storage(BaseStorage) :
             printer.ident = result[0][0]
             printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
             printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
-            printer.LastJob = self.getPrinterLastJob(printer)
             printer.uniqueMember = fields.get("uniqueMember", [])
             printer.Exists = 1
         return printer    
@@ -556,7 +558,7 @@ class Storage(BaseStorage) :
                 fields = result[0][1]
                 lastjob.ident = result[0][0]
                 lastjob.JobId = fields.get("pykotaJobId")[0]
-                lastjob.User = self.getUser(fields.get("pykotaUserName")[0])
+                lastjob.UserName = fields.get("pykotaUserName")[0]
                 lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter")[0] or 0)
                 lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
                 lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
@@ -635,7 +637,6 @@ class Storage(BaseStorage) :
                 printer.PricePerJob = float(fields.get("pykotaPricePerJob")[0] or 0.0)
                 printer.PricePerPage = float(fields.get("pykotaPricePerPage")[0] or 0.0)
                 printer.uniqueMember = fields.get("uniqueMember", [])
-                printer.LastJob = self.getPrinterLastJob(printer)
                 printer.Exists = 1
                 printers.append(printer)
                 self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -992,8 +993,8 @@ class Storage(BaseStorage) :
                 second = int(date[12:14])
                 job.JobDate = "%04i-%02i-%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
                 if (datelimit is None) or (job.JobDate <= datelimit) :
-                    job.User = self.getUser(fields.get("pykotaUserName")[0])
-                    job.Printer = self.getPrinter(fields.get("pykotaPrinterName")[0])
+                    job.UserName = fields.get("pykotaUserName")[0]
+                    job.PrinterName = fields.get("pykotaPrinterName")[0]
                     job.Exists = 1
                     jobs.append(job)
             jobs.sort(lambda x,y : cmp(y.JobDate, x.JobDate))        
