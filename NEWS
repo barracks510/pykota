@@ -23,7 +23,7 @@ PyKota NEWS :
 
     - 1.21alpha18 :
     
-        - Now dumpykota can dumps the job history into CUPS' page_log
+        - Now dumpykota can dump the job history into CUPS' page_log
           format (even when the printing system is LPRng). This allows
           people to use tools like PrintAnalyzer or phpPrintAnalyzer 
           (two completely different beasts) with PyKota.
