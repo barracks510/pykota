@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2004/12/21 15:49:59  jalet
+# The dumpykota command now supports extended filtering capabilities with
+# the PostgreSQL backend. LDAP doesn't yet support such possibilities.
+#
 # Revision 1.60  2004/12/21 14:45:31  jalet
 # Prepared dumpykota to accept the new --filter command line option. Some
 # additionnal work needs to be done in the backends though.
@@ -135,49 +139,85 @@ class SQLStorage :
                 entries[i] = tuple(fields)    
             return entries
         
+    def createFilter(self, only) :    
+        """Returns the appropriate SQL filter."""
+        if only :
+            expressions = []
+            for (k, v) in only.items() :
+                expressions.append("%s=%s" % (k, self.doQuote(v)))
+            return " AND ".join(expressions)     
+        return ""        
+        
     def extractPrinters(self, extractonly={}) :
         """Extracts all printer records."""
-        result = self.doRawSearch("SELECT * FROM printers ORDER BY id ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "WHERE %s" % thefilter
+        result = self.doRawSearch("SELECT * FROM printers %s ORDER BY id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractUsers(self, extractonly={}) :
         """Extracts all user records."""
-        result = self.doRawSearch("SELECT * FROM users ORDER BY id ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "WHERE %s" % thefilter
+        result = self.doRawSearch("SELECT * FROM users %s ORDER BY id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractGroups(self, extractonly={}) :
         """Extracts all group records."""
-        result = self.doRawSearch("SELECT groups.*,COALESCE(SUM(balance), 0) AS balance, COALESCE(SUM(lifetimepaid), 0) as lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby ORDER BY groups.id ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "WHERE %s" % thefilter
+        result = self.doRawSearch("SELECT groups.*,COALESCE(SUM(balance), 0) AS balance, COALESCE(SUM(lifetimepaid), 0) as lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) %s GROUP BY groups.id,groups.groupname,groups.limitby ORDER BY groups.id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractPayments(self, extractonly={}) :
         """Extracts all payment records."""
-        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid ORDER BY payments.id ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "AND %s" % thefilter
+        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid %s ORDER BY payments.id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractUpquotas(self, extractonly={}) :
         """Extracts all userpquota records."""
-        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid ORDER BY userpquota.id ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "AND %s" % thefilter
+        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid %s ORDER BY userpquota.id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractGpquotas(self, extractonly={}) :
         """Extracts all grouppquota records."""
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY grouppquota.id")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "AND %s" % thefilter
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY grouppquota.id" % thefilter)
         return self.prepareRawResult(result)
         
     def extractUmembers(self, extractonly={}) :
         """Extracts all user groups members."""
-        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid ORDER BY groupsmembers.groupid, groupsmembers.userid ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "AND %s" % thefilter
+        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid %s ORDER BY groupsmembers.groupid, groupsmembers.userid ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractPmembers(self, extractonly={}) :
         """Extracts all printer groups members."""
-        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid ORDER BY printergroupsmembers.groupid, printergroupsmembers.printerid ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "AND %s" % thefilter
+        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid %s ORDER BY printergroupsmembers.groupid, printergroupsmembers.printerid ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractHistory(self, extractonly={}) :
         """Extracts all jobhistory records."""
-        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid ORDER BY jobhistory.id ASC")
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "AND %s" % thefilter
+        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid %s ORDER BY jobhistory.id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def getAllUsersNames(self) :    

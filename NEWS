@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha14 :
+    
+        - dumpykota now supports extended filtering possibilities
+          with the PostgreSQL backend (LDAP support will come soon).
+          
     - 1.21alpha13 :
     
         - Added a --debug command line option to pkpgcounter, so
