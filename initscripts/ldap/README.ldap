@@ -44,6 +44,22 @@ pykota.schema :
         include         /etc/ldap/schema/inetorgperson.schema
         include         /etc/ldap/schema/pykota.schema
         
+    While this is not mandatory, you may want to create    
+    some indexes to speed things up a bit :
+    
+      You should already have these :
+      
+        index objectClass eq
+        index cn pres,eq,sub
+        index uid pres,eq,sub
+        
+      But we recommend that you add these :  
+      
+        index pykotaUserName eq,sub
+        index pykotaGroupName eq,sub
+        index pykotaPrinterName eq,sub
+        index pykotaLastJobIdent eq
+        
     Finally, restart the OpenLDAP server :    
     
         $ /etc/init.d/slapd restart
