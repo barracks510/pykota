@@ -452,6 +452,9 @@ policy: deny
 # PYKOTADATELIMIT : user's soft to hard limit date limit on this printer
 # PYKOTASTATUS : contains "CANCELLED" when SIGTERM was received by PyKota
 #                else is not set.
+# PYKOTAPRECOMPUTEDJOBSIZE : contains the precomputed job's size
+# PYKOTAPRECOMPUTEDJOBPRICE : contains the precomputed job's price
+#
 
 # PreHook : gets executed after being sure the user, printer and user quota
 # entry on the printer both exist in the PyKota database, and after

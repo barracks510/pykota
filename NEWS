@@ -23,6 +23,9 @@ PyKota NEWS :
 
     - 1.19alpha14 :
     
+        - PYKOTAPRECOMPUTEDJOBSIZE and PYKOTAPRECOMPUTEDJOBPRICE 
+          are now exported as environment variables.
+          
         - Heavy CPU usage is now completely fixed it seems, by 
           introducing some 0.01 second sleeping when nothing to do.
           

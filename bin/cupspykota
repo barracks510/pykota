@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.52  2004/05/25 09:15:13  jalet
+# accounter.py : old code deleted
+# the rest : now exports PYKOTAPRECOMPUTEDJOBSIZE and PYKOTAPRECOMPUTEDJOBPRICE
+#
 # Revision 1.51  2004/05/25 08:31:16  jalet
 # Heavy CPU usage seems to be fixed at least !
 #
@@ -264,8 +268,10 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # checks the user's quota
             if self.config.getPrinterEnforcement(printer.Name) == "STRICT" :
                 self.softwareJobSize = self.precomputeJobSize()
-                self.logdebug("Precomputed job's size is : %s pages" % self.softwareJobSize)
                 self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
+                self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
+            os.putenv("PYKOTAPRECOMPUTEDJOBSIZE", str(self.softwareJobSize))    
+            os.putenv("PYKOTAPRECOMPUTEDJOBPRICE", str(self.softwareJobPrice))    
             action = self.warnUserPQuota(userpquota)
             
             # exports some new environment variables

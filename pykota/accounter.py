@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.16  2004/05/25 09:15:15  jalet
+# accounter.py : old code deleted
+# the rest : now exports PYKOTAPRECOMPUTEDJOBSIZE and PYKOTAPRECOMPUTEDJOBPRICE
+#
 # Revision 1.15  2004/05/24 22:45:49  jalet
 # New 'enforcement' directive added
 # Polling loop improvements
@@ -70,7 +74,6 @@
 #
 
 import sys
-from pykota import pdlanalyzer
 
 class PyKotaAccounterError(Exception):
     """An exception for Accounter related stuff."""
@@ -87,21 +90,6 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
-        self.firstPassSize = None
-        
-    def getSoftwareJobSize(self) :    
-        """Pre-computes the job's size with a software method."""
-        if self.filter.preserveinputfile is None :
-            raise PyKotaAccounterError, "Only supports raw jobs for now."""
-        else :    
-            fname = self.filter.preserveinputfile
-        parser = pdfanalyzer.PDLAnalyzer(fname)    
-        try : 
-            jobsize = parser.getJobSize()
-        except TypeError, msg :    
-            raise PyKotaAccounterError, msg
-        else :    
-            self.firstPassSize = jobsize
         
     def getLastPageCounter(self) :    
         """Returns last internal page counter value (possibly faked)."""
