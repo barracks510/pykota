@@ -188,6 +188,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             self.exportUserInfo(userpquota)
             
             # tries to extract job-originating-host-name and other information
+            self.regainPriv()
             cupsdconf = self.getCupsConfigDirectives(["PageLog", "RequestRoot"])
             requestroot = cupsdconf.get("requestroot", "/var/spool/cups")
             if (len(self.jobid) < 5) and self.jobid.isdigit() :
@@ -196,7 +197,6 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 ippmessagefile = "c%s" % self.jobid
             ippmessagefile = os.path.join(requestroot, ippmessagefile)
             ippmessage = {}
-            self.regainPriv()
             try :
                 ippdatafile = open(ippmessagefile)
             except :    
