@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2004/09/21 16:00:46  jalet
+# More informational messages
+#
 # Revision 1.17  2004/09/21 13:42:18  jalet
 # Typo
 #
@@ -161,6 +164,7 @@ else :
                 statusAsString = printerStatusValues.get(self.printerStatus)
                 if statusAsString in ('idle', 'printing') :
                     break
+                self.parent.filter.printInfo(_("Waiting for printer to be idle or printing..."))    
                 time.sleep(SNMPDELAY)
             
         def waitIdle(self) :
@@ -179,7 +183,7 @@ else :
                         break
                 else :    
                     idle_num = 0
-                self.parent.filter.printInfo(_("Waiting for printer's status to stabilize..."))    
+                self.parent.filter.printInfo(_("Waiting for printer's idle status to stabilize..."))    
                 time.sleep(SNMPDELAY)
     
 class Accounter(AccounterBase) :
