@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.34  2004/08/27 09:08:22  jalet
+# Improvement in PostScript parser to avoid being fooled by clever "students"
+#
 # Revision 1.33  2004/08/27 09:02:34  jalet
 # Forgot to remove some special debugging code...
 #
@@ -196,7 +199,7 @@ class PostScriptAnalyzer :
                 except :     
                     pass
                 else :    
-                    if number > 1 :
+                    if number > self.copies :
                         self.copies = number
             elif line.startswith("1 dict dup /NumCopies ") :
                 # handle # of copies set by mozilla/kprinter
@@ -205,7 +208,7 @@ class PostScriptAnalyzer :
                 except :     
                     pass
                 else :    
-                    if number > 1 :
+                    if number > self.copies :
                         self.copies = number
         return pagecount * self.copies
         

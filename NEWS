@@ -23,6 +23,13 @@ PyKota NEWS :
 
     - 1.20alpha3 :
        
+        - Small improvement in PostScript parser to avoid being
+          fooled by a change in number of copies : 
+          The user can't ask for 200 copies of page 1 and 1 copy 
+          of page 2 to fool PyKota anymore : 
+          this would have been accounted for as 1 copy only, but
+          now the maximum value seen is used.
+          
         - Relax checks for PCL5 header to accomodate some strange
           printer drivers.
           
