@@ -45,6 +45,9 @@ PyKota NEWS :
         - More work on LDAP storage backend. Many options
           were added to /etc/pykota.conf to give some
           hints to the LDAP storage backend.
+          
+        - Severe database access optimizations were done by
+          rewriting most of the Quota Storage backends drivers.
       
     - 1.08 :
     
