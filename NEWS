@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
-    - 1.02alpha :
+    - 1.02 :
     
         - The installation script now checks for software availability
           and in case a software is missing asks the user if he
