@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.11  2003/04/09 23:20:38  jalet
+# A message added.
+#
 # Revision 1.10  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -255,3 +258,6 @@ msgstr "L'option mailto dans la section %s supporte seulement les valeurs %s"
 
 msgid "Configuration file %s not found."
 msgstr "Fichier de configuration %s non trouvé."
+
+msgid "User %s not registered in the PyKota system"
+msgstr "Utilisateur %s non enregistré dans le système PyKota"
