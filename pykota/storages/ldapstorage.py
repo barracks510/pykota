@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.72  2004/07/01 19:56:43  jalet
+# Better dispatching of error messages
+#
 # Revision 1.71  2004/07/01 17:45:49  jalet
 # Added code to handle the description field for printers
 #
@@ -804,7 +807,7 @@ class Storage(BaseStorage) :
             else :
                 message = _("Unable to find an existing objectClass %s entry with %s=%s to attach pykotaAccount objectClass") % (where, self.info["userrdn"], user.Name)
                 if action.lower() == "warn" :    
-                    self.tool.logger.log_message("%s. A new entry will be created instead." % message, "warn")
+                    self.tool.printInfo("%s. A new entry will be created instead." % message, "warn")
                 else : # 'fail' or incorrect setting
                     raise PyKotaStorageError, "%s. Action aborted. Please check your configuration." % message
                 
@@ -840,7 +843,7 @@ class Storage(BaseStorage) :
             else :
                 message = _("Unable to find an existing entry to attach pykotaGroup objectclass %s") % group.Name
                 if action.lower() == "warn" :    
-                    self.tool.logger.log_message("%s. A new entry will be created instead." % message, "warn")
+                    self.tool.printInfo("%s. A new entry will be created instead." % message, "warn")
                 else : # 'fail' or incorrect setting
                     raise PyKotaStorageError, "%s. Action aborted. Please check your configuration." % message
                 

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.110  2004/07/01 19:56:42  jalet
+# Better dispatching of error messages
+#
 # Revision 1.109  2004/07/01 17:45:49  jalet
 # Added code to handle the description field for printers
 #
@@ -450,7 +453,6 @@ class PyKotaTool :
             gettext.install("pykota")
         except (locale.Error, IOError) :
             gettext.NullTranslations().install()
-            # sys.stderr.write("PyKota : Error while loading translations\n")
     
         # pykota specific stuff
         self.documentation = doc
@@ -478,9 +480,9 @@ class PyKotaTool :
         if self.debug :
             self.logger.log_message(message, "debug")
             
-    def printError(self, message) :        
+    def printInfo(self, message, level="info") :        
         """Sends a message to standard error."""
-        sys.stderr.write("%s\n" % message)
+        sys.stderr.write("%s: %s\n" % (level.upper(), message))
         sys.stderr.flush()
         
     def clean(self) :    
@@ -576,8 +578,7 @@ class PyKotaTool :
             elif (not args) and (not allownothing) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
                 self.display_usage_and_quit()
         except getopt.error, msg :
-            sys.stderr.write("%s\n" % msg)
-            sys.stderr.flush()
+            self.printInfo(msg)
             self.display_usage_and_quit()
         return (parsed, args)
     
@@ -606,13 +607,13 @@ class PyKotaTool :
         try :    
             server = smtplib.SMTP(self.smtpserver)
         except socket.error, msg :    
-            self.logger.log_message(_("Impossible to connect to SMTP server : %s") % msg, "error")
+            self.printInfo(_("Impossible to connect to SMTP server : %s") % msg, "error")
         else :
             try :
                 server.sendmail(adminmail, [touser], "From: %s\nTo: %s\n%s" % (adminmail, touser, fullmessage))
             except smtplib.SMTPException, answer :    
                 for (k, v) in answer.recipients.items() :
-                    self.logger.log_message(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
+                    self.printInfo(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
             server.quit()
         
     def sendMessageToUser(self, admin, adminmail, user, subject, message) :
@@ -639,7 +640,7 @@ class PyKotaTool :
                 action = "POLICY_ALLOW"
             else :    
                 action = "POLICY_DENY"
-            self.logger.log_message(_("Unable to match user %s on printer %s, applying default policy (%s)") % (user.Name, printer.Name, action))
+            self.printInfo(_("Unable to match user %s on printer %s, applying default policy (%s)") % (user.Name, printer.Name, action))
         else :    
             pagecounter = int(userpquota.PageCounter or 0)
             if enforcement == "STRICT" :
@@ -768,7 +769,7 @@ class PyKotaTool :
                     action = "POLICY_ALLOW"
                 else :    
                     action = "POLICY_DENY"
-                self.logger.log_message(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (user.Name, action, printer.Name))
+                self.printInfo(_("Unable to find user %s's account balance, applying default policy (%s) for printer %s") % (user.Name, action, printer.Name))
                 return action        
             else :    
                 val = float(user.AccountBalance or 0.0)
@@ -829,7 +830,7 @@ class PyKotaTool :
             action = action[7:]
         if action == "DENY" :
             adminmessage = _("Print Quota exceeded for group %s on printer %s") % (group.Name, printer.Name)
-            self.logger.log_message(adminmessage)
+            self.printInfo(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
@@ -840,7 +841,7 @@ class PyKotaTool :
                         self.externalMailTo(arguments, action, user, printer, message)
         elif action == "WARN" :    
             adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
-            self.logger.log_message(adminmessage)
+            self.printInfo(adminmessage)
             if mailto in [ "BOTH", "ADMIN" ] :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
             if group.LimitBy and (group.LimitBy.lower() == "balance") : 
@@ -867,7 +868,7 @@ class PyKotaTool :
             action = action[7:]
         if action == "DENY" :
             adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
-            self.logger.log_message(adminmessage)
+            self.printInfo(adminmessage)
             if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
                 message = self.config.getHardWarn(printer.Name)
                 if mailto != "EXTERNAL" :
@@ -878,7 +879,7 @@ class PyKotaTool :
                 self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         elif action == "WARN" :    
             adminmessage = _("Print Quota low for user %s on printer %s") % (user.Name, printer.Name)
-            self.logger.log_message(adminmessage)
+            self.printInfo(adminmessage)
             if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
                 if user.LimitBy and (user.LimitBy.lower() == "balance") : 
                     message = self.config.getPoorWarn()
@@ -979,7 +980,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             # we finally ignore it and return 0 since this
             # computation is just an indication of what the
             # job's size MAY be.
-            self.logger.log_message(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
+            self.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
             return 0
         else :    
             if ((self.printingsystem == "CUPS") \
@@ -993,7 +994,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         """Sets an attribute whenever SIGTERM is received."""
         self.gotSigTerm = 1
         os.environ["PYKOTASTATUS"] = "CANCELLED"
-        self.logger.log_message(_("SIGTERM received, job %s cancelled.") % self.jobid, "info")
+        self.printInfo(_("SIGTERM received, job %s cancelled.") % self.jobid)
         
     def exportJobInfo(self) :    
         """Exports job information to the environment."""
@@ -1034,6 +1035,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         if posthook :
             self.logdebug("Executing post-hook [%s]" % posthook)
             os.system(posthook)
+        
+    def printInfo(self, message, level="info") :        
+        """Sends a message to standard error."""
+        self.logger.log_message("%s" % message, level)
         
     def extractInfoFromCupsOrLprng(self) :    
         """Returns a tuple (printingsystem, printerhostname, printername, username, jobid, filename, title, options, backend).
@@ -1097,12 +1102,12 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             if Kseen is None :        
                 Kseen = 1       # we assume the user wants at least one copy...
             if (rseen is None) and jseen and Pseen and nseen :    
-                self.logger.log_message(_("Printer hostname undefined, set to 'localhost'"), "warn")
+                self.printInfo(_("Printer hostname undefined, set to 'localhost'"), "warn")
                 rseen = "localhost"
             if jseen and Pseen and nseen and rseen :        
                 # job is always in stdin (None)
                 return ("LPRNG", rseen, Pseen, nseen, jseen, None, Kseen, None, None, None)
-        self.logger.log_message(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
+        self.printInfo(_("Printing system unknown, args=%s") % " ".join(sys.argv), "warn")
         return (None, None, None, None, None, None, None, None, None, None)   # Unknown printing system
         
     def getPrinterUserAndUserPQuota(self) :        
@@ -1133,30 +1138,30 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             if policy == "EXTERNAL" :    
                 commandline = self.formatCommandLine(args, user, printer)
                 if not printer.Exists :
-                    self.logger.log_message(_("Printer %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.printername, commandline, self.printername), "info")
+                    self.printInfo(_("Printer %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.printername, commandline, self.printername))
                 if not user.Exists :
-                    self.logger.log_message(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.username, commandline, self.printername), "info")
+                    self.printInfo(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.username, commandline, self.printername))
                 if not userpquota.Exists :
-                    self.logger.log_message(_("User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s") % (self.username, self.printername, commandline, self.printername), "info")
+                    self.printInfo(_("User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s") % (self.username, self.printername, commandline, self.printername))
                 if os.system(commandline) :
-                    self.logger.log_message(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, self.printername), "error")
+                    self.printInfo(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, self.printername), "error")
                     policy = "EXTERNALERROR"
                     break
             else :        
                 if not printer.Exists :
-                    self.logger.log_message(_("Printer %s not registered in the PyKota system, applying default policy (%s)") % (self.printername, policy), "info")
+                    self.printInfo(_("Printer %s not registered in the PyKota system, applying default policy (%s)") % (self.printername, policy))
                 if not user.Exists :
-                    self.logger.log_message(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (self.username, policy, self.printername), "info")
+                    self.printInfo(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (self.username, policy, self.printername))
                 if not userpquota.Exists :
-                    self.logger.log_message(_("User %s doesn't have quota on printer %s in the PyKota system, applying default policy (%s)") % (self.username, self.printername, policy), "info")
+                    self.printInfo(_("User %s doesn't have quota on printer %s in the PyKota system, applying default policy (%s)") % (self.username, self.printername, policy))
                 break
         if policy == "EXTERNAL" :    
             if not printer.Exists :
-                self.logger.log_message(_("Printer %s still not registered in the PyKota system, job will be rejected") % self.printername, "info")
+                self.printInfo(_("Printer %s still not registered in the PyKota system, job will be rejected") % self.printername)
             if not user.Exists :
-                self.logger.log_message(_("User %s still not registered in the PyKota system, job will be rejected on printer %s") % (self.username, self.printername), "info")
+                self.printInfo(_("User %s still not registered in the PyKota system, job will be rejected on printer %s") % (self.username, self.printername))
             if not userpquota.Exists :
-                self.logger.log_message(_("User %s still doesn't have quota on printer %s in the PyKota system, job will be rejected") % (self.username, self.printername), "info")
+                self.printInfo(_("User %s still doesn't have quota on printer %s in the PyKota system, job will be rejected") % (self.username, self.printername))
         return (policy, printer, user, userpquota)
         
     def mainWork(self) :    
@@ -1176,7 +1181,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
             return self.removeJob()
         else :
             if policy not in ("OK", "ALLOW") :
-                self.logger.log_message(_("Invalid policy %s for printer %s") % (policy, self.printername))
+                self.printInfo(_("Invalid policy %s for printer %s") % (policy, self.printername))
                 return self.removeJob()
             else :
                 return self.doWork(policy, printer, user, userpquota)

@@ -21,6 +21,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.19alpha29 : 
+    
+        - Correctly dispatches error messages depending on the
+          situation : tools which can be run interactively will
+          ALWAYS output their logs to stderr, excepted for
+          their DEBUG messages, for which the "logger:"
+          directive as set in pykota.conf will be honored.
+          Tools which can't be run interactively will ALWAYS
+          honor the "logger:" directive as set in pykota.conf
+          
     - 1.19alpha28 :
     
         - The description field for printers can now be set,

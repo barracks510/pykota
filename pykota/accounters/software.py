@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/07/01 19:56:43  jalet
+# Better dispatching of error messages
+#
 # Revision 1.5  2004/06/10 22:42:06  jalet
 # Better messages in logs
 #
@@ -48,7 +51,7 @@ from pykota.accounter import AccounterBase, PyKotaAccounterError
 class Accounter(AccounterBase) :
     def computeJobSize(self) :    
         """Feeds an external command with our datas to let it compute the job size, and return its value."""
-        self.filter.logger.log_message(_("Launching SOFTWARE(%s)...") % self.arguments, "info")
+        self.filter.printInfo(_("Launching SOFTWARE(%s)...") % self.arguments)
         MEGABYTE = 1024*1024
         self.filter.jobdatastream.seek(0)
         child = popen2.Popen4(self.arguments)
@@ -61,28 +64,28 @@ class Accounter(AccounterBase) :
             child.tochild.close()    
         except (IOError, OSError), msg :    
             msg = "%s : %s" % (self.arguments, msg) 
-            self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % msg)
+            self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
         
         pagecount = 0
         try :
             pagecount = int(child.fromchild.readline().strip())
         except (AttributeError, ValueError) :
-            self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % self.arguments)
+            self.filter.printInfo(_("Unable to compute job size with accounter %s") % self.arguments)
         except (IOError, OSError), msg :    
             msg = "%s : %s" % (self.arguments, msg) 
-            self.filter.logger.log_message(_("Unable to compute job size with accounter %s") % msg)
+            self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
         child.fromchild.close()
         
         try :
             retcode = child.wait()
         except OSError, msg :    
-            self.filter.logger.log_message(_("Problem while waiting for software accounter pid %s to exit : %s") % (child.pid, msg))
+            self.filter.printInfo(_("Problem while waiting for software accounter pid %s to exit : %s") % (child.pid, msg))
         else :    
             if os.WIFEXITED(retcode) :
                 status = os.WEXITSTATUS(retcode)
             else :    
                 status = retcode
-            self.filter.logger.log_message(_("Software accounter %s exit code is %s") % (self.arguments, repr(retcode)))
+            self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, repr(retcode)))
         self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, pagecount))
         return pagecount    
             

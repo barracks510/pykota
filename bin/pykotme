@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.13  2004/07/01 19:56:42  jalet
+# Better dispatching of error messages
+#
 # Revision 1.12  2004/06/18 13:34:49  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -150,8 +153,7 @@ class PyKotMe(PyKotaTool) :
                 parser = PDLAnalyzer(filename)
                 totalsize += parser.getJobSize()
             except PDLAnalyzerError, msg :    
-                sys.stderr.write("%s\n" % msg)
-                sys.stderr.flush()
+                self.printInfo(msg)
             
         # get current user
         uid = os.geteuid()

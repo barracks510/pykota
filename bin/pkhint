@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2004/07/01 19:56:40  jalet
+# Better dispatching of error messages
+#
 # Revision 1.13  2004/06/29 07:55:18  jalet
 # Doesn't output the warning message when --help or --version is asked
 #
@@ -225,7 +228,7 @@ class PKHint(PyKotaTool) :
                 devicetype = self.searchDeviceType(devicestypes, deviceuri)
                 device = self.extractDeviceFromURI(deviceuri)
                 if devicetype is None :
-                    sys.stderr.write("Unknown device %s for printer %s\n" % (device, printer))
+                    self.printInfo(_("Unknown device %s for printer %s") % (device, printer))
                 elif devicetype == "network" :
                     try :
                         hostname, port = device.split(':')
@@ -244,12 +247,6 @@ class PKHint(PyKotaTool) :
                             configuration.append((printer, accounter))
                         else :    
                             configuration.append((printer, "software(/usr/bin/pkpgcounter)"))
-                # elif devicetype == "direct" : 
-                #    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
-                #elif devicetype == "serial" : 
-                #    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
-                #else :
-                #    sys.stderr.write("Can't currently handle device %s for printer %s\n" % (device, printer))
                 else :
                     configuration.append((printer, "software(/usr/bin/pkpgcounter)"))
                     

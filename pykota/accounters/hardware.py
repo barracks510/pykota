@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.6  2004/07/01 19:56:42  jalet
+# Better dispatching of error messages
+#
 # Revision 1.5  2004/06/10 22:42:06  jalet
 # Better messages in logs
 #
@@ -59,7 +62,7 @@ class Accounter(AccounterBase) :
         except PyKotaAccounterError, msg :
             # can't get actual page counter, assume printer is off or warming up
             # log the message anyway.
-            self.filter.logger.log_message("%s" % msg, "warn")
+            self.filter.printInfo("%s" % msg, "warn")
             counter = None
         self.filter.logdebug("Printer's internal page counter value is : %s" % str(counter))
         return counter    
@@ -105,7 +108,7 @@ class Accounter(AccounterBase) :
         commandline = self.arguments.strip() % locals()
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
-        self.filter.logger.log_message(_("Launching HARDWARE(%s)...") % commandline, "info")
+        self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
         error = 1
         pagecounter = None
         child = popen2.Popen4(commandline)    
@@ -113,7 +116,7 @@ class Accounter(AccounterBase) :
             line = child.fromchild.readline()
             pagecounter = int(line.strip())
         except ValueError :    
-            self.filter.logger.log_message(_("Incorrect answer : %s") % repr(line), "error")
+            self.filter.printInfo(_("Incorrect answer : %s") % repr(line), "error")
         except IOError :    
             # we were interrupted by a signal, certainely a SIGTERM
             # caused by the user cancelling the current job
@@ -121,7 +124,7 @@ class Accounter(AccounterBase) :
                 os.kill(child.pid, signal.SIGTERM)
             except :    
                 pass # already killed ?
-            self.filter.logger.log_message(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid), "info")
+            self.filter.printInfo(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid))
         else :    
             error = 0
         child.fromchild.close()    

@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.66  2004/07/01 19:56:25  jalet
+# Better dispatching of error messages
+#
 # Revision 1.65  2004/06/22 09:31:17  jalet
 # Always send some debug info to CUPS' back channel stream (stderr) as
 # informationnal messages.
@@ -380,7 +383,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # higher in the chain failed because of a misconfiguration.
             # we deny the job in this case (nothing to print anyway)
             if not self.jobSizeBytes :
-                self.logger.log_message(_("Job contains no data. Printing is denied."), "warn")
+                self.printInfo(_("Job contains no data. Printing is denied."), "warn")
                 action = "DENY"
             
             # exports some new environment variables
@@ -445,7 +448,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         try :
             pollobj.unregister(fileno)
         except KeyError :    
-            self.logger.log_message(_("File number %s unregistered twice from polling object, ignored.") % fileno, "warn")
+            self.printInfo(_("File number %s unregistered twice from polling object, ignored.") % fileno, "warn")
         except :    
             self.logdebug("Error while unregistering file number %s from polling object." % fileno)
         else :    
@@ -470,8 +473,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         
     def sendBackChannelData(self, message) :    
         """Sends an informational message to CUPS via back channel stream (stderr)."""
-        sys.stderr.write("INFO: PyKota (PID %s) : %s\n" % (os.getpid(), message.strip()))
-        sys.stderr.flush()
+        self.printInfo("PyKota (PID %s) : %s" % (os.getpid(), message.strip()))
         
     def handleData(self) :                    
         """Pass the job's data to the real backend."""
@@ -650,7 +652,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         if os.WIFEXITED(status) :
             retcode = os.WEXITSTATUS(status)
         elif not killed :    
-            self.logger.log_message(_("CUPS backend %s died abnormally.") % realbackend, "error")
+            self.printInfo(_("CUPS backend %s died abnormally.") % realbackend, "error")
             retcode = -1
         else :    
             retcode = self.removeJob()

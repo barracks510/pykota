@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.76  2004/07/01 19:56:40  jalet
+# Better dispatching of error messages
+#
 # Revision 1.75  2004/06/18 13:34:47  jalet
 # Now all tracebacks include PyKota's version number
 #
@@ -462,7 +465,7 @@ class EdPyKota(PyKotaTool) :
                     raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
             if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
                 # error, exchange them
-                self.logger.log_message(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
+                self.printInfo(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
                 (softlimit, hardlimit) = (hardlimit, softlimit)
             
         balance = options["balance"]
@@ -540,22 +543,22 @@ class EdPyKota(PyKotaTool) :
                 if protoentry.Exists :
                     protoquota = getattr(self.storage, "get%sPQuota" % suffix)(protoentry, printer)
                     if not protoquota.Exists :
-                        self.logger.log_message(_("Prototype %s not found in Quota Storage for printer %s.") % (protoentry.Name, printer.Name))
+                        self.printInfo(_("Prototype %s not found in Quota Storage for printer %s.") % (protoentry.Name, printer.Name))
                         continue    # skip this printer
                     else :    
                         (softlimit, hardlimit) = (protoquota.SoftLimit, protoquota.HardLimit)
                 else :        
-                    self.logger.log_message(_("Prototype object %s not found in Quota Storage.") % protoentry.Name)
+                    self.printInfo(_("Prototype object %s not found in Quota Storage.") % protoentry.Name)
                     
             if not options["noquota"] :    
                 if hardlimit is None :    
                     hardlimit = softlimit
                     if hardlimit is not None :
-                        self.logger.log_message(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer.Name))
+                        self.printInfo(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer.Name))
                 if softlimit is None :    
                     softlimit = hardlimit
                     if softlimit is not None :
-                        self.logger.log_message(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer.Name))
+                        self.printInfo(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer.Name))
                         
             if options["add"] :    
                 allentries = []    
@@ -567,7 +570,7 @@ class EdPyKota(PyKotaTool) :
                             splitname.append("")
                         (name, email) = splitname
                         if email and (email.count('@') != 1) :
-                            self.logger.log_message(_("Invalid email address %s") % email)
+                            self.printInfo(_("Invalid email address %s") % email)
                             email = ""
                     entry = getattr(self.storage, "get%s" % suffix)(name)
                     if email and not options["groups"] :
@@ -594,9 +597,9 @@ class EdPyKota(PyKotaTool) :
                             entry = getattr(self.storage, "add%s" % suffix)(entry)
                         else :    
                             if options["groups"] :
-                                self.logger.log_message(_("Invalid group name %s") % entry.Name)
+                                self.printInfo(_("Invalid group name %s") % entry.Name)
                             else :    
-                                self.logger.log_message(_("Invalid user name %s") % entry.Name)
+                                self.printInfo(_("Invalid user name %s") % entry.Name)
                 elif options["delete"] :                
                     todelete[entry.Name] = entry
                                 
@@ -606,7 +609,7 @@ class EdPyKota(PyKotaTool) :
                         entrypquota = getattr(self.storage, "add%sPQuota" % suffix)(entry, printer)
                         
                 if not entrypquota.Exists :     
-                    self.logger.log_message(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
+                    self.printInfo(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
                 else :    
                     if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
                         entrypquota.setLimits(softlimit, hardlimit)
@@ -639,7 +642,7 @@ class EdPyKota(PyKotaTool) :
                                     self.storage.addUserToGroup(entry, group)
                                     changed[entry.Name]["ingroups"].append(groupname)
                                 else :
-                                    self.logger.log_message(_("Group %s not found in the PyKota Storage.") % groupname)
+                                    self.printInfo(_("Group %s not found in the PyKota Storage.") % groupname)
                                     
                     # This line disabled to prevent sending of unwanted email                 
                     # messages if quota is reached at creation/modification time.
