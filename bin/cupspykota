@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.61  2004/06/08 09:00:04  jalet
+# Fixed problem when username was passed in uppercase from Samba and we
+# tried to find correct line in CUPS page_log to extract the hostname.
+#
 # Revision 1.60  2004/06/03 23:14:08  jalet
 # Now stores the job's size in bytes in the database.
 # Preliminary work on payments storage : database schemas are OK now,
@@ -312,7 +316,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         else :    
             # TODO : read backward so we could take first value seen
             # TODO : here we read forward so we must take the last value seen
-            prefix = "%s %s %s" % (printername, username, jobid)
+            prefix = ("%s %s %s" % (printername, username, jobid)).lower()
             matchingline = None
             while 1 :
                 line = pagelog.readline()
@@ -320,7 +324,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     break
                 else :
                     line = line.strip()
-                    if line.startswith(prefix) :    
+                    if line.lower().startswith(prefix) :    
                         matchingline = line # no break, because we read forward
             pagelog.close()        
             if matchingline is None :
