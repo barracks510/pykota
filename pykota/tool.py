@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.69  2004/01/05 16:02:18  jalet
+# Dots in user, groups and printer names should be allowed.
+#
 # Revision 1.68  2004/01/02 17:38:40  jalet
 # This time it should be better...
 #
@@ -394,7 +397,7 @@ class PyKotaTool :
         asciiletters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         digits = '0123456789'
         if name[0] in asciiletters :
-            validchars = asciiletters + digits + "-_"
+            validchars = asciiletters + digits + "-_."
             for c in name[1:] :
                 if c not in validchars :
                     return 0

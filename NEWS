@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.16alpha21 :
+    
+        - Allows the dot in user and printer names.
+        
     - 1.16alpha20 :
     
         - Fixed several small bugs with the help of PyChecker.
