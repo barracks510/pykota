@@ -19,6 +19,9 @@
 -- $Id$
 --
 -- $Log$
+-- Revision 1.15  2005/01/23 10:58:22  jalet
+-- Added a few indexes for the database
+--
 -- Revision 1.14  2005/01/17 08:44:24  jalet
 -- Modified copyright years
 --
@@ -132,6 +135,8 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         hardlimit INT4,
                         datelimit TIMESTAMP,
                         warned INT4 DEFAULT 0); -- not a boolean, will help stats
+CREATE INDEX userpquota_u_id_ix ON userpquota (userid);
+CREATE INDEX userpquota_p_id_ix ON userpquota (printerid);
 CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
                         
 --
@@ -156,6 +161,7 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         billingcode TEXT,
                         jobdate TIMESTAMP DEFAULT now(),
                         CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid));
+CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
 CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
