@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2004/02/07 13:56:03  jalet
+# Help
+#
 # Revision 1.2  2004/02/07 13:47:55  jalet
 # More warnings
 #
@@ -45,7 +48,7 @@ A tool to give hints on what accounting method is best for each printer.
 
 command line usage :
 
-  pkhint [options] [printer1 printer2 printer3 ... printerN]
+  pkhint [options] [printer1 printer2 printer3 ... printerN] <file.conf
 
 options :
 
@@ -54,7 +57,7 @@ options :
   
 examples :                              
 
-  $ pkhint "hp*" printer103 
+  $ pkhint "hp*" printer103 </etc/cups/printers.conf
   
   Will analyze your printing system to test which accounter
   is the best for each of the defined printer which

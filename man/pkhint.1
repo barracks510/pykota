@@ -8,7 +8,7 @@ A tool to give hints on what accounting method is best for each printer.
 .PP
 command line usage :
 .IP
-pkhint [options] [printer1 printer2 printer3 ... printerN]
+pkhint [options] [printer1 printer2 printer3 ... printerN] <file.conf
 .PP
 options :
 .TP
@@ -20,7 +20,7 @@ Prints this message then exits.
 .PP
 examples :
 .IP
-\f(CW$ pkhint "hp*" printer103\fR
+\f(CW$ pkhint "hp*" printer103 </etc/cups/printers.conf\fR
 .IP
 Will analyze your printing system to test which accounter
 is the best for each of the defined printer which
