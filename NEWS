@@ -23,8 +23,14 @@ PyKota NEWS :
 
     - 1.21alpha11 :
     
+        - Now user and group print quota entries can be stored directly
+          below the user or group with the LDAP backend, using them
+          as branches. Thanks to Stefan Wold for the patch.
+          See the sample configuration file for details.
+          
         - TLS is now supported with the LDAP backend. Thanks to Stefan
           Wold for the patch.
+          See the sample configuration file for details.
           
         - edpkota now accepts the -U | --used value command line argument
           to preset the page counters to an initial value. Thanks to

@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.89  2004/12/02 22:27:11  jalet
+# Integrated and extended Stefan Wold's patch to store print quota entries
+# directly below the user or the group object with the LDAP backend
+#
 # Revision 1.88  2004/12/02 22:01:58  jalet
 # TLS is now supported with the LDAP backend
 #
@@ -674,7 +678,10 @@ class Storage(BaseStorage) :
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
         if printer.Exists and user.Exists :
-            result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
+            if self.info["userquotabase"].lower() == "user" :
+                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=user.ident)
+            else :    
+                result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % (user.Name, printer.Name), ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["userquotabase"])
             if result :
                 fields = result[0][1]
                 userpquota.ident = result[0][0]
@@ -705,7 +712,10 @@ class Storage(BaseStorage) :
         """Extracts a group print quota."""
         grouppquota = StorageGroupPQuota(self, group, printer)
         if group.Exists :
-            result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["groupquotabase"])
+            if self.info["groupquotabase"].lower() == "group" :
+                result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=group.ident)
+            else :    
+                result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % (group.Name, printer.Name), ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], base=self.info["groupquotabase"])
             if result :
                 fields = result[0][1]
                 grouppquota.ident = result[0][0]
@@ -1027,7 +1037,10 @@ class Storage(BaseStorage) :
                    "pykotaPageCounter" : "0",
                    "pykotaLifePageCounter" : "0",
                  } 
-        dn = "cn=%s,%s" % (uuid, self.info["userquotabase"])
+        if self.info["userquotabase"].lower() == "user" :
+            dn = "cn=%s,%s" % (uuid, user.ident)
+        else :    
+            dn = "cn=%s,%s" % (uuid, self.info["userquotabase"])
         self.doAdd(dn, fields)
         return self.getUserPQuota(user, printer)
         
@@ -1040,7 +1053,10 @@ class Storage(BaseStorage) :
                    "pykotaPrinterName" : printer.Name,
                    "pykotaDateLimit" : "None",
                  } 
-        dn = "cn=%s,%s" % (uuid, self.info["groupquotabase"])
+        if self.info["groupquotabase"].lower() == "group" :
+            dn = "cn=%s,%s" % (uuid, group.ident)
+        else :    
+            dn = "cn=%s,%s" % (uuid, self.info["groupquotabase"])
         self.doAdd(dn, fields)
         return self.getGroupPQuota(group, printer)
         

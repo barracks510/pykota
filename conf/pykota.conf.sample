@@ -103,10 +103,20 @@ disablehistory: No
 #grouprdn: cn
 #printerbase: ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
 #printerrdn: cn
-#userquotabase: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
-#groupquotabase: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
 #jobbase: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
 #lastjobbase: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+
+# These two fields are special, they either accept a branch
+# dn, like an ou for example, or the special keywords 'user'
+# and 'group'. If 'user' or 'group' is used, the print quota
+# entries will be created below the user or group entry itself,
+# which will then be used like a branch (you can mix and match
+# different values depending on what you want to do).
+#userquotabase: user
+#userquotabase: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#groupquotabase: group
+#groupquotabase: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+
 #
 # How to create new accounts and groups
 # authorized values are "below" and "attach(objectclass name [, fail|warn])"
