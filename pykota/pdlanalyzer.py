@@ -21,6 +21,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.49  2005/01/06 17:41:34  jalet
+# Of course if I forget some files during the commits, the software doesn't
+# work as expected ;-)
+#
 # Revision 1.48  2004/12/16 15:11:00  jalet
 # Added some debugging code to PCL3/4/5 parser
 #
@@ -570,35 +574,45 @@ class PCLAnalyzer :
             sys.stderr.write("startgfx : %s\n" % startgfx)
             sys.stderr.write("endgfx : %s\n" % endgfx)
         
-        if not pagecount :
-            pagecount = (pagecount or ((resets - 3) * (resets > 2)))
-        else :    
-            # here we add counters for other ways new pages may have
-            # been printed and ejected by the printer
-            pagecount += ejects + backsides
-        
-        # now handle number of copies for each page (may differ).
-        # in duplex mode, number of copies may be sent only once.
-        for pnum in range(pagecount) :
-            # if no number of copies defined, take the preceding one else the one set before any page else 1.
-            page = pages.get(pnum, pages.get(pnum - 1, pages.get(0, { "copies" : 1 })))
-            pagecount += (page["copies"] - 1)
-            
-        # in PCL3 files, there's one Start Gfx tag per page
-        if ispcl3 :
-            if endgfx == int(startgfx / 2) : # special case for cdj1600
-                pagecount = endgfx 
-            elif startgfx :
-                pagecount = startgfx
-            elif endgfx :    
-                pagecount = endgfx
+#        if not pagecount :
+#            pagecount = (pagecount or ((resets - 3) * (resets > 2)))
+#        else :    
+#            # here we add counters for other ways new pages may have
+#            # been printed and ejected by the printer
+#            pagecount += ejects + backsides
+#        
+#        # now handle number of copies for each page (may differ).
+#        # in duplex mode, number of copies may be sent only once.
+#        for pnum in range(pagecount) :
+#            # if no number of copies defined, take the preceding one else the one set before any page else 1.
+#            page = pages.get(pnum, pages.get(pnum - 1, pages.get(0, { "copies" : 1 })))
+#            pagecount += (page["copies"] - 1)
+#            
+#        # in PCL3 files, there's one Start Gfx tag per page
+#        if ispcl3 :
+#            if endgfx == int(startgfx / 2) : # special case for cdj1600
+#                pagecount = endgfx 
+#            elif startgfx :
+#                pagecount = startgfx
+#            elif endgfx :    
+#                pagecount = endgfx
                 
+            
+        if (not startgfx) and (not endgfx) :
+            pagecount = ejects or pagecount
+        elif startgfx == endgfx :    
+            pagecount = startgfx
+        elif startgfx == (endgfx - 1) :    
+            pagecount = startgfx
+        else :    
+            pagecount = abs(startgfx - endgfx)
+            
         if self.debug :        
             for pnum in range(pagecount) :
                 # if no number of copies defined, take the preceding one else the one set before any page else 1.
                 page = pages.get(pnum, pages.get(pnum - 1, pages.get(0, { "copies" : 1, "mediasource" : "Main", "mediasize" : "Default", "mediatype" : "Plain", "orientation" : "Portrait"})))
                 sys.stderr.write("%s*%s*%s*%s*%s\n" % (page["copies"], page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"]))
-            
+                
         return pagecount
         
 class PCLXLAnalyzer :
