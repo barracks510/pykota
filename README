@@ -174,10 +174,12 @@ PyKota features :
           
         - Web based print quota monitor and data dumper are included.  
         
-        - an On Screen Display X-Window print quota monitor is included.
+        - An On Screen Display X-Window print quota monitor is included.
         
-        - a cross-platform print quota monitor will soon be available 
+        - A cross-platform print quota monitor will soon be available 
           as an purchaseable add-on.
+          
+        - Third party web based management tools are available.
 
 ====================================================================
         
