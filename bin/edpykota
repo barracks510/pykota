@@ -16,6 +16,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.14  2003/02/08 22:18:15  jalet
+# Now checks user and group names for validity before adding them
+#
 # Revision 1.13  2003/02/08 22:09:02  jalet
 # Only printer was added the first time.
 #
@@ -195,11 +198,17 @@ class EdPyKota(PyKotaTool) :
                     # not found
                     if options["add"] :
                         if options["users"] :
-                            self.storage.addUserPQuota(name, printer)
-                            quota = self.storage.getUserPQuota(name, printer)
+                            if self.isValidName(name) :
+                                self.storage.addUserPQuota(name, printer)
+                                quota = self.storage.getUserPQuota(name, printer)
+                            else :    
+                                self.logger.log_message("Invalid user name %s" % name)
                         else :
-                            self.storage.addGroupPQuota(name, printer)
-                            quota = self.storage.getGroupPQuota(name, printer)
+                            if self.isValidName(name) :
+                                self.storage.addGroupPQuota(name, printer)
+                                quota = self.storage.getGroupPQuota(name, printer)
+                            else :    
+                                self.logger.log_message("Invalid group name %s" % name)
                 if quota is None :     
                     self.logger.log_message("Quota not found for object %s on printer %s." % (name, printer))
                 else :    
