@@ -23,9 +23,14 @@ PyKota NEWS :
 
     - 1.19alpha27 :
     
+        - Reintroduced the use of mmap in PCL5 parser : this speedups
+          PCL5 parsing by almost 4 times.
+          This 4x with the 3x below give us in fact a twelvefold increase
+          in performance for PCL5 parsing !
+          
         - The Python accelerator Psyco is now used if available
           in the generic PDL parser : it speedups PCL5 parsing by
-          almost three times automagically.
+          almost three times automagically. 
           
     - 1.19alpha26 :
     
