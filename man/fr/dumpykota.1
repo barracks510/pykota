@@ -5,63 +5,70 @@ dumpykota \- page de manuel de dumpykota 1.20alpha25_unofficial
 .SH DESCRIPTION
 dumpykota v1.20alpha25_unofficial (c) 2003-2004 C@LL - Conseil Internet & Logiciels Libres
 .PP
-Dumps PyKota database's content.
+Exporte le contenu de la base de données de PyKota.
 .PP
-command line usage :
+ligne de commande :
 .IP
 dumpykota [options]
 .PP
 options :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints dumpykota's version number then exits.
+Affiche la version de dumpykota et quitte.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Affiche ce message et quitte.
 .TP
 \fB\-d\fR | \fB\-\-data\fR type
-Dumps 'type' datas. Allowed types are :
+Exporte les données de type 'type'.
+Les types autorisés sont :
 .IP
-- history : dumps the jobs history.
-- users : dumps users.
-- groups : dumps user groups.
-- printers : dump printers.
-- upquotas : dump user quotas.
-- gpquotas : dump user groups quotas.
-- payments : dumps user payments.
-- pmembers : dumps printer groups members.
-- umembers : dumps user groups members.
+- history : exporte l'historique des travaux.
+- users : exporte les utilisateurs.
+- groups : exporte les groupes d'utilisateurs.
+- printers : exporte les imprimantes.
+- upquotas : exporte les quotas des utilisateurs.
+- gpquotas : exporte les quotas des groupes.
+- payments : exporte l'historique des paiements.
+- pmembers : exporte les membres des groupes
 .IP
-NB : the \fB\-d\fR | \fB\-\-data\fR command line option
-is MANDATORY.
+d'imprimantes.
+.IP
+- umembers : exporte les membres des groupes
+.IP
+d'utilisateurs.
+.IP
+NB : l'option de ligne de commande \fB\-d\fR | \fB\-\-data\fR est
+OBLIGATOIRE.
 .TP
 \fB\-f\fR | \fB\-\-format\fR fmt
-Dumps datas in the 'fmt' format. When not specified,
-the format is to dump datas in the csv format (comma
-separated values). All data dumped is between double
-quotes. Allowed formats are :
+Exporte les données dans le format 'fmt' spécifié.
+Si non précisé, le format sera csv (champs séparés
+par des virgules).
+Toutes les données sont exportées entre double quotes.
+Les formats autorisés sont :
 .IP
-- csv : separate datas with commas
-- ssv : separate datas with semicolons
-- tsv : separate datas with tabs
-- xml : dump data as XML
+- csv : données séparées par des virgules
+- ssv : données séparées par des point-virgules
+- tsv : données séparés par des tabulations
+- xml : données exportées au format XML
 .TP
-\fB\-o\fR | \fB\-\-output\fR fname
-All datas will be dumped to the file instead of
-to the standard output. The special '-' filename
-is the default value and means stdout.
-WARNING : existing files are truncated !
+\fB\-o\fR | \fB\-\-output\fR nomf
+Toutes les données seront exportées vers un fichier
+plutôt que vers la sortie standard. Le nom spécial '-'
+est la valeur par défaut indiquant la sortie standard.
+ATTENTION : les fichiers existants sont tronqués !
 .PP
-Examples :
+Exemples :
 .IP
-\f(CW$ dumpykota --data history --format csv >myfile.csv\fR
+\f(CW$ dumpykota --data history --format csv >monfichier.csv\fR
 .IP
-This dumps the history in a comma separated values file, for possible
-use in a spreadsheet.
+Ceci va exporter l'historique dans un fichier à champs séparés par des
+virgules, par exemple pour réimportation dans un tableur.
 .IP
-\f(CW$ dumpykota --data users --format xml -o users.xml\fR
+\f(CW$ dumpykota --data users --format xml -o util.xml\fR
 .IP
-Dumps all users datas to the users.xml file.
+Exporte toutes les données des utilisateurs dans le fichier util.xml
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
