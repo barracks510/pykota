@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.35  2005/01/12 22:44:06  jalet
+# Tried to fix a problem with printers which are slow to pass into printing mode.
+#
 # Revision 1.34  2004/11/19 11:57:51  jalet
 # Modified the SNMP fix as hinted by pysnmp's maintainer
 #
@@ -220,9 +223,9 @@ else :
             while 1:
                 self.retrieveSNMPValues()
                 statusAsString = printerStatusValues.get(self.printerStatus)
-                if statusAsString in ('idle', 'printing') :
+                if statusAsString in ('printing',) :
                     break
-                self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)    
+                self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.printername)    
                 time.sleep(ITERATIONDELAY)
             
         def waitIdle(self) :
@@ -310,9 +313,9 @@ class PJLAccounter :
         """Waits for printer status being 'printing'."""
         while 1:
             self.retrievePJLValues()
-            if self.printerStatus in ('10000', '10001', '10023', '35078') :
+            if self.printerStatus in ('10023',) :
                 break
-            self.parent.filter.logdebug(_("Waiting for printer %s to be idle or printing...") % self.parent.filter.printername)
+            self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.printername)
             time.sleep(ITERATIONDELAY)
         
     def waitIdle(self) :
@@ -473,7 +476,8 @@ class Accounter(AccounterBase) :
         try :
             if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
                (os.environ.get("PYKOTAACTION") != "DENY") and \
-               (os.environ.get("PYKOTAPHASE") == "AFTER") :
+               (os.environ.get("PYKOTAPHASE") == "AFTER") and \
+               self.filter.jobSizeBytes :
                 acc.waitPrinting()
             acc.waitIdle()    
         except :    
@@ -489,7 +493,8 @@ class Accounter(AccounterBase) :
         try :
             if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
                (os.environ.get("PYKOTAACTION") != "DENY") and \
-               (os.environ.get("PYKOTAPHASE") == "AFTER") :
+               (os.environ.get("PYKOTAPHASE") == "AFTER") and \
+               self.filter.jobSizeBytes :
                 acc.waitPrinting()
             acc.waitIdle()    
         except :    
