@@ -23,6 +23,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.86  2005/01/21 14:40:01  jalet
+# edpykota's --delete command line tool doesn't use "*" as its default argument
+# anymore when the user doesn't pass any real argument :-)
+#
 # Revision 1.85  2005/01/18 19:47:49  jalet
 # Big bug fix wrt the datelimit attribute
 #
@@ -582,8 +586,10 @@ class EdPyKota(PyKotaTool) :
                     raise PyKotaToolError, _("You have to pass user or group names on the command line")
                 else :    
                     names = getattr(self.storage, "getAll%ssNames" % suffix)()
-            else :    
-                names = [ "*" ] # all users
+            elif options["delete"] :    
+                raise PyKotaToolError, _("You have to pass user or group names on the command line")
+            else :
+                names = [ "*" ] # all users or groups
                 
         printersgroups = []        
         if options["pgroups"] :        

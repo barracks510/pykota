@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
+    - 1.21alpha22 :
+    
+        - edpykota's --delete command line option doesn't consider
+          '*' to be the default argument anymore :-)
+          
     - 1.21alpha21 :
     
         - dumpykota.cgi can now be run as a normal user as opposed to 
