@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2003/04/08 21:10:18  jalet
+# Checks --groups option presence instead of --users because --users is the default.
+#
 # Revision 1.29  2003/04/05 09:28:56  jalet
 # Unnecessary message was logged
 #
@@ -255,10 +258,11 @@ class EdPyKota(PyKotaTool) :
                 names = [ "*" ] # all users
         for (printer, printerpagecounter) in printernames :
             if options["prototype"] :
-                if options["users"] :
-                    prototype = self.storage.getUserPQuota(options["prototype"], printer)
-                else :     
+                if options["groups"] :
                     prototype = self.storage.getGroupPQuota(options["prototype"], printer)
+                else :     
+                    # default is user quota edition
+                    prototype = self.storage.getUserPQuota(options["prototype"], printer)
                 if prototype is None :
                     self.logger.log_message(_("Prototype %s not found in Quota Storage for printer %s.") % (options["prototype"], printer))
                     continue    # skip this printer
@@ -277,15 +281,15 @@ class EdPyKota(PyKotaTool) :
             if options["add"] :    
                 allnames = names
             else :   
-                if options["users"] :    
-                    allnames = self.storage.getPrinterUsers(printer)
-                else :    
+                if options["groups"] :    
                     allnames = self.storage.getPrinterGroups(printer)
+                else :    
+                    allnames = self.storage.getPrinterUsers(printer)
             for name in [n for n in allnames if self.matchString(n, names)]:
-                if options["users"] :
-                    quota = self.storage.getUserPQuota(name, printer)
-                else :
+                if options["groups"] :
                     quota = self.storage.getGroupPQuota(name, printer)
+                else :
+                    quota = self.storage.getUserPQuota(name, printer)
                 if quota is None :
                     # not found
                     if options["add"] :
@@ -293,31 +297,31 @@ class EdPyKota(PyKotaTool) :
                         # that we DON'T check with the system accounts files
                         # like /etc/passwd because users may be defined 
                         # only remotely
-                        if options["users"] :
-                            if self.isValidName(name) :
-                                self.storage.addUserPQuota(name, printer)
-                                quota = self.storage.getUserPQuota(name, printer)
-                            else :    
-                                self.logger.log_message(_("Invalid user name %s") % name)
-                        else :
+                        if options["groups"] :
                             if self.isValidName(name) :
                                 self.storage.addGroupPQuota(name, printer)
                                 quota = self.storage.getGroupPQuota(name, printer)
                             else :    
                                 self.logger.log_message(_("Invalid group name %s") % name)
+                        else :
+                            if self.isValidName(name) :
+                                self.storage.addUserPQuota(name, printer)
+                                quota = self.storage.getUserPQuota(name, printer)
+                            else :    
+                                self.logger.log_message(_("Invalid user name %s") % name)
                 if quota is None :     
                     self.logger.log_message(_("Quota not found for object %s on printer %s.") % (name, printer))
                 else :    
-                    if options["users"] :
-                        if options["noquota"] or ((softlimit is not None) and (hardlimit is not None)) :
-                            self.storage.setUserPQuota(name, printer, softlimit, hardlimit)
-                        if options["reset"] :
-                            self.storage.resetUserPQuota(name, printer)
-                    else :
+                    if options["groups"] :
                         if options["noquota"] or ((softlimit is not None) and (hardlimit is not None)) :
                             self.storage.setGroupPQuota(name, printer, softlimit, hardlimit)
                         if options["reset"] :
                             self.storage.resetGroupPQuota(name, printer)
+                    else :
+                        if options["noquota"] or ((softlimit is not None) and (hardlimit is not None)) :
+                            self.storage.setUserPQuota(name, printer, softlimit, hardlimit)
+                        if options["reset"] :
+                            self.storage.resetUserPQuota(name, printer)
                      
 if __name__ == "__main__" : 
     try :

@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.12  2003/04/08 21:10:18  jalet
+# Checks --groups option presence instead of --users because --users is the default.
+#
 # Revision 1.11  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -128,12 +131,12 @@ class WarnPyKota(PyKotaTool) :
         if not printernames :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
         for (printer, printerpagecounter) in printernames :
-            if options["users"] :
-                for name in self.storage.getPrinterUsers(printer) :
-                    self.warnUserPQuota(name, printer)
-            else :
+            if options["groups"] :
                 for name in self.storage.getPrinterGroups(printer) :
                     self.warnGroupPQuota(name, printer)
+            else :
+                for name in self.storage.getPrinterUsers(printer) :
+                    self.warnUserPQuota(name, printer)
                      
 if __name__ == "__main__" : 
     try :

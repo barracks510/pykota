@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.18  2003/04/08 21:10:18  jalet
+# Checks --groups option presence instead of --users because --users is the default.
+#
 # Revision 1.17  2003/03/29 13:45:27  jalet
 # GPL paragraphs were incorrectly (from memory) copied into the sources.
 # Two README files were added.
@@ -146,17 +149,18 @@ class RePyKota(PyKotaTool) :
             print _("*** Report for %s quota on printer %s") % ((options["users"] and "user") or "group", printer)
             print _("Pages grace time: %idays") % self.config.getGraceDelay(printer)
             total = 0
-            if options["users"] :
-                print _("User             used     soft     hard   grace        total")
-                print "------------------------------------------------------------"
-                for name in self.storage.getPrinterUsers(printer) :
-                    quota = self.storage.getUserPQuota(name, printer)
-                    total += self.printQuota(name, quota)
-            else :
+            if options["groups"] :
                 print _("Group            used     soft     hard   grace        total")
                 print "------------------------------------------------------------"
                 for name in self.storage.getPrinterGroups(printer) :
                     quota = self.storage.getGroupPQuota(name, printer) 
+                    total += self.printQuota(name, quota)
+            else :
+                # default is user quota report
+                print _("User             used     soft     hard   grace        total")
+                print "------------------------------------------------------------"
+                for name in self.storage.getPrinterUsers(printer) :
+                    quota = self.storage.getUserPQuota(name, printer)
                     total += self.printQuota(name, quota)
             if total :        
                 print (" " * 43) + (_("Total : %9i") % total)
