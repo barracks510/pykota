@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.29  2003/07/03 11:38:44  jalet
+# Translations for pykotme added
+#
 # Revision 1.28  2003/06/30 21:44:18  jalet
 # 1.09 is out !
 #
@@ -404,3 +407,12 @@ msgstr "Impossible d'envoyer un message à %s, erreur %s : %s"
 
 msgid "Unsupported reporter backend %s"
 msgstr "backend reporter %s non supporté"
+
+msgid "Unable to compute size of %s in number of pages.\n"
+msgstr "Impossible de calculer le nombre de pages de %s.\n"
+
+msgid "Job size : %i pages"    
+msgstr "Taille du job : %i pages"
+
+msgid "Cost on printer %s : %.2f"
+msgstr "Coût sur l'imprimante %s : %.2f"
