@@ -17,6 +17,10 @@ PyKota NEWS :
 
     - 1.02alpha :
     
+        - The installation script now checks for software availability
+          and in case a software is missing asks the user if he
+          wants to continue with the installation or abort it.
+          
         - Improved documentation.
         
         - You can now set the tcp/ip port on which the Quota Storage
