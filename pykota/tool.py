@@ -91,14 +91,16 @@ class Tool :
         localecharset = None
         try :
             try :
-                # preferred method with Python 2.3 and up
-                localecharset = locale.getpreferredencoding()
+                localecharset = locale.nl_langinfo(locale.CODESET)
             except AttributeError :    
-                localecharset = locale.getlocale()[1]
                 try :
-                    localecharset = localecharset or locale.getdefaultlocale()[1]
-                except ValueError :    
-                    pass        # Unknown locale, strange...
+                    localecharset = locale.getpreferredencoding()
+                except AttributeError :    
+                    localecharset = locale.getlocale()[1]
+                    try :
+                        localecharset = localecharset or locale.getdefaultlocale()[1]
+                    except ValueError :    
+                        pass        # Unknown locale, strange...
         except locale.Error :            
             pass
         self.charset = charset or os.environ.get("CHARSET") or localecharset or "ISO-8859-15"
