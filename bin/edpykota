@@ -22,6 +22,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.42  2003/04/17 13:38:47  jalet
+# Docstring corrected for better manual page
+#
 # Revision 1.41  2003/04/16 12:35:49  jalet
 # Groups quota work now !
 #
@@ -167,6 +170,7 @@ A Print Quota editor for PyKota.
 command line usage :
 
   edpykota [options] user1 user2 ... userN
+  
   edpykota [options] group1 group2 ... groupN
 
 options :
