@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.10  2003/06/16 21:55:15  jalet
+# More work on LDAP, again. Problem detected.
+#
 # Revision 1.9  2003/06/16 11:59:09  jalet
 # More work on LDAP
 #
@@ -241,6 +244,7 @@ class Storage :
             result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % (self.info["groupmembers"], username), [self.info["grouprdn"]], base=self.info["groupbase"])
             if result :
                 return [v[self.info["grouprdn"]][0] for (k, v) in result]
+        return []        
         
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns its id."""
@@ -352,7 +356,7 @@ class Storage :
         result = self.doSearch("objectClass=pykotaGroupPQuota", ["pykotaGroupName"], base=groupquotaid, scope=ldap.SCOPE_BASE)
         if result :
             groupname = result[0][1]["pykotaGroupName"][0]
-            members = self.getGroupMembersNames(groupname)
+            members = self.getGroupMembersNames(groupname) or []
             balance = lifetimepaid = 0.0
             for member in members :
                 userid = self.getUserId(member)
@@ -416,6 +420,7 @@ class Storage :
         fields = { 
                    "pykotaSoftLimit" : str(softlimit),
                    "pykotaHardLimit" : str(hardlimit),
+                   "pykotaDateLimit" : "None",
                  } 
         return self.doModify(userquotaid, fields)
         
@@ -424,6 +429,7 @@ class Storage :
         fields = { 
                    "pykotaSoftLimit" : str(softlimit),
                    "pykotaHardLimit" : str(hardlimit),
+                   "pykotaDateLimit" : "None",
                  } 
         return self.doModify(groupquotaid, fields)
         
@@ -485,7 +491,7 @@ class Storage :
                       "hardlimit" : int(fields["pykotaHardLimit"][0]),
                       "datelimit" : datelimit
                     }
-            members = self.getGroupMembersNames(groupname)
+            members = self.getGroupMembersNames(groupname) or []
             pagecounter = lifepagecounter = 0
             printerusers = self.getPrinterUsers(printerid)
             if printerusers :
@@ -512,13 +518,49 @@ class Storage :
                  }
         return self.doModify(groupquotaid, fields)
         
-    def addJobToHistory(self, jobid, userid, printerid, pagecounter, action) :
+    def addJobToHistory(self, jobid, userid, printerid, pagecounter, action, jobsize=None) :
         """Adds a job to the history: (jobid, userid, printerid, last page counter taken from requester)."""
-        raise PyKotaStorageError, "Not implemented !"
+        uuid = self.genUUID()
+        printername = self.getPrinterName(printerid)
+        fields = {
+                   "objectClass" : ["pykotaObject", "pykotaJob"],
+                   "cn" : uuid,
+                   "pykotaUserName" : self.getUserName(userid),
+                   "pykotaPrinterName" : printername,
+                   "pykotaJobId" : jobid,
+                   "pykotaPrinterPageCounter" : str(pagecounter),
+                   "pykotaAction" : action,
+                 }
+        if jobsize is not None :         
+            fields.update({ "pykotaJobSize" : str(jobsize) })
+        dn = "cn=%s,%s" % (uuid, self.info["jobbase"])
+        self.doAdd(dn, fields)
+        result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaPrinterName=%s))" % printername, None, base=self.info["lastjobbase"])
+        if result :
+            lastjdn = result[0][0] 
+            fields = {
+                       "pykotaLastJobIdent" : uuid,
+                     }
+            self.doModify(lastjdn, fields)         
+        else :    
+            lastjuuid = self.genUUID()
+            lastjdn = "cn=%s,%s" % (lasjuuid, self.info["lastjobbase"])
+            fields = {
+                       "objectClass" : ["pykotaObject", "pykotaLastJob"],
+                       "cn" : lastjuuid,
+                       "pykotaPrinterName" : printername,
+                       "pykotaLastJobIdent" : uuid,
+                     }  
+            self.doAdd(lastjdn, fields)          
     
     def updateJobSizeInHistory(self, historyid, jobsize) :
         """Updates a job size in the history given the history line's id."""
-        raise PyKotaStorageError, "Not implemented !"
+        result = self.doSearch("(&(objectClass=pykotaJob)(cn=%s))" % historyid, ["cn"], base=self.info["jobbase"])
+        if result :
+            fields = {
+                       "pykotaJobSize" : str(jobsize),
+                     }
+            self.doModify(result[0][0], fields)         
     
     def getPrinterPageCounter(self, printerid) :
         """Returns the last page counter value for a printer given its id, also returns last username, last jobid and history line id."""
@@ -537,6 +579,7 @@ class Storage :
                              "userid" : self.getUserId(fields.get("pykotaUserName")[0]),
                              "username" : fields.get("pykotaUserName")[0], 
                              "pagecounter" : int(fields.get("pykotaPrinterPageCounter")[0]),
+                             "jobsize" : int(fields.get("pykotaJobSize")[0]),
                            }
         
     def addUserToGroup(self, userid, groupid) :    
