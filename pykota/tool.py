@@ -21,6 +21,13 @@
 # $Id$
 #
 # $Log$
+# Revision 1.121  2004/09/15 18:47:58  jalet
+# Re-Extends the list of invalid characters in names to prevent
+# people from adding user "*" for example, or to prevent
+# print administrators to hijack the system by putting dangerous
+# datas into the database which would cause commands later run by root
+# to compromise the system.
+#
 # Revision 1.120  2004/09/02 13:26:29  jalet
 # Small fix for old versions of LPRng
 #
@@ -615,7 +622,7 @@ class PyKotaTool :
     
     def isValidName(self, name) :
         """Checks if a user or printer name is valid."""
-        invalidchars = "/@"
+        invalidchars = "/@?*,;&|"
         for c in list(invalidchars) :
             if c in name :
                 return 0
