@@ -27,6 +27,11 @@ PyKota NEWS :
           or version.
           
         - Extended some PATH in the shell scripts  
+        
+        - Deleting an user now also deletes his payments history.
+        
+        - Doesn't explicitely ignore SIGCHLD anymore. This seems to
+          cause problems.
 
     - 1.19alpha18 :
     

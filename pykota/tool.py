@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.98  2004/06/08 19:27:12  jalet
+# Doesn't ignore SIGCHLD anymore
+#
 # Revision 1.97  2004/06/07 22:45:35  jalet
 # Now accepts a job when enforcement is STRICT and predicted account balance
 # is equal to 0.0 : since the job hasn't been printed yet, only its printing
@@ -841,7 +844,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         # We begin with ignoring signals, we may de-ignore them later on.
         self.gotSigTerm = 0
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        signal.signal(signal.SIGCHLD, signal.SIG_IGN)
+        # signal.signal(signal.SIGCHLD, signal.SIG_IGN)
         signal.signal(signal.SIGPIPE, signal.SIG_IGN)
         
         PyKotaTool.__init__(self)
