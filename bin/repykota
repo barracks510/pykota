@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.41  2003/07/07 12:19:52  jalet
+# Now repykota and warnpykota --groups check the groups the user is a member of
+# in the print quota database, not in the system passwd/group files
+#
 # Revision 1.40  2003/06/30 12:46:15  jalet
 # Extracted reporting code.
 #
@@ -237,10 +241,15 @@ class RePyKota(PyKotaTool) :
         else :        
             # not the root user
             # reports only the current user
+            username = pwd.getpwuid(uid)[0]
             if options["groups"] :
-                ugnames = [ grp.getgrgid(pwd.getpwuid(uid)[3])[0] ]
+                user = self.storage.getUser(username)
+                if user.Exists :
+                    ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
+                else :    
+                    ugnames = [ ]
             else :
-                ugnames = [ pwd.getpwuid(uid)[0] ]
+                ugnames = [ username ]
         
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :

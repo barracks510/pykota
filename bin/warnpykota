@@ -22,6 +22,10 @@
 # $Id$
 #
 # $Log$
+# Revision 1.21  2003/07/07 12:19:52  jalet
+# Now repykota and warnpykota --groups check the groups the user is a member of
+# in the print quota database, not in the system passwd/group files
+#
 # Revision 1.20  2003/06/25 14:10:01  jalet
 # Hey, it may work (edpykota --reset excepted) !
 #
@@ -172,10 +176,15 @@ class WarnPyKota(PyKotaTool) :
             # the utility of this is discutable, but at least it
             # protects other users from mail bombing if they are
             # over quota.
+            username = pwd.getpwuid(uid)[0]
             if options["groups"] :
-                ugnames = [ grp.getgrgid(pwd.getpwuid(uid)[3])[0] ]
+                user = self.storage.getUser(username)
+                if user.Exists :
+                    ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
+                else :    
+                    ugnames = [ ]
             else :
-                ugnames = [ pwd.getpwuid(uid)[0] ]
+                ugnames = [ username ]
         
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
