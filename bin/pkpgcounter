@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.8  2004/05/08 15:12:23  jalet
+# Improved PCL6 support
+#
 # Revision 1.7  2004/05/07 23:08:21  jalet
 # Skeleton for PCLXL aka PCL6
 # Added the "potential" fix for rastertoprinter's output
@@ -51,8 +54,14 @@
 import sys
 import os
 import mmap
+import struct
 import tempfile
 
+def debug(msg) :
+    """Outputs a debug message on stderr."""
+    sys.stderr.write("%s\n" % msg)
+    sys.stderr.flush()
+    
 def ispostscript(data) :    
     """Returns 1 if data is PostScript, else 0."""
     if data.startswith("%!") or \
@@ -207,9 +216,149 @@ def pcl(infile) :
     else :
         return copies * pagecount
 
+class PCLXLParser :
+    def __init__(self, infile) :
+        """Initialize PCLXL parser."""
+        self.infile = infile
+        self.islittleendian = None
+        found = 0
+        while not found :
+            line = self.infile.readline()
+            if not line :
+                break
+            if line[1:12] == " HP-PCL XL;" :
+                found = 1
+                if line[0] == ")" :
+                    self.littleendian()
+                elif line[0] == "(" :    
+                    self.bigendian()
+        if not found :
+            raise TypeError, "This file doesn't seem to be PCLXL (aka PCL6)"
+        else :    
+            self.tags = [None] * 256    
+            self.tags[0x28] = self.bigendian    # big endian
+            self.tags[0x29] = self.littleendian # big endian
+            self.tags[0x43] = self.beginPage    # BeginPage
+            self.tags[0x44] = self.endPage      # EndPage
+            
+            self.tags[0xc0] = 1 # ubyte
+            self.tags[0xc1] = 2 # uint16
+            self.tags[0xc2] = 4 # uint32
+            self.tags[0xc3] = 2 # sint16
+            self.tags[0xc4] = 4 # sint32
+            self.tags[0xc5] = 4 # real32
+            
+            self.tags[0xc8] = self.array_8  # ubyte_array
+            self.tags[0xc9] = self.array_16 # uint16_array
+            self.tags[0xca] = self.array_32 # uint32_array
+            self.tags[0xcb] = self.array_16 # sint16_array
+            self.tags[0xcc] = self.array_32 # sint32_array
+            self.tags[0xcd] = self.array_32 # real32_array
+            
+            self.tags[0xd0] = 2 # ubyte_xy
+            self.tags[0xd1] = 4 # uint16_xy
+            self.tags[0xd2] = 8 # uint32_xy
+            self.tags[0xd3] = 4 # sint16_xy
+            self.tags[0xd4] = 8 # sint32_xy
+            self.tags[0xd5] = 8 # real32_xy
+            
+            self.tags[0xd0] = 4  # ubyte_box
+            self.tags[0xd1] = 8  # uint16_box
+            self.tags[0xd2] = 16 # uint32_box
+            self.tags[0xd3] = 8  # sint16_box
+            self.tags[0xd4] = 16 # sint32_box
+            self.tags[0xd5] = 16 # real32_box
+            
+            self.tags[0xf8] = 1 # attr_ubyte
+            self.tags[0xf9] = 2 # attr_uint16
+            
+            self.tags[0xfa] = self.embeddedData      # dataLength
+            self.tags[0xfb] = self.embeddedDataSmall # dataLengthByte
+            
+    def beginPage(self) :
+        """Indicates the beginning of a new page."""
+        self.pagecount += 1
+        debug("Begin page %i at %s" % (self.pagecount, self.infile.tell()))
+        
+    def endPage(self) :
+        """Indicates the end of a page."""
+        debug("End page %i at %s" % (self.pagecount, self.infile.tell()))
+        
+    def handleArray(self, itemsize) :        
+        """Handles arrays."""
+        datatype = self.infile.read(1)
+        length = self.tags[ord(datatype)]
+        sarraysize = self.infile.read(length)
+        if self.islittleendian :
+            fmt = "<"
+        else :    
+            fmt = ">"
+        if length == 1 :    
+            fmt += "B"
+        elif length == 2 :    
+            fmt += "H"
+        elif length == 4 :    
+            fmt += "I"
+        else :    
+            raise TypeError, "Error on array size at %s" % self.infile.tell()
+        arraysize = struct.unpack(fmt, sarraysize)[0]
+        return arraysize * itemsize
+        
+    def array_8(self) :    
+        """Handles byte arrays."""
+        return self.handleArray(1)
+        
+    def array_16(self) :    
+        """Handles byte arrays."""
+        return self.handleArray(2)
+        
+    def array_32(self) :    
+        """Handles byte arrays."""
+        return self.handleArray(4)
+        
+    def embeddedDataSmall(self) :
+        """Handle small amounts of data."""
+        return ord(self.infile.read(1))
+        
+    def embeddedData(self) :
+        """Handle normal amounts of data."""
+        if self.islittleendian :
+            fmt = "<I"
+        else :    
+            fmt = ">I"
+        return struct.unpack(fmt, self.infile.read(4))[0]
+        
+    def littleendian(self) :        
+        """Toggles to little endianness."""
+        self.islittleendian = 1 # little endian
+        
+    def bigendian(self) :    
+        """Toggles to big endianness."""
+        self.islittleendian = 0 # big endian
+    
+    def pagecount(self) :
+        """Counts pages in a PCLXL (PCL6) document."""
+        self.pagecount = 0
+        while 1 :
+            pos = self.infile.tell()
+            char = self.infile.read(1)
+            if not char :
+                break
+            index = ord(char)    
+            length = self.tags[index]
+            if length is not None :
+                if not length :
+                    debug("Unrecognized tag 0x%02x at %s\n" % (index, self.infile.tell()))
+                elif callable(length) :    
+                    length = length()
+                if length :    
+                    self.infile.read(length)    
+        return self.pagecount
+        
 def pclxl(infile) :     
     """Count pages in a PCL6 aka PCLXL document."""
-    raise TypeError, "Sorry but PCL6, aka PCLXL, is not supported yet.\n"
+    parser = PCLXLParser(infile)    
+    return parser.pagecount()
     
 def smartpagecounter(filename) :
     """Autodetects file format and returns number of pages."""
@@ -235,6 +384,7 @@ def smartpagecounter(filename) :
     if ispostscript(firstblock) :
         size = postscript(infile)
     elif ispclxl(firstblock) :    
+        raise TypeError, "PCLXL (aka PCL6) is not supported yet."
         size = pclxl(infile)
     elif ispcl(firstblock) :    
         size = pcl(infile)
@@ -250,5 +400,8 @@ if __name__ == "__main__" :
         
     totalsize = 0    
     for arg in sys.argv[1:] :
-        totalsize += smartpagecounter(arg)
+        try :
+            totalsize += smartpagecounter(arg)
+        except TypeError, msg :    
+            debug(msg)
     print "%s" % totalsize
