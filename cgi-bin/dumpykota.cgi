@@ -23,6 +23,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.3  2005/01/10 14:57:29  jalet
+# Fixed the default datatype which is now set to 'history'
+#
 # Revision 1.2  2005/01/08 19:47:00  jalet
 # Fixed a bad copy&paste
 #
@@ -94,7 +97,7 @@ class PyKotaDumperGUI(DumPyKota) :
         """Displays the dumper interface."""
         global header, footer
         print header % (self.getCharset(), _("PyKota Data Dumper"), version.__version__, _("PyKota Data Dumper"), _("Dump"), _("Please click on the above button"))
-        print self.htmlListDataTypes(self.options.get("datatype", "")) 
+        print self.htmlListDataTypes(self.options.get("data", "")) 
         print "<br />"
         print self.htmlListFormats(self.options.get("format", ""))
         print "<br />"
