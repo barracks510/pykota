@@ -48,8 +48,6 @@ Actual working features :
         - Centralized storage of quotas : you can manage quotas for
           different printers on different print servers and store them all
           on the same quota storage server. 
-          WARNING : actually all your printers must have an unique name,
-                    but this may change in a future version.
                     
         - SNMP querying of any networked SNMP-enabled printer. 
         
