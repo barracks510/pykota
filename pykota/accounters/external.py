@@ -20,6 +20,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.2  2003/05/13 13:54:20  jalet
+# Better handling of broken pipes
+#
 # Revision 1.1  2003/05/07 19:47:06  jalet
 # v1.07 Release of the Shame is out !
 #
@@ -77,32 +80,37 @@ class Accounter(AccounterBase) :
             infile = open(self.filter.inputfile, "rb")
             
         # launches external accounter
-        process = popen2.Popen3("%s" % self.arguments)
+        try :
+            process = popen2.Popen3("%s" % self.arguments)
         
-        # feed it with our data
-        data = infile.read(256*1024)    
-        while data :
-            process.tochild.write(data)
-            temporary.write(data)
-            data = infile.read(256*1024)
-        process.tochild.close()
+            # feed it with our data
+            data = infile.read(256*1024)    
+            while data :
+                process.tochild.write(data)
+                temporary.write(data)
+                data = infile.read(256*1024)
+            process.tochild.close()
         
-        # wait for child process to exit (or die)
-        retcode = process.wait()
-        
-        # check exit status
-        if os.WIFEXITED(retcode) and not os.WEXITSTATUS(retcode) :
-            # tries to extract the job size from the external accounter's
-            # standard output
-            try :
-                pagecount = int(process.fromchild.readline().strip())
-            except (AttributeError, ValueError) :
+            # wait for child process to exit (or die)
+            retcode = process.wait()
+            
+            # check exit status
+            if os.WIFEXITED(retcode) and not os.WEXITSTATUS(retcode) :
+                # tries to extract the job size from the external accounter's
+                # standard output
+                try :
+                    pagecount = int(process.fromchild.readline().strip())
+                except (AttributeError, ValueError) :
+                    self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % self.arguments)
+                    pagecount = 0
+            else :
                 self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % self.arguments)
                 pagecount = 0
-        else :
-            self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % self.arguments)
+            process.fromchild.close()    
+        except IOError, msg :    
+            msg = "%s : %s" % (self.arguments, msg) 
+            self.filter.logger.log_message(_("Unable to compute job size with external accounter %s") % msg)
             pagecount = 0
-        process.fromchild.close()    
             
         if temporary is not None :    
             # this is a copy of our previous standard input
