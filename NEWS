@@ -25,6 +25,8 @@ PyKota NEWS :
     
         - Allows the dot in user and printer names.
         
+        - Printer groups are now cached too.
+        
     - 1.16alpha20 :
     
         - Fixed several small bugs with the help of PyChecker.

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.30  2004/01/06 14:24:59  jalet
+# Printer groups should be cached now, if caching is enabled.
+#
 # Revision 1.29  2003/12/27 16:49:25  uid67467
 # Should be ok now.
 #
@@ -421,6 +424,14 @@ class BaseStorage :
             lastjob = self.getPrinterLastJobFromBackend(printer)
             self.cacheEntry("LASTJOBS", printer.Name, lastjob)
         return lastjob    
+        
+    def getParentPrinters(self, printer) :    
+        """Extracts parent printers information for a given printer from cache."""
+        parents = self.getFromCache("PARENTPRINTERS", printer.Name)
+        if parents is None :
+            parents = self.getParentPrintersFromBackend(printer)
+            self.cacheEntry("PARENTPRINTERS", printer.Name, parents)
+        return parents    
         
     def getGroupMembers(self, group) :        
         """Returns the group's members list from in-group cache."""

@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.27  2004/01/06 14:24:59  jalet
+# Printer groups should be cached now, if caching is enabled.
+#
 # Revision 1.26  2003/12/29 14:12:48  uid67467
 # Tries to workaround possible integrity violations when retrieving printer groups
 #
@@ -338,6 +341,18 @@ class Storage(BaseStorage) :
                 groups.append(self.getGroup(record.get("groupname")))
         return groups        
         
+    def getParentPrintersFromBackend(self, printer) :    
+        """Get all the printer groups this printer is a member of."""
+        pgroups = []
+        result = self.doSearch("SELECT groupid,printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s;" % self.doQuote(printer.ident))
+        if result :
+            for record in result :
+                if record["groupid"] != printer.ident : # in case of integrity violation
+                    parentprinter = self.getPrinter(record.get("printername"))
+                    if parentprinter.Exists :
+                        pgroups.append(parentprinter)
+        return pgroups
+        
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
@@ -396,18 +411,6 @@ class Storage(BaseStorage) :
                     grouppquota = self.getGroupPQuota(group, printer)
                     groupsandquotas.append((group, grouppquota))
         return groupsandquotas
-        
-    def getParentPrinters(self, printer) :    
-        """Get all the printer groups this printer is a member of."""
-        pgroups = []
-        result = self.doSearch("SELECT groupid,printername FROM printergroupsmembers JOIN printers ON groupid=id WHERE printerid=%s;" % self.doQuote(printer.ident))
-        if result :
-            for record in result :
-                if record["groupid"] != printer.ident : # in case of integrity violation
-                    parentprinter = self.getPrinter(record.get("printername"))
-                    if parentprinter.Exists :
-                        pgroups.append(parentprinter)
-        return pgroups
         
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns it."""
