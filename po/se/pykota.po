@@ -137,10 +137,6 @@ msgid "Printer %s was never used"
 msgstr "Skrivare %s aldrig använd"
 
 #, python-format
-msgid "Unable to compute size of %s in number of pages.\n"
-msgstr "Kunde inte beräkna storleken på %s i antalet sidor.\n"
-
-#, python-format
 msgid "Your account balance : %.2f"
 msgstr "Ditt utskriftssaldo : %.2f"
 

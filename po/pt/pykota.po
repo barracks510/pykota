@@ -134,10 +134,6 @@ msgid "Printer %s was never used"
 msgstr "A impressora %s nunca foi usada"
 
 #, python-format
-msgid "Unable to compute size of %s in number of pages.\n"
-msgstr "Não foi possível calcular o tamanho de %s em número de páginas.\n"
-
-#, python-format
 msgid "Your account balance : %.2f"
 msgstr "Saldo da sua conta : %.2f"
 
