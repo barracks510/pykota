@@ -19,8 +19,37 @@ PyKota's FAQ :
     that all debug messages for PyKota will go to syslog's
     destination for the LPR syslog facility.
   
+  * How can I limit my users to N pages per day (month/year) ?
+  
+    The easiest way to do this is to create their print quota
+    entries using something like :
+        
+      $ edpykota --add -S 30 -H 30 user1 user2 user3 ...
+        
+      this would limit users to 30 pages on each printer.
+        
+    Then in a crontab launched every day (month/year) you could    
+    do :
+    
+      00 23 * * * /usr/bin/edpykota --reset 
+        
+      this would reset every user's page counter to 0 on each printer
+      at 23h00 every day. 
+  
+  * How can I tell PyKota to allow some users to print without limitation ?
+   
+    Just create these users' print quota entries this way :
+    
+      $ edpykota --add --limitby quota --noquota user1 user2 ...
+  
+      This would effectively put these users in "no limit" mode on
+      each printer. If you want to do this only on some printers, just
+      use the --printer command line argument as well. See
+      edpykota's documentation for details.
+  
   * Nothing prints when my printer is in PowerSave mode, what
     can I do ?
+    
     This happens if you use hardware accounting with SNMP, because
     some (all ?) printers don't say they are idle when they are
     in PowerSave mode.
