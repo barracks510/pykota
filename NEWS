@@ -21,31 +21,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
 
-    - 1.04pre4 :
+    - 1.04 :
     
         - Default print policy for users/groups unknown from 
           the print quota system is now DENY instead of ALLOW,
           since ALLOW can generate inaccurate results
           (incorrect job sizes charged to the wrong persons)
           
-    - 1.04pre3 :
-    
         - LPRng support works !
-        
-    - 1.04pre2 :
-    
-        - Preliminary support for LPRng added (still untested)
         
         - A bug was introduced some time ago wrt printers' default
           policy for unknown users. It is now corrected.
         
-    - 1.04pre1 :
-    
         - repykota now displays prices per job and per page for each
           printer, if they are defined.
           
-    - 1.04pre0 :
-    
         - Minor display bug fixed in repykota.
         
         - Problem when running repykota with an empty database was fixed.
@@ -55,8 +45,6 @@ PyKota NEWS :
         - Upgrade script included for earlier versions.
           Please look inside the initscripts subdirectory.
           
-    - 1.03beta2 :
-    
         - repykota now reports account balances too.
         
         - PyKota now has a nice logo, see the logos
@@ -64,12 +52,8 @@ PyKota NEWS :
         
         - Manual pages were finally updated.
         
-    - 1.03beta :
-    
         - Group quotas seem to work now !
         
-    - 1.03alpha :
-    
         - IMPORTANT : DataBase schema has changed.
           DON'T TRY TO UPGRADE AN EXISTING PYKOTA INSTALLATION !
           The upgrade script will be finalized ASAP, be patient,

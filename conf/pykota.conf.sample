@@ -118,7 +118,7 @@ requester: external(snmpget -c public -Ov %(printer)s 43.10.2.1.4.1.1 | cut -f 2
 # If both are defined, the printer option has priority.
 # If the value is not set then the default policy DENY applies.
 # ATTENTION :
-#     Before 1.04pre4 the default value was ALLOW, but unknown users
+#     Before 1.04 the default value was ALLOW, but unknown users
 #     allowed to print causes accuracy problems : their jobs are
 #     charged to the next person who prints on the same printer.
 policy: deny
