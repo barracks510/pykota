@@ -21,6 +21,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.85  2004/10/24 12:55:09  jalet
+# Missing spaces
+#
 # Revision 1.84  2004/10/12 08:58:53  jalet
 # Now warnpykota only warns users who have already printed, to not confuse
 # users who have just opened their account.
@@ -314,7 +317,7 @@ import time
 import md5
 from mx import DateTime
 
-from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, StorageUser, StorageGroup, StoragePrinter, StorageJob, StorageLastJob, StorageUserPQuota, StorageGroupPQuota
 
 try :
     import ldap
@@ -1212,7 +1215,7 @@ class Storage(BaseStorage) :
                     job.PrinterName = fields.get("pykotaPrinterName")[0]
                     job.Exists = 1
                     jobs.append(job)
-            jobs.sort(lambda x,y : cmp(y.JobDate, x.JobDate))        
+            jobs.sort(lambda x, y : cmp(y.JobDate, x.JobDate))        
             if limit :    
                 jobs = jobs[:int(limit)]
         return jobs
