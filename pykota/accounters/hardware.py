@@ -43,6 +43,7 @@ except ImportError :
 else :    
     hasSNMP = 1
     pageCounterOID = ".1.3.6.1.2.1.43.10.2.1.4.1.1"  # SNMPv2-SMI::mib-2.43.10.2.1.4.1.1
+    pageCounterOID2 = ".1.3.6.1.2.1.43.10.2.1.5.1.1"  # SNMPv2-SMI::mib-2.43.10.2.1.5.1.1
     hrPrinterStatusOID = ".1.3.6.1.2.1.25.3.5.1.1.1" # SNMPv2-SMI::mib-2.25.3.5.1.1.1
     printerStatusValues = { 1 : 'other',
                             2 : 'unknown',
@@ -70,7 +71,10 @@ else :
         def __init__(self, parent, printerhostname) :
             self.parent = parent
             self.printerHostname = printerhostname
-            self.printerInternalPageCounter = self.printerStatus = None
+            self.printerInternalPageCounter = None
+            self.printerInternalPageCounter2 = None
+            self.printerStatus = None
+            self.deviceStatus = None
             
         def retrieveSNMPValues(self) :    
             """Retrieves a printer's internal page counter and status via SNMP."""
@@ -79,7 +83,9 @@ else :
             req.apiAlphaSetCommunity('public')
             req.apiAlphaSetPdu(ver.GetRequestPdu())
             req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), \
-                                                        (hrPrinterStatusOID, ver.Null()))
+                                                        (pageCounterOID2, ver.Null()), \
+                                                        (hrPrinterStatusOID, ver.Null()), \
+                                                        (hrDeviceStatusOID, ver.Null()))
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
@@ -108,8 +114,10 @@ else :
                         try :    
                             # keep maximum value seen for printer's internal page counter
                             self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
-                            self.printerStatus = self.values[1]
-                            self.parent.filter.logdebug("SNMP answer is decoded : PageCounter : %s     Status : %s" % (self.values[0], self.values[1]))
+                            self.printerInternalPageCounter2 = max(self.printerInternalPageCounter2, self.values[1])
+                            self.printerStatus = self.values[2]
+                            self.deviceStatus = self.values[3]
+                            self.parent.filter.logdebug("SNMP answer is decoded : PageCounters : (%s, %s)  PrinterStatus : %s  DeviceStatus : %s" % tuple(self.values))
                         except IndexError :    
                             self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass
@@ -175,7 +183,6 @@ class PJLAccounter :
     def __init__(self, parent, printerhostname) :
         self.parent = parent
         self.printerHostname = printerhostname
-        self.printerInternalPageCounter = self.printerStatus = None
         self.printerInternalPageCounter = self.printerStatus = None
         self.timedout = 0
         
