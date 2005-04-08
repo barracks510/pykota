@@ -532,6 +532,7 @@ class PCLXLAnalyzer :
         self.debug = debug
         self.infile = infile
         self.endianness = None
+        self.iscolor = None
         found = 0
         while not found :
             line = self.infile.readline()
@@ -550,51 +551,61 @@ class PCLXLAnalyzer :
                     raise PDLAnalyzerError, "Unknown endianness marker 0x%02x at start !" % endian
         if not found :
             raise PDLAnalyzerError, "This file doesn't seem to be PCLXL (aka PCL6)"
-        else :    
-            # Initialize table of tags
-            self.tags = [ 0 ] * 256    
             
-            # GhostScript's sources tell us that HP printers
-            # only accept little endianness, but we can handle both.
-            self.tags[0x28] = self.bigEndian    # BigEndian
-            self.tags[0x29] = self.littleEndian # LittleEndian
+        # Initialize table of tags
+        self.tags = [ 0 ] * 256    
+        
+        # GhostScript's sources tell us that HP printers
+        # only accept little endianness, but we can handle both.
+        self.tags[0x28] = self.bigEndian    # BigEndian
+        self.tags[0x29] = self.littleEndian # LittleEndian
+        
+        self.tags[0x43] = self.beginPage    # BeginPage
+        self.tags[0x44] = self.endPage      # EndPage
+        
+        self.tags[0x6a] = self.setColorSpace    # to detect color/b&w mode
+        
+        self.tags[0xc0] = 1 # ubyte
+        self.tags[0xc1] = 2 # uint16
+        self.tags[0xc2] = 4 # uint32
+        self.tags[0xc3] = 2 # sint16
+        self.tags[0xc4] = 4 # sint32
+        self.tags[0xc5] = 4 # real32
+        
+        self.tags[0xc8] = self.array_8  # ubyte_array
+        self.tags[0xc9] = self.array_16 # uint16_array
+        self.tags[0xca] = self.array_32 # uint32_array
+        self.tags[0xcb] = self.array_16 # sint16_array
+        self.tags[0xcc] = self.array_32 # sint32_array
+        self.tags[0xcd] = self.array_32 # real32_array
+        
+        self.tags[0xd0] = 2 # ubyte_xy
+        self.tags[0xd1] = 4 # uint16_xy
+        self.tags[0xd2] = 8 # uint32_xy
+        self.tags[0xd3] = 4 # sint16_xy
+        self.tags[0xd4] = 8 # sint32_xy
+        self.tags[0xd5] = 8 # real32_xy
+        
+        self.tags[0xe0] = 4  # ubyte_box
+        self.tags[0xe1] = 8  # uint16_box
+        self.tags[0xe2] = 16 # uint32_box
+        self.tags[0xe3] = 8  # sint16_box
+        self.tags[0xe4] = 16 # sint32_box
+        self.tags[0xe5] = 16 # real32_box
+        
+        self.tags[0xf8] = 1 # attr_ubyte
+        self.tags[0xf9] = 2 # attr_uint16
+        
+        self.tags[0xfa] = self.embeddedData      # dataLength
+        self.tags[0xfb] = self.embeddedDataSmall # dataLengthByte
             
-            self.tags[0x43] = self.beginPage    # BeginPage
-            self.tags[0x44] = self.endPage      # EndPage
-            
-            self.tags[0xc0] = 1 # ubyte
-            self.tags[0xc1] = 2 # uint16
-            self.tags[0xc2] = 4 # uint32
-            self.tags[0xc3] = 2 # sint16
-            self.tags[0xc4] = 4 # sint32
-            self.tags[0xc5] = 4 # real32
-            
-            self.tags[0xc8] = self.array_8  # ubyte_array
-            self.tags[0xc9] = self.array_16 # uint16_array
-            self.tags[0xca] = self.array_32 # uint32_array
-            self.tags[0xcb] = self.array_16 # sint16_array
-            self.tags[0xcc] = self.array_32 # sint32_array
-            self.tags[0xcd] = self.array_32 # real32_array
-            
-            self.tags[0xd0] = 2 # ubyte_xy
-            self.tags[0xd1] = 4 # uint16_xy
-            self.tags[0xd2] = 8 # uint32_xy
-            self.tags[0xd3] = 4 # sint16_xy
-            self.tags[0xd4] = 8 # sint32_xy
-            self.tags[0xd5] = 8 # real32_xy
-            
-            self.tags[0xe0] = 4  # ubyte_box
-            self.tags[0xe1] = 8  # uint16_box
-            self.tags[0xe2] = 16 # uint32_box
-            self.tags[0xe3] = 8  # sint16_box
-            self.tags[0xe4] = 16 # sint32_box
-            self.tags[0xe5] = 16 # real32_box
-            
-            self.tags[0xf8] = 1 # attr_ubyte
-            self.tags[0xf9] = 2 # attr_uint16
-            
-            self.tags[0xfa] = self.embeddedData      # dataLength
-            self.tags[0xfb] = self.embeddedDataSmall # dataLengthByte
+        # color spaces    
+        self.BWColorSpace = "".join([chr(0x00), chr(0xf8), chr(0x03)])
+        self.GrayColorSpace = "".join([chr(0x01), chr(0xf8), chr(0x03)])
+        self.RGBColorSpace = "".join([chr(0x02), chr(0xf8), chr(0x03)])
+        
+        # set number of copies
+        self.setNumberOfCopies = "".join([chr(0xf8), chr(0x31)]) 
             
     def beginPage(self) :
         """Indicates the beginning of a new page, and extracts media information."""
@@ -649,15 +660,22 @@ class PCLXLAnalyzer :
     def endPage(self) :    
         """Indicates the end of a page."""
         pos = self.pos
+        pos3 = pos - 3
         minfile = self.minfile
-        if (ord(minfile[pos-3]) == 0xf8) and (ord(minfile[pos-2]) == 0x31) :
+        if minfile[pos3:pos-1] == self.setNumberOfCopies :
             # The EndPage operator may be preceded by a PageCopies attribute
             # So set number of copies for current page.
             # From what I read in PCLXL documentation, the number
             # of copies is an unsigned 16 bits integer
-            self.pages[self.pagecount]["copies"] = unpack(self.endianness + "H", minfile[pos-5:pos-3])[0]
+            self.pages[self.pagecount]["copies"] = unpack(self.endianness + "H", minfile[pos-5:pos3])[0]
         return 0
         
+    def setColorSpace(self) :    
+        """Changes the color space."""
+        if self.minfile[self.pos-4:self.pos-1] == self.RGBColorSpace :
+            self.iscolor = 1
+        return 0
+            
     def array_8(self) :    
         """Handles byte arrays."""
         pos = self.pos
@@ -778,6 +796,10 @@ class PCLXLAnalyzer :
             self.minfile.close() # reached EOF
             
         # now handle number of copies for each page (may differ).
+        if self.iscolor :
+            colormode = "Color"
+        else :    
+            colormode = "Black"
         for pnum in range(1, self.pagecount + 1) :
             # if no number of copies defined, take 1, as explained
             # in PCLXL documentation.
@@ -788,8 +810,12 @@ class PCLXLAnalyzer :
             copies = page["copies"]
             self.pagecount += (copies - 1)
             if self.debug :
-                sys.stderr.write("%s*%s*%s*%s*%s\n" % (copies, page["mediatype"], page["mediasize"], page["orientation"], page["mediasource"]))
-            
+                sys.stderr.write("%s*%s*%s*%s*%s*%s\n" % (copies, 
+                                                          page["mediatype"], 
+                                                          page["mediasize"], 
+                                                          page["orientation"], 
+                                                          page["mediasource"], 
+                                                          colormode))
         return self.pagecount
         
 class PDLAnalyzer :    
