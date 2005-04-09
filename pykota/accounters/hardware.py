@@ -337,7 +337,7 @@ class Accounter(AccounterBase) :
                 jobsize += 10
             else :    
                 # here we may have got a printer being replaced
-                # DURING the job. This is HIGHLY improbable !
+                # DURING the job. This is HIGHLY improbable (but already happened) !
                 self.filter.printInfo(_("Inconsistent values for printer %s's internal page counter.") % printer.Name, "warn")
                 self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
                 jobsize = 1
