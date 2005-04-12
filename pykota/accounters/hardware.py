@@ -177,6 +177,7 @@ pjlStatusValues = {
                     "10005" : "Reset",
                     "10023" : "Printing",
                     "35078" : "Powersave Mode",         # 10000 is ALSO powersave !!!
+                    "40000" : "Sleep Mode",             # Standby
                   }
 class PJLAccounter :
     """A class for PJL print accounting."""
@@ -257,7 +258,7 @@ class PJLAccounter :
         while 1 :
             self.retrievePJLValues()
             idle_flag = 0
-            if self.printerStatus in ('10000', '10001', '35078') :
+            if self.printerStatus in ('10000', '10001', '35078', '40000') :
                 idle_flag = 1
             if idle_flag :    
                 idle_num += 1
