@@ -1,7 +1,29 @@
 # PyKota sample configuration file
 #
-# Copy this file into the /etc/pykota/ directory
-# under the name /etc/pykota/pykota.conf
+#
+# File format :
+#
+#   - A mandatory [global] section :
+#
+#     Contains configuration directives which apply for all printers.
+#     Some directives MUST be set in the [global] section, e.g.
+#     database related directives.
+#
+#   - Any number of optional [PrintQueueName] sections :
+#
+#     Contain directives which apply for a particular print queue only.
+#
+#     Override the values of the same directives present in [global].
+#
+#
+# Directives format :
+#
+#   - Directive's name, followed by ':' followed by the directive's value.
+#
+#   - No leading whitespace : leading whitespace tell the parser that the
+#     current directive is the continuation of the previous one. Use with
+#     care and only when you need it.
+#
 #
 # PyKota - Print Quotas for CUPS and LPRng
 #

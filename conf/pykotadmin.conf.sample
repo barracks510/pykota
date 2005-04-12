@@ -1,12 +1,25 @@
 # PyKota sample administrator's configuration file
 #
-# Copy it into the /etc/pykota/ directory under
-# the /etc/pykota/pykotadmin.conf name, and 
-# ensure that only the root user and the user
-# the printing system is run as can read it.
-#
 # Under NO circumstances regular users should 
 # be allowed to read this file.
+#
+#
+# File format :
+#
+#   - A mandatory [global] section :
+#
+#     Contains configuration directives to specify the username and
+#     optional password for the PyKota's database administrator.
+#     This user is either a PostgreSQL user, or an LDAP dn.
+#
+# Directives format :
+#
+#   - Directive's name, followed by ':' followed by the directive's value.
+#
+#   - No leading whitespace : leading whitespace tell the parser that the
+#     current directive is the continuation of the previous one. Use with
+#     care and only when you need it.
+#
 #
 # PyKota - Print Quotas for CUPS and LPRng
 #
