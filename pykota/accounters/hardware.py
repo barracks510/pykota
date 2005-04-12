@@ -64,8 +64,6 @@ else :
     #                      
     # Documentation taken from RFC 3805 (Printer MIB v2) and RFC 2790 (Host Resource MIB)
     #
-    # TODO : if hrDeviceStatus==2 and hrPrinterStatus==1 then it's powersave mode.
-    #
     class SNMPAccounter :
         """A class for SNMP print accounting."""
         def __init__(self, parent, printerhostname) :
