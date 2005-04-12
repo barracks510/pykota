@@ -153,10 +153,13 @@ else :
             idle_num = idle_flag = 0
             while 1 :
                 self.retrieveSNMPValues()
-                statusAsString = printerStatusValues.get(self.printerStatus)
+                pstatusAsString = printerStatusValues.get(self.printerStatus)
+                dstatusAsString = deviceStatusValues.get(self.deviceStatus)
                 idle_flag = 0
-                if statusAsString in ('idle',) :
-                    idle_flag = 1
+                if (pstatusAsString == 'idle') or \
+                   ((pstatusAsString == 'other') and \
+                    (dstatusAsString == 'running')) :
+                    idle_flag = 1       # Standby / Powersave is considered idle
                 if idle_flag :    
                     idle_num += 1
                     if idle_num > STABILIZATIONDELAY :
