@@ -29,6 +29,12 @@ TODO, in no particular order :
           don't want our users to complain about their credits being
           "eaten" for mandatory printouts.
           
+        - Allow several levels of administrative priviledges by allowing
+          files like ~pykota/pykotadmin.someusername.conf (readonly by
+          user 'someusername'), and have the database server deal
+          with the permissions : no need for additionnal code or data
+          in PyKota's database !
+        
         - Add a "printing denied" indicator on user print quota entries,  
           to temporarily forbid an user to print on a particular printer.
           
