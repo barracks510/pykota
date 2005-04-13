@@ -29,6 +29,9 @@ TODO, in no particular order :
           don't want our users to complain about their credits being
           "eaten" for mandatory printouts.
           
+        - Add a "printing denied" indicator on user print quota entries,  
+          to temporarily forbid an user to print on a particular printer.
+          
         - Maybe per user "denyduplicates" : my 5 years old daughter 
           just prints again when the printer is off...
           
