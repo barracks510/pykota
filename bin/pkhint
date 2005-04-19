@@ -27,9 +27,7 @@
 import sys
 import os
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
-from pykota.config import PyKotaConfigError
-from pykota.storage import PyKotaStorageError
+from pykota.tool import Tool, PyKotaToolError, crashed, N_
 try :
     import pysnmp
 except ImportError :    
@@ -88,7 +86,7 @@ NETPJLTESTS = [ \
                 'nc -w 2 %(printer)s %(port)s </usr/share/pykota/pagecount.pjl 2>/dev/null | tail -2', \
               ]
               
-class PKHint(PyKotaTool) :
+class PKHint(Tool) :
     """A class to autodetect the best accounting method for printers."""
     def extractPrintersInformation(self) :    
         """Extracts printer information from the printing system.
@@ -236,6 +234,7 @@ if __name__ == "__main__" :
         
         # Initializes the command line tool
         manager = PKHint(doc=__doc__)
+        manager.deferredInit()
         
         (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)
         
@@ -259,10 +258,5 @@ if __name__ == "__main__" :
         except :    
             crashed("pkhint failed")
         retcode = -1
-
-    try :
-        manager.storage.close()
-    except (TypeError, NameError, AttributeError) :    
-        pass
         
     sys.exit(retcode)    

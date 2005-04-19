@@ -47,13 +47,9 @@ class Storage(BaseStorage, SQLStorage) :
         except ValueError :    
             port = -1         # Use PostgreSQL's default tcp/ip port (5432).
         
-        try :
-            self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
-        except PGError, msg :
-            raise PyKotaStorageError, str(msg)
-        else :    
-            self.closed = 0
-            self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
+        self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
+        self.closed = 0
+        self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
             
     def close(self) :    
         """Closes the database connection."""

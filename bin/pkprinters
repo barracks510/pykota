@@ -205,6 +205,7 @@ if __name__ == "__main__" :
         
         # Initializes the command line tool
         manager = PKPrinters(doc=__doc__)
+        manager.deferredInit()
         
         # parse and checks the command line
         (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)

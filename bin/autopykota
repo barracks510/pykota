@@ -107,6 +107,7 @@ if __name__ == "__main__" :
         
         # Initializes the command line tool
         automat = AutoPyKota(doc=__doc__)
+        automat.deferredInit()
         
         # parse and checks the command line
         (options, args) = automat.parseCommandline(sys.argv[1:], short_options, long_options)

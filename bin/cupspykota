@@ -704,18 +704,14 @@ if __name__ == "__main__" :
         retcode = 1
     else :    
         try :
-            try :
-                # Initializes the backend
-                kotabackend = PyKotaBackend()    
-            except SystemExit :    
-                retcode = -1
-            except :    
-                crashed("cupspykota backend initialization failed")
-                retcode = 1
-            else :    
-                retcode = kotabackend.mainWork()
-                kotabackend.storage.close()
-                kotabackend.closeJobDataStream()    
+            # Initializes the backend
+            kotabackend = PyKotaBackend()    
+            kotabackend.deferredInit()
+            retcode = kotabackend.mainWork()
+            kotabackend.storage.close()
+            kotabackend.closeJobDataStream()    
+        except SystemExit :    
+            retcode = -1
         except :
             try :
                 kotabackend.crashed("cupspykota backend failed")

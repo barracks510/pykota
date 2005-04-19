@@ -505,6 +505,7 @@ if __name__ == "__main__" :
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
+        editor.deferredInit()
         
         # parse and checks the command line
         (options, args) = editor.parseCommandline(sys.argv[1:], short_options, long_options)

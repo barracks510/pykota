@@ -73,12 +73,12 @@ class Tool :
         self.privdropped = 0
         
         # locale stuff
-        defaultToCLocale = 0
+        self.defaultToCLocale = 0
         try :
             locale.setlocale(locale.LC_ALL, lang)
         except (locale.Error, IOError) :
             locale.setlocale(locale.LC_ALL, "C")
-            defaultToCLocale = 1
+            self.defaultToCLocale = 1
         try :
             gettext.install("pykota")
         except :
@@ -108,6 +108,8 @@ class Tool :
         # pykota specific stuff
         self.documentation = doc
         
+    def deferredInit(self) :        
+        """Deferred initialization."""
         # try to find the configuration files in user's 'pykota' home directory.
         try :
             self.pykotauser = pwd.getpwnam("pykota")
@@ -119,21 +121,11 @@ class Tool :
             confdir = self.pykotauser[5]
             missingUser = 0
             
-        try :
-            self.config = config.PyKotaConfig(confdir)
-        except ConfigParser.ParsingError, msg :    
-            sys.stderr.write("ERROR: Problem encountered while parsing configuration file : %s\n" % msg)
-            sys.stderr.flush()
-            sys.exit(-1)
-            
-        try :
-            self.debug = self.config.getDebug()
-            self.smtpserver = self.config.getSMTPServer()
-            self.maildomain = self.config.getMailDomain()
-            self.logger = logger.openLogger(self.config.getLoggingBackend())
-        except (config.PyKotaConfigError, logger.PyKotaLoggingError, storage.PyKotaStorageError), msg :
-            self.crashed(msg)
-            raise
+        self.config = config.PyKotaConfig(confdir)
+        self.debug = self.config.getDebug()
+        self.smtpserver = self.config.getSMTPServer()
+        self.maildomain = self.config.getMailDomain()
+        self.logger = logger.openLogger(self.config.getLoggingBackend())
             
         # now drop priviledge if possible
         self.dropPriv()    
@@ -142,7 +134,7 @@ class Tool :
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
         
-        if defaultToCLocale :
+        if self.defaultToCLocale :
             self.printInfo("Incorrect locale settings. PyKota falls back to the 'C' locale.", "warn")
         if missingUser :     
             self.printInfo("The 'pykota' system account is missing. Configuration files were searched in /etc/pykota instead.", "warn")
@@ -199,6 +191,13 @@ class Tool :
         """Sends a message to standard error."""
         sys.stderr.write("%s: %s\n" % (level.upper(), message))
         sys.stderr.flush()
+        
+    def matchString(self, s, patterns) :
+        """Returns 1 if the string s matches one of the patterns, else 0."""
+        for pattern in patterns :
+            if fnmatch.fnmatchcase(s, pattern) :
+                return 1
+        return 0
         
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
@@ -301,16 +300,15 @@ class PyKotaTool(Tool) :
     def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
         """Initializes the command line tool and opens the database."""
         Tool.__init__(self, lang, charset, doc)
-        try :
-            self.storage = storage.openConnection(self)
-        except storage.PyKotaStorageError, msg :
-            self.crashed(msg)
-            raise
+        
+    def deferredInit(self) :    
+        """Deferred initialization."""
+        Tool.deferredInit(self)
+        self.storage = storage.openConnection(self)
+        if self.config.isAdmin : # TODO : We don't know this before, fix this !
+            self.logdebug("Beware : running as a PyKota administrator !")
         else :    
-            if self.config.isAdmin : # TODO : We don't know this before, fix this !
-                self.logdebug("Beware : running as a PyKota administrator !")
-            else :    
-                self.logdebug("Don't Panic : running as a mere mortal !")
+            self.logdebug("Don't Panic : running as a mere mortal !")
         
     def clean(self) :    
         """Ensures that the database is closed."""
@@ -326,13 +324,6 @@ class PyKotaTool(Tool) :
             if c in name :
                 return 0
         return 1        
-        
-    def matchString(self, s, patterns) :
-        """Returns 1 if the string s matches one of the patterns, else 0."""
-        for pattern in patterns :
-            if fnmatch.fnmatchcase(s, pattern) :
-                return 1
-        return 0
         
     def sendMessage(self, adminmail, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
@@ -654,6 +645,10 @@ class PyKotaFilterOrBackend(PyKotaTool) :
          self.options, \
          self.originalbackend) = self.extractInfoFromCupsOrLprng()
          
+    def deferredInit(self) :
+        """Deferred initialization."""
+        PyKotaTool.deferredInit(self)
+        
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug(_("Printing system %s, args=%s") % (str(self.printingsystem), arguments))
         

@@ -267,18 +267,14 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
 if __name__ == "__main__" :    
     retcode = JSUCC
     try :
-        try :
-            # Initializes the backend
-            kotabackend = PyKotaFilter()    
-        except SystemExit :    
-            retcode = JABORT
-        except :    
-            crashed("lprngpykota filter initialization failed")
-            retcode = JABORT
-        else :    
-            retcode = kotabackend.mainWork()
-            kotabackend.storage.close()
-            kotabackend.closeJobDataStream()    
+        # Initializes the backend
+        kotabackend = PyKotaFilter()    
+        kotabackend.deferredInit()
+        retcode = kotabackend.mainWork()
+        kotabackend.storage.close()
+        kotabackend.closeJobDataStream()    
+    except SystemExit :    
+        retcode = JABORT
     except :
         try :
             kotabackend.crashed("lprngpykota filter failed")

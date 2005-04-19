@@ -157,6 +157,7 @@ if __name__ == "__main__" :
         
         # Initializes the command line tool
         mailparser = PKMail(doc=__doc__)
+        mailparser.deferredInit()
         
         # parse and checks the command line
         (options, args) = mailparser.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)

@@ -136,6 +136,7 @@ class PyKotMeGUI(PyKotaTool) :
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()
     admin = PyKotMeGUI(lang=os.environ["LC_ALL"], charset=getCharsetPreference())
+    admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.guiAction()
     admin.guiDisplay()
