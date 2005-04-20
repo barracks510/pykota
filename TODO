@@ -54,9 +54,9 @@ TODO, in no particular order :
           
         - Allow soft and hard limits to be increased/decreased.
         
-        - Web enabled pykotme.
-        
-        - Maybe put "gracedelay" and "denyduplicates" into the database.
+        - Add most configuration directives to the database itself,
+          while still allowing to overwrite them with the configuration
+          files at run time.
         
         - Ink accounting ala PrintBill.
         
@@ -73,7 +73,8 @@ TODO, in no particular order :
         
         - CUPS accepts the "STATE: ..." message as backchannel
           data : use this to tell CUPS what action has been taken
-          for current job.
+          for current job. I did some testing but wasn't able to
+          make it work...
           
         - Think about some possible client <=> PyKota dialog
           possibilities, like embedding a small web server in
