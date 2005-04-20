@@ -489,7 +489,24 @@ class Storage(BaseStorage) :
             lastjobident = result[0][1]["pykotaLastJobIdent"][0]
             result = None
             try :
-                result = self.doSearch("objectClass=pykotaJob", ["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaJobSize", "pykotaAction", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "pykotaBillingCode", "pykotaPages", "pykotaMD5Sum", "createTimestamp"], base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
+                result = self.doSearch("objectClass=pykotaJob", [ "pykotaJobSizeBytes", 
+                                                                  "pykotaHostName", 
+                                                                  "pykotaUserName", 
+                                                                  "pykotaPrinterName", 
+                                                                  "pykotaJobId", 
+                                                                  "pykotaPrinterPageCounter", 
+                                                                  "pykotaJobSize", 
+                                                                  "pykotaAction", 
+                                                                  "pykotaJobPrice", 
+                                                                  "pykotaFileName", 
+                                                                  "pykotaTitle", 
+                                                                  "pykotaCopies", 
+                                                                  "pykotaOptions", 
+                                                                  "pykotaBillingCode", 
+                                                                  "pykotaPages", 
+                                                                  "pykotaMD5Sum", 
+                                                                  "createTimestamp" ], 
+                                                                base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
             except PyKotaStorageError :    
                 pass # Last job entry exists, but job probably doesn't exist anymore. 
             if result :
@@ -513,7 +530,7 @@ class Storage(BaseStorage) :
                 lastjob.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
                 lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
-                lastjob.JobBillingCode = fields.get("pykotaMD5Sum", [None])[0]
+                lastjob.JobBillingCode = fields.get("pykotaBillingCode", [None])[0]
                 lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 lastjob.JobPages = fields.get("pykotaPages", [""])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
@@ -1032,7 +1049,24 @@ class Storage(BaseStorage) :
         else :    
             where = precond
         jobs = []    
-        result = self.doSearch(where, fields=["pykotaJobSizeBytes", "pykotaHostName", "pykotaUserName", "pykotaPrinterName", "pykotaJobId", "pykotaPrinterPageCounter", "pykotaAction", "pykotaJobSize", "pykotaJobPrice", "pykotaFileName", "pykotaTitle", "pykotaCopies", "pykotaOptions", "createTimestamp"], base=self.info["jobbase"])
+        result = self.doSearch(where, fields=[ "pykotaJobSizeBytes", 
+                                               "pykotaHostName", 
+                                               "pykotaUserName", 
+                                               "pykotaPrinterName", 
+                                               "pykotaJobId", 
+                                               "pykotaPrinterPageCounter", 
+                                               "pykotaAction", 
+                                               "pykotaJobSize", 
+                                               "pykotaJobPrice", 
+                                               "pykotaFileName", 
+                                               "pykotaTitle", 
+                                               "pykotaCopies", 
+                                               "pykotaOptions", 
+                                               "pykotaBillingCode", 
+                                               "pykotaPages", 
+                                               "pykotaMD5Sum", 
+                                               "createTimestamp" ], 
+                                      base=self.info["jobbase"])
         if result :
             for (ident, fields) in result :
                 job = StorageJob(self)
@@ -1054,6 +1088,9 @@ class Storage(BaseStorage) :
                 job.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 job.JobHostName = fields.get("pykotaHostName", [""])[0]
                 job.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
+                job.JobBillingCode = fields.get("pykotaBillingCode", [None])[0]
+                job.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
+                job.JobPages = fields.get("pykotaPages", [""])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])
@@ -1288,7 +1325,7 @@ class Storage(BaseStorage) :
             printer = None
         entries = self.retrieveHistory(user, printer, limit=None)
         if entries :
-            result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes") ] 
+            result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode") ] 
             for entry in entries :
-                result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes)) 
+                result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes, entry.JobMD5Sum, entry.JobPages, entry.JobBillingCode)) 
             return result    
