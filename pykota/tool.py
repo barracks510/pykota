@@ -96,8 +96,8 @@ class Tool :
                 try :
                     localecharset = locale.getpreferredencoding()
                 except AttributeError :    
-                    localecharset = locale.getlocale()[1]
                     try :
+                        localecharset = locale.getlocale()[1]
                         localecharset = localecharset or locale.getdefaultlocale()[1]
                     except ValueError :    
                         pass        # Unknown locale, strange...
