@@ -646,6 +646,7 @@ policy: deny
 # PYKOTAWARNCOUNT : the number of times the user was forbidden to print but a banner
 #                   page was still printed on the current printer.                   
 # PYKOTAOVERCHARGE : user's overcharging factor.
+# PYKOTAJOBBILLING : Job's billing code if present (CUPS only)
 #
 
 # PreHook : gets executed after being sure the user, printer and user quota

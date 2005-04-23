@@ -140,7 +140,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
                                     action, jobsize, jobprice, self.preserveinputfile, \
                                     self.title, self.copies, self.options, clienthost, \
-                                    self.jobSizeBytes, self.checksum)
+                                    self.jobSizeBytes, self.checksum, None, None) # TODO : pages detail and billing code
             self.printMoreInfo(user, printer, _("Job added to history."))
             
             # exports some new environment variables
@@ -159,7 +159,7 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
                                     action, filename=self.preserveinputfile, title=self.title, \
                                     copies=self.copies, options=self.options, clienthost=clienthost, \
-                                    jobsizebytes=self.jobSizeBytes, jobmd5sum=self.checksum)
+                                    jobsizebytes=self.jobSizeBytes, jobmd5sum=self.checksum, jobpages=None, jobbilling=None) # TODO : pages detail and billing code
             self.logdebug("Job added to history during first pass : Job's size and price are still unknown.")
             
         self.logdebug("First pass ends : ACTION_%s => %s => %s" % (action, getattr(printer, "Name", None), getattr(user, "Name", None)))

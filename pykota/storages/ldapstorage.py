@@ -530,7 +530,7 @@ class Storage(BaseStorage) :
                 lastjob.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
                 lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
-                lastjob.JobBillingCode = fields.get("pykotaBillingCode", [None])[0]
+                lastjob.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
                 lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 lastjob.JobPages = fields.get("pykotaPages", [""])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
@@ -928,7 +928,7 @@ class Storage(BaseStorage) :
                  }
         self.doModify(lastjob.ident, fields)         
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None) :
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None) :
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
@@ -938,7 +938,7 @@ class Storage(BaseStorage) :
             dn = printer.LastJob.ident
         if self.privacy :    
             # For legal reasons, we want to hide the title, filename and options
-            title = filename = options = "Hidden because of privacy concerns"
+            title = filename = options = _("Hidden because of privacy concerns")
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,
@@ -954,6 +954,8 @@ class Storage(BaseStorage) :
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
                    "pykotaMD5Sum" : str(jobmd5sum),
+                   "pykotaPages" : jobpages,            # don't add this attribute if it is not set, so no string conversion
+                   "pykotaBillingCode" : self.userCharsetToDatabase(jobbilling), # don't add this attribute if it is not set, so no string conversion
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         
@@ -1088,7 +1090,7 @@ class Storage(BaseStorage) :
                 job.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
                 job.JobHostName = fields.get("pykotaHostName", [""])[0]
                 job.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
-                job.JobBillingCode = fields.get("pykotaBillingCode", [None])[0]
+                job.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
                 job.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 job.JobPages = fields.get("pykotaPages", [""])[0]
                 date = fields.get("createTimestamp", ["19700101000000"])[0]

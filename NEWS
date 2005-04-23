@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.22alpha8 :
     
+        - The job billing code if present is now saved into the database,
+          and exported to subprocesses as the PYKOTAJOBBILLING environment
+          variable.
+          
         - Ctrl+C now makes PyKota commands exit without a traceback.
         
         - Fixed an i18n problem with Python 2.1

@@ -147,15 +147,15 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             conffile.close()            
         return dirvalues       
             
-    def getJobOriginatingHostnameFromPageLog(self, cupsconfig, printername, username, jobid) :
-        """Retrieves the job-originating-hostname from the CUPS page_log file if possible."""
+    def getJobInfosFromPageLog(self, cupsconfig, printername, username, jobid) :
+        """Retrieves the job-originating-hostname and job-billing attributes from the CUPS page_log file if possible."""
         pagelogpath = cupsconfig.get("pagelog", "/var/log/cups/page_log")
         self.logdebug("Trying to extract job-originating-host-name from %s" % pagelogpath)
         try :
             pagelog = open(pagelogpath, "r")
         except IOError :    
             self.logdebug("Unable to open %s" % pagelogpath)
-            return # no page log or can't read it, originating hostname unknown yet
+            return (None, None) # no page log or can't read it, originating hostname unknown yet
         else :    
             # TODO : read backward so we could take first value seen
             # TODO : here we read forward so we must take the last value seen
@@ -172,9 +172,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             pagelog.close()        
             if matchingline is None :
                 self.logdebug("No matching line found in %s" % pagelogpath)
-                return # correct line not found, job-originating-host-name unknown
+                return (None, None) # correct line not found, job-originating-host-name unknown
             else :    
-                return matchingline.split()[-1]
+                (jobbilling, hostname) = matchingline.split()[-2:]
+                if jobbilling == "-" :
+                    jobbilling = ""
+                return (jobbilling, hostname)   
                 
     def doWork(self, policy, printer, user, userpquota) :    
         """Most of the work is done here."""
@@ -211,12 +214,14 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
                 ippdatafile.close()
             self.dropPriv()    
-            clienthost = ippmessage.get("job-originating-host-name") \
-                         or self.getJobOriginatingHostnameFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
+            clienthost = ippmessage.get("job-originating-host-name") 
+            billingcode = ippmessage.get("job-billing")
+            if clienthost is None :
+                (billingcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
             self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
-            os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
-            
-            # TODO : extract username (double check ?) and billing code too
+            self.logdebug("Billing Code : %s" % (billingcode or "None"))    
+            os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = clienthost or ""
+            os.environ["PYKOTAJOBBILLING"] = billingcode or ""
             
             # enters first phase
             os.environ["PYKOTAPHASE"] = "BEFORE"
@@ -354,7 +359,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
                                     action, jobsize, jobprice, self.preserveinputfile, \
                                     self.title, self.copies, self.options, clienthost, \
-                                    self.jobSizeBytes, self.checksum)
+                                    self.jobSizeBytes, self.checksum, None, billingcode)
             self.printMoreInfo(user, printer, _("Job added to history."))
             
             # exports some new environment variables
