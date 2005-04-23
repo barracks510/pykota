@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Make Ctrl+C interrupts exit silently instead of exit
+          with a traceback.
+          
         - Pass-through mode for printers : history correctly filled (including
           job size) but no impact on user's page counter or account
           balance : this is meant to be a temporary situation for
