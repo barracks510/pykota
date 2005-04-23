@@ -157,6 +157,8 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("The -d | --data command line option is mandatory, see help.")
         else :
             retcode = dumper.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :

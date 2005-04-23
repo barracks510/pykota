@@ -548,6 +548,8 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = editor.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :

@@ -172,6 +172,8 @@ if __name__ == "__main__" :
             mailparser.display_version_and_quit()
         else :
             retcode = mailparser.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :

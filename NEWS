@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.22alpha8 :
     
+        - Ctrl+C now makes PyKota commands exit without a traceback.
+        
         - Fixed an i18n problem with Python 2.1
         
     - 1.22alpha7 :

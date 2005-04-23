@@ -250,6 +250,8 @@ if __name__ == "__main__" :
             if not args :
                 args = [ "*" ]
             retcode = manager.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :

@@ -188,6 +188,8 @@ if __name__ == "__main__" :
             retcode = cmd.main(args, options)
     except KeyboardInterrupt :
         retcode = 0
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :    

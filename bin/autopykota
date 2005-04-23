@@ -125,6 +125,8 @@ if __name__ == "__main__" :
             raise PyKotaToolError, "autopykota doesn't accept non option arguments !"
         else :
             retcode = automat.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :

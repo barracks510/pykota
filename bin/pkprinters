@@ -236,6 +236,8 @@ if __name__ == "__main__" :
             raise PyKotaToolError, _("You have to pass printer names on the command line")
         else :
             retcode = manager.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
     except SystemExit :        
         pass
     except :
