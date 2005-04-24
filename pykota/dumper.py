@@ -60,6 +60,8 @@ class DumPyKota(PyKotaTool) :
                         "groupname",
                         "printername",
                         "pgroupname",
+                        "hostname",
+                        "billingcode",
                       ]
     def main(self, arguments, options, restricted=1) :
         """Print Quota Data Dumper."""
@@ -74,7 +76,7 @@ class DumPyKota(PyKotaTool) :
                     if filterkey not in self.validfilterkeys :
                         raise ValueError                
                 except ValueError :    
-                    raise PyKotaToolError, _("Invalid value [%s] for --filter command line option, see help.") % filterexp
+                    raise PyKotaToolError, _("Invalid filter value [%s], see help.") % filterexp
                 else :    
                     extractonly.update({ filterkey : filtervalue })
             
@@ -90,7 +92,7 @@ class DumPyKota(PyKotaTool) :
         if (format == "xml") and not hasJAXML :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
             
-        entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)    
+        entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
         if entries :
             mustclose = 0    
             if options["output"].strip() == "-" :    

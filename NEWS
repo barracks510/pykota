@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.22alpha8 :
     
+        - The data dumper now accepts billingcode= and hostname= as
+          filters when dumping the job history.
+          
         - The job billing code if present is now saved into the database,
           and exported to subprocesses as the PYKOTAJOBBILLING environment
           variable.

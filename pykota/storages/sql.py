@@ -46,7 +46,7 @@ class SQLStorage :
         if only :
             expressions = []
             for (k, v) in only.items() :
-                expressions.append("%s=%s" % (k, self.doQuote(v)))
+                expressions.append("%s=%s" % (k, self.doQuote(self.userCharsetToDatabase(v))))
             return " AND ".join(expressions)     
         return ""        
         

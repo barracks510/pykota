@@ -1036,7 +1036,7 @@ class Storage(BaseStorage) :
                      }  
             self.doModify(pgroup.ident, fields)         
             
-    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, limit=100) :    
+    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, billingcode=None, limit=100) :
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
         precond = "(objectClass=pykotaJob)"
         where = []
@@ -1046,6 +1046,8 @@ class Storage(BaseStorage) :
             where.append("(pykotaPrinterName=%s)" % printer.Name)
         if hostname is not None :
             where.append("(pykotaHostName=%s)" % hostname)
+        if billingcode is not None :
+            where.append("(pykotaBillingCode=%s)" % self.userCharsetToDatabase(billingcode))
         if where :    
             where = "(&%s)" % "".join([precond] + where)
         else :    
@@ -1325,7 +1327,7 @@ class Storage(BaseStorage) :
             printer = self.getPrinter(pname)
         else :    
             printer = None
-        entries = self.retrieveHistory(user, printer, limit=None)
+        entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), limit=None)
         if entries :
             result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode") ] 
             for entry in entries :

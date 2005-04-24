@@ -87,6 +87,8 @@ options :
          groupname      Users group's name
          printername    Printer's name
          pgroupname     Printers group's name
+         hostname       Client's hostname
+         billingcode    Job's billing code
          
   Contrary to other PyKota management tools, wildcard characters are not 
   expanded, so you can't use them.
