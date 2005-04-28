@@ -497,7 +497,7 @@ class SQLStorage :
         """Removes a printer from a printer group."""
         self.doModify("DELETE FROM printergroupsmembers WHERE groupid=%s AND printerid=%s" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
-    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, limit=100) :    
+    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, billingcode=None, limit=100) :
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
         query = "SELECT jobhistory.*,username,printername FROM jobhistory,users,printers WHERE users.id=userid AND printers.id=printerid"
         where = []
@@ -507,6 +507,8 @@ class SQLStorage :
             where.append("printerid=%s" % self.doQuote(printer.ident))
         if hostname is not None :    
             where.append("hostname=%s" % self.doQuote(hostname))
+        if billingcode is not None :    
+            where.append("billingcode=%s" % self.doQuote(self.userCharsetToDatabase(billingcode)))
         if datelimit is not None :    
             where.append("jobdate<=%s" % self.doQuote(datelimit))
         if where :    

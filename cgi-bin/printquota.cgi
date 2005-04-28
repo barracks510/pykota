@@ -182,8 +182,12 @@ class PyKotaReportGUI(PyKotaTool) :
                 hostname = self.form["hostname"].value
             else :    
                 hostname = None
+            if self.form.has_key("billingcode") :    
+                billingcode = self.form["billingcode"].value
+            else :    
+                billingcode = None
             self.report = ["<h2>%s</h2>" % _("History")]    
-            history = self.storage.retrieveHistory(user, printer, datelimit, hostname)
+            history = self.storage.retrieveHistory(user, printer, datelimit, hostname, billingcode)
             if not history :
                 self.report.append("<h3>%s</h3>" % _("Empty"))
             else :
@@ -212,7 +216,30 @@ class PyKotaReportGUI(PyKotaTool) :
                         hostname_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "hostname" : job.JobHostName}), job.JobHostName)
                     else :    
                         hostname_url = None
-                    self.report.append('<tr class="%s">%s</tr>' % (oddevenclass, "".join(["<td>%s</td>" % (h or "&nbsp;") for h in (job.JobDate[:19], job.JobAction, username_url, printername_url, hostname_url, job.JobId, job.JobSize, job.JobPrice, job.JobCopies, job.JobSizeBytes, job.PrinterPageCounter, job.JobTitle, job.JobFileName, job.JobOptions, job.JobMD5Sum, job.JobBillingCode, job.JobPages)])))
+                    if job.JobBillingCode :
+                        billingcode_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "billingcode" : job.JobBillingCode}), job.JobBillingCode)
+                    else :    
+                        billingcode_url = None
+                    self.report.append('<tr class="%s">%s</tr>' % \
+                                          (oddevenclass, \
+                                           "".join(["<td>%s</td>" % (h or "&nbsp;") \
+                                              for h in (job.JobDate[:19], \
+                                                        job.JobAction, \
+                                                        username_url, \
+                                                        printername_url, \
+                                                        hostname_url, \
+                                                        job.JobId, \
+                                                        job.JobSize, \
+                                                        job.JobPrice, \
+                                                        job.JobCopies, \
+                                                        job.JobSizeBytes, \
+                                                        job.PrinterPageCounter, \
+                                                        job.JobTitle, \
+                                                        job.JobFileName, \
+                                                        job.JobOptions, \
+                                                        job.JobMD5Sum, \
+                                                        billingcode_url, \
+                                                        job.JobPages)])))
                 self.report.append('</table>')
                 dico = { "history" : 1,
                          "datelimit" : job.JobDate,
