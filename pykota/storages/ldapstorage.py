@@ -28,6 +28,7 @@
 # is 16868. Use this as a base to create the LDAP schema.
 #
 
+import sys
 import os
 import types
 import time
@@ -39,10 +40,16 @@ from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, Stora
 try :
     import ldap
     import ldap.modlist
-    import ldap.cidict
 except ImportError :    
-    import sys
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the python-ldap module installed correctly." % sys.version.split()[0]
+else :    
+    try :
+        from ldap.cidict import cidict
+    except ImportError :    
+        import UserDict
+        sys.stderr.write("ERROR: PyKota requires a newer version of python-ldap. Workaround activated. Please upgrade python-ldap !\n")
+        class cidict(UserDict.UserDict) :
+            pass # Fake it all, and don't care for case insensitivity : users who need it will have to upgrade.
     
 class Storage(BaseStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
@@ -158,7 +165,7 @@ class Storage(BaseStorage) :
                 self.secondStageInit()
             else :     
                 self.tool.logdebug("QUERY : Result : %s" % result)
-                result = [ (dn, ldap.cidict.cidict(attrs)) for (dn, attrs) in result ]
+                result = [ (dn, cidict(attrs)) for (dn, attrs) in result ]
                 if self.useldapcache :
                     for (dn, attributes) in result :
                         self.tool.logdebug("LDAP cache store %s => %s" % (dn, attributes))
@@ -168,7 +175,7 @@ class Storage(BaseStorage) :
             
     def doAdd(self, dn, fields) :
         """Adds an entry in the LDAP directory."""
-        fields = self.normalizeFields(ldap.cidict.cidict(fields))
+        fields = self.normalizeFields(cidict(fields))
         message = ""
         for tryit in range(3) :
             try :
@@ -214,7 +221,7 @@ class Storage(BaseStorage) :
             
     def doModify(self, dn, fields, ignoreold=1, flushcache=0) :
         """Modifies an entry in the LDAP directory."""
-        fields = ldap.cidict.cidict(fields)
+        fields = cidict(fields)
         for tryit in range(3) :
             try :
                 # TODO : take care of, and update LDAP specific cache
