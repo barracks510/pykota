@@ -501,9 +501,9 @@ class SQLStorage :
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
         query = "SELECT jobhistory.*,username,printername FROM jobhistory,users,printers WHERE users.id=userid AND printers.id=printerid"
         where = []
-        if (user is not None) and user.Exists :
+        if user is not None : # user.ident is None anyway if user doesn't exist
             where.append("userid=%s" % self.doQuote(user.ident))
-        if (printer is not None) and printer.Exists :
+        if printer is not None : # printer.ident is None anyway if printer doesn't exist
             where.append("printerid=%s" % self.doQuote(printer.ident))
         if hostname is not None :    
             where.append("hostname=%s" % self.doQuote(hostname))

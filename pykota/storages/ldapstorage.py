@@ -1047,9 +1047,9 @@ class Storage(BaseStorage) :
         """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
         precond = "(objectClass=pykotaJob)"
         where = []
-        if (user is not None) and user.Exists :
+        if user is not None :
             where.append("(pykotaUserName=%s)" % user.Name)
-        if (printer is not None) and printer.Exists :
+        if printer is not None :
             where.append("(pykotaPrinterName=%s)" % printer.Name)
         if hostname is not None :
             where.append("(pykotaHostName=%s)" % hostname)

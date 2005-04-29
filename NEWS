@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.22alpha8 :
     
+        - Fixed history retrieval for nonexisting printers or users.
+        
         - Clicking on the billing code in printquota.cgi's job history
           now shows all jobs matching this billing code.
           
