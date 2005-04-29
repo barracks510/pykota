@@ -99,9 +99,6 @@ TODO, in no particular order :
         - Learn more bits of PHP to help with phpPyKotaAdmin, which
           is a GREAT tool !
        
-        - Group administrators (think quotagrpdmins for disk quotas).
-          Won't be implemented for now.
-          
         - Multidatabase support, e.g. store users in LDAP, quota  
           related datas in PostgreSQL, history in text file,
           and so on... For 2.0, probably not before.
