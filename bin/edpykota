@@ -329,15 +329,10 @@ class EdPyKota(PyKotaTool) :
             else :
                 raise PyKotaToolError, _("There's no printer matching %s") % pname
         if not names :    
-            if options["add"] :
-                if not printeradded :
-                    raise PyKotaToolError, _("You have to pass user or group names on the command line")
-                else :    
-                    names = getattr(self.storage, "getAll%ssNames" % suffix)()
-            elif options["delete"] :    
+            if options["delete"] :    
                 raise PyKotaToolError, _("You have to pass user or group names on the command line")
             else :
-                names = [ "*" ] # all users or groups
+                names = getattr(self.storage, "getAll%ssNames" % suffix)() # all users or groups
                 
         printersgroups = []        
         if options["pgroups"] :        
