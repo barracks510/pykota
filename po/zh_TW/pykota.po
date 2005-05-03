@@ -36,631 +36,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "PyKota Data Dumper"
-msgstr ""
-
-msgid "Dump"
-msgstr ""
-
-msgid "Please click on the above button"
-msgstr "請按以上按鈕"
-
-msgid "Data Type"
-msgstr ""
-
-msgid "Output Format"
-msgstr ""
-
-msgid "Filter"
-msgstr ""
-
-msgid "PyKota Reports"
-msgstr "PyKota 列印配額報告"
-
-msgid "Report"
-msgstr "報告"
-
-msgid "Printer"
-msgstr "列印機"
-
-msgid "User / Group names mask"
-msgstr "使用者/群組 名稱篩選"
-
-msgid "Groups report"
-msgstr "群組報告"
-
-msgid "History"
-msgstr "列印紀錄"
-
-msgid "Empty"
-msgstr "沒有紀錄"
-
-msgid "Date"
-msgstr "日期"
-
-msgid "Action"
-msgstr "允許/禁止 列印"
-
-msgid "User"
-msgstr "使用者"
-
-msgid "Hostname"
-msgstr "列印使用電腦"
-
-msgid "JobId"
-msgstr "列印工作識別碼"
-
-msgid "JobSize"
-msgstr "列印總頁數"
-
-msgid "JobPrice"
-msgstr "列印費用"
-
-msgid "Copies"
-msgstr "複製數量"
-
-msgid "JobBytes"
-msgstr "列印工作容量"
-
-msgid "PageCounter"
-msgstr "列印總計"
-
-msgid "Title"
-msgstr "檔案標題"
-
-msgid "Filename"
-msgstr "檔案名稱"
-
-msgid "Options"
-msgstr "其他選項"
-
-msgid "MD5Sum"
-msgstr ""
-
-msgid "BillingCode"
-msgstr ""
-
-msgid "Pages"
-msgstr ""
-
-msgid "Previous page"
-msgstr "上一頁"
-
-#, python-format
-msgid "Unsupported accounter backend %s"
-msgstr "%s 是暫時未能夠支援的計算器"
-
-#, python-format
-msgid "Configuration file %s not found."
-msgstr "未能尋找設定檔 %s"
-
-#, python-format
-msgid "Option %s not found in section global of %s"
-msgstr "%s 這個設定未能於 %s 內的section global找到"
-
-#, python-format
-msgid "Option %s not found in section %s of %s"
-msgstr "%s 這個設定未能在 %s section附屬於 %s 內找到"
-
-#, python-format
-msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr ""
-
-#, python-format
-msgid "Option logger only supports values in %s"
-msgstr "logger只支援數值在 %s"
-
-#, python-format
-msgid "Invalid accounter %s for printer %s"
-msgstr "%s 是不正確的計算器用於列印機 %s"
-
-#, python-format
-msgid "Option accounter in section %s only supports values in %s"
-msgstr "accounter於 %s 部份只支援數值在 %s"
-
-#, python-format
-msgid "Option enforcement in section %s only supports values in %s"
-msgstr "enforcement於 %s 部份只支援數值在 %s"
-
-#, python-format
-msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr "onaccountererror於 %s 部份只支援數值在 %s"
-
-#, python-format
-msgid "Invalid policy %s for printer %s"
-msgstr "%s 是不正確的政策設定用於列印機 %s"
-
-#, python-format
-msgid "Option policy in section %s only supports values in %s"
-msgstr "政策設定在 %s 只能夠支援的數值在 %s"
-
-#, python-format
-msgid "Invalid option mailto %s for printer %s"
-msgstr "%s 是不正確的mailto選項用於列印機 %s"
-
-#, python-format
-msgid "Option mailto in section %s only supports values in %s"
-msgstr "mailto 於 %s 的部份只支援數值在 %s"
-
-#, python-format
-msgid "Invalid maximal deny banners counter %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid grace delay %s"
-msgstr "%s 是不正確的寬限時間"
-
-#, python-format
-msgid "Invalid poor man's threshold %s"
-msgstr "%s 是不正確的poor man's threshold"
-
-msgid ""
-"Your Print Quota account balance is Low.\n"
-"Soon you'll not be allowed to print anymore.\n"
-"Please contact the Print Quota Administrator to solve the problem."
-msgstr ""
-"你的列印配額經已很低，\n"
-"假若你不增加配額，在不久的時間後，你將不能再列印，\n"
-"請你聯絡負責列印配額的管理人員，以解決這個問題。"
-
-#, python-format
-msgid ""
-"You are not allowed to print anymore because\n"
-"your Print Quota is exceeded on printer %s."
-msgstr ""
-"你不能再列印任何文件，\n"
-"因為你在列印機 %s 已沒有列印配額。"
-
-#, python-format
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your Print Quota is almost reached on printer %s."
-msgstr ""
-"在不久的時間内，你將會被禁止作任何列印，\n"
-"因為你在印表機 %s 的列印配額，差不多用完。"
-
-#, python-format
-msgid "Option accountbanner in section %s only supports values in %s"
-msgstr "accountbanner內的 %s 只能支援數值在 %s"
-
-#, python-format
-msgid "Option trustjobsize for printer %s is incorrect"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "Groups"
-msgstr ""
-
-msgid "Printers"
-msgstr ""
-
-msgid "Users Print Quotas"
-msgstr ""
-
-msgid "Users Groups Print Quotas"
-msgstr ""
-
-msgid "History of Payments"
-msgstr ""
-
-msgid "Printers Groups Membership"
-msgstr ""
-
-msgid "Users Groups Membership"
-msgstr ""
-
-msgid "Comma Separated Values"
-msgstr ""
-
-msgid "Semicolon Separated Values"
-msgstr ""
-
-msgid "Tabulation Separated Values"
-msgstr ""
-
-msgid "eXtensible Markup Language"
-msgstr ""
-
-msgid "CUPS' page_log"
-msgstr ""
-
-msgid "You're not allowed to use this command."
-msgstr "你沒有權限執行這個指令"
-
-#, python-format
-msgid "Invalid value [%s] for --filter command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr "不正確的修改參數 [%s] 給 --data 指令選項，請參閱說明文件"
-
-#, python-format
-msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr "不正確的修改參數 [%s] 給 --format 指令選項，請參閱說明文件"
-
-msgid "XML output is disabled because the jaxml module is not available."
-msgstr "因為jaxml模組尙未安裝，XML輸出已停用"
-
-msgid "PyKota data dumper failed : I/O error"
-msgstr "PyKota data dumper失敗 : I/O 錯誤 "
-
-#, python-format
-msgid "Unsupported logging subsystem %s"
-msgstr "%s 暫時不支援的紀錄系統"
-
-#, python-format
-msgid "Report for %s quota on printer %s"
-msgstr "使用者 %s 的列印配額於印表機%s"
-
-#, python-format
-msgid "Pages grace time: %i days"
-msgstr "寬限日期: %i 日"
-
-#, python-format
-msgid "Price per job: %.3f"
-msgstr "毎次列印工作所需費用: %.3f"
-
-#, python-format
-msgid "Price per page: %.3f"
-msgstr "列印毎頁所需費用: %.3f"
-
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid "unknown"
-msgstr "未能確認"
-
-#, python-format
-msgid "Real : %s"
-msgstr "硬體/軟體內部計算的數值 : %s"
-
-#, python-format
-msgid "Total : %9i"
-msgstr "總計 : %9i"
-
-msgid "N/A"
-msgstr ""
-
-#, python-format
-msgid "Unsupported reporter backend %s"
-msgstr "%s 是不能支援的reporter backend"
-
-#, python-format
-msgid "Unsupported quota storage backend %s"
-msgstr "%s 是不能支援的配額資料庫"
-
-#, python-format
-msgid "Strange problem with uid(%s) : %s"
-msgstr ""
-
-#, python-format
-msgid "Running as user '%s'."
-msgstr ""
-
-msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr ""
-
-#, python-format
-msgid "Impossible to drop priviledges : %s"
-msgstr ""
-
-msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr ""
-
-#, python-format
-msgid "Impossible to regain priviledges : %s"
-msgstr ""
-
-msgid "Regained priviledges. Now running as root."
-msgstr ""
-
-#, python-format
-msgid "Impossible to connect to SMTP server : %s"
-msgstr "不能夠連線至SMTP伺服器 : %s"
-
-#, python-format
-msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "未能成功發送電郵到 %s，錯誤 %s : %s"
-
-#, python-format
-msgid ""
-"\n"
-"\n"
-"Please contact your system administrator :\n"
-"\n"
-"\t%s - <%s>\n"
-msgstr ""
-"\n"
-"\n"
-"請聯絡系統管理員 :\n"
-"\t%s - <%S>\n"
-
-#, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr "未能尋找使用者 %s 於印表機 %s，因此採用預設的政策(%s)"
-
-#, python-format
-msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr "未能尋找使用者 %s 的帳目結算，因此採用預設的政策(%s)於列印機 %s"
-
-#, python-format
-msgid "User %s will not be charged for printing."
-msgstr ""
-
-#, python-format
-msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "群組 %s 超出列印配額於列印機 %s"
-
-msgid "Print Quota"
-msgstr "列印配額"
-
-msgid "Print Quota Exceeded"
-msgstr "超出列印配額"
-
-#, python-format
-msgid "Print Quota low for group %s on printer %s"
-msgstr "羣組 %s 的列印配額於列印機 %s 經已很低"
-
-#, python-format
-msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "使用者 %s 的列印配額於列印機 %s 經已超出配額"
-
-#, python-format
-msgid "Print Quota low for user %s on printer %s"
-msgstr "使用者 %s 的列印配額於列印機 %s經已很低"
-
-msgid "Print Quota Low"
-msgstr "列印配額經已很低"
-
-#, python-format
-msgid "Printing system %s, args=%s"
-msgstr "列印系統 %s，args=%s"
-
-#, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "未能運用通用的PDL分析器 %s 計算列印工作的數量"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "收到信號中止信息，列印工作 %s 中斷"
-
-msgid "Printer hostname undefined, set to 'localhost'"
-msgstr "列印機主機名稱未能確認，設定為'localhost'"
-
-#, python-format
-msgid "Printing system unknown, args=%s"
-msgstr "未能確認列系統，args=%s"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
-msgstr ""
-"列印機 %s 在PyKota系統內沒有登記，因此這台列印機套用external policy (%s) "
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr ""
-"使用者 %s 在PyKota內沒有登記，因此這個使用者將會套用external policy(%s) 於列"
-"印機 %s "
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr "使用者沒有列印配額於列印機 %s ，套用對外政策 (%s) 於列印機 %s"
-
-#, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr "對外政策 %s 於列印機 %s 產生錯誤，列印工作被拒，請撿查PyKota的設定檔案"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr "列印機 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr "使用者 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)於列印機 %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr "使用者 %s 沒有列印配額於列印機 %s，套用預設的政策 (%s)"
-
-#, python-format
-msgid ""
-"Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr "列印機 %s 依然沒有於PyKota系統內登記，列印工作要求被拒"
-
-#, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr "使用者 %s 依然沒有於PyKota系統內登記，列印工作要求被拒於列印機 %s"
-
-#, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr "使用者 %s 依然沒有列印配額於列印機 %s 在PyKota系統，列印工作被拒"
-
-#, python-format
-msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr "當列印機 %s : %s 進行SNMP查詢時出現網絡錯誤"
-
-#, python-format
-msgid "SNMP message decoding error for printer %s : %s"
-msgstr "SNMP信息解讀錯誤於列印機 %s : %s"
-
-#, python-format
-msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr "當在列印機 %s 進行SNMP查詢時出現問題 : %s"
-
-#, python-format
-msgid "Waiting for printer %s to be printing..."
-msgstr ""
-
-#, python-format
-msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr "正等待列印機 %s 閒置狀況達到穩定..."
-
-#, python-format
-msgid "Problem during connection to %s:%s : %s"
-msgstr "連線到 %s:%s : %s 時出現問題"
-
-#, python-format
-msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr "傳送查詢到 %s:%s : %s 出現問題"
-
-#, python-format
-msgid "A problem occured while reading printer %s's internal page counter."
-msgstr "在讀取列印機 %s 的內存頁面計算器時出現問題"
-
-#, python-format
-msgid "Retrieving printer %s's page counter from database instead."
-msgstr "從資料庫讀取，恢復列印機 %s 的頁面計算器的計算值"
-
-#, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr "不能恢復列印機 %s 的內存頁面計算器不論在列印的之前或之後"
-
-#, python-format
-msgid "Job's size forced to 1 page for printer %s."
-msgstr "列印機 %s 被強制設定列印總頁數為 1 頁"
-
-#, python-format
-msgid "No previous job in database for printer %s."
-msgstr "資料庫沒有紀錄列印機 %s 上一次的列印紀錄"
-
-#, python-format
-msgid "Inconsistent values for printer %s's internal page counter."
-msgstr "列印機 %s 的內存頁面計算器的數值不一致"
-
-msgid ""
-"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
-"download it from http://pysnmp.sourceforge.net"
-msgstr ""
-"要求內存的SNMP計算器，但找不到Python-SNMP請到http://pysnmp.sourceforge.net下"
-"載"
-
-#, python-format
-msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "不明的列印機地址在硬體(%s)用於列印機 %s 上"
-
-#, python-format
-msgid "Launching HARDWARE(%s)..."
-msgstr "正在執行硬體(%s)..."
-
-#, python-format
-msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "中止信號傳送到硬體計算器 %s (pid: %s)"
-
-#, python-format
-msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr "計算器輸出的第 [%s] 行被跳過，請再試一次..."
-
-#, python-format
-msgid "Hardware accounter %s exit code is %s"
-msgstr "硬件計算器 %s 中止，代碼為 %s"
-
-#, python-format
-msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "未能夠查詢列印機 %s 透過硬件(%s)"
-
-#, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr "SNMP查詢被中斷，使用最更新的數值來計算頁數計算器 (%s) 在列印機 %s 上"
-
-#, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr "PJL查詢被中斷，使用最更新的數值來計算頁數計算器 (%s) 在列印機 %s 上"
-
-#, python-format
-msgid "Launching SOFTWARE(%s)..."
-msgstr "正在執行軟件(%s)..."
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "未能夠使用記帳器計算列印總頁數 %s"
-
-#, python-format
-msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "等待軟件記帳時出現問題，pid為 %s : %s"
-
-#, python-format
-msgid "Software accounter %s exit code is %s"
-msgstr "軟件記帳器 %s 終止，代碼為 %s"
-
-msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr "假若有些使用者是屬於幾個不同組別，總計數值有機會不準確"
-
-#, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr "%s 不存在，很可能是錯誤設定所致請撿查 /etc/pykota/pykota.conf : %s"
-
-#, python-format
-msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "搜尋不到 %s(%s) 從 %s(scope=%s)"
-
-#, python-format
-msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "新增LDAP紀錄 (%s, %s) 時出現問題"
-
-#, python-format
-msgid "Problem deleting LDAP entry (%s)"
-msgstr "刪除LDAP紀錄 (%s) 時出現問題"
-
-#, python-format
-msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "修改LDAP紀錄出現問題 (%s, %s)"
-
-#, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
-msgstr ""
-"未能為使用者 %s 尋找pkotaAccountBalance object，請問你是否已手動建立LDAP 紀"
-"錄?  "
-
-#, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-"未能尋找現存的objectclass %s 紀錄帶有 %s=%s 連繫到pykotaAccount objectClass "
-
-#, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr "未能尋找現存的紀錄連繫到pykotaGroup objectclass %s"
-
 #, python-format
 msgid ""
 "autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
@@ -825,6 +200,8 @@ msgid ""
 "         groupname      Users group's name\n"
 "         printername    Printer's name\n"
 "         pgroupname     Printers group's name\n"
+"         hostname       Client's hostname\n"
+"         billingcode    Job's billing code\n"
 "         \n"
 "  Contrary to other PyKota management tools, wildcard characters are not \n"
 "  expanded, so you can't use them.\n"
@@ -1085,6 +462,9 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
+msgid "You're not allowed to use this command."
+msgstr "你沒有權限執行這個指令"
+
 #, python-format
 msgid "Invalid used value %s."
 msgstr ""
@@ -1190,138 +570,6 @@ msgstr "列印總頁數及列印費用已於列印紀錄中設定"
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Generates print quota reports.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  repykota [options] \n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints repykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Generates a report on users quota, this is \n"
-"                       the default.\n"
-"  \n"
-"  -g | --groups        Generates a report on group quota instead of users.\n"
-"  \n"
-"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ repykota --printer lp\n"
-"  \n"
-"  This will print the quota status for all users who use the lp printer.\n"
-"\n"
-"  $ repykota \n"
-"  \n"
-"  This will print the quota status for all users on all printers.\n"
-"  \n"
-"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
-"  \n"
-"  This will print the quota status for user jerome and all users\n"
-"  whose name begins with \"jo\" on all printers which name begins\n"
-"  with \"laser\" or ends with \"pson\".\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Sends mail to users over print quota.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  warnpykota  [options]  [names]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints warnpykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Warns users over their print quota, this is the \n"
-"                       default.\n"
-"  \n"
-"  -g | --groups        Warns users whose groups quota are over limit.\n"
-"  \n"
-"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ warnpykota --printer lp\n"
-"  \n"
-"  This will warn all users of the lp printer who have exceeded their\n"
-"  print quota.\n"
-"\n"
-"  $ warnpykota \n"
-"  \n"
-"  This will warn all users  who have exceeded their print quota on\n"
-"  any printer.\n"
-"\n"
-"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
-"  \n"
-"  This will warn all users of groups which names begins with \"dev\" and\n"
-"  who have exceeded their print quota on any printer which name begins \n"
-"  with \"laserjet\"\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid ""
 "pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
 "Libres\n"
 "\n"
@@ -1329,7 +577,7 @@ msgid ""
 "\n"
 "command line usage :\n"
 "\n"
-"  pkbanner  [options] \n"
+"  pkbanner  [options]  [more info]\n"
 "\n"
 "options :\n"
 "\n"
@@ -1391,8 +639,14 @@ msgstr "未能確認"
 msgid "Username"
 msgstr "使用者名稱"
 
+msgid "More Info"
+msgstr ""
+
 msgid "Job"
 msgstr "列印工作"
+
+msgid "Date"
+msgstr "日期"
 
 msgid "Allowed"
 msgstr "允許"
@@ -1405,6 +659,12 @@ msgstr "允許但帶有警告"
 
 msgid "Result"
 msgstr "結果"
+
+msgid "Title"
+msgstr "檔案標題"
+
+msgid "Filename"
+msgstr "檔案名稱"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -1840,6 +1100,768 @@ msgstr "列印總頁數 : %i 頁"
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr "於 %s 列印，你所需要的費用為 %.2f"
+
+#, python-format
+msgid ""
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Generates print quota reports.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  repykota [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints repykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Generates a report on users quota, this is \n"
+"                       the default.\n"
+"  \n"
+"  -g | --groups        Generates a report on group quota instead of users.\n"
+"  \n"
+"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ repykota --printer lp\n"
+"  \n"
+"  This will print the quota status for all users who use the lp printer.\n"
+"\n"
+"  $ repykota \n"
+"  \n"
+"  This will print the quota status for all users on all printers.\n"
+"  \n"
+"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
+"  \n"
+"  This will print the quota status for user jerome and all users\n"
+"  whose name begins with \"jo\" on all printers which name begins\n"
+"  with \"laser\" or ends with \"pson\".\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Sends mail to users over print quota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  warnpykota  [options]  [names]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints warnpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Warns users over their print quota, this is the \n"
+"                       default.\n"
+"  \n"
+"  -g | --groups        Warns users whose groups quota are over limit.\n"
+"  \n"
+"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  This will warn all users of the lp printer who have exceeded their\n"
+"  print quota.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  This will warn all users  who have exceeded their print quota on\n"
+"  any printer.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  This will warn all users of groups which names begins with \"dev\" and\n"
+"  who have exceeded their print quota on any printer which name begins \n"
+"  with \"laserjet\"\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+msgid "PyKota Data Dumper"
+msgstr ""
+
+msgid "Dump"
+msgstr ""
+
+msgid "Please click on the above button"
+msgstr "請按以上按鈕"
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Output Format"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "PyKota Reports"
+msgstr "PyKota 列印配額報告"
+
+msgid "Report"
+msgstr "報告"
+
+msgid "Printer"
+msgstr "列印機"
+
+msgid "User / Group names mask"
+msgstr "使用者/群組 名稱篩選"
+
+msgid "Groups report"
+msgstr "群組報告"
+
+msgid "History"
+msgstr "列印紀錄"
+
+msgid "Empty"
+msgstr "沒有紀錄"
+
+msgid "Action"
+msgstr "允許/禁止 列印"
+
+msgid "User"
+msgstr "使用者"
+
+msgid "Hostname"
+msgstr "列印使用電腦"
+
+msgid "JobId"
+msgstr "列印工作識別碼"
+
+msgid "JobSize"
+msgstr "列印總頁數"
+
+msgid "JobPrice"
+msgstr "列印費用"
+
+msgid "Copies"
+msgstr "複製數量"
+
+msgid "JobBytes"
+msgstr "列印工作容量"
+
+msgid "PageCounter"
+msgstr "列印總計"
+
+msgid "Options"
+msgstr "其他選項"
+
+msgid "MD5Sum"
+msgstr ""
+
+msgid "BillingCode"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Previous page"
+msgstr "上一頁"
+
+msgid "PyKota Quotes"
+msgstr ""
+
+msgid "Quote"
+msgstr ""
+
+#, python-format
+msgid "This file is %i pages long."
+msgstr ""
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "%s 是暫時未能夠支援的計算器"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "未能尋找設定檔 %s"
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "%s 這個設定未能於 %s 內的section global找到"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "%s 這個設定未能在 %s section附屬於 %s 內找到"
+
+#, python-format
+msgid "Option ldaptls is set, but certificate %s is not readable."
+msgstr ""
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "logger只支援數值在 %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "%s 是不正確的計算器用於列印機 %s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "accounter於 %s 部份只支援數值在 %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "enforcement於 %s 部份只支援數值在 %s"
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr "onaccountererror於 %s 部份只支援數值在 %s"
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "%s 是不正確的政策設定用於列印機 %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "政策設定在 %s 只能夠支援的數值在 %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "%s 是不正確的mailto選項用於列印機 %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "mailto 於 %s 的部份只支援數值在 %s"
+
+#, python-format
+msgid "Invalid maximal deny banners counter %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "%s 是不正確的寬限時間"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "%s 是不正確的poor man's threshold"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"你的列印配額經已很低，\n"
+"假若你不增加配額，在不久的時間後，你將不能再列印，\n"
+"請你聯絡負責列印配額的管理人員，以解決這個問題。"
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"你不能再列印任何文件，\n"
+"因為你在列印機 %s 已沒有列印配額。"
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"在不久的時間内，你將會被禁止作任何列印，\n"
+"因為你在印表機 %s 的列印配額，差不多用完。"
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr "accountbanner內的 %s 只能支援數值在 %s"
+
+#, python-format
+msgid "Option trustjobsize for printer %s is incorrect"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Printers"
+msgstr ""
+
+msgid "Users Print Quotas"
+msgstr ""
+
+msgid "Users Groups Print Quotas"
+msgstr ""
+
+msgid "History of Payments"
+msgstr ""
+
+msgid "Printers Groups Membership"
+msgstr ""
+
+msgid "Users Groups Membership"
+msgstr ""
+
+msgid "Comma Separated Values"
+msgstr ""
+
+msgid "Semicolon Separated Values"
+msgstr ""
+
+msgid "Tabulation Separated Values"
+msgstr ""
+
+msgid "eXtensible Markup Language"
+msgstr ""
+
+msgid "CUPS' page_log"
+msgstr ""
+
+#, python-format
+msgid "Invalid filter value [%s], see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr "不正確的修改參數 [%s] 給 --data 指令選項，請參閱說明文件"
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr "不正確的修改參數 [%s] 給 --format 指令選項，請參閱說明文件"
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr "因為jaxml模組尙未安裝，XML輸出已停用"
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr "PyKota data dumper失敗 : I/O 錯誤 "
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "%s 暫時不支援的紀錄系統"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "使用者 %s 的列印配額於印表機%s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "寬限日期: %i 日"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "毎次列印工作所需費用: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "列印毎頁所需費用: %.3f"
+
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid "unknown"
+msgstr "未能確認"
+
+#, python-format
+msgid "Real : %s"
+msgstr "硬體/軟體內部計算的數值 : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "總計 : %9i"
+
+msgid "N/A"
+msgstr ""
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "%s 是不能支援的reporter backend"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "%s 是不能支援的配額資料庫"
+
+#, python-format
+msgid "Strange problem with uid(%s) : %s"
+msgstr ""
+
+#, python-format
+msgid "Running as user '%s'."
+msgstr ""
+
+msgid "No user named 'pykota'. Not dropping priviledges."
+msgstr ""
+
+#, python-format
+msgid "Impossible to drop priviledges : %s"
+msgstr ""
+
+msgid "Priviledges dropped. Now running as user 'pykota'."
+msgstr ""
+
+#, python-format
+msgid "Impossible to regain priviledges : %s"
+msgstr ""
+
+msgid "Regained priviledges. Now running as root."
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "不能夠連線至SMTP伺服器 : %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "未能成功發送電郵到 %s，錯誤 %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"請聯絡系統管理員 :\n"
+"\t%s - <%S>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr "未能尋找使用者 %s 於印表機 %s，因此採用預設的政策(%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr "未能尋找使用者 %s 的帳目結算，因此採用預設的政策(%s)於列印機 %s"
+
+#, python-format
+msgid "User %s will not be charged for printing."
+msgstr ""
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "群組 %s 超出列印配額於列印機 %s"
+
+msgid "Print Quota"
+msgstr "列印配額"
+
+msgid "Print Quota Exceeded"
+msgstr "超出列印配額"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "羣組 %s 的列印配額於列印機 %s 經已很低"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "使用者 %s 的列印配額於列印機 %s 經已超出配額"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "使用者 %s 的列印配額於列印機 %s經已很低"
+
+msgid "Print Quota Low"
+msgstr "列印配額經已很低"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "列印系統 %s，args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "未能運用通用的PDL分析器 %s 計算列印工作的數量"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "收到信號中止信息，列印工作 %s 中斷"
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "列印機主機名稱未能確認，設定為'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "未能確認列系統，args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"列印機 %s 在PyKota系統內沒有登記，因此這台列印機套用external policy (%s) "
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"使用者 %s 在PyKota內沒有登記，因此這個使用者將會套用external policy(%s) 於列"
+"印機 %s "
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr "使用者沒有列印配額於列印機 %s ，套用對外政策 (%s) 於列印機 %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr "對外政策 %s 於列印機 %s 產生錯誤，列印工作被拒，請撿查PyKota的設定檔案"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr "列印機 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr "使用者 %s 沒有於PyKota系統內登記，套用預設的政策 (%s)於列印機 %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr "使用者 %s 沒有列印配額於列印機 %s，套用預設的政策 (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr "列印機 %s 依然沒有於PyKota系統內登記，列印工作要求被拒"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr "使用者 %s 依然沒有於PyKota系統內登記，列印工作要求被拒於列印機 %s"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr "使用者 %s 依然沒有列印配額於列印機 %s 在PyKota系統，列印工作被拒"
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr "在讀取列印機 %s 的內存頁面計算器時出現問題"
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr "從資料庫讀取，恢復列印機 %s 的頁面計算器的計算值"
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr "不能恢復列印機 %s 的內存頁面計算器不論在列印的之前或之後"
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr "列印機 %s 被強制設定列印總頁數為 1 頁"
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr "資料庫沒有紀錄列印機 %s 上一次的列印紀錄"
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr "列印機 %s 的內存頁面計算器的數值不一致"
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "不明的列印機地址在硬體(%s)用於列印機 %s 上"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "正在執行硬體(%s)..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "中止信號傳送到硬體計算器 %s (pid: %s)"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr "計算器輸出的第 [%s] 行被跳過，請再試一次..."
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr "硬件計算器 %s 中止，代碼為 %s"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "未能夠查詢列印機 %s 透過硬件(%s)"
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr "連線到 %s:%s : %s 時出現問題"
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr "傳送查詢到 %s:%s : %s 出現問題"
+
+#, python-format
+msgid "Waiting for printer %s to be printing..."
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr "正等待列印機 %s 閒置狀況達到穩定..."
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr "PJL查詢被中斷，使用最更新的數值來計算頁數計算器 (%s) 在列印機 %s 上"
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr "當列印機 %s : %s 進行SNMP查詢時出現網絡錯誤"
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr "SNMP信息解讀錯誤於列印機 %s : %s"
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr "當在列印機 %s 進行SNMP查詢時出現問題 : %s"
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr "SNMP查詢被中斷，使用最更新的數值來計算頁數計算器 (%s) 在列印機 %s 上"
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "正在執行軟件(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "未能夠使用記帳器計算列印總頁數 %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr "等待軟件記帳時出現問題，pid為 %s : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "軟件記帳器 %s 終止，代碼為 %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr "假若有些使用者是屬於幾個不同組別，總計數值有機會不準確"
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr "%s 不存在，很可能是錯誤設定所致請撿查 /etc/pykota/pykota.conf : %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "搜尋不到 %s(%s) 從 %s(scope=%s)"
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "新增LDAP紀錄 (%s, %s) 時出現問題"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "刪除LDAP紀錄 (%s) 時出現問題"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "修改LDAP紀錄出現問題 (%s, %s)"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr ""
+"未能為使用者 %s 尋找pkotaAccountBalance object，請問你是否已手動建立LDAP 紀"
+"錄?  "
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"未能尋找現存的objectclass %s 紀錄帶有 %s=%s 連繫到pykotaAccount objectClass "
+
+#, python-format
+msgid "%s. A new entry will be created instead."
+msgstr ""
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr "未能尋找現存的紀錄連繫到pykotaGroup objectclass %s"
+
+msgid "Hidden because of privacy concerns"
+msgstr ""
+
+#~ msgid ""
+#~ "Internal SNMP accounting asked, but Python-SNMP is not available. Please "
+#~ "download it from http://pysnmp.sourceforge.net"
+#~ msgstr ""
+#~ "要求內存的SNMP計算器，但找不到Python-SNMP請到http://pysnmp.sourceforge.net"
+#~ "下載"
 
 #~ msgid "Too many arguments, see help."
 #~ msgstr "太多arguments，請參閱說明文件"
