@@ -12,7 +12,7 @@ Recommends: snmp, netatalk, python-psyco, npadmin
 Description: Print Quota/Accounting system for CUPS and LPRng
  PyKota is a full featured, internationalized, centralized and extensible 
  Print Quota system for CUPS and LPRng. It supports both PostgreSQL and 
- OpenLDAP as the quota database backend. 
+ OpenLDAP (or other LDAP servers) as the quota database backend. 
  .
  This software features most of what you might expect from a modern Print 
  Quota and Accounting Solution. 
@@ -23,6 +23,6 @@ Description: Print Quota/Accounting system for CUPS and LPRng
  management or reporting tools in the improbable case you'd judge PyKota's 
  ones to be inadapted.
  .
- Full access to source code is granted to all for no fee via CVS, but 
+ Full access to source code is granted to all for no fee via Subversion, but 
  installable tarball, DEB and RPM download is for a fee. Redistribution and 
  modification is allowed to all under the terms of the GNU GPL.

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 ============================================================
 
 This directory contains scripts you may find interesting to
-use on a Debian GNU/Linux system.
+build Debian GNU/Linux packages for PyKota.
 
 ============================================================
 

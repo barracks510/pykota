@@ -39,629 +39,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-msgid "PyKota Data Dumper"
-msgstr "PyKota Data Dumper"
-
-msgid "Dump"
-msgstr "Dump"
-
-msgid "Please click on the above button"
-msgstr "Vennligst trykk på knappen ovenfor"
-
-msgid "Data Type"
-msgstr "Datatype"
-
-msgid "Output Format"
-msgstr "Output format"
-
-msgid "Filter"
-msgstr "Filter"
-
-msgid "PyKota Reports"
-msgstr "Pykota rapporter"
-
-msgid "Report"
-msgstr "Rapport"
-
-msgid "Printer"
-msgstr "Skriver"
-
-msgid "User / Group names mask"
-msgstr "Bruker / gruppe navn felt"
-
-msgid "Groups report"
-msgstr "Grupperapport"
-
-msgid "History"
-msgstr "Historie"
-
-msgid "Empty"
-msgstr "Tomt"
-
-msgid "Date"
-msgstr "Dato"
-
-msgid "Action"
-msgstr "Handling"
-
-msgid "User"
-msgstr "Bruker"
-
-msgid "Hostname"
-msgstr "Vertsnavn"
-
-msgid "JobId"
-msgstr "UtskriftsId"
-
-msgid "JobSize"
-msgstr "UtskriftsStørrelse"
-
-msgid "JobPrice"
-msgstr "UtskriftsPris"
-
-msgid "Copies"
-msgstr "Kopier"
-
-msgid "JobBytes"
-msgstr "UtskriftsBytes"
-
-msgid "PageCounter"
-msgstr "SideTeller"
-
-msgid "Title"
-msgstr "Tittel"
-
-msgid "Filename"
-msgstr "Filnavn"
-
-msgid "Options"
-msgstr "Opsjoner"
-
-msgid "MD5Sum"
-msgstr "MD5Sum"
-
-msgid "BillingCode"
-msgstr "PrisKode"
-
-msgid "Pages"
-msgstr "Sider"
-
-msgid "Previous page"
-msgstr "Forrige side"
-
-#, python-format
-msgid "Unsupported accounter backend %s"
-msgstr "Bokføringsbakgrunnen er ikke støttet %s"
-
-#, python-format
-msgid "Configuration file %s not found."
-msgstr "Konfigurasjonsfil %s ble ikke funnet."
-
-#, python-format
-msgid "Option %s not found in section global of %s"
-msgstr "Opsjonen %s ble ikke funnet i den globale delen av %s"
-
-#, python-format
-msgid "Option %s not found in section %s of %s"
-msgstr "Opsjonen %s ble ikke funnet i delen %s i %s"
-
-#, python-format
-msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr "Opsjonen ldaptls er satt, men sertifikatet %s er ikke lesbart."
-
-#, python-format
-msgid "Option logger only supports values in %s"
-msgstr "Opsjonen logger støtter kun verdier i %s"
-
-#, python-format
-msgid "Invalid accounter %s for printer %s"
-msgstr "Ugyldig bokføringssystem %s for skriver %s"
-
-#, python-format
-msgid "Option accounter in section %s only supports values in %s"
-msgstr "Opsjonen bokføringsystem i avsnittet %s støtter kun verdier i området %s"
-
-#, python-format
-msgid "Option enforcement in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid policy %s for printer %s"
-msgstr "Ugyldige regel %s for skriver %s"
-
-#, python-format
-msgid "Option policy in section %s only supports values in %s"
-msgstr "Regelopsjon i avsnitt %s støtter kun verdier i %s"
-
-#, python-format
-msgid "Invalid option mailto %s for printer %s"
-msgstr "Ugyldige mailto opsjon %s for skriver %s"
-
-#, python-format
-msgid "Option mailto in section %s only supports values in %s"
-msgstr "Opsjonen mailto i avsnitt %s støtter kun verdier i %s"
-
-#, python-format
-msgid "Invalid maximal deny banners counter %s"
-msgstr "Ugyldig verdi for maksimalt antall nektede bannere %s"
-
-#, python-format
-msgid "Invalid grace delay %s"
-msgstr "Ugyldig grace forsinkelse %s"
-
-#, python-format
-msgid "Invalid poor man's threshold %s"
-msgstr "Ugyldig fattigmansterskel %s"
-
-msgid ""
-"Your Print Quota account balance is Low.\n"
-"Soon you'll not be allowed to print anymore.\n"
-"Please contact the Print Quota Administrator to solve the problem."
-msgstr ""
-"Din resterende utskriftskvote er lav.\n"
-"Du vil snart ikke kunne skrive ut mer.\n"
-"Ta kontakt med administratoren for utskriftskvotene for å løse problemet."
-
-#, python-format
-msgid ""
-"You are not allowed to print anymore because\n"
-"your Print Quota is exceeded on printer %s."
-msgstr ""
-"Du kan ikke lenger skrive ut fordi\n"
-"din utskriftkvote er overskredet på skriver %s."
-
-#, python-format
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your Print Quota is almost reached on printer %s."
-msgstr ""
-"Du vil snart ikke lenger kunne skrive ut fordi\n"
-"din utskriftskvote snart er overskredet på skriver %s."
-
-#, python-format
-msgid "Option accountbanner in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Option trustjobsize for printer %s is incorrect"
-msgstr ""
-
-msgid "Users"
-msgstr "Brukere"
-
-msgid "Groups"
-msgstr "Grupper"
-
-msgid "Printers"
-msgstr "Skrivere"
-
-msgid "Users Print Quotas"
-msgstr "Brukerens utskriftskvote"
-
-msgid "Users Groups Print Quotas"
-msgstr "Brukerens gruppeutskriftskvote"
-
-msgid "History of Payments"
-msgstr "Betalingshistorikk"
-
-msgid "Printers Groups Membership"
-msgstr "Skriverens gruppemedlemskap"
-
-msgid "Users Groups Membership"
-msgstr "Brukerens gruppemedlemskap"
-
-msgid "Comma Separated Values"
-msgstr "Komma Separerte Verdier"
-
-msgid "Semicolon Separated Values"
-msgstr "Semikolon Separerte Verdier"
-
-msgid "Tabulation Separated Values"
-msgstr "Tabulator Separerte Verdier"
-
-msgid "eXtensible Markup Language"
-msgstr "eXtensible Markup Language"
-
-msgid "CUPS' page_log"
-msgstr "CUPS' page_log"
-
-msgid "You're not allowed to use this command."
-msgstr "Du har ikke tillatelse til å bruke denne kommandoen."
-
-#, python-format
-msgid "Invalid value [%s] for --filter command line option, see help."
-msgstr "Ugyldig verdi [%s] for --filter kommandolinje opsjonen, se Hjelp."
-
-#, python-format
-msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr "Ugyldig modifikator [%s] for kommandolinje opsjonen --data, se Hjelp."
-
-#, python-format
-msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr "Ugyldig modifikator [%s] for kommandolinje opsjonen --format, se Hjelp."
-
-msgid "XML output is disabled because the jaxml module is not available."
-msgstr "Bruk av XML er ikke mulig fordi jaxml modulen ikke er tilgjengelig."
-
-msgid "PyKota data dumper failed : I/O error"
-msgstr "PyKota datadumper feilet: I/O-feil"
-
-#, python-format
-msgid "Unsupported logging subsystem %s"
-msgstr "Det underliggende systemet %s for bokføring er ikke støttet"
-
-#, python-format
-msgid "Report for %s quota on printer %s"
-msgstr "Rapport for %s kvote på skriver %s"
-
-#, python-format
-msgid "Pages grace time: %i days"
-msgstr ""
-
-#, python-format
-msgid "Price per job: %.3f"
-msgstr "Pris per utskrift: %.3f"
-
-#, python-format
-msgid "Price per page: %.3f"
-msgstr "Pris per side: %.3f"
-
-#, fuzzy
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-"Gruppe          overcharge   brukt    myk    hard    balanse grace         "
-"totalt       betalt advarsel"
-
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-"Bruker           overcharge   brukt    myk    hard    balanse grace         "
-"totalt       betalt advarsel"
-
-msgid "unknown"
-msgstr "ukjent"
-
-#, python-format
-msgid "Real : %s"
-msgstr "Virkelig : %s"
-
-#, python-format
-msgid "Total : %9i"
-msgstr "Totalt : %9i"
-
-msgid "N/A"
-msgstr "I/T"
-
-#, python-format
-msgid "Unsupported reporter backend %s"
-msgstr "Det bakenforliggende rapportprogrammet %s er ikke støttet"
-
-#, python-format
-msgid "Unsupported quota storage backend %s"
-msgstr "Det bakenforliggende kvotesystemet %s er ikke støttet"
-
-#, python-format
-msgid "Strange problem with uid(%s) : %s"
-msgstr "Merkelig problem med uid(%s) : %s"
-
-#, python-format
-msgid "Running as user '%s'."
-msgstr "Kjører som bruker '%s'."
-
-msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr "Ingen bruker 'pykota'. Gir ikke slipp på privilegier."
-
-#, python-format
-msgid "Impossible to drop priviledges : %s"
-msgstr "Ikke mulig å gi slipp på privilegier : %s"
-
-msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr "Har gitt slipp på privilegier. Kjører nå som bruker 'pykota'."
-
-#, python-format
-msgid "Impossible to regain priviledges : %s"
-msgstr "Ikke mulig å ta tilbake privilegier : %s"
-
-msgid "Regained priviledges. Now running as root."
-msgstr "Fikk tilbake privilegier. Kjører nå som root."
-
-#, python-format
-msgid "Impossible to connect to SMTP server : %s"
-msgstr "Ikke mulig å koble seg til SMTP serveren . %s"
-
-#, python-format
-msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "Ikke mulig å sende e-post til %s, feil %s : %s"
-
-#, python-format
-msgid ""
-"\n"
-"\n"
-"Please contact your system administrator :\n"
-"\n"
-"\t%s - <%s>\n"
-msgstr ""
-"\n"
-"\n"
-"Vennligst kontakt din systemadministrator :\n"
-"\n"
-"\t%s - <%s>\n"
-
-#, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr "Klarte ikke å finne bruker %s på skriver %s, bruker standard regel (%s)"
-
-#, python-format
-msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr ""
-
-#, python-format
-msgid "User %s will not be charged for printing."
-msgstr "Bruker %s trenger ikke å betale for utskrift."
-
-#, python-format
-msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "Utskriftskvoten er oversteget for gruppe %s på skriver %s"
-
-msgid "Print Quota"
-msgstr "Utskriftskvote"
-
-msgid "Print Quota Exceeded"
-msgstr "Utskriftskvoten er oversteget"
-
-#, python-format
-msgid "Print Quota low for group %s on printer %s"
-msgstr "Utskriftskvoten er lav for gruppe %s på skriver %s"
-
-#, python-format
-msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "Utskriftskvoten er oversteget for bruker %s på skriver %s"
-
-#, python-format
-msgid "Print Quota low for user %s on printer %s"
-msgstr "Utskriftskvoten er lav for bruker %s på skriver %s"
-
-msgid "Print Quota Low"
-msgstr "Utskriftskvoten er lav"
-
-#, python-format
-msgid "Printing system %s, args=%s"
-msgstr "Utskriftssystem %s, args=%s"
-
-#, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr ""
-"Klarer ikke å beregne størrelsen på utskriften ved hjelp av den "
-"generiske PDL analyseren : %s"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "Signalet SIGTERM ble sendt, utskriften %s ble avbrutt."
-
-msgid "Printer hostname undefined, set to 'localhost'"
-msgstr "Vertsnavnet til skriveren er udefinert, setter det lik 'localhost'"
-
-#, python-format
-msgid "Printing system unknown, args=%s"
-msgstr "Utskriftssystemet er ukjent, args=%s"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
-msgstr "Skriver %s er ikke registret i Pykotasystemet, bruker ekstern regel (%s) på skriver %s"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr "Bruker %s er ikke registret i Pykotasystemet, bruker ekstern regel (%s) på skriver %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr "Bruker %s har ingen kvote på skriver %s i Pykotasystemet, bruker ekstern regel (%s) på skriver %s"
-
-#, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr ""
-
-#, python-format
-msgid "Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr "Skriveren %s er ikke registrert i Pykotasystemet, bruker standard regel (%s)"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr "Bruker %s er ikke registrert i PyKota systemet, bruker standard regel (%s) for skriver %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr "Bruker %s har ingen kvote på skriver %s i PyKota systemet, bruker standard regel (%s)"
-
-#, python-format
-msgid "Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr "Skriver %s er fremdeles ikke registrert i Pykotasystemet, utskriften vil derfor bli nektet"
-
-#, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr "Bruker %s er fremdeles ikke registrert i Pykotasystemet, utskriften vil derfor bli nektet på skriver %s"
-
-#, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr "Bruker %s har fremdeles ikke en kvote på skriver %s i Pykotasystemet, utskriften vil derfor bli nektet"
-
-#, python-format
-msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr "Feil på nettverket mens SNMP spørring ble utført på skriver %s : %s"
-
-#, python-format
-msgid "SNMP message decoding error for printer %s : %s"
-msgstr ""
-
-#, python-format
-msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr "En feil oppstod mens en SNMP spørring ble utført på skriver %s : %s"
-
-#, python-format
-msgid "Waiting for printer %s to be printing..."
-msgstr "Venter på at skriver %s skal begynne å skrive ..."
-
-#, python-format
-msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr "Venter på at skriver %s sin hvilestatus skal stabilisere seg ..."
-
-#, python-format
-msgid "Problem during connection to %s:%s : %s"
-msgstr "Det oppstod et problem under oppkobling til %s:%s : %s"
-
-#, python-format
-msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr "Det oppstod et problem under sending av PJL til %s:%s : %s"
-
-#, python-format
-msgid "A problem occured while reading printer %s's internal page counter."
-msgstr "Det oppstod et problem under avlesing av sidetelleren til skriver %s."
-
-#, python-format
-msgid "Retrieving printer %s's page counter from database instead."
-msgstr ""
-
-#, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr ""
-
-#, python-format
-msgid "Job's size forced to 1 page for printer %s."
-msgstr "Utskriftstørrelsen ble satt til 1 side for skriver %s."
-
-#, python-format
-msgid "No previous job in database for printer %s."
-msgstr "Ingen tidligere utskrift er registrert i databasen for skriver %s."
-
-#, python-format
-msgid "Inconsistent values for printer %s's internal page counter."
-msgstr ""
-
-msgid ""
-"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
-"download it from http://pysnmp.sourceforge.net"
-msgstr ""
-
-#, python-format
-msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "Ukjent skriveradresse i HARDWARE(%s) for skriver %s"
-
-#, python-format
-msgid "Launching HARDWARE(%s)..."
-msgstr "Starter HARDWARE(%s) ..."
-
-#, python-format
-msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "SIGTERM ble sendt til hardware bokholders %s (pid: %s)"
-
-#, python-format
-msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr ""
-
-#, python-format
-msgid "Hardware accounter %s exit code is %s"
-msgstr "Hardware telleren %s avsluttet med kode %s"
-
-#, python-format
-msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "Klarte ikke å spørre skriver %s via HARDWARE(%s)"
-
-#, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-
-#, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-
-#, python-format
-msgid "Launching SOFTWARE(%s)..."
-msgstr "Starter SOFTWARE(%s) ..."
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "Klarte ikke å beregne utskriftstørrelse med bokholder %s"
-
-#, python-format
-msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr ""
-
-#, python-format
-msgid "Software accounter %s exit code is %s"
-msgstr ""
-
-msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr "Totalen kan være feil hvis en bruker er medlem av flere grupper."
-
-#, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-
-#, python-format
-msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "Søk etter %s(%s) fra %s(scope=%s) returnerte ikke et svar."
-
-#, python-format
-msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "Det oppstod et problem med å legge til i LDAP (%s, %s)"
-
-#, python-format
-msgid "Problem deleting LDAP entry (%s)"
-msgstr "Det oppstod et problem med å slette i LDAP (%s)"
-
-#, python-format
-msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "Det oppstod et problem med å endre i LDAP (%s, %s)"
-
-#, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
-msgstr ""
-
-#, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-
-#, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr ""
-
 #, python-format
 msgid ""
 "autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
@@ -755,7 +132,9 @@ msgid "Job is a duplicate. Printing is denied."
 msgstr "Utskriften er en duplikat. Utskriften blir ikke skrevet."
 
 msgid "Banner won't be printed : maximum number of deny banners reached."
-msgstr "Utskriftsbanner vil ikke bli skrevet : det maksimale antall utskriftsbannere som nektes er nådd."
+msgstr ""
+"Utskriftsbanner vil ikke bli skrevet : det maksimale antall utskriftsbannere "
+"som nektes er nådd."
 
 msgid "Job accounting begins."
 msgstr "Telling av utskrifter begynner."
@@ -765,14 +144,17 @@ msgstr "Telling av utskrifter avsluttes."
 
 msgid "Job size forced to 0 because printing is denied."
 msgstr ""
-"Størrelsen på utskriften ble satt til 0 fordi du har ikke tillatelse "
-"til å skrive ut."
+"Størrelsen på utskriften ble satt til 0 fordi du har ikke tillatelse til å "
+"skrive ut."
 
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
-msgstr "Advarsel : beregnet utskriftstørrelse (%s) != forberegnet utskriftstørrelse (%s)"
+msgstr ""
+"Advarsel : beregnet utskriftstørrelse (%s) != forberegnet utskriftstørrelse "
+"(%s)"
 
-msgid "The job size will be trusted anyway according to the 'trustjobsize' directive"
+msgid ""
+"The job size will be trusted anyway according to the 'trustjobsize' directive"
 msgstr ""
 
 #, python-format
@@ -782,8 +164,11 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid "The job size will be modified according to the 'trustjobsize' directive : %s"
-msgstr "Størrelsen på utskriften vil bli endret, i samsvar med 'trustjobsize' regelen : %s"
+msgid ""
+"The job size will be modified according to the 'trustjobsize' directive : %s"
+msgstr ""
+"Størrelsen på utskriften vil bli endret, i samsvar med 'trustjobsize' "
+"regelen : %s"
 
 #, python-format
 msgid "Job size : %i"
@@ -867,6 +252,8 @@ msgid ""
 "         groupname      Users group's name\n"
 "         printername    Printer's name\n"
 "         pgroupname     Printers group's name\n"
+"         hostname       Client's hostname\n"
+"         billingcode    Job's billing code\n"
 "         \n"
 "  Contrary to other PyKota management tools, wildcard characters are not \n"
 "  expanded, so you can't use them.\n"
@@ -1127,6 +514,9 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
+msgid "You're not allowed to use this command."
+msgstr "Du har ikke tillatelse til å bruke denne kommandoen."
+
 #, python-format
 msgid "Invalid used value %s."
 msgstr "Ugyldig verdi brukt %s."
@@ -1232,205 +622,6 @@ msgstr "Utskriftstørrelse og pris er bokført."
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Generates print quota reports.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  repykota [options] \n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints repykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Generates a report on users quota, this is \n"
-"                       the default.\n"
-"  \n"
-"  -g | --groups        Generates a report on group quota instead of users.\n"
-"  \n"
-"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ repykota --printer lp\n"
-"  \n"
-"  This will print the quota status for all users who use the lp printer.\n"
-"\n"
-"  $ repykota \n"
-"  \n"
-"  This will print the quota status for all users on all printers.\n"
-"  \n"
-"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
-"  \n"
-"  This will print the quota status for user jerome and all users\n"
-"  whose name begins with \"jo\" on all printers which name begins\n"
-"  with \"laser\" or ends with \"pson\".\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Sends mail to users over print quota.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  warnpykota  [options]  [names]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints warnpykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Warns users over their print quota, this is the \n"
-"                       default.\n"
-"  \n"
-"  -g | --groups        Warns users whose groups quota are over limit.\n"
-"  \n"
-"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ warnpykota --printer lp\n"
-"  \n"
-"  This will warn all users of the lp printer who have exceeded their\n"
-"  print quota.\n"
-"\n"
-"  $ warnpykota \n"
-"  \n"
-"  This will warn all users  who have exceeded their print quota on\n"
-"  any printer.\n"
-"\n"
-"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
-"  \n"
-"  This will warn all users of groups which names begins with \"dev\" and\n"
-"  who have exceeded their print quota on any printer which name begins \n"
-"  with \"laserjet\"\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Sender e-post til brukere som har oversetget sin utskriftskvote.\n"
-"\n"
-"kommandolinje bruk :\n"
-"\n"
-"  warnpykota  [opsjoner]  [navn]\n"
-"\n"
-"opsjoner :\n"
-"\n"
-"  -v | --version       Viser warnpykota versjon nummer.\n"
-"  -h | --help          Viser denne meldingen.\n"
-"  \n"
-"  -u | --users         Advarer brukere som har oversteget sin "
-"utskriftskvote,\n"
-"                       dette er standard.\n"
-"  \n"
-"  -g | --groups        Advarer brukere som er medlem av en gruppe som har "
-"overseteget sin gruppeutskriftskvote.\n"
-"  \n"
-"  -P | --printer p     Verifiser kvoter på kun denne skriveren.Faktisk så "
-"kan p\n"
-"                       også være jokertegn for å kun velge noen bestemte\n"
-"                       skrivere. Standard er *, som betyr \n"
-"                       alle skrivere.\n"
-"                       Du kan bruke flere skrivernavn eller jokertegn\n"
-"                       ved å separere dem med komma.\n"
-"  \n"
-"eksempler :                              \n"
-"\n"
-"  $ warnpykota --printer lp\n"
-"  \n"
-"  Dette vil advare alle brukere på skriveren lp som har oversteget sin\n"
-"  utskriftskvote.\n"
-"\n"
-"  $ warnpykota \n"
-"  \n"
-"  Dette vil advare alle brukere som har oversteget sin\n"
-"  utskriftskvote.\n"
-"\n"
-"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
-"  \n"
-"  Dette vil advare alle brukere i grupper som begynner på \"dev\" om at\n"
-"  de har oversteget sin kvote på skriver med navn som begynner med\n"
-"  \"laserjet\"\n"
-"  \n"
-"  Hvis en bruker som ikke er en PyKota administrator bruker programet,\n"
-"  sp vil opsjoner som representerer brukere eller grupper bli sett bort "
-"fra,\n"
-"  kun vedkommendes bruker/gruppe blir rapportert.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-
-#, python-format
-msgid ""
 "pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
 "Libres\n"
 "\n"
@@ -1438,7 +629,7 @@ msgid ""
 "\n"
 "command line usage :\n"
 "\n"
-"  pkbanner  [options] \n"
+"  pkbanner  [options]  [more info]\n"
 "\n"
 "options :\n"
 "\n"
@@ -1500,8 +691,14 @@ msgstr "Ukjent"
 msgid "Username"
 msgstr "Brukernavn"
 
+msgid "More Info"
+msgstr ""
+
 msgid "Job"
 msgstr "Utskrift"
+
+msgid "Date"
+msgstr "Dato"
 
 msgid "Allowed"
 msgstr "Tillat"
@@ -1514,6 +711,12 @@ msgstr "Tillat med advarsel"
 
 msgid "Result"
 msgstr "Resultat"
+
+msgid "Title"
+msgstr "Tittel"
+
+msgid "Filename"
+msgstr "Filnavn"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -1695,7 +898,7 @@ msgid ""
 "        report [username]\n"
 "  \n"
 "  NB : For pkmail to work correctly, you may have to put the 'mail'\n"
-"  system user in the 'lpadmin' system group to ensure this user can\n"
+"  system user in the 'pykota' system group to ensure this user can\n"
 "  read the /etc/pykota/pykotadmin.conf file, and restart your\n"
 "  mail server (e.g. /etc/init.d/exim restart). It is strongly advised\n"
 "  that you think at least twice before doing this though.\n"
@@ -1718,61 +921,6 @@ msgid ""
 "\n"
 "Please e-mail bugs to: %s"
 msgstr ""
-"pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
-"\n"
-"Epost gateway for PyKota.\n"
-"\n"
-"kommandolinje bruk :\n"
-"\n"
-"  pkmail  [opsjoner]\n"
-"\n"
-"opsjoner :\n"
-"\n"
-"  -v | --version       Viser pkmail's versjon nummer.\n"
-"  -h | --help          Viser denne meldingen.\n"
-"  \n"
-"    \n"
-"  Denne kommandoen er ment brukt fra din epostservers aliasfil,\n"
-"  som en pipe. Den vil da akseptere kommandoer sendt til den i epost,\n"
-"  og vil sende et svar til avsenderen.\n"
-"  \n"
-"  For å bruke denne kommandoen, lag en epostalias i /etc/aliases med\n"
-"  følgende format :\n"
-"  \n"
-"    pykotacmd: \"|/usr/bin/pkmail\"\n"
-"    \n"
-"  Utfør deretter kommandoen 'newaliases' for å gjenoppfriske alias databasen.\n"
-"  \n"
-"  Du kan nå sende kommandoer i epost til 'pykotacmd@yourdomain.com', med\n"
-"  kommandoen i Emne-feltet.\n"
-"  \n"
-"  Liste med støttede kommandoer :\n"
-"  \n"
-"        report [brukernavn]\n"
-"  \n"
-"  NB : For at plmail skal fungere korrect, så må du muligens legge til 'mail'\n"
-"  system brukeren til 'lpadmin' systemgruppa slik at brukeren kan\n"
-"  lese fila /etc/pykota/pykotadmin.conf, og kunne restarte din\n"
-"  epostserver (f.eks /etc/init.d/exim restart). Det anbefales på det sterkeste\n"
-"  at du tenker deg om minst to ganger før du gjør dette.\n"
-"  \n"
-"  Brukes på eget ansvar !\n"
-"  \n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
 
 #, python-format
 msgid ""
@@ -2222,7 +1370,8 @@ msgstr ""
 "  $ pykotme --printer apple file1.ps file2.ps\n"
 "  \n"
 "  Dette vil sette en utskriftskvote for brukeren. Utskriftskvoten vil \n"
-"  vise prisen og størrelsen på en utskrift som består av filene file1.ps og file2.ps \n"
+"  vise prisen og størrelsen på en utskrift som består av filene file1.ps og "
+"file2.ps \n"
 "  som skal skrives ut på skriver apple.\n"
 "  \n"
 "  $ pykotme --printer apple,hplaser <file1.ps\n"
@@ -2265,3 +1414,969 @@ msgstr "Størrelse på utskriften : %i sider"
 msgid "Cost on printer %s : %.2f"
 msgstr "Prisen på skriver %s : %.2f"
 
+#, python-format
+msgid ""
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Generates print quota reports.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  repykota [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints repykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Generates a report on users quota, this is \n"
+"                       the default.\n"
+"  \n"
+"  -g | --groups        Generates a report on group quota instead of users.\n"
+"  \n"
+"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ repykota --printer lp\n"
+"  \n"
+"  This will print the quota status for all users who use the lp printer.\n"
+"\n"
+"  $ repykota \n"
+"  \n"
+"  This will print the quota status for all users on all printers.\n"
+"  \n"
+"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
+"  \n"
+"  This will print the quota status for user jerome and all users\n"
+"  whose name begins with \"jo\" on all printers which name begins\n"
+"  with \"laser\" or ends with \"pson\".\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Sends mail to users over print quota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  warnpykota  [options]  [names]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints warnpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Warns users over their print quota, this is the \n"
+"                       default.\n"
+"  \n"
+"  -g | --groups        Warns users whose groups quota are over limit.\n"
+"  \n"
+"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  This will warn all users of the lp printer who have exceeded their\n"
+"  print quota.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  This will warn all users  who have exceeded their print quota on\n"
+"  any printer.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  This will warn all users of groups which names begins with \"dev\" and\n"
+"  who have exceeded their print quota on any printer which name begins \n"
+"  with \"laserjet\"\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Sender e-post til brukere som har oversetget sin utskriftskvote.\n"
+"\n"
+"kommandolinje bruk :\n"
+"\n"
+"  warnpykota  [opsjoner]  [navn]\n"
+"\n"
+"opsjoner :\n"
+"\n"
+"  -v | --version       Viser warnpykota versjon nummer.\n"
+"  -h | --help          Viser denne meldingen.\n"
+"  \n"
+"  -u | --users         Advarer brukere som har oversteget sin "
+"utskriftskvote,\n"
+"                       dette er standard.\n"
+"  \n"
+"  -g | --groups        Advarer brukere som er medlem av en gruppe som har "
+"overseteget sin gruppeutskriftskvote.\n"
+"  \n"
+"  -P | --printer p     Verifiser kvoter på kun denne skriveren.Faktisk så "
+"kan p\n"
+"                       også være jokertegn for å kun velge noen bestemte\n"
+"                       skrivere. Standard er *, som betyr \n"
+"                       alle skrivere.\n"
+"                       Du kan bruke flere skrivernavn eller jokertegn\n"
+"                       ved å separere dem med komma.\n"
+"  \n"
+"eksempler :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  Dette vil advare alle brukere på skriveren lp som har oversteget sin\n"
+"  utskriftskvote.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  Dette vil advare alle brukere som har oversteget sin\n"
+"  utskriftskvote.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  Dette vil advare alle brukere i grupper som begynner på \"dev\" om at\n"
+"  de har oversteget sin kvote på skriver med navn som begynner med\n"
+"  \"laserjet\"\n"
+"  \n"
+"  Hvis en bruker som ikke er en PyKota administrator bruker programet,\n"
+"  sp vil opsjoner som representerer brukere eller grupper bli sett bort "
+"fra,\n"
+"  kun vedkommendes bruker/gruppe blir rapportert.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+
+msgid "PyKota Data Dumper"
+msgstr "PyKota Data Dumper"
+
+msgid "Dump"
+msgstr "Dump"
+
+msgid "Please click on the above button"
+msgstr "Vennligst trykk på knappen ovenfor"
+
+msgid "Data Type"
+msgstr "Datatype"
+
+msgid "Output Format"
+msgstr "Output format"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "PyKota Reports"
+msgstr "Pykota rapporter"
+
+msgid "Report"
+msgstr "Rapport"
+
+msgid "Printer"
+msgstr "Skriver"
+
+msgid "User / Group names mask"
+msgstr "Bruker / gruppe navn felt"
+
+msgid "Groups report"
+msgstr "Grupperapport"
+
+msgid "History"
+msgstr "Historie"
+
+msgid "Empty"
+msgstr "Tomt"
+
+msgid "Action"
+msgstr "Handling"
+
+msgid "User"
+msgstr "Bruker"
+
+msgid "Hostname"
+msgstr "Vertsnavn"
+
+msgid "JobId"
+msgstr "UtskriftsId"
+
+msgid "JobSize"
+msgstr "UtskriftsStørrelse"
+
+msgid "JobPrice"
+msgstr "UtskriftsPris"
+
+msgid "Copies"
+msgstr "Kopier"
+
+msgid "JobBytes"
+msgstr "UtskriftsBytes"
+
+msgid "PageCounter"
+msgstr "SideTeller"
+
+msgid "Options"
+msgstr "Opsjoner"
+
+msgid "MD5Sum"
+msgstr "MD5Sum"
+
+msgid "BillingCode"
+msgstr "PrisKode"
+
+msgid "Pages"
+msgstr "Sider"
+
+msgid "Previous page"
+msgstr "Forrige side"
+
+msgid "PyKota Quotes"
+msgstr ""
+
+msgid "Quote"
+msgstr ""
+
+#, python-format
+msgid "This file is %i pages long."
+msgstr ""
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "Bokføringsbakgrunnen er ikke støttet %s"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "Konfigurasjonsfil %s ble ikke funnet."
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "Opsjonen %s ble ikke funnet i den globale delen av %s"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "Opsjonen %s ble ikke funnet i delen %s i %s"
+
+#, python-format
+msgid "Option ldaptls is set, but certificate %s is not readable."
+msgstr "Opsjonen ldaptls er satt, men sertifikatet %s er ikke lesbart."
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "Opsjonen logger støtter kun verdier i %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "Ugyldig bokføringssystem %s for skriver %s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr ""
+"Opsjonen bokføringsystem i avsnittet %s støtter kun verdier i området %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "Ugyldige regel %s for skriver %s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "Regelopsjon i avsnitt %s støtter kun verdier i %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "Ugyldige mailto opsjon %s for skriver %s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "Opsjonen mailto i avsnitt %s støtter kun verdier i %s"
+
+#, python-format
+msgid "Invalid maximal deny banners counter %s"
+msgstr "Ugyldig verdi for maksimalt antall nektede bannere %s"
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "Ugyldig grace forsinkelse %s"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "Ugyldig fattigmansterskel %s"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"Din resterende utskriftskvote er lav.\n"
+"Du vil snart ikke kunne skrive ut mer.\n"
+"Ta kontakt med administratoren for utskriftskvotene for å løse problemet."
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"Du kan ikke lenger skrive ut fordi\n"
+"din utskriftkvote er overskredet på skriver %s."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"Du vil snart ikke lenger kunne skrive ut fordi\n"
+"din utskriftskvote snart er overskredet på skriver %s."
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Option trustjobsize for printer %s is incorrect"
+msgstr ""
+
+msgid "Users"
+msgstr "Brukere"
+
+msgid "Groups"
+msgstr "Grupper"
+
+msgid "Printers"
+msgstr "Skrivere"
+
+msgid "Users Print Quotas"
+msgstr "Brukerens utskriftskvote"
+
+msgid "Users Groups Print Quotas"
+msgstr "Brukerens gruppeutskriftskvote"
+
+msgid "History of Payments"
+msgstr "Betalingshistorikk"
+
+msgid "Printers Groups Membership"
+msgstr "Skriverens gruppemedlemskap"
+
+msgid "Users Groups Membership"
+msgstr "Brukerens gruppemedlemskap"
+
+msgid "Comma Separated Values"
+msgstr "Komma Separerte Verdier"
+
+msgid "Semicolon Separated Values"
+msgstr "Semikolon Separerte Verdier"
+
+msgid "Tabulation Separated Values"
+msgstr "Tabulator Separerte Verdier"
+
+msgid "eXtensible Markup Language"
+msgstr "eXtensible Markup Language"
+
+msgid "CUPS' page_log"
+msgstr "CUPS' page_log"
+
+#, python-format
+msgid "Invalid filter value [%s], see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr "Ugyldig modifikator [%s] for kommandolinje opsjonen --data, se Hjelp."
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr ""
+"Ugyldig modifikator [%s] for kommandolinje opsjonen --format, se Hjelp."
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr "Bruk av XML er ikke mulig fordi jaxml modulen ikke er tilgjengelig."
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr "PyKota datadumper feilet: I/O-feil"
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "Det underliggende systemet %s for bokføring er ikke støttet"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "Rapport for %s kvote på skriver %s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr ""
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "Pris per utskrift: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "Pris per side: %.3f"
+
+#, fuzzy
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+"Gruppe          overcharge   brukt    myk    hard    balanse grace         "
+"totalt       betalt advarsel"
+
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+"Bruker           overcharge   brukt    myk    hard    balanse grace         "
+"totalt       betalt advarsel"
+
+msgid "unknown"
+msgstr "ukjent"
+
+#, python-format
+msgid "Real : %s"
+msgstr "Virkelig : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "Totalt : %9i"
+
+msgid "N/A"
+msgstr "I/T"
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "Det bakenforliggende rapportprogrammet %s er ikke støttet"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "Det bakenforliggende kvotesystemet %s er ikke støttet"
+
+#, python-format
+msgid "Strange problem with uid(%s) : %s"
+msgstr "Merkelig problem med uid(%s) : %s"
+
+#, python-format
+msgid "Running as user '%s'."
+msgstr "Kjører som bruker '%s'."
+
+msgid "No user named 'pykota'. Not dropping priviledges."
+msgstr "Ingen bruker 'pykota'. Gir ikke slipp på privilegier."
+
+#, python-format
+msgid "Impossible to drop priviledges : %s"
+msgstr "Ikke mulig å gi slipp på privilegier : %s"
+
+msgid "Priviledges dropped. Now running as user 'pykota'."
+msgstr "Har gitt slipp på privilegier. Kjører nå som bruker 'pykota'."
+
+#, python-format
+msgid "Impossible to regain priviledges : %s"
+msgstr "Ikke mulig å ta tilbake privilegier : %s"
+
+msgid "Regained priviledges. Now running as root."
+msgstr "Fikk tilbake privilegier. Kjører nå som root."
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "Ikke mulig å koble seg til SMTP serveren . %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "Ikke mulig å sende e-post til %s, feil %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"Vennligst kontakt din systemadministrator :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"Klarte ikke å finne bruker %s på skriver %s, bruker standard regel (%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+
+#, python-format
+msgid "User %s will not be charged for printing."
+msgstr "Bruker %s trenger ikke å betale for utskrift."
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "Utskriftskvoten er oversteget for gruppe %s på skriver %s"
+
+msgid "Print Quota"
+msgstr "Utskriftskvote"
+
+msgid "Print Quota Exceeded"
+msgstr "Utskriftskvoten er oversteget"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "Utskriftskvoten er lav for gruppe %s på skriver %s"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "Utskriftskvoten er oversteget for bruker %s på skriver %s"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "Utskriftskvoten er lav for bruker %s på skriver %s"
+
+msgid "Print Quota Low"
+msgstr "Utskriftskvoten er lav"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Utskriftssystem %s, args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr ""
+"Klarer ikke å beregne størrelsen på utskriften ved hjelp av den generiske "
+"PDL analyseren : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "Signalet SIGTERM ble sendt, utskriften %s ble avbrutt."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Vertsnavnet til skriveren er udefinert, setter det lik 'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "Utskriftssystemet er ukjent, args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"Skriver %s er ikke registret i Pykotasystemet, bruker ekstern regel (%s) på "
+"skriver %s"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"Bruker %s er ikke registret i Pykotasystemet, bruker ekstern regel (%s) på "
+"skriver %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"Bruker %s har ingen kvote på skriver %s i Pykotasystemet, bruker ekstern "
+"regel (%s) på skriver %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"Skriveren %s er ikke registrert i Pykotasystemet, bruker standard regel (%s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"Bruker %s er ikke registrert i PyKota systemet, bruker standard regel (%s) "
+"for skriver %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"Bruker %s har ingen kvote på skriver %s i PyKota systemet, bruker standard "
+"regel (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr ""
+"Skriver %s er fremdeles ikke registrert i Pykotasystemet, utskriften vil "
+"derfor bli nektet"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"Bruker %s er fremdeles ikke registrert i Pykotasystemet, utskriften vil "
+"derfor bli nektet på skriver %s"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"Bruker %s har fremdeles ikke en kvote på skriver %s i Pykotasystemet, "
+"utskriften vil derfor bli nektet"
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr "Det oppstod et problem under avlesing av sidetelleren til skriver %s."
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr ""
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr ""
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr "Utskriftstørrelsen ble satt til 1 side for skriver %s."
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr "Ingen tidligere utskrift er registrert i databasen for skriver %s."
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr ""
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "Ukjent skriveradresse i HARDWARE(%s) for skriver %s"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "Starter HARDWARE(%s) ..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "SIGTERM ble sendt til hardware bokholders %s (pid: %s)"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr ""
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr "Hardware telleren %s avsluttet med kode %s"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "Klarte ikke å spørre skriver %s via HARDWARE(%s)"
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr "Det oppstod et problem under oppkobling til %s:%s : %s"
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr "Det oppstod et problem under sending av PJL til %s:%s : %s"
+
+#, python-format
+msgid "Waiting for printer %s to be printing..."
+msgstr "Venter på at skriver %s skal begynne å skrive ..."
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr "Venter på at skriver %s sin hvilestatus skal stabilisere seg ..."
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr "Feil på nettverket mens SNMP spørring ble utført på skriver %s : %s"
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr "En feil oppstod mens en SNMP spørring ble utført på skriver %s : %s"
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "Starter SOFTWARE(%s) ..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "Klarte ikke å beregne utskriftstørrelse med bokholder %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr ""
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr ""
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr "Totalen kan være feil hvis en bruker er medlem av flere grupper."
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "Søk etter %s(%s) fra %s(scope=%s) returnerte ikke et svar."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "Det oppstod et problem med å legge til i LDAP (%s, %s)"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "Det oppstod et problem med å slette i LDAP (%s)"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "Det oppstod et problem med å endre i LDAP (%s, %s)"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr ""
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+
+#, python-format
+msgid "%s. A new entry will be created instead."
+msgstr ""
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+
+msgid "Hidden because of privacy concerns"
+msgstr ""
+
+#~ msgid "Invalid value [%s] for --filter command line option, see help."
+#~ msgstr "Ugyldig verdi [%s] for --filter kommandolinje opsjonen, se Hjelp."
+
+#~ msgid ""
+#~ "pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+#~ "Libres\n"
+#~ "\n"
+#~ "Email gateway for PyKota.\n"
+#~ "\n"
+#~ "command line usage :\n"
+#~ "\n"
+#~ "  pkmail  [options]\n"
+#~ "\n"
+#~ "options :\n"
+#~ "\n"
+#~ "  -v | --version       Prints pkmail's version number then exits.\n"
+#~ "  -h | --help          Prints this message then exits.\n"
+#~ "  \n"
+#~ "    \n"
+#~ "  This command is meant to be used from your mail server's aliases file,\n"
+#~ "  as a pipe. It will then accept commands send to it in email messages,\n"
+#~ "  and will send the answer to the command's originator.\n"
+#~ "  \n"
+#~ "  To use this command, create an email alias in /etc/aliases with\n"
+#~ "  the following format :\n"
+#~ "  \n"
+#~ "    pykotacmd: \"|/usr/bin/pkmail\"\n"
+#~ "    \n"
+#~ "  Then run the 'newaliases' command to regenerate the aliases database.\n"
+#~ "  \n"
+#~ "  You can now send commands by email to 'pykotacmd@yourdomain.com', with\n"
+#~ "  the command in the subject.\n"
+#~ "  \n"
+#~ "  List of supported commands :\n"
+#~ "  \n"
+#~ "        report [username]\n"
+#~ "  \n"
+#~ "  NB : For pkmail to work correctly, you may have to put the 'mail'\n"
+#~ "  system user in the 'lpadmin' system group to ensure this user can\n"
+#~ "  read the /etc/pykota/pykotadmin.conf file, and restart your\n"
+#~ "  mail server (e.g. /etc/init.d/exim restart). It is strongly advised\n"
+#~ "  that you think at least twice before doing this though.\n"
+#~ "  \n"
+#~ "  Use at your own risk !\n"
+#~ "  \n"
+#~ "This program is free software; you can redistribute it and/or modify\n"
+#~ "it under the terms of the GNU General Public License as published by\n"
+#~ "the Free Software Foundation; either version 2 of the License, or\n"
+#~ "(at your option) any later version.\n"
+#~ "\n"
+#~ "This program is distributed in the hope that it will be useful,\n"
+#~ "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+#~ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+#~ "GNU General Public License for more details.\n"
+#~ "\n"
+#~ "You should have received a copy of the GNU General Public License\n"
+#~ "along with this program; if not, write to the Free Software\n"
+#~ "Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, "
+#~ "USA.\n"
+#~ "\n"
+#~ "Please e-mail bugs to: %s"
+#~ msgstr ""
+#~ "pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+#~ "Libres\n"
+#~ "\n"
+#~ "Epost gateway for PyKota.\n"
+#~ "\n"
+#~ "kommandolinje bruk :\n"
+#~ "\n"
+#~ "  pkmail  [opsjoner]\n"
+#~ "\n"
+#~ "opsjoner :\n"
+#~ "\n"
+#~ "  -v | --version       Viser pkmail's versjon nummer.\n"
+#~ "  -h | --help          Viser denne meldingen.\n"
+#~ "  \n"
+#~ "    \n"
+#~ "  Denne kommandoen er ment brukt fra din epostservers aliasfil,\n"
+#~ "  som en pipe. Den vil da akseptere kommandoer sendt til den i epost,\n"
+#~ "  og vil sende et svar til avsenderen.\n"
+#~ "  \n"
+#~ "  For å bruke denne kommandoen, lag en epostalias i /etc/aliases med\n"
+#~ "  følgende format :\n"
+#~ "  \n"
+#~ "    pykotacmd: \"|/usr/bin/pkmail\"\n"
+#~ "    \n"
+#~ "  Utfør deretter kommandoen 'newaliases' for å gjenoppfriske alias "
+#~ "databasen.\n"
+#~ "  \n"
+#~ "  Du kan nå sende kommandoer i epost til 'pykotacmd@yourdomain.com', med\n"
+#~ "  kommandoen i Emne-feltet.\n"
+#~ "  \n"
+#~ "  Liste med støttede kommandoer :\n"
+#~ "  \n"
+#~ "        report [brukernavn]\n"
+#~ "  \n"
+#~ "  NB : For at plmail skal fungere korrect, så må du muligens legge til "
+#~ "'mail'\n"
+#~ "  system brukeren til 'lpadmin' systemgruppa slik at brukeren kan\n"
+#~ "  lese fila /etc/pykota/pykotadmin.conf, og kunne restarte din\n"
+#~ "  epostserver (f.eks /etc/init.d/exim restart). Det anbefales på det "
+#~ "sterkeste\n"
+#~ "  at du tenker deg om minst to ganger før du gjør dette.\n"
+#~ "  \n"
+#~ "  Brukes på eget ansvar !\n"
+#~ "  \n"
+#~ "This program is free software; you can redistribute it and/or modify\n"
+#~ "it under the terms of the GNU General Public License as published by\n"
+#~ "the Free Software Foundation; either version 2 of the License, or\n"
+#~ "(at your option) any later version.\n"
+#~ "\n"
+#~ "This program is distributed in the hope that it will be useful,\n"
+#~ "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+#~ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+#~ "GNU General Public License for more details.\n"
+#~ "\n"
+#~ "You should have received a copy of the GNU General Public License\n"
+#~ "along with this program; if not, write to the Free Software\n"
+#~ "Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, "
+#~ "USA.\n"
+#~ "\n"
+#~ "Please e-mail bugs to: %s"

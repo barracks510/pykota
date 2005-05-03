@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.22beta :
+    
+        - Fixed an inconsitency between SQL and LDAP backends'
+          behavior in edpykota.
+          
     - 1.22alpha8 :
     
         - Fixed history retrieval for nonexisting printers or users.

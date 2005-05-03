@@ -39,671 +39,6 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms:  nplurals=1; plural=0;\n"
 
-msgid "PyKota Data Dumper"
-msgstr ""
-
-msgid "Dump"
-msgstr ""
-
-msgid "Please click on the above button"
-msgstr "Lütfen yukarıdaki düğmeye tıklayın"
-
-msgid "Data Type"
-msgstr ""
-
-msgid "Output Format"
-msgstr ""
-
-msgid "Filter"
-msgstr ""
-
-msgid "PyKota Reports"
-msgstr "PyKota Raporları"
-
-msgid "Report"
-msgstr "Rapor"
-
-msgid "Printer"
-msgstr "Yazıcı"
-
-msgid "User / Group names mask"
-msgstr "Kullanıcı / Grup isimleri maskesi"
-
-msgid "Groups report"
-msgstr "Grup raporu"
-
-msgid "History"
-msgstr "Geçmiş"
-
-msgid "Empty"
-msgstr "Boş"
-
-msgid "Date"
-msgstr "Tarih"
-
-msgid "Action"
-msgstr "Eylem"
-
-msgid "User"
-msgstr "Kullanıcı"
-
-msgid "Hostname"
-msgstr "MakineAdı"
-
-msgid "JobId"
-msgstr "İşBelirteci"
-
-msgid "JobSize"
-msgstr "İşBoyutu"
-
-msgid "JobPrice"
-msgstr "İşÜcreti"
-
-msgid "Copies"
-msgstr "Nüshalar"
-
-msgid "JobBytes"
-msgstr "İşBaytı"
-
-msgid "PageCounter"
-msgstr "SayfaSayacı"
-
-msgid "Title"
-msgstr "Başlık"
-
-msgid "Filename"
-msgstr "DosyaAdı"
-
-msgid "Options"
-msgstr "Seçenekler"
-
-msgid "MD5Sum"
-msgstr ""
-
-msgid "BillingCode"
-msgstr ""
-
-msgid "Pages"
-msgstr ""
-
-msgid "Previous page"
-msgstr "Önceki sayfa"
-
-#, python-format
-msgid "Unsupported accounter backend %s"
-msgstr "Desteklenmeyen muhasebeci arkaucu %s"
-
-#, python-format
-msgid "Configuration file %s not found."
-msgstr "Yapılandırma dosyası %s bulunamadı."
-
-#, python-format
-msgid "Option %s not found in section global of %s"
-msgstr "%s seçeneği %s içinde global bölümünde bulunamadı"
-
-#, python-format
-msgid "Option %s not found in section %s of %s"
-msgstr "%1s seçeneği %3s içinde %2s bölümünde bulunamadı"
-
-#, python-format
-msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr ""
-
-#, python-format
-msgid "Option logger only supports values in %s"
-msgstr "logger seçeneği sadece %s içindeki değerleri kabul ediyor"
-
-#, python-format
-msgid "Invalid accounter %s for printer %s"
-msgstr "%2s yazıcısı için geçersiz muhasebeci %1s"
-
-#, python-format
-msgid "Option accounter in section %s only supports values in %s"
-msgstr ""
-"%s bölümündeki accounter seçeneği sadece %s içindeki değerleri kabul ediyor"
-
-#, python-format
-msgid "Option enforcement in section %s only supports values in %s"
-msgstr ""
-"%s bölümündeki enforcement seçeneği sadece %s içindeki değerleri kabul ediyor"
-
-#, python-format
-msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr ""
-"%s bölümündeki onaccountererror seçeneği sadece %s içindeki değerleri kabul "
-"ediyor"
-
-#, python-format
-msgid "Invalid policy %s for printer %s"
-msgstr "%2s yazıcısı için geçersiz kural %1s"
-
-#, python-format
-msgid "Option policy in section %s only supports values in %s"
-msgstr ""
-"%s bölümündeki policy seçeneği sadece %s içindeki değerleri kabul ediyor"
-
-#, python-format
-msgid "Invalid option mailto %s for printer %s"
-msgstr "%2s yazıcısı için geçersiz seçenek mailto %1s"
-
-#, python-format
-msgid "Option mailto in section %s only supports values in %s"
-msgstr ""
-"%s bölümündeki mailto seçeneği sadece %s içindeki değerleri kabul ediyor"
-
-#, python-format
-msgid "Invalid maximal deny banners counter %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid grace delay %s"
-msgstr "Geçersiz kota esneklik süresi %s"
-
-#, python-format
-msgid "Invalid poor man's threshold %s"
-msgstr "Geçersiz hesap blançosu eşiği %s"
-
-msgid ""
-"Your Print Quota account balance is Low.\n"
-"Soon you'll not be allowed to print anymore.\n"
-"Please contact the Print Quota Administrator to solve the problem."
-msgstr ""
-"Yazma Kotası hesap bilançonuz Düşük.\n"
-"Yakında yazamayacaksınız.\n"
-"Lütfen Yazma Kotası Yöneticisine sorunu çözmesi için ulaşın."
-
-#, python-format
-msgid ""
-"You are not allowed to print anymore because\n"
-"your Print Quota is exceeded on printer %s."
-msgstr ""
-"%s yazıcısında Yazma Kotanız dolduğu için\n"
-"artık yazmanıza izin verilmiyor."
-
-#, python-format
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your Print Quota is almost reached on printer %s."
-msgstr ""
-"%s yazıcısında Yazma Kotanız çok az kaldığı için\n"
-"yakında yazamayacaksınız."
-
-#, python-format
-msgid "Option accountbanner in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Option trustjobsize for printer %s is incorrect"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "Groups"
-msgstr ""
-
-msgid "Printers"
-msgstr ""
-
-msgid "Users Print Quotas"
-msgstr ""
-
-msgid "Users Groups Print Quotas"
-msgstr ""
-
-msgid "History of Payments"
-msgstr ""
-
-msgid "Printers Groups Membership"
-msgstr ""
-
-msgid "Users Groups Membership"
-msgstr ""
-
-msgid "Comma Separated Values"
-msgstr ""
-
-msgid "Semicolon Separated Values"
-msgstr ""
-
-msgid "Tabulation Separated Values"
-msgstr ""
-
-msgid "eXtensible Markup Language"
-msgstr ""
-
-msgid "CUPS' page_log"
-msgstr ""
-
-msgid "You're not allowed to use this command."
-msgstr "Bu komutu kullanmaya yetkili değilsiniz."
-
-#, python-format
-msgid "Invalid value [%s] for --filter command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr ""
-"--data komut satırı seçeneği için geçersiz düzenleyici [%s], yardıma bakın."
-
-#, python-format
-msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr ""
-"--format komut satırı seçeneği için geçersiz düzenleyici [%s], yardıma bakın."
-
-msgid "XML output is disabled because the jaxml module is not available."
-msgstr "jaxml modülü bulunmadığı için XML çıktısı kapalı."
-
-msgid "PyKota data dumper failed : I/O error"
-msgstr "PyKota veri yazıcısı başarısız : G/Ç hatası"
-
-#, python-format
-msgid "Unsupported logging subsystem %s"
-msgstr "Desteklenmeyen günlükleme alt sistemi %s"
-
-#, python-format
-msgid "Report for %s quota on printer %s"
-msgstr "%2s yazıcısı üzerineki %1s kotası için rapor"
-
-#, python-format
-msgid "Pages grace time: %i days"
-msgstr "Sayfa kota esneklik süresi: %i gün"
-
-#, python-format
-msgid "Price per job: %.3f"
-msgstr "İş başına ücret: %.3f"
-
-#, python-format
-msgid "Price per page: %.3f"
-msgstr "Sayfa başına ücret : %.3f"
-
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid "unknown"
-msgstr "bilinmeyen"
-
-#, python-format
-msgid "Real : %s"
-msgstr "Gerçek : %s"
-
-#, python-format
-msgid "Total : %9i"
-msgstr "Toplam : %9i"
-
-msgid "N/A"
-msgstr ""
-
-#, python-format
-msgid "Unsupported reporter backend %s"
-msgstr "Desteklenmeyen raporcu arkaucu %s"
-
-#, python-format
-msgid "Unsupported quota storage backend %s"
-msgstr "Desteklenmeyen kota depo arkaucu %s"
-
-#, python-format
-msgid "Strange problem with uid(%s) : %s"
-msgstr ""
-
-#, python-format
-msgid "Running as user '%s'."
-msgstr ""
-
-msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr ""
-
-#, python-format
-msgid "Impossible to drop priviledges : %s"
-msgstr ""
-
-msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr ""
-
-#, python-format
-msgid "Impossible to regain priviledges : %s"
-msgstr ""
-
-msgid "Regained priviledges. Now running as root."
-msgstr ""
-
-#, python-format
-msgid "Impossible to connect to SMTP server : %s"
-msgstr "SMTP sunucusuna bağlantı mümkün değil : %s"
-
-#, python-format
-msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "%s adresine mektup gönderilmesi mümkün değil, hata %s : %s"
-
-#, python-format
-msgid ""
-"\n"
-"\n"
-"Please contact your system administrator :\n"
-"\n"
-"\t%s - <%s>\n"
-msgstr ""
-"\n"
-"\n"
-"Lütfen sistem yöneticinizle görüşün :\n"
-"\n"
-"\t%s - <%s>\n"
-
-#, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr ""
-"%2s yazıcısı üzerindeki %1s kullanıcısı eşlenemedi, öntanımlı kural "
-"uygulanıyor (%3s)"
-
-#, python-format
-msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr ""
-"%s kullanıcısının hesap bilançosu bulunamadı, öntanımlı kural (%s) %s "
-"yazıcısı için uygulanıyor"
-
-#, python-format
-msgid "User %s will not be charged for printing."
-msgstr ""
-
-#, python-format
-msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "%2s yazıcısı üzerindeki %1s grubu Yazma Kotasını aştı"
-
-msgid "Print Quota"
-msgstr "Yazma Kotası"
-
-msgid "Print Quota Exceeded"
-msgstr "Yazma Kotası Aşıldı"
-
-#, python-format
-msgid "Print Quota low for group %s on printer %s"
-msgstr "%2s yazıcısı üzerindeki %1s grubu için Yazma Kotası düşük"
-
-#, python-format
-msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "%2s yazıcısı üzerindeki %1s kullanıcısı Yazma Kotasını aştı"
-
-#, python-format
-msgid "Print Quota low for user %s on printer %s"
-msgstr "%2s yazıcısı üzerindeki %1s kullanıcısı için Yazma Kotası düşük"
-
-msgid "Print Quota Low"
-msgstr "Yazma Kotası Düşük"
-
-#, python-format
-msgid "Printing system %s, args=%s"
-msgstr "Yazma sistemi %s, args=%s"
-
-#, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "Genel PDL inceleyicisi ile işin boyutu hesaplanamadı : %s"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "SIGTERM alındı, %s işi iptal edildi."
-
-msgid "Printer hostname undefined, set to 'localhost'"
-msgstr "Yazıcı makine adı tanımsız, 'localhost' olarak atandı"
-
-#, python-format
-msgid "Printing system unknown, args=%s"
-msgstr "Yazma altsistemi bilinmiyor, args=%s"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
-msgstr ""
-"%s yazıcısı PyKota sistemine kayıtlı değil, harici kurallar (%s) %s yazıcısı "
-"için uygulanıyor"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr ""
-"%s kullanıcısı PyKota sistemine kayıtlı değil, harici kurallar (%s) %s "
-"yazıcısı için uygulanıyor"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr ""
-"%2s yazıcısı üzerindeki %1s kullanıcısı  PyKota sisteminde kota sahibi "
-"değil, harici kurallar (%3s) %4s yazıcısı için uygulanıyor"
-
-#, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr ""
-"%2s yazıcısı için %1s harici kuralı bir hata oluşturdu. İş reddedildi. "
-"Lütfen PyKota yapılandırma dosyalarını kontrol edin."
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
-"%s yazıcısı PyKota sistemine kayıtlı değil, öntanımlı kurallar (%s) "
-"uygulanıyor"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr ""
-"%s kullanıcısı PyKota sistemine kayıtlı değil, öntanımlı kurallar (%s) %s "
-"yazıcısı için uygulanıyor"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr ""
-"%2s yazıcısı üzerindeki %1s kullanıcısı  PyKota sisteminde kota sahibi "
-"değil, öntanımlı kurallar (%3s) uygulanıyor"
-
-#, python-format
-msgid ""
-"Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr "%s yazıcısı PyKota sisteminde kayıtlı değil, iş reddedilecek"
-
-#, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr ""
-"%s kullanıcısı PyKota sisteminde kayıtlı değil, %s yazıcısındaki iş "
-"reddedilecek"
-
-#, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr ""
-"%s kullanıcısı %s yazıcısında PyKota sistemi içindek kotaya sahip değil, iş "
-"reddedilecek"
-
-#, python-format
-msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr "%s yazıcısı üzerinde SNMP sorguları yapılırken ağ hatası: %s"
-
-#, python-format
-msgid "SNMP message decoding error for printer %s : %s"
-msgstr ""
-
-#, python-format
-msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr ""
-"%s yazıcısı üzerinde SNMP sorguları yapılırken sorunlarla karşılaşıldı: %s"
-
-#, python-format
-msgid "Waiting for printer %s to be printing..."
-msgstr ""
-
-#, python-format
-msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr "%s yazıcısının bekleme durumu ya da sabit olması olması bekleniyor..."
-
-#, python-format
-msgid "Problem during connection to %s:%s : %s"
-msgstr "%s:%s bağlantısı yapılırken sorun : %s"
-
-#, python-format
-msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr "%s:%s PJL sorguları gönderilirken sorun : %s"
-
-#, python-format
-msgid "A problem occured while reading printer %s's internal page counter."
-msgstr "%s yazıcısının dahili sayfa sayacı okunurken hata oluştu."
-
-#, python-format
-msgid "Retrieving printer %s's page counter from database instead."
-msgstr "%s yazıcısının sayfa sayacı onun yerine veritabanından alınıyor."
-
-#, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr ""
-"%s yazıcısının dahili sayfa sayacı yazmadan önce ya da sonra alınamadı."
-
-#, python-format
-msgid "Job's size forced to 1 page for printer %s."
-msgstr "%s yazıcısı için iş boyutu 1 sayfa olmak zorunda."
-
-#, python-format
-msgid "No previous job in database for printer %s."
-msgstr "%s yazıcısı için veritabanında daha öncesinde hiç iş yok."
-
-#, python-format
-msgid "Inconsistent values for printer %s's internal page counter."
-msgstr "%s yazıcısının dahili sayfa sayacında tutarsız değerler."
-
-msgid ""
-"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
-"download it from http://pysnmp.sourceforge.net"
-msgstr ""
-"Dahili SNMP hesaplaması soruldu, ancak Python-SNMP mevcut değil. Lütfen onu "
-"http://pysnmp.sourceforge.net adresinden indirin"
-
-#, python-format
-msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "%2s yazıcısı için HARDWARE(%1s) içinde bilinmeyen yazıcı adresi"
-
-#, python-format
-msgid "Launching HARDWARE(%s)..."
-msgstr "HARDWARE(%s) başlatılıyor..."
-
-#, python-format
-msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "%s donanım hesaplayıcısına (pid: %s) SIGTERM gönderildi"
-
-#, python-format
-msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr "Hesaplayıcının çıktısında satır [%s] geçildi. Tekrar deneniyor..."
-
-#, python-format
-msgid "Hardware accounter %s exit code is %s"
-msgstr "Donanım hesaplayıcısı %s çıkış kodu %s"
-
-#, python-format
-msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "%s yazıcısı HARDWARE(%s) ile sorgulanamıyor"
-
-#, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-"SNMP sorgulama aşaması kesildi. %2s yazıcısındaki dahili sayfa sayacı (%1s) "
-"için görülen en son değer kullanılıyor."
-
-#, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-"PJL sorgulama aşaması kesildi. %2s yazıcısındaki dahili sayfa sayacı (%1s) "
-"için görülen en son değer kullanılıyor."
-
-#, python-format
-msgid "Launching SOFTWARE(%s)..."
-msgstr "SOFTWARE(%s) başlatılıyor..."
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "%s hesaplayıcısı ile iş boytu hesaplanamıyor"
-
-#, python-format
-msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "Yazılım hesaplayıcısı pid %s çıkışı içlin beklenirken sorun : %s"
-
-#, python-format
-msgid "Software accounter %s exit code is %s"
-msgstr "Yazılım hesalayıcısı %s çıkış kodu %s"
-
-msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr ""
-"Eğer kimi kullanıcılar birden fazla grup üyesiyseler toplamlar doğru "
-"olmayabilir."
-
-#, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-"%s arama tabanı bulunmuyor. Olası bir hatalı yapılandırma. Lütfen /etc/"
-"pykota/pykota.conf dosyasını kontrol edin : %s"
-
-#, python-format
-msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "%s (%s) için yapılan arama %s (kapsam=%s) konumundan cevap alamadı."
-
-#, python-format
-msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "LDAP girişi (%s, %s) ekleme sorunu"
-
-#, python-format
-msgid "Problem deleting LDAP entry (%s)"
-msgstr "LDAP girişi (%s) silme sorunu"
-
-#, python-format
-msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "LDAP girişi (%s, %s) düzenleme sorunu"
-
-#, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
-msgstr ""
-"%s kullanıcısı için pykotaAccountBalance nesnesi bulunamadı. LDAP "
-"girişlerini kendiniz mi yaptınız?"
-
-#, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-"pykotaAccount objectClass'ına eklemek için %2s=%3s ile mevcut olan "
-"objectClass %s girişi bulunamadı"
-
-#, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr ""
-"pykotaGroup %s objectclass'ına eklenekcek mevcut olan bir giriş bulunamadı"
-
 #, python-format
 msgid ""
 "autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
@@ -909,6 +244,8 @@ msgid ""
 "         groupname      Users group's name\n"
 "         printername    Printer's name\n"
 "         pgroupname     Printers group's name\n"
+"         hostname       Client's hostname\n"
+"         billingcode    Job's billing code\n"
 "         \n"
 "  Contrary to other PyKota management tools, wildcard characters are not \n"
 "  expanded, so you can't use them.\n"
@@ -1169,6 +506,9 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
+msgid "You're not allowed to use this command."
+msgstr "Bu komutu kullanmaya yetkili değilsiniz."
+
 #, python-format
 msgid "Invalid used value %s."
 msgstr ""
@@ -1276,270 +616,6 @@ msgstr ""
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Generates print quota reports.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  repykota [options] \n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints repykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Generates a report on users quota, this is \n"
-"                       the default.\n"
-"  \n"
-"  -g | --groups        Generates a report on group quota instead of users.\n"
-"  \n"
-"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ repykota --printer lp\n"
-"  \n"
-"  This will print the quota status for all users who use the lp printer.\n"
-"\n"
-"  $ repykota \n"
-"  \n"
-"  This will print the quota status for all users on all printers.\n"
-"  \n"
-"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
-"  \n"
-"  This will print the quota status for user jerome and all users\n"
-"  whose name begins with \"jo\" on all printers which name begins\n"
-"  with \"laser\" or ends with \"pson\".\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Yacıcı kotası raporları oluşturur.\n"
-"\n"
-"komut satırı kullanımı :\n"
-"\n"
-"  repykota [seçenekler] \n"
-"\n"
-"seçenekler :\n"
-"\n"
-"  -v | --version       repykota'nın sürüm numarasını gösterir ve çıkar.\n"
-"  -h | --help          Bu mesaji gösterir ve çıkar.\n"
-"  \n"
-"  -u | --users         Kullanıcı kotaları üzerine bir rapor oluşturur, bu \n"
-"                       öntanımlıdır.\n"
-"  \n"
-"  -g | --groups        Kullanıcılar yerine grup kotaları üzerine rapor "
-"oluşturur.\n"
-"  \n"
-"  -P | --printer p     Sadece bu yazıcı üzerindeki kotaları raporlar. p "
-"maske\n"
-"                       karakterleri kullanarak sadece bazı yazıcıları "
-"seçebilir.\n"
-"                       Öntanımlı değer *'dır, tüm yazıcılar\n"
-"                       anlamına gelir.\n"
-"                       Virgül ile ayırarak birden fazla isim ya da maske \n"
-"                       kullanabilirsiniz.\n"
-"  \n"
-"örnekler :                              \n"
-"\n"
-"  $ repykota --printer lp\n"
-"  \n"
-"  Bu lp yazıcısını kullanan tüm kullanıcıların kota durumlarını bildirir.\n"
-"\n"
-"  $ repykota \n"
-"  \n"
-"  Bu tüm yacıcıların kullanıcıların kota durumlarını bildirir.\n"
-"  \n"
-"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
-"  \n"
-"  Bu adı \"laser\" ile başlayan ya da \"pson\" ile biten tüm yazıcılar\n"
-"  üzerinde adı \"jo\" ile başlayan ve adı jerome olan kullanıcıların kota\n"
-"  durumlarını bildirir.\n"
-"  \n"
-"  Eğer PyKota yöneticisi olmayan bir kullanıcı tarafından başlatılırsa,\n"
-"  kullanıcı ve grup adlarını belirten parametreler yok sayılır, sadece "
-"mevcut\n"
-"  kullanıcı ve grup hakkında bildirim yapılır.\n"
-"\n"
-"Bu program özgür yazılımdır; bu yazılımı Özgür Yazılım Vakfı tarafından\n"
-"yayınlanan GNU Genel Kamu Lisansı'nın 2. sürümü ya da (kendi\n"
-"tercihinize bağlı) sonraki sürümü şartları altında yeniden dağıtabilir \n"
-"ve/ya da değiştirebilirsiniz.\n"
-"\n"
-"Bu program faydalı olacağı düşünülerek dağıtılmaktadır, fakat HİÇBİR\n"
-"GARANTİSİ YOKTUR; BELLİ BİR AMACA UYGUNLUK ya da MAL\n"
-"DEĞERİ gibi garantileri de yoktur.  Daha fazla ayrıntı için GNU Genel\n"
-"Kamu Lisansını okuyun.\n"
-"\n"
-"GNU Genel Kamu Lisansının bir nüshasını programla birlikte almış\n"
-"olmalısınız, eğer almadıysanız Özgür Yazılım Vakfı'na 59 Temple Place, \n"
-"Suite 330, Boston, MA 02111-1307, USA adresinden ulaşın.\n"
-"\n"
-"Lütfen hataları %s adresine mektupla bildirin"
-
-#, python-format
-msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Sends mail to users over print quota.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  warnpykota  [options]  [names]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints warnpykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Warns users over their print quota, this is the \n"
-"                       default.\n"
-"  \n"
-"  -g | --groups        Warns users whose groups quota are over limit.\n"
-"  \n"
-"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ warnpykota --printer lp\n"
-"  \n"
-"  This will warn all users of the lp printer who have exceeded their\n"
-"  print quota.\n"
-"\n"
-"  $ warnpykota \n"
-"  \n"
-"  This will warn all users  who have exceeded their print quota on\n"
-"  any printer.\n"
-"\n"
-"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
-"  \n"
-"  This will warn all users of groups which names begins with \"dev\" and\n"
-"  who have exceeded their print quota on any printer which name begins \n"
-"  with \"laserjet\"\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Yazma kotası üzerinden kullanıcılara mektup gönderir.\n"
-"\n"
-"komut satırı kullanımı :\n"
-"\n"
-"  warnpykota  [seçenekler]  [adlar]\n"
-"\n"
-"seçenekler :\n"
-"\n"
-"  -v | --version       warnpykota'nın sürüm numarasını yaza ve çıkar.\n"
-"  -h | --help          Bu mesajı yazar ve çıkar.\n"
-"  \n"
-"  -u | --users         Yazma kotası üzerindeki kullanıcıları uyarır, bu \n"
-"                       öntanımlıdır .\n"
-"  \n"
-"  -g | --groups        Grupları yazma kotasının üzerinde olan kullanıcıları "
-"uyarır.\n"
-"  \n"
-"  -P | --printer p     Sadece bu yazıcıyı denetler. p birkaç yazıcı\n"
-"                       seçmek için maske karakterlerini kullanabilir.\n"
-"                       Öntanımlı deıer *'dır, tüm yazıcılar anlamına \n"
-"                       gelir.\n"
-"                       Birden fazla ismi ya da maskeyi kullanabilirsiniz, \n"
-"                       onları virgül ile ayırarak kullanın.\n"
-"  \n"
-"örnekler :                              \n"
-"\n"
-"  $ warnpykota --printer lp\n"
-"  \n"
-"  Bu lp yazıcısı üzerinde yazma kotalarını geçmiş olan tüm kullanıcıları\n"
-"  uyarır.\n"
-"\n"
-"  $ warnpykota \n"
-"  \n"
-"  Bu herhangi bir yazıcı üzerinde yazma kotasını geçmiş olan kullanıcıları\n"
-"  uyarır.\n"
-"\n"
-"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
-"  \n"
-"  Bu adı \"dev\" ile başlayan ve adı \"laserjer\" ile başlayan herhangi bir "
-"yazıcı\n"
-"  üzerinde yazma kotasını geçmiş tüm kullanıcıları uyarır\n"
-"  \n"
-"  \n"
-"  Eğer PyKota yöneticisi olmayan birisi tarafından başlatılırsa, kullanıcı "
-"ve\n"
-"  grup adlarını belirten isimler yoksayılır, ve sadece mevcut kullanıcı/"
-"grup\n"
-"  belirtilir.\n"
-"\n"
-"Bu program özgür yazılımdır; bu yazılımı Özgür Yazılım Vakfı tarafından\n"
-"yayınlanan GNU Genel Kamu Lisansı'nın 2. sürümü ya da (kendi\n"
-"tercihinize bağlı) sonraki sürümü şartları altında yeniden dağıtabilir \n"
-"ve/ya da değiştirebilirsiniz.\n"
-"\n"
-"Bu program faydalı olacağı düşünülerek dağıtılmaktadır, fakat HİÇBİR\n"
-"GARANTİSİ YOKTUR; BELLİ BİR AMACA UYGUNLUK ya da MAL\n"
-"DEĞERİ gibi garantileri de yoktur.  Daha fazla ayrıntı için GNU Genel\n"
-"Kamu Lisansını okuyun.\n"
-"\n"
-"GNU Genel Kamu Lisansının bir nüshasını programla birlikte almış\n"
-"olmalısınız, eğer almadıysanız Özgür Yazılım Vakfı'na 59 Temple Place, \n"
-"Suite 330, Boston, MA 02111-1307, USA adresinden ulaşın.\n"
-"\n"
-"Lütfen hataları %s adresine mektupla bildirin"
-
-#, python-format
-msgid ""
 "pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
 "Libres\n"
 "\n"
@@ -1547,7 +623,7 @@ msgid ""
 "\n"
 "command line usage :\n"
 "\n"
-"  pkbanner  [options] \n"
+"  pkbanner  [options]  [more info]\n"
 "\n"
 "options :\n"
 "\n"
@@ -1609,8 +685,14 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
+msgid "More Info"
+msgstr ""
+
 msgid "Job"
 msgstr ""
+
+msgid "Date"
+msgstr "Tarih"
 
 msgid "Allowed"
 msgstr ""
@@ -1623,6 +705,12 @@ msgstr ""
 
 msgid "Result"
 msgstr ""
+
+msgid "Title"
+msgstr "Başlık"
+
+msgid "Filename"
+msgstr "DosyaAdı"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -2209,6 +1297,940 @@ msgstr "İş boyutu : %i sayfa"
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr "%s yazıcısı için fiyat : %.2f"
+
+#, python-format
+msgid ""
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Generates print quota reports.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  repykota [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints repykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Generates a report on users quota, this is \n"
+"                       the default.\n"
+"  \n"
+"  -g | --groups        Generates a report on group quota instead of users.\n"
+"  \n"
+"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ repykota --printer lp\n"
+"  \n"
+"  This will print the quota status for all users who use the lp printer.\n"
+"\n"
+"  $ repykota \n"
+"  \n"
+"  This will print the quota status for all users on all printers.\n"
+"  \n"
+"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
+"  \n"
+"  This will print the quota status for user jerome and all users\n"
+"  whose name begins with \"jo\" on all printers which name begins\n"
+"  with \"laser\" or ends with \"pson\".\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Yacıcı kotası raporları oluşturur.\n"
+"\n"
+"komut satırı kullanımı :\n"
+"\n"
+"  repykota [seçenekler] \n"
+"\n"
+"seçenekler :\n"
+"\n"
+"  -v | --version       repykota'nın sürüm numarasını gösterir ve çıkar.\n"
+"  -h | --help          Bu mesaji gösterir ve çıkar.\n"
+"  \n"
+"  -u | --users         Kullanıcı kotaları üzerine bir rapor oluşturur, bu \n"
+"                       öntanımlıdır.\n"
+"  \n"
+"  -g | --groups        Kullanıcılar yerine grup kotaları üzerine rapor "
+"oluşturur.\n"
+"  \n"
+"  -P | --printer p     Sadece bu yazıcı üzerindeki kotaları raporlar. p "
+"maske\n"
+"                       karakterleri kullanarak sadece bazı yazıcıları "
+"seçebilir.\n"
+"                       Öntanımlı değer *'dır, tüm yazıcılar\n"
+"                       anlamına gelir.\n"
+"                       Virgül ile ayırarak birden fazla isim ya da maske \n"
+"                       kullanabilirsiniz.\n"
+"  \n"
+"örnekler :                              \n"
+"\n"
+"  $ repykota --printer lp\n"
+"  \n"
+"  Bu lp yazıcısını kullanan tüm kullanıcıların kota durumlarını bildirir.\n"
+"\n"
+"  $ repykota \n"
+"  \n"
+"  Bu tüm yacıcıların kullanıcıların kota durumlarını bildirir.\n"
+"  \n"
+"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
+"  \n"
+"  Bu adı \"laser\" ile başlayan ya da \"pson\" ile biten tüm yazıcılar\n"
+"  üzerinde adı \"jo\" ile başlayan ve adı jerome olan kullanıcıların kota\n"
+"  durumlarını bildirir.\n"
+"  \n"
+"  Eğer PyKota yöneticisi olmayan bir kullanıcı tarafından başlatılırsa,\n"
+"  kullanıcı ve grup adlarını belirten parametreler yok sayılır, sadece "
+"mevcut\n"
+"  kullanıcı ve grup hakkında bildirim yapılır.\n"
+"\n"
+"Bu program özgür yazılımdır; bu yazılımı Özgür Yazılım Vakfı tarafından\n"
+"yayınlanan GNU Genel Kamu Lisansı'nın 2. sürümü ya da (kendi\n"
+"tercihinize bağlı) sonraki sürümü şartları altında yeniden dağıtabilir \n"
+"ve/ya da değiştirebilirsiniz.\n"
+"\n"
+"Bu program faydalı olacağı düşünülerek dağıtılmaktadır, fakat HİÇBİR\n"
+"GARANTİSİ YOKTUR; BELLİ BİR AMACA UYGUNLUK ya da MAL\n"
+"DEĞERİ gibi garantileri de yoktur.  Daha fazla ayrıntı için GNU Genel\n"
+"Kamu Lisansını okuyun.\n"
+"\n"
+"GNU Genel Kamu Lisansının bir nüshasını programla birlikte almış\n"
+"olmalısınız, eğer almadıysanız Özgür Yazılım Vakfı'na 59 Temple Place, \n"
+"Suite 330, Boston, MA 02111-1307, USA adresinden ulaşın.\n"
+"\n"
+"Lütfen hataları %s adresine mektupla bildirin"
+
+#, python-format
+msgid ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Sends mail to users over print quota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  warnpykota  [options]  [names]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints warnpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Warns users over their print quota, this is the \n"
+"                       default.\n"
+"  \n"
+"  -g | --groups        Warns users whose groups quota are over limit.\n"
+"  \n"
+"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  This will warn all users of the lp printer who have exceeded their\n"
+"  print quota.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  This will warn all users  who have exceeded their print quota on\n"
+"  any printer.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  This will warn all users of groups which names begins with \"dev\" and\n"
+"  who have exceeded their print quota on any printer which name begins \n"
+"  with \"laserjet\"\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Yazma kotası üzerinden kullanıcılara mektup gönderir.\n"
+"\n"
+"komut satırı kullanımı :\n"
+"\n"
+"  warnpykota  [seçenekler]  [adlar]\n"
+"\n"
+"seçenekler :\n"
+"\n"
+"  -v | --version       warnpykota'nın sürüm numarasını yaza ve çıkar.\n"
+"  -h | --help          Bu mesajı yazar ve çıkar.\n"
+"  \n"
+"  -u | --users         Yazma kotası üzerindeki kullanıcıları uyarır, bu \n"
+"                       öntanımlıdır .\n"
+"  \n"
+"  -g | --groups        Grupları yazma kotasının üzerinde olan kullanıcıları "
+"uyarır.\n"
+"  \n"
+"  -P | --printer p     Sadece bu yazıcıyı denetler. p birkaç yazıcı\n"
+"                       seçmek için maske karakterlerini kullanabilir.\n"
+"                       Öntanımlı deıer *'dır, tüm yazıcılar anlamına \n"
+"                       gelir.\n"
+"                       Birden fazla ismi ya da maskeyi kullanabilirsiniz, \n"
+"                       onları virgül ile ayırarak kullanın.\n"
+"  \n"
+"örnekler :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  Bu lp yazıcısı üzerinde yazma kotalarını geçmiş olan tüm kullanıcıları\n"
+"  uyarır.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  Bu herhangi bir yazıcı üzerinde yazma kotasını geçmiş olan kullanıcıları\n"
+"  uyarır.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  Bu adı \"dev\" ile başlayan ve adı \"laserjer\" ile başlayan herhangi bir "
+"yazıcı\n"
+"  üzerinde yazma kotasını geçmiş tüm kullanıcıları uyarır\n"
+"  \n"
+"  \n"
+"  Eğer PyKota yöneticisi olmayan birisi tarafından başlatılırsa, kullanıcı "
+"ve\n"
+"  grup adlarını belirten isimler yoksayılır, ve sadece mevcut kullanıcı/"
+"grup\n"
+"  belirtilir.\n"
+"\n"
+"Bu program özgür yazılımdır; bu yazılımı Özgür Yazılım Vakfı tarafından\n"
+"yayınlanan GNU Genel Kamu Lisansı'nın 2. sürümü ya da (kendi\n"
+"tercihinize bağlı) sonraki sürümü şartları altında yeniden dağıtabilir \n"
+"ve/ya da değiştirebilirsiniz.\n"
+"\n"
+"Bu program faydalı olacağı düşünülerek dağıtılmaktadır, fakat HİÇBİR\n"
+"GARANTİSİ YOKTUR; BELLİ BİR AMACA UYGUNLUK ya da MAL\n"
+"DEĞERİ gibi garantileri de yoktur.  Daha fazla ayrıntı için GNU Genel\n"
+"Kamu Lisansını okuyun.\n"
+"\n"
+"GNU Genel Kamu Lisansının bir nüshasını programla birlikte almış\n"
+"olmalısınız, eğer almadıysanız Özgür Yazılım Vakfı'na 59 Temple Place, \n"
+"Suite 330, Boston, MA 02111-1307, USA adresinden ulaşın.\n"
+"\n"
+"Lütfen hataları %s adresine mektupla bildirin"
+
+msgid "PyKota Data Dumper"
+msgstr ""
+
+msgid "Dump"
+msgstr ""
+
+msgid "Please click on the above button"
+msgstr "Lütfen yukarıdaki düğmeye tıklayın"
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Output Format"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "PyKota Reports"
+msgstr "PyKota Raporları"
+
+msgid "Report"
+msgstr "Rapor"
+
+msgid "Printer"
+msgstr "Yazıcı"
+
+msgid "User / Group names mask"
+msgstr "Kullanıcı / Grup isimleri maskesi"
+
+msgid "Groups report"
+msgstr "Grup raporu"
+
+msgid "History"
+msgstr "Geçmiş"
+
+msgid "Empty"
+msgstr "Boş"
+
+msgid "Action"
+msgstr "Eylem"
+
+msgid "User"
+msgstr "Kullanıcı"
+
+msgid "Hostname"
+msgstr "MakineAdı"
+
+msgid "JobId"
+msgstr "İşBelirteci"
+
+msgid "JobSize"
+msgstr "İşBoyutu"
+
+msgid "JobPrice"
+msgstr "İşÜcreti"
+
+msgid "Copies"
+msgstr "Nüshalar"
+
+msgid "JobBytes"
+msgstr "İşBaytı"
+
+msgid "PageCounter"
+msgstr "SayfaSayacı"
+
+msgid "Options"
+msgstr "Seçenekler"
+
+msgid "MD5Sum"
+msgstr ""
+
+msgid "BillingCode"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Previous page"
+msgstr "Önceki sayfa"
+
+msgid "PyKota Quotes"
+msgstr ""
+
+msgid "Quote"
+msgstr ""
+
+#, python-format
+msgid "This file is %i pages long."
+msgstr ""
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "Desteklenmeyen muhasebeci arkaucu %s"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "Yapılandırma dosyası %s bulunamadı."
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "%s seçeneği %s içinde global bölümünde bulunamadı"
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "%1s seçeneği %3s içinde %2s bölümünde bulunamadı"
+
+#, python-format
+msgid "Option ldaptls is set, but certificate %s is not readable."
+msgstr ""
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "logger seçeneği sadece %s içindeki değerleri kabul ediyor"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "%2s yazıcısı için geçersiz muhasebeci %1s"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr ""
+"%s bölümündeki accounter seçeneği sadece %s içindeki değerleri kabul ediyor"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr ""
+"%s bölümündeki enforcement seçeneği sadece %s içindeki değerleri kabul ediyor"
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr ""
+"%s bölümündeki onaccountererror seçeneği sadece %s içindeki değerleri kabul "
+"ediyor"
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "%2s yazıcısı için geçersiz kural %1s"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr ""
+"%s bölümündeki policy seçeneği sadece %s içindeki değerleri kabul ediyor"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "%2s yazıcısı için geçersiz seçenek mailto %1s"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr ""
+"%s bölümündeki mailto seçeneği sadece %s içindeki değerleri kabul ediyor"
+
+#, python-format
+msgid "Invalid maximal deny banners counter %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "Geçersiz kota esneklik süresi %s"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "Geçersiz hesap blançosu eşiği %s"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"Yazma Kotası hesap bilançonuz Düşük.\n"
+"Yakında yazamayacaksınız.\n"
+"Lütfen Yazma Kotası Yöneticisine sorunu çözmesi için ulaşın."
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"%s yazıcısında Yazma Kotanız dolduğu için\n"
+"artık yazmanıza izin verilmiyor."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"%s yazıcısında Yazma Kotanız çok az kaldığı için\n"
+"yakında yazamayacaksınız."
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Option trustjobsize for printer %s is incorrect"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Printers"
+msgstr ""
+
+msgid "Users Print Quotas"
+msgstr ""
+
+msgid "Users Groups Print Quotas"
+msgstr ""
+
+msgid "History of Payments"
+msgstr ""
+
+msgid "Printers Groups Membership"
+msgstr ""
+
+msgid "Users Groups Membership"
+msgstr ""
+
+msgid "Comma Separated Values"
+msgstr ""
+
+msgid "Semicolon Separated Values"
+msgstr ""
+
+msgid "Tabulation Separated Values"
+msgstr ""
+
+msgid "eXtensible Markup Language"
+msgstr ""
+
+msgid "CUPS' page_log"
+msgstr ""
+
+#, python-format
+msgid "Invalid filter value [%s], see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr ""
+"--data komut satırı seçeneği için geçersiz düzenleyici [%s], yardıma bakın."
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr ""
+"--format komut satırı seçeneği için geçersiz düzenleyici [%s], yardıma bakın."
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr "jaxml modülü bulunmadığı için XML çıktısı kapalı."
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr "PyKota veri yazıcısı başarısız : G/Ç hatası"
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "Desteklenmeyen günlükleme alt sistemi %s"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "%2s yazıcısı üzerineki %1s kotası için rapor"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "Sayfa kota esneklik süresi: %i gün"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "İş başına ücret: %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "Sayfa başına ücret : %.3f"
+
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid "unknown"
+msgstr "bilinmeyen"
+
+#, python-format
+msgid "Real : %s"
+msgstr "Gerçek : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "Toplam : %9i"
+
+msgid "N/A"
+msgstr ""
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "Desteklenmeyen raporcu arkaucu %s"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "Desteklenmeyen kota depo arkaucu %s"
+
+#, python-format
+msgid "Strange problem with uid(%s) : %s"
+msgstr ""
+
+#, python-format
+msgid "Running as user '%s'."
+msgstr ""
+
+msgid "No user named 'pykota'. Not dropping priviledges."
+msgstr ""
+
+#, python-format
+msgid "Impossible to drop priviledges : %s"
+msgstr ""
+
+msgid "Priviledges dropped. Now running as user 'pykota'."
+msgstr ""
+
+#, python-format
+msgid "Impossible to regain priviledges : %s"
+msgstr ""
+
+msgid "Regained priviledges. Now running as root."
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "SMTP sunucusuna bağlantı mümkün değil : %s"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "%s adresine mektup gönderilmesi mümkün değil, hata %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"Lütfen sistem yöneticinizle görüşün :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr ""
+"%2s yazıcısı üzerindeki %1s kullanıcısı eşlenemedi, öntanımlı kural "
+"uygulanıyor (%3s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr ""
+"%s kullanıcısının hesap bilançosu bulunamadı, öntanımlı kural (%s) %s "
+"yazıcısı için uygulanıyor"
+
+#, python-format
+msgid "User %s will not be charged for printing."
+msgstr ""
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "%2s yazıcısı üzerindeki %1s grubu Yazma Kotasını aştı"
+
+msgid "Print Quota"
+msgstr "Yazma Kotası"
+
+msgid "Print Quota Exceeded"
+msgstr "Yazma Kotası Aşıldı"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "%2s yazıcısı üzerindeki %1s grubu için Yazma Kotası düşük"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "%2s yazıcısı üzerindeki %1s kullanıcısı Yazma Kotasını aştı"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "%2s yazıcısı üzerindeki %1s kullanıcısı için Yazma Kotası düşük"
+
+msgid "Print Quota Low"
+msgstr "Yazma Kotası Düşük"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "Yazma sistemi %s, args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "Genel PDL inceleyicisi ile işin boyutu hesaplanamadı : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "SIGTERM alındı, %s işi iptal edildi."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "Yazıcı makine adı tanımsız, 'localhost' olarak atandı"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "Yazma altsistemi bilinmiyor, args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"%s yazıcısı PyKota sistemine kayıtlı değil, harici kurallar (%s) %s yazıcısı "
+"için uygulanıyor"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"%s kullanıcısı PyKota sistemine kayıtlı değil, harici kurallar (%s) %s "
+"yazıcısı için uygulanıyor"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"%2s yazıcısı üzerindeki %1s kullanıcısı  PyKota sisteminde kota sahibi "
+"değil, harici kurallar (%3s) %4s yazıcısı için uygulanıyor"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"%2s yazıcısı için %1s harici kuralı bir hata oluşturdu. İş reddedildi. "
+"Lütfen PyKota yapılandırma dosyalarını kontrol edin."
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"%s yazıcısı PyKota sistemine kayıtlı değil, öntanımlı kurallar (%s) "
+"uygulanıyor"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"%s kullanıcısı PyKota sistemine kayıtlı değil, öntanımlı kurallar (%s) %s "
+"yazıcısı için uygulanıyor"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"%2s yazıcısı üzerindeki %1s kullanıcısı  PyKota sisteminde kota sahibi "
+"değil, öntanımlı kurallar (%3s) uygulanıyor"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr "%s yazıcısı PyKota sisteminde kayıtlı değil, iş reddedilecek"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr ""
+"%s kullanıcısı PyKota sisteminde kayıtlı değil, %s yazıcısındaki iş "
+"reddedilecek"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"%s kullanıcısı %s yazıcısında PyKota sistemi içindek kotaya sahip değil, iş "
+"reddedilecek"
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr "%s yazıcısının dahili sayfa sayacı okunurken hata oluştu."
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr "%s yazıcısının sayfa sayacı onun yerine veritabanından alınıyor."
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr ""
+"%s yazıcısının dahili sayfa sayacı yazmadan önce ya da sonra alınamadı."
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr "%s yazıcısı için iş boyutu 1 sayfa olmak zorunda."
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr "%s yazıcısı için veritabanında daha öncesinde hiç iş yok."
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr "%s yazıcısının dahili sayfa sayacında tutarsız değerler."
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "%2s yazıcısı için HARDWARE(%1s) içinde bilinmeyen yazıcı adresi"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "HARDWARE(%s) başlatılıyor..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "%s donanım hesaplayıcısına (pid: %s) SIGTERM gönderildi"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr "Hesaplayıcının çıktısında satır [%s] geçildi. Tekrar deneniyor..."
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr "Donanım hesaplayıcısı %s çıkış kodu %s"
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "%s yazıcısı HARDWARE(%s) ile sorgulanamıyor"
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr "%s:%s bağlantısı yapılırken sorun : %s"
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr "%s:%s PJL sorguları gönderilirken sorun : %s"
+
+#, python-format
+msgid "Waiting for printer %s to be printing..."
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr "%s yazıcısının bekleme durumu ya da sabit olması olması bekleniyor..."
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+"PJL sorgulama aşaması kesildi. %2s yazıcısındaki dahili sayfa sayacı (%1s) "
+"için görülen en son değer kullanılıyor."
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr "%s yazıcısı üzerinde SNMP sorguları yapılırken ağ hatası: %s"
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr ""
+"%s yazıcısı üzerinde SNMP sorguları yapılırken sorunlarla karşılaşıldı: %s"
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+"SNMP sorgulama aşaması kesildi. %2s yazıcısındaki dahili sayfa sayacı (%1s) "
+"için görülen en son değer kullanılıyor."
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "SOFTWARE(%s) başlatılıyor..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "%s hesaplayıcısı ile iş boytu hesaplanamıyor"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr "Yazılım hesaplayıcısı pid %s çıkışı içlin beklenirken sorun : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "Yazılım hesalayıcısı %s çıkış kodu %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr ""
+"Eğer kimi kullanıcılar birden fazla grup üyesiyseler toplamlar doğru "
+"olmayabilir."
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"%s arama tabanı bulunmuyor. Olası bir hatalı yapılandırma. Lütfen /etc/"
+"pykota/pykota.conf dosyasını kontrol edin : %s"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "%s (%s) için yapılan arama %s (kapsam=%s) konumundan cevap alamadı."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "LDAP girişi (%s, %s) ekleme sorunu"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "LDAP girişi (%s) silme sorunu"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "LDAP girişi (%s, %s) düzenleme sorunu"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr ""
+"%s kullanıcısı için pykotaAccountBalance nesnesi bulunamadı. LDAP "
+"girişlerini kendiniz mi yaptınız?"
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"pykotaAccount objectClass'ına eklemek için %2s=%3s ile mevcut olan "
+"objectClass %s girişi bulunamadı"
+
+#, python-format
+msgid "%s. A new entry will be created instead."
+msgstr ""
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr ""
+"pykotaGroup %s objectclass'ına eklenekcek mevcut olan bir giriş bulunamadı"
+
+msgid "Hidden because of privacy concerns"
+msgstr ""
+
+#~ msgid ""
+#~ "Internal SNMP accounting asked, but Python-SNMP is not available. Please "
+#~ "download it from http://pysnmp.sourceforge.net"
+#~ msgstr ""
+#~ "Dahili SNMP hesaplaması soruldu, ancak Python-SNMP mevcut değil. Lütfen "
+#~ "onu http://pysnmp.sourceforge.net adresinden indirin"
 
 #~ msgid ""
 #~ "dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "

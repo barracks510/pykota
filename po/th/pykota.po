@@ -35,643 +35,6 @@ msgstr ""
 "Content-Type: text/plain; charset=TIS-620\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "PyKota Data Dumper"
-msgstr ""
-
-msgid "Dump"
-msgstr ""
-
-msgid "Please click on the above button"
-msgstr ""
-
-msgid "Data Type"
-msgstr ""
-
-msgid "Output Format"
-msgstr ""
-
-msgid "Filter"
-msgstr ""
-
-msgid "PyKota Reports"
-msgstr "รายงาน PyKota"
-
-msgid "Report"
-msgstr "รายงาน"
-
-msgid "Printer"
-msgstr "เครื่องพิมพ์"
-
-msgid "User / Group names mask"
-msgstr "ซ่อน ชื่อผู้ใช้/ชื่อกลุ่มผู้ใช้"
-
-msgid "Groups report"
-msgstr "รายงานกลุ่ม"
-
-msgid "History"
-msgstr "ประวัติ"
-
-msgid "Empty"
-msgstr "ล้าง"
-
-msgid "Date"
-msgstr "วันที่"
-
-msgid "Action"
-msgstr "กิจกรรม"
-
-msgid "User"
-msgstr "ผู้ใช้"
-
-msgid "Hostname"
-msgstr "ชื่อเครื่อง"
-
-msgid "JobId"
-msgstr "หมายเลขงาน"
-
-msgid "JobSize"
-msgstr "ขนาดงาน"
-
-msgid "JobPrice"
-msgstr "ราคางาน"
-
-msgid "Copies"
-msgstr "จำนวนสำเนา"
-
-msgid "JobBytes"
-msgstr "ข้อมูลขนาดงาน"
-
-msgid "PageCounter"
-msgstr "จำนวนหน้า"
-
-msgid "Title"
-msgstr "ชื่อเรื่อง"
-
-msgid "Filename"
-msgstr "ชื่อแฟ้มข้อมูล"
-
-msgid "Options"
-msgstr "ตัวเลือก"
-
-msgid "MD5Sum"
-msgstr ""
-
-msgid "BillingCode"
-msgstr ""
-
-msgid "Pages"
-msgstr ""
-
-msgid "Previous page"
-msgstr "หน้าที่แล้ว"
-
-#, python-format
-msgid "Unsupported accounter backend %s"
-msgstr "ระบบบัญชีสมาชิกไม่สนับสนุนการทำงาน %s"
-
-#, python-format
-msgid "Configuration file %s not found."
-msgstr "ขอภัย! ไม่พบคอนฟิกไฟล์ %s"
-
-#, python-format
-msgid "Option %s not found in section global of %s"
-msgstr "ไม่พบตัวเลือก %s ในหมวดทั่วไปของ %s "
-
-#, python-format
-msgid "Option %s not found in section %s of %s"
-msgstr "ไม่พบตัวเลือก %s ในหมวด %s ของ %s"
-
-#, python-format
-msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr ""
-
-#, python-format
-msgid "Option logger only supports values in %s"
-msgstr "ตัวเลือกบันทึกการทำงานสนับสนุนค่าเฉพาะใน %s"
-
-#, python-format
-msgid "Invalid accounter %s for printer %s"
-msgstr "ระบบบัญชีสมาชิก %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
-
-#, python-format
-msgid "Option accounter in section %s only supports values in %s"
-msgstr "ตัวเลือกระบบบัญชีสมาชิกในหมวด %s สนับสนุนเฉพาะค่าใน %s"
-
-#, python-format
-msgid "Option enforcement in section %s only supports values in %s"
-msgstr "ตัวเลือก enforcement ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
-
-#, python-format
-msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid policy %s for printer %s"
-msgstr "กฏการใช้ %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
-
-#, python-format
-msgid "Option policy in section %s only supports values in %s"
-msgstr "ตัวเลือกกฏการใช้ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
-
-#, python-format
-msgid "Invalid option mailto %s for printer %s"
-msgstr "ตัวเลือกส่งเมล์  %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
-
-#, python-format
-msgid "Option mailto in section %s only supports values in %s"
-msgstr "ตัวเลือกส่งเมล์ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
-
-#, python-format
-msgid "Invalid maximal deny banners counter %s"
-msgstr ""
-
-#, python-format
-msgid "Invalid grace delay %s"
-msgstr "ค่า grace delay %s ไม่ถูกต้อง"
-
-#, python-format
-msgid "Invalid poor man's threshold %s"
-msgstr "ค่า poor man's threshold %s ไม่ถูกต้อง"
-
-msgid ""
-"Your Print Quota account balance is Low.\n"
-"Soon you'll not be allowed to print anymore.\n"
-"Please contact the Print Quota Administrator to solve the problem."
-msgstr ""
-"ขออภัย! ยอดเงินของท่านเหลือน้อย\n"
-"ท่านจะไม่สามารพิมพ์เอกสารใดๆได้ในระยะเวลอันใกล้\n"
-"กรุณาติดต่อผู้ดูแลระบบการพิมพ์เพื่อแก้ไขปัญหา"
-
-#, python-format
-msgid ""
-"You are not allowed to print anymore because\n"
-"your Print Quota is exceeded on printer %s."
-msgstr ""
-"ขออภัย! คุณไม่สามารถทำการพิมพ์สิ่งใดได้เนื่องจาก\n"
-"สิทธิ์ในการพิมพ์ของคุณเกินกำหนดบนเครื่องพิมพ์ %s."
-
-#, python-format
-msgid ""
-"You will soon be forbidden to print anymore because\n"
-"your Print Quota is almost reached on printer %s."
-msgstr ""
-"ขออภัย! คุณจะไม่ได้รับอนุญาตให้ทำการพิมพ์ใดๆได้อีกเพราะ\n"
-"โควต้าในการพิมพ์ของคุณใกล้หมดบนเครื่องพิมพ์ %s."
-
-#, python-format
-msgid "Option accountbanner in section %s only supports values in %s"
-msgstr ""
-
-#, python-format
-msgid "Option trustjobsize for printer %s is incorrect"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "Groups"
-msgstr ""
-
-msgid "Printers"
-msgstr ""
-
-msgid "Users Print Quotas"
-msgstr ""
-
-msgid "Users Groups Print Quotas"
-msgstr ""
-
-msgid "History of Payments"
-msgstr ""
-
-msgid "Printers Groups Membership"
-msgstr ""
-
-msgid "Users Groups Membership"
-msgstr ""
-
-msgid "Comma Separated Values"
-msgstr ""
-
-msgid "Semicolon Separated Values"
-msgstr ""
-
-msgid "Tabulation Separated Values"
-msgstr ""
-
-msgid "eXtensible Markup Language"
-msgstr ""
-
-msgid "CUPS' page_log"
-msgstr ""
-
-msgid "You're not allowed to use this command."
-msgstr ""
-
-#, python-format
-msgid "Invalid value [%s] for --filter command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr ""
-
-#, python-format
-msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr ""
-
-msgid "XML output is disabled because the jaxml module is not available."
-msgstr ""
-
-msgid "PyKota data dumper failed : I/O error"
-msgstr ""
-
-#, python-format
-msgid "Unsupported logging subsystem %s"
-msgstr "ระบบบันทึกการย่อยไม่สนับสนุนการทำงาน %s"
-
-#, python-format
-msgid "Report for %s quota on printer %s"
-msgstr "รายงานสิทธิ์การพิมพ์สำหรับ %s บนเครื่องพิมพ์ %s"
-
-#, python-format
-msgid "Pages grace time: %i days"
-msgstr "หน้า grace time : %i วัน"
-
-#, python-format
-msgid "Price per job: %.3f"
-msgstr "ราคาต่องาน : %.3f"
-
-#, python-format
-msgid "Price per page: %.3f"
-msgstr "ราคาต่อหน้า : %.3f "
-
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
-msgstr ""
-
-msgid "unknown"
-msgstr "ไม่ทราบข้อมูล"
-
-#, python-format
-msgid "Real : %s"
-msgstr "เป็นจริง : %s"
-
-#, python-format
-msgid "Total : %9i"
-msgstr "รวม : %9i"
-
-msgid "N/A"
-msgstr ""
-
-#, python-format
-msgid "Unsupported reporter backend %s"
-msgstr "ระบบรายงานไม่สนับสนุน %s"
-
-#, python-format
-msgid "Unsupported quota storage backend %s"
-msgstr "ระบบสิทธิ์ในการใช้พื้นที่ไม่สนับสนุน %s"
-
-#, python-format
-msgid "Strange problem with uid(%s) : %s"
-msgstr ""
-
-#, python-format
-msgid "Running as user '%s'."
-msgstr ""
-
-msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr ""
-
-#, python-format
-msgid "Impossible to drop priviledges : %s"
-msgstr ""
-
-msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr ""
-
-#, python-format
-msgid "Impossible to regain priviledges : %s"
-msgstr ""
-
-msgid "Regained priviledges. Now running as root."
-msgstr ""
-
-#, python-format
-msgid "Impossible to connect to SMTP server : %s"
-msgstr "ไม่สามารถติดต่อกับ SMTP เซิร์ฟเวอร์ได้"
-
-#, python-format
-msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "ไม่สามารถส่งเมล์ถึง %s, พบข้อผิดพลาด %s : %s"
-
-#, python-format
-msgid ""
-"\n"
-"\n"
-"Please contact your system administrator :\n"
-"\n"
-"\t%s - <%s>\n"
-msgstr ""
-"\n"
-"\n"
-"กรุณาติดต่อผู้ดูแลระบบ :\n"
-"\n"
-"\t%s - <%s>\n"
-
-#, python-format
-msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr "ไม่พบชื่อผู้ใช้ %s บนเครื่องพิมพ์ %s, ตรวจสอบกฏการใช้งานเบื้องต้น (%s)"
-
-#, python-format
-msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr "ไม่พบยอดเงินของผู้ใช้ %s, ตรวจสอบกฏการใช้งานเบื้องต้น(%s) ของ เครื่องพิมพ์ %s"
-
-#, python-format
-msgid "User %s will not be charged for printing."
-msgstr ""
-
-#, python-format
-msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "ขออภัย! โควต้าในการพิมพ์ของกลุ่ม %s บนเครื่องพิมพ์ %s หมดแล้ว"
-
-msgid "Print Quota"
-msgstr "โควต้าในการพิมพ์"
-
-msgid "Print Quota Exceeded"
-msgstr "โควต้าในการพิมพ์เกินแล้ว"
-
-#, python-format
-msgid "Print Quota low for group %s on printer %s"
-msgstr "โควต้าในการพิมพ์ของกลุ่ม %s บนเครื่องพิมพ์ %s ใกล้หมดแล้ว"
-
-#, python-format
-msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "โควต้าในการพิมพ์ของ %s บนเครื่องพิมพ์ %s หมดแล้ว"
-
-#, python-format
-msgid "Print Quota low for user %s on printer %s"
-msgstr "โควต้าในการพิมพ์ของ %s บนเครื่องพิมพ์ %s ใกล้หมดแล้ว"
-
-msgid "Print Quota Low"
-msgstr "โควต้าในการพิมพ์ใกล้หมดแล้ว"
-
-#, python-format
-msgid "Printing system %s, args=%s"
-msgstr "ระบบการพิมพ์ %s, args=%s"
-
-#, python-format
-msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "ไม่สามารถทำการคำนวณขนาดของงานได้ด้วย PDL analyzer : %s"
-
-#, python-format
-msgid "SIGTERM received, job %s cancelled."
-msgstr "ได้รับค่า SIGTERM , งาน %s ถูกยกเลิก."
-
-msgid "Printer hostname undefined, set to 'localhost'"
-msgstr "ไม่ได้ตั้งชื่อเครื่องพิมพ์, กรุณาตั้งเป็น 'localhost'"
-
-#, python-format
-msgid "Printing system unknown, args=%s"
-msgstr "ไม่ทราบระบบการพิมพ์, args=%s"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
-msgstr ""
-"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%"
-"s) สำหรับเครื่องพิมพ์ %s"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr ""
-"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) "
-"สำหรับเครื่องพิมพ์ %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr ""
-"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota, "
-"ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
-
-#, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr ""
-"กฏการใช้งานภายนอก %s สำหรับเครื่องพิมพ์ %s แจ้งข้อผิดพลาด. ยกเลิกการทำงาน. "
-"กรุณาตรวจสอบไฟล์คอนฟิกกุเรชั่นของ PyKota"
-
-#, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
-"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%"
-"s)"
-
-#, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr ""
-"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s) "
-"สำหรับเครื่องพิมพ์ %s"
-
-#, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr ""
-"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota , ลงทะเบียน "
-"ในส่วนกฏการใช้งานเบื้องต้น (%s)"
-
-#, python-format
-msgid ""
-"Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr "เครื่องพิมพ์ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก"
-
-#, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr "ผู้ใช้ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก printer %s"
-
-#, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr ""
-"ผู้ใช้ %s ยังคงไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,งานที่สั่งจะถูกยกเลิก "
-
-#, python-format
-msgid "Network error while doing SNMP queries on printer %s : %s"
-msgstr ""
-
-#, python-format
-msgid "SNMP message decoding error for printer %s : %s"
-msgstr ""
-
-#, python-format
-msgid "Problem encountered while doing SNMP queries on printer %s : %s"
-msgstr ""
-
-#, python-format
-msgid "Waiting for printer %s to be printing..."
-msgstr ""
-
-#, python-format
-msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr ""
-
-#, python-format
-msgid "Problem during connection to %s:%s : %s"
-msgstr ""
-
-#, python-format
-msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr ""
-
-#, python-format
-msgid "A problem occured while reading printer %s's internal page counter."
-msgstr ""
-
-#, python-format
-msgid "Retrieving printer %s's page counter from database instead."
-msgstr ""
-
-#, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr ""
-
-#, python-format
-msgid "Job's size forced to 1 page for printer %s."
-msgstr ""
-
-#, python-format
-msgid "No previous job in database for printer %s."
-msgstr ""
-
-#, python-format
-msgid "Inconsistent values for printer %s's internal page counter."
-msgstr ""
-
-msgid ""
-"Internal SNMP accounting asked, but Python-SNMP is not available. Please "
-"download it from http://pysnmp.sourceforge.net"
-msgstr ""
-
-#, python-format
-msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "ไม่พบที่อยู่ของเครื่องพิมพ์ในอุปกรณ์ (%s) สำหรับเครื่องพิมพ์ %s"
-
-#, python-format
-msgid "Launching HARDWARE(%s)..."
-msgstr "เริ่มการทำงานของอุปกรณ์ (%s)..."
-
-#, python-format
-msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "สัญญาณ SIGTERM ถูกส่งไปยังอุปกรณ์ระบบบัญชีสมาชิก %s (pid: %s)"
-
-#, python-format
-msgid "Line [%s] skipped in accounter's output. Trying again..."
-msgstr ""
-
-#, python-format
-msgid "Hardware accounter %s exit code is %s"
-msgstr ""
-
-#, python-format
-msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "ไม่สามารค้นหาเครื่องพิมพ์ %s โดยผ่านอุปกรณ์(%s)"
-
-#, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-
-#, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-
-#, python-format
-msgid "Launching SOFTWARE(%s)..."
-msgstr "เริ่มการทำงานของซอฟต์แวร์(%s)..."
-
-#, python-format
-msgid "Unable to compute job size with accounter %s"
-msgstr "ไม่สามารถคำนวณขนาดงานได้ด้วยระบบสมาชิก %s"
-
-#, python-format
-msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "เกิดปัญหาจากการคอยซอฟต์แวร์ระบบสมาชิก pid %s เพื่อออก : %s"
-
-#, python-format
-msgid "Software accounter %s exit code is %s"
-msgstr "ซอฟต์แวร์ระบบสมาชิก %s ที่สั่งการออกคือ %s"
-
-msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr "จำนวนรวมอาจไม่ถูกต้อง หากผู้ใช้บางท่านเป็นสมาชิกของกลุ่มหลายกลุ่ม."
-
-#, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-"ผลการค้นหา %s ไม่พบ. อาจมีการตั้งค่าไม่ถูกต้อง กรุณา ตรวสอบ /etc/pykota/pykota.conf : %"
-"s อีกครั้ง"
-
-#, python-format
-msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "ผลการค้นหา %s(%s) จาก %s(scope=%s) คือ ไม่พบสิ่งที่ค้น."
-
-#, python-format
-msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "เกิดปัญหาในการเพิ่มข้อมูลเข้าสู่ LDAP (%s, %s)"
-
-#, python-format
-msgid "Problem deleting LDAP entry (%s)"
-msgstr "เกิดปัญหาในการลบข้อมูลจาก LDAP (%s, %s)"
-
-#, python-format
-msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "เกิดปัญหาในการแก้ใขข้อมูลใน LDAP (%s, %s)"
-
-#, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
-msgstr ""
-
-#, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-"ไม่สามารถค้นพบออปเจ็กคลาส %s ที่เข้าถึงด้วย %s=%s เพื่อแนบกับ ระบบสมาชิก Pykota "
-"ออปเจ็กคลาส"
-
-#, python-format
-msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr "ไม่สามารถค้นพบสิ่งใดที่เข้าถึงเพื่อเชื่อมต่อกับ pykotaGroup ออปเจ็กคลาส %s"
-
 #, python-format
 msgid ""
 "autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
@@ -836,6 +199,8 @@ msgid ""
 "         groupname      Users group's name\n"
 "         printername    Printer's name\n"
 "         pgroupname     Printers group's name\n"
+"         hostname       Client's hostname\n"
+"         billingcode    Job's billing code\n"
 "         \n"
 "  Contrary to other PyKota management tools, wildcard characters are not \n"
 "  expanded, so you can't use them.\n"
@@ -1096,6 +461,9 @@ msgid ""
 "Please e-mail bugs to: %s"
 msgstr ""
 
+msgid "You're not allowed to use this command."
+msgstr ""
+
 #, python-format
 msgid "Invalid used value %s."
 msgstr ""
@@ -1201,138 +569,6 @@ msgstr ""
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Generates print quota reports.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  repykota [options] \n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints repykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Generates a report on users quota, this is \n"
-"                       the default.\n"
-"  \n"
-"  -g | --groups        Generates a report on group quota instead of users.\n"
-"  \n"
-"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ repykota --printer lp\n"
-"  \n"
-"  This will print the quota status for all users who use the lp printer.\n"
-"\n"
-"  $ repykota \n"
-"  \n"
-"  This will print the quota status for all users on all printers.\n"
-"  \n"
-"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
-"  \n"
-"  This will print the quota status for user jerome and all users\n"
-"  whose name begins with \"jo\" on all printers which name begins\n"
-"  with \"laser\" or ends with \"pson\".\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
-"\n"
-"Sends mail to users over print quota.\n"
-"\n"
-"command line usage :\n"
-"\n"
-"  warnpykota  [options]  [names]\n"
-"\n"
-"options :\n"
-"\n"
-"  -v | --version       Prints warnpykota's version number then exits.\n"
-"  -h | --help          Prints this message then exits.\n"
-"  \n"
-"  -u | --users         Warns users over their print quota, this is the \n"
-"                       default.\n"
-"  \n"
-"  -g | --groups        Warns users whose groups quota are over limit.\n"
-"  \n"
-"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
-"                       use wildcards characters to select only\n"
-"                       some printers. The default value is *, meaning\n"
-"                       all printers.\n"
-"                       You can specify several names or wildcards, \n"
-"                       by separating them with commas.\n"
-"  \n"
-"examples :                              \n"
-"\n"
-"  $ warnpykota --printer lp\n"
-"  \n"
-"  This will warn all users of the lp printer who have exceeded their\n"
-"  print quota.\n"
-"\n"
-"  $ warnpykota \n"
-"  \n"
-"  This will warn all users  who have exceeded their print quota on\n"
-"  any printer.\n"
-"\n"
-"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
-"  \n"
-"  This will warn all users of groups which names begins with \"dev\" and\n"
-"  who have exceeded their print quota on any printer which name begins \n"
-"  with \"laserjet\"\n"
-"  \n"
-"  If launched by an user who is not a PyKota administrator, additionnal\n"
-"  arguments representing users or groups names are ignored, and only the\n"
-"  current user/group is reported.\n"
-"\n"
-"This program is free software; you can redistribute it and/or modify\n"
-"it under the terms of the GNU General Public License as published by\n"
-"the Free Software Foundation; either version 2 of the License, or\n"
-"(at your option) any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License\n"
-"along with this program; if not, write to the Free Software\n"
-"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
-"\n"
-"Please e-mail bugs to: %s"
-msgstr ""
-
-#, python-format
-msgid ""
 "pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
 "Libres\n"
 "\n"
@@ -1340,7 +576,7 @@ msgid ""
 "\n"
 "command line usage :\n"
 "\n"
-"  pkbanner  [options] \n"
+"  pkbanner  [options]  [more info]\n"
 "\n"
 "options :\n"
 "\n"
@@ -1402,8 +638,14 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
+msgid "More Info"
+msgstr ""
+
 msgid "Job"
 msgstr ""
+
+msgid "Date"
+msgstr "วันที่"
 
 msgid "Allowed"
 msgstr ""
@@ -1416,6 +658,12 @@ msgstr ""
 
 msgid "Result"
 msgstr ""
+
+msgid "Title"
+msgstr "ชื่อเรื่อง"
+
+msgid "Filename"
+msgstr "ชื่อแฟ้มข้อมูล"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -1851,6 +1099,775 @@ msgstr "จำนวนงาน : %i หน้า"
 #, python-format
 msgid "Cost on printer %s : %.2f"
 msgstr "ราคาการพิมพ์ของเครื่องพิมพ์ %s : %.2f"
+
+#, python-format
+msgid ""
+"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Generates print quota reports.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  repykota [options] \n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints repykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Generates a report on users quota, this is \n"
+"                       the default.\n"
+"  \n"
+"  -g | --groups        Generates a report on group quota instead of users.\n"
+"  \n"
+"  -P | --printer p     Report quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ repykota --printer lp\n"
+"  \n"
+"  This will print the quota status for all users who use the lp printer.\n"
+"\n"
+"  $ repykota \n"
+"  \n"
+"  This will print the quota status for all users on all printers.\n"
+"  \n"
+"  $ repykota --printer \"laser*,*pson\" jerome \"jo*\"\n"
+"  \n"
+"  This will print the quota status for user jerome and all users\n"
+"  whose name begins with \"jo\" on all printers which name begins\n"
+"  with \"laser\" or ends with \"pson\".\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
+"Libres\n"
+"\n"
+"Sends mail to users over print quota.\n"
+"\n"
+"command line usage :\n"
+"\n"
+"  warnpykota  [options]  [names]\n"
+"\n"
+"options :\n"
+"\n"
+"  -v | --version       Prints warnpykota's version number then exits.\n"
+"  -h | --help          Prints this message then exits.\n"
+"  \n"
+"  -u | --users         Warns users over their print quota, this is the \n"
+"                       default.\n"
+"  \n"
+"  -g | --groups        Warns users whose groups quota are over limit.\n"
+"  \n"
+"  -P | --printer p     Verify quotas on this printer only. Actually p can\n"
+"                       use wildcards characters to select only\n"
+"                       some printers. The default value is *, meaning\n"
+"                       all printers.\n"
+"                       You can specify several names or wildcards, \n"
+"                       by separating them with commas.\n"
+"  \n"
+"examples :                              \n"
+"\n"
+"  $ warnpykota --printer lp\n"
+"  \n"
+"  This will warn all users of the lp printer who have exceeded their\n"
+"  print quota.\n"
+"\n"
+"  $ warnpykota \n"
+"  \n"
+"  This will warn all users  who have exceeded their print quota on\n"
+"  any printer.\n"
+"\n"
+"  $ warnpykota --groups --printer \"laserjet*\" \"dev*\"\n"
+"  \n"
+"  This will warn all users of groups which names begins with \"dev\" and\n"
+"  who have exceeded their print quota on any printer which name begins \n"
+"  with \"laserjet\"\n"
+"  \n"
+"  If launched by an user who is not a PyKota administrator, additionnal\n"
+"  arguments representing users or groups names are ignored, and only the\n"
+"  current user/group is reported.\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License\n"
+"along with this program; if not, write to the Free Software\n"
+"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.\n"
+"\n"
+"Please e-mail bugs to: %s"
+msgstr ""
+
+msgid "PyKota Data Dumper"
+msgstr ""
+
+msgid "Dump"
+msgstr ""
+
+msgid "Please click on the above button"
+msgstr ""
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Output Format"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "PyKota Reports"
+msgstr "รายงาน PyKota"
+
+msgid "Report"
+msgstr "รายงาน"
+
+msgid "Printer"
+msgstr "เครื่องพิมพ์"
+
+msgid "User / Group names mask"
+msgstr "ซ่อน ชื่อผู้ใช้/ชื่อกลุ่มผู้ใช้"
+
+msgid "Groups report"
+msgstr "รายงานกลุ่ม"
+
+msgid "History"
+msgstr "ประวัติ"
+
+msgid "Empty"
+msgstr "ล้าง"
+
+msgid "Action"
+msgstr "กิจกรรม"
+
+msgid "User"
+msgstr "ผู้ใช้"
+
+msgid "Hostname"
+msgstr "ชื่อเครื่อง"
+
+msgid "JobId"
+msgstr "หมายเลขงาน"
+
+msgid "JobSize"
+msgstr "ขนาดงาน"
+
+msgid "JobPrice"
+msgstr "ราคางาน"
+
+msgid "Copies"
+msgstr "จำนวนสำเนา"
+
+msgid "JobBytes"
+msgstr "ข้อมูลขนาดงาน"
+
+msgid "PageCounter"
+msgstr "จำนวนหน้า"
+
+msgid "Options"
+msgstr "ตัวเลือก"
+
+msgid "MD5Sum"
+msgstr ""
+
+msgid "BillingCode"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Previous page"
+msgstr "หน้าที่แล้ว"
+
+msgid "PyKota Quotes"
+msgstr ""
+
+msgid "Quote"
+msgstr ""
+
+#, python-format
+msgid "This file is %i pages long."
+msgstr ""
+
+#, python-format
+msgid "Unsupported accounter backend %s"
+msgstr "ระบบบัญชีสมาชิกไม่สนับสนุนการทำงาน %s"
+
+#, python-format
+msgid "Configuration file %s not found."
+msgstr "ขอภัย! ไม่พบคอนฟิกไฟล์ %s"
+
+#, python-format
+msgid "Option %s not found in section global of %s"
+msgstr "ไม่พบตัวเลือก %s ในหมวดทั่วไปของ %s "
+
+#, python-format
+msgid "Option %s not found in section %s of %s"
+msgstr "ไม่พบตัวเลือก %s ในหมวด %s ของ %s"
+
+#, python-format
+msgid "Option ldaptls is set, but certificate %s is not readable."
+msgstr ""
+
+#, python-format
+msgid "Option logger only supports values in %s"
+msgstr "ตัวเลือกบันทึกการทำงานสนับสนุนค่าเฉพาะใน %s"
+
+#, python-format
+msgid "Invalid accounter %s for printer %s"
+msgstr "ระบบบัญชีสมาชิก %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
+
+#, python-format
+msgid "Option accounter in section %s only supports values in %s"
+msgstr "ตัวเลือกระบบบัญชีสมาชิกในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+
+#, python-format
+msgid "Option enforcement in section %s only supports values in %s"
+msgstr "ตัวเลือก enforcement ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+
+#, python-format
+msgid "Option onaccountererror in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid policy %s for printer %s"
+msgstr "กฏการใช้ %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
+
+#, python-format
+msgid "Option policy in section %s only supports values in %s"
+msgstr "ตัวเลือกกฏการใช้ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+
+#, python-format
+msgid "Invalid option mailto %s for printer %s"
+msgstr "ตัวเลือกส่งเมล์  %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
+
+#, python-format
+msgid "Option mailto in section %s only supports values in %s"
+msgstr "ตัวเลือกส่งเมล์ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+
+#, python-format
+msgid "Invalid maximal deny banners counter %s"
+msgstr ""
+
+#, python-format
+msgid "Invalid grace delay %s"
+msgstr "ค่า grace delay %s ไม่ถูกต้อง"
+
+#, python-format
+msgid "Invalid poor man's threshold %s"
+msgstr "ค่า poor man's threshold %s ไม่ถูกต้อง"
+
+msgid ""
+"Your Print Quota account balance is Low.\n"
+"Soon you'll not be allowed to print anymore.\n"
+"Please contact the Print Quota Administrator to solve the problem."
+msgstr ""
+"ขออภัย! ยอดเงินของท่านเหลือน้อย\n"
+"ท่านจะไม่สามารพิมพ์เอกสารใดๆได้ในระยะเวลอันใกล้\n"
+"กรุณาติดต่อผู้ดูแลระบบการพิมพ์เพื่อแก้ไขปัญหา"
+
+#, python-format
+msgid ""
+"You are not allowed to print anymore because\n"
+"your Print Quota is exceeded on printer %s."
+msgstr ""
+"ขออภัย! คุณไม่สามารถทำการพิมพ์สิ่งใดได้เนื่องจาก\n"
+"สิทธิ์ในการพิมพ์ของคุณเกินกำหนดบนเครื่องพิมพ์ %s."
+
+#, python-format
+msgid ""
+"You will soon be forbidden to print anymore because\n"
+"your Print Quota is almost reached on printer %s."
+msgstr ""
+"ขออภัย! คุณจะไม่ได้รับอนุญาตให้ทำการพิมพ์ใดๆได้อีกเพราะ\n"
+"โควต้าในการพิมพ์ของคุณใกล้หมดบนเครื่องพิมพ์ %s."
+
+#, python-format
+msgid "Option accountbanner in section %s only supports values in %s"
+msgstr ""
+
+#, python-format
+msgid "Option trustjobsize for printer %s is incorrect"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Groups"
+msgstr ""
+
+msgid "Printers"
+msgstr ""
+
+msgid "Users Print Quotas"
+msgstr ""
+
+msgid "Users Groups Print Quotas"
+msgstr ""
+
+msgid "History of Payments"
+msgstr ""
+
+msgid "Printers Groups Membership"
+msgstr ""
+
+msgid "Users Groups Membership"
+msgstr ""
+
+msgid "Comma Separated Values"
+msgstr ""
+
+msgid "Semicolon Separated Values"
+msgstr ""
+
+msgid "Tabulation Separated Values"
+msgstr ""
+
+msgid "eXtensible Markup Language"
+msgstr ""
+
+msgid "CUPS' page_log"
+msgstr ""
+
+#, python-format
+msgid "Invalid filter value [%s], see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --data command line option, see help."
+msgstr ""
+
+#, python-format
+msgid "Invalid modifier [%s] for --format command line option, see help."
+msgstr ""
+
+msgid "XML output is disabled because the jaxml module is not available."
+msgstr ""
+
+msgid "PyKota data dumper failed : I/O error"
+msgstr ""
+
+#, python-format
+msgid "Unsupported logging subsystem %s"
+msgstr "ระบบบันทึกการย่อยไม่สนับสนุนการทำงาน %s"
+
+#, python-format
+msgid "Report for %s quota on printer %s"
+msgstr "รายงานสิทธิ์การพิมพ์สำหรับ %s บนเครื่องพิมพ์ %s"
+
+#, python-format
+msgid "Pages grace time: %i days"
+msgstr "หน้า grace time : %i วัน"
+
+#, python-format
+msgid "Price per job: %.3f"
+msgstr "ราคาต่องาน : %.3f"
+
+#, python-format
+msgid "Price per page: %.3f"
+msgstr "ราคาต่อหน้า : %.3f "
+
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
+msgstr ""
+
+msgid "unknown"
+msgstr "ไม่ทราบข้อมูล"
+
+#, python-format
+msgid "Real : %s"
+msgstr "เป็นจริง : %s"
+
+#, python-format
+msgid "Total : %9i"
+msgstr "รวม : %9i"
+
+msgid "N/A"
+msgstr ""
+
+#, python-format
+msgid "Unsupported reporter backend %s"
+msgstr "ระบบรายงานไม่สนับสนุน %s"
+
+#, python-format
+msgid "Unsupported quota storage backend %s"
+msgstr "ระบบสิทธิ์ในการใช้พื้นที่ไม่สนับสนุน %s"
+
+#, python-format
+msgid "Strange problem with uid(%s) : %s"
+msgstr ""
+
+#, python-format
+msgid "Running as user '%s'."
+msgstr ""
+
+msgid "No user named 'pykota'. Not dropping priviledges."
+msgstr ""
+
+#, python-format
+msgid "Impossible to drop priviledges : %s"
+msgstr ""
+
+msgid "Priviledges dropped. Now running as user 'pykota'."
+msgstr ""
+
+#, python-format
+msgid "Impossible to regain priviledges : %s"
+msgstr ""
+
+msgid "Regained priviledges. Now running as root."
+msgstr ""
+
+#, python-format
+msgid "Impossible to connect to SMTP server : %s"
+msgstr "ไม่สามารถติดต่อกับ SMTP เซิร์ฟเวอร์ได้"
+
+#, python-format
+msgid "Impossible to send mail to %s, error %s : %s"
+msgstr "ไม่สามารถส่งเมล์ถึง %s, พบข้อผิดพลาด %s : %s"
+
+#, python-format
+msgid ""
+"\n"
+"\n"
+"Please contact your system administrator :\n"
+"\n"
+"\t%s - <%s>\n"
+msgstr ""
+"\n"
+"\n"
+"กรุณาติดต่อผู้ดูแลระบบ :\n"
+"\n"
+"\t%s - <%s>\n"
+
+#, python-format
+msgid "Unable to match user %s on printer %s, applying default policy (%s)"
+msgstr "ไม่พบชื่อผู้ใช้ %s บนเครื่องพิมพ์ %s, ตรวจสอบกฏการใช้งานเบื้องต้น (%s)"
+
+#, python-format
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr "ไม่พบยอดเงินของผู้ใช้ %s, ตรวจสอบกฏการใช้งานเบื้องต้น(%s) ของ เครื่องพิมพ์ %s"
+
+#, python-format
+msgid "User %s will not be charged for printing."
+msgstr ""
+
+#, python-format
+msgid "Print Quota exceeded for group %s on printer %s"
+msgstr "ขออภัย! โควต้าในการพิมพ์ของกลุ่ม %s บนเครื่องพิมพ์ %s หมดแล้ว"
+
+msgid "Print Quota"
+msgstr "โควต้าในการพิมพ์"
+
+msgid "Print Quota Exceeded"
+msgstr "โควต้าในการพิมพ์เกินแล้ว"
+
+#, python-format
+msgid "Print Quota low for group %s on printer %s"
+msgstr "โควต้าในการพิมพ์ของกลุ่ม %s บนเครื่องพิมพ์ %s ใกล้หมดแล้ว"
+
+#, python-format
+msgid "Print Quota exceeded for user %s on printer %s"
+msgstr "โควต้าในการพิมพ์ของ %s บนเครื่องพิมพ์ %s หมดแล้ว"
+
+#, python-format
+msgid "Print Quota low for user %s on printer %s"
+msgstr "โควต้าในการพิมพ์ของ %s บนเครื่องพิมพ์ %s ใกล้หมดแล้ว"
+
+msgid "Print Quota Low"
+msgstr "โควต้าในการพิมพ์ใกล้หมดแล้ว"
+
+#, python-format
+msgid "Printing system %s, args=%s"
+msgstr "ระบบการพิมพ์ %s, args=%s"
+
+#, python-format
+msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
+msgstr "ไม่สามารถทำการคำนวณขนาดของงานได้ด้วย PDL analyzer : %s"
+
+#, python-format
+msgid "SIGTERM received, job %s cancelled."
+msgstr "ได้รับค่า SIGTERM , งาน %s ถูกยกเลิก."
+
+msgid "Printer hostname undefined, set to 'localhost'"
+msgstr "ไม่ได้ตั้งชื่อเครื่องพิมพ์, กรุณาตั้งเป็น 'localhost'"
+
+#, python-format
+msgid "Printing system unknown, args=%s"
+msgstr "ไม่ทราบระบบการพิมพ์, args=%s"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%"
+"s) สำหรับเครื่องพิมพ์ %s"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) "
+"สำหรับเครื่องพิมพ์ %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota, "
+"ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
+
+#, python-format
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"กฏการใช้งานภายนอก %s สำหรับเครื่องพิมพ์ %s แจ้งข้อผิดพลาด. ยกเลิกการทำงาน. "
+"กรุณาตรวจสอบไฟล์คอนฟิกกุเรชั่นของ PyKota"
+
+#, python-format
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%"
+"s)"
+
+#, python-format
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s) "
+"สำหรับเครื่องพิมพ์ %s"
+
+#, python-format
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota , ลงทะเบียน "
+"ในส่วนกฏการใช้งานเบื้องต้น (%s)"
+
+#, python-format
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr "เครื่องพิมพ์ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก"
+
+#, python-format
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr "ผู้ใช้ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก printer %s"
+
+#, python-format
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"ผู้ใช้ %s ยังคงไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,งานที่สั่งจะถูกยกเลิก "
+
+#, python-format
+msgid "A problem occured while reading printer %s's internal page counter."
+msgstr ""
+
+#, python-format
+msgid "Retrieving printer %s's page counter from database instead."
+msgstr ""
+
+#, python-format
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
+msgstr ""
+
+#, python-format
+msgid "Job's size forced to 1 page for printer %s."
+msgstr ""
+
+#, python-format
+msgid "No previous job in database for printer %s."
+msgstr ""
+
+#, python-format
+msgid "Inconsistent values for printer %s's internal page counter."
+msgstr ""
+
+#, python-format
+msgid "Unknown printer address in HARDWARE(%s) for printer %s"
+msgstr "ไม่พบที่อยู่ของเครื่องพิมพ์ในอุปกรณ์ (%s) สำหรับเครื่องพิมพ์ %s"
+
+#, python-format
+msgid "Launching HARDWARE(%s)..."
+msgstr "เริ่มการทำงานของอุปกรณ์ (%s)..."
+
+#, python-format
+msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
+msgstr "สัญญาณ SIGTERM ถูกส่งไปยังอุปกรณ์ระบบบัญชีสมาชิก %s (pid: %s)"
+
+#, python-format
+msgid "Line [%s] skipped in accounter's output. Trying again..."
+msgstr ""
+
+#, python-format
+msgid "Hardware accounter %s exit code is %s"
+msgstr ""
+
+#, python-format
+msgid "Unable to query printer %s via HARDWARE(%s)"
+msgstr "ไม่สามารค้นหาเครื่องพิมพ์ %s โดยผ่านอุปกรณ์(%s)"
+
+#, python-format
+msgid "Problem during connection to %s:%s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem while sending PJL query to %s:%s : %s"
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s to be printing..."
+msgstr ""
+
+#, python-format
+msgid "Waiting for printer %s's idle status to stabilize..."
+msgstr ""
+
+#, python-format
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+
+#, python-format
+msgid "Network error while doing SNMP queries on printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "SNMP message decoding error for printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid "Problem encountered while doing SNMP queries on printer %s : %s"
+msgstr ""
+
+#, python-format
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
+msgstr ""
+
+#, python-format
+msgid "Launching SOFTWARE(%s)..."
+msgstr "เริ่มการทำงานของซอฟต์แวร์(%s)..."
+
+#, python-format
+msgid "Unable to compute job size with accounter %s"
+msgstr "ไม่สามารถคำนวณขนาดงานได้ด้วยระบบสมาชิก %s"
+
+#, python-format
+msgid "Problem while waiting for software accounter pid %s to exit : %s"
+msgstr "เกิดปัญหาจากการคอยซอฟต์แวร์ระบบสมาชิก pid %s เพื่อออก : %s"
+
+#, python-format
+msgid "Software accounter %s exit code is %s"
+msgstr "ซอฟต์แวร์ระบบสมาชิก %s ที่สั่งการออกคือ %s"
+
+msgid "Totals may be inaccurate if some users are members of several groups."
+msgstr "จำนวนรวมอาจไม่ถูกต้อง หากผู้ใช้บางท่านเป็นสมาชิกของกลุ่มหลายกลุ่ม."
+
+#, python-format
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"ผลการค้นหา %s ไม่พบ. อาจมีการตั้งค่าไม่ถูกต้อง กรุณา ตรวสอบ /etc/pykota/pykota.conf : %"
+"s อีกครั้ง"
+
+#, python-format
+msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
+msgstr "ผลการค้นหา %s(%s) จาก %s(scope=%s) คือ ไม่พบสิ่งที่ค้น."
+
+#, python-format
+msgid "Problem adding LDAP entry (%s, %s)"
+msgstr "เกิดปัญหาในการเพิ่มข้อมูลเข้าสู่ LDAP (%s, %s)"
+
+#, python-format
+msgid "Problem deleting LDAP entry (%s)"
+msgstr "เกิดปัญหาในการลบข้อมูลจาก LDAP (%s, %s)"
+
+#, python-format
+msgid "Problem modifying LDAP entry (%s, %s)"
+msgstr "เกิดปัญหาในการแก้ใขข้อมูลใน LDAP (%s, %s)"
+
+#, python-format
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
+msgstr ""
+
+#, python-format
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"ไม่สามารถค้นพบออปเจ็กคลาส %s ที่เข้าถึงด้วย %s=%s เพื่อแนบกับ ระบบสมาชิก Pykota "
+"ออปเจ็กคลาส"
+
+#, python-format
+msgid "%s. A new entry will be created instead."
+msgstr ""
+
+#, python-format
+msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
+msgstr "ไม่สามารถค้นพบสิ่งใดที่เข้าถึงเพื่อเชื่อมต่อกับ pykotaGroup ออปเจ็กคลาส %s"
+
+msgid "Hidden because of privacy concerns"
+msgstr ""
 
 #~ msgid ""
 #~ "Group           used    soft    hard    balance grace         total       "
