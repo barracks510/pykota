@@ -54,7 +54,7 @@ class PyKotaToolError(Exception):
         return self.message
     __str__ = __repr__
     
-def crashed(message) :    
+def crashed(message="Bug in PyKota") :    
     """Minimal crash method."""
     import traceback
     lines = []
@@ -217,17 +217,17 @@ class Tool :
         print _(self.documentation) % (version.__version__, version.__author__)
         sys.exit(0)
         
-    def crashed(self, message) :    
+    def crashed(self, message="Bug in PyKota") :    
         """Outputs a crash message, and optionally sends it to software author."""
         msg = crashed(message)
+        fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
+                        (msg, \
+                         "\n".join(["    %s" % repr(a) for a in sys.argv]), \
+                         "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
         try :
             crashrecipient = self.config.getCrashRecipient()
             if crashrecipient :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
-                fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
-                                (msg, \
-                                 "\n".join(["    %s" % repr(a) for a in sys.argv]), \
-                                 "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
                 server = smtplib.SMTP(self.smtpserver)
                 server.sendmail(admin, [admin, crashrecipient], \
                                        "From: %s\nTo: %s\nCc: %s\nSubject: PyKota v%s crash traceback !\n\n%s" % \
@@ -235,6 +235,7 @@ class Tool :
                 server.quit()
         except :
             pass
+        return fullmessage    
         
     def parseCommandline(self, argv, short, long, allownothing=0) :
         """Parses the command line, controlling options."""

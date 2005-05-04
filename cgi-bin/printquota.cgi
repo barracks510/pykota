@@ -155,104 +155,107 @@ class PyKotaReportGUI(PyKotaTool) :
         self.body += self.htmlUGNamesInput(ugmask)
         self.body += "<br />"
         self.body += self.htmlGroupsCheckbox(isgroup)
-        if not self.form.has_key("history") :
-            if printers and ugmask :
-                self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
-                self.body += "%s" % self.reportingtool.generateReport()
-        else :        
-            if remuser != "root" :
-                username = remuser
-            elif self.form.has_key("username") :    
-                username = self.form["username"].value
-            else :    
-                username = None
-            if username is not None :    
-                user = self.storage.getUser(username)
-            else :    
-                user =None
-            if self.form.has_key("printername") :
-                printer = self.storage.getPrinter(self.form["printername"].value)
-            else :    
-                printer = None
-            if self.form.has_key("datelimit") :    
-                datelimit = self.form["datelimit"].value
-            else :    
-                datelimit = None
-            if self.form.has_key("hostname") :    
-                hostname = self.form["hostname"].value
-            else :    
-                hostname = None
-            if self.form.has_key("billingcode") :    
-                billingcode = self.form["billingcode"].value
-            else :    
-                billingcode = None
-            self.report = ["<h2>%s</h2>" % _("History")]    
-            history = self.storage.retrieveHistory(user, printer, datelimit, hostname, billingcode)
-            if not history :
-                self.report.append("<h3>%s</h3>" % _("Empty"))
-            else :
-                self.report.append('<table class="pykotatable" border="1">')
-                headers = [_("Date"), _("Action"), _("User"), _("Printer"), \
-                           _("Hostname"), _("JobId"), _("JobSize"), \
-                           _("JobPrice"), _("Copies"), _("JobBytes"), \
-                           _("PageCounter"), _("Title"), _("Filename"), \
-                           _("Options"), _("MD5Sum"), _("BillingCode"), \
-                           _("Pages")]
-                self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
-                oddeven = 0
-                for job in history :
-                    oddeven += 1
-                    if oddeven % 2 :
-                        oddevenclass = "odd"
-                    else :    
-                        oddevenclass = "even"
-                    if job.JobAction == "DENY" :
-                        oddevenclass = "deny"
-                    elif job.JobAction == "WARN" :    
-                        oddevenclass = "warn"
-                    username_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
-                    printername_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "printername" : job.PrinterName}), job.PrinterName)
-                    if job.JobHostName :
-                        hostname_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "hostname" : job.JobHostName}), job.JobHostName)
-                    else :    
-                        hostname_url = None
-                    if job.JobBillingCode :
-                        billingcode_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "billingcode" : job.JobBillingCode}), job.JobBillingCode)
-                    else :    
-                        billingcode_url = None
-                    self.report.append('<tr class="%s">%s</tr>' % \
-                                          (oddevenclass, \
-                                           "".join(["<td>%s</td>" % (h or "&nbsp;") \
-                                              for h in (job.JobDate[:19], \
-                                                        job.JobAction, \
-                                                        username_url, \
-                                                        printername_url, \
-                                                        hostname_url, \
-                                                        job.JobId, \
-                                                        job.JobSize, \
-                                                        job.JobPrice, \
-                                                        job.JobCopies, \
-                                                        job.JobSizeBytes, \
-                                                        job.PrinterPageCounter, \
-                                                        job.JobTitle, \
-                                                        job.JobFileName, \
-                                                        job.JobOptions, \
-                                                        job.JobMD5Sum, \
-                                                        billingcode_url, \
-                                                        job.JobPages)])))
-                self.report.append('</table>')
-                dico = { "history" : 1,
-                         "datelimit" : job.JobDate,
-                       }
-                if user and user.Exists :
-                    dico.update({ "username" : user.Name })
-                if printer and printer.Exists :
-                    dico.update({ "printername" : printer.Name })
-                if hostname :    
-                    dico.update({ "hostname" : hostname })
-                prevurl = "%s?%s" % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(dico))
-                self.report.append('<a href="%s">%s</a>' % (prevurl, _("Previous page")))
-            self.body = "\n".join(self.report)    
+        try :
+            if not self.form.has_key("history") :
+                if printers and ugmask :
+                    self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
+                    self.body += "%s" % self.reportingtool.generateReport()
+            else :        
+                if remuser != "root" :
+                    username = remuser
+                elif self.form.has_key("username") :    
+                    username = self.form["username"].value
+                else :    
+                    username = None
+                if username is not None :    
+                    user = self.storage.getUser(username)
+                else :    
+                    user =None
+                if self.form.has_key("printername") :
+                    printer = self.storage.getPrinter(self.form["printername"].value)
+                else :    
+                    printer = None
+                if self.form.has_key("datelimit") :    
+                    datelimit = self.form["datelimit"].value
+                else :    
+                    datelimit = None
+                if self.form.has_key("hostname") :    
+                    hostname = self.form["hostname"].value
+                else :    
+                    hostname = None
+                if self.form.has_key("billingcode") :    
+                    billingcode = self.form["billingcode"].value
+                else :    
+                    billingcode = None
+                self.report = ["<h2>%s</h2>" % _("History")]    
+                history = self.storage.retrieveHistory(user, printer, datelimit, hostname, billingcode)
+                if not history :
+                    self.report.append("<h3>%s</h3>" % _("Empty"))
+                else :
+                    self.report.append('<table class="pykotatable" border="1">')
+                    headers = [_("Date"), _("Action"), _("User"), _("Printer"), \
+                               _("Hostname"), _("JobId"), _("JobSize"), \
+                               _("JobPrice"), _("Copies"), _("JobBytes"), \
+                               _("PageCounter"), _("Title"), _("Filename"), \
+                               _("Options"), _("MD5Sum"), _("BillingCode"), \
+                               _("Pages")]
+                    self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
+                    oddeven = 0
+                    for job in history :
+                        oddeven += 1
+                        if oddeven % 2 :
+                            oddevenclass = "odd"
+                        else :    
+                            oddevenclass = "even"
+                        if job.JobAction == "DENY" :
+                            oddevenclass = "deny"
+                        elif job.JobAction == "WARN" :    
+                            oddevenclass = "warn"
+                        username_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
+                        printername_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "printername" : job.PrinterName}), job.PrinterName)
+                        if job.JobHostName :
+                            hostname_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "hostname" : job.JobHostName}), job.JobHostName)
+                        else :    
+                            hostname_url = None
+                        if job.JobBillingCode :
+                            billingcode_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "billingcode" : job.JobBillingCode}), job.JobBillingCode)
+                        else :    
+                            billingcode_url = None
+                        self.report.append('<tr class="%s">%s</tr>' % \
+                                              (oddevenclass, \
+                                               "".join(["<td>%s</td>" % (h or "&nbsp;") \
+                                                  for h in (job.JobDate[:19], \
+                                                            job.JobAction, \
+                                                            username_url, \
+                                                            printername_url, \
+                                                            hostname_url, \
+                                                            job.JobId, \
+                                                            job.JobSize, \
+                                                            job.JobPrice, \
+                                                            job.JobCopies, \
+                                                            job.JobSizeBytes, \
+                                                            job.PrinterPageCounter, \
+                                                            job.JobTitle, \
+                                                            job.JobFileName, \
+                                                            job.JobOptions, \
+                                                            job.JobMD5Sum, \
+                                                            billingcode_url, \
+                                                            job.JobPages)])))
+                    self.report.append('</table>')
+                    dico = { "history" : 1,
+                             "datelimit" : job.JobDate,
+                           }
+                    if user and user.Exists :
+                        dico.update({ "username" : user.Name })
+                    if printer and printer.Exists :
+                        dico.update({ "printername" : printer.Name })
+                    if hostname :    
+                        dico.update({ "hostname" : hostname })
+                    prevurl = "%s?%s" % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(dico))
+                    self.report.append('<a href="%s">%s</a>' % (prevurl, _("Previous page")))
+                self.body = "\n".join(self.report)    
+        except :
+                self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()

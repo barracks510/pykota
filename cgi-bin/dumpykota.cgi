@@ -126,50 +126,50 @@ class PyKotaDumperGUI(DumPyKota) :
             pass # WebDAV request probably, seen when trying to open a csv file in OOo
         else :    
             if wantreport :
-                if self.form.has_key("datatype") :
-                    self.options["data"] = self.form["datatype"].value
-                if self.form.has_key("format") :
-                    self.options["format"] = self.form["format"].value
-                if self.form.has_key("filter") :    
-                    self.arguments = self.form["filter"].value.split()
-                    
-                # when no authentication is done, or when the remote username    
-                # is 'root' (even if not run as root of course), then unrestricted
-                # dump is allowed.
-                remuser = os.environ.get("REMOTE_USER", "root")    
-                # special hack to accomodate mod_auth_ldap Apache module
                 try :
-                    remuser = remuser.split("=")[1].split(",")[0]
-                except IndexError :    
-                    pass
-                if remuser != "root" :
-                    # non-'root' users when the script is password protected
-                    # can not dump any data as they like, we restrict them
-                    # to their own datas.
-                    if self.options["data"] not in ["printers", "pmembers", "groups", "gpquotas"] :
-                        self.arguments.append("username=%s" % remuser)
-                    
-                if self.options["format"] in ("csv", "ssv") :
-                    #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
-                    ctype = "text/comma-separated-values"
-                    fname = "dump.csv"
-                elif self.options["format"] == "tsv" :
-                    #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
-                    ctype = "text/tab-separated-values"
-                    fname = "dump.tsv"
-                elif self.options["format"] == "xml" :
-                    ctype = "text/xml"
-                    fname = "dump.xml"
-                elif self.options["format"] == "cups" :
-                    ctype = "text/plain"
-                    fname = "page_log"
-                print "Content-type: %s" % ctype    
-                print "Content-disposition: attachment; filename=%s" % fname 
-                print
-                try :
+                    if self.form.has_key("datatype") :
+                        self.options["data"] = self.form["datatype"].value
+                    if self.form.has_key("format") :
+                        self.options["format"] = self.form["format"].value
+                    if self.form.has_key("filter") :    
+                        self.arguments = self.form["filter"].value.split()
+                        
+                    # when no authentication is done, or when the remote username    
+                    # is 'root' (even if not run as root of course), then unrestricted
+                    # dump is allowed.
+                    remuser = os.environ.get("REMOTE_USER", "root")    
+                    # special hack to accomodate mod_auth_ldap Apache module
+                    try :
+                        remuser = remuser.split("=")[1].split(",")[0]
+                    except IndexError :    
+                        pass
+                    if remuser != "root" :
+                        # non-'root' users when the script is password protected
+                        # can not dump any data as they like, we restrict them
+                        # to their own datas.
+                        if self.options["data"] not in ["printers", "pmembers", "groups", "gpquotas"] :
+                            self.arguments.append("username=%s" % remuser)
+                        
+                    if self.options["format"] in ("csv", "ssv") :
+                        #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
+                        ctype = "text/comma-separated-values"
+                        fname = "dump.csv"
+                    elif self.options["format"] == "tsv" :
+                        #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
+                        ctype = "text/tab-separated-values"
+                        fname = "dump.tsv"
+                    elif self.options["format"] == "xml" :
+                        ctype = "text/xml"
+                        fname = "dump.xml"
+                    elif self.options["format"] == "cups" :
+                        ctype = "text/plain"
+                        fname = "page_log"
+                    print "Content-type: %s" % ctype    
+                    print "Content-disposition: attachment; filename=%s" % fname 
+                    print
                     self.main(self.arguments, self.options, restricted=0)
-                except PyKotaToolError, msg :    
-                    print msg
+                except :
+                    print 'Content-type: text/html\n\n<html><head><title>CGI Error</title></head><body><p><font color="red">%s</font></p></body></html>' % self.crashed("CGI Error").replace("\n", "<br />")
             else :        
                 self.guiDisplay()
             

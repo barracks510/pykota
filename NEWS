@@ -26,6 +26,10 @@ PyKota NEWS :
         - Fixed an inconsitency between SQL and LDAP backends'
           behavior in edpykota.
           
+        - Improved stability and allowed tracebacks in CGI scripts.
+        
+        - Improved pykotme.cgi
+          
     - 1.22alpha8 :
     
         - Fixed history retrieval for nonexisting printers or users.

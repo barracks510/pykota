@@ -129,9 +129,27 @@ class PyKotMeGUI(PyKotaTool) :
                 parser = PDLAnalyzer(cStringIO.StringIO(inputfile))
                 jobsize = parser.getJobSize()
             except PDLAnalyzerError, msg :    
-                self.body += '<font color="red">%s</font>' % msg
+                self.body += '<p><font color="red">%s</font></p>' % msg
             else :    
-                self.body += _("This file is %i pages long.") % jobsize
+                self.body += "<p>%s</p>" % (_("Job size : %i pages") % jobsize)
+                
+            remuser = os.environ.get("REMOTE_USER", "root")    
+            # special hack to accomodate mod_auth_ldap Apache module
+            try :
+                remuser = remuser.split("=")[1].split(",")[0]
+            except IndexError :    
+                pass
+            if remuser == "root" :    
+                self.body += "<p>%s</p>" % _("The exact cost of a print job can only be determined for a particular user. Please retry while logged-in.")
+            else :    
+                try :    
+                    user = self.storage.getUser(remuser)
+                    for printer in printers :
+                        upquota = self.storage.getUserPQuota(user, printer)
+                        cost = upquota.computeJobPrice(jobsize)
+                        self.body += "<p>%s</p>" % (_("Cost on printer %s : %.2f") % (printer.Name, cost))
+                except :
+                    self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
     os.environ["LC_ALL"] = getLanguagePreference()
