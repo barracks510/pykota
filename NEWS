@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.22beta :
     
+        - Improved stability in pykotme and pykotme.cgi.
+        
+        - Fixed a permission problem in pykotme and pykosd.
+        
         - Fixed an inconsitency between SQL and LDAP backends'
           behavior in edpykota.
           

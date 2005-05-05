@@ -103,21 +103,22 @@ class PyKotMe(PyKotaTool) :
             except PDLAnalyzerError, msg :    
                 self.printInfo(msg)
             
-        # get current user
-        username = pwd.getpwuid(os.geteuid())[0]
-        user = self.storage.getUser(username)
-        if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
-            print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
-            
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
             raise PyKotaToolError, _("There's no printer matching %s") % options["printer"]
             
+        username = pwd.getpwuid(os.getuid())[0]
+        user = self.storage.getUser(username)
+        if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
+            print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
+            
         print _("Job size : %i pages") % totalsize    
-        for printer in printers :
-            userpquota = self.storage.getUserPQuota(user, printer)
-            cost = userpquota.computeJobPrice(totalsize)
-            print _("Cost on printer %s : %.2f") % (printer.Name, cost)
+        if user.Exists :
+            for printer in printers :
+                userpquota = self.storage.getUserPQuota(user, printer)
+                if userpquota.Exists :
+                    cost = userpquota.computeJobPrice(totalsize)
+                    print _("Cost on printer %s : %.2f") % (printer.Name, cost)
             
 if __name__ == "__main__" : 
     retcode = 0

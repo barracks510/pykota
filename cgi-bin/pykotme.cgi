@@ -144,10 +144,12 @@ class PyKotMeGUI(PyKotaTool) :
             else :    
                 try :    
                     user = self.storage.getUser(remuser)
-                    for printer in printers :
-                        upquota = self.storage.getUserPQuota(user, printer)
-                        cost = upquota.computeJobPrice(jobsize)
-                        self.body += "<p>%s</p>" % (_("Cost on printer %s : %.2f") % (printer.Name, cost))
+                    if user.Exists :
+                        for printer in printers :
+                            upquota = self.storage.getUserPQuota(user, printer)
+                            if upquota.Exists :
+                                cost = upquota.computeJobPrice(jobsize)
+                                self.body += "<p>%s</p>" % (_("Cost on printer %s : %.2f") % (printer.Name, cost))
                 except :
                     self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
