@@ -232,7 +232,10 @@ implemented :
     job's size in number of pages to any external command of your choice.
     The command can read the job's data from its standard input and MUST
     output the job's size on its standard output. Changes to the user
-    account are reported immediately.
+    account are reported immediately. PyKota features an internal
+    software accounting method which handles several Page Description
+    Languages : DSC compliant and binary PostScript, PDF, PCLXL (aka PCL6),
+    PCL3/4/5 and ESC/P2.
     
 PyKota is known to work fine with most laser printers, either with
 software accounting, or with hardware accounting if the printer
@@ -249,8 +252,8 @@ SUPPORT CONTRACTS:
 
   (100.0 * NbPrintServers) + (2.5 * NbPrinters) + (0.04 * NbUsers) EUROS.
   
-  This fee includes the VAT, and a free subscription to official  
-  PyKota packages.  
+  This fee includes the VAT, a free subscription to official  
+  PyKota packages, and the latest documentation on paper.
 
   Please send an email to alet@librelogiciel.com if you're
   interested in purchasing such a contract.   
@@ -403,6 +406,10 @@ Download the latest PyKota version from the Subversion tree :
 You can now check if the dependencies are correct by typing :
 
     $ python checkdeps.py
+    
+    An availability report for all the software needed by PyKota
+    will be displayed : you'll have to install the missing
+    software if you want PyKota to work correctly.
     
 To install the software, just type :
 
@@ -622,9 +629,9 @@ Restart CUPS or LPRng, for example under Debian GNU/Linux systems :
 Your users now should be able to print but not exceed their 
 printing quota.
 
-To see printer quota usage, you can use :
+To see printer quota usage on printer hp2100, you can use :
 
-    $ repykota --printer lp
+    $ repykota --printer hp2100
     
 or :
 
@@ -642,6 +649,9 @@ look, especially quota violations will appear in different colors.
 
 For different security concerns, please give a look at the SECURITY
 file which is part of this software.
+
+To diagnose a problem when something doesn't work as expected,
+please read the very first entry in the FAQ document.
            
 ============================================================
 
