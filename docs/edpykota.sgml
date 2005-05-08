@@ -1,12 +1,61 @@
 <!-- $Id$ -->
 
 <chapter>
-  <title id="edpykota">Maintaining the Print Quota DataBase with edpykota</title>
+  <title id="edpykota">Manage the Print Quota DataBase with edpykota</title>
   <para>Last modified on $Date$</para>
   
   <para>
-    <command>edpykota</command> is the command line tool with which you will 
+    <command>edpykota</command> is the main command line tool with which you will 
     maintain your print quota database.
+  </para>
+  
+  <para>
+    You'll use this tool to create, manage or delete print quota entries for users
+    or users groups on printers or printers groups.
+  </para>
+  
+  <para>
+    By default, before being allowed to print through <application>PyKota</application>,
+    an user must exist in the database and have a print quota entry on every printer
+    he should be allowed to use. The simplest way to add an user named <literal>jerome</literal> to the database is
+    to type :
+<screen>    
+$ edpykota --add --noquota jerome
+</screen>
+  </para>
+  
+  <para>
+    The command above has created user <literal>jerome</literal> in the database, and has automatically
+    created print quota entries with no limit for this user on all existing printers. This means
+    that user <literal>jerome</literal> is allowed to print without limitation, but that full accounting
+    will still be done for this user : you'll know whenever he prints and how much.
+  </para>
+  
+  <para>
+    You can apply two sorts of print quotas to users : page quotas, and account balance quotas.
+    <itemizedlist>
+      <listitem>
+        <para>
+          Page quotas are defined for each user on each printer. This means that an user can be
+          limited to print more than 20 pages on printer <literal>HP2100</literal> while still
+          being allowed to print 500 pages on printer <literal>TekTro</literal>.
+        </para>
+      </listitem>  
+      <listitem>
+        <para>
+          Account balance quotas are defined once for each user. You give a number of credits
+          to an user, and whenever he prints on any printer, his number of credits diminishes
+          by the cost of the current print job, until his balance reaches 0.
+          In other terms, while page quotas are specific to a particular printer for a particular
+          user, account balance quotas are shared between all printers for a particular user.
+        </para>
+      </listitem>  
+    </itemizedlist>  
+    This means that you have to choose which type of quota you want for each user.
+    The default mode is page quotas, but if you pass <literal>--limitby balance</literal>
+    as command line options to <command>edpykota</command>, the users onto which the command
+    will apply will be limited by the value of their account instead of by a number of
+    pages.
   </para>
   
   <para>
@@ -65,6 +114,11 @@
         </para>
       </listitem>
     </itemizedlist>
+  </para>
+  
+  <para>
+    For more details on the use of <command>edpykota</command>, please see this command's manual
+    page or help.
   </para>
   
 </chapter>
