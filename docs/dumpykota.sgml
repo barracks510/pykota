@@ -54,6 +54,27 @@
   </para>
   
   <para>
+    An important feature of this command is the possibility to use
+    a simple but powerful filtering mechanism to only export the datas
+    you want. You can pass any number of filter expressions which will
+    be ANDed together to select only certain records in the database.
+    For example the filter expression <literal>username=jerome</literal>
+    would only dump datas pertaining to user <literal>jerome</literal>.
+  </para>
+  
+  <para>
+    Several keys like <literal>username</literal> are possible, but some
+    only apply to certain data types. Using a key which is not supported
+    for a particular data type will return an empty result.
+    <tip><title>Tip</title>
+      <para>
+        Please refer to dumpykota's help or manual page to obtain
+        the complete list of supported keys.
+      </para>
+    </tip>  
+  </para>
+  
+  <para>
     This command could also be used if you plan to write your own management
     tools : just write wrappers around the <command>pkprinters</command>,
     <command>edpykota</command>, and <command>dumpykota</command>
