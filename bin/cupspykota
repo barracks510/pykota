@@ -220,8 +220,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 (billingcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
             self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
             self.logdebug("Billing Code : %s" % (billingcode or "None"))    
-            os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = clienthost or ""
-            os.environ["PYKOTAJOBBILLING"] = billingcode or ""
+            os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
+            os.environ["PYKOTAJOBBILLING"] = str(billingcode or "")
             
             # enters first phase
             os.environ["PYKOTAPHASE"] = "BEFORE"
