@@ -653,7 +653,7 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug(_("Printing system %s, args=%s") % (str(self.printingsystem), arguments))
         
-        self.username = self.username or 'root' # when printing test page from CUPS web interface, username is empty
+        self.username = self.username or pwd.getpwuid(os.geteuid())[0] # use CUPS' user when printing test page from CUPS web interface, otherwise username is empty
         
         # do we want to strip out the Samba/Winbind domain name ?
         separator = self.config.getWinbindSeparator()

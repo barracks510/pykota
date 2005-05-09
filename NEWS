@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.23alpha1 :   
     
+        - Sets current username to the user CUPS runs as instead of "root"
+          when printing test pages from CUPS' web interface (because
+          the username is empty in this case).
+          
         - Fix for strange values in job-originating-hostname
         
     - 1.22 : 
