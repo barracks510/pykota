@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
 
+        - Add date filtering options to dumpykota, something like 
+                date=+20050101 date=-20050201
+          to dump all jobs printed between January 1st 2005 included      
+          and February 1st 2005 not included. This looks ugly but
+          at least we avoid the problematic '<' and '>' on command
+          lines, which would mandate the use of quotes...
+        
         - Make the PyKota's logo URL a new configuration directive.
         
         - Pass-through mode for printers : history correctly filled (including
