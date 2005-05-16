@@ -416,7 +416,8 @@ privacy : no
 # accounter: hardware(pjl)
 # accounter: software(/usr/bin/pkpgcounter)
 #
-# The following is only allowed since PyKota 1.21 
+# The following, software without any argument, works since PyKota 1.21 
+# and uses PyKota's internal parser.
 accounter: software()
 
 # What should we do if the accounter's subprocess doesn't return
