@@ -39,7 +39,7 @@ from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError, crashed
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
-from pykota.ipp import IPPMessage, PyKotaIPPError
+from pykota.ipp import IPPMessage, IPPError
     
 class PyKotaPopen4(popen2.Popen4) :
     """Our own class to execute real backends.
@@ -214,12 +214,19 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
                 ippdatafile.close()
             self.dropPriv()    
-            clienthost = ippmessage.get("job-originating-host-name") 
-            billingcode = ippmessage.get("job-billing")
+            
+            try :
+                (chtype, clienthost) = ippmessage.operation_attributes.get("job-originating-host-name", \
+                                          ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
+                (jbtype, billingcode) = ippmessage.job_attributes.get("job-billing", (None, None))
+            except AttributeError :    
+                clienthost = None
+                billingcode = None
             if clienthost is None :
                 (billingcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
             self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
             self.logdebug("Billing Code : %s" % (billingcode or "None"))    
+            
             os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
             os.environ["PYKOTAJOBBILLING"] = str(billingcode or "")
             

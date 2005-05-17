@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha2 :
+    
+        - Major rewrite of the IPP message parsing code to definitely
+          fix the job-originating-hostname IPP attribute problem.
+        
     - 1.23alpha1 :   
     
         - Sets current username to the user CUPS runs as instead of "root"
