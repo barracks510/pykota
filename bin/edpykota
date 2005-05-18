@@ -345,7 +345,10 @@ class EdPyKota(PyKotaTool) :
             else :    
                 limitby = protoentry.LimitBy
                 balancevalue = protoentry.AccountBalance
-                balance = str(abs(balancevalue))
+                if balancevalue is not None :
+                    balance = str(abs(balancevalue))
+                else :    
+                    balance = None
                 overcharge = getattr(protoentry, "OverCharge", None)
             
         todelete = {}    
