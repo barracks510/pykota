@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.23alpha2 :
     
+        - Fixed edpykota --prototype with balance.
+        
         - Major rewrite of the IPP message parsing code to definitely
           fix the job-originating-hostname IPP attribute problem.
         
