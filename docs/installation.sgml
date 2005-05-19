@@ -706,6 +706,47 @@ $ chmod 640 ~pykota/pykotadmin.conf
     </para>
     
     <para>
+      On some systems, you may be able to strenghten permissions like this :
+      <screen>
+$ chown pykota.pykota ~pykota/pykota.conf      
+$ chmod 640 ~pykota/pykota.conf      
+$ chown pykota.pykota ~pykota/pykotadmin.conf      
+$ chmod 600 ~pykota/pykotadmin.conf      
+      </screen>
+    </para>
+    
+    <para>
+      And on other ones, you may need to relax them, and change the files' owner :
+      <screen>
+$ chown lp.pykota ~pykota/pykota.conf      
+$ chmod 640 ~pykota/pykota.conf      
+$ chown lp.pykota ~pykota/pykotadmin.conf      
+$ chmod 640 ~pykota/pykotadmin.conf      
+      </screen>
+    </para>
+    
+    <para>
+      This all depends on the printing system you are using, and the user the
+      printing system is usually running as. You need to remember two things :
+      
+      <itemizedlist>
+        <listitem>
+          <para>
+            The user your printing system runs as MUST be allowed to read
+            both <application>PyKota</application>'s configuration files.
+          </para>  
+        </listitem>  
+        <listitem>        
+          <para>
+            Any user who can read <filename>pykotadmin.conf</filename>
+            is a <application>PyKota</application> administrator, and
+            can do whatever he wants to the print quota database.
+          </para>
+        </listitem>
+      </itemizedlist>  
+    </para>
+    
+    <para>
       Don't forget to restart your print server sofware if you changed group membership for the user it runs
       as, otherwise your change wouldn't be taken into account.
     </para>
