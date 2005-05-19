@@ -37,15 +37,21 @@ PyKota's FAQ :
   
     It's probably best to do this :
     
-        $ chown pykota.pykota pykota.conf pykotadmin.conf
-        $ chmod 640 pykota.conf
-        $ chmod 600 pykotadmin.conf
+        $ chown pykota.pykota ~pykota/pykota.conf ~pykota/pykotadmin.conf
+        $ chmod 640 ~pykota/pykota.conf
+        $ chmod 600 ~pykota/pykotadmin.conf
         
     Then the user 'pykota' will be the only PyKota Administrator    
     (with user 'root' of course), but all members of the 'pykota'
     group will be allowed to use unrestricted PyKota commands
     like repykota.
     
+    But on some systems, the following may be needed instead :
+      
+        $ chown lp.pykota pykota.conf pykotadmin.conf
+        $ chmod 640 pykota.conf
+        $ chmod 640 pykotadmin.conf
+        
   * How can I limit my users to N pages per day (month/year) ?
   
     The easiest way to do this is to create their print quota

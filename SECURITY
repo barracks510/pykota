@@ -48,19 +48,24 @@ How to improve PyKota's security :
     user the printing system is run as can read it. With CUPS under 
     Debian you may want to do : 
     
-        $ chown pykota.pykota pykota.conf pykotadmin.conf    
-        $ chmod 640 pykota.conf
-        $ chmod 600 pykotadmin.conf
+        $ chown pykota.pykota ~pykota/pykota.conf ~pykota/pykotadmin.conf    
+        $ chmod 640 ~pykota/pykota.conf
+        $ chmod 600 ~pykota/pykotadmin.conf
         
     Depending on your needs, you may want to put the user the printing 
     system is run as in the group 'pykota', and relax permissions a bit 
     so that this user can read the pykotadmin.conf file while printing. 
     For example : 
     
-        $ chmod 640 pykotadmin.conf
+        $ chmod 640 ~pykota/pykotadmin.conf
         $ adduser lp pykota
           (this makes user 'lp' a member of group 'pykota')
     
+    Another solution, needed on some systems :
+    
+        $ chmod a+rx ~pykota/
+        $ chown lp.pykota ~pykota/pykota.conf ~pykota/pykotadmin.conf 
+        
     Letting any user read PyKota administrator's configuration file may 
     expose passwords or database information which would allow write 
     access to the database, and so may transform your print quota 
