@@ -24,6 +24,8 @@
 import sys
 import os
 import pwd
+from xml.sax import saxutils
+
 from mx import DateTime
 
 try :
@@ -112,9 +114,14 @@ class DumPyKota(PyKotaTool) :
     def dumpWithSeparator(self, separator, entries) :    
         """Dumps datas with a separator."""
         for entry in entries :
-            line = separator.join([ '"%s"' % field for field in entry ])
+            line = []
+            for value in entry :
+                if type(value).__name__ in ("str", "NoneType") :
+                    line.append('"%s"' % str(value).replace(separator, "\\%s" % separator).replace('"', '\\"'))
+                else :    
+                    line.append(str(value))
             try :
-                self.outfile.write("%s\n" % line)
+                self.outfile.write("%s\n" % separator.join(line))
             except IOError, msg :    
                 sys.stderr.write("%s : %s\n" % (_("PyKota data dumper failed : I/O error"), msg))
                 return -1
@@ -164,13 +171,17 @@ class DumPyKota(PyKotaTool) :
         for entry in entries[1:] :
             x._push()
             x.entry()
-            for i in range(len(entry)) :
-                value = str(entry[i])
-                typval = type(entry[i]).__name__
-                try :
-                    value = unicode(value, self.getCharset()).encode("UTF-8")
-                except UnicodeError :    
-                    pass
-                x.attribute(value, type=typval, name=headers[i])
+            for (header, value) in zip(headers, entry) :
+                strvalue = str(value)
+                typval = type(value).__name__
+                if header in ("filename", "title", "options", "billingcode") \
+                          and (typval == "str") :
+                    try :
+                        strvalue = unicode(strvalue, self.getCharset()).encode("UTF-8")
+                    except UnicodeError :    
+                        pass
+                    strvalue = saxutils.escape(strvalue, { "'" : "&apos;", \
+                                                           '"' : "&quot;" })
+                x.attribute(strvalue, type=typval, name=header)
             x._pop()    
         x._output(self.outfile)

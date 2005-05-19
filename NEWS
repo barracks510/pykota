@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.23alpha3 :
     
+        - Data dumper improved : it's faster and now datas are correctly 
+          escaped.
+        
         - The URL to the logo displayed in the CGI scripts is configurable.
         
     - 1.23alpha2 :
