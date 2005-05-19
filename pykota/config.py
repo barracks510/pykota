@@ -142,6 +142,12 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Option logger only supports values in %s") % str(validloggers)
         return logger    
         
+    def getLogoURL(self) :
+        """Returns the URL to use for the logo in the CGI scripts."""
+        url = self.getGlobalOption("logourl", ignore=1) or \
+                   "http://www.librelogiciel.com/software/PyKota/pykota.png"
+        return url.strip()           
+    
     def getAccounterBackend(self, printername) :    
         """Returns the accounter backend to use for a given printer.
         

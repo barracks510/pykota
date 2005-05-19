@@ -48,7 +48,7 @@ header = """Content-type: text/html
         <tr>
           <td>
             <p>
-              <a href="http://www.librelogiciel.com/software/"><img src="http://www.librelogiciel.com/software/PyKota/pykota.png?version=%s" alt="PyKota's Logo" /></a>
+              <a href="http://www.librelogiciel.com/software/"><img src="%s?version=%s" alt="PyKota's Logo" /></a>
               <br />
               <a href="http://www.librelogiciel.com/software/">PyKota v%s</a>
             </p>
@@ -84,7 +84,7 @@ class PyKotaDumperGUI(DumPyKota) :
     def guiDisplay(self) :
         """Displays the dumper interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Data Dumper"), version.__version__, version.__version__, _("PyKota Data Dumper"), _("Dump"), _("Please click on the above button"))
+        print header % (self.getCharset(), _("PyKota Data Dumper"), self.config.getLogoURL(), version.__version__, version.__version__, _("PyKota Data Dumper"), _("Dump"), _("Please click on the above button"))
         print self.htmlListDataTypes(self.options.get("data", "")) 
         print "<br />"
         print self.htmlListFormats(self.options.get("format", ""))

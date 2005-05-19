@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha3 :
+    
+        - The URL to the logo displayed in the CGI scripts is configurable.
+        
     - 1.23alpha2 :
     
         - Fixed edpykota --prototype with balance.

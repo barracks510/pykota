@@ -191,6 +191,13 @@ logger: system
 # logs.
 debug : Yes
 
+#
+# The URL to PyKota's logo when used from the CGI scripts.
+# You can use your own logo by modifying the URL below.
+# If not defined, the default URL is the same as the
+# one defined below
+logourl : http://www.librelogiciel.com/software/PyKota/pykota.png
+
 # Mail server to use to warn users
 # If the value is not set then localhost is used.
 smtpserver: localhost

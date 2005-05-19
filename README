@@ -647,7 +647,7 @@ also use the CSS stylesheet present in the stylesheets/ subdirectory
 and put it at your web server's DocumentRoot, to benefit from a nicer 
 look, especially quota violations will appear in different colors.
 
-For different security concerns, please give a look at the SECURITY
+For additionnal security concerns, please give a look at the SECURITY
 file which is part of this software.
 
 To diagnose a problem when something doesn't work as expected,

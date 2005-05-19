@@ -35,8 +35,6 @@ TODO, in no particular order :
           at least we avoid the problematic '<' and '>' on command
           lines, which would mandate the use of quotes...
         
-        - Make the PyKota's logo URL a new configuration directive.
-        
         - Pass-through mode for printers : history correctly filled (including
           job size) but no impact on user's page counter or account
           balance : this is meant to be a temporary situation for
