@@ -59,13 +59,16 @@
     you want. You can pass any number of filter expressions which will
     be ANDed together to select only certain records in the database.
     For example the filter expression <literal>username=jerome</literal>
-    would only dump datas pertaining to user <literal>jerome</literal>.
+    would only dump datas pertaining to user <literal>jerome</literal>
+    while the filter expression <literal>start=2005</literal> used
+    when dumping the history would only dump jobs printed during
+    the year <literal>2005</literal>.
   </para>
   
   <para>
     Several keys like <literal>username</literal> are possible, but some
     only apply to certain data types. Using a key which is not supported
-    for a particular data type will return an empty result.
+    for a particular data type may return an incorrect result.
     <tip><title>Tip</title>
       <para>
         Please refer to dumpykota's help or manual page to obtain

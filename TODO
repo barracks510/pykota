@@ -25,13 +25,6 @@ TODO, in no particular order :
           print jobs' titles (only appear when printing as raw from
           Winboxes it seems)
 
-        - Add date filtering options to dumpykota, something like 
-                date=+20050101 date=-20050201
-          to dump all jobs printed between January 1st 2005 included      
-          and February 1st 2005 not included. This looks ugly but
-          at least we avoid the problematic '<' and '>' on command
-          lines, which would mandate the use of quotes...
-        
         - Pass-through mode for printers : history correctly filled (including
           job size) but no impact on user's page counter or account
           balance : this is meant to be a temporary situation for

@@ -29,6 +29,8 @@ import os
 import cgi
 import urllib
 
+from mx import DateTime
+
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.reporter import PyKotaReporterError, openReporter
@@ -202,7 +204,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 else :    
                     billingcode = None
                 self.report = ["<h2>%s</h2>" % _("History")]    
-                history = self.storage.retrieveHistory(user, printer, datelimit, hostname, billingcode)
+                history = self.storage.retrieveHistory(user, printer, hostname, billingcode, end=datelimit)
                 if not history :
                     self.report.append("<h3>%s</h3>" % _("Empty"))
                 else :
@@ -256,8 +258,9 @@ class PyKotaReportGUI(PyKotaTool) :
                                                             billingcode_url, \
                                                             job.JobPages)])))
                     self.report.append('</table>')
+                    d = DateTime.ISO.ParseDateTime(job.JobDate)       
                     dico = { "history" : 1,
-                             "datelimit" : job.JobDate,
+                             "datelimit" : "%04i%02i%02i %02i:%02i:%02i" % (d.year, d.month, d.day, d.hour, d.minute, d.second),
                            }
                     if user and user.Exists :
                         dico.update({ "username" : user.Name })

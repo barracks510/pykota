@@ -64,6 +64,8 @@ class DumPyKota(PyKotaTool) :
                         "pgroupname",
                         "hostname",
                         "billingcode",
+                        "start",
+                        "end",
                       ]
     def main(self, arguments, options, restricted=1) :
         """Print Quota Data Dumper."""

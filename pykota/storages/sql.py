@@ -123,12 +123,22 @@ class SQLStorage :
         
     def extractHistory(self, extractonly={}) :
         """Extracts all jobhistory records."""
+        startdate = extractonly.get("start")
+        enddate = extractonly.get("end")
+        for limit in ("start", "end") :
+            try :
+                del extractonly[limit]
+            except KeyError :    
+                pass
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
+        (startdate, enddate) = self.cleanDates(startdate, enddate)
+        if startdate and enddate : 
+            thefilter = "%s AND jobdate>=%s AND jobdate<=%s" % (thefilter, self.doQuote(startdate), self.doQuote(enddate))
         result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid %s ORDER BY jobhistory.id ASC" % thefilter)
         return self.prepareRawResult(result)
-        
+            
     def getAllUsersNames(self) :    
         """Extracts all user names."""
         usernames = []
@@ -497,8 +507,8 @@ class SQLStorage :
         """Removes a printer from a printer group."""
         self.doModify("DELETE FROM printergroupsmembers WHERE groupid=%s AND printerid=%s" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
-    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, billingcode=None, limit=100) :
-        """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
+    def retrieveHistory(self, user=None, printer=None, hostname=None, billingcode=None, limit=100, start=None, end=None) :
+        """Retrieves all print jobs for user on printer (or all) between start and end date, limited to first 100 results."""
         query = "SELECT jobhistory.*,username,printername FROM jobhistory,users,printers WHERE users.id=userid AND printers.id=printerid"
         where = []
         if user is not None : # user.ident is None anyway if user doesn't exist
@@ -509,8 +519,10 @@ class SQLStorage :
             where.append("hostname=%s" % self.doQuote(hostname))
         if billingcode is not None :    
             where.append("billingcode=%s" % self.doQuote(self.userCharsetToDatabase(billingcode)))
-        if datelimit is not None :    
-            where.append("jobdate<=%s" % self.doQuote(datelimit))
+        if start is not None :    
+            where.append("jobdate>=%s" % self.doQuote(start))
+        if end is not None :    
+            where.append("jobdate<=%s" % self.doQuote(end))
         if where :    
             query += " AND %s" % " AND ".join(where)
         query += " ORDER BY id DESC"

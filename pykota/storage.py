@@ -22,6 +22,8 @@
 #
 #
 
+from mx import DateTime
+
 class PyKotaStorageError(Exception):
     """An exception for Quota Storage related stuff."""
     def __init__(self, message = ""):
@@ -586,6 +588,61 @@ class BaseStorage :
                 except UnicodeError :    
                     pass
         return text
+        
+    def cleanDates(self, startdate, enddate) :    
+        """Clean the dates to create a correct filter."""
+        if startdate is None :
+            startdate = enddate
+        if enddate is None :    
+            enddate = startdate
+        if (startdate is None) and (enddate is None) :    
+            return (None, None)
+        if startdate.isdigit() and enddate.isdigit() :
+            datedict = { "start" : startdate, "end" : enddate }    
+            for limit in datedict.keys() :
+                dateval = datedict[limit]
+                lgdateval = len(dateval)
+                if lgdateval == 4 :
+                    if limit == "start" : 
+                        dateval = "%s0101 00:00:00" % dateval
+                    else :  
+                        dateval = "%s1231 23:59:59" % dateval
+                elif lgdateval == 6 :
+                    if limit == "start" : 
+                        dateval = "%s01 00:00:00" % dateval
+                    else :  
+                        mxdate = DateTime.ISO.ParseDateTime("%s01 00:00:00" % dateval)
+                        dateval = "%s%02i 23:59:59" % (dateval, mxdate.days_in_month)
+                elif lgdateval == 8 :
+                    if limit == "start" : 
+                        dateval = "%s 00:00:00" % dateval
+                    else :  
+                        dateval = "%s 23:59:59" % dateval
+                elif lgdateval == 10 :
+                    if limit == "start" : 
+                        dateval = "%s %s:00:00" % (dateval[:8], dateval[8:])
+                    else :  
+                        dateval = "%s %s:59:59" % (dateval[:8], dateval[8:])
+                elif lgdateval == 12 :
+                    if limit == "start" : 
+                        dateval = "%s %s:%s:00" % (dateval[:8], dateval[8:10], dateval[10:])
+                    else :  
+                        dateval = "%s %s:%s:59" % (dateval[:8], dateval[8:10], dateval[10:])
+                elif lgdateval == 14 :        
+                    dateval = "%s %s:%s:%s" % (dateval[:8], dateval[8:10], dateval[10:12], dateval[12:])
+                else :    
+                    dateval = None
+                try :    
+                    DateTime.ISO.ParseDateTime(dateval)
+                except :    
+                    dateval = None
+                datedict[limit] = dateval    
+            (start, end) = (datedict["start"], datedict["end"])
+            if start > end :
+                (start, end) = (end, start)
+            return (start, end)    
+        else :            
+            return (None, None)
         
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""

@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha4 :
+    
+        - The data dumper now accept start= and end= to specify the starting
+          and ending dates to dump the history.
+          
     - 1.23alpha3 :
     
         - The destination link for the logo used in CGI scripts is 

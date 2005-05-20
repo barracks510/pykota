@@ -1043,8 +1043,8 @@ class Storage(BaseStorage) :
                      }  
             self.doModify(pgroup.ident, fields)         
             
-    def retrieveHistory(self, user=None, printer=None, datelimit=None, hostname=None, billingcode=None, limit=100) :
-        """Retrieves all print jobs for user on printer (or all) before date, limited to first 100 results."""
+    def retrieveHistory(self, user=None, printer=None, hostname=None, billingcode=None, limit=100, start=None, end=None) :
+        """Retrieves all print jobs for user on printer (or all) between start and end date, limited to first 100 results."""
         precond = "(objectClass=pykotaJob)"
         where = []
         if user is not None :
@@ -1109,8 +1109,11 @@ class Storage(BaseStorage) :
                 hour = int(date[8:10])
                 minute = int(date[10:12])
                 second = int(date[12:14])
-                job.JobDate = "%04i-%02i-%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
-                if (datelimit is None) or (job.JobDate <= datelimit) :
+                job.JobDate = "%04i%02i%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
+                if ((start is None) and (end is None)) or \
+                   ((start is None) and (job.JobDate <= end)) or \
+                   ((end is None) and (job.JobDate >= start)) or \
+                   ((job.JobDate >= start) and (job.JobDate <= end)) :
                     job.UserName = fields.get("pykotaUserName")[0]
                     job.PrinterName = fields.get("pykotaPrinterName")[0]
                     job.Exists = 1
@@ -1334,7 +1337,15 @@ class Storage(BaseStorage) :
             printer = self.getPrinter(pname)
         else :    
             printer = None
-        entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), limit=None)
+        startdate = extractonly.get("start")
+        enddate = extractonly.get("end")
+        for limit in ("start", "end") :
+            try :
+                del extractonly[limit]
+            except KeyError :    
+                pass
+        (startdate, enddate) = self.cleanDates(startdate, enddate)
+        entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), limit=None, start=startdate, end=enddate)
         if entries :
             result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode") ] 
             for entry in entries :
