@@ -198,6 +198,14 @@ debug : Yes
 # one defined below
 logourl : http://www.librelogiciel.com/software/PyKota/pykota.png
 
+# 
+# The destination to which the web browser will be redirected
+# when you click on the logo defined above.
+# If not defined, the default URL is the same as the
+# one defined below
+logolink : http://www.librelogiciel.com/software/
+
+#
 # Mail server to use to warn users
 # If the value is not set then localhost is used.
 smtpserver: localhost

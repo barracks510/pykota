@@ -43,36 +43,45 @@ header = """Content-type: text/html
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
-    <form action="printquota.cgi" method="POST">
-      <table>
-        <tr>
-          <td>
-            <p>
-              <a href="http://www.librelogiciel.com/software/"><img src="%s?version=%s" alt="PyKota's Logo" /></a>
-              <br />
-              <a href="http://www.librelogiciel.com/software/">PyKota v%s</a>
-            </p>
-          </td>
-          <td colspan="2">
-            <h1>%s</h1>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3" align="center">
-            <input type="submit" name="report" value="%s" />
-          </td>
-        </tr>
-      </table>"""
+    <p>
+      <form action="printquota.cgi" method="POST">
+        <table>
+          <tr>
+            <td>
+              <p>
+                <a href="%s"><img src="%s?version=%s" alt="PyKota's Logo" /></a>
+                <br />
+                <a href="%s">PyKota v%s</a>
+              </p>
+            </td>
+            <td colspan="2">
+              <h1>%s</h1>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" align="center">
+              <input type="submit" name="report" value="%s" />
+            </td>
+          </tr>
+        </table>"""
     
 footer = """
-      <table>
-        <tr>
-          <td colspan="3" align="center">
-            <input type="submit" name="report" value="%s" />
-          </td>
-        </tr>
-      </table>  
-    </form>
+        <table>
+          <tr>
+            <td colspan="3" align="center">
+              <input type="submit" name="report" value="%s" />
+            </td>
+          </tr>
+        </table>  
+      </form>
+    </p>
+    <hr width="25%%" />
+    <p>
+      <font size="-2">
+        <a href="http://www.librelogiciel.com/software/">%s</a>
+        &copy; 2003, 2004, 2005 %s 
+      </font>
+    </p>
   </body>
 </html>"""  
 
@@ -81,9 +90,14 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Reports"), self.config.getLogoURL(), version.__version__, version.__version__, _("PyKota Reports"), _("Report"))
+        print header % (self.getCharset(), _("PyKota Reports"), \
+                        self.config.getLogoLink(), \
+                        self.config.getLogoURL(), version.__version__, \
+                        self.config.getLogoLink(), \
+                        version.__version__, _("PyKota Reports"), \
+                        _("Report"))
         print self.body
-        print footer % _("Report")
+        print footer % (_("Report"), version.__doc__, version.__author__)
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""

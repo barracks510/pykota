@@ -147,6 +147,12 @@ class PyKotaConfig :
         url = self.getGlobalOption("logourl", ignore=1) or \
                    "http://www.librelogiciel.com/software/PyKota/pykota.png"
         return url.strip()           
+        
+    def getLogoLink(self) :
+        """Returns the URL to go to when the user clicks on the logo in the CGI scripts."""
+        url = self.getGlobalOption("logolink", ignore=1) or \
+                   "http://www.librelogiciel.com/software/"
+        return url.strip()           
     
     def getAccounterBackend(self, printername) :    
         """Returns the accounter backend to use for a given printer.

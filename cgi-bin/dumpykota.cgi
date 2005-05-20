@@ -43,39 +43,48 @@ header = """Content-type: text/html
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
-    <form action="dumpykota.cgi" method="GET">
-      <table>
-        <tr>
-          <td>
-            <p>
-              <a href="http://www.librelogiciel.com/software/"><img src="%s?version=%s" alt="PyKota's Logo" /></a>
-              <br />
-              <a href="http://www.librelogiciel.com/software/">PyKota v%s</a>
-            </p>
-          </td>
-          <td colspan="2">
-            <h1>%s</h1>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3" align="center">
-            <input type="submit" name="report" value="%s" />
-          </td>
-        </tr>
-      </table>
-      <p>
-        %s
-      </p>"""
+    <p>
+      <form action="dumpykota.cgi" method="GET">
+        <table>
+          <tr>
+            <td>
+              <p>
+                <a href="%s"><img src="%s?version=%s" alt="PyKota's Logo" /></a>
+                <br />
+                <a href="%s">PyKota v%s</a>
+              </p>
+            </td>
+            <td colspan="2">
+              <h1>%s</h1>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" align="center">
+              <input type="submit" name="report" value="%s" />
+            </td>
+          </tr>
+        </table>
+        <p>
+          %s
+        </p>"""
     
 footer = """
-      <table>
-        <tr>
-          <td colspan="3" align="center">
-            <input type="submit" name="report" value="%s" />
-          </td>
-        </tr>
-      </table>  
-    </form>
+        <table>
+          <tr>
+            <td colspan="3" align="center">
+              <input type="submit" name="report" value="%s" />
+            </td>
+          </tr>
+        </table>  
+      </form>
+    </p>  
+    <hr width="25%%" />
+    <p>
+      <font size="-2">
+        <a href="http://www.librelogiciel.com/software/">%s</a>
+        &copy; 2003, 2004, 2005 %s 
+      </font>
+    </p>
   </body>
 </html>"""  
 
@@ -84,13 +93,18 @@ class PyKotaDumperGUI(DumPyKota) :
     def guiDisplay(self) :
         """Displays the dumper interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Data Dumper"), self.config.getLogoURL(), version.__version__, version.__version__, _("PyKota Data Dumper"), _("Dump"), _("Please click on the above button"))
+        print header % (self.getCharset(), _("PyKota Data Dumper"), \
+                        self.config.getLogoLink(), \
+                        self.config.getLogoURL(), version.__version__, \
+                        self.config.getLogoLink(), \
+                        version.__version__, _("PyKota Data Dumper"), \
+                        _("Dump"), _("Please click on the above button"))
         print self.htmlListDataTypes(self.options.get("data", "")) 
         print "<br />"
         print self.htmlListFormats(self.options.get("format", ""))
         print "<br />"
         print self.htmlFilterInput(" ".join(self.arguments))
-        print footer % _("Dump")
+        print footer % (_("Dump"), version.__doc__, version.__author__)
         
     def htmlListDataTypes(self, selected="") :    
         """Displays the datatype selection list."""
