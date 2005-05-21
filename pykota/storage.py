@@ -597,10 +597,34 @@ class BaseStorage :
             enddate = startdate
         if (startdate is None) and (enddate is None) :    
             return (None, None)
-        if startdate.isdigit() and enddate.isdigit() :
+            
+        now = DateTime.now()    
+        nameddates = ('yesterday', 'today', 'now', 'tomorrow')
+        if ((startdate.lower() in nameddates) or startdate.isdigit()) and \
+           ((enddate.lower() in nameddates) or enddate.isdigit()) : 
             datedict = { "start" : startdate, "end" : enddate }    
             for limit in datedict.keys() :
                 dateval = datedict[limit]
+                if dateval in nameddates :
+                    if limit == "start" :
+                        if dateval == "yesterday" :
+                            dateval = (now - 1).Format("%Y%m%d000000")
+                        elif dateval == "today" :
+                            dateval = now.Format("%Y%m%d000000")
+                        elif dateval == "now" :
+                            dateval = now.Format("%Y%m%d%H%M%S")
+                        else : # tomorrow
+                            dateval = (now + 1).Format("%Y%m%d000000")
+                    else :
+                        if dateval == "yesterday" :
+                            dateval = (now - 1).Format("%Y%m%d235959")
+                        elif dateval == "today" :
+                            dateval = now.Format("%Y%m%d235959")
+                        elif dateval == "now" :
+                            dateval = now.Format("%Y%m%d%H%M%S")
+                        else : # tomorrow
+                            dateval = (now + 1).Format("%Y%m%d235959")
+                        
                 lgdateval = len(dateval)
                 if lgdateval == 4 :
                     if limit == "start" : 

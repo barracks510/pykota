@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha5 :
+    
+        - The data dumper's start= and end= date filtering options now accept 
+          the special keywords 'yesterday', 'today', 'now' and 'tomorrow'.
+          
     - 1.23alpha4 :
     
         - The data dumper now accept start= and end= to specify the starting
