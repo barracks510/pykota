@@ -67,7 +67,7 @@ def crashed(message="Bug in PyKota") :
 
 class Tool :
     """Base class for tools with no database access."""
-    def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, lang="", charset=None, doc="PyKota v%s (c) %s %s" % (version.__version__, version.__copyright__, version.__author__)) :
         """Initializes the command line tool."""
         # did we drop priviledges ?
         self.privdropped = 0
@@ -214,7 +214,7 @@ class Tool :
             self.clean()
         except AttributeError :    
             pass
-        print _(self.documentation) % (version.__version__, version.__author__)
+        print _(self.documentation) % (version.__version__, version.__copyright__, version.__author__, version.__author__)
         sys.exit(0)
         
     def crashed(self, message="Bug in PyKota") :    

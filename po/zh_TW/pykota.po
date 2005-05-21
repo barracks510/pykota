@@ -38,8 +38,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"autopykota v%s (c) %s %s\n"
+"\n"
 "A tool to automate user account creation and initial balance setting.\n"
 "\n"
 "THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !\n"
@@ -143,8 +143,7 @@ msgstr "CUPS %s 不正常的停止運作"
 
 #, python-format
 msgid ""
-"dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"dumpykota v%s (c) %s %s\n"
 "\n"
 "Dumps PyKota database's content.\n"
 "\n"
@@ -253,8 +252,8 @@ msgstr "-d | --data是強制的指令選項，請參閱說明文件"
 
 #, python-format
 msgid ""
-"edpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"edpykota v%s (c) %s %s\n"
+"\n"
 "A Print Quota editor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -577,8 +576,7 @@ msgstr "列印總頁數及列印費用已於列印紀錄中設定"
 
 #, python-format
 msgid ""
-"pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"pkbanner v%s (c) %s %s\n"
 "\n"
 "Generates banners.\n"
 "\n"
@@ -702,7 +700,8 @@ msgstr "%s 是不正確的'pagesize'設定，改為使用預設的A4"
 
 #, python-format
 msgid ""
-"pkhint v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkhint v%s (c) %s %s\n"
+"\n"
 "A tool to give hints on what accounting method is best for each printer.\n"
 "\n"
 "command line usage :\n"
@@ -775,7 +774,7 @@ msgstr "未能自動偵測哪一個硬體記帳方法能夠使用"
 
 #, python-format
 msgid ""
-"pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkmail v%s (c) %s %s\n"
 "\n"
 "Email gateway for PyKota.\n"
 "\n"
@@ -834,8 +833,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkprinters v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"pkprinters v%s (c) %s %s\n"
+"\n"
 "A Printers Manager for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -953,7 +952,8 @@ msgstr "你必須需入列印機名稱"
 
 #, python-format
 msgid ""
-"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pykosd v%s (c) %s %s\n"
+"\n"
 "An OSD quota monitor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -1038,7 +1038,7 @@ msgstr "PyKota 配額還剩 : %.2f"
 
 #, python-format
 msgid ""
-"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pykotme v%s (c) %s %s\n"
 "\n"
 "Gives print quotes to users.\n"
 "\n"
@@ -1110,8 +1110,7 @@ msgstr "於 %s 列印，你所需要的費用為 %.2f"
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"repykota v%s (c) %s %s\n"
 "\n"
 "Generates print quota reports.\n"
 "\n"
@@ -1175,8 +1174,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"warnpykota v%s (c) %s %s\n"
 "\n"
 "Sends mail to users over print quota.\n"
 "\n"

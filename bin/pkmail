@@ -33,7 +33,7 @@ import email
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
 
-__doc__ = N_("""pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres
+__doc__ = N_("""pkmail v%s (c) %s %s
 
 Email gateway for PyKota.
 

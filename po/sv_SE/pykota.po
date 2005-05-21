@@ -37,8 +37,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"autopykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"autopykota v%s (c) %s %s\n"
+"\n"
 "A tool to automate user account creation and initial balance setting.\n"
 "\n"
 "THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !\n"
@@ -143,8 +143,7 @@ msgstr "CUPS bakgrundsprocess %s avbröts oväntat."
 
 #, python-format
 msgid ""
-"dumpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"dumpykota v%s (c) %s %s\n"
 "\n"
 "Dumps PyKota database's content.\n"
 "\n"
@@ -253,8 +252,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"edpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"edpykota v%s (c) %s %s\n"
+"\n"
 "A Print Quota editor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -578,8 +577,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkbanner v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"pkbanner v%s (c) %s %s\n"
 "\n"
 "Generates banners.\n"
 "\n"
@@ -703,7 +701,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkhint v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkhint v%s (c) %s %s\n"
+"\n"
 "A tool to give hints on what accounting method is best for each printer.\n"
 "\n"
 "command line usage :\n"
@@ -777,7 +776,7 @@ msgstr "# inte automatiskt kunde upptäcka vilken metod den skall använda."
 
 #, python-format
 msgid ""
-"pkmail v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pkmail v%s (c) %s %s\n"
 "\n"
 "Email gateway for PyKota.\n"
 "\n"
@@ -836,8 +835,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"pkprinters v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"pkprinters v%s (c) %s %s\n"
+"\n"
 "A Printers Manager for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -955,7 +954,8 @@ msgstr "Du måste skicka med skrivarnamn på kommandoraden"
 
 #, python-format
 msgid ""
-"pykosd v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pykosd v%s (c) %s %s\n"
+"\n"
 "An OSD quota monitor for PyKota.\n"
 "\n"
 "command line usage :\n"
@@ -1040,7 +1040,7 @@ msgstr "PyKota enheter kvar : %.2f"
 
 #, python-format
 msgid ""
-"pykotme v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels Libres\n"
+"pykotme v%s (c) %s %s\n"
 "\n"
 "Gives print quotes to users.\n"
 "\n"
@@ -1112,8 +1112,7 @@ msgstr "Kostnad på skrivare %s : %.2f"
 
 #, python-format
 msgid ""
-"repykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"repykota v%s (c) %s %s\n"
 "\n"
 "Generates print quota reports.\n"
 "\n"
@@ -1177,8 +1176,7 @@ msgstr ""
 
 #, python-format
 msgid ""
-"warnpykota v%s (c) 2003, 2004, 2005 C@LL - Conseil Internet & Logiciels "
-"Libres\n"
+"warnpykota v%s (c) %s %s\n"
 "\n"
 "Sends mail to users over print quota.\n"
 "\n"

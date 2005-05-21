@@ -82,7 +82,7 @@ footer = """
     <p>
       <font size="-2">
         <a href="http://www.librelogiciel.com/software/">%s</a>
-        &copy; 2003, 2004, 2005 %s 
+        &copy; %s %s 
       </font>
     </p>
   </body>
@@ -104,7 +104,7 @@ class PyKotaDumperGUI(DumPyKota) :
         print self.htmlListFormats(self.options.get("format", ""))
         print "<br />"
         print self.htmlFilterInput(" ".join(self.arguments))
-        print footer % (_("Dump"), version.__doc__, version.__author__)
+        print footer % (_("Dump"), version.__doc__, version.__copyright__, version.__author__)
         
     def htmlListDataTypes(self, selected="") :    
         """Displays the datatype selection list."""
