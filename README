@@ -432,7 +432,11 @@ Go to the initscripts subdirectory of PyKota's sources, and choose
 the appropriate storage backend for your configuration. Read carefully
 the associated README file and execute the initialization script
 to create an empty PyKota Storage. Upgrade scripts may be 
-provided as well.
+provided as well. NB : if you use PostgreSQL, a good way to
+make PyKota work first time is to modify PostgreSQL's pg_hba.conf
+to allow the 'trust' database connection mode. However once PyKota
+works it is HIGHLY RECOMMENDED TO CHANGE THIS TO A MORE SECURE
+VALUE.
 
 Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample 
 sample configuration files to /etc/pykota/pykota.conf and 
