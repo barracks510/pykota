@@ -42,6 +42,8 @@ class IPPError(Exception):
         return self.message
     __str__ = __repr__
 
+attributes_types = ("operation", "job", "printer", "unsupported")
+
 class IPPMessage :
     """A class for IPP message files.
     
@@ -70,10 +72,8 @@ class IPPMessage :
         """
         self.debug = debug
         self.data = data
-        self.operation_attributes = {}
-        self.job_attributes = {}
-        self.printer_attributes = {}
-        self.unsupported_attributes = {}
+        for attrtype in attributes_types :
+            setattr(self, "%s_attributes" % attrtype, {})
         self.tags = [ None ] * 256      # by default all tags reserved
         
         # Delimiter tags
@@ -145,7 +145,7 @@ class IPPMessage :
             value = unpack(">I", value)[0]
         oldval = self._curdict.setdefault(name, [])
         oldval.append((tagtype, value))
-        self.printInfo("%s(%s) %s" % (name, tagtype, value))
+        self.printInfo("%s(%s) : %s" % (name, tagtype, value))
         return posend - self.position
         
     def operation_attributes_tag(self) : 
@@ -200,7 +200,7 @@ class IPPMessage :
             raise IPPError, "Unexpected end of IPP message."
             
         # Now transform all one-element lists into single values
-        for attrtype in ("operation", "job", "printer") :
+        for attrtype in attributes_types :
             attrdict = getattr(self, "%s_attributes" % attrtype)
             for (key, value) in attrdict.items() :
                 if len(value) == 1 :
@@ -216,7 +216,7 @@ if __name__ == "__main__" :
         print "IPP version : %s" % message.version
         print "IPP operation Id : %s" % message.operation_id
         print "IPP request Id : %s" % message.request_id
-        for attrtype in ("operation", "job", "printer", "unsupported") :
+        for attrtype in attributes_types :
             attrdict = getattr(message, "%s_attributes" % attrtype)
             if attrdict :
                 print "%s attributes :" % attrtype.title()
