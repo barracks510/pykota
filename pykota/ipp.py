@@ -42,8 +42,6 @@ class IPPError(Exception):
         return self.message
     __str__ = __repr__
 
-attributes_types = ("operation", "job", "printer", "unsupported")
-
 class IPPMessage :
     """A class for IPP message files.
     
@@ -62,6 +60,7 @@ class IPPMessage :
                  for key in attrdict.keys() :
                      print "  %s : %s" % (key, attrdict[key])
     """
+    attributes_types = ("operation", "job", "printer", "unsupported")
     def __init__(self, data, debug=0) :
         """Initializes and parses IPP Message object.
         
@@ -72,7 +71,7 @@ class IPPMessage :
         """
         self.debug = debug
         self.data = data
-        for attrtype in attributes_types :
+        for attrtype in self.attributes_types :
             setattr(self, "%s_attributes" % attrtype, {})
         self.tags = [ None ] * 256      # by default all tags reserved
         
@@ -200,7 +199,7 @@ class IPPMessage :
             raise IPPError, "Unexpected end of IPP message."
             
         # Now transform all one-element lists into single values
-        for attrtype in attributes_types :
+        for attrtype in self.attributes_types :
             attrdict = getattr(self, "%s_attributes" % attrtype)
             for (key, value) in attrdict.items() :
                 if len(value) == 1 :
@@ -216,7 +215,7 @@ if __name__ == "__main__" :
         print "IPP version : %s" % message.version
         print "IPP operation Id : %s" % message.operation_id
         print "IPP request Id : %s" % message.request_id
-        for attrtype in attributes_types :
+        for attrtype in message.attributes_types :
             attrdict = getattr(message, "%s_attributes" % attrtype)
             if attrdict :
                 print "%s attributes :" % attrtype.title()
