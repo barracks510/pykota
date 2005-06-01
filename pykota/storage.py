@@ -600,31 +600,39 @@ class BaseStorage :
             
         now = DateTime.now()    
         nameddates = ('yesterday', 'today', 'now', 'tomorrow')
-        if ((startdate.lower() in nameddates) or startdate.isdigit()) and \
-           ((enddate.lower() in nameddates) or enddate.isdigit()) : 
-            datedict = { "start" : startdate, "end" : enddate }    
-            for limit in datedict.keys() :
-                dateval = datedict[limit]
-                if dateval in nameddates :
+        datedict = { "start" : startdate.lower(), "end" : enddate.lower() }    
+        for limit in datedict.keys() :
+            dateval = datedict[limit]
+            for name in nameddates :
+                if dateval.startswith(name) :
+                    try :
+                        offset = int(dateval[len(name):])
+                    except :    
+                        offset = 0
+                    dateval = dateval[:len(name)]    
                     if limit == "start" :
                         if dateval == "yesterday" :
-                            dateval = (now - 1).Format("%Y%m%d000000")
+                            dateval = (now - 1 + offset).Format("%Y%m%d000000")
                         elif dateval == "today" :
-                            dateval = now.Format("%Y%m%d000000")
+                            dateval = (now + offset).Format("%Y%m%d000000")
                         elif dateval == "now" :
-                            dateval = now.Format("%Y%m%d%H%M%S")
+                            dateval = (now + offset).Format("%Y%m%d%H%M%S")
                         else : # tomorrow
-                            dateval = (now + 1).Format("%Y%m%d000000")
+                            dateval = (now + 1 + offset).Format("%Y%m%d000000")
                     else :
                         if dateval == "yesterday" :
-                            dateval = (now - 1).Format("%Y%m%d235959")
+                            dateval = (now - 1 + offset).Format("%Y%m%d235959")
                         elif dateval == "today" :
-                            dateval = now.Format("%Y%m%d235959")
+                            dateval = (now + offset).Format("%Y%m%d235959")
                         elif dateval == "now" :
-                            dateval = now.Format("%Y%m%d%H%M%S")
+                            dateval = (now + offset).Format("%Y%m%d%H%M%S")
                         else : # tomorrow
-                            dateval = (now + 1).Format("%Y%m%d235959")
-                        
+                            dateval = (now + 1 + offset).Format("%Y%m%d235959")
+                    break
+                    
+            if not dateval.isdigit() :
+                dateval = None
+            else :    
                 lgdateval = len(dateval)
                 if lgdateval == 4 :
                     if limit == "start" : 
@@ -660,13 +668,11 @@ class BaseStorage :
                     DateTime.ISO.ParseDateTime(dateval)
                 except :    
                     dateval = None
-                datedict[limit] = dateval    
-            (start, end) = (datedict["start"], datedict["end"])
-            if start > end :
-                (start, end) = (end, start)
-            return (start, end)    
-        else :            
-            return (None, None)
+            datedict[limit] = dateval    
+        (start, end) = (datedict["start"], datedict["end"])
+        if start > end :
+            (start, end) = (end, start)
+        return (start, end)    
         
 def openConnection(pykotatool) :
     """Returns a connection handle to the appropriate Quota Storage Database."""

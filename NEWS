@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha6 :
+    
+        - The data dumper's start= and end= date filtering options now
+          accept a positive or negative offset to be added to the special
+          keywords 'yesterday', 'today', 'now', 'tomorrow'. 
+          e.g. : dumpykota --data history start=yesterday-5 end=today
+          
     - 1.23alpha5 :
     
         - The data dumper's start= and end= date filtering options now accept 

@@ -1339,11 +1339,6 @@ class Storage(BaseStorage) :
             printer = None
         startdate = extractonly.get("start")
         enddate = extractonly.get("end")
-        for limit in ("start", "end") :
-            try :
-                del extractonly[limit]
-            except KeyError :    
-                pass
         (startdate, enddate) = self.cleanDates(startdate, enddate)
         entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), limit=None, start=startdate, end=enddate)
         if entries :
