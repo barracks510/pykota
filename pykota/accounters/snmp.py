@@ -22,7 +22,7 @@
 #
 #
 
-ITERATIONDELAY = 1.0   # 1 Second
+ITERATIONDELAY = 1.5   # 1.5 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
 
 import sys
@@ -158,7 +158,7 @@ else :
                     idle_flag = 1       # Standby / Powersave is considered idle
                 if idle_flag :    
                     idle_num += 1
-                    if idle_num > STABILIZATIONDELAY :
+                    if idle_num >= STABILIZATIONDELAY :
                         # printer status is stable, we can exit
                         break
                 else :    

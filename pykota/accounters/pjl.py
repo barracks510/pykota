@@ -28,10 +28,20 @@ import socket
 import time
 import signal
 
-ITERATIONDELAY = 1.0   # 1 Second
+# NB : in fact these variables don't do much, since the time 
+# is in fact wasted in the sock.recv() blocking call, with the timeout
+ITERATIONDELAY = 1   # 1 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
 
-pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
+# Here's the real thing :
+TIMEOUT = 3
+
+# Old method : pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
+# Here's a new method, which seems to work fine on my HP2300N, while the 
+# previous one didn't.
+# TODO : We could also experiment with USTATUS JOB=ON and we would know for sure 
+# when the job is finished, without having to poll the printer repeatedly.
+pjlMessage = "\033%-12345X@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n@PJL USTATUS DEVICE=OFF\033%-12345X"
 pjlStatusValues = {
                     "10000" : "Powersave Mode",
                     "10001" : "Ready Online",
@@ -75,13 +85,14 @@ class Handler :
                 self.timedout = 0
                 while (self.timedout == 0) or (actualpagecount is None) or (self.printerStatus is None) :
                     signal.signal(signal.SIGALRM, self.alarmHandler)
-                    signal.alarm(3)
+                    signal.alarm(TIMEOUT)
                     try :
                         answer = sock.recv(1024)
                     except IOError, msg :    
                         break   # our alarm handler was launched, probably
                     else :    
                         readnext = 0
+                        self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
                         for line in [l.strip() for l in answer.split()] : 
                             if line.startswith("CODE=") :
                                 self.printerStatus = line.split("=")[1]
@@ -127,7 +138,7 @@ class Handler :
                 idle_flag = 1
             if idle_flag :    
                 idle_num += 1
-                if idle_num > STABILIZATIONDELAY :
+                if idle_num >= STABILIZATIONDELAY :
                     # printer status is stable, we can exit
                     break
             else :    

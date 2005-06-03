@@ -21,6 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha7 :
+    
+        - Improvements to the internal PJL and SNMP accounter : now should
+          support more printers and waste less time.
+          
     - 1.23alpha6 :
     
         - The data dumper's start= and end= date filtering options now
