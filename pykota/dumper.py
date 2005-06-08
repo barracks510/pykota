@@ -124,9 +124,42 @@ class DumPyKota(PyKotaTool) :
         if not sum :
             return entries
         else :    
-            # TODO : really transform the datas.
             sys.stderr.write("WARNING : --sum command line option is not implemented yet !\n")
-            return entries
+            headers = entries[0]
+            nbheaders = len(headers)
+            fieldnumber = {}
+            for i in range(nbheaders) :
+                fieldnumber[headers[i]] = i
+            if datatype == "payments" :
+                newentries = [ headers ]
+                fnusername = fieldnumber["username"]
+                fnamount = fieldnumber["amount"]
+                fndate = fieldnumber["date"]
+                sortedentries = entries[1:]
+                sortedentries.sort(lambda x, y, fnum=fnusername : cmp(x[fnum], y[fnum]))
+                amount = 0.0
+                prevusername = sortedentries[0][fnusername]
+                for entry in sortedentries :
+                    if entry[fnusername] != prevusername :
+                        summary = [None] * nbheaders
+                        summary[fnusername] = prevusername
+                        summary[fnamount] = amount
+                        summary[fndate] = "*"
+                        newentries.append(summary)
+                        amount = entry[fnamount]
+                    else :    
+                        amount += entry[fnamount]
+                    prevusername = entry[fnusername]    
+                summary = [None] * nbheaders
+                summary[fnusername] = prevusername
+                summary[fnamount] = amount
+                summary[fndate] = "*"
+                newentries.append(summary)
+            elif datatype == "history" :
+                newentries = entries # Fake this for now
+            else :
+                raise PyKotaToolError, _("Summarizing is not implemented for the [%s] data type, sorry.") % datatype
+            return newentries
             
     def dumpWithSeparator(self, separator, entries) :    
         """Dumps datas with a separator."""
