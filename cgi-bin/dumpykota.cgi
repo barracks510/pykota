@@ -136,7 +136,7 @@ class PyKotaDumperGUI(DumPyKota) :
         
     def htmlSumCheckbox(self, checked="") :    
         """Input the optional Sum option."""
-        return _("Summarize") + (' : <input type="checkbox" name="sum" %s />' % (checked and 'checked="checked"'))
+        return _("Summarize") + (' : <input type="checkbox" name="sum" %s /> <em>%s</em>' % ((checked and 'checked="checked"'), _("only for payments or history")))
         
     def guiAction(self) :
         """Main function"""
