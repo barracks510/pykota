@@ -21,14 +21,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 TODO, in no particular order :
         
-        - Add a table listing all the allowed billing codes. Unknown
-          billing codes should produce an action which is configurable
-          (reject the job being the default). The billing codes table
-          will contains total pages and cost, and life time pages
-          and cost => speedup for LDAP, and allows people to cleanup
-          the printing history in any case. A tool to manage the
-          table of billing codes must be written, but this will
-          be easy.
+        - Allow 'external' syntax for denyduplicates :
+        
+            in pykota.conf, if denyduplicates is set to :
+  
+              - yes ==> then duplicates are denied silently (with a log)
+              - no (or unset) ==> then duplicates are allowed (without a log)
+              - external(some_command_here) then the command is launched
+                and its output is parsed, it may contain only ALLOW or DENY.
+                And it should handle the dialog with the user, if any.
+              - Add a table listing all the allowed billing codes. Unknown
+                billing codes should produce an action which is configurable
+                (reject the job being the default). The billing codes table
+                will contains total pages and cost, and life time pages
+                and cost => speedup for LDAP, and allows people to cleanup
+                the printing history in any case. A tool to manage the
+                table of billing codes must be written, but this will
+                be easy.
           
         - Add a way to strip off "smbprn.????????" from the left of
           print jobs' titles (only appear when printing as raw from
