@@ -367,7 +367,7 @@ class Storage(BaseStorage) :
                 user.Payments = []
                 for payment in fields.get("pykotaPayments", []) :
                     (date, amount) = payment.split(" # ")
-                    user.Payments.append((date, amount))
+                    user.Payments.append((date, float(amount)))
             user.Exists = 1
         return user
        
