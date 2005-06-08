@@ -104,6 +104,8 @@ class PyKotaDumperGUI(DumPyKota) :
         print self.htmlListFormats(self.options.get("format", ""))
         print "<br />"
         print self.htmlFilterInput(" ".join(self.arguments))
+        print "<br />"
+        print self.htmlSumCheckbox(self.options.get("sum", ""))
         print footer % (_("Dump"), version.__doc__, version.__copyright__, version.__author__)
         
     def htmlListDataTypes(self, selected="") :    
@@ -132,6 +134,10 @@ class PyKotaDumperGUI(DumPyKota) :
         """Input the optional dump filter."""
         return _("Filter") + (' : <input type="text" name="filter" size="40" value="%s" /> <em>e.g. <strong>username=jerome printername=HP2100</strong></em>' % (value or ""))
         
+    def htmlSumCheckbox(self, checked="") :    
+        """Input the optional Sum option."""
+        return _("Summarize") + (' : <input type="checkbox" name="sum" %s />' % (checked and 'checked="checked"'))
+        
     def guiAction(self) :
         """Main function"""
         try :
@@ -147,7 +153,8 @@ class PyKotaDumperGUI(DumPyKota) :
                         self.options["format"] = self.form["format"].value
                     if self.form.has_key("filter") :    
                         self.arguments = self.form["filter"].value.split()
-                        
+                    if self.form.has_key("sum") :    
+                        self.options["sum"] = self.form["sum"].value
                     # when no authentication is done, or when the remote username    
                     # is 'root' (even if not run as root of course), then unrestricted
                     # dump is allowed.
