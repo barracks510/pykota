@@ -21,6 +21,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha8 :
+    
+        - The data dumper can now summarize payments and history with the
+          help of the --sum command line option (or checkbox in the CGI).
+          
+        - The message used when the job's filename, title and options are 
+          hidden because of the privacy directive is now translated at
+          retrieval time, instead of at saving time.
+          
+        - Minor fix in the LDAP backend code.  
+          
     - 1.23alpha7 :
     
         - Improvements to the internal PJL and SNMP accounter : now should

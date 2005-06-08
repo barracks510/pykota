@@ -108,7 +108,7 @@ class DumPyKota(PyKotaTool) :
                 self.outfile = open(options["output"], "w")
                 mustclose = 1
                 
-            retcode = getattr(self, "dump%s" % format.title())(self.summarizeDatas(entries, datatype, options["sum"]), datatype)
+            retcode = getattr(self, "dump%s" % format.title())(self.summarizeDatas(entries, datatype, extractonly, options["sum"]), datatype)
             
             if mustclose :
                 self.outfile.close()
@@ -116,7 +116,7 @@ class DumPyKota(PyKotaTool) :
             return retcode    
         return 0
         
-    def summarizeDatas(self, entries, datatype, sum=0) :    
+    def summarizeDatas(self, entries, datatype, extractonly, sum=0) :    
         """Transforms the datas into a summarized view (with totals).
         
            If sum is false, returns the entries unchanged.
@@ -129,55 +129,53 @@ class DumPyKota(PyKotaTool) :
             fieldnumber = {}
             fieldname = {}
             for i in range(nbheaders) :
-                name = headers[i]
-                fieldnumber[name] = i
-                fieldname[i] = name
-                
+                fieldnumber[headers[i]] = i
+            
             if datatype == "payments" :
                 totalize = [ ("amount", float) ]
-                ignored = [ "date" ]
-                key = "username"
+                keys = [ "username" ]
+            else : # elif datatype == "history"
+                totalize = [ ("jobsize", int), 
+                             ("jobprice", float),
+                             ("jobsizebytes", int),
+                           ]
+                keys = [ k for k in ("username", "printername", "hostname", "billingcode") if k in extractonly.keys() ]
                 
-                fnkey = fieldnumber[key]
-                newentries = [ headers ]
-                sortedentries = entries[1:]
-                sortedentries.sort(lambda x, y, fnum=fnkey : cmp(x[fnum], y[fnum]))
-                totals = {}
-                for (k, t) in totalize :
-                    totals[k] = { "convert" : t, "value" : 0.0 }
-                prevkey = sortedentries[0][fnkey]
-                for entry in sortedentries :
-                    if entry[fnkey] != prevkey :
-                        summary = [None] * nbheaders
-                        summary[fnkey] = prevkey
-                        for ignore in ignored :
-                            summary[fieldnumber[ignore]] = '*'
-                        for k in totals.keys() :    
-                            summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
-                        for i in range(nbheaders) :    
-                            if summary[i] is None :
-                                summary[i] = entry[i]
-                        newentries.append(summary)
-                        for k in totals.keys() :    
-                            totals[k]["value"] = totals[k]["convert"](entry[fieldnumber[k]])
-                    else :    
-                        for k in totals.keys() :    
-                            totals[k]["value"] += totals[k]["convert"](entry[fieldnumber[k]])
-                    prevkey = entry[fnkey]    
-                summary = [None] * nbheaders
-                summary[fnkey] = prevkey
-                for ignore in ignored :
-                    summary[fieldnumber[ignore]] = '*'
-                for k in totals.keys() :    
-                    summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
-                for i in range(nbheaders) :    
-                    if summary[i] is None :
-                        summary[i] = entry[i]
-                newentries.append(summary)
-            elif datatype == "history" :
-                newentries = entries # Fake this for now
-            else :
-                raise PyKotaToolError, _("Summarizing is not implemented for the [%s] data type, sorry.") % datatype
+            newentries = [ headers ]
+            sortedentries = entries[1:]
+            if keys :
+                # If we have several keys, we can sort only on the first one, because they
+                # will vary the same way.
+                sortedentries.sort(lambda x, y, fnum=fieldnumber[keys[0]] : cmp(x[fnum], y[fnum]))
+            totals = {}
+            for (k, t) in totalize :
+                totals[k] = { "convert" : t, "value" : 0.0 }
+            prevkeys = {}
+            for k in keys :
+                prevkeys[k] = sortedentries[0][fieldnumber[k]]
+            for entry in sortedentries :
+                curval = '-'.join([str(entry[fieldnumber[k]]) for k in keys])
+                prevval = '-'.join([str(prevkeys[k]) for k in keys])
+                if curval != prevval :
+                    summary = [ "*" ] * nbheaders
+                    for k in keys :
+                        summary[fieldnumber[k]] = prevkeys[k]
+                    for k in totals.keys() :    
+                        summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
+                    newentries.append(summary)
+                    for k in totals.keys() :    
+                        totals[k]["value"] = totals[k]["convert"](entry[fieldnumber[k]])
+                else :    
+                    for k in totals.keys() :    
+                        totals[k]["value"] += totals[k]["convert"](entry[fieldnumber[k]])
+                for k in keys :
+                    prevkeys[k] = entry[fieldnumber[k]]
+            summary = [ "*" ] * nbheaders
+            for k in keys :
+                summary[fieldnumber[k]] = prevkeys[k]
+            for k in totals.keys() :    
+                summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
+            newentries.append(summary)
             return newentries
             
     def dumpWithSeparator(self, separator, entries) :    
