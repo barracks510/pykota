@@ -118,7 +118,19 @@ How to improve PyKota's security :
         host  pykota pykotaadmin 127.0.0.1 255.255.255.255 crypt
         host  pykota all         127.0.0.1 255.255.255.255 reject
         --- CUT ---        
+        
+      As an alternative, which may depend on the default encryption setting  
+      used by your version of PostgreSQL, you may want to use the following
+      settings instead :
 
+        --- CUT ---        
+        local all    postgres                              ident sameuser
+        local all    all                                   reject
+        host  pykota pykotauser  127.0.0.1 255.255.255.255 md5
+        host  pykota pykotaadmin 127.0.0.1 255.255.255.255 md5
+        host  pykota all         127.0.0.1 255.255.255.255 reject
+        --- CUT ---        
+        
       Finally restart PostgreSQL so that the changes will be applied :
       
         $ /etc/init.d/postgresql restart
