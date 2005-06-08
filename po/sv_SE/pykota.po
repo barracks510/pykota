@@ -1889,6 +1889,12 @@ msgstr ""
 msgid "Hidden because of privacy concerns"
 msgstr ""
 
+msgid "Summarize"
+msgstr ""
+
+msgid "Invalid data type [%s] for --sum command line option, see help."
+msgstr ""
+
 #~ msgid ""
 #~ "Group           used    soft    hard    balance grace         total       "
 #~ "paid"

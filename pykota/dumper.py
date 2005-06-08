@@ -97,7 +97,7 @@ class DumPyKota(PyKotaTool) :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
             
         if options["sum"] and datatype not in ("payments", "history") : 
-            raise PyKotaToolError, _("Invalid datatype [%s] for --sum command line option, see help.") % datatype
+            raise PyKotaToolError, _("Invalid data type [%s] for --sum command line option, see help.") % datatype
             
         entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
         if entries :

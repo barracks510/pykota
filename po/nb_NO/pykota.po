@@ -2267,6 +2267,12 @@ msgstr ""
 msgid "Hidden because of privacy concerns"
 msgstr ""
 
+msgid "Summarize"
+msgstr ""
+
+msgid "Invalid data type [%s] for --sum command line option, see help."
+msgstr ""
+
 #~ msgid "Invalid value [%s] for --filter command line option, see help."
 #~ msgstr "Ugyldig verdi [%s] for --filter kommandolinje opsjonen, se Hjelp."
 

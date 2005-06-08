@@ -2333,6 +2333,12 @@ msgstr ""
 msgid "Hidden because of privacy concerns"
 msgstr ""
 
+msgid "Summarize"
+msgstr ""
+
+msgid "Invalid data type [%s] for --sum command line option, see help."
+msgstr ""
+
 #~ msgid ""
 #~ "Internal SNMP accounting asked, but Python-SNMP is not available. Please "
 #~ "download it from http://pysnmp.sourceforge.net"

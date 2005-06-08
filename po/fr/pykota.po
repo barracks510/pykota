@@ -2344,7 +2344,7 @@ msgstr "page_log de CUPS"
 
 #, python-format
 msgid "Invalid filter value [%s], see help."
-msgstr ""
+msgstr "Valeur du filtre [%s] invalide, voir l'aide."
 
 #, python-format
 msgid "Invalid modifier [%s] for --data command line option, see help."
@@ -2785,3 +2785,11 @@ msgstr ""
 
 msgid "Hidden because of privacy concerns"
 msgstr "Caché par respect de la vie privée"
+
+msgid "Summarize"
+msgstr "Somme"
+
+msgid "Invalid data type [%s] for --sum command line option, see help."
+msgstr ""
+"Le type de données [%s] est invalide pour l'option de ligne de commande --"
+"sum, voir l'aide."
