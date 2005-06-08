@@ -96,6 +96,9 @@ class DumPyKota(PyKotaTool) :
         if (format == "xml") and not hasJAXML :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
             
+        if options["sum"] and datatype not in ("payments", "history") : 
+            raise PyKotaToolError, _("Invalid datatype [%s] for --sum command line option, see help.") % datatype
+            
         entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
         if entries :
             mustclose = 0    
@@ -105,7 +108,7 @@ class DumPyKota(PyKotaTool) :
                 self.outfile = open(options["output"], "w")
                 mustclose = 1
                 
-            retcode = getattr(self, "dump%s" % format.title())(entries, datatype)
+            retcode = getattr(self, "dump%s" % format.title())(self.summarizeDatas(entries, datatype, options["sum"]), datatype)
             
             if mustclose :
                 self.outfile.close()
@@ -113,6 +116,18 @@ class DumPyKota(PyKotaTool) :
             return retcode    
         return 0
         
+    def summarizeDatas(self, entries, datatype, sum=0) :    
+        """Transforms the datas into a summarized view (with totals).
+        
+           If sum is false, returns the entries unchanged.
+        """   
+        if not sum :
+            return entries
+        else :    
+            # TODO : really transform the datas.
+            sys.stderr.write("WARNING : --sum command line option is not implemented yet !\n")
+            return entries
+            
     def dumpWithSeparator(self, separator, entries) :    
         """Dumps datas with a separator."""
         for entry in entries :
