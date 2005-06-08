@@ -90,7 +90,7 @@ class DumPyKota(PyKotaTool) :
                     
         format = options["format"]
         if (format not in self.validformats.keys()) \
-              or ((format == "cups") and (datatype != "history")) :
+              or ((format == "cups") and ((datatype != "history") or options["sum"])) :
             raise PyKotaToolError, _("Invalid modifier [%s] for --format command line option, see help.") % format
             
         if (format == "xml") and not hasJAXML :
