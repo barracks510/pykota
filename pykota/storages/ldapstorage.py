@@ -540,6 +540,8 @@ class Storage(BaseStorage) :
                 lastjob.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
                 lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 lastjob.JobPages = fields.get("pykotaPages", [""])[0]
+                if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
+                    (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])
@@ -945,7 +947,7 @@ class Storage(BaseStorage) :
             dn = printer.LastJob.ident
         if self.privacy :    
             # For legal reasons, we want to hide the title, filename and options
-            title = filename = options = _("Hidden because of privacy concerns")
+            title = filename = options = "hidden"
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,
@@ -1102,6 +1104,8 @@ class Storage(BaseStorage) :
                 job.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
                 job.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 job.JobPages = fields.get("pykotaPages", [""])[0]
+                if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
+                    (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
                 year = int(date[:4])
                 month = int(date[4:6])

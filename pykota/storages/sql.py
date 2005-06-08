@@ -265,6 +265,8 @@ class SQLStorage :
             lastjob.JobMD5Sum = fields.get("md5sum")
             lastjob.JobPages = fields.get("pages")
             lastjob.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode"))
+            if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
+                (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
             lastjob.Exists = 1
         return lastjob
             
@@ -463,7 +465,7 @@ class SQLStorage :
         """Adds a job in a printer's history."""
         if self.privacy :    
             # For legal reasons, we want to hide the title, filename and options
-            title = filename = options = _("Hidden because of privacy concerns")
+            title = filename = options = "hidden"
         filename = self.userCharsetToDatabase(filename)
         title = self.userCharsetToDatabase(title)
         options = self.userCharsetToDatabase(options)
@@ -551,6 +553,8 @@ class SQLStorage :
                 job.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode"))
                 job.UserName = fields.get("username")
                 job.PrinterName = fields.get("printername")
+                if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
+                    (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 job.Exists = 1
                 jobs.append(job)
         return jobs
