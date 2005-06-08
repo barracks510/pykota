@@ -1847,3 +1847,6 @@ msgstr ""
 
 msgid "Invalid data type [%s] for --sum command line option, see help."
 msgstr ""
+
+msgid "only for payments or history"
+msgstr ""

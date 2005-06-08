@@ -2793,3 +2793,6 @@ msgid "Invalid data type [%s] for --sum command line option, see help."
 msgstr ""
 "Le type de données [%s] est invalide pour l'option de ligne de commande --"
 "sum, voir l'aide."
+
+msgid "only for payments or history"
+msgstr "seulement pour les paiements ou l'historique"
