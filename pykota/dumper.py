@@ -124,36 +124,49 @@ class DumPyKota(PyKotaTool) :
         if not sum :
             return entries
         else :    
-            sys.stderr.write("WARNING : --sum command line option is not implemented yet !\n")
             headers = entries[0]
             nbheaders = len(headers)
             fieldnumber = {}
+            fieldname = {}
             for i in range(nbheaders) :
-                fieldnumber[headers[i]] = i
+                name = headers[i]
+                fieldnumber[name] = i
+                fieldname[i] = name
+                
             if datatype == "payments" :
+                totalize = [ ("amount", float) ]
+                ignored = [ "date" ]
+                key = "username"
+                
+                fnkey = fieldnumber[key]
                 newentries = [ headers ]
-                fnusername = fieldnumber["username"]
-                fnamount = fieldnumber["amount"]
-                fndate = fieldnumber["date"]
                 sortedentries = entries[1:]
-                sortedentries.sort(lambda x, y, fnum=fnusername : cmp(x[fnum], y[fnum]))
-                amount = 0.0
-                prevusername = sortedentries[0][fnusername]
+                sortedentries.sort(lambda x, y, fnum=fnkey : cmp(x[fnum], y[fnum]))
+                totals = {}
+                for (k, t) in totalize :
+                    totals[k] = { "convert" : t, "value" : 0.0 }
+                prevkey = sortedentries[0][fnkey]
                 for entry in sortedentries :
-                    if entry[fnusername] != prevusername :
+                    if entry[fnkey] != prevkey :
                         summary = [None] * nbheaders
-                        summary[fnusername] = prevusername
-                        summary[fnamount] = amount
-                        summary[fndate] = "*"
+                        summary[fnkey] = prevkey
+                        for ignore in ignored :
+                            summary[fieldnumber[ignore]] = '*'
+                        for k in totals.keys() :    
+                            summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
                         newentries.append(summary)
-                        amount = entry[fnamount]
+                        for k in totals.keys() :    
+                            totals[k]["value"] = totals[k]["convert"](entry[fieldnumber[k]])
                     else :    
-                        amount += entry[fnamount]
-                    prevusername = entry[fnusername]    
+                        for k in totals.keys() :    
+                            totals[k]["value"] += totals[k]["convert"](entry[fieldnumber[k]])
+                    prevkey = entry[fnkey]    
                 summary = [None] * nbheaders
-                summary[fnusername] = prevusername
-                summary[fnamount] = amount
-                summary[fndate] = "*"
+                summary[fnkey] = prevkey
+                for ignore in ignored :
+                    summary[fieldnumber[ignore]] = '*'
+                for k in totals.keys() :    
+                    summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
                 newentries.append(summary)
             elif datatype == "history" :
                 newentries = entries # Fake this for now
