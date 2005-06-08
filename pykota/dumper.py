@@ -154,6 +154,9 @@ class DumPyKota(PyKotaTool) :
                             summary[fieldnumber[ignore]] = '*'
                         for k in totals.keys() :    
                             summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
+                        for i in range(nbheaders) :    
+                            if summary[i] is None :
+                                summary[i] = entry[i]
                         newentries.append(summary)
                         for k in totals.keys() :    
                             totals[k]["value"] = totals[k]["convert"](entry[fieldnumber[k]])
@@ -167,6 +170,9 @@ class DumPyKota(PyKotaTool) :
                     summary[fieldnumber[ignore]] = '*'
                 for k in totals.keys() :    
                     summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
+                for i in range(nbheaders) :    
+                    if summary[i] is None :
+                        summary[i] = entry[i]
                 newentries.append(summary)
             elif datatype == "history" :
                 newentries = entries # Fake this for now
