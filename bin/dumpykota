@@ -75,7 +75,10 @@ options :
                        to the standard output. The special '-' filename
                        is the default value and means stdout.
                        WARNING : existing files are truncated !
-                       
+
+  -s | --sum           Summarize the selected datas.
+                           ONLY AVAILABLE WITH --data history or payments
+
   Use the filter expressions to extract only parts of the 
   datas. Allowed filters are of the form :
                 
@@ -141,8 +144,8 @@ if __name__ == "__main__" :
                      "format" : "csv", \
                      "output" : "-", \
                    }
-        short_options = "vhd:f:o:"
-        long_options = ["help", "version", "data=", "format=", "output="]
+        short_options = "vhd:f:o:s"
+        long_options = ["help", "version", "data=", "format=", "output=", "sum"]
         
         # Initializes the command line tool
         dumper = DumPyKota(doc=__doc__)
@@ -157,6 +160,7 @@ if __name__ == "__main__" :
         options["data"] = options["d"] or options["data"]
         options["format"] = options["f"] or options["format"] or defaults["format"]
         options["output"] = options["o"] or options["output"] or defaults["output"]
+        options["sum"] = options["s"] or options["sum"]
         
         if options["help"] :
             dumper.display_usage_and_quit()
