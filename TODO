@@ -30,14 +30,38 @@ TODO, in no particular order :
               - external(some_command_here) then the command is launched
                 and its output is parsed, it may contain only ALLOW or DENY.
                 And it should handle the dialog with the user, if any.
-              - Add a table listing all the allowed billing codes. Unknown
-                billing codes should produce an action which is configurable
-                (reject the job being the default). The billing codes table
-                will contains total pages and cost, and life time pages
-                and cost => speedup for LDAP, and allows people to cleanup
-                the printing history in any case. A tool to manage the
-                table of billing codes must be written, but this will
-                be easy.
+                
+        - Add a new external hook to allow the overwriting of the job's ticket        
+          (mainly username and billing code) at startup time :
+          
+            1 - hook is launched and can do whatever it wants, like asking
+                the user for username+password or billing code
+                
+            2 - hook prints any (or all) of :    
+            
+                USER:some_username
+                BILLING:some_billingcode
+                DENY
+                
+                if hook doesn't print anything, job processed as usual.
+                if DENY, job is rejected.
+                
+            3 - if billing code or username is invalid, and if PyKota
+                is configured to loop in this case, hook is launched
+                again, otherwise job is rejected.
+                
+            4 - if billing code and/or username is valid, the job's
+                billing code and/or username are overwritten with
+                these values, and PyKota processes the job as usual.
+          
+        - Add a table listing all the allowed billing codes. Unknown
+          billing codes should produce an action which is configurable
+          (reject the job being the default). The billing codes table
+          will contains total pages and cost, and life time pages
+          and cost => speedup for LDAP, and allows people to cleanup
+          the printing history in any case. A tool to manage the
+          table of billing codes must be written, but this will
+          be easy.
           
         - Add a way to strip off "smbprn.????????" from the left of
           print jobs' titles (only appear when printing as raw from
