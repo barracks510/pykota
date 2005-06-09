@@ -40,7 +40,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -630,6 +630,12 @@ policy: deny
 # of external commands defined in the accounter and mailto 
 # directives.
 #
+# PYKOTADIRECTORY : The directory containing cupspykota's temporary files
+# PYKOTADATAFILE : The name of the temporary file which contains the 
+#                  job's datas
+# PYKOTAINPUTFILE : The name of the file which contains the job's datas or 
+#                   empty if datas come from stdin
+# PYKOTACONTROLFILE : The name of the IPP message file
 # PYKOTAMD5SUM : Contains an hexadecimal digest of the md5 sum of the job's datas
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
 # PYKOTAACTION : ALLOW or DENY or WARN for current print job
