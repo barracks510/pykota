@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha9 :   
+    
+        - Fixed internal SNMP accounter for printers which only have a life time
+          page counter, and not a volatile page counter.
+          
     - 1.23alpha8 :
     
         - The data dumper can now summarize payments and history with the
