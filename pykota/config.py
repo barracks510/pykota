@@ -190,6 +190,13 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return      # No command to launch in the post-hook
             
+    def getStripTitle(self, printername) :    
+        """Returns the striptitle directive's content, or None if unset."""
+        try :
+            return self.getPrinterOption(printername, "striptitle").strip()
+        except PyKotaConfigError :    
+            return      # No prefix to strip off
+            
     def getPrinterEnforcement(self, printername) :    
         """Returns if quota enforcement should be strict or laxist for the current printer."""
         validenforcements = [ "STRICT", "LAXIST" ]     

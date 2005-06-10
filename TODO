@@ -63,10 +63,6 @@ TODO, in no particular order :
           table of billing codes must be written, but this will
           be easy.
           
-        - Add a way to strip off "smbprn.????????" from the left of
-          print jobs' titles (only appear when printing as raw from
-          Winboxes it seems)
-
         - Pass-through mode for printers : history correctly filled (including
           job size) but no impact on user's page counter or account
           balance : this is meant to be a temporary situation for

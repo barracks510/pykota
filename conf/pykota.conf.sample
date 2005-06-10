@@ -295,6 +295,17 @@ utolower: No
 # [global] section.
 privacy : no
 
+# Should we strip off some characters from the beginning of
+# print jobs' titles ? This can be used to remove smbprn.??????
+# which sometimes appear when printing in raw mode from Windows
+# through Samba.
+# This setting only applies at printing time.
+# When not set, titles are used as received from the printing system.
+# The default is to not strip any character off of jobs' titles.
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+# striptitle : smbprn.??????
+
 # What is the accounting backend to use
 # 
 # supported values :

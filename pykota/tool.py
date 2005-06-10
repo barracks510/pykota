@@ -664,6 +664,13 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         if self.config.getUserNameToLower() :
             self.username = self.username.lower()
             
+        # do we want to strip some prefix off of titles ?    
+        stripprefix = self.config.getStripTitle(self.printername)
+        if stripprefix :
+            if fnmatch.fnmatch(self.title[:len(stripprefix)], stripprefix) :
+                self.logdebug("Prefix [%s] removed from job's title [%s]." % (stripprefix, self.title))
+                self.title = self.title[len(stripprefix):]
+            
         self.preserveinputfile = self.inputfile 
         try :
             self.accounter = accounter.openAccounter(self)
