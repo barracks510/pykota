@@ -2697,6 +2697,12 @@ msgstr ""
 msgid "only for payments or history"
 msgstr ""
 
+msgid "Job is a duplicate. Printing is denied by subprocess."
+msgstr ""
+
+msgid "Job is a duplicate. Printing is allowed by subprocess."
+msgstr ""
+
 #~ msgid "Invalid value [%s] for --filter command line option, see help."
 #~ msgstr ""
 #~ "Valor [%s] inválido para la opción de la línea de comandos --filter, ver "

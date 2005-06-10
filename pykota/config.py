@@ -48,7 +48,14 @@ class PyKotaConfig :
             
     def isTrue(self, option) :        
         """Returns 1 if option is set to true, else 0."""
-        if (option is not None) and (option.upper().strip() in ['Y', 'YES', '1', 'ON', 'T', 'TRUE']) :
+        if (option is not None) and (option.strip().upper() in ['Y', 'YES', '1', 'ON', 'T', 'TRUE']) :
+            return 1
+        else :    
+            return 0
+                        
+    def isFalse(self, option) :        
+        """Returns 1 if option is set to false, else 0."""
+        if (option is not None) and (option.strip().upper() in ['N', 'NO', '0', 'OFF', 'F', 'FALSE']) :
             return 1
         else :    
             return 0
@@ -393,11 +400,19 @@ class PyKotaConfig :
         return self.isTrue(self.getGlobalOption("reject_unknown", ignore=1))
         
     def getDenyDuplicates(self, printername) :          
-        """Returns 1 if we want to deny duplicate jobs, else 0."""
+        """Returns 1 or a command if we want to deny duplicate jobs, else 0."""
         try : 
-            return self.isTrue(self.getPrinterOption(printername, "denyduplicates"))
+            denyduplicates = self.getPrinterOption(printername, "denyduplicates")
         except PyKotaConfigError :    
             return 0
+        else :    
+            if self.isTrue(denyduplicates) :
+                return 1
+            elif self.isFalse(denyduplicates) :
+                return 0
+            else :    
+                # it's a command to run.
+                return denyduplicates
         
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""

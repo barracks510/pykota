@@ -21,16 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
-        - Allow 'external' syntax for denyduplicates :
-        
-            in pykota.conf, if denyduplicates is set to :
-  
-              - yes ==> then duplicates are denied silently (with a log)
-              - no (or unset) ==> then duplicates are allowed (without a log)
-              - external(some_command_here) then the command is launched
-                and its output is parsed, it may contain only ALLOW or DENY.
-                And it should handle the dialog with the user, if any.
-                
         - Add a new external hook to allow the overwriting of the job's ticket        
           (mainly username and billing code) at startup time :
           

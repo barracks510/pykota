@@ -238,18 +238,30 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
             self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
             
+            denyduplicates = self.config.getDenyDuplicates(printer.Name)
             if not self.jobSizeBytes :
                 # if no data to pass to real backend, probably a filter
                 # higher in the chain failed because of a misconfiguration.
                 # we deny the job in this case (nothing to print anyway)
                 self.printMoreInfo(user, printer, _("Job contains no data. Printing is denied."), "warn")
                 action = "DENY"
-            elif self.config.getDenyDuplicates(printer.Name) \
+            elif denyduplicates \
                  and printer.LastJob.Exists \
                  and (printer.LastJob.UserName == user.Name) \
                  and (printer.LastJob.JobMD5Sum == self.checksum) :
-                self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied."), "warn")
-                action = "DENY" 
+                if denyduplicates == 1 :
+                    self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied."), "warn")
+                    action = "DENY"
+                else :    
+                    self.logdebug("Launching subprocess [%s] to see if dupes should be allowed or not." % denyduplicates)
+                    fanswer = os.popen(denyduplicates, "r")
+                    action = fanswer.read().strip().upper()
+                    fanswer.close()
+                    if action == "DENY" :     
+                        self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied by subprocess."), "warn")
+                    else :    
+                        self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is allowed by subprocess."), "warn")
+                        action = "ALLOW" # just to be sure, in the case the external command returns something else...
             else :    
                 # checks the user's quota
                 action = self.warnUserPQuota(userpquota)

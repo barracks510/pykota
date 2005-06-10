@@ -23,6 +23,12 @@ PyKota NEWS :
        
     - 1.23alpha9 :   
     
+        - The denyduplicates directive now accepts a command line as an
+          argument beside yes/no. The command is launched and must
+          print either ALLOW or DENY to its standard output. Then the
+          job gets allowed or denied by PyKota.
+          This will allow user interaction in the near future.
+          
         - Introduced the new 'striptitle' directive to remove ugly prefixes
           from print job's titles whenever a new print job is submitted.
           

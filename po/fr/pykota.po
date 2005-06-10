@@ -2817,3 +2817,13 @@ msgstr ""
 
 msgid "only for payments or history"
 msgstr "seulement pour les paiements ou l'historique"
+
+msgid "Job is a duplicate. Printing is denied by subprocess."
+msgstr ""
+"Le travail d'impression est un doublon. Impression interdite par le sous-"
+"processus."
+
+msgid "Job is a duplicate. Printing is allowed by subprocess."
+msgstr ""
+"Le travail d'impression est un doublon. Impression autorisée par le sous-"
+"processus."

@@ -850,7 +850,15 @@ trustjobsize : yes
 #      identical jobs printed by the first user are not
 #      one just after the other.
 #
-# Possible values are 'yes' and 'no'
+# Possible values are 'yes', 'no', or any other string.
+# If the string is not recognized as a truth value,
+# it is considered to be a command to launch. 
+# PyKota launches the command and parses its standard
+# output. The special keywords 'ALLOW' and 'DENY' are
+# recognized, allowing an external tool to decide if
+# the job is to be allowed or denied. 
 #
+# denyduplicates : /usr/bin/myowncommand with some arguments
+# denyduplicates : yes
 denyduplicates : no
 
