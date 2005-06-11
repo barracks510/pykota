@@ -202,6 +202,7 @@ if __name__ == "__main__" :
     admin.options = { "output" : "-",
                 "data" : "history",
                 "format" : "cups",
+                "sum" : None,
               }
     admin.arguments = []
     admin.guiAction()
