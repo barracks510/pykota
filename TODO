@@ -72,6 +72,9 @@ TODO, in no particular order :
           
         - Maybe per user "denyduplicates" : my 5 years old daughter 
           just prints again when the printer is off...
+          Maybe not needed anymore since denyduplicates now allows
+          an external command to decide if the job should be allowed
+          or denied.
           
         - Now that the job size is ALWAYS precomputed, add a 
           MaxJobSize attribute to users and groups (printers as
