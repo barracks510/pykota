@@ -208,7 +208,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                 self.logdebug("Parsing of IPP message file %s begins." % ippmessagefile)
                 try :
                     ippmessage = IPPMessage(ippdatafile.read())
-                except PyKotaIPPError, msg :    
+                    ippmessage.parse()
+                except IPPError, msg :    
                     self.printInfo("Error while parsing %s : %s" % (ippmessagefile, msg), "warn")
                 else :    
                     self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)

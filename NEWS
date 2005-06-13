@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha10 :
+    
+        - Fixed a bad exception name in cupspykota when parsing IPP messages.
+        
+        - Improved the IPP messages module : it can now generate IPP messages
+          in addition to parsing them.
+        
     - 1.23alpha9 :   
     
         - The denyduplicates directive now accepts a command line as an
