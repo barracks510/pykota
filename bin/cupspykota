@@ -39,7 +39,7 @@ from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError, crashed
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 from pykota.accounter import PyKotaAccounterError
-from pykota.ipp import IPPMessage, IPPError
+from pykota.ipp import IPPRequest, IPPError
     
 class PyKotaPopen4(popen2.Popen4) :
     """Our own class to execute real backends.
@@ -207,7 +207,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             else :    
                 self.logdebug("Parsing of IPP message file %s begins." % ippmessagefile)
                 try :
-                    ippmessage = IPPMessage(ippdatafile.read())
+                    ippmessage = IPPRequest(ippdatafile.read())
                     ippmessage.parse()
                 except IPPError, msg :    
                     self.printInfo("Error while parsing %s : %s" % (ippmessagefile, msg), "warn")

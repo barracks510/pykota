@@ -36,47 +36,66 @@ class IPPError(Exception):
         return self.message
     __str__ = __repr__
 
-class IPPMessage :
-    """A class for IPP message files.
+class IPPRequest :
+    """A class for IPP requests.
     
        Usage :
        
          fp = open("/var/spool/cups/c00001", "rb")
-         message = IPPMessage(fp.read())
+         message = IPPRequest(fp.read())
          fp.close()
          message.parse()
-         # print str(message)
-         # print message.dump()
-         print "IPP version : %s" % message.version
-         print "IPP operation Id : %s" % message.operation_id
-         print "IPP request Id : %s" % message.request_id
-         for attrtype in ("operation", "job", "printer", "unsupported") :
+         # print message.dump() # dumps an equivalent to the original IPP message
+         # print str(message)   # returns a string of text with the same content as below
+         print "IPP version : %s.%s" % message.version
+         print "IPP operation Id : 0x%04x" % message.operation_id
+         print "IPP request Id : 0x%08x" % message.request_id
+         for attrtype in message.attributes_types :
              attrdict = getattr(message, "%s_attributes" % attrtype)
              if attrdict :
                  print "%s attributes :" % attrtype.title()
                  for key in attrdict.keys() :
                      print "  %s : %s" % (key, attrdict[key])
+         if message.data :            
+             print "IPP datas : ", repr(message.data)            
     """
-    attributes_types = ("operation", "job", "printer", "unsupported")
-    def __init__(self, data="", version=None, operation_id=None, request_id=None, debug=0) :
+    attributes_types = ("operation", "job", "printer", "unsupported", \
+                                     "subscription", "event_notification")
+    def __init__(self, data="", version=None, operation_id=None, \
+                                              request_id=None, debug=0) :
         """Initializes an IPP Message object.
         
            Parameters :
            
-             data : the IPP Message's content.
+             data : the complete IPP Message's content.
              debug : a boolean value to output debug info on stderr.
         """
         self.debug = debug
-        self.data = data
+        self._data = data
         self.parsed = 0
         
-        self.version = version
+        # Initializes message
+        if version is not None :
+            try :
+                self.version = [int(p) for p in version.split(".")]
+            except AttributeError :
+                if len(version) == 2 : # 2-tuple
+                    self.version = version
+                else :    
+                    try :
+                        self.version = [int(p) for p in str(float(version)).split(".")]
+                    except :
+                        self.version = (1, 1) # default version number
         self.operation_id = operation_id
         self.request_id = request_id
+        self.data = ""
         
+        # Initialize attributes mappings
         for attrtype in self.attributes_types :
             setattr(self, "%s_attributes" % attrtype, {})
-        self.tags = [ None ] * 256      # by default all tags reserved
+            
+        # Initialize tags    
+        self.tags = [ None ] * 256 # by default all tags reserved
         
         # Delimiter tags
         self.tags[0x01] = "operation-attributes-tag"
@@ -84,13 +103,18 @@ class IPPMessage :
         self.tags[0x03] = "end-of-attributes-tag"
         self.tags[0x04] = "printer-attributes-tag"
         self.tags[0x05] = "unsupported-attributes-tag"
+        self.tags[0x06] = "subscription-attributes-tag"
+        self.tags[0x07] = "event-notification-attributes-tag"
         
         # out of band values
         self.tags[0x10] = "unsupported"
         self.tags[0x11] = "reserved-for-future-default"
         self.tags[0x12] = "unknown"
         self.tags[0x13] = "no-value"
-        
+        self.tags[0x15] = "not-settable"
+        self.tags[0x16] = "delete-attribute"
+        self.tags[0x17] = "admin-define"
+  
         # integer values
         self.tags[0x20] = "generic-integer"
         self.tags[0x21] = "integer"
@@ -102,21 +126,22 @@ class IPPMessage :
         self.tags[0x31] = "dateTime"
         self.tags[0x32] = "resolution"
         self.tags[0x33] = "rangeOfInteger"
-        self.tags[0x34] = "reserved-for-collection"
+        self.tags[0x34] = "begCollection" # TODO : find sample files for testing
         self.tags[0x35] = "textWithLanguage"
         self.tags[0x36] = "nameWithLanguage"
+        self.tags[0x37] = "endCollection"
         
         # character strings
-        self.tags[0x20] = "generic-character-string"
+        self.tags[0x40] = "generic-character-string"
         self.tags[0x41] = "textWithoutLanguage"
         self.tags[0x42] = "nameWithoutLanguage"
-        self.tags[0x43] = "reserved"
         self.tags[0x44] = "keyword"
         self.tags[0x45] = "uri"
         self.tags[0x46] = "uriScheme"
         self.tags[0x47] = "charset"
         self.tags[0x48] = "naturalLanguage"
         self.tags[0x49] = "mimeMediaType"
+        self.tags[0x4a] = "memberAttrName"
         
         # Reverse mapping to generate IPP messages
         self.dictags = {}
@@ -137,15 +162,17 @@ class IPPMessage :
             return ""
         else :    
             buffer = []
-            buffer.append("IPP version : %s" % self.version)
-            buffer.append("IPP operation Id : %s" % self.operation_id)
-            buffer.append("IPP request Id : %s" % self.request_id)
+            buffer.append("IPP version : %s.%s" % self.version)
+            buffer.append("IPP operation Id : 0x%04x" % self.operation_id)
+            buffer.append("IPP request Id : 0x%08x" % self.request_id)
             for attrtype in self.attributes_types :
                 attrdict = getattr(self, "%s_attributes" % attrtype)
                 if attrdict :
                     buffer.append("%s attributes :" % attrtype.title())
                     for key in attrdict.keys() :
                         buffer.append("  %s : %s" % (key, attrdict[key]))
+            if self.data :            
+                buffer.append("IPP datas : %s" % repr(message.data))
             return "\n".join(buffer)
         
     def dump(self) :    
@@ -155,10 +182,9 @@ class IPPMessage :
         """    
         buffer = []
         if None not in (self.version, self.operation_id, self.request_id) :
-            version = [int(p) for p in self.version.split('.')]
-            buffer.append(chr(version[0]) + chr(version[1]))
-            buffer.append(pack(">H", int(self.operation_id, 16)))
-            buffer.append(pack(">I", int(self.request_id, 16)))
+            buffer.append(chr(self.version[0]) + chr(self.version[1]))
+            buffer.append(pack(">H", self.operation_id))
+            buffer.append(pack(">I", self.request_id))
             for attrtype in self.attributes_types :
                 tagprinted = 0
                 for (attrname, value) in getattr(self, "%s_attributes" % attrtype).items() :
@@ -181,23 +207,24 @@ class IPPMessage :
                             buffer.append(pack(">H", len(val)))
                             buffer.append(val)
             buffer.append(chr(self.dictags["end-of-attributes-tag"]))
+        buffer.append(self.data)    
         return "".join(buffer)
-        
+            
     def parse(self) :
-        """Parses an IPP Message.
+        """Parses an IPP Request.
         
            NB : Only a subset of RFC2910 is implemented.
         """
         self._curname = None
         self._curdict = None
-        self.version = "%s.%s" % (ord(self.data[0]), ord(self.data[1]))
-        self.operation_id = "0x%04x" % unpack(">H", self.data[2:4])[0]
-        self.request_id = "0x%08x" % unpack(">I", self.data[4:8])[0]
+        self.version = (ord(self._data[0]), ord(self._data[1]))
+        self.operation_id = unpack(">H", self._data[2:4])[0]
+        self.request_id = unpack(">I", self._data[4:8])[0]
         self.position = 8
         endofattributes = self.dictags["end-of-attributes-tag"]
-        unsupportedattributes = self.dictags["unsupported-attributes-tag"]
+        maxdelimiter = self.dictags["event-notification-attributes-tag"]
         try :
-            tag = ord(self.data[self.position])
+            tag = ord(self._data[self.position])
             while tag != endofattributes :
                 self.position += 1
                 name = self.tags[tag]
@@ -205,10 +232,10 @@ class IPPMessage :
                     func = getattr(self, name.replace("-", "_"), None)
                     if func is not None :
                         self.position += func()
-                        if ord(self.data[self.position]) > unsupportedattributes :
+                        if ord(self._data[self.position]) > maxdelimiter :
                             self.position -= 1
                             continue
-                tag = ord(self.data[self.position])
+                tag = ord(self._data[self.position])
         except IndexError :
             raise IPPError, "Unexpected end of IPP message."
             
@@ -218,24 +245,25 @@ class IPPMessage :
             for (key, value) in attrdict.items() :
                 if len(value) == 1 :
                     attrdict[key] = value[0]
+        self.data = self._data[self.position+1:]            
         self.parsed = 1            
         
     def parseTag(self) :    
         """Extracts information from an IPP tag."""
         pos = self.position
-        tagtype = self.tags[ord(self.data[pos])]
+        tagtype = self.tags[ord(self._data[pos])]
         pos += 1
         posend = pos2 = pos + 2
-        namelength = unpack(">H", self.data[pos:pos2])[0]
+        namelength = unpack(">H", self._data[pos:pos2])[0]
         if not namelength :
             name = self._curname
         else :    
             posend += namelength
-            self._curname = name = self.data[pos2:posend]
+            self._curname = name = self._data[pos2:posend]
         pos2 = posend + 2
-        valuelength = unpack(">H", self.data[posend:pos2])[0]
+        valuelength = unpack(">H", self._data[posend:pos2])[0]
         posend = pos2 + valuelength
-        value = self.data[pos2:posend]
+        value = self._data[pos2:posend]
         if tagtype in ("integer", "enum") :
             value = unpack(">I", value)[0]
         elif tagtype == "boolean" :    
@@ -268,17 +296,30 @@ class IPPMessage :
         self.printInfo("Start of unsupported_attributes_tag")
         self._curdict = self.unsupported_attributes
         return self.parseTag()
+        
+    def subscription_attributes_tag(self) : 
+        """Indicates that the parser enters into a subscription-attributes-tag group."""
+        self.printInfo("Start of subscription_attributes_tag")
+        self._curdict = self.subscription_attributes
+        return self.parseTag()
+        
+    def event_notification_attributes_tag(self) : 
+        """Indicates that the parser enters into an event-notification-attributes-tag group."""
+        self.printInfo("Start of event_notification_attributes_tag")
+        self._curdict = self.event_notification_attributes
+        return self.parseTag()
             
 if __name__ == "__main__" :            
     if (len(sys.argv) < 2) or (sys.argv[1] == "--debug") :
         print "usage : python ipp.py /var/spool/cups/c00005 [--debug] (for example)\n"
     else :    
         infile = open(sys.argv[1], "rb")
-        message = IPPMessage(infile.read(), debug=(sys.argv[-1]=="--debug"))
+        data = infile.read()
+        message = IPPRequest(data, debug=(sys.argv[-1]=="--debug"))
         infile.close()
         message.parse()
         
-        message2 = IPPMessage(message.dump())
+        message2 = IPPRequest(message.dump())
         message2.parse()
         
         # We now compare the message parsed, and the output
