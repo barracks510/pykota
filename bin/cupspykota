@@ -250,6 +250,12 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                  and printer.LastJob.Exists \
                  and (printer.LastJob.UserName == user.Name) \
                  and (printer.LastJob.JobMD5Sum == self.checksum) :
+                # TODO : use the current user's last job instead of  
+                # TODO : the current printer's last job. This would be
+                # TODO : better but requires an additional database query
+                # TODO : with SQL, and is much more complex with the 
+                # TODO : actual LDAP schema. Maybe this is not very
+                # TODO : important, because usually dupes are rapidly sucessive.
                 if denyduplicates == 1 :
                     self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied."), "warn")
                     action = "DENY"
