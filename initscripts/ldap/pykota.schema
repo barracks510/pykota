@@ -225,6 +225,33 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.32 NAME 'pykotaBillingCode'
         SUBSTR caseIgnoreSubstringsMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
         
+# pykotaPrecomputedJobSize
+attributetype ( 1.3.6.1.4.1.16868.1.1.33 NAME 'pykotaPrecomputedJobSize'
+        DESC 'Precomputed job size in number of pages in the history'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+# pykotaPrecomputedJobPrice
+attributetype ( 1.3.6.1.4.1.16868.1.1.34 NAME 'pykotaPrecomputedJobPrice'
+        DESC 'Precomputed Price of a particular job in the history, float'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+        
+# pykotaMaxJobSize
+attributetype ( 1.3.6.1.4.1.16868.1.1.35 NAME 'pykotaMaxJobSize'
+        DESC 'Maximum size allowed for a job'
+        EQUALITY integerMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
+
+# pykotaTemporaryDenied
+attributetype ( 1.3.6.1.4.1.16868.1.1.36 NAME 'pykotaTemporaryDenied'
+        DESC 'Indicates if the user is temporarily denied to print'
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
+
+# pykotaPassThrough
+attributetype ( 1.3.6.1.4.1.16868.1.1.37 NAME 'pykotaPassThrough'
+        DESC 'Indicates if the printer is in pass through mode'
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
 
 #        
 # PyKota Object Classes
@@ -234,37 +261,37 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.32 NAME 'pykotaBillingCode'
 objectclass ( 1.3.6.1.4.1.16868.1.2.1 NAME 'pykotaAccount' SUP top AUXILIARY
         DESC 'PyKota Auxiliary User Account'
         MUST ( uid )
-        MAY  ( pykotaUserName $ pykotaLimitBy $ mail ) )
+        MAY  ( pykotaUserName $ pykotaLimitBy $ mail $ description ) )
         
 # pykotaGroup        
 objectclass ( 1.3.6.1.4.1.16868.1.2.2 NAME 'pykotaGroup' SUP top AUXILIARY
         DESC 'PyKota Auxiliary Group'
         MUST ( cn )
-        MAY  ( pykotaGroupName $ pykotaLimitBy $ memberUid $ uniqueMember $ member ) )
+        MAY  ( pykotaGroupName $ pykotaLimitBy $ memberUid $ uniqueMember $ member $ description ) )
         
 # pykotaPrinter        
 objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top AUXILIARY
         DESC 'PyKota Printer'
         MUST ( cn )
-        MAY  ( description $ pykotaPrinterName $ pykotaPricePerPage $ pykotaPricePerJob $ pykotaPrinterCoefficient $ uniqueMember ) )
+        MAY  ( pykotaMaxJobSize $ pykotaPassThrough $ description $ pykotaPrinterName $ pykotaPricePerPage $ pykotaPricePerJob $ pykotaPrinterCoefficient $ uniqueMember ) )
         
 # pykotaUserPQuota        
 objectclass ( 1.3.6.1.4.1.16868.1.2.4 NAME 'pykotaUserPQuota' SUP top AUXILIARY
         DESC 'PyKota User Quota on a Printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName )
-        MAY  ( pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit $ pykotaWarnCount ) )
+        MAY  ( pykotaMaxJobSize $ pykotaTemporaryDenied $ pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit $ pykotaWarnCount ) )
         
 # pykotaGroupPQuota        
 objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
         DESC 'PyKota Group Quota on a Printer'
         MUST ( cn $ pykotaGroupName $ pykotaPrinterName )
-        MAY  ( pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit ) )
+        MAY  ( pykotaMaxJobSize $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit ) )
         
 # pykotaJob        
 objectclass ( 1.3.6.1.4.1.16868.1.2.6 NAME 'pykotaJob' SUP top AUXILIARY
         DESC 'An entry in the job history for a printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName $ pykotaJobId )
-        MAY  ( pykotaBillingCode $ pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes $ pykotaMD5Sum $ pykotaPages ) )
+        MAY  ( pykotaPrecomputedJobPrice $ pykotaPrecomputedJobSize $ pykotaBillingCode $ pykotaPrinterPageCounter $ pykotaJobSize $ pykotaAction $ pykotaJobPrice $ pykotaFileName $ pykotaTitle $ pykotaCopies $ pykotaOptions $ pykotaHostName $ pykotaJobSizeBytes $ pykotaMD5Sum $ pykotaPages ) )
         
 # pykotaAccountBalance
 objectclass ( 1.3.6.1.4.1.16868.1.2.7 NAME 'pykotaAccountBalance' SUP top AUXILIARY
@@ -276,6 +303,12 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.8 NAME 'pykotaLastJob' SUP top AUXILIARY
         DESC 'Last job information for a printer'
         MUST ( pykotaLastJobIdent )
         MAY ( pykotaPrinterName ) ) 
+        
+# pykotaBilling
+objectclass ( 1.3.6.1.4.1.16868.1.2.10 NAME 'pykotaBilling' SUP top AUXILIARY
+        DESC 'Allowed billing codes'
+        MUST ( cn $ pykotaBillingCode )
+        MAY ( pykotaPageCounter $ pykotaBalance ) )
         
 # pykotaObject - Use it if you have to 
 objectclass ( 1.3.6.1.4.1.16868.1.2.9 NAME 'pykotaObject' SUP top STRUCTURAL

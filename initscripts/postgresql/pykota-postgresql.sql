@@ -52,6 +52,7 @@ CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
                    balance FLOAT DEFAULT 0.0,
                    lifetimepaid FLOAT DEFAULT 0.0,
                    limitby TEXT DEFAULT 'quota',
+                   description TEXT,
                    overcharge FLOAT NOT NULL DEFAULT 1.0);
                    
 --
@@ -59,6 +60,7 @@ CREATE TABLE users(id SERIAL PRIMARY KEY NOT NULL,
 --
 CREATE TABLE groups(id SERIAL PRIMARY KEY NOT NULL,
                     groupname TEXT UNIQUE NOT NULL,
+                    description TEXT,
                     limitby TEXT DEFAULT 'quota');
                     
 --
@@ -68,7 +70,9 @@ CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
                       printername TEXT UNIQUE NOT NULL,
                       description TEXT,
                       priceperpage FLOAT DEFAULT 0.0,
-                      priceperjob FLOAT DEFAULT 0.0);
+                      priceperjob FLOAT DEFAULT 0.0,
+                      passthrough BOOLEAN DEFAULT 'f',
+                      maxjobsize INT4);
                     
 --
 -- Create the print quota table for users
@@ -81,6 +85,8 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         softlimit INT4,
                         hardlimit INT4,
                         datelimit TIMESTAMP,
+                        maxjobsize INT4,
+                        temporarydenied BOOLEAN DEFAULT 'f',
                         warncount INT4 DEFAULT 0); 
 CREATE INDEX userpquota_u_id_ix ON userpquota (userid);
 CREATE INDEX userpquota_p_id_ix ON userpquota (printerid);
@@ -106,6 +112,8 @@ CREATE TABLE jobhistory(id SERIAL PRIMARY KEY NOT NULL,
                         md5sum TEXT,
                         pages TEXT,
                         billingcode TEXT,
+                        precomputedjobsize INT4,
+                        precomputedjobprice FLOAT,
                         jobdate TIMESTAMP DEFAULT now(),
                         CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid));
 CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
@@ -121,6 +129,7 @@ CREATE TABLE grouppquota(id SERIAL PRIMARY KEY NOT NULL,
                          printerid INT4 REFERENCES printers(id),
                          softlimit INT4,
                          hardlimit INT4,
+                         maxjobsize INT4,
                          datelimit TIMESTAMP);
 CREATE INDEX grouppquota_g_id_ix ON grouppquota (groupid);
 CREATE INDEX grouppquota_p_id_ix ON grouppquota (printerid);
@@ -157,13 +166,21 @@ CREATE TABLE coefficients (id SERIAL PRIMARY KEY NOT NULL,
                            coefficient FLOAT DEFAULT 1.0, 
                            CONSTRAINT coeffconstraint UNIQUE (printerid, label));
 
+-- 
+-- Create the table for the billing codes
+--
+CREATE TABLE billingcodes (id SERIAL PRIMARY KEY NOT NULL,
+                           label TEXT UNIQUE NOT NULL,
+                           balance FLOAT DEFAULT 0.0,
+                           pagecounter INT4 DEFAULT 0);
+
 --                        
 -- Set some ACLs                        
 --
-REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients FROM public;                        
-REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq, coefficients_id_seq FROM public;
+REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients, billingcodes FROM public;
+REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq, coefficients_id_seq, billingcodes_id_seq FROM public;
 
-GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients TO pykotaadmin;
-GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq, coefficients_id_seq TO pykotaadmin;
-GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients TO pykotauser;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients, billingcodes TO pykotaadmin;
+GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq, coefficients_id_seq, billingcodes_id_seq TO pykotaadmin;
+GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments, coefficients, billingcodes TO pykotauser;
 
