@@ -54,6 +54,7 @@ UPDATE printers SET passthrough='f';
 --
 CREATE TABLE billingcodes (id SERIAL PRIMARY KEY NOT NULL,
                            label TEXT UNIQUE NOT NULL,
+                           description TEXT,
                            balance FLOAT DEFAULT 0.0,
                            pagecounter INT4 DEFAULT 0);
 

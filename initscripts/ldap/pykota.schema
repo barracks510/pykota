@@ -308,7 +308,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.8 NAME 'pykotaLastJob' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.10 NAME 'pykotaBilling' SUP top AUXILIARY
         DESC 'Allowed billing codes'
         MUST ( cn $ pykotaBillingCode )
-        MAY ( pykotaPageCounter $ pykotaBalance ) )
+        MAY ( pykotaPageCounter $ pykotaBalance $ description ) )
         
 # pykotaObject - Use it if you have to 
 objectclass ( 1.3.6.1.4.1.16868.1.2.9 NAME 'pykotaObject' SUP top STRUCTURAL
