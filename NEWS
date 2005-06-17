@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha13 :
+    
+        - Minor fix for user groups because of latest database changes.
+        
     - 1.23alpha12 :
     
         - Big database changes, use the migration scripts !
