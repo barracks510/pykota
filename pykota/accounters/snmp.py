@@ -28,6 +28,7 @@ STABILIZATIONDELAY = 3 # We must read three times the same value to consider it 
 import sys
 import os
 import time
+import select
 
 try :
     from pysnmp.asn1.encoding.ber.error import TypeMismatchError
@@ -82,7 +83,7 @@ else :
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
-            except SnmpOverUdpError, msg :    
+            except (SnmpOverUdpError, select.error), msg :    
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
             tsp.close()
     
