@@ -70,7 +70,7 @@ if __name__ == "__main__" :
     modulestocheck = [ ("Python-PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota storage backend.\nSee http://www.pygresql.org"),
                        ("Python-egenix-mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"),
                        ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota storage backend.\nSee http://python-ldap.sf.net"),
-                       ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd."),
+                       ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd. See http://repose.cx/pyosd/"),
                        ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
                        ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
                        ("Python-ReportLab", "reportlab.pdfgen.canvas", "Python-ReportLab is required if you plan to have PyKota generate banners.\nSee http://www.reportlab.org/"),
