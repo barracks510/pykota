@@ -352,6 +352,8 @@ class EdPyKota(PyKotaTool) :
                     balance = None
                 overcharge = getattr(protoentry, "OverCharge", None)
             
+        missingusers = {}
+        missinggroups = {}    
         todelete = {}    
         changed = {} # tracks changes made at the user/group level
         for printer in printers :
@@ -399,6 +401,15 @@ class EdPyKota(PyKotaTool) :
             else :   
                 allentries = getattr(self.storage, "getPrinter%ssAndQuotas" % suffix)(printer, names)
                 
+            # TODO : do this only once !!!    
+            allnames = [entry.Name for (entry, dummy) in allentries]
+            for name in names :    
+                if not self.matchString(name, allnames) :
+                    if options["groups"] :
+                        missinggroups[name] = 1
+                    else :    
+                        missingusers[name] = 1
+                
             for (entry, entrypquota) in allentries :
                 if not changed.has_key(entry.Name) :
                     changed[entry.Name] = {}
@@ -434,6 +445,11 @@ class EdPyKota(PyKotaTool) :
                                 self.printInfo(_("Invalid group name %s") % entry.Name)
                             else :    
                                 self.printInfo(_("Invalid user name %s") % entry.Name)
+                    else :
+                        if options["groups"] :
+                            missinggroups[entry.Name] = 1
+                        else :    
+                            missingusers[entry.Name] = 1
                 elif options["delete"] :                
                     todelete[entry.Name] = entry
                                 
@@ -489,6 +505,12 @@ class EdPyKota(PyKotaTool) :
                                 else :
                                     self.printInfo(_("Group %s not found in the PyKota Storage.") % groupname)
                         
+        # Now outputs the list of nonexistent users and groups                
+        for name in missingusers.keys() :
+            self.printInfo(_("Nonnexistent user %s") % name, level="warn")
+        for name in missinggroups.keys() :
+            self.printInfo(_("Nonnexistent group %s") % name, level="warn")
+        
         # Now delete what has to be deleted                
         for (name, entry) in todelete.items() :                
             entry.delete()

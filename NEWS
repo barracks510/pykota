@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha14 : 
+    
+        - Logs a warning when the user/group doesn't exist when running
+          edpykota.
+          
     - 1.23alpha13 :
     
         - Minor fix for user groups because of latest database changes.

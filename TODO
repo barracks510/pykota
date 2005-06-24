@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Adds configurability to what happens when the user/group doesn't exist
+          when running edpykota.
+          
         - Add the listing of the member printers in pkprinters if the printer
           is a printer group.
           
