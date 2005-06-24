@@ -760,8 +760,8 @@ maxdenybanners: 0
 # startingbanner: /usr/bin/pkbanner | gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sOutputFile=- -sDEVICE=lj5mono -
 # startingbanner: /usr/bin/pkbanner
 
-# EndingBanner : if defined will print a banner before the rest of the job 
-# is printed. The argument can be a printable file, or an executable file.
+# EndingBanner : if defined will print a banner after the job 
+# has been printed. The argument can be a printable file, or an executable file.
 # If not executable, the file will be printed as is. If executable, the 
 # file will be executed and its output will be printed.
 #
