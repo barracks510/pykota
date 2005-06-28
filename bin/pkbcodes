@@ -1,0 +1,223 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Billing Codes manager
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# $Id$
+#
+#
+
+import os
+import sys
+import pwd
+
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+
+__doc__ = N_("""pkbcodes v%s (c) %s %s
+
+A billing codes Manager for PyKota.
+
+command line usage :
+
+  pkbcodes [options] code1 code2 code3 ... codeN
+
+options :
+
+  -v | --version       Prints pkbcodes version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -a | --add           Adds billing codes if they don't exist in PyKota's
+                       database. If they exist, they are modified
+                       unless -s|--skipexisting is also used.
+
+  -d | --delete        Deletes billing codes from PyKota's database.
+
+  -D | --description d Adds a textual description to billing codes.
+
+  -l | --list          List informations about the billing codes.
+
+  -s | --reset         Resets the billing codes' balance and page counters
+                       to 0.
+
+  -s | --skipexisting  In combination with the --add option above, tells
+                       pkbcodes to not modify existing printers.
+
+  code1 through codeN can contain wildcards if the --add option
+  is not set.
+
+examples :                              
+
+  $ pkbcodes --add -D "My project" myproj
+
+  Will create the myproj billing code with "My project"
+  as the description.
+
+  $ pkbcodes --delete "*"
+
+  This will completely delete all the billing codes, but without
+  removing any matching job from the history. USE WITH CARE ANYWAY !
+  
+  $ pkbcodes --list "my*"
+  
+  This will list all billing codes which name begins with "my". 
+  
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
+Please e-mail bugs to: %s""")
+        
+class PKBcodes(PyKotaTool) :        
+    """A class for edpykota."""
+    def main(self, names, options) :
+        """Manage printers."""
+        raise "Not Implemented yet !!! Please be patient !!!"
+        
+        if (not self.config.isAdmin) and (not options["list"]) :
+            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
+        if options["list"] and not names :
+            names = ["*"]
+            
+        if options["groups"] :        
+            printersgroups = self.storage.getMatchingPrinters(options["groups"])
+            if not printersgroups :
+                raise PyKotaToolError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
+            
+        if options["charge"] :
+            try :
+                charges = [float(part) for part in options["charge"].split(',', 1)]
+            except ValueError :    
+                raise PyKotaToolError, _("Invalid charge amount value %s") % options["charge"]
+            else :    
+                if len(charges) > 2 :
+                    charges = charges[:2]
+                if len(charges) != 2 :
+                    charges = [charges[0], None]
+                (perpage, perjob) = charges
+                
+        if options["add"] :    
+            printers = []
+            for pname in names :
+                printer = self.storage.getPrinter(pname)
+                if printer.Exists :
+                    if options["skipexisting"] :
+                        self.printInfo(_("Printer %s already exists, skipping.") % printer.Name)
+                    else :    
+                        self.printInfo(_("Printer %s already exists, will be modified.") % printer.Name)
+                        printers.append(printer)
+                else :
+                    if self.isValidName(pname) :
+                        printer = self.storage.addPrinter(pname)
+                        if not printer.Exists :
+                            raise PyKotaToolError, _("Impossible to add printer %s") % pname
+                        else :    
+                            printers.append(printer)
+                    else :    
+                        raise PyKotaToolError, _("Invalid printer name %s") % pname
+        else :        
+            printers = self.storage.getMatchingPrinters(",".join(names))
+            if not printers :
+                raise PyKotaToolError, _("There's no printer matching %s") % " ".join(names)
+                    
+        for printer in printers :        
+            if options["delete"] :
+                printer.delete()
+            elif options["list"] :    
+                parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
+                if parents : 
+                    parents = "%s %s" % (_("in"), parents)
+                print "%s [%s] (%s + #*%s) %s" % \
+                      (printer.Name, printer.Description, printer.PricePerJob, \
+                       printer.PricePerPage, parents)
+            else :    
+                if options["charge"] :
+                    printer.setPrices(perpage, perjob)    
+                if options["description"] is not None :
+                    printer.setDescription(options["description"].strip())
+                if options["groups"] :    
+                    for pgroup in printersgroups :
+                        if options["remove"] :
+                            pgroup.delPrinterFromGroup(printer)
+                        else :
+                            pgroup.addPrinterToGroup(printer)    
+                     
+if __name__ == "__main__" : 
+    retcode = 0
+    try :
+        short_options = "hvaD:dlrs"
+        long_options = ["help", "version", "add", "description=", "delete", "list", "reset", "skipexisting"]
+        
+        # Initializes the command line tool
+        manager = PKBcodes(doc=__doc__)
+        manager.deferredInit()
+        
+        # parse and checks the command line
+        (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["add"] = options["a"] or options["add"]
+        options["description"] = options["D"] or options["description"]
+        options["delete"] = options["d"] or options["delete"] 
+        options["list"] = options["l"] or options["list"]
+        options["reset"] = options["r"] or options["reset"]
+        options["skipexisting"] = options["s"] or options["skipexisting"]
+        
+        if options["help"] :
+            manager.display_usage_and_quit()
+        elif options["version"] :
+            manager.display_version_and_quit()
+        elif (options["delete"] and (options["add"] or options["reset"] or options["description"])) \
+           or (options["skipexisting"] and not options["add"]) \
+           or (options["list"] and (options["add"] or options["delete"] or options["reset"] or options["description"])) :
+            raise PyKotaToolError, _("incompatible options, see help.")
+        elif (not args) and (options["add"] or options["delete"]) :    
+            raise PyKotaToolError, _("You have to pass billing codes on the command line")
+        else :
+            retcode = manager.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except SystemExit :        
+        pass
+    except :
+        try :
+            manager.crashed("pkbcodes failed")
+        except :    
+            crashed("pkbcodes failed")
+        retcode = -1
+
+    try :
+        manager.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    
