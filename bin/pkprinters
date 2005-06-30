@@ -126,7 +126,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 Please e-mail bugs to: %s""")
         
 class PKPrinters(PyKotaTool) :        
-    """A class for edpykota."""
+    """A class for a printers manager."""
     def main(self, names, options) :
         """Manage printers."""
         if (not self.config.isAdmin) and (not options["list"]) :
