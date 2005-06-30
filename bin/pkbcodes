@@ -57,7 +57,7 @@ options :
                        to 0.
 
   -s | --skipexisting  In combination with the --add option above, tells
-                       pkbcodes to not modify existing printers.
+                       pkbcodes to not modify existing billing codes.
 
   code1 through codeN can contain wildcards if the --add option
   is not set.
@@ -95,79 +95,52 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 Please e-mail bugs to: %s""")
         
 class PKBcodes(PyKotaTool) :        
-    """A class for edpykota."""
+    """A class for a billing codes manager."""
     def main(self, names, options) :
-        """Manage printers."""
-        raise "Not Implemented yet !!! Please be patient !!!"
-        
+        """Manage billing codes."""
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         if options["list"] and not names :
             names = ["*"]
             
-        if options["groups"] :        
-            printersgroups = self.storage.getMatchingPrinters(options["groups"])
-            if not printersgroups :
-                raise PyKotaToolError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
-            
-        if options["charge"] :
-            try :
-                charges = [float(part) for part in options["charge"].split(',', 1)]
-            except ValueError :    
-                raise PyKotaToolError, _("Invalid charge amount value %s") % options["charge"]
-            else :    
-                if len(charges) > 2 :
-                    charges = charges[:2]
-                if len(charges) != 2 :
-                    charges = [charges[0], None]
-                (perpage, perjob) = charges
-                
         if options["add"] :    
-            printers = []
-            for pname in names :
-                printer = self.storage.getPrinter(pname)
-                if printer.Exists :
+            billingcodes = []
+            for bname in names :
+                billingcode = self.storage.getBillingCode(bname)
+                if billingcode.Exists :
                     if options["skipexisting"] :
-                        self.printInfo(_("Printer %s already exists, skipping.") % printer.Name)
+                        self.printInfo(_("Billing code [%s] already exists, skipping.") % billingcode.Name)
                     else :    
-                        self.printInfo(_("Printer %s already exists, will be modified.") % printer.Name)
-                        printers.append(printer)
+                        self.printInfo(_("Billing code [%s] already exists, will be modified.") % billingcode.Name)
+                        billingcodes.append(billingcode)
                 else :
-                    if self.isValidName(pname) :
-                        printer = self.storage.addPrinter(pname)
-                        if not printer.Exists :
-                            raise PyKotaToolError, _("Impossible to add printer %s") % pname
-                        else :    
-                            printers.append(printer)
-                    else :    
-                        raise PyKotaToolError, _("Invalid printer name %s") % pname
+                    billingcode = self.storage.addBillingCode(bname)
+                    if not billingcode.Exists :
+                        raise PyKotaToolError, _("Impossible to add billingcode %s") % bname
+                    else :     
+                        billingcodes.append(billingcode)
         else :        
-            printers = self.storage.getMatchingPrinters(",".join(names))
-            if not printers :
-                raise PyKotaToolError, _("There's no printer matching %s") % " ".join(names)
+            billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
+            if not billingcodes :
+                raise PyKotaToolError, _("There's no billingcode matching %s") % " ".join(names)
                     
-        for printer in printers :        
+        for billingcode in billingcodes :        
             if options["delete"] :
-                printer.delete()
+                billingcode.delete()
             elif options["list"] :    
-                parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
-                if parents : 
-                    parents = "%s %s" % (_("in"), parents)
-                print "%s [%s] (%s + #*%s) %s" % \
-                      (printer.Name, printer.Description, printer.PricePerJob, \
-                       printer.PricePerPage, parents)
+                print "%s [%s] %s %s %s %.2f %s" % \
+                      (billingcode.Name, billingcode.Description, \
+                       billingcode.PageCounter, \
+                       _("pages"), \
+                       _("and"), \
+                       billingcode.Balance, \
+                       _("credits"))
             else :    
-                if options["charge"] :
-                    printer.setPrices(perpage, perjob)    
+                if options["reset"] :
+                    billingcode.reset()    
                 if options["description"] is not None :
-                    printer.setDescription(options["description"].strip())
-                if options["groups"] :    
-                    for pgroup in printersgroups :
-                        if options["remove"] :
-                            pgroup.delPrinterFromGroup(printer)
-                        else :
-                            pgroup.addPrinterToGroup(printer)    
+                    billingcode.setDescription(options["description"].strip())
                      
 if __name__ == "__main__" : 
     retcode = 0
