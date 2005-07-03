@@ -48,6 +48,8 @@ options :
                        unless -s|--skipexisting is also used.
 
   -d | --delete        Deletes billing codes from PyKota's database.
+                       NB : the history entries with this billing code
+                       are not deleted, voluntarily.
 
   -D | --description d Adds a textual description to billing codes.
 

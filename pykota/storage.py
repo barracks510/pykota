@@ -98,6 +98,7 @@ class StorageUser(StorageObject) :
             raise PyKotaStorageError, msg
         else :    
             self.parent.commitTransaction()
+            self.Exists = 0
         
 class StorageGroup(StorageObject) :        
     """User class."""
@@ -128,6 +129,7 @@ class StorageGroup(StorageObject) :
             raise PyKotaStorageError, msg
         else :    
             self.parent.commitTransaction()
+            self.Exists = 0
         
 class StoragePrinter(StorageObject) :
     """Printer class."""
@@ -175,8 +177,8 @@ class StoragePrinter(StorageObject) :
             self.PricePerJob = float(priceperjob)
         self.parent.writePrinterPrices(self)
         
-    def setDescription(self, description = None) :    
-        """Sets the printer's prices."""
+    def setDescription(self, description=None) :
+        """Sets the printer's description."""
         if description is None :
             description = self.Description
         else :    
@@ -193,6 +195,7 @@ class StoragePrinter(StorageObject) :
             raise PyKotaStorageError, msg
         else :    
             self.parent.commitTransaction()
+            self.Exists = 0    
         
 class StorageUserPQuota(StorageObject) :
     """User Print Quota class."""
@@ -300,6 +303,7 @@ class StorageUserPQuota(StorageObject) :
                     self.parent.increaseUserPQuotaPagesCounters(upq, jobsize)
                     upq.PageCounter = int(upq.PageCounter or 0) + jobsize
                     upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
+                # TODO : consume from the billing code as well
             except PyKotaStorageError, msg :    
                 self.parent.rollbackTransaction()
                 raise PyKotaStorageError, msg
@@ -411,6 +415,41 @@ class StorageLastJob(StorageJob) :
         StorageJob.__init__(self, parent)
         self.PrinterName = printer.Name # not needed
         self.Printer = printer
+        
+class StorageBillingCode(StorageObject) :
+    """Billing code class."""
+    def __init__(self, parent, name) :
+        StorageObject.__init__(self, parent)
+        self.BillingCode = name
+        self.Description = None
+        self.PageCounter = None
+        self.Balance = None
+        
+    def delete(self) :    
+        """Deletes the billing code from the database."""
+        self.parent.deleteBillingCode(self)
+        self.Exists = 0
+        
+    def reset(self, pagecounter=0, balance=0.0) :    
+        """Resets the pagecounter and balance for this billing code."""
+        self.parent.setBillingCodeValues(self, pagecounter, balance)
+        self.PageCounter = pagecounter
+        self.Balance = balance
+        
+    def setDescription(self, description=None) :
+        """Modifies the description for this billing code."""
+        if description is None :
+            description = self.Description
+        else :    
+            self.Description = str(description)
+        self.parent.writeBillingCodeDescription(self)
+        
+    def consume(self, pages, price) :
+        """Consumes some pages and credits for this billing code."""
+        if pages :
+           self.parent.consumeBillingCode(self, pages, price)
+           self.PageCounter += pages
+           self.Balance -= price
         
 class BaseStorage :
     def __init__(self, pykotatool) :
