@@ -430,11 +430,11 @@ class StorageBillingCode(StorageObject) :
         self.parent.deleteBillingCode(self)
         self.Exists = 0
         
-    def reset(self, pagecounter=0, balance=0.0) :    
+    def reset(self, balance=0.0, pagecounter=0) :    
         """Resets the pagecounter and balance for this billing code."""
-        self.parent.setBillingCodeValues(self, pagecounter, balance)
-        self.PageCounter = pagecounter
+        self.parent.setBillingCodeValues(self, balance, pagecounter)
         self.Balance = balance
+        self.PageCounter = pagecounter
         
     def setDescription(self, description=None) :
         """Modifies the description for this billing code."""
@@ -463,7 +463,7 @@ class BaseStorage :
             pykotatool.logdebug("Jobs' title, filename and options will be hidden because of privacy concerns.")
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
-            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {} }
+            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {}, "BILLINGCODES" : {} }
         
     def close(self) :    
         """Must be overriden in children classes."""
@@ -538,6 +538,14 @@ class BaseStorage :
             lastjob = self.getPrinterLastJobFromBackend(printer)
             self.cacheEntry("LASTJOBS", printer.Name, lastjob)
         return lastjob    
+        
+    def getBillingCode(self, label) :        
+        """Returns the user from cache."""
+        code = self.getFromCache("BILLINGCODES", label)
+        if code is None :
+            code = self.getBillingCodeFromBackend(label)
+            self.cacheEntry("BILLINGCODES", label, code)
+        return code
         
     def getParentPrinters(self, printer) :    
         """Extracts parent printers information for a given printer from cache."""

@@ -55,6 +55,7 @@ options :
                          - payments : dumps user payments.
                          - pmembers : dumps printer groups members.
                          - umembers : dumps user groups members.
+                         - billingcodes : dumps billing codes.
                          
                        NB : the -d | --data command line option   
                        is MANDATORY.

@@ -51,6 +51,7 @@ class DumPyKota(PyKotaTool) :
                        "payments" : N_("History of Payments"),
                        "pmembers" : N_("Printers Groups Membership"), 
                        "umembers" : N_("Users Groups Membership"),
+                       "billingcodes" : N_("Billing Codes"),
                      }
     validformats = { "csv" : N_("Comma Separated Values"),
                      "ssv" : N_("Semicolon Separated Values"),

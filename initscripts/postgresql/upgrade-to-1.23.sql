@@ -57,9 +57,12 @@ CREATE TABLE billingcodes (id SERIAL PRIMARY KEY NOT NULL,
                            description TEXT,
                            balance FLOAT DEFAULT 0.0,
                            pagecounter INT4 DEFAULT 0);
+ALTER TABLE billingcodes RENAME COLUMN label TO billingcode;
 
 REVOKE ALL ON billingcodes FROM public;                        
 REVOKE ALL ON billingcodes_id_seq FROM public;
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON billingcodes TO pykotaadmin;
 GRANT SELECT, UPDATE ON billingcodes_id_seq TO pykotaadmin;
 GRANT SELECT ON billingcodes TO pykotauser;
+
+

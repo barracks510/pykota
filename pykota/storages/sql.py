@@ -23,7 +23,10 @@
 #
 
 from types import StringType
-from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, \
+                           StorageUser, StorageGroup, StoragePrinter, \
+                           StorageJob, StorageLastJob, StorageUserPQuota, \
+                           StorageGroupPQuota, StorageBillingCode
 
 class SQLStorage :
     def prepareRawResult(self, result) :
@@ -64,6 +67,14 @@ class SQLStorage :
         if thefilter :
             thefilter = "WHERE %s" % thefilter
         result = self.doRawSearch("SELECT * FROM users %s ORDER BY id ASC" % thefilter)
+        return self.prepareRawResult(result)
+        
+    def extractBillingcodes(self, extractonly={}) :
+        """Extracts all billing codes records."""
+        thefilter = self.createFilter(extractonly)
+        if thefilter :
+            thefilter = "WHERE %s" % thefilter
+        result = self.doRawSearch("SELECT * FROM billingcodes %s ORDER BY id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractGroups(self, extractonly={}) :
@@ -206,6 +217,20 @@ class SQLStorage :
             printer.Exists = 1
         return printer    
         
+    def getBillingCodeFromBackend(self, label) :        
+        """Extracts a billing code information given its name."""
+        code = StorageBillingCode(self, label)
+        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" % self.doQuote(label))
+        if result :
+            fields = result[0]
+            code.ident = fields.get("id")
+            code.BillingCode = fields.get("billingcode", label)
+            code.Description = self.databaseToUserCharset(fields.get("description") or "")
+            code.Balance = fields.get("balance") or 0.0
+            code.PageCounter = fields.get("pagecounter") or 0
+            code.Exists = 1
+        return code    
+        
     def getUserPQuotaFromBackend(self, user, printer) :        
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
@@ -329,6 +354,23 @@ class SQLStorage :
                     self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
         
+    def getMatchingBillingCodes(self, billingcodepattern) :
+        """Returns the list of all billing codes for which the label matches a certain pattern."""
+        codes = []
+        result = self.doSearch("SELECT * FROM billingcodes")
+        if result :
+            for record in result :
+                if self.tool.matchString(record["billingcode"], billingcodepattern.split(",")) :
+                    code = StorageBillingCode(self, record["billingcode"])
+                    code.ident = record.get("id")
+                    code.Balance = record.get("balance") or 0.0
+                    code.PageCounter = record.get("pagecounter") or 0
+                    code.Description = self.databaseToUserCharset(record.get("description") or "") 
+                    code.Exists = 1
+                    codes.append(code)
+                    self.cacheEntry("BILLINGCODES", code.BillingCode, code)
+        return codes        
+        
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
@@ -375,13 +417,18 @@ class SQLStorage :
         self.doModify("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(printername))
         return self.getPrinter(printername)
         
+    def addBillingCode(self, label) :        
+        """Adds a billing code to the quota storage, returns it."""
+        self.doModify("INSERT INTO billingcodes (billingcode) VALUES (%s)" % self.doQuote(label))
+        return self.getBillingCode(label)
+        
     def addUser(self, user) :        
-        """Adds a user to the quota storage, returns its id."""
+        """Adds a user to the quota storage, returns it."""
         self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email), self.doQuote(user.OverCharge)))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
-        """Adds a group to the quota storage, returns its id."""
+        """Adds a group to the quota storage, returns it."""
         self.doModify("INSERT INTO groups (groupname, limitby) VALUES (%s, %s)" % (self.doQuote(group.Name), self.doQuote(group.LimitBy or "quota")))
         return self.getGroup(group.Name)
 
@@ -441,6 +488,18 @@ class SQLStorage :
     def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
         """Sets the new page counters permanently for a user print quota."""
         self.doModify("UPDATE userpquota SET pagecounter=%s, lifepagecounter=%s, warncount=0, datelimit=NULL WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
+       
+    def writeBillingCodeDescription(self, code) :
+        """Sets the new description for a billing code."""
+        self.doModify("UPDATE billingcodes SET description=%s WHERE id=%s" % (self.doQuote(self.userCharsetToDatabase(code.Description or "")), self.doQuote(code.ident)))
+       
+    def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
+        """Sets the new page counter and balance for a billing code."""
+        self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newpagecounter), self.doQuote(code.ident)))
+       
+    def consumeBillingCode(self, code, balance, pagecounter) :
+        """Consumes from a billing code."""
+        self.doModify("UPDATE billingcodes SET balance=balance + %s, pagecounter=pagecounter + %s WHERE id=%s" % (self.doQuote(balance), self.doQuote(pagecounter), self.doQuote(code.ident)))
        
     def decreaseUserAccountBalance(self, user, amount) :    
         """Decreases user's account balance from an amount."""
@@ -592,4 +651,12 @@ class SQLStorage :
                     "DELETE FROM printers WHERE id=%s" % self.doQuote(printer.ident),
                   ] :
             self.doModify(q)
+            
+    def deleteBillingCode(self, code) :    
+        """Completely deletes a billing code from the Quota Storage."""
+        for q in [
+                   "DELETE FROM billingcodes WHERE id=%s" % self.doQuote(code.ident),
+                 ] :  
+            self.doModify(q)
+            
         

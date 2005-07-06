@@ -103,7 +103,7 @@ class PKBcodes(PyKotaTool) :
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
-        if options["list"] and not names :
+        if (options["list"] or options["reset"]) and not names :
             names = ["*"]
             
         if options["add"] :    
@@ -112,9 +112,9 @@ class PKBcodes(PyKotaTool) :
                 billingcode = self.storage.getBillingCode(bname)
                 if billingcode.Exists :
                     if options["skipexisting"] :
-                        self.printInfo(_("Billing code [%s] already exists, skipping.") % billingcode.Name)
+                        self.printInfo(_("Billing code [%s] already exists, skipping.") % billingcode.BillingCode)
                     else :    
-                        self.printInfo(_("Billing code [%s] already exists, will be modified.") % billingcode.Name)
+                        self.printInfo(_("Billing code [%s] already exists, will be modified.") % billingcode.BillingCode)
                         billingcodes.append(billingcode)
                 else :
                     billingcode = self.storage.addBillingCode(bname)
@@ -132,7 +132,7 @@ class PKBcodes(PyKotaTool) :
                 billingcode.delete()
             elif options["list"] :    
                 print "%s [%s] %s %s %s %.2f %s" % \
-                      (billingcode.Name, billingcode.Description, \
+                      (billingcode.BillingCode, billingcode.Description, \
                        billingcode.PageCounter, \
                        _("pages"), \
                        _("and"), \
