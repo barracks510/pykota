@@ -106,7 +106,7 @@ class PyKotaDumperGUI(DumPyKota) :
         print self.htmlFilterInput(" ".join(self.arguments))
         print "<br />"
         print self.htmlSumCheckbox(self.options.get("sum", ""))
-        print footer % (_("Dump"), version.__doc__, version.__copyright__, version.__author__)
+        print footer % (_("Dump"), version.__doc__, version.__years__, version.__author__)
         
     def htmlListDataTypes(self, selected="") :    
         """Displays the datatype selection list."""

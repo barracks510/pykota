@@ -35,7 +35,7 @@ except ImportError :
 else :    
     hasSNMP = 1
 
-__doc__ = N_("""pkhint v%s (c) %s %s
+__doc__ = N_("""pkhint v%(__version__)s (c) %(__years__)s %(__author__)s
 
 A tool to give hints on what accounting method is best for each printer.
 
@@ -58,22 +58,7 @@ examples :
   
   If you don't pass any argument on the command line, all
   printers will be analyzed.
-  
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-Please e-mail bugs to: %s""")
+""")
         
 SNMPTESTS = [ \
               'npadmin --pagecount %(printer)s 2>/dev/null', \

@@ -99,7 +99,7 @@ class PyKotaReportGUI(PyKotaTool) :
                         version.__version__, _("PyKota Reports"), \
                         _("Report"))
         print self.body
-        print footer % (_("Report"), version.__doc__, version.__copyright__, version.__author__)
+        print footer % (_("Report"), version.__doc__, version.__years__, version.__author__)
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""

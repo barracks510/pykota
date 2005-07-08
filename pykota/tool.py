@@ -39,7 +39,8 @@ import popen2
 
 from mx import DateTime
 
-from pykota import version, config, storage, logger, accounter, pdlanalyzer
+from pykota import config, storage, logger, accounter, pdlanalyzer
+from pykota.version import __version__, __author__, __years__, __gplblurb__
 
 def N_(message) :
     """Fake translation marker for translatable strings extraction."""
@@ -60,14 +61,14 @@ def crashed(message="Bug in PyKota") :
     lines = []
     for line in traceback.format_exception(*sys.exc_info()) :
         lines.extend([l for l in line.split("\n") if l])
-    msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % version.__version__, message] + lines)])
+    msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % __version__, message] + lines)])
     sys.stderr.write(msg)
     sys.stderr.flush()
     return msg
 
 class Tool :
     """Base class for tools with no database access."""
-    def __init__(self, lang="", charset=None, doc="PyKota v%s (c) %s %s" % (version.__version__, version.__copyright__, version.__author__)) :
+    def __init__(self, lang="", charset=None, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
         """Initializes the command line tool."""
         # did we drop priviledges ?
         self.privdropped = 0
@@ -205,7 +206,7 @@ class Tool :
             self.clean()
         except AttributeError :    
             pass
-        print version.__version__
+        print __version__
         sys.exit(0)
     
     def display_usage_and_quit(self) :
@@ -214,7 +215,10 @@ class Tool :
             self.clean()
         except AttributeError :    
             pass
-        print _(self.documentation) % (version.__version__, version.__copyright__, version.__author__, version.__author__)
+        print _(self.documentation) % globals()
+        print __gplblurb__
+        print
+        print _("Please report bugs to :"), __author__
         sys.exit(0)
         
     def crashed(self, message="Bug in PyKota") :    
@@ -231,7 +235,7 @@ class Tool :
                 server = smtplib.SMTP(self.smtpserver)
                 server.sendmail(admin, [admin, crashrecipient], \
                                        "From: %s\nTo: %s\nCc: %s\nSubject: PyKota v%s crash traceback !\n\n%s" % \
-                                       (admin, crashrecipient, admin, version.__version__, fullmessage))
+                                       (admin, crashrecipient, admin, __version__, fullmessage))
                 server.quit()
         except :
             pass
@@ -298,7 +302,7 @@ class Tool :
     
 class PyKotaTool(Tool) :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, lang="", charset=None, doc="PyKota %s (c) 2003-2004 %s" % (version.__version__, version.__author__)) :
+    def __init__(self, lang="", charset=None, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
         """Initializes the command line tool and opens the database."""
         Tool.__init__(self, lang, charset, doc)
         

@@ -31,7 +31,7 @@ import pwd
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
 
-__doc__ = N_("""pykotme v%s (c) %s %s
+__doc__ = N_("""pykotme v%(__version__)s (c) %(__years__)s %(__author__)s
 
 Gives print quotes to users.
 
@@ -71,22 +71,7 @@ examples :
   This will give a quote for a job consisting of what is on standard 
   input. The quote will list the job size, and the price the job
   would cost on each printer.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-Please e-mail bugs to: %s""")
+""")
         
         
 class PyKotMe(PyKotaTool) :        

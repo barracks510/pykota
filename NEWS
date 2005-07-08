@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha16 :
+      
+        - Extracted the GPL blurb from all commands' help, and use
+          a static version only once. This saves space big time, and
+          eases future translations.
+          
     - 1.23alpha15 :
     
         - pkbcodes now works with the PostgreSQL backend.

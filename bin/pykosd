@@ -37,7 +37,7 @@ except ImportError :
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
 
-__doc__ = N_("""pykosd v%s (c) %s %s
+__doc__ = N_("""pykosd v%(__version__)s (c) %(__years__)s %(__author__)s
 
 An OSD quota monitor for PyKota.
 
@@ -74,22 +74,7 @@ examples :
   Will launch pykosd. Display will be refreshed every 60 seconds,
   and will last for 3 seconds (the default) each time. After five
   iterations, the program will exit.
-  
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-Please e-mail bugs to: %s""")
+""")
 
 
 class PyKOSD(PyKotaTool) :

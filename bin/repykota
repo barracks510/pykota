@@ -36,7 +36,7 @@ from pykota.storage import PyKotaStorageError
 from pykota.reporter import PyKotaReporterError
 from pykota import reporter
 
-__doc__ = N_("""repykota v%s (c) %s %s
+__doc__ = N_("""repykota v%(__version__)s (c) %(__years__)s %(__author__)s
 
 Generates print quota reports.
 
@@ -80,22 +80,7 @@ examples :
   If launched by an user who is not a PyKota administrator, additionnal
   arguments representing users or groups names are ignored, and only the
   current user/group is reported.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-Please e-mail bugs to: %s""")
+""")
         
 class RePyKota(PyKotaTool) :        
     """A class for repykota."""

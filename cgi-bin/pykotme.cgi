@@ -98,7 +98,7 @@ class PyKotMeGUI(PyKotaTool) :
                         version.__version__, _("PyKota Quotes"), \
                         _("Quote"))
         print self.body
-        print footer % (_("Quote"), version.__doc__, version.__copyright__, version.__author__)
+        print footer % (_("Quote"), version.__doc__, version.__years__, version.__author__)
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""
