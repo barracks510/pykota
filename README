@@ -70,8 +70,9 @@ PyKota features :
           
         - Supports DSC compliant and binary PostScript, PDF, PCL5 (up to), 
           PCLXL (aka PCL6), ESC/P2, DVI, TIFF, OpenOffice.org Writer and 
-          OpenOffice.org Impress printers natively (through pkpgcounter) 
-          for software accounting methods. More formats to come.
+          OpenOffice.org Impress printers (or virtual printers) natively 
+          (through the direct use of pkpgcounter's code) for software 
+          accounting methods. More formats to come.
             
     Quota systems :        
     
