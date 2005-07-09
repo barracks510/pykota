@@ -73,6 +73,9 @@ PyKota features :
           OpenOffice.org Impress printers (or virtual printers) natively 
           (through the direct use of pkpgcounter's code) for software 
           accounting methods. More formats to come.
+          
+        - Supports any other Page Description Language for which you  
+          have a parser which can be scripted.
             
     Quota systems :        
     
