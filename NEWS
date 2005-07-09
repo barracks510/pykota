@@ -21,6 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha17 :
+    
+        - pkpgcounter is now distributed separately only. This
+          means that people must now download and install pkpgcounter
+          v1.56 or higher prior to being able to run PyKota.
+          
+        - Removed all the autoconf/automake stuff which was outdated  
+          and confusing.
+          
     - 1.23alpha16 :
       
         - Extracted the GPL blurb from all commands' help, and use

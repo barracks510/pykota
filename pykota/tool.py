@@ -39,9 +39,14 @@ import popen2
 
 from mx import DateTime
 
-from pykota import config, storage, logger, accounter, pdlanalyzer
+from pykota import config, storage, logger, accounter
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
+try :
+    from pkpgpdls import analyzer, pdlparser
+except ImportError :    
+    sys.stderr.write("ERROR: pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download\n")
+    
 def N_(message) :
     """Fake translation marker for translatable strings extraction."""
     return message
@@ -758,9 +763,9 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.logdebug("Precomputing job's size with generic PDL analyzer...")
         self.jobdatastream.seek(0)
         try :
-            parser = pdlanalyzer.PDLAnalyzer(self.jobdatastream)
+            parser = analyzer.PDLAnalyzer(self.jobdatastream)
             jobsize = parser.getJobSize()
-        except pdlanalyzer.PDLAnalyzerError, msg :    
+        except pdlparser.PDLParserError, msg :    
             # Here we just log the failure, but
             # we finally ignore it and return 0 since this
             # computation is just an indication of what the

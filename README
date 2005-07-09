@@ -69,8 +69,9 @@ PyKota features :
           This is completely configurable.
           
         - Supports DSC compliant and binary PostScript, PDF, PCL5 (up to), 
-          PCLXL (aka PCL6) and ESC/P2 printers natively for software
-          accounting methods. More formats to come.
+          PCLXL (aka PCL6), ESC/P2, DVI, TIFF, OpenOffice.org Writer and 
+          OpenOffice.org Impress printers natively (through pkpgcounter) 
+          for software accounting methods. More formats to come.
             
     Quota systems :        
     
@@ -223,7 +224,6 @@ implemented :
   - The 'hardware' method consists in querying the printer (via SNMP
     or Netatalk or any other method of your choice) for its total pages 
     counter.
-    
     This is done both at the beginning and at the end of a
     print job. The counters difference is then immediately used to 
     decrease the user's account balance or increase his quota usage.
@@ -232,10 +232,14 @@ implemented :
     job's size in number of pages to any external command of your choice.
     The command can read the job's data from its standard input and MUST
     output the job's size on its standard output. Changes to the user
-    account are reported immediately. PyKota features an internal
-    software accounting method which handles several Page Description
-    Languages : DSC compliant and binary PostScript, PDF, PCLXL (aka PCL6),
-    PCL3/4/5 and ESC/P2.
+    account are reported immediately.
+    
+    PyKota featured an internal software accounting method which handles 
+    several Page Description Languages : DSC compliant and binary PostScript,
+    PDF, PCLXL (aka PCL6), PCL3/4/5, ESC/P2, DVI, TIFF, OpenOffice.org Writer
+    and OpenOffice.org Impress. This software is now distributed separately
+    as 'pkpgcounter', and not included anymore in PyKota, so you must now
+    download and install it before running PyKota.
     
 PyKota is known to work fine with most laser printers, either with
 software accounting, or with hardware accounting if the printer
@@ -301,6 +305,9 @@ Prerequisite :
     - CUPS (http://www.cups.org) or LPRng (http://www.lprng.com)
     - Python v2.1 or above (http://www.python.org)
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
+    - The pkpgcounter command line tool, version 1.56 or higher. This
+      tool is now mandatory for PyKota to work. 
+      (http://www.librelogiciel.com/software/)
     - The JAXML Python module to be able to dump datas in the XML format.
       (http://www.librelogiciel.com/software/)
     - The Python-SNMP module to query printers for their page counter.
@@ -394,7 +401,8 @@ Hint :
     easiest distribution to install PyKota on, because all
     of PyKota dependencies are already included, excepted
     for the PySNMP (http://pysnmp.sourceforge.net) module
-    which for now has to be downloaded separately.
+    and the pkpgcounter utility which for now have to be downloaded
+    and installed separately.
 
 Then :   
 ------

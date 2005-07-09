@@ -412,21 +412,20 @@ privacy : no
 #
 #                   accounter: software()
 #
-#                 which uses PyKota's internal parser to compute
+#                 which uses pkpgcounter's code internally to compute
 #                 the size of the job.
+#                 NB : YOU MUST NOW INSTALL pkpgcounter FOR PyKota TO WORK.
 #
 #                 You could obtain exactly the same result with :
 #
 #                   accounter: software(/usr/bin/pkpgcounter)
 #
 #                 But in this case the job would be passed through
-#                 PyKota's internal parser a second time.
+#                 pkpgcounter's parser a second time.
 #
-#                 pkpgcounter is a command line tool which is
-#                 part of PyKota and which can handle both
-#                 DSC compliant or binary PostScript, PCL5, PCL6 (aka PCLXL)
-#                 and PDF documents. More file formats will be added
-#                 in the future, as time permits.
+#                 pkpgcounter is a command line tool which was
+#                 part of PyKota and which can handle several types
+#                 of documents. It is now distributed separately.
 #
 #                 while pkpgcounter is the recommended value if you want
 #                 to use an external command here, you can use whatever 
@@ -443,7 +442,7 @@ privacy : no
 # accounter: software(/usr/bin/pkpgcounter)
 #
 # The following, software without any argument, works since PyKota 1.21 
-# and uses PyKota's internal parser.
+# and uses pkpgcounter's code internally.
 accounter: software()
 
 # What should we do if the accounter's subprocess doesn't return
