@@ -171,7 +171,8 @@ PyKota features :
           Banners can still be enabled even if the print job is denied.
           NB : Banners are a CUPS only feature for now.
           
-        - Duplicate print jobs can be forbidden automatically.  
+        - Duplicate print jobs can be forbidden automatically. The decision
+          can be left to any script to decided this on a per job basis.
           
         - Powerful data dumper to export datas to other
           software (spreadsheets for example). Actually
