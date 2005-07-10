@@ -31,8 +31,7 @@ import smtplib
 import email
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
-from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
-
+    
 __doc__ = N_("""pkmail v%(__version__)s (c) %(__years__)s %(__author__)s
 
 Email gateway for PyKota.

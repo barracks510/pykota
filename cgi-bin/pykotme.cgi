@@ -32,8 +32,13 @@ import cStringIO
 
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
-from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
 from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
+
+try :
+    from pkpgpdls import analyzer, pdlparser
+except ImportError : # TODO : Remove the try/except after release 1.24.
+    sys.stderr.write("ERROR: pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download\n")
+    
 
 header = """Content-type: text/html
 
@@ -140,9 +145,9 @@ class PyKotMeGUI(PyKotaTool) :
         self.body += "<br />"
         if inputfile :
             try :
-                parser = PDLAnalyzer(cStringIO.StringIO(inputfile))
+                parser = analyzer.PDLAnalyzer(cStringIO.StringIO(inputfile))
                 jobsize = parser.getJobSize()
-            except PDLAnalyzerError, msg :    
+            except pdlparser.PDLParserError, msg :    
                 self.body += '<p><font color="red">%s</font></p>' % msg
             else :    
                 self.body += "<p>%s</p>" % (_("Job size : %i pages") % jobsize)

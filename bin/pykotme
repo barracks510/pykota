@@ -29,7 +29,12 @@ import os
 import pwd
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
-from pykota.pdlanalyzer import PDLAnalyzer, PDLAnalyzerError
+
+try :
+    from pkpgpdls import analyzer, pdlparser
+except ImportError : # TODO : Remove the try/except after release 1.24.
+    sys.stderr.write("ERROR: pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download\n")
+    
 
 __doc__ = N_("""pykotme v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -83,9 +88,9 @@ class PyKotMe(PyKotaTool) :
         totalsize = 0    
         for filename in files :    
             try :
-                parser = PDLAnalyzer(filename)
+                parser = analyzer.PDLAnalyzer(filename)
                 totalsize += parser.getJobSize()
-            except PDLAnalyzerError, msg :    
+            except pdlparser.PDLParserError, msg :    
                 self.printInfo(msg)
             
         printers = self.storage.getMatchingPrinters(options["printer"])
