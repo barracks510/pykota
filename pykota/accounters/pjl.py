@@ -76,11 +76,13 @@ class Handler :
         except socket.error, msg :
             self.parent.filter.printInfo(_("Problem during connection to %s:%s : %s") % (self.printerHostname, port, msg), "warn")
         else :
+            self.parent.filter.logdebug("Connected to printer %s" % self.printerHostname)
             try :
                 sock.send(pjlMessage)
             except socket.error, msg :
                 self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, port, msg), "warn")
             else :    
+                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
                 actualpagecount = self.printerStatus = None
                 self.timedout = 0
                 while (self.timedout == 0) or (actualpagecount is None) or (self.printerStatus is None) :
@@ -89,6 +91,7 @@ class Handler :
                     try :
                         answer = sock.recv(1024)
                     except IOError, msg :    
+                        self.parent.filter.logdebug("I/O Error [%s] : alarm handler probably called" % msg)
                         break   # our alarm handler was launched, probably
                     else :    
                         readnext = 0
@@ -96,14 +99,17 @@ class Handler :
                         for line in [l.strip() for l in answer.split()] : 
                             if line.startswith("CODE=") :
                                 self.printerStatus = line.split("=")[1]
+                                self.parent.filter.logdebug("Found status : %s" % self.printerStatus)
                             elif line.startswith("PAGECOUNT") :    
                                 readnext = 1 # page counter is on next line
                             elif readnext :    
                                 actualpagecount = int(line.strip())
+                                self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
                                 readnext = 0
                     signal.alarm(0)
                 self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
         sock.close()
+        self.parent.filter.logdebug("Connection to %s is now closed." % self.printerHostname)
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
