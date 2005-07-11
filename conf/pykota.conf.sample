@@ -98,9 +98,9 @@ disablehistory: No
 
 # LDAP example, uncomment and adapt it to your own configuration :
 #storagebackend: ldapstorage
-#storageserver: ldap://ldap.librelogiciel.com:389
-#storagename: dc=librelogiciel,dc=com
-#storageuser: cn=notadmin,dc=librelogiciel,dc=com
+#storageserver: ldap://ldap.example.com:389
+#storagename: dc=example,dc=com
+#storageuser: cn=notadmin,dc=example,dc=com
 #storageuserpw: abc.123
 #
 # TLS support for LDAP
@@ -117,16 +117,17 @@ disablehistory: No
 #
 # Here we define some helpers to know where 
 # to plug into an existing LDAP directory
-#userbase: ou=People,dc=librelogiciel,dc=com
+#userbase: ou=People,dc=example,dc=com
 #userrdn: uid
-#balancebase: ou=People,dc=librelogiciel,dc=com
+#balancebase: ou=People,dc=example,dc=com
 #balancerdn: uid
-#groupbase: ou=Groups,dc=librelogiciel,dc=com
+#groupbase: ou=Groups,dc=example,dc=com
 #grouprdn: cn
-#printerbase: ou=Printers,ou=PyKota,dc=librelogiciel,dc=com
+#printerbase: ou=Printers,ou=PyKota,dc=example,dc=com
 #printerrdn: cn
-#jobbase: ou=Jobs,ou=PyKota,dc=librelogiciel,dc=com
-#lastjobbase: ou=LastJobs,ou=PyKota,dc=librelogiciel,dc=com
+#jobbase: ou=Jobs,ou=PyKota,dc=example,dc=com
+#lastjobbase: ou=LastJobs,ou=PyKota,dc=example,dc=com
+#billingcodebase: ou=BillingCodes,ou=PyKota,dc=example,dc=com
 
 # These two fields are special, they either accept a branch
 # dn, like an ou for example, or the special keywords 'user'
@@ -135,9 +136,9 @@ disablehistory: No
 # which will then be used like a branch (you can mix and match
 # different values depending on what you want to do).
 #userquotabase: user
-#userquotabase: ou=UQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#userquotabase: ou=UQuotas,ou=PyKota,dc=example,dc=com
 #groupquotabase: group
-#groupquotabase: ou=GQuotas,ou=PyKota,dc=librelogiciel,dc=com
+#groupquotabase: ou=GQuotas,ou=PyKota,dc=example,dc=com
 
 #
 # How to create new accounts and groups
