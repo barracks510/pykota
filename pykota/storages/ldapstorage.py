@@ -1205,7 +1205,7 @@ class Storage(BaseStorage) :
                 self.doDelete(group.ident)
                 
     def deletePrinter(self, printer) :    
-        """Completely deletes an user from the Quota Storage."""
+        """Completely deletes a printer from the Quota Storage."""
         result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaPrinterName=%s))" % printer.Name, base=self.info["lastjobbase"])
         for (ident, fields) in result :
             self.doDelete(ident)
@@ -1238,6 +1238,10 @@ class Storage(BaseStorage) :
                 self.doModify(parent.ident, fields)         
         self.doDelete(printer.ident)    
         
+    def deleteBillingCode(self, code) :
+        """Deletes a billing code from the Quota Storage (no entries are deleted from the history)"""
+        self.doDelete(code.ident)
+        
     def extractPrinters(self, extractonly={}) :
         """Extracts all printer records."""
         pname = extractonly.get("printername")
@@ -1256,6 +1260,16 @@ class Storage(BaseStorage) :
             result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email") ]
             for entry in entries :
                 result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email))
+            return result 
+        
+    def extractBillingcodes(self, extractonly={}) :
+        """Extracts all billing codes records."""
+        billingcode = extractonly.get("billingcode")
+        entries = [b for b in [self.getBillingCode(label) for label in self.getAllBillingCodes(billingcode)] if b.Exists]
+        if entries :
+            result = [ ("dn", "billingcode", "balance", "pagecounter", "description") ]
+            for entry in entries :
+                result.append((entry.ident, entry.BillingCode, entry.Balance, entry.PageCounter, entry.Description))
             return result 
         
     def extractGroups(self, extractonly={}) :
@@ -1349,4 +1363,13 @@ class Storage(BaseStorage) :
             result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode") ] 
             for entry in entries :
                 result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes, entry.JobMD5Sum, entry.JobPages, entry.JobBillingCode)) 
-            return result    
+            return result
+            
+            
+# def getBillingCodeFromBackend(self, label) :        
+# def getMatchingBillingCodes(self, billingcodepattern) :
+# def addBillingCode(self, label) :        
+# def writeBillingCodeDescription(self, code) :
+# def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
+# def consumeBillingCode(self, code, balance, pagecounter) :
+
