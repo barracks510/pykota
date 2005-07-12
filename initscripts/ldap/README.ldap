@@ -29,9 +29,10 @@ pykota.schema :
     with PyKota.
     
     Include it in your LDAP server's configuration.
-    For example, with OpenLDAP 2.1.17 under Debian :
+    For example, with OpenLDAP under Debian :
     
         $ cp pykota.schema /etc/ldap/schema
+        (no need to do this if you install from PyKota's Debian package)
         
     Then edit /etc/ldap/slapd.conf and add a line to    
     include the PyKota schema. You should have something
@@ -58,6 +59,7 @@ pykota.schema :
         index pykotaUserName pres,eq,sub
         index pykotaGroupName pres,eq,sub
         index pykotaPrinterName pres,eq,sub
+        index pykotaBillingCode pres,eq,sub
         index pykotaLastJobIdent eq
         
     Now you must ensure that the DN you use to bind to    

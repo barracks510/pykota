@@ -330,6 +330,7 @@ include         /etc/ldap/schema/pykota.schema
 index pykotaUserName pres,eq,sub
 index pykotaGroupName pres,eq,sub
 index pykotaPrinterName pres,eq,sub
+index pykotaBillingCode pres,eq,sub
 index pykotaLastJobIdent eq
         </screen>
       </para>
@@ -370,7 +371,7 @@ $ /etc/init.d/slapd restart
       
       <para>
         PyKota needs at least an <literal>ou</literal> for printers, for users quotas, for
-        groups quotas, for print jobs, and for pointers to the last job of each printer.
+        groups quotas, for print jobs, for billing codes, and for pointers to the last job of each printer.
         In the future, this last <literal>ou</literal> may disappear as its content
         will probably be attached to each printer.
       </para>
