@@ -34,7 +34,7 @@ ITERATIONDELAY = 1   # 1 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
 
 # Here's the real thing :
-TIMEOUT = 3
+TIMEOUT = 5
 
 # Old method : pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 # Here's a new method, which seems to work fine on my HP2300N, while the 

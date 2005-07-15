@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha18 :
+     
+        - Increased the timeout in the PJL hardware accounting code to
+          accomodate some printers (HP5000 at least).
+          
     - 1.23alpha17 :
     
         - pkpgcounter is now distributed separately only. This
