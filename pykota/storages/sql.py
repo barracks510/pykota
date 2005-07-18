@@ -610,7 +610,7 @@ class SQLStorage :
                 job.JobSizeBytes = fields.get("jobsizebytes")
                 job.JobMD5Sum = fields.get("md5sum")
                 job.JobPages = fields.get("pages")
-                job.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode"))
+                job.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode") or "")
                 job.UserName = fields.get("username")
                 job.PrinterName = fields.get("printername")
                 if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
