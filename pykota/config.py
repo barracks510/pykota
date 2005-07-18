@@ -119,7 +119,7 @@ class PyKotaConfig :
                         "groupbase", "grouprdn", "groupmembers", \
                         "printerbase", "printerrdn", \
                         "userquotabase", "groupquotabase", \
-                        "jobbase", "lastjobbase", billingcodebase, \
+                        "jobbase", "lastjobbase", "billingcodebase", \
                         "newuser", "newgroup", \
                         "usermail", \
                       ] :
