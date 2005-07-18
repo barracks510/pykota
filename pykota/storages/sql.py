@@ -224,7 +224,7 @@ class SQLStorage :
         if result :
             fields = result[0]
             code.ident = fields.get("id")
-            code.BillingCode = fields.get("billingcode", label)
+            code.BillingCode = self.databaseToUserCharset(fields.get("billingcode", label))
             code.Description = self.databaseToUserCharset(fields.get("description") or "")
             code.Balance = fields.get("balance") or 0.0
             code.PageCounter = fields.get("pagecounter") or 0
@@ -360,8 +360,9 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM billingcodes")
         if result :
             for record in result :
-                if self.tool.matchString(record["billingcode"], billingcodepattern.split(",")) :
-                    code = StorageBillingCode(self, record["billingcode"])
+                bcode = self.databaseToUserCharset(record["billingcode"])
+                if self.tool.matchString(bcode, billingcodepattern.split(",")) :
+                    code = StorageBillingCode(self, bcode)
                     code.ident = record.get("id")
                     code.Balance = record.get("balance") or 0.0
                     code.PageCounter = record.get("pagecounter") or 0
@@ -419,7 +420,7 @@ class SQLStorage :
         
     def addBillingCode(self, label) :        
         """Adds a billing code to the quota storage, returns it."""
-        self.doModify("INSERT INTO billingcodes (billingcode) VALUES (%s)" % self.doQuote(label))
+        self.doModify("INSERT INTO billingcodes (billingcode) VALUES (%s)" % self.doQuote(self.userCharsetToDatabase(label)))
         return self.getBillingCode(label)
         
     def addUser(self, user) :        
@@ -658,5 +659,4 @@ class SQLStorage :
                    "DELETE FROM billingcodes WHERE id=%s" % self.doQuote(code.ident),
                  ] :  
             self.doModify(q)
-            
         
