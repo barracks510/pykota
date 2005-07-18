@@ -1365,6 +1365,19 @@ class Storage(BaseStorage) :
                 result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes, entry.JobMD5Sum, entry.JobPages, entry.JobBillingCode)) 
             return result
             
+    def getBillingCodeFromBackend(self, label) :
+        """Extracts billing code information given its label : returns first matching billing code."""
+        code = StorageBillingCode(self, label)
+        result = self.doSearch("(&(objectClass=pykotaBilling)(pykotaBillingCode=%s))" % label), ["pykotaBillingCode", "pykotaBalance", "pykotaPageCounter", "description"], base=self.info["billingcodebase"])
+        if result :
+            fields = result[0][1]       # take only first matching code, ignore the rest
+            code.ident = result[0][0]
+            code.BillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [self.userCharsetToDatabase(label)])[0])
+            code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
+            code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
+            code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
+            code.Exists = 1
+        return code    
             
 # def getBillingCodeFromBackend(self, label) :        
 # def getMatchingBillingCodes(self, billingcodepattern) :
