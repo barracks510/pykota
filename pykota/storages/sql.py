@@ -220,11 +220,11 @@ class SQLStorage :
     def getBillingCodeFromBackend(self, label) :        
         """Extracts a billing code information given its name."""
         code = StorageBillingCode(self, label)
-        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" % self.doQuote(label))
+        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" % self.doQuote(self.userCharsetToDatabase(label)))
         if result :
             fields = result[0]
             code.ident = fields.get("id")
-            code.BillingCode = self.databaseToUserCharset(fields.get("billingcode", label))
+            code.BillingCode = self.databaseToUserCharset(fields.get("billingcode"))
             code.Description = self.databaseToUserCharset(fields.get("description") or "")
             code.Balance = fields.get("balance") or 0.0
             code.PageCounter = fields.get("pagecounter") or 0
