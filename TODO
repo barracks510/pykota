@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Make the SNMP and PJL delay and number of loops a new configuration
+          directive.
+        
         - Ensure that deleted or modified entries are flushed from the cache.
         
         - Adds configurability to what happens when the user/group doesn't exist
