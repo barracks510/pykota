@@ -79,8 +79,8 @@ class AutoPyKota(PyKotaTool) :
                     return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
             else :
                 self.logdebug("User %s doesn't exist yet." % username)
-                self.logdebug("Creating user %s's account with balance %s and quota entries on all existing printers." % (username, options["initbalance"]))
-                return os.system('edpykota --add --limitby balance --balance "%s" "%s"' % (options["initbalance"], username))
+                self.logdebug("Creating user %s's account with balance %s and quota entries on printer %s." % (username, options["initbalance"], printername))
+                return os.system('edpykota --add --limitby balance --balance "%s" --printer "%s" "%s"' % (options["initbalance"], printername, username))
     
 if __name__ == "__main__" :    
     retcode = 0
