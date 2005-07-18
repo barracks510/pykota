@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Ensure that deleted or modified entries are flushed from the cache.
+        
         - Adds configurability to what happens when the user/group doesn't exist
           when running edpykota. Rewrite the main loop to be able to abort
           early, before any modification has taken place.
