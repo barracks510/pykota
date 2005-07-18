@@ -1368,7 +1368,7 @@ class Storage(BaseStorage) :
     def getBillingCodeFromBackend(self, label) :
         """Extracts billing code information given its label : returns first matching billing code."""
         code = StorageBillingCode(self, label)
-        result = self.doSearch("(&(objectClass=pykotaBilling)(pykotaBillingCode=%s))" % label), ["pykotaBillingCode", "pykotaBalance", "pykotaPageCounter", "description"], base=self.info["billingcodebase"])
+        result = self.doSearch("(&(objectClass=pykotaBilling)(pykotaBillingCode=%s))" % label, ["pykotaBillingCode", "pykotaBalance", "pykotaPageCounter", "description"], base=self.info["billingcodebase"])
         if result :
             fields = result[0][1]       # take only first matching code, ignore the rest
             code.ident = result[0][0]
