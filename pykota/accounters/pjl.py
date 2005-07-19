@@ -103,9 +103,13 @@ class Handler :
                             elif line.startswith("PAGECOUNT") :    
                                 readnext = 1 # page counter is on next line
                             elif readnext :    
-                                actualpagecount = int(line.strip())
-                                self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
-                                readnext = 0
+                                try :
+                                    actualpagecount = int(line.strip())
+                                except ValueError :    
+                                    self.parent.filter.logdebug("Received incorrect datas (probably because of a signal) : [%s]" % line.strip())
+                                else :
+                                    self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
+                                    readnext = 0
                     signal.alarm(0)
                 self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
         sock.close()
