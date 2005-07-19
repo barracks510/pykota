@@ -93,6 +93,8 @@ class Handler :
                     except IOError, msg :    
                         self.parent.filter.logdebug("I/O Error [%s] : alarm handler probably called" % msg)
                         break   # our alarm handler was launched, probably
+                    except socket.error :    
+                        self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, port, msg), "warn")
                     else :    
                         readnext = 0
                         self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
@@ -100,13 +102,20 @@ class Handler :
                             if line.startswith("CODE=") :
                                 self.printerStatus = line.split("=")[1]
                                 self.parent.filter.logdebug("Found status : %s" % self.printerStatus)
+                            elif line.startswith("PAGECOUNT=") :    
+                                try :
+                                    actualpagecount = int(line.split('=')[1].strip())
+                                except ValueError :    
+                                    self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
+                                else :
+                                    self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
                             elif line.startswith("PAGECOUNT") :    
                                 readnext = 1 # page counter is on next line
                             elif readnext :    
                                 try :
                                     actualpagecount = int(line.strip())
                                 except ValueError :    
-                                    self.parent.filter.logdebug("Received incorrect datas (probably because of a signal) : [%s]" % line.strip())
+                                    self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
                                 else :
                                     self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
                                     readnext = 0
