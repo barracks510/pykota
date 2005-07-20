@@ -149,6 +149,7 @@ class PyKotMeGUI(PyKotaTool) :
                 jobsize = parser.getJobSize()
             except pdlparser.PDLParserError, msg :    
                 self.body += '<p><font color="red">%s</font></p>' % msg
+                jobsize = 0 # unknown file format ?
             else :    
                 self.body += "<p>%s</p>" % (_("Job size : %i pages") % jobsize)
                 
