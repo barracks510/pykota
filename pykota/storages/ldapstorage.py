@@ -35,7 +35,10 @@ import time
 import md5
 from mx import DateTime
 
-from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, StorageUser, StorageGroup, StoragePrinter, StorageJob, StorageLastJob, StorageUserPQuota, StorageGroupPQuota
+from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, \
+                           StorageUser, StorageGroup, StoragePrinter, \
+                           StorageJob, StorageLastJob, StorageUserPQuota, \
+                           StorageGroupPQuota, StorageBillingCode
 
 try :
     import ldap
@@ -1402,8 +1405,26 @@ class Storage(BaseStorage) :
         if fields["description"] :
             self.doModify(code.ident, fields)
             
-# def getMatchingBillingCodes(self, billingcodepattern) :
-# def writeBillingCodeDescription(self, code) :
+    def getMatchingBillingCodes(self, billingcodepattern) :
+        """Returns the list of all billing codes which match a certain pattern."""
+        codes = []
+        result = self.doSearch("(&(objectClass=pykotaBilling)%s)" % "".join(["(pykotaBillingCode=%s)" % self.userCharsetToDatabase(bcode) for bcode in billingcodepattern.split(",")]), \
+                                ["pykotaBillingCode", "description", "pykotaPageCounter", "pykotaBalance"], \
+                                base=self.info["billingcodebase"])
+        if result :
+            for (codeid, fields) in result :
+                codename = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
+                code = StorageBillingCode(self, codename)
+                code.ident = codeid
+                code.BillingCode = codename
+                code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
+                code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
+                code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
+                code.Exists = 1
+                codes.append(code)
+                self.cacheEntry("BILLINGCODES", code.BillingCode, code)
+        return codes        
+        
 # def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
 # def consumeBillingCode(self, code, balance, pagecounter) :
 
