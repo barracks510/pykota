@@ -15,9 +15,10 @@
   <para>
     To get a print quote, you have to launch <command>pykotme</command>
     from the command line, passing your print job's content in any format
-    recognized by PyKota
-    <footnote><para>PyKota currently recognizes PostScript (both binary and DSC compliant),
-    PCLXL (aka PCL6), PDF, PCL3/4/5, and ESC/P2
+    recognized by PyKota 
+    <footnote><para>PyKota now uses <ulink url="http://www.librelogiciel.com/software/pkpgcounter/action_Presentation">pkpgcounter</ulink>
+    which recognizes PostScript (both binary and DSC compliant),
+    PCLXL (aka PCL6), PDF, PCL3/4/5, ESC/P2, TIFF, DVI, OpenOffice Writer, and OpenOffice Impress.
     </para></footnote>, either in the form of one or more file names on the command line,
     or on its standard input (i.e. in a shell pipe or redirection).
   </para>
@@ -42,10 +43,14 @@
     use of the <filename>pykotme.cgi</filename> <acronym>CGI</acronym> script.
     However without authentication <filename>pykotme.cgi</filename> will only
     return the print job's size and not its cost, because the cost depends on
-    the value of the user's overcharging factor. That's why if you want to
+    the value of the user's overcharging factor and the printer being used. 
+    That's why if you want to 
     obtain the same functionnality with the <acronym>CGI</acronym> script than 
     with the command line tool, you must configure your web server to force
     users to authenticate whevenver they access to <filename>pykotme.cgi</filename>.
+    Then they will be able to choose one or more printers (all by default), 
+    and also to enter their username,
+    and the exact cost of the print job will be computed.
   </para>
   
   <sect1>

@@ -138,8 +138,9 @@ class PyKotMeGUI(PyKotaTool) :
             if self.form.has_key("inputfile") :    
                 inputfile = self.form["inputfile"].value
                 
-        self.body += self.htmlListPrinters(printers or [])            
-        self.body += "<br />"
+        if os.environ.get("REMOTE_USER") is not None :        
+            self.body += self.htmlListPrinters(printers or [])            
+            self.body += "<br />"
         self.body += _("Filename") + " : "
         self.body += '<input type="file" size="64" name="inputfile" />'
         self.body += "<br />"
