@@ -8,7 +8,7 @@ recursive-include initscripts README README.* *.sql *.py *.schema *.ldif
 recursive-include debian README pykota.templates Makefile.docs pykota.config pykota.cron.daily printquota.default Makefile.docs changelog control copyright dirs docs examples links rules conffiles
 recursive-include untested README *.sh *.ps *.pjl
 recursive-include logos README *.png *.xcf *.jpeg
-recursive-include contributed README *.pl *.sh *.py
+recursive-include contributed README *.pl *.sh *.py *.php
 recursive-include stylesheets README *.css
 recursive-include openoffice README *.png *.sx? *.pdf
 recursive-include tests README *.ps.gz *.sh

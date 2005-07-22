@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.23alpha18 :
      
+        - Added the dump_bfd.php contribution. 
+        
+        - Several fixes in the internal PJL accounter.
+        
         - Now autopykota doesn't create unneeded print quota entries anymore.
         
         - Increased the timeout in the PJL hardware accounting code to

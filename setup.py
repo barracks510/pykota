@@ -79,7 +79,16 @@ for dir in modirs :
     data_files.append((directory, manpages))
 
 directory = os.sep.join(["share", "pykota"])
-data_files.append((directory, ["checkdeps.py", "bin/cupspykota", "bin/lprngpykota", "bin/waitprinter.sh", "bin/papwaitprinter.sh", "bin/mailandpopup.sh", "contributed/pagecount.pl", "untested/pjl/pagecount.pjl", "untested/pjl/status.pjl", "untested/netatalk/netatalk.sh", "untested/netatalk/pagecount.ps"]))
+data_files.append((directory, ["checkdeps.py", "bin/cupspykota", \
+                               "bin/lprngpykota", "bin/waitprinter.sh", \
+                               "bin/papwaitprinter.sh", \
+                               "bin/mailandpopup.sh", \
+                               "contributed/pagecount.pl", \
+                               "contributed/dump_bfd.php", \
+                               "untested/pjl/pagecount.pjl", \
+                               "untested/pjl/status.pjl", \
+                               "untested/netatalk/netatalk.sh", \
+                               "untested/netatalk/pagecount.ps"]))
 
 data_files.append((os.sep.join([directory, "conf"]), ["conf/README", "conf/pykota.conf.sample", "conf/pykotadmin.conf.sample"]))
 
