@@ -307,6 +307,50 @@ privacy : no
 # If both are defined, the printer option has priority.
 # striptitle : smbprn.??????
 
+# Should we launch a command to overwrite the job's ticket ?
+# This allows a command to overwrite the username and/or the
+# billing code used.
+# If unset no command is launched and the job's username and
+# billing code are used as they are received.
+# If set, the command is launched.
+# To overwrite the job's ticket, the command has to print
+# on its standard output one or more of the following lines,
+# without any prefix or space character :
+#
+#    USERNAME=the_username_we_want_to_overwrite_with
+#    BILLINGCODE=the_billingcode_we_want_to_overwrite_with
+#
+# NB : the output is entirely read, and the latest value
+# seen is used, so you command can output several usernames
+# or billing codes and only the latest ones will be used.
+# If only USERNAME= lines are printed, the billing code,
+# if any, is used unchanged.
+# If only BILLINGCODE= lines are printed, the username is
+# used unchanged.
+#
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+#
+# overwrite_jobticket : /path/to/some/script/or/command
+
+# What should we do when we print and the billing code used is
+# not present in the database ?
+# The default value is 'create' which adds the billing code to the
+# database.
+# Other values can be :
+#       deny
+#     which silently rejects the job.
+# or :
+#       deny(your script here)
+#     if you put the path to a script or command here, it is executed, for
+#     example you can open a popup window explaining why the job was
+#     rejected.
+#
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+#
+# unknown_billingcode : create
+
 # What is the accounting backend to use
 # 
 # supported values :

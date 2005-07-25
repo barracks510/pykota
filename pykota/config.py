@@ -204,6 +204,37 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return      # No prefix to strip off
             
+    def getOverwriteJobTicket(self, printername) :        
+        """Returns the overwrite_jobticket directive's content, or None if unset."""
+        try :
+            return self.getPrinterOption(printername, "overwrite_jobticket").strip()
+        except PyKotaConfigError :    
+            return      # No overwriting will be done
+        
+    def getUnknownBillingCode(self, printername) :        
+        """Returns the unknown_billingcode directive's content, or the default value if unset."""
+        validvalues = [ "CREATE", "DENY" ]
+        try :
+            fullvalue = self.getPrinterOption(printername, "unknown_billingcode")
+        except PyKotaConfigError :    
+            return ("CREATE", None)
+        else :    
+            try :
+                value = [x.strip() for x in fullvalue.split('(', 1)]
+            except ValueError :    
+                raise PyKotaConfigError, _("Invalid unknown_billingcode directive %s for printer %s") % (fullvalue, printername)
+            if len(value) == 1 :    
+                value.append("")
+            (value, args) = value    
+            if args.endswith(')') :
+                args = args[:-1]
+            value = value.upper()    
+            if (value == "DENY") and not args :
+                return ("DENY", None)
+            if value not in validvalues :
+                raise PyKotaConfigError, _("Directive unknown_billingcode in section %s only supports values in %s") % (printername, str(validvalues))
+            return (value, args)
+        
     def getPrinterEnforcement(self, printername) :    
         """Returns if quota enforcement should be strict or laxist for the current printer."""
         validenforcements = [ "STRICT", "LAXIST" ]     
