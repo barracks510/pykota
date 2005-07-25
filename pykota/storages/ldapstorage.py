@@ -1425,6 +1425,19 @@ class Storage(BaseStorage) :
                 self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
         
-# def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
-# def consumeBillingCode(self, code, balance, pagecounter) :
+    def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
+        """Sets the new page counter and balance for a billing code."""
+        fields = {
+                   "pykotaPageCounter" : str(newpagecounter),
+                   "pykotaBalance" : str(newbalance),
+                 }  
+        return self.doModify(code.ident, fields)         
+       
+    def consumeBillingCode(self, code, balance, pagecounter) :
+        """Consumes from a billing code."""
+        fields = {
+                   "pykotaBalance" : { "operator" : "-", "value" : balance, "convert" : float },
+                   "pykotaPageCounter" : { "operator" : "+", "value" : pagecounter, "convert" : int },
+                 }
+        return self.doModify(code.ident, fields)         
 
