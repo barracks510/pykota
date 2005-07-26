@@ -298,6 +298,17 @@ class Storage(BaseStorage) :
                 result.append(attrval)
         return result        
                 
+    def getAllBillingCodes(self, billingcode=None) :    
+        """Extracts all billing codes or only the billing codes matching the optional parameter."""
+        billingcodes = []
+        ldapfilter = "objectClass=pykotaBilling"
+        if billingcode :
+            ldapfilter = "(&(%s)(pykotaBillingCode=%s))" % (ldapfilter, self.userCharsetToDatabase(billingcode))
+        result = self.doSearch(ldapfilter, ["pykotaBillingCode"], base=self.info["billingcodebase"])
+        if result :
+            billingcodes = [self.databaseToUserCharset(bc) for bc in self.filterNames(result, "pykotaBillingCode")]
+        return billingcodes
+        
     def getAllPrintersNames(self, printername=None) :    
         """Extracts all printer names or only the printers' names matching the optional parameter."""
         printernames = []
