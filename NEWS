@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha19 :
+    
+        - Fixed an LDAP filtering problems when managing billing codes.
+        
+        - Added the unknown_billingcode directive. See pykota.conf.sample
+          for how to use it.
+        
     - 1.23alpha18 :
      
         - Added the dump_bfd.php contribution. 

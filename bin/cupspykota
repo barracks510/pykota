@@ -275,6 +275,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             
             # Now handle the billing code
             if bcode is not None :
+                self.logdebug("Checking billing code [%s]." % bcode)
                 billingcode = self.storage.getBillingCode(bcode)
                 if billingcode.Exists :
                     self.logdebug("Billing code [%s] exists in database." % bcode)
