@@ -494,11 +494,11 @@ class SQLStorage :
         """Sets the new description for a billing code."""
         self.doModify("UPDATE billingcodes SET description=%s WHERE id=%s" % (self.doQuote(self.userCharsetToDatabase(code.Description or "")), self.doQuote(code.ident)))
        
-    def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
+    def setBillingCodeValues(self, code, newpagecounter, newbalance) :    
         """Sets the new page counter and balance for a billing code."""
         self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newpagecounter), self.doQuote(code.ident)))
        
-    def consumeBillingCode(self, code, balance, pagecounter) :
+    def consumeBillingCode(self, code, pagecounter, balance) :
         """Consumes from a billing code."""
         self.doModify("UPDATE billingcodes SET balance=balance + %s, pagecounter=pagecounter + %s WHERE id=%s" % (self.doQuote(balance), self.doQuote(pagecounter), self.doQuote(code.ident)))
        

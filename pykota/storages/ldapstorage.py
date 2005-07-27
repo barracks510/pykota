@@ -1419,7 +1419,7 @@ class Storage(BaseStorage) :
     def getMatchingBillingCodes(self, billingcodepattern) :
         """Returns the list of all billing codes which match a certain pattern."""
         codes = []
-        result = self.doSearch("(&(objectClass=pykotaBilling)%s)" % "".join(["(pykotaBillingCode=%s)" % self.userCharsetToDatabase(bcode) for bcode in billingcodepattern.split(",")]), \
+        result = self.doSearch("(&(objectClass=pykotaBilling)(|%s))" % "".join(["(pykotaBillingCode=%s)" % self.userCharsetToDatabase(bcode) for bcode in billingcodepattern.split(",")]), \
                                 ["pykotaBillingCode", "description", "pykotaPageCounter", "pykotaBalance"], \
                                 base=self.info["billingcodebase"])
         if result :
@@ -1436,7 +1436,7 @@ class Storage(BaseStorage) :
                 self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
         
-    def setBillingCodeValues(self, code, newbalance, newpagecounter) :    
+    def setBillingCodeValues(self, code, newpagecounter, newbalance) :
         """Sets the new page counter and balance for a billing code."""
         fields = {
                    "pykotaPageCounter" : str(newpagecounter),
@@ -1444,7 +1444,7 @@ class Storage(BaseStorage) :
                  }  
         return self.doModify(code.ident, fields)         
        
-    def consumeBillingCode(self, code, balance, pagecounter) :
+    def consumeBillingCode(self, code, pagecounter, balance) :
         """Consumes from a billing code."""
         fields = {
                    "pykotaBalance" : { "operator" : "-", "value" : balance, "convert" : float },

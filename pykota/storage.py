@@ -303,7 +303,6 @@ class StorageUserPQuota(StorageObject) :
                     self.parent.increaseUserPQuotaPagesCounters(upq, jobsize)
                     upq.PageCounter = int(upq.PageCounter or 0) + jobsize
                     upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
-                # TODO : consume from the billing code as well
             except PyKotaStorageError, msg :    
                 self.parent.rollbackTransaction()
                 raise PyKotaStorageError, msg
@@ -432,7 +431,7 @@ class StorageBillingCode(StorageObject) :
         
     def reset(self, balance=0.0, pagecounter=0) :    
         """Resets the pagecounter and balance for this billing code."""
-        self.parent.setBillingCodeValues(self, balance, pagecounter)
+        self.parent.setBillingCodeValues(self, pagecounter, balance)
         self.Balance = balance
         self.PageCounter = pagecounter
         

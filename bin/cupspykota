@@ -219,17 +219,17 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             try :
                 (chtype, clienthost) = ippmessage.operation_attributes.get("job-originating-host-name", \
                                           ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
-                (jbtype, billingcode) = ippmessage.job_attributes.get("job-billing", (None, None))
+                (jbtype, bcode) = ippmessage.job_attributes.get("job-billing", (None, None))
             except AttributeError :    
                 clienthost = None
-                billingcode = None
+                bcode = None
             if clienthost is None :
-                (billingcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
+                (bcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
             self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
-            self.logdebug("Billing Code : %s" % (billingcode or "None"))    
+            self.logdebug("Billing Code : %s" % (bcode or "None"))    
             
             os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
-            os.environ["PYKOTAJOBBILLING"] = str(billingcode or "")
+            os.environ["PYKOTAJOBBILLING"] = str(bcode or "")
             
             # enters first phase
             os.environ["PYKOTAPHASE"] = "BEFORE"
@@ -268,10 +268,34 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                         self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied by subprocess."), "warn")
                     else :    
                         self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is allowed by subprocess."), "warn")
-                        action = "ALLOW" # just to be sure, in the case the external command returns something else...
+                        action = self.warnUserPQuota(userpquota)
             else :    
                 # checks the user's quota
                 action = self.warnUserPQuota(userpquota)
+            
+            # Now handle the billing code
+            if bcode is not None :
+                billingcode = self.storage.getBillingCode(bcode)
+                if billingcode.Exists :
+                    self.logdebug("Billing code [%s] exists in database." % bcode)
+                else :
+                    msg = "Unknown billing code [%s] : " % bcode
+                    (newaction, script) = self.config.getUnknownBillingCode(printer.Name)
+                    if newaction == "CREATE" :
+                        self.logdebug(msg + "will be created.")
+                        billingcode = self.storage.addBillingCode(bcode)
+                        if billingcode.Exists :
+                            self.logdebug(msg + "has been created.")
+                        else :    
+                            self.printInfo(msg + "couldn't be created.", "error")
+                    else :    
+                        self.logdebug(msg + "job will be denied.")
+                        action = newaction
+                        if script is not None : 
+                            self.logdebug(msg + "launching subprocess [%s] to notify user." % script)
+                            os.system(script)
+            else :    
+                billingcode = None
             
             # exports some new environment variables
             os.environ["PYKOTAACTION"] = action
@@ -385,9 +409,13 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
                                     action, jobsize, jobprice, self.preserveinputfile, \
                                     self.title, self.copies, self.options, clienthost, \
-                                    self.jobSizeBytes, self.checksum, None, billingcode)
+                                    self.jobSizeBytes, self.checksum, None, bcode)
             self.printMoreInfo(user, printer, _("Job added to history."))
             
+            if billingcode and billingcode.Exists :
+                billingcode.consume(jobsize, jobprice)
+                self.printMoreInfo(user, printer, _("Billing code %s was updated.") % billingcode.BillingCode)
+                
             # exports some new environment variables
             os.environ["PYKOTAJOBSIZE"] = str(jobsize)
             os.environ["PYKOTAJOBPRICE"] = str(jobprice)
