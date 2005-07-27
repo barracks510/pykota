@@ -118,6 +118,9 @@ PyKota features :
           which is applied whenever PyKota computes the cost of a 
           print job.
           
+        - Specific pages and credits counters can be defined per billing code,
+          and can be reset independantly of the printing history.
+        
     Administration :        
     
         - Powerful delegation of administrative priviledges.
