@@ -23,7 +23,7 @@ PyKota NEWS :
        
     - 1.23alpha19 :
     
-        - Fixed an LDAP filtering problems when managing billing codes.
+        - Fixed an LDAP filtering problem when managing billing codes.
         
         - Added the unknown_billingcode directive. See pykota.conf.sample
           for how to use it.
