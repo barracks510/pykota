@@ -309,16 +309,16 @@ privacy : no
 
 # Should we launch a command to overwrite the job's ticket ?
 # This allows a command to overwrite the username and/or the
-# billing code used.
+# billing code used, or to deny the job.
 # If unset no command is launched and the job's username and
 # billing code are used as they are received.
-# If set, the command is launched.
 # To overwrite the job's ticket, the command has to print
 # on its standard output one or more of the following lines,
 # without any prefix or space character :
 #
 #    USERNAME=the_username_we_want_to_overwrite_with
 #    BILLINGCODE=the_billingcode_we_want_to_overwrite_with
+#    DENY 
 #
 # NB : the output is entirely read, and the latest value
 # seen is used, so you command can output several usernames
@@ -327,6 +327,8 @@ privacy : no
 # if any, is used unchanged.
 # If only BILLINGCODE= lines are printed, the username is
 # used unchanged.
+# If DENY is output, but is followed by new USERNAME= or
+# BILLINGCODE= lines, the job is not denied.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
