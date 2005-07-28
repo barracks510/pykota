@@ -664,6 +664,21 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         
         self.username = self.username or pwd.getpwuid(os.geteuid())[0] # use CUPS' user when printing test page from CUPS web interface, otherwise username is empty
         
+        (newusername, newbillingcode, newaction) = self.overwriteJobTicket()
+        if newusername :
+            self.printInfo(_("Job ticket overwritten : new username = [%s]") % newusername)
+            self.username = newusername
+        if newbillingcode :
+            self.printInfo(_("Job ticket overwritten : new billing code = [%s]") % newbillingcode)
+            self.overwrittenBillingCode = newbillingcode
+        else :    
+            self.overwrittenBillingCode = None
+        if newaction :    
+            self.printInfo(_("Job ticket overwritten : job will be denied (but a bit later)."))
+            self.mustDeny = 1
+        else :    
+            self.mustDeny = 0
+        
         # do we want to strip out the Samba/Winbind domain name ?
         separator = self.config.getWinbindSeparator()
         if separator is not None :
@@ -695,6 +710,31 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         self.logdebug("Job size is %s bytes on %s pages." % (self.jobSizeBytes, self.softwareJobSize))
         self.logdebug("Capturing SIGTERM events.")
         signal.signal(signal.SIGTERM, self.sigterm_handler)
+        
+    def overwriteJobTicket(self) :    
+        """Should we overwrite the job's ticket (username and billingcode) ?"""
+        jobticketcommand = self.config.getOverwriteJobTicket(self.printername)
+        if jobticketcommand is not None :
+            username = billingcode = action = None
+            self.logdebug("Launching subprocess [%s] to overwrite the job's ticket." % jobticketcommand)
+            inputfile = os.popen(jobticketcommand, "r")
+            for line in inputfile.xreadlines() :
+                line = line.strip()
+                if line == "DENY" :
+                    self.logdebug("Seen DENY command.")
+                    action = "DENY"
+                elif line.startswith("USERNAME=") :    
+                    username = line.split("=", 1)[1].strip()
+                    self.logdebug("Seen new username [%s]" % username)
+                    action = None
+                elif line.startswith("BILLINGCODE=") :    
+                    billingcode = line.split("=", 1)[1].strip()
+                    self.logdebug("Seen new billing code [%s]" % billingcode)
+                    action = None
+            inputfile.close()    
+            return (username, billingcode, action)
+        else :
+            return (None, None, None)
         
     def sendBackChannelData(self, message, level="info") :    
         """Sends an informational message to CUPS via back channel stream (stderr)."""

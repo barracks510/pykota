@@ -226,6 +226,8 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             if clienthost is None :
                 (bcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
             self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
+            
+            bcode = self.overwrittenBillingCode or bcode
             self.logdebug("Billing Code : %s" % (bcode or "None"))    
             
             os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
@@ -298,6 +300,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             else :    
                 billingcode = None
             
+            # Should we cancel the job in any case (because job ticket
+            # was overwritten) ?
+            if self.mustDeny :
+                action = "DENY"
+                
             # exports some new environment variables
             os.environ["PYKOTAACTION"] = action
             

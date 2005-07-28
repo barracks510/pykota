@@ -33,29 +33,6 @@ TODO, in no particular order :
         - Add the listing of the member printers in pkprinters if the printer
           is a printer group.
           
-        - Add a new external hook to allow the overwriting of the job's ticket        
-          (mainly username and billing code) at startup time :
-          
-            1 - hook is launched and can do whatever it wants, like asking
-                the user for username+password or billing code
-                
-            2 - hook prints any (or all) of :    
-            
-                USER:some_username
-                BILLING:some_billingcode
-                DENY
-                
-                if hook doesn't print anything, job processed as usual.
-                if DENY, job is rejected.
-                
-            3 - if billing code or username is invalid, and if PyKota
-                is configured to loop in this case, hook is launched
-                again, otherwise job is rejected.
-                
-            4 - if billing code and/or username is valid, the job's
-                billing code and/or username are overwritten with
-                these values, and PyKota processes the job as usual.
-          
         - Allow several levels of administrative priviledges by allowing
           files like ~pykota/pykotadmin.someusername.conf (readonly by
           user 'someusername'), and have the database server deal
