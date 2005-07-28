@@ -180,6 +180,10 @@ PyKota features :
         - Duplicate print jobs can be forbidden automatically. The decision
           can be left to any script to decide this on a per job basis.
           
+        - Username and billing code can be overwritten at printing time,
+          to allow people to login as guest users and print as authenticated
+          users, for example.
+          
         - Powerful data dumper to export datas to other
           software (spreadsheets for example). Actually
           supported formats are :
