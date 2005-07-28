@@ -664,6 +664,9 @@ class PyKotaFilterOrBackend(PyKotaTool) :
         
         self.username = self.username or pwd.getpwuid(os.geteuid())[0] # use CUPS' user when printing test page from CUPS web interface, otherwise username is empty
         
+        if self.printingsystem == "CUPS" :
+            self.extractDatasFromCups()
+        
         (newusername, newbillingcode, newaction) = self.overwriteJobTicket()
         if newusername :
             self.printInfo(_("Job ticket overwritten : new username = [%s]") % newusername)

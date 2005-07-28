@@ -179,6 +179,50 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
                     jobbilling = ""
                 return (jobbilling, hostname)   
                 
+    def extractDatasFromCups(self) :            
+        """Extract datas from CUPS IPP message or page_log file."""
+        # tries to extract job-originating-host-name and other information
+        self.regainPriv()
+        cupsdconf = self.getCupsConfigDirectives(["PageLog", "RequestRoot"])
+        requestroot = cupsdconf.get("requestroot", "/var/spool/cups")
+        if (len(self.jobid) < 5) and self.jobid.isdigit() :
+            ippmessagefile = "c%05i" % int(self.jobid)
+        else :    
+            ippmessagefile = "c%s" % self.jobid
+        ippmessagefile = os.path.join(requestroot, ippmessagefile)
+        ippmessage = {}
+        try :
+            ippdatafile = open(ippmessagefile)
+        except :    
+            self.printInfo("Unable to open IPP message file %s" % ippmessagefile, "warn")
+        else :    
+            self.logdebug("Parsing of IPP message file %s begins." % ippmessagefile)
+            try :
+                ippmessage = IPPRequest(ippdatafile.read())
+                ippmessage.parse()
+            except IPPError, msg :    
+                self.printInfo("Error while parsing %s : %s" % (ippmessagefile, msg), "warn")
+            else :    
+                self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
+            ippdatafile.close()
+        self.dropPriv()    
+        
+        try :
+            (chtype, clienthost) = ippmessage.operation_attributes.get("job-originating-host-name", \
+                                      ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
+            (jbtype, bcode) = ippmessage.job_attributes.get("job-billing", (None, None))
+        except AttributeError :    
+            clienthost = None
+            bcode = None
+        if clienthost is None :
+            # TODO : in case the job ticket is overwritten later, self.username is not the correct one.
+            # TODO : doesn't matter much, since this code is only used as a last resort.
+            (bcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, self.printername, self.username, self.jobid)
+        self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
+        self.clientHostname = clienthost
+        self.initialBillingCode = bcode
+        os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(self.clientHostname or "")
+        
     def doWork(self, policy, printer, user, userpquota) :    
         """Most of the work is done here."""
         # Two different values possible for policy here :
@@ -190,47 +234,9 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # exports user information with initial values
             self.exportUserInfo(userpquota)
             
-            # tries to extract job-originating-host-name and other information
-            self.regainPriv()
-            cupsdconf = self.getCupsConfigDirectives(["PageLog", "RequestRoot"])
-            requestroot = cupsdconf.get("requestroot", "/var/spool/cups")
-            if (len(self.jobid) < 5) and self.jobid.isdigit() :
-                ippmessagefile = "c%05i" % int(self.jobid)
-            else :    
-                ippmessagefile = "c%s" % self.jobid
-            ippmessagefile = os.path.join(requestroot, ippmessagefile)
-            ippmessage = {}
-            try :
-                ippdatafile = open(ippmessagefile)
-            except :    
-                self.printInfo("Unable to open IPP message file %s" % ippmessagefile, "warn")
-            else :    
-                self.logdebug("Parsing of IPP message file %s begins." % ippmessagefile)
-                try :
-                    ippmessage = IPPRequest(ippdatafile.read())
-                    ippmessage.parse()
-                except IPPError, msg :    
-                    self.printInfo("Error while parsing %s : %s" % (ippmessagefile, msg), "warn")
-                else :    
-                    self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
-                ippdatafile.close()
-            self.dropPriv()    
-            
-            try :
-                (chtype, clienthost) = ippmessage.operation_attributes.get("job-originating-host-name", \
-                                          ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
-                (jbtype, bcode) = ippmessage.job_attributes.get("job-billing", (None, None))
-            except AttributeError :    
-                clienthost = None
-                bcode = None
-            if clienthost is None :
-                (bcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, printer.Name, user.Name, self.jobid)
-            self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
-            
-            bcode = self.overwrittenBillingCode or bcode
+            bcode = self.overwrittenBillingCode or self.initialBillingCode
             self.logdebug("Billing Code : %s" % (bcode or "None"))    
             
-            os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(clienthost or "")
             os.environ["PYKOTAJOBBILLING"] = str(bcode or "")
             
             # enters first phase
@@ -416,7 +422,7 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
             # adds the current job to history    
             printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
                                     action, jobsize, jobprice, self.preserveinputfile, \
-                                    self.title, self.copies, self.options, clienthost, \
+                                    self.title, self.copies, self.options, self.clientHostname, \
                                     self.jobSizeBytes, self.checksum, None, bcode)
             self.printMoreInfo(user, printer, _("Job added to history."))
             
