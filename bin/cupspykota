@@ -208,8 +208,11 @@ class PyKotaBackend(PyKotaFilterOrBackend) :
         self.dropPriv()    
         
         try :
-            (chtype, clienthost) = ippmessage.operation_attributes.get("job-originating-host-name", \
-                                      ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
+            john = ippmessage.operation_attributes.get("job-originating-host-name", \
+                   ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
+            if type(john) == type([]) :                          
+                john = john[-1]
+            (chtype, clienthost) = john                          
             (jbtype, bcode) = ippmessage.job_attributes.get("job-billing", (None, None))
         except AttributeError :    
             clienthost = None
