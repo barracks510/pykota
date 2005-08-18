@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha21 :
+     
+        - Fix for IPP requests which contain more than a single 
+          job-originating-host-name attribute.
+          
     - 1.23alpha20 :
     
         - Added the overwrite_jobticket directive. See pykota.conf.sample
