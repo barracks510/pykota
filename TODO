@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Very good idea from Martin Oesterund : comment field for
+          payments !!!
+          
         - Make the SNMP and PJL delay and number of loops a new configuration
           directive.
         
