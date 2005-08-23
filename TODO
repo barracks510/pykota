@@ -24,6 +24,10 @@ TODO, in no particular order :
         - Very good idea from Martin Oesterund : comment field for
           payments !!!
           
+        - Another one : add a third value like 'nocheck' or something
+          like that to allow an user to print with no limitation while
+          still updating the balance and number of pages printed.
+          
         - Make the SNMP and PJL delay and number of loops a new configuration
           directive.
         
