@@ -359,6 +359,7 @@ privacy : no
 # for the tempfile.gettempdir() function).
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
+# On my system, when not set, the /var/spool/cups/tmp directory is used.
 # directory : /tmp
 # directory : /var/spool/cups
 
