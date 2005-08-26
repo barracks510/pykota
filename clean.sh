@@ -23,6 +23,7 @@
 
 # Use this to clean the tree from temporary files
 
+rm -f MANIFEST
 find . -name "*.bak" -exec rm -f {} \;
 find . -name "*~" -exec rm -f {} \;
 find . -name "*.pyc" -exec rm -f {} \;
