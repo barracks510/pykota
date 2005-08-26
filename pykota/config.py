@@ -23,6 +23,7 @@
 #
 
 import os
+import tempfile
 import ConfigParser
 
 class PyKotaConfigError(Exception):
@@ -430,6 +431,20 @@ class PyKotaConfig :
         """Returns 1 if we want to reject the creation of unknown users or groups, else 0."""
         return self.isTrue(self.getGlobalOption("reject_unknown", ignore=1))
         
+    def getPrinterKeepFiles(self, printername) :          
+        """Returns 1 if files must be kept on disk, else 0."""
+        try : 
+            return self.isTrue(self.getPrinterOption(printername, "keepfiles"))
+        except PyKotaConfigError :    
+            return 0
+            
+    def getPrinterDirectory(self, printername) :          
+        """Returns the path to our working directory, else a directory suitable for temporary files."""
+        try : 
+            return self.getPrinterOption(printername, "directory").strip()
+        except PyKotaConfigError :    
+            return tempfile.gettempdir()
+            
     def getDenyDuplicates(self, printername) :          
         """Returns 1 or a command if we want to deny duplicate jobs, else 0."""
         try : 

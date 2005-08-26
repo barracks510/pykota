@@ -353,6 +353,26 @@ privacy : no
 #
 # unknown_billingcode : create
 
+# Where should we store our (temporary) files when printing ?
+# if unset, defaults to a system directory dedicated to temporary
+# files and evaluated at runtime (see Python's documentation
+# for the tempfile.gettempdir() function).
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+# directory : /tmp
+# directory : /var/spool/cups
+
+# Should we keep our work files on disk after printing ?
+# If unset, temporary files are deleted once the work is finished.
+# If set to yes, files are kept on disk in the 'directory' 
+# named with the previous directive.
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+# Default value is No, meaning temporary files are deleted
+# keepfiles : yes
+keepfiles : no
+
+
 # What is the accounting backend to use
 # 
 # supported values :
