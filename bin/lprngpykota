@@ -265,6 +265,12 @@ class PyKotaFilter(PyKotaFilterOrBackend) :
                 return self.firstPass(policy, printer, user, userpquota)
             
 if __name__ == "__main__" :    
+
+    sys.stderr.write("IMPORTANT : since PyKota v1.23alpha21, LPRng is not supported anymore !\n")
+    sys.stderr.write("IMPORTANT : please download an earlier release, or wait until LPRng support is re-added.\n")
+    sys.exit(-1)
+
+
     retcode = JSUCC
     try :
         # Initializes the backend
