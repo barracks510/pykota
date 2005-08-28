@@ -32,9 +32,9 @@ import popen2
 import cStringIO
 import shlex
 import signal
-import time
 import md5
 import fnmatch
+import pwd
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
@@ -173,7 +173,7 @@ class CUPSBackend(PyKotaTool) :
             (backend, destination) = device_uri.split(":", 1) 
         except ValueError :    
             if not device_uri :
-                self.logDebug("Not attached to an existing print queue.")
+                self.logdebug("Not attached to an existing print queue.")
                 backend = ""
                 printerhostname = ""
             else :    
