@@ -37,9 +37,9 @@ class Accounter(AccounterBase) :
         
     def getPrinterInternalPageCounter(self) :    
         """Returns the printer's internal page counter."""
-        self.filter.logdebug("Reading printer %s's internal page counter..." % self.filter.printername)
-        counter = self.askPrinterPageCounter(self.filter.printerhostname)
-        self.filter.logdebug("Printer %s's internal page counter value is : %s" % (self.filter.printername, str(counter)))
+        self.filter.logdebug("Reading printer %s's internal page counter..." % self.filter.PrinterName)
+        counter = self.askPrinterPageCounter(self.filter.PrinterHostName)
+        self.filter.logdebug("Printer %s's internal page counter value is : %s" % (self.filter.PrinterName, str(counter)))
         return counter    
         
     def beginJob(self, printer) :    
@@ -116,7 +116,7 @@ class Accounter(AccounterBase) :
             return pjl.Handler(self, printer).retrieveInternalPageCounter()
             
         if printer is None :
-            raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.printername)
+            raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.PrinterName)
         while 1 :    
             self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
             pagecounter = None

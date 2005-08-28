@@ -142,9 +142,9 @@ class Handler :
                         # it says it is not printing or warming up
                         # BUT the page counter increases !!!
                         # So we can probably quit being sure it is printing.
-                        self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.printername, "warn")
+                        self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.PrinterName, "warn")
                         break
-            self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.printername)
+            self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)
             time.sleep(ITERATIONDELAY)
         
     def waitIdle(self) :
@@ -162,7 +162,7 @@ class Handler :
                     break
             else :    
                 idle_num = 0
-            self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.printername)
+            self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)
             time.sleep(ITERATIONDELAY)
     
     def retrieveInternalPageCounter(self) :
@@ -171,14 +171,14 @@ class Handler :
             if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
                (os.environ.get("PYKOTAACTION") != "DENY") and \
                (os.environ.get("PYKOTAPHASE") == "AFTER") and \
-               self.parent.filter.jobSizeBytes :
+               self.parent.filter.JobSizeBytes :
                 self.waitPrinting()
             self.waitIdle()    
         except :    
             if self.printerInternalPageCounter is None :
                 raise
             else :    
-                self.parent.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.printername), "warn")
+                self.parent.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
         return self.printerInternalPageCounter
             
 if __name__ == "__main__" :            
@@ -190,8 +190,8 @@ if __name__ == "__main__" :
             
         class fakeFilter :
             def __init__(self) :
-                self.printername = "FakePrintQueue"
-                self.jobSizeBytes = 1
+                self.PrinterName = "FakePrintQueue"
+                self.JobSizeBytes = 1
                 
             def printInfo(self, msg, level="info") :
                 sys.stderr.write("%s : %s\n" % (level.upper(), msg))

@@ -295,19 +295,12 @@ class StorageUserPQuota(StorageObject) :
         """Increase the value of used pages and money."""
         jobprice = self.computeJobPrice(jobsize)
         if jobsize :
-            self.parent.beginTransaction()
-            try :
-                if jobprice :
-                    self.User.consumeAccountBalance(jobprice)
-                for upq in [ self ] + self.ParentPrintersUserPQuota :
-                    self.parent.increaseUserPQuotaPagesCounters(upq, jobsize)
-                    upq.PageCounter = int(upq.PageCounter or 0) + jobsize
-                    upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
-            except PyKotaStorageError, msg :    
-                self.parent.rollbackTransaction()
-                raise PyKotaStorageError, msg
-            else :    
-                self.parent.commitTransaction()
+            if jobprice :
+                self.User.consumeAccountBalance(jobprice)
+            for upq in [ self ] + self.ParentPrintersUserPQuota :
+                self.parent.increaseUserPQuotaPagesCounters(upq, jobsize)
+                upq.PageCounter = int(upq.PageCounter or 0) + jobsize
+                upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
         return jobprice
         
 class StorageGroupPQuota(StorageObject) :

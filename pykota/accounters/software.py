@@ -35,19 +35,19 @@ class Accounter(AccounterBase) :
             self.filter.logdebug("Internal software accounter said job is %s pages long." % repr(pagecounter))
         else :
             MEGABYTE = 1024*1024
-            self.filter.jobdatastream.seek(0)
+            infile = open(self.filter.DataFile, "rb")
             child = popen2.Popen4(self.arguments)
             try :
-                data = self.filter.jobdatastream.read(MEGABYTE)    
+                data = infile.read(MEGABYTE)    
                 while data :
                     child.tochild.write(data)
-                    data = self.filter.jobdatastream.read(MEGABYTE)
+                    data = infile.read(MEGABYTE)
                 child.tochild.flush()
                 child.tochild.close()    
             except (IOError, OSError), msg :    
                 msg = "%s : %s" % (self.arguments, msg) 
                 self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
-            
+            infile.close()
             pagecounter = None
             try :
                 answer = child.fromchild.read()

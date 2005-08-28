@@ -39,7 +39,7 @@ class AccounterBase :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
-        self.onerror = self.filter.config.getPrinterOnAccounterError(self.filter.printername)
+        self.onerror = self.filter.config.getPrinterOnAccounterError(self.filter.PrinterName)
         self.isSoftware = 1 # by default software accounting
         
     def getLastPageCounter(self) :    
@@ -53,10 +53,8 @@ class AccounterBase :
         """Saves the computed job size."""
         # computes job's size
         self.JobSize = self.computeJobSize()
-        if ((self.filter.printingsystem == "CUPS") \
-            and (self.filter.preserveinputfile is not None)) \
-            or (self.filter.printingsystem != "CUPS") :
-            self.JobSize *= self.filter.copies
+        if self.filter.InputFile is not None :
+            self.JobSize *= self.filter.Copies
         
         # get last job information for this printer
         if not printer.LastJob.Exists :
@@ -89,7 +87,7 @@ class AccounterBase :
         
 def openAccounter(kotafilter) :
     """Returns a connection handle to the appropriate accounter."""
-    (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.printername)
+    (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.PrinterName)
     try :
         exec "from pykota.accounters import %s as accounterbackend" % backend.lower()
     except ImportError :

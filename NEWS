@@ -21,6 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha22 :
+    
+        - The cupspykota backend was almost entirely rewritten from scratch.
+          It's now much more readable, maintainable, etc...
+          
+        - LPRng support is OFFICIALLY dropped for now. LPRng users are  
+          advised to download earlier releases or purchase the
+          PyKota v1.22HotFix1 Official release. LPRng support 
+          MIGHT be re-added later.
+        
     - 1.23alpha21 :
      
         - Fix for IPP requests which contain more than a single 

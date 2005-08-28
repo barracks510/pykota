@@ -31,697 +31,67 @@ import tempfile
 import popen2
 import cStringIO
 import shlex
-import select
 import signal
 import time
+import md5
+import fnmatch
 
-from pykota.tool import PyKotaFilterOrBackend, PyKotaToolError, crashed
-from pykota.config import PyKotaConfigError
-from pykota.storage import PyKotaStorageError
-from pykota.accounter import PyKotaAccounterError
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed
+from pykota.accounter import openAccounter
 from pykota.ipp import IPPRequest, IPPError
-    
-class PyKotaPopen4(popen2.Popen4) :
-    """Our own class to execute real backends.
-    
-       Their first argument is different from their path so using
-       native popen2.Popen3 would not be feasible.
-    """
-    def __init__(self, cmd, bufsize=-1, arg0=None) :
-        self.arg0 = arg0
-        popen2.Popen4.__init__(self, cmd, bufsize)
+from pykota.storage import PyKotaStorageError
         
-    def _run_child(self, cmd):
-        try :
-            MAXFD = os.sysconf("SC_OPEN_MAX")
-        except (AttributeError, ValueError) :    
-            MAXFD = 256
-        for i in range(3, MAXFD) : 
-            try:
-                os.close(i)
-            except OSError:
-                pass
-        try:
-            os.execvpe(cmd[0], [self.arg0 or cmd[0]] + cmd[1:], os.environ)
-        finally:
-            os._exit(1)
-    
-class PyKotaBackend(PyKotaFilterOrBackend) :        
-    """A class for the pykota backend."""
-    def acceptJob(self) :        
-        """Returns the appropriate exit code to tell CUPS all is OK."""
-        return 0
-            
-    def removeJob(self) :            
-        """Returns the appropriate exit code to let CUPS think all is OK.
+class CUPSBackend(PyKotaTool) :
+    """Base class for tools with no database access."""
+    def __init__(self) :
+        """Initializes the CUPS backend wrapper."""
+        PyKotaTool.__init__(self)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+        self.MyName = "PyKota"
+        self.myname = "cupspykota"
+        self.pid = os.getpid()
         
-           Returning 0 (success) prevents CUPS from stopping the print queue.
-        """   
-        return 0
+    def deferredInit(self) :    
+        """Deferred initialization."""
+        PyKotaTool.deferredInit(self)
+        self.gotSigTerm = 0
+        self.installSigTermHandler()
         
-    def genBanner(self, bannerfileorcommand) :
-        """Reads a banner or generates one through an external command.
+    def sigtermHandler(self, signum, frame) :
+        """Sets an attribute whenever SIGTERM is received."""
+        self.gotSigTerm = 1
+        self.printInfo(_("SIGTERM received, job %s cancelled.") % self.JobId)
+        os.environ["PYKOTASTATUS"] = "CANCELLED"
         
-           Returns the banner's content in a format which MUST be accepted
-           by the printer.
+    def deinstallSigTermHandler(self) :           
+        """Deinstalls the SIGTERM handler."""
+        self.logdebug("Deinstalling SIGTERM handler...")
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        self.logdebug("SIGTERM handler deinstalled.")
+        
+    def installSigTermHandler(self) :           
+        """Installs the SIGTERM handler."""
+        self.logdebug("Installing SIGTERM handler...")
+        signal.signal(signal.SIGTERM, self.sigtermHandler)
+        self.logdebug("SIGTERM handler installed.")
+        
+    def discoverOtherBackends(self) :    
+        """Discovers the other CUPS backends.
+        
+           Executes each existing backend in turn in device enumeration mode.
+           Returns the list of available backends.
         """
-        if bannerfileorcommand :
-            banner = "" # no banner by default
-            if os.access(bannerfileorcommand, os.X_OK) or not os.path.isfile(bannerfileorcommand) :
-                self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
-                child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
-                banner = child.fromchild.read()
-                child.tochild.close()
-                child.childerr.close()
-                child.fromchild.close()
-                status = child.wait()
-                if os.WIFEXITED(status) :
-                    status = os.WEXITSTATUS(status)
-                self.printInfo(_("Banner generator %s exit code is %s") % (bannerfileorcommand, str(status)))
-            else :
-                self.logdebug("Using %s as the banner." % bannerfileorcommand)
-                try :
-                    fh = open(bannerfileorcommand, 'r')
-                except IOError, msg :    
-                    self.printInfo("Impossible to open %s : %s" % (bannerfileorcommand, msg), "error")
-                else :    
-                    banner = fh.read()
-                    fh.close()
-            if banner :        
-                return cStringIO.StringIO(banner)
-    
-    def startingBanner(self, printername) :
-        """Retrieves a starting banner for current printer and returns its content."""
-        self.logdebug("Retrieving starting banner...")
-        return self.genBanner(self.config.getStartingBanner(printername))
-    
-    def endingBanner(self, printername) :
-        """Retrieves an ending banner for current printer and returns its content."""
-        self.logdebug("Retrieving ending banner...")
-        return self.genBanner(self.config.getEndingBanner(printername))
-        
-    def getCupsConfigDirectives(self, directives=[]) :
-        """Retrieves some CUPS directives from its configuration file.
-        
-           Returns a mapping with lowercased directives as keys and 
-           their setting as values.
-        """
-        dirvalues = {} 
-        cupsroot = os.environ.get("CUPS_SERVERROOT", "/etc/cups")
-        cupsdconf = os.path.join(cupsroot, "cupsd.conf")
-        try :
-            conffile = open(cupsdconf, "r")
-        except IOError :    
-            self.logdebug("Unable to open %s" % cupsdconf)
-        else :    
-            for line in conffile.readlines() :
-                linecopy = line.strip().lower()
-                for di in [d.lower() for d in directives] :
-                    if linecopy.startswith("%s " % di) :
-                        try :
-                            val = line.split()[1]
-                        except :    
-                            pass # ignore errors, we take the last value in any case.
-                        else :    
-                            dirvalues[di] = val
-            conffile.close()            
-        return dirvalues       
-            
-    def getJobInfosFromPageLog(self, cupsconfig, printername, username, jobid) :
-        """Retrieves the job-originating-hostname and job-billing attributes from the CUPS page_log file if possible."""
-        pagelogpath = cupsconfig.get("pagelog", "/var/log/cups/page_log")
-        self.logdebug("Trying to extract job-originating-host-name from %s" % pagelogpath)
-        try :
-            pagelog = open(pagelogpath, "r")
-        except IOError :    
-            self.logdebug("Unable to open %s" % pagelogpath)
-            return (None, None) # no page log or can't read it, originating hostname unknown yet
-        else :    
-            # TODO : read backward so we could take first value seen
-            # TODO : here we read forward so we must take the last value seen
-            prefix = ("%s %s %s " % (printername, username, jobid)).lower()
-            matchingline = None
-            while 1 :
-                line = pagelog.readline()
-                if not line :
-                    break
-                else :
-                    line = line.strip()
-                    if line.lower().startswith(prefix) :    
-                        matchingline = line # no break, because we read forward
-            pagelog.close()        
-            if matchingline is None :
-                self.logdebug("No matching line found in %s" % pagelogpath)
-                return (None, None) # correct line not found, job-originating-host-name unknown
-            else :    
-                (jobbilling, hostname) = matchingline.split()[-2:]
-                if jobbilling == "-" :
-                    jobbilling = ""
-                return (jobbilling, hostname)   
-                
-    def extractDatasFromCups(self) :            
-        """Extract datas from CUPS IPP message or page_log file."""
-        # tries to extract job-originating-host-name and other information
-        self.regainPriv()
-        cupsdconf = self.getCupsConfigDirectives(["PageLog", "RequestRoot"])
-        requestroot = cupsdconf.get("requestroot", "/var/spool/cups")
-        if (len(self.jobid) < 5) and self.jobid.isdigit() :
-            ippmessagefile = "c%05i" % int(self.jobid)
-        else :    
-            ippmessagefile = "c%s" % self.jobid
-        ippmessagefile = os.path.join(requestroot, ippmessagefile)
-        ippmessage = {}
-        try :
-            ippdatafile = open(ippmessagefile)
-        except :    
-            self.printInfo("Unable to open IPP message file %s" % ippmessagefile, "warn")
-        else :    
-            self.logdebug("Parsing of IPP message file %s begins." % ippmessagefile)
-            try :
-                ippmessage = IPPRequest(ippdatafile.read())
-                ippmessage.parse()
-            except IPPError, msg :    
-                self.printInfo("Error while parsing %s : %s" % (ippmessagefile, msg), "warn")
-            else :    
-                self.logdebug("Parsing of IPP message file %s ends." % ippmessagefile)
-            ippdatafile.close()
-        self.dropPriv()    
-        
-        try :
-            john = ippmessage.operation_attributes.get("job-originating-host-name", \
-                   ippmessage.job_attributes.get("job-originating-host-name", (None, None)))
-            if type(john) == type([]) :                          
-                john = john[-1]
-            (chtype, clienthost) = john                          
-            (jbtype, bcode) = ippmessage.job_attributes.get("job-billing", (None, None))
-        except AttributeError :    
-            clienthost = None
-            bcode = None
-        if clienthost is None :
-            # TODO : in case the job ticket is overwritten later, self.username is not the correct one.
-            # TODO : doesn't matter much, since this code is only used as a last resort.
-            (bcode, clienthost) = self.getJobInfosFromPageLog(cupsdconf, self.printername, self.username, self.jobid)
-        self.logdebug("Client Hostname : %s" % (clienthost or "Unknown"))    
-        self.clientHostname = clienthost
-        self.initialBillingCode = bcode
-        os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = str(self.clientHostname or "")
-        
-    def doWork(self, policy, printer, user, userpquota) :    
-        """Most of the work is done here."""
-        # Two different values possible for policy here :
-        # ALLOW means : Either printer, user or user print quota doesn't exist,
-        #               but the job should be allowed anyway.
-        # OK means : Both printer, user and user print quota exist, job should
-        #            be allowed if current user is allowed to print on this printer
-        if policy == "OK" :
-            # exports user information with initial values
-            self.exportUserInfo(userpquota)
-            
-            bcode = self.overwrittenBillingCode or self.initialBillingCode
-            self.logdebug("Billing Code : %s" % (bcode or "None"))    
-            
-            os.environ["PYKOTAJOBBILLING"] = str(bcode or "")
-            
-            # enters first phase
-            os.environ["PYKOTAPHASE"] = "BEFORE"
-            
-            # precomputes the job's price
-            self.softwareJobPrice = userpquota.computeJobPrice(self.softwareJobSize)
-            os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
-            self.logdebug("Precomputed job's size is %s pages, price is %s units" % (self.softwareJobSize, self.softwareJobPrice))
-            
-            denyduplicates = self.config.getDenyDuplicates(printer.Name)
-            if not self.jobSizeBytes :
-                # if no data to pass to real backend, probably a filter
-                # higher in the chain failed because of a misconfiguration.
-                # we deny the job in this case (nothing to print anyway)
-                self.printMoreInfo(user, printer, _("Job contains no data. Printing is denied."), "warn")
-                action = "DENY"
-            elif denyduplicates \
-                 and printer.LastJob.Exists \
-                 and (printer.LastJob.UserName == user.Name) \
-                 and (printer.LastJob.JobMD5Sum == self.checksum) :
-                # TODO : use the current user's last job instead of  
-                # TODO : the current printer's last job. This would be
-                # TODO : better but requires an additional database query
-                # TODO : with SQL, and is much more complex with the 
-                # TODO : actual LDAP schema. Maybe this is not very
-                # TODO : important, because usually dupes are rapidly sucessive.
-                if denyduplicates == 1 :
-                    self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied."), "warn")
-                    action = "DENY"
-                else :    
-                    self.logdebug("Launching subprocess [%s] to see if dupes should be allowed or not." % denyduplicates)
-                    fanswer = os.popen(denyduplicates, "r")
-                    action = fanswer.read().strip().upper()
-                    fanswer.close()
-                    if action == "DENY" :     
-                        self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is denied by subprocess."), "warn")
-                    else :    
-                        self.printMoreInfo(user, printer, _("Job is a duplicate. Printing is allowed by subprocess."), "warn")
-                        action = self.warnUserPQuota(userpquota)
-            else :    
-                # checks the user's quota
-                action = self.warnUserPQuota(userpquota)
-            
-            # Now handle the billing code
-            if bcode is not None :
-                self.logdebug("Checking billing code [%s]." % bcode)
-                billingcode = self.storage.getBillingCode(bcode)
-                if billingcode.Exists :
-                    self.logdebug("Billing code [%s] exists in database." % bcode)
-                else :
-                    msg = "Unknown billing code [%s] : " % bcode
-                    (newaction, script) = self.config.getUnknownBillingCode(printer.Name)
-                    if newaction == "CREATE" :
-                        self.logdebug(msg + "will be created.")
-                        billingcode = self.storage.addBillingCode(bcode)
-                        if billingcode.Exists :
-                            self.logdebug(msg + "has been created.")
-                        else :    
-                            self.printInfo(msg + "couldn't be created.", "error")
-                    else :    
-                        self.logdebug(msg + "job will be denied.")
-                        action = newaction
-                        if script is not None : 
-                            self.logdebug(msg + "launching subprocess [%s] to notify user." % script)
-                            os.system(script)
-            else :    
-                billingcode = None
-            
-            # Should we cancel the job in any case (because job ticket
-            # was overwritten) ?
-            if self.mustDeny :
-                action = "DENY"
-                
-            # exports some new environment variables
-            os.environ["PYKOTAACTION"] = action
-            
-            # launches the pre hook
-            self.prehook(userpquota)
-
-            # saves the size of banners which have to be accounted for
-            # this is needed in the case of software accounting
-            bannersize = 0
-            
-            # handle starting banner pages before accounting
-            accountbanner = self.config.getAccountBanner(printer.Name)
-            if accountbanner in ["ENDING", "NONE"] :
-                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
-                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
-                else :
-                    if action == 'DENY' :
-                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
-                        userpquota.incDenyBannerCounter() # increments the warning counter
-                        self.exportUserInfo(userpquota)
-                    banner = self.startingBanner(printer.Name)
-                    if banner :
-                        self.logdebug("Printing starting banner before accounting begins.")
-                        self.handleData(banner)
- 
-            self.printMoreInfo(user, printer, _("Job accounting begins."))
-            self.accounter.beginJob(printer)
-            
-            # handle starting banner pages during accounting
-            if accountbanner in ["STARTING", "BOTH"] :
-                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
-                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
-                else :
-                    if action == 'DENY' :
-                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
-                        userpquota.incDenyBannerCounter() # increments the warning counter
-                        self.exportUserInfo(userpquota)
-                    banner = self.startingBanner(printer.Name)
-                    if banner :
-                        self.logdebug("Printing starting banner during accounting.")
-                        self.handleData(banner)
-                        if self.accounter.isSoftware :
-                            bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
-        else :    
-            action = "ALLOW"
-            os.environ["PYKOTAACTION"] = action
-            
-        # pass the job's data to the real backend    
-        if action in ["ALLOW", "WARN"] :
-            if self.gotSigTerm :
-                retcode = self.removeJob()
-            else :    
-                retcode = self.handleData()        
-        else :        
-            retcode = self.removeJob()
-        
-        if policy == "OK" :        
-            # indicate phase change
-            os.environ["PYKOTAPHASE"] = "AFTER"
-            
-            # handle ending banner pages during accounting
-            if accountbanner in ["ENDING", "BOTH"] :
-                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
-                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
-                else :
-                    if action == 'DENY' :
-                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
-                        userpquota.incDenyBannerCounter() # increments the warning counter
-                        self.exportUserInfo(userpquota)
-                    banner = self.endingBanner(printer.Name)
-                    if banner :
-                        self.logdebug("Printing ending banner during accounting.")
-                        self.handleData(banner)
-                        if self.accounter.isSoftware :
-                            bannersize += 1 # TODO : fix this by passing the banner's content through PDLAnalyzer
- 
-            # stops accounting. 
-            self.accounter.endJob(printer)
-            self.printMoreInfo(user, printer, _("Job accounting ends."))
-                
-            # retrieve the job size    
-            if action == "DENY" :
-                jobsize = 0
-                self.printMoreInfo(user, printer, _("Job size forced to 0 because printing is denied."))
-            else :    
-                userpquota.resetDenyBannerCounter()
-                jobsize = self.accounter.getJobSize(printer)
-                if self.softwareJobSize and (jobsize != self.softwareJobSize) :
-                    self.printInfo(_("Beware : computed job size (%s) != precomputed job size (%s)") % (jobsize, self.softwareJobSize), "error")
-                    (limit, replacement) = self.config.getTrustJobSize(printer.Name)
-                    if limit is None :
-                        self.printInfo(_("The job size will be trusted anyway according to the 'trustjobsize' directive"), "warn")
-                    else :
-                        if jobsize <= limit :
-                            self.printInfo(_("The job size will be trusted because it is inferior to the 'trustjobsize' directive's limit %s") % limit, "warn")
-                        else :
-                            self.printInfo(_("The job size will be modified according to the 'trustjobsize' directive : %s") % replacement, "warn")
-                            if replacement == "PRECOMPUTED" :
-                                jobsize = self.softwareJobSize
-                            else :    
-                                jobsize = replacement
-                jobsize += bannersize    
-            self.printMoreInfo(user, printer, _("Job size : %i") % jobsize)
-            
-            # update the quota for the current user on this printer 
-            self.printInfo(_("Updating user %s's quota on printer %s") % (user.Name, printer.Name))
-            jobprice = userpquota.increasePagesUsage(jobsize)
-            
-            # adds the current job to history    
-            printer.addJobToHistory(self.jobid, user, self.accounter.getLastPageCounter(), \
-                                    action, jobsize, jobprice, self.preserveinputfile, \
-                                    self.title, self.copies, self.options, self.clientHostname, \
-                                    self.jobSizeBytes, self.checksum, None, bcode)
-            self.printMoreInfo(user, printer, _("Job added to history."))
-            
-            if billingcode and billingcode.Exists :
-                billingcode.consume(jobsize, jobprice)
-                self.printMoreInfo(user, printer, _("Billing code %s was updated.") % billingcode.BillingCode)
-                
-            # exports some new environment variables
-            os.environ["PYKOTAJOBSIZE"] = str(jobsize)
-            os.environ["PYKOTAJOBPRICE"] = str(jobprice)
-            
-            # then re-export user information with new value
-            self.exportUserInfo(userpquota)
-            
-            # handle ending banner pages after accounting ends
-            if accountbanner in ["STARTING", "NONE"] :
-                if (action == 'DENY') and (userpquota.WarnCount >= self.config.getMaxDenyBanners(printer.Name)) :
-                    self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), "warn")
-                else :
-                    if action == 'DENY' :
-                        self.logdebug("Incrementing the number of deny banners for user %s on printer %s" % (user.Name, printer.Name))
-                        userpquota.incDenyBannerCounter() # increments the warning counter
-                        self.exportUserInfo(userpquota)
-                    banner = self.endingBanner(printer.Name)
-                    if banner :
-                        self.logdebug("Printing ending banner after accounting ends.")
-                        self.handleData(banner)
-                        
-            # Launches the post hook
-            self.posthook(userpquota)
-            
-        return retcode    
-               
-    def unregisterFileNo(self, pollobj, fileno) :                
-        """Removes a file handle from the polling object."""
-        try :
-            pollobj.unregister(fileno)
-        except KeyError :    
-            self.printInfo(_("File number %s unregistered twice from polling object, ignored.") % fileno, "warn")
-        except :    
-            self.logdebug("Error while unregistering file number %s from polling object." % fileno)
-        else :    
-            self.logdebug("File number %s unregistered from polling object." % fileno)
-            
-    def formatFileEvent(self, fd, mask) :        
-        """Formats file debug info."""
-        maskval = []
-        if mask & select.POLLIN :
-            maskval.append("POLLIN")
-        if mask & select.POLLOUT :
-            maskval.append("POLLOUT")
-        if mask & select.POLLPRI :
-            maskval.append("POLLPRI")
-        if mask & select.POLLERR :
-            maskval.append("POLLERR")
-        if mask & select.POLLHUP :
-            maskval.append("POLLHUP")
-        if mask & select.POLLNVAL :
-            maskval.append("POLLNVAL")
-        return "%s (%s)" % (fd, " | ".join(maskval))
-        
-    def handleData(self, filehandle=None) :
-        """Pass the job's data to the real backend."""
-        # Find the real backend pathname    
-        realbackend = os.path.join(os.path.split(sys.argv[0])[0], self.originalbackend)
-        
-        # And launch it
-        if filehandle is None :
-            arguments = sys.argv
-        else :    
-            # Here we absolutely WANT to remove any filename from the command line !
-            arguments = [ "Fake this because we are printing a banner" ] + sys.argv[1:6]
-        # in case the username was modified by an external command :    
-        arguments[2] = self.username
-            
-        self.regainPriv()    
-        
-        self.logdebug("Starting real backend %s with args %s" % (realbackend, " ".join(['"%s"' % a for a in ([os.environ["DEVICE_URI"]] + arguments[1:])])))
-        subprocess = PyKotaPopen4([realbackend] + arguments[1:], bufsize=0, arg0=os.environ["DEVICE_URI"])
-        
-        # Save file descriptors, we will need them later.
-        stderrfno = sys.stderr.fileno()
-        fromcfno = subprocess.fromchild.fileno()
-        tocfno = subprocess.tochild.fileno()
-        
-        # We will have to be careful when dealing with I/O 
-        # So we use a poll object to know when to read or write
-        pollster = select.poll()
-        pollster.register(fromcfno, select.POLLIN | select.POLLPRI)
-        pollster.register(stderrfno, select.POLLOUT)
-        pollster.register(tocfno, select.POLLOUT)
-        
-        # Initialize our buffers
-        indata = ""
-        outdata = ""
-        endinput = endoutput = 0
-        inputclosed = outputclosed = 0
-        totaltochild = totalfromcups = 0
-        totalfromchild = totaltocups = 0
-        
-        if filehandle is None:
-            if self.preserveinputfile is None :
-               # this is not a real file, we read the job's data
-                # from our temporary file which is a copy of stdin 
-                infno = self.jobdatastream.fileno()
-                self.jobdatastream.seek(0)
-                pollster.register(infno, select.POLLIN | select.POLLPRI)
-            else :    
-                # job's data is in a file, no need to pass the data
-                # to the real backend
-                self.logdebug("Job's data is in %s" % self.preserveinputfile)
-                infno = None
-                endinput = 1
-        else:
-            self.logdebug("Printing data passed from filehandle")
-            indata = filehandle.read()
-            infno = None
-            endinput = 1
-            filehandle.close()
-        
-        self.logdebug("Entering streams polling loop...")
-        MEGABYTE = 1024*1024
-        killed = 0
-        status = -1
-        while (status == -1) and (not killed) and not (inputclosed and outputclosed) :
-            # First check if original backend is still alive
-            status = subprocess.poll()
-            
-            # Now if we got SIGTERM, we have 
-            # to kill -TERM the original backend
-            if self.gotSigTerm and not killed :
-                try :
-                    os.kill(subprocess.pid, signal.SIGTERM)
-                except OSError, msg : # ignore but logs if process was already killed.
-                    self.logdebug("Error while sending signal to pid %s : %s" % (subprocess.pid, msg))
-                else :    
-                    self.printInfo(_("SIGTERM was sent to real backend %s (pid: %s)") % (realbackend, subprocess.pid))
-                    killed = 1
-            
-            # In any case, deal with any remaining I/O
-            try :
-                availablefds = pollster.poll(5000)
-            except select.error, msg :    
-                self.logdebug("Interrupted poll : %s" % msg)
-                availablefds = []
-            if not availablefds :
-                self.logdebug("Nothing to do, sleeping a bit...")
-                time.sleep(0.01) # give some time to the system
-            else :
-                for (fd, mask) in availablefds :
-                    # self.logdebug(self.formatFileEvent(fd, mask))
-                    try :
-                        if mask & select.POLLOUT :
-                            # We can write
-                            if fd == tocfno :
-                                if indata :
-                                    try :
-                                        nbwritten = os.write(fd, indata)    
-                                    except (OSError, IOError), msg :    
-                                        self.logdebug("Error while writing to real backend's stdin %s : %s" % (fd, msg))
-                                    else :    
-                                        if len(indata) != nbwritten :
-                                            self.logdebug("Short write to real backend's input !")
-                                        totaltochild += nbwritten    
-                                        self.logdebug("%s bytes sent to real backend so far..." % totaltochild)
-                                        indata = indata[nbwritten:]
-                                else :        
-                                    self.logdebug("No data to send to real backend yet, sleeping a bit...")
-                                    time.sleep(0.01)
-                                    
-                                if endinput :    
-                                    self.unregisterFileNo(pollster, tocfno)        
-                                    self.logdebug("Closing real backend's stdin.")
-                                    os.close(tocfno)
-                                    inputclosed = 1
-                            elif fd == stderrfno :
-                                if outdata :
-                                    try :
-                                        nbwritten = os.write(fd, outdata)
-                                    except (OSError, IOError), msg :    
-                                        self.logdebug("Error while writing to CUPS back channel (stderr) %s : %s" % (fd, msg))
-                                    else :
-                                        if len(outdata) != nbwritten :
-                                            self.logdebug("Short write to stderr (CUPS) !")
-                                        totaltocups += nbwritten    
-                                        self.logdebug("%s bytes sent back to CUPS so far..." % totaltocups)
-                                        outdata = outdata[nbwritten:]
-                                else :        
-                                    # self.logdebug("No data to send back to CUPS yet, sleeping a bit...") # Uncommenting this fills your logs
-                                    time.sleep(0.01) # Give some time to the system, stderr is ALWAYS writeable it seems.
-                                    
-                                if endoutput :    
-                                    self.unregisterFileNo(pollster, stderrfno)        
-                                    outputclosed = 1
-                            else :    
-                                self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
-                                time.sleep(0.01)
-                                
-                        if mask & (select.POLLIN | select.POLLPRI) :     
-                            # We have something to read
-                            try :
-                                data = os.read(fd, MEGABYTE)
-                            except (IOError, OSError), msg :    
-                                self.logdebug("Error while reading file %s : %s" % (fd, msg))
-                            else :
-                                if fd == infno :
-                                    if not data :    # If yes, then no more input data
-                                        self.unregisterFileNo(pollster, infno)
-                                        self.logdebug("Input data ends.")
-                                        endinput = 1 # this happens with real files.
-                                    else :    
-                                        indata += data
-                                        totalfromcups += len(data)
-                                        self.logdebug("%s bytes read from CUPS so far..." % totalfromcups)
-                                elif fd == fromcfno :
-                                    if not data :
-                                        self.logdebug("No back channel data to read from real backend yet, sleeping a bit...")
-                                        time.sleep(0.01)
-                                    else :
-                                        outdata += data
-                                        totalfromchild += len(data)
-                                        self.logdebug("%s bytes read from real backend so far..." % totalfromchild)
-                                else :    
-                                    self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
-                                    time.sleep(0.01)
-                                    
-                        if mask & (select.POLLHUP | select.POLLERR) :
-                            # Treat POLLERR as an EOF.
-                            # Some standard I/O stream has no more datas
-                            self.unregisterFileNo(pollster, fd)
-                            if fd == infno :
-                                # Here we are in the case where the input file is stdin.
-                                # which has no more data to be read.
-                                self.logdebug("Input data ends.")
-                                endinput = 1
-                            elif fd == fromcfno :    
-                                # We are no more interested in this file descriptor        
-                                self.logdebug("Closing real backend's stdout+stderr.")
-                                os.close(fromcfno)
-                                endoutput = 1
-                            else :    
-                                self.logdebug("Unexpected : %s - Sleeping a bit..." % self.formatFileEvent(fd, mask))
-                                time.sleep(0.01)
-                                
-                        if mask & select.POLLNVAL :        
-                            self.logdebug("File %s was closed. Unregistering from polling object." % fd)
-                            self.unregisterFileNo(pollster, fd)
-                    except IOError, msg :            
-                        self.logdebug("Got an IOError : %s" % msg) # we got signalled during an I/O
-                
-        # We must close the real backend's input stream
-        if killed and not inputclosed :
-            self.logdebug("Forcing close of real backend's stdin.")
-            os.close(tocfno)
-        
-        self.logdebug("Exiting streams polling loop...")
-        
-        self.logdebug("input data's final length : %s" % len(indata))
-        self.logdebug("back-channel data's final length : %s" % len(outdata))
-        
-        self.logdebug("Total bytes read from CUPS (job's datas) : %s" % totalfromcups)
-        self.logdebug("Total bytes sent to real backend (job's datas) : %s" % totaltochild)
-        
-        self.logdebug("Total bytes read from real backend (back-channel datas) : %s" % totalfromchild)
-        self.logdebug("Total bytes sent back to CUPS (back-channel datas) : %s" % totaltocups)
-        
-        # Check exit code of original CUPS backend.    
-        if status == -1 :
-            # we exited the loop before the real backend exited
-            # now we have to wait for it to finish and get its status
-            self.logdebug("Waiting for real backend to exit...")
-            try :
-                status = subprocess.wait()
-            except OSError : # already dead : TODO : detect when abnormal
-                status = 0
-        if os.WIFEXITED(status) :
-            retcode = os.WEXITSTATUS(status)
-        elif not killed :    
-            self.sendBackChannelData(_("CUPS backend %s died abnormally.") % realbackend, "error")
-            retcode = -1
-        else :    
-            retcode = self.removeJob()
-            
-        self.dropPriv()    
-        
-        return retcode    
-    
-if __name__ == "__main__" :    
-    # This is a CUPS backend, we should act and die like a CUPS backend
-    retcode = 0
-    if len(sys.argv) == 1 :
+        # Unfortunately this method can't output any debug information
+        # to stdout or stderr, else CUPS considers that the device is
+        # not available.
+        available = []
         (directory, myname) = os.path.split(sys.argv[0])
+        if not directory :
+            directory = "./"
         tmpdir = tempfile.gettempdir()
         lockfilename = os.path.join(tmpdir, "%s..LCK" % myname)
         if os.path.exists(lockfilename) :
-            # there's already a lockfile, see if still used
             lockfile = open(lockfilename, "r")
             pid = int(lockfile.read())
             lockfile.close()
@@ -730,15 +100,13 @@ if __name__ == "__main__" :
                 os.kill(pid, 0)
             except OSError, e :    
                 if e.errno != errno.EPERM :
-                    # process doesn't exist anymore, remove the lock
+                    # process doesn't exist anymore
                     os.remove(lockfilename)
             
         if not os.path.exists(lockfilename) :
             lockfile = open(lockfilename, "w")
-            lockfile.write("%i" % os.getpid())
+            lockfile.write("%i" % self.pid)
             lockfile.close()
-            # we will execute each existing backend in device enumeration mode
-            # and generate their PyKota accounting counterpart
             allbackends = [ os.path.join(directory, b) \
                                 for b in os.listdir(directory) 
                                     if os.access(os.path.join(directory, b), os.X_OK) \
@@ -752,11 +120,13 @@ if __name__ == "__main__" :
                 status = answer.close()
                 if status is None :
                     for d in devices :
-                        # each line is of the form : 'xxxx xxxx "xxxx xxx" "xxxx xxx"'
+                        # each line is of the form : 
+                        # 'xxxx xxxx "xxxx xxx" "xxxx xxx"'
                         # so we have to decompose it carefully
-                        fdevice = cStringIO.StringIO("%s" % d)
+                        fdevice = cStringIO.StringIO(d)
                         tokenizer = shlex.shlex(fdevice)
-                        tokenizer.wordchars = tokenizer.wordchars + r".:,?!~/\_$*-+={}[]()#"
+                        tokenizer.wordchars = tokenizer.wordchars + \
+                                                        r".:,?!~/\_$*-+={}[]()#"
                         arguments = []
                         while 1 :
                             token = tokenizer.get_token()
@@ -774,27 +144,899 @@ if __name__ == "__main__" :
                                 name = name[1:-1]
                             if fullname.startswith('"') and fullname.endswith('"') :
                                 fullname = fullname[1:-1]
-                            print '%s cupspykota:%s "PyKota+%s" "PyKota managed %s"' % (devicetype, device, name, fullname)
+                            available.append('%s %s:%s "%s+%s" "%s managed %s"' \
+                                                 % (devicetype, self.myname, \
+                                                    device, self.MyName, \
+                                                    name, self.MyName, \
+                                                    fullname))
             os.remove(lockfilename)
-        retcode = 0                
+        available.append('direct %s:// "%s+Nothing" "%s managed Virtual Printer"' \
+                             % (self.myname, self.MyName, self.MyName))
+        return available
+                        
+    def initBackendParameters(self) :    
+        """Initializes the backend's attributes."""
+        # check that the DEVICE_URI environment variable's value is 
+        # prefixed with self.myname otherwise don't touch it.
+        # If this is the case, we have to remove the prefix from 
+        # the environment before launching the real backend 
+        self.logdebug("Initializing backend...")
+        muststartwith = "%s:" % self.myname
+        device_uri = os.environ.get("DEVICE_URI", "")
+        if device_uri.startswith(muststartwith) :
+            fulldevice_uri = device_uri[:]
+            device_uri = fulldevice_uri[len(muststartwith):]
+            for i in range(2) :
+                if device_uri.startswith("/") :  
+                    device_uri = device_uri[1:]
+        try :
+            (backend, destination) = device_uri.split(":", 1) 
+        except ValueError :    
+            if not device_uri :
+                self.logDebug("Not attached to an existing print queue.")
+                backend = ""
+                printerhostname = ""
+            else :    
+                raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
+        else :        
+            while destination.startswith("/") :
+                destination = destination[1:]
+            checkauth = destination.split("@", 1)    
+            if len(checkauth) == 2 :
+                destination = checkauth[1]
+            printerhostname = destination.split("/")[0].split(":")[0]
+        
+        self.Action = "ALLOW"   # job allowed by default
+        self.JobId = sys.argv[1].strip()
+        # use CUPS' user when printing test pages from CUPS' web interface
+        self.UserName = sys.argv[2].strip() or pwd.getpwuid(os.geteuid())[0]
+        self.Title = sys.argv[3].strip()
+        self.Copies = int(sys.argv[4].strip())
+        self.Options = sys.argv[5].strip()
+        if len(sys.argv) == 7 :
+            self.InputFile = sys.argv[6] # read job's datas from file
+        else :    
+            self.InputFile = None        # read job's datas from stdin
+            
+        self.PrinterHostName = printerhostname    
+        self.RealBackend = backend
+        self.DeviceURI = device_uri
+        self.PrinterName = os.environ.get("PRINTER", "")
+        self.Directory = self.config.getPrinterDirectory(self.PrinterName)
+        self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
+                   (self.myname, self.PrinterName, self.UserName, self.JobId))
+        
+        (ippfilename, ippmessage) = self.parseIPPRequestFile()
+        self.ControlFile = ippfilename
+        john = ippmessage.operation_attributes.get("job-originating-host-name", \
+               ippmessage.job_attributes.get("job-originating-host-name", \
+               (None, None)))
+        if type(john) == type([]) : 
+            john = john[-1]
+        (chtype, self.ClientHost) = john 
+        jbing = ippmessage.job_attributes.get("job-billing", (None, None))
+        if type(jbing) == type([]) : 
+            jbing = jbing[-1]
+        (jbtype, self.JobBillingCode) = jbing
+        
+        self.logdebug("Backend : %s" % self.RealBackend)
+        self.logdebug("DeviceURI : %s" % self.DeviceURI)
+        self.logdebug("Printername : %s" % self.PrinterName)
+        self.logdebug("Username : %s" % self.UserName)
+        self.logdebug("JobId : %s" % self.JobId)
+        self.logdebug("Title : %s" % self.Title)
+        self.logdebug("Filename : %s" % self.InputFile)
+        self.logdebug("Copies : %s" % self.Copies)
+        self.logdebug("Options : %s" % self.Options)
+        self.logdebug("Directory : %s" % self.Directory) 
+        self.logdebug("DataFile : %s" % self.DataFile)
+        self.logdebug("ControlFile : %s" % self.ControlFile)
+        self.logdebug("JobBillingCode : %s" % self.JobBillingCode)
+        self.logdebug("JobOriginatingHostName : %s" % self.ClientHost)
+        
+        self.logdebug("Backend initialized.")
+        
+    def overwriteJobAttributes(self) :
+        """Overwrites some of the job's attributes if needed."""
+        self.logdebug("Sanitizing job's attributes...")
+        # First overwrite the job ticket
+        self.overwriteJobTicket()
+        
+        # do we want to strip out the Samba/Winbind domain name ?
+        separator = self.config.getWinbindSeparator()
+        if separator is not None :
+            self.UserName = self.UserName.split(separator)[-1]
+            
+        # do we want to lowercase usernames ?    
+        if self.config.getUserNameToLower() :
+            self.UserName = self.UserName.lower()
+            
+        # do we want to strip some prefix off of titles ?    
+        stripprefix = self.config.getStripTitle(self.PrinterName)
+        if stripprefix :
+            if fnmatch.fnmatch(self.Title[:len(stripprefix)], stripprefix) :
+                self.logdebug("Prefix [%s] removed from job's title [%s]." \
+                                      % (stripprefix, self.Title))
+                self.Title = self.Title[len(stripprefix):]
+                
+        self.logdebug("Username : %s" % self.UserName)
+        self.logdebug("BillingCode : %s" % self.JobBillingCode)
+        self.logdebug("Title : %s" % self.Title)
+        self.logdebug("Job's attributes sanitizing done.")
+                
+    def overwriteJobTicket(self) :    
+        """Should we overwrite the job's ticket (username and billingcode) ?"""
+        self.logdebug("Checking if we need to overwrite the job ticket...")
+        jobticketcommand = self.config.getOverwriteJobTicket(self.PrinterName)
+        if jobticketcommand is not None :
+            username = billingcode = action = None
+            self.logdebug("Launching subprocess [%s] to overwrite the job ticket." \
+                                     % jobticketcommand)
+            inputfile = os.popen(jobticketcommand, "r")
+            for line in inputfile.xreadlines() :
+                line = line.strip()
+                if line == "DENY" :
+                    self.logdebug("Seen DENY command.")
+                    action = "DENY"
+                elif line.startswith("USERNAME=") :    
+                    username = line.split("=", 1)[1].strip()
+                    self.logdebug("Seen new username [%s]" % username)
+                    action = None
+                elif line.startswith("BILLINGCODE=") :    
+                    billingcode = line.split("=", 1)[1].strip()
+                    self.logdebug("Seen new billing code [%s]" % billingcode)
+                    action = None
+            inputfile.close()    
+            
+            # now overwrite the job's ticket if new data was supplied
+            if action :
+                self.Action = action
+            if username :
+                self.UserName = username
+            # NB : we overwrite the billing code even if empty    
+            self.JobBillingCode = billingcode 
+        self.logdebug("Job ticket overwriting done.")
+            
+    def saveDatasAndCheckSum(self) :
+        """Saves the input datas into a static file."""
+        self.logdebug("Duplicating data stream into %s" % self.DataFile)
+        mustclose = 0
+        if self.InputFile is not None :
+            infile = open(self.InputFile, "rb")
+            mustclose = 1
+        else :    
+            infile = sys.stdin
+        CHUNK = 64*1024         # read 64 Kb at a time
+        dummy = 0
+        sizeread = 0
+        checksum = md5.new()
+        outfile = open(self.DataFile, "wb")    
+        while 1 :
+            data = infile.read(CHUNK) 
+            if not data :
+                break
+            sizeread += len(data)    
+            outfile.write(data)
+            checksum.update(data)    
+            if not (dummy % 32) : # Only display every 2 Mb
+                self.logdebug("%s bytes saved..." % sizeread)
+            dummy += 1    
+        outfile.close()
+        if mustclose :    
+            infile.close()
+            
+        self.JobSizeBytes = sizeread    
+        self.JobMD5Sum = checksum.hexdigest()
+        
+        self.logdebug("JobSizeBytes : %s" % self.JobSizeBytes)
+        self.logdebug("JobMD5Sum : %s" % self.JobMD5Sum)
+        self.logdebug("Data stream duplicated into %s" % self.DataFile)
+            
+    def clean(self) :
+        """Cleans up the place."""
+        self.logdebug("Cleaning up...")
+        self.deinstallSigTermHandler()
+        if not self.config.getPrinterKeepFiles(self.PrinterName) :
+            try :
+                self.logdebug("Work file %s will be deleted." % self.DataFile)
+            except AttributeError :    
+                pass
+            else :    
+                os.remove(self.DataFile)
+                self.logdebug("Work file %s has been deleted." % self.DataFile)
+        else :    
+            self.logdebug("Work file %s will be kept." % self.DataFile)
+        PyKotaTool.clean(self)    
+        self.logdebug("Clean.")
+            
+    def precomputeJobSize(self) :    
+        """Computes the job size with a software method."""
+        self.logdebug("Precomputing job's size...")
+        jobsize = 0
+        if self.JobSizeBytes :
+            try :
+                from pkpgpdls import analyzer, pdlparser
+            except ImportError :    
+                self.printInfo("pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download", "error")
+                self.printInfo("Precomputed job size will be forced to 0 pages.", "error")
+            else :     
+                infile = open(self.DataFile, "rb")
+                try :
+                    parser = analyzer.PDLAnalyzer(infile)
+                    jobsize = parser.getJobSize()
+                except pdlparser.PDLParserError, msg :    
+                    # Here we just log the failure, but
+                    # we finally ignore it and return 0 since this
+                    # computation is just an indication of what the
+                    # job's size MAY be.
+                    self.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
+                else :    
+                    if self.InputFile is not None :
+                        # when a filename is passed as an argument, the backend 
+                        # must generate the correct number of copies.
+                        jobsize *= self.Copies
+                infile.close()        
+        self.softwareJobSize = jobsize
+        self.logdebug("Precomputed job's size is %s pages." % self.softwareJobSize)
+        
+    def precomputeJobPrice(self) :    
+        """Precomputes the job price with a software method."""
+        self.logdebug("Precomputing job's price...")
+        self.softwareJobPrice = self.UserPQuota.computeJobPrice(self.softwareJobSize)
+        self.logdebug("Precomputed job's price is %.3f credits." \
+                                   % self.softwareJobPrice)
+        
+    def getCupsConfigDirectives(self, directives=[]) :
+        """Retrieves some CUPS directives from its configuration file.
+        
+           Returns a mapping with lowercased directives as keys and 
+           their setting as values.
+        """
+        self.logdebug("Parsing CUPS' configuration file...")
+        dirvalues = {} 
+        cupsroot = os.environ.get("CUPS_SERVERROOT", "/etc/cups")
+        cupsdconf = os.path.join(cupsroot, "cupsd.conf")
+        try :
+            conffile = open(cupsdconf, "r")
+        except IOError :    
+            raise PyKotaToolError, "Unable to open %s" % cupsdconf
+        else :    
+            for line in conffile.readlines() :
+                linecopy = line.strip().lower()
+                for di in [d.lower() for d in directives] :
+                    if linecopy.startswith("%s " % di) :
+                        try :
+                            val = line.split()[1]
+                        except :    
+                            pass # ignore errors, we take the last value in any case.
+                        else :    
+                            dirvalues[di] = val
+            conffile.close()            
+        self.logdebug("CUPS' configuration file parsed successfully.")
+        return dirvalues       
+            
+    def parseIPPRequestFile(self) :        
+        """Parses the IPP message file and returns a tuple (filename, parsedvalue)."""
+        self.logdebug("Parsing IPP request file...")
+        
+        class DummyClass :
+            operation_attributes = {}
+            job_attributes = {}
+            
+        ippmessage = DummyClass() # in case the code below fails
+        
+        self.regainPriv()
+        cupsdconf = self.getCupsConfigDirectives(["RequestRoot"])
+        requestroot = cupsdconf.get("requestroot", "/var/spool/cups")
+        if (len(self.JobId) < 5) and self.JobId.isdigit() :
+            ippmessagefile = "c%05i" % int(self.JobId)
+        else :    
+            ippmessagefile = "c%s" % self.JobId
+        ippmessagefile = os.path.join(requestroot, ippmessagefile)
+        try :
+            ippdatafile = open(ippmessagefile)
+        except :    
+            self.logdebug("Unable to open IPP request file %s" % ippmessagefile)
+        else :    
+            self.logdebug("Parsing of IPP request file %s begins." % ippmessagefile)
+            try :
+                ippmessage = IPPRequest(ippdatafile.read())
+                ippmessage.parse()
+            except IPPError, msg :    
+                self.printInfo("Error while parsing %s : %s" \
+                                      % (ippmessagefile, msg), "warn")
+            else :    
+                self.logdebug("Parsing of IPP request file %s ends." \
+                                       % ippmessagefile)
+            ippdatafile.close()
+        self.dropPriv()
+        self.logdebug("IPP request file parsed successfully.")
+        return (ippmessagefile, ippmessage)
+                
+    def exportJobInfo(self) :    
+        """Exports the actual job's attributes to the environment."""
+        self.logdebug("Exporting job information to the environment...")
+        os.environ["DEVICE_URI"] = self.DeviceURI       # WARNING !
+        os.environ["PYKOTAPRINTERNAME"] = self.PrinterName
+        os.environ["PYKOTADIRECTORY"] = self.Directory
+        os.environ["PYKOTADATAFILE"] = self.DataFile
+        os.environ["PYKOTAJOBSIZEBYTES"] = str(self.JobSizeBytes)
+        os.environ["PYKOTAMD5SUM"] = self.JobMD5Sum
+        os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = self.ClientHost or ""
+        os.environ["PYKOTAJOBID"] = self.JobId
+        os.environ["PYKOTAUSERNAME"] = self.UserName
+        os.environ["PYKOTATITLE"] = self.Title
+        os.environ["PYKOTACOPIES"] = str(self.Copies)
+        os.environ["PYKOTAOPTIONS"] = self.Options
+        os.environ["PYKOTAFILENAME"] = self.InputFile or ""
+        os.environ["PYKOTAJOBBILLING"] = self.JobBillingCode or ""
+        os.environ["PYKOTACONTROLFILE"] = self.ControlFile
+        os.environ["PYKOTAPRINTERHOSTNAME"] = self.PrinterHostName
+        os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
+        self.logdebug("Environment updated.")
+        
+    def exportUserInfo(self) :
+        """Exports user information to the environment."""
+        self.logdebug("Exporting user information to the environment...")
+        os.environ["PYKOTAOVERCHARGE"] = str(self.User.OverCharge)
+        os.environ["PYKOTALIMITBY"] = str(self.User.LimitBy)
+        os.environ["PYKOTABALANCE"] = str(self.User.AccountBalance or 0.0)
+        os.environ["PYKOTALIFETIMEPAID"] = str(self.User.LifeTimePaid or 0.0)
+        
+        os.environ["PYKOTAPAGECOUNTER"] = str(self.UserPQuota.PageCounter or 0)
+        os.environ["PYKOTALIFEPAGECOUNTER"] = str(self.UserPQuota.LifePageCounter or 0)
+        os.environ["PYKOTASOFTLIMIT"] = str(self.UserPQuota.SoftLimit)
+        os.environ["PYKOTAHARDLIMIT"] = str(self.UserPQuota.HardLimit)
+        os.environ["PYKOTADATELIMIT"] = str(self.UserPQuota.DateLimit)
+        os.environ["PYKOTAWARNCOUNT"] = str(self.UserPQuota.WarnCount)
+        
+        # TODO : move this elsewhere once software accounting is done only once.
+        os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
+        
+        self.logdebug("Environment updated.")
+        
+    def exportPrinterInfo(self) :
+        """Exports printer information to the environment."""
+        self.logdebug("Exporting printer information to the environment...")
+        # exports the list of printers groups the current
+        # printer is a member of
+        os.environ["PYKOTAPGROUPS"] = ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)])
+        self.logdebug("Environment updated.")
+        
+    def exportPhaseInfo(self, phase) :
+        """Exports phase information to the environment."""
+        self.logdebug("Exporting phase information [%s] to the environment..." % phase)
+        os.environ["PYKOTAPHASE"] = phase
+        self.logdebug("Environment updated.")
+        
+    def exportJobSizeAndPrice(self) :
+        """Exports job's size and price information to the environment."""
+        self.logdebug("Exporting job's size and price information to the environment...")
+        os.environ["PYKOTAJOBSIZE"] = str(self.JobSize)
+        os.environ["PYKOTAJOBPRICE"] = str(self.JobPrice)
+        self.logdebug("Environment updated.")
+        
+    def acceptJob(self) :        
+        """Returns the appropriate exit code to tell CUPS all is OK."""
+        return 0
+            
+    def removeJob(self) :            
+        """Returns the appropriate exit code to let CUPS think all is OK.
+        
+           Returning 0 (success) prevents CUPS from stopping the print queue.
+        """   
+        return 0
+        
+    def launchPreHook(self) :
+        """Allows plugging of an external hook before the job gets printed."""
+        prehook = self.config.getPreHook(self.PrinterName)
+        if prehook :
+            self.logdebug("Executing pre-hook [%s]..." % prehook)
+            retcode = os.system(prehook)
+            self.logdebug("pre-hook exited with status %s." % retcode)
+        
+    def launchPostHook(self) :
+        """Allows plugging of an external hook after the job gets printed and/or denied."""
+        posthook = self.config.getPostHook(self.PrinterName)
+        if posthook :
+            self.logdebug("Executing post-hook [%s]..." % posthook)
+            retcode = os.system(posthook)
+            self.logdebug("post-hook exited with status %s." % retcode)
+            
+    def improveMessage(self, message) :        
+        """Improves a message by adding more informations in it if possible."""
+        try :
+            return "%s@%s(%s) => %s" % (self.UserName, \
+                                        self.PrinterName, \
+                                        self.JobId, \
+                                        message)
+        except :                                               
+            return message
+        
+    def logdebug(self, message) :        
+        """Improves the debug message before outputting it."""
+        PyKotaTool.logdebug(self, self.improveMessage(message))
+        
+    def printInfo(self, message, level="info") :        
+        """Improves the informational message before outputting it."""
+        self.logger.log_message(self.improveMessage(message), level)
+    
+    def startingBanner(self) :
+        """Retrieves a starting banner for current printer and returns its content."""
+        self.logdebug("Retrieving starting banner...")
+        self.printBanner(self.config.getStartingBanner(self.PrinterName))
+        self.logdebug("Starting banner retrieved.")
+    
+    def endingBanner(self) :
+        """Retrieves an ending banner for current printer and returns its content."""
+        self.logdebug("Retrieving ending banner...")
+        self.printBanner(self.config.getEndingBanner(self.PrinterName))
+        self.logdebug("Ending banner retrieved.")
+        
+    def printBanner(self, bannerfileorcommand) :
+        """Reads a banner or generates one through an external command.
+        
+           Returns the banner's content in a format which MUST be accepted
+           by the printer.
+        """
+        self.logdebug("Printing banner...")
+        if bannerfileorcommand :
+            if os.access(bannerfileorcommand, os.X_OK) or \
+                  not os.path.isfile(bannerfileorcommand) :
+                self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
+                child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
+                self.runOriginalBackend(child.fromchild, isBanner=1)
+                child.tochild.close()
+                child.childerr.close()
+                child.fromchild.close()
+                status = child.wait()
+                if os.WIFEXITED(status) :
+                    status = os.WEXITSTATUS(status)
+                self.printInfo(_("Banner generator %s exit code is %s") \
+                                         % (bannerfileorcommand, str(status)))
+            else :
+                self.logdebug("Using %s as the banner." % bannerfileorcommand)
+                try :
+                    fh = open(bannerfileorcommand, 'rb')
+                except IOError, msg :    
+                    self.printInfo("Impossible to open %s : %s" \
+                                       % (bannerfileorcommand, msg), "error")
+                else :    
+                    self.runOriginalBackend(fh, isBanner=1)
+                    fh.close()
+        self.logdebug("Banner printed...")
+                
+    def handleBanner(self, bannertype, withaccounting) :
+        """Handles the banner with or without accounting."""
+        if withaccounting :
+            acc = "with"
+        else :    
+            acc = "without"
+        self.logdebug("Handling %s banner %s accounting..." % (bannertype, acc))
+        if (self.Action == 'DENY') and \
+           (self.UserPQuota.WarnCount >= \
+                            self.config.getMaxDenyBanners(self.PrinterName)) :
+            self.printInfo(_("Banner won't be printed : maximum number of deny banners reached."), \
+                             "warn")
+        else :
+            if self.Action == 'DENY' :
+                self.logdebug("Incrementing the number of deny banners for user %s on printer %s" \
+                                  % (self.UserName, self.PrinterName))
+                self.UserPQuota.incDenyBannerCounter() # increments the warning counter
+                self.exportUserInfo()
+            getattr(self, "%sBanner" % bannertype)()
+            if withaccounting :
+                if self.accounter.isSoftware :
+                    self.BannerSize += 1 # TODO : fix this by passing the banner's content through software accounting
+        self.logdebug("%s banner done." % bannertype.title())
+        
+    def sanitizeJobSize(self) :    
+        """Sanitizes the job's size if needed."""
+        # TODO : there's a difficult to see bug here when banner accounting is activated and hardware accounting is used.
+        self.logdebug("Sanitizing job's size...")
+        if self.softwareJobSize and (self.JobSize != self.softwareJobSize) :
+            self.printInfo(_("Beware : computed job size (%s) != precomputed job size (%s)") % \
+                                       (self.JobSize, self.softwareJobSize), \
+                           "error")
+            (limit, replacement) = self.config.getTrustJobSize(self.PrinterName)
+            if limit is None :
+                self.printInfo(_("The job size will be trusted anyway according to the 'trustjobsize' directive"), "warn")
+            else :
+                if self.JobSize <= limit :
+                    self.printInfo(_("The job size will be trusted because it is inferior to the 'trustjobsize' directive's limit %s") % limit, "warn")
+                else :
+                    self.printInfo(_("The job size will be modified according to the 'trustjobsize' directive : %s") % replacement, "warn")
+                    if replacement == "PRECOMPUTED" :
+                        self.JobSize = self.softwareJobSize
+                    else :    
+                        self.JobSize = replacement
+        self.logdebug("Job's size sanitized.")
+                        
+    def getPrinterUserAndUserPQuota(self) :        
+        """Returns a tuple (policy, printer, user, and user print quota) on this printer.
+        
+           "OK" is returned in the policy if both printer, user and user print quota
+           exist in the Quota Storage.
+           Otherwise, the policy as defined for this printer in pykota.conf is returned.
+           
+           If policy was set to "EXTERNAL" and one of printer, user, or user print quota
+           doesn't exist in the Quota Storage, then an external command is launched, as
+           defined in the external policy for this printer in pykota.conf
+           This external command can do anything, like automatically adding printers
+           or users, for example, and finally extracting printer, user and user print
+           quota from the Quota Storage is tried a second time.
+           
+           "EXTERNALERROR" is returned in case policy was "EXTERNAL" and an error status
+           was returned by the external command.
+        """
+        self.logdebug("Retrieving printer, user, and user print quota entry from database...")
+        for passnumber in range(1, 3) :
+            printer = self.storage.getPrinter(self.PrinterName)
+            user = self.storage.getUser(self.UserName)
+            userpquota = self.storage.getUserPQuota(user, printer)
+            if printer.Exists and user.Exists and userpquota.Exists :
+                policy = "OK"
+                break
+            (policy, args) = self.config.getPrinterPolicy(self.PrinterName)
+            if policy == "EXTERNAL" :    
+                commandline = self.formatCommandLine(args, user, printer)
+                if not printer.Exists :
+                    self.printInfo(_("Printer %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.PrinterName, commandline, self.PrinterName))
+                if not user.Exists :
+                    self.printInfo(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.UserName, commandline, self.PrinterName))
+                if not userpquota.Exists :
+                    self.printInfo(_("User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s") % (self.UserName, self.PrinterName, commandline, self.PrinterName))
+                if os.system(commandline) :
+                    self.printInfo(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, self.PrinterName), "error")
+                    policy = "EXTERNALERROR"
+                    break
+            else :        
+                if not printer.Exists :
+                    self.printInfo(_("Printer %s not registered in the PyKota system, applying default policy (%s)") % (self.PrinterName, policy))
+                if not user.Exists :
+                    self.printInfo(_("User %s not registered in the PyKota system, applying default policy (%s) for printer %s") % (self.UserName, policy, self.PrinterName))
+                if not userpquota.Exists :
+                    self.printInfo(_("User %s doesn't have quota on printer %s in the PyKota system, applying default policy (%s)") % (self.UserName, self.PrinterName, policy))
+                break
+                
+        if policy == "EXTERNAL" :    
+            if not printer.Exists :
+                self.printInfo(_("Printer %s still not registered in the PyKota system, job will be rejected") % self.PrinterName)
+            if not user.Exists :
+                self.printInfo(_("User %s still not registered in the PyKota system, job will be rejected on printer %s") % (self.UserName, self.PrinterName))
+            if not userpquota.Exists :
+                self.printInfo(_("User %s still doesn't have quota on printer %s in the PyKota system, job will be rejected") % (self.UserName, self.PrinterName))
+        self.Policy = policy         
+        self.Printer = printer
+        self.User = user
+        self.UserPQuota = userpquota
+        self.logdebug("Retrieval of printer, user and user print quota entry done.")
+        
+    def getBillingCode(self) :    
+        """Extracts the billing code from the database.
+         
+           An optional script is launched to notify the user when
+           the billing code is unknown and PyKota was configured to
+           deny printing in this case.
+        """
+        self.logdebug("Retrieving billing code information from the database...")
+        self.BillingCode = None
+        if self.JobBillingCode :
+            self.BillingCode = self.storage.getBillingCode(self.JobBillingCode)
+            if self.BillingCode.Exists :
+                self.logdebug("Billing code [%s] found in database." % self.JobBillingCode)
+            else :
+                msg = "Unknown billing code [%s] : " % self.JobBillingCode
+                (newaction, script) = self.config.getUnknownBillingCode(self.PrinterName)
+                if newaction == "CREATE" :
+                    self.logdebug(msg + "will be created.")
+                    self.BillingCode = self.storage.addBillingCode(self.JobBillingCode)
+                    if self.BillingCode.Exists :
+                        self.logdebug(msg + "has been created.")
+                    else :    
+                        self.printInfo(msg + "couldn't be created.", "error")
+                else :    
+                    self.logdebug(msg + "job will be denied.")
+                    self.Action = newaction
+                    if script is not None : 
+                        self.logdebug(msg + "launching subprocess [%s] to notify user." % script)
+                        os.system(script)
+        self.logdebug("Retrieval of billing code information done.")
+        
+    def checkIfDupe(self) :    
+        """Checks if the job is a dupe, and handles the situation."""
+        self.logdebug("Checking if the job is a dupe...")
+        denyduplicates = self.config.getDenyDuplicates(self.PrinterName)
+        if not denyduplicates :
+            self.logdebug("We don't care about dupes after all.")
+        elif self.Printer.LastJob.Exists \
+             and (self.Printer.LastJob.UserName == self.UserName) \
+             and (self.Printer.LastJob.JobMD5Sum == self.JobMD5Sum) :
+            # TODO : use the current user's last job instead of  
+            # TODO : the current printer's last job. This would be
+            # TODO : better but requires an additional database query
+            # TODO : with SQL, and is much more complex with the 
+            # TODO : actual LDAP schema. Maybe this is not very
+            # TODO : important, because usually dupes are rapidly sucessive.
+            msg = _("Job is a dupe")
+            if denyduplicates == 1 :
+                self.printInfo("%s : %s." % (msg, _("Printing is denied by configuration")), "warn")
+                self.Action = "DENY"
+            else :    
+                self.logdebug("Launching subprocess [%s] to see if dupes should be allowed or not." % denyduplicates)
+                fanswer = os.popen(denyduplicates, "r")
+                self.Action = fanswer.read().strip().upper()
+                fanswer.close()
+                if self.Action == "DENY" :     
+                    self.printInfo("%s : %s." % (msg, _("Subprocess denied printing of a dupe")), "warn")
+                else :    
+                    self.printInfo("%s : %s." % (msg, _("Subprocess allowed printing of a dupe")), "warn")
+        else :            
+            self.logdebug("Job doesn't seem to be a dupe.")
+        self.logdebug("Checking if the job is a dupe done.")
+        
+    def mainWork(self) :    
+        """Main work is done here."""
+        if not self.JobSizeBytes :
+            # if no data to pass to real backend, probably a filter
+            # higher in the chain failed because of a misconfiguration.
+            # we deny the job in this case (nothing to print anyway)
+            self.printInfo(_("Job contains no data. Printing is denied."), "error")
+            return self.removeJob()
+            
+        self.getPrinterUserAndUserPQuota()
+        if self.Policy == "EXTERNALERROR" :
+            # Policy was 'EXTERNAL' and the external command returned an error code
+            return self.removeJob()
+        elif self.Policy == "EXTERNAL" :
+            # Policy was 'EXTERNAL' and the external command wasn't able
+            # to add either the printer, user or user print quota
+            return self.removeJob()
+        elif self.Policy == "DENY" :    
+            # Either printer, user or user print quota doesn't exist,
+            # and the job should be rejected.
+            return self.removeJob()
+        elif self.Policy == "ALLOW" :
+            # ALLOW means : Either printer, user or user print quota doesn't exist,
+            #               but the job should be allowed anyway.
+            self.printInfo(_("Job allowed by printer policy. No accounting will be done."), "warn")
+            return self.printJobDatas()
+        elif self.Policy == "OK" :
+            # OK means : Both printer, user and user print quota exist, job should
+            #            be allowed if current user is allowed to print on this printer
+            return self.doWork()
+        else :    
+            self.printInfo(_("Invalid policy %s for printer %s") % (self.Policy, self.PrinterName), "error")
+            return self.removeJob()
+    
+    def doWork(self) :    
+        """The accounting work is done here."""
+        self.precomputeJobPrice()
+        self.exportUserInfo()
+        self.exportPrinterInfo()
+        self.exportPhaseInfo("BEFORE")
+        
+        if self.Action != "DENY" :
+            # If printing is still allowed at this time, we
+            # need to extract the billing code information from the database.
+            # No need to do this if the job is denied, this way we
+            # save some database queries.
+            self.getBillingCode()
+            
+        if self.Action != "DENY" :
+            # If printing is still allowed at this time, we
+            # need to check if the job is a dupe or not, and what to do then.
+            # No need to do this if the job is denied, this way we
+            # save some database queries.
+            self.checkIfDupe()
+                    
+        if self.Action != "DENY" :
+            # If printing is still allowed at this time, we
+            # need to check the user's print quota on the current printer.
+            # No need to do this if the job is denied, this way we
+            # save some database queries.
+            self.logdebug("Checking user %s print quota entry on printer %s" \
+                                    % (self.UserName, self.PrinterName))
+            self.Action = self.warnUserPQuota(self.UserPQuota)
+            
+        # exports some new environment variables
+        os.environ["PYKOTAACTION"] = str(self.Action)
+        
+        # launches the pre hook
+        self.launchPreHook()
+        
+        # handle starting banner pages without accounting
+        self.BannerSize = 0
+        accountbanner = self.config.getAccountBanner(self.PrinterName)
+        if accountbanner in ["ENDING", "NONE"] :
+            self.handleBanner("starting", 0)
+        
+        if self.Action == "DENY" :
+            self.printInfo(_("Job denied, no accounting will be done."))
+        else :
+            self.printInfo(_("Job accounting begins."))
+            self.deinstallSigTermHandler()
+            self.accounter.beginJob(self.Printer)
+            self.installSigTermHandler()
+        
+        # handle starting banner pages with accounting
+        if accountbanner in ["STARTING", "BOTH"] :
+            if not self.gotSigTerm :
+                self.handleBanner("starting", 1)
+        
+        # pass the job's data to the real backend    
+        if (not self.gotSigTerm) and (self.Action in ["ALLOW", "WARN"]) :
+            retcode = self.printJobDatas()
+        else :        
+            retcode = self.removeJob()
+        
+        # indicate phase change
+        self.exportPhaseInfo("AFTER")
+        
+        # handle ending banner pages with accounting
+        if accountbanner in ["ENDING", "BOTH"] :
+            if not self.gotSigTerm :
+                self.handleBanner("ending", 1)
+        
+        # stops accounting
+        if self.Action == "DENY" :
+            self.printInfo(_("Job denied, no accounting has been done."))
+        else :
+            self.deinstallSigTermHandler()
+            self.accounter.endJob(self.Printer)
+            self.installSigTermHandler()
+            self.printInfo(_("Job accounting ends."))
+        
+        # Do all these database changes within a single transaction    
+        # NB : we don't enclose ALL the changes within a single transaction
+        # because while waiting for the printer to answer its internal page
+        # counter, we would open the door to accounting problems for other
+        # jobs launched by the same user at the same time on other printers.
+        # All the code below doesn't take much time, so it's fine.
+        self.storage.beginTransaction()
+        try :
+            # retrieve the job size    
+            if self.Action == "DENY" :
+                self.JobSize = 0
+                self.printInfo(_("Job size forced to 0 because printing is denied."))
+            else :    
+                self.UserPQuota.resetDenyBannerCounter()
+                self.JobSize = self.accounter.getJobSize(self.Printer)
+                self.sanitizeJobSize()
+                self.JobSize += self.BannerSize
+            self.printInfo(_("Job size : %i") % self.JobSize)
+            
+            # update the quota for the current user on this printer 
+            self.printInfo(_("Updating user %s's quota on printer %s") % (self.UserName, self.PrinterName))
+            self.JobPrice = self.UserPQuota.increasePagesUsage(self.JobSize)
+            
+            # adds the current job to history    
+            self.Printer.addJobToHistory(self.JobId, self.User, self.accounter.getLastPageCounter(), \
+                                    self.Action, self.JobSize, self.JobPrice, self.InputFile, \
+                                    self.Title, self.Copies, self.Options, self.ClientHost, \
+                                    self.JobSizeBytes, self.JobMD5Sum, None, self.JobBillingCode)
+            self.printInfo(_("Job added to history."))
+            
+            if self.BillingCode and self.BillingCode.Exists :
+                self.BillingCode.consume(self.JobSize, self.JobPrice)
+                self.printInfo(_("Billing code %s was updated.") % self.BillingCode.BillingCode)
+        except :    
+            self.storage.rollbackTransaction()
+            raise
+        else :    
+            self.storage.commitTransaction()
+            
+        # exports some new environment variables
+        self.exportJobSizeAndPrice()
+        
+        # then re-export user information with new values
+        self.exportUserInfo()
+        
+        # handle ending banner pages without accounting
+        if accountbanner in ["STARTING", "NONE"] :
+            self.handleBanner("ending", 0)
+                    
+        self.launchPostHook()
+            
+        return retcode    
+               
+    def printJobDatas(self) :           
+        """Sends the job's datas to the real backend."""
+        self.logdebug("Sending job's datas to real backend...")
+        if self.InputFile is None :
+            infile = open(self.DataFile, "rb")
+        else :    
+            infile = None
+        self.runOriginalBackend(infile)
+        if self.InputFile is None :
+            infile.close()
+        self.logdebug("Job's datas sent to real backend.")
+        
+    def runOriginalBackend(self, filehandle=None, isBanner=0) :
+        """Launches the original backend."""
+        originalbackend = os.path.join(os.path.split(sys.argv[0])[0], self.RealBackend)
+        if not isBanner :
+            arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:]
+        else :    
+            # For banners, we absolutely WANT
+            # to remove any filename from the command line !
+            self.logdebug("It looks like we try to print a banner.")
+            arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:6]
+        arguments[2] = self.UserName # in case it was overwritten by external script
+        # TODO : do something about job-billing option, in case it was overwritten as well...
+        
+        self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a for a in arguments])))
+        self.regainPriv()    
+        pid = os.fork()
+        self.logdebug("Forked !")
+        if pid == 0 :
+            if filehandle is not None :
+                self.logdebug("Redirecting file handle to real backend's stdin")
+                os.dup2(filehandle.fileno(), 0)
+            try :
+                self.logdebug("Calling execve...")
+                os.execve(originalbackend, arguments, os.environ)
+            except OSError, msg :
+                self.logdebug("execve() failed: %s" % msg)
+            self.logdebug("We shouldn't be there !!!")    
+            os._exit(-1)
+        self.dropPriv()    
+        
+        killed = 0
+        status = -1
+        while status == -1 :
+            try :
+                status = os.waitpid(pid, 0)[1]
+            except OSError, (err, msg) :
+                if (err == 4) and self.gotSigTerm :
+                    os.kill(pid, signal.SIGTERM)
+                    killed = 1
+                    
+        if os.WIFEXITED(status) :
+            status = os.WEXITSTATUS(status)
+            if status :
+                level = "error"
+            else :    
+                level = "info"
+            self.printInfo("CUPS backend %s returned %d." % \
+                                     (originalbackend, status), level)
+            return status
+        elif not killed :
+            self.printInfo("CUPS backend %s died abnormally." % \
+                               originalbackend, "error")
+            return -1
+        else :
+            self.printInfo("CUPS backend %s was killed." % \
+                               originalbackend, "warn")
+            return 1
+        
+if __name__ == "__main__" :    
+    # This is a CUPS backend, we should act and die like a CUPS backend
+    wrapper = CUPSBackend()
+    if len(sys.argv) == 1 :
+        print "\n".join(wrapper.discoverOtherBackends())
+        sys.exit(0)                
     elif len(sys.argv) not in (6, 7) :    
-        sys.stderr.write("ERROR: %s job-id user title copies options [file]\n" % sys.argv[0])
-        retcode = 1
+        sys.stderr.write("ERROR: %s job-id user title copies options [file]\n"\
+                              % sys.argv[0])
+        sys.exit(1)
     else :    
         try :
-            # Initializes the backend
-            kotabackend = PyKotaBackend()    
-            kotabackend.deferredInit()
-            retcode = kotabackend.mainWork()
-            kotabackend.storage.close()
-            kotabackend.closeJobDataStream()    
-        except SystemExit :    
-            retcode = -1
-        except :
+            wrapper.deferredInit()
+            wrapper.initBackendParameters()
+            wrapper.saveDatasAndCheckSum()
+            wrapper.accounter = openAccounter(wrapper)
+            wrapper.precomputeJobSize()
+            wrapper.overwriteJobAttributes()
+            wrapper.exportJobInfo()
+            retcode = wrapper.mainWork()
+        except SystemExit, e :    
+            retcode = e.code
+        except :    
             try :
-                kotabackend.crashed("cupspykota backend failed")
+                wrapper.crashed("cupspykota backend failed")
             except :    
                 crashed("cupspykota backend failed")
-            retcode = 1    
-        
-    sys.exit(retcode)    
+            retcode = 1
+        wrapper.clean()
+        sys.exit(retcode)
