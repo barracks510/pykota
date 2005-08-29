@@ -300,6 +300,7 @@ class CUPSBackend(PyKotaTool) :
     def saveDatasAndCheckSum(self) :
         """Saves the input datas into a static file."""
         self.logdebug("Duplicating data stream into %s" % self.DataFile)
+        self.regainPriv()
         mustclose = 0
         if self.InputFile is not None :
             infile = open(self.InputFile, "rb")
@@ -330,6 +331,7 @@ class CUPSBackend(PyKotaTool) :
         
         self.logdebug("JobSizeBytes : %s" % self.JobSizeBytes)
         self.logdebug("JobMD5Sum : %s" % self.JobMD5Sum)
+        self.dropPriv()
         self.logdebug("Data stream duplicated into %s" % self.DataFile)
             
     def clean(self) :
