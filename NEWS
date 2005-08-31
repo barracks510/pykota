@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha23 :
+    
+        - Introduction of the new 'pkturnkey' command line tool.
+        
     - 1.23alpha22 :
     
         - The cupspykota backend was almost entirely rewritten from scratch.

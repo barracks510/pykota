@@ -1,0 +1,191 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Turn Key tool
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# $Id$
+#
+#
+
+import sys
+import os
+import pwd
+
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+
+__doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
+
+A turn key tool for PyKota. When launched, this command will initialize
+PyKota's database with all existing print queues and some or all users.
+For now, no prices or limits are set, so printing is fully accounted
+for, but not limited.
+
+command line usage :
+
+  pkturnkey [options]
+
+options :
+
+  -v | --version       Prints pkturnkey version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -u | --uidmin uid    Only adds users whose uid is greater than or equal to
+                       uid. You can pass an username there as well, and its
+                       uid will be used automatically.
+                       If not set, 0 will be used automatically.
+                       
+  -U | --uidmax uid    Only adds users whose uid is lesser than or equal to
+                       uid. You can pass an username there as well, and its
+                       uid will be used automatically.
+                       If not set, a large value will be used automatically.
+
+examples :                              
+
+  $ pkturnkey --uidmin jerome
+
+  Will initialize PyKota's database will all existing printers and
+  create print accounts for all users whose uid is greater than or
+  equal to jerome's one.
+""")
+        
+class PKTurnKey(PyKotaTool) :
+    """A class for an initialization tool."""
+    def listPrinters(self) :
+        """Returns a list of tuples (queuename, deviceuri) for all existing print queues."""
+        self.logdebug("Extracting all print queues.")
+        result = os.popen("lpstat -v", "r")
+        lines = result.readlines()
+        result.close()
+        printers = []
+        for line in lines :
+            (begin, end) = line.split(':', 1)
+            deviceuri = end.strip()
+            queuename = begin.split()[-1]
+            printers.append((queuename, deviceuri))
+        return printers    
+        
+    def listUsers(self, uidmin, uidmax) :    
+        """Returns a list of usernames whose uids are between uidmin and uidmax."""
+        self.logdebug("Extracting all users whose uid is between %s and %s." % (uidmin, uidmax))
+        return [entry[0] for entry in pwd.getpwall() if uidmin <= entry[2] <= uidmax]
+        
+    def createPrinters(self, printers) :    
+        """Creates all printers in PyKota's database."""
+        needswarning = [p[0] for p in printers if p[1].find("cupspykota") == -1]
+        command = "pkprinters --add %s" % " ".join(['"%s"' % p[0] for p in printers])
+        self.logdebug("Launching : %s" % command)
+        os.system(command)
+        
+    def createUsers(self, users) :    
+        """Creates all users in PyKota's database."""
+        command = "edpykota --add --noquota %s" % " ".join(['"%s"' % u for u in users])
+        self.logdebug("Launching : %s" % command)
+        os.system(command)
+        
+    def main(self, names, options) :
+        """Intializes PyKota's database."""
+        if not self.config.isAdmin :
+            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
+        # TODO : names not used for now    
+        if not names :
+            names = ["*"]
+            
+        if not options["uidmin"] :    
+            self.printInfo(_("System users will have a print account as well !"), "warn")
+            uidmin = 0
+        else :    
+            try :
+                uidmin = int(options["uidmin"])
+            except :    
+                try :
+                    uidmin = pwd.getpwnam(options["uidmin"])[2]
+                except KeyError, msg :    
+                    raise PyKotaToolError, _("Unknown username %s : %s") % (options["uidmin"], msg)
+                    
+        if not options["uidmax"] :    
+            uidmax = sys.maxint
+        else :    
+            try :
+                uidmax = int(options["uidmax"])
+            except :    
+                try :
+                    uidmax = pwd.getpwnam(options["uidmax"])[2]
+                except KeyError, msg :    
+                    raise PyKotaToolError, _("Unknown username %s : %s") % (options["uidmax"], msg)
+                    
+        if uidmin > uidmax :            
+            (uidmin, uidmax) = (uidmax, uidmin)
+        users = self.listUsers(uidmin, uidmax)
+        printers = self.listPrinters()                    
+        
+        print "Please be patient...",
+        sys.stdout.flush()
+        self.createPrinters(printers)
+        self.createUsers(users)
+        print
+        print "Database initialized."
+                    
+                     
+if __name__ == "__main__" : 
+    retcode = 0
+    try :
+        short_options = "hvu:U:"
+        long_options = ["help", "version", "uidmin=", "uidmax="]
+        
+        # Initializes the command line tool
+        manager = PKTurnKey(doc=__doc__)
+        manager.deferredInit()
+        
+        # parse and checks the command line
+        (options, args) = manager.parseCommandline(sys.argv[1:], \
+                                                   short_options, \
+                                                   long_options, \
+                                                   allownothing=1)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["uidmin"] = options["u"] or options["uidmin"]
+        options["uidmax"] = options["U"] or options["uidmax"]
+        
+        if options["help"] :
+            manager.display_usage_and_quit()
+        elif options["version"] :
+            manager.display_version_and_quit()
+        else :
+            retcode = manager.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except SystemExit :        
+        pass
+    except :
+        try :
+            manager.crashed("pkturnkey failed")
+        except :    
+            crashed("pkturnkey failed")
+        retcode = -1
+
+    try :
+        manager.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    
