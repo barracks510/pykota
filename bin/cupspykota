@@ -563,19 +563,19 @@ class CUPSBackend(PyKotaTool) :
         """Improves the informational message before outputting it."""
         self.logger.log_message(self.improveMessage(message), level)
     
-    def startingBanner(self) :
+    def startingBanner(self, withaccounting) :
         """Retrieves a starting banner for current printer and returns its content."""
         self.logdebug("Retrieving starting banner...")
-        self.printBanner(self.config.getStartingBanner(self.PrinterName))
+        self.printBanner(self.config.getStartingBanner(self.PrinterName), withaccounting)
         self.logdebug("Starting banner retrieved.")
     
-    def endingBanner(self) :
+    def endingBanner(self, withaccounting) :
         """Retrieves an ending banner for current printer and returns its content."""
         self.logdebug("Retrieving ending banner...")
-        self.printBanner(self.config.getEndingBanner(self.PrinterName))
+        self.printBanner(self.config.getEndingBanner(self.PrinterName), withaccounting)
         self.logdebug("Ending banner retrieved.")
         
-    def printBanner(self, bannerfileorcommand) :
+    def printBanner(self, bannerfileorcommand, withaccounting) :
         """Reads a banner or generates one through an external command.
         
            Returns the banner's content in a format which MUST be accepted
@@ -596,6 +596,9 @@ class CUPSBackend(PyKotaTool) :
                     status = os.WEXITSTATUS(status)
                 self.printInfo(_("Banner generator %s exit code is %s") \
                                          % (bannerfileorcommand, str(status)))
+                if withaccounting :
+                    if self.accounter.isSoftware :
+                        self.BannerSize += 1 # TODO : fix this by passing the banner's content through software accounting
             else :
                 self.logdebug("Using %s as the banner." % bannerfileorcommand)
                 try :
@@ -606,6 +609,9 @@ class CUPSBackend(PyKotaTool) :
                 else :    
                     self.runOriginalBackend(fh, isBanner=1)
                     fh.close()
+                    if withaccounting :
+                        if self.accounter.isSoftware :
+                            self.BannerSize += 1 # TODO : fix this by passing the banner's content through software accounting
         self.logdebug("Banner printed...")
                 
     def handleBanner(self, bannertype, withaccounting) :
@@ -626,10 +632,7 @@ class CUPSBackend(PyKotaTool) :
                                   % (self.UserName, self.PrinterName))
                 self.UserPQuota.incDenyBannerCounter() # increments the warning counter
                 self.exportUserInfo()
-            getattr(self, "%sBanner" % bannertype)()
-            if withaccounting :
-                if self.accounter.isSoftware :
-                    self.BannerSize += 1 # TODO : fix this by passing the banner's content through software accounting
+            getattr(self, "%sBanner" % bannertype)(withaccounting)
         self.logdebug("%s banner done." % bannertype.title())
         
     def sanitizeJobSize(self) :    

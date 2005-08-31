@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.23alpha23 :
     
+        - Fixed a problem with banner accounting.
+    
         - Introduction of the new 'pkturnkey' command line tool.
         
     - 1.23alpha22 :
