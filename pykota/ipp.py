@@ -160,20 +160,19 @@ class IPPRequest :
         """Returns the parsed IPP message in a readable form."""
         if not self.parsed :
             return ""
-        else :    
-            buffer = []
-            buffer.append("IPP version : %s.%s" % self.version)
-            buffer.append("IPP operation Id : 0x%04x" % self.operation_id)
-            buffer.append("IPP request Id : 0x%08x" % self.request_id)
-            for attrtype in self.attributes_types :
-                attrdict = getattr(self, "%s_attributes" % attrtype)
-                if attrdict :
-                    buffer.append("%s attributes :" % attrtype.title())
-                    for key in attrdict.keys() :
-                        buffer.append("  %s : %s" % (key, attrdict[key]))
-            if self.data :            
-                buffer.append("IPP datas : %s" % repr(message.data))
-            return "\n".join(buffer)
+        buffer = []
+        buffer.append("IPP version : %s.%s" % self.version)
+        buffer.append("IPP operation Id : 0x%04x" % self.operation_id)
+        buffer.append("IPP request Id : 0x%08x" % self.request_id)
+        for attrtype in self.attributes_types :
+            attrdict = getattr(self, "%s_attributes" % attrtype)
+            if attrdict :
+                buffer.append("%s attributes :" % attrtype.title())
+                for key in attrdict.keys() :
+                    buffer.append("  %s : %s" % (key, attrdict[key]))
+        if self.data :            
+            buffer.append("IPP datas : %s" % repr(message.data))
+        return "\n".join(buffer)
         
     def dump(self) :    
         """Generates an IPP Message.
