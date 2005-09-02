@@ -171,7 +171,7 @@ class IPPRequest :
                 for key in attrdict.keys() :
                     mybuffer.append("  %s : %s" % (key, attrdict[key]))
         if self.data :            
-            mybuffer.append("IPP datas : %s" % repr(message.data))
+            mybuffer.append("IPP datas : %s" % repr(self.data))
         return "\n".join(mybuffer)
         
     def dump(self) :    
