@@ -71,6 +71,7 @@ class Storage(BaseStorage) :
         message = ""
         for tryit in range(3) :
             try :
+                self.tool.logdebug("Trying to open database (host=%s, dbname=%s, user=%s)..." % (self.savedhost, self.saveddbname, self.saveduser))
                 self.database = ldap.initialize(self.savedhost) 
                 if self.info["ldaptls"] :
                     # we want TLS

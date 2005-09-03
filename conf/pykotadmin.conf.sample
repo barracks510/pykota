@@ -50,8 +50,9 @@
 #
 
 #
-# THIS FILE CAN ONLY CONTAIN A [global] SECTION AND TWO FIELDS
-# NAMED storageadmin AND storageadminpw
+# THIS FILE CAN ONLY CONTAIN A [global] SECTION AND ONE MANDATORY
+# FIELD NAMED storageadmin, ALONG WITH THE FOLLOWING FOUR OPTIONAL
+# FIELDS : storageadminpw, storagebackend, storageserver, storagename.
 #
 
 [global]
@@ -59,4 +60,8 @@
 # Quota Storage administrator's name and password
 storageadmin: pykotaadmin
 # storageadminpw: Comment out if unused, or set to Quota Storage admin password
+
+# storagebackend: ldapstorage
+# storageserver: ldap://ldapmaster.example.com:389
+# storagename: dc=example,dc=com
 

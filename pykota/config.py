@@ -42,8 +42,13 @@ class PyKotaConfig :
         self.isAdmin = 0
         self.directory = directory
         self.filename = os.path.join(directory, "pykota.conf")
+        self.adminfilename = os.path.join(directory, "pykotadmin.conf")
         if not os.path.isfile(self.filename) :
             raise PyKotaConfigError, _("Configuration file %s not found.") % self.filename
+        if not os.path.isfile(self.adminfilename) :
+            raise PyKotaConfigError, _("Configuration file %s not found.") % self.adminfilename
+        if os.access(self.adminfilename, os.R_OK) :    
+            self.isAdmin = 1
         self.config = ConfigParser.ConfigParser()
         self.config.read([self.filename])
             
@@ -96,20 +101,33 @@ class PyKotaConfig :
         backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=1)  # password is optional
         backendinfo["storageadmin"] = None
         backendinfo["storageadminpw"] = None
-        adminconf = ConfigParser.ConfigParser()
-        filename = os.path.join(self.directory, "pykotadmin.conf")
-        adminconf.read([filename])
-        if adminconf.sections() : # were we able to read the file ?
-            try :
-                backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1)
-            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
-                raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", filename)
-            else :    
-                self.isAdmin = 1 # We are a PyKota administrator
-            try :
-                backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1)
-            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
-                pass # Password is optional
+        if self.isAdmin :
+            adminconf = ConfigParser.ConfigParser()
+            adminconf.read([self.adminfilename])
+            if adminconf.sections() : # were we able to read the file ?
+                try :
+                    backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1)
+                except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
+                    raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", self.adminfilename)
+                try :
+                    backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1)
+                except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
+                    pass # Password is optional
+                # Now try to overwrite the storagebackend, storageserver 
+                # and storagename. This allows admins to use the master LDAP
+                # server directly and users to use the replicas transparently.
+                try :
+                    backendinfo["storagebackend"] = adminconf.get("global", "storagebackend", raw=1)
+                except ConfigParser.NoOptionError :
+                    pass
+                try :
+                    backendinfo["storageserver"] = adminconf.get("global", "storageserver", raw=1)
+                except ConfigParser.NoOptionError :
+                    pass
+                try :
+                    backendinfo["storagename"] = adminconf.get("global", "storagename", raw=1)
+                except ConfigParser.NoOptionError :
+                    pass
         return backendinfo
         
     def getLDAPInfo(self) :    

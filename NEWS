@@ -21,6 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha24 :
+    
+        - Allows different databases to be used depending on the
+          user's rights. This allows PyKota admins to directly
+          use a master LDAP server for read+write, while letting
+          normal users using the replicas for readonly access.
+          NB : using different storage backends is also possible,
+          but you're on your own there.
+          
     - 1.23alpha23 :
     
         - Fixed a problem with banner accounting.
