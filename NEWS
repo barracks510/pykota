@@ -21,6 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha25 :
+    
+        - Added a --dryrun command line switch to pkturnkey.
+        
+        - Improved pkturnkey's general usability.
+        
+        - Added a manpage for pkturnkey.
+        
     - 1.23alpha24 :
     
         - Allows different databases to be used depending on the

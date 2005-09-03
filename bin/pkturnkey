@@ -46,6 +46,9 @@ options :
   -v | --version       Prints pkturnkey version number then exits.
   -h | --help          Prints this message then exits.
   
+  -d | --dryrun        Doesn't modify the database at all, but instead prints
+                       what it would do.
+                       
   -u | --uidmin uid    Only adds users whose uid is greater than or equal to
                        uid. You can pass an username there as well, and its
                        uid will be used automatically.
@@ -86,18 +89,28 @@ class PKTurnKey(Tool) :
         self.logdebug("Extracting all users whose uid is between %s and %s." % (uidmin, uidmax))
         return [entry[0] for entry in pwd.getpwall() if uidmin <= entry[2] <= uidmax]
         
-    def createPrinters(self, printers) :    
+    def runCommand(self, command, dryrun) :    
+        """Launches an external command."""
+        if dryrun :
+            self.printInfo("%s" % command)
+        else :    
+            self.logdebug("%s" % command)
+            os.system(command)
+            
+    def createPrinters(self, printers, dryrun=0) :    
         """Creates all printers in PyKota's database."""
-        needswarning = [p[0] for p in printers if p[1].find("cupspykota") == -1]
-        command = "pkprinters --add %s" % " ".join(['"%s"' % p[0] for p in printers])
-        self.logdebug("Launching : %s" % command)
-        os.system(command)
+        if printers :
+            needswarning = [p[0] for p in printers if p[1].find("cupspykota") == -1]
+            command = "pkprinters --add %s" % " ".join(['"%s"' % p[0] for p in printers])
+            self.runCommand(command, dryrun)
+            for p in needswarning :
+                self.printInfo(_("Printer %s is not managed by PyKota yet. Please modify printers.conf and restart CUPS.") % p, "warn")
         
-    def createUsers(self, users) :    
+    def createUsers(self, users, dryrun=0) :
         """Creates all users in PyKota's database."""
-        command = "edpykota --add --noquota %s" % " ".join(['"%s"' % u for u in users])
-        self.logdebug("Launching : %s" % command)
-        os.system(command)
+        if users :
+            command = "edpykota --add --noquota %s" % " ".join(['"%s"' % u for u in users])
+            self.runCommand(command, dryrun)
         
     def main(self, names, options) :
         """Intializes PyKota's database."""
@@ -136,19 +149,20 @@ class PKTurnKey(Tool) :
         users = self.listUsers(uidmin, uidmax)
         printers = self.listPrinters()                    
         
-        print "Please be patient...",
-        sys.stdout.flush()
-        self.createPrinters(printers)
-        self.createUsers(users)
-        print
+        print "Please be patient..."
+        
+        if printers :
+            self.createPrinters(printers, options["dryrun"])
+            self.createUsers(users, options["dryrun"])
+        
         print "Database initialized."
                     
                      
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvu:U:"
-        long_options = ["help", "version", "uidmin=", "uidmax="]
+        short_options = "hvdu:U:"
+        long_options = ["help", "version", "dryrun", "uidmin=", "uidmax="]
         
         # Initializes the command line tool
         manager = PKTurnKey(doc=__doc__)
@@ -163,6 +177,7 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
+        options["dryrun"] = options["d"] or options["dryrun"]
         options["uidmin"] = options["u"] or options["uidmin"]
         options["uidmax"] = options["U"] or options["uidmax"]
         
