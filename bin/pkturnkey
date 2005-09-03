@@ -28,7 +28,7 @@ import sys
 import os
 import pwd
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+from pykota.tool import Tool, PyKotaToolError, crashed, N_
 
 __doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -65,7 +65,7 @@ examples :
   equal to jerome's one.
 """)
         
-class PKTurnKey(PyKotaTool) :
+class PKTurnKey(Tool) :
     """A class for an initialization tool."""
     def listPrinters(self) :
         """Returns a list of tuples (queuename, deviceuri) for all existing print queues."""
