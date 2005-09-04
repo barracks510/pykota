@@ -43,8 +43,8 @@ class PyKotaConfig :
         self.directory = directory
         self.filename = os.path.join(directory, "pykota.conf")
         self.adminfilename = os.path.join(directory, "pykotadmin.conf")
-        if not os.path.isfile(self.filename) :
-            raise PyKotaConfigError, _("Configuration file %s not found.") % self.filename
+        if not os.access(self.filename, os.R_OK) :
+            raise PyKotaConfigError, _("Configuration file %s can't be read. Please check that the file exists and that your permissions are sufficient.") % self.filename
         if not os.path.isfile(self.adminfilename) :
             raise PyKotaConfigError, _("Configuration file %s not found.") % self.adminfilename
         if os.access(self.adminfilename, os.R_OK) :    
