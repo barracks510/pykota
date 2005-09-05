@@ -67,7 +67,10 @@ else :
         def __init__(self, parent, printerhostname) :
             self.parent = parent
             self.printerHostname = printerhostname
-            self.community = "public"
+            try :
+                self.community = self.parent.arguments.split(":")[1].strip()
+            except IndexError :    
+                self.community = "public"
             self.port = 161
             self.printerInternalPageCounter = None
             self.printerStatus = None

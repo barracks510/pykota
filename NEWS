@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha26 :
+    
+        - Allows parametrized pjl and snmp hardware accounting methods,
+          to be able to respectively set the TCP port and the SNMP
+          community.
+          
     - 1.23alpha25 :
     
         - Added a --dryrun command line switch to pkturnkey.

@@ -59,7 +59,10 @@ class Handler :
     def __init__(self, parent, printerhostname) :
         self.parent = parent
         self.printerHostname = printerhostname
-        self.port = 9100
+        try :
+            self.port = int(self.parent.arguments.split(":")[1].strip())
+        except (IndexError, ValueError) :
+            self.port = 9100
         self.printerInternalPageCounter = self.printerStatus = None
         self.timedout = 0
         

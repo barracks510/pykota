@@ -110,9 +110,9 @@ class Accounter(AccounterBase) :
         """
         commandline = self.arguments.strip() % locals()
         cmdlower = commandline.lower()
-        if cmdlower == "snmp" :
+        if (cmdlower == "snmp") or cmdlower.startswith("snmp:") :
             return snmp.Handler(self, printer).retrieveInternalPageCounter()
-        elif cmdlower == "pjl" :
+        elif (cmdlower == "pjl") or cmdlower.startswith("pjl:") :
             return pjl.Handler(self, printer).retrieveInternalPageCounter()
             
         if printer is None :

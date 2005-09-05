@@ -401,6 +401,17 @@ keepfiles : no
 # 
 #               Extracts the printer's internal page counter via PJL queries over port tcp/9100.
 #
+#         Advanced uses :
+#
+#             accounter: hardware(snmp:MyCommunity)
+#
+#               To use a different SNMP community name than the default one (which is 'public')
+#
+#             accounter: hardware(pjl:9101) 
+#
+#               To use a different port than the default one (which is 9100)
+#
+#
 #         Other Examples : 
 #         
 #             accounter: hardware(/usr/bin/snmpget -v1 -c public -Ov %(printer)s mib-2.43.10.2.1.4.1.1 | cut -f 2,2 -d " ")
