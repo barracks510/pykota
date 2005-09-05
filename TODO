@@ -76,10 +76,6 @@ TODO, in no particular order :
           possibilities, like embedding a small web server in
           PyKota for example, or something like that.
         
-        - Log something when --add is used with existing entries.
-          Maybe add a new command line option to force/not force
-          modification of existing entries.
-          
         - Finish implementation of quota-then-balance and 
           balance-then-quota.
           
