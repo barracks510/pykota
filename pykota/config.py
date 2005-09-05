@@ -198,7 +198,7 @@ class PyKotaConfig :
                 args = args[:-1].strip()
             if (accounter == "hardware") and not args :
                 raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
-            return (accounter.lower(), args)    
+            return (accounter.lower(), args)
         else :
             raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printername, str(validaccounters))
         
