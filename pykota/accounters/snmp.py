@@ -67,6 +67,8 @@ else :
         def __init__(self, parent, printerhostname) :
             self.parent = parent
             self.printerHostname = printerhostname
+            self.community = "public"
+            self.port = 161
             self.printerInternalPageCounter = None
             self.printerStatus = None
             self.deviceStatus = None
@@ -75,14 +77,16 @@ else :
             """Retrieves a printer's internal page counter and status via SNMP."""
             ver = alpha.protoVersions[alpha.protoVersionId1]
             req = ver.Message()
-            req.apiAlphaSetCommunity('public')
+            req.apiAlphaSetCommunity(self.community)
             req.apiAlphaSetPdu(ver.GetRequestPdu())
             req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), \
                                                         (hrPrinterStatusOID, ver.Null()), \
                                                         (hrDeviceStatusOID, ver.Null()))
             tsp = Manager()
             try :
-                tsp.sendAndReceive(req.berEncode(), (self.printerHostname, 161), (self.handleAnswer, req))
+                tsp.sendAndReceive(req.berEncode(), \
+                                   (self.printerHostname, self.port), \
+                                   (self.handleAnswer, req))
             except (SnmpOverUdpError, select.error), msg :    
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
             tsp.close()
