@@ -324,8 +324,8 @@ Prerequisite :
       (http://www.librelogiciel.com/software/)
     - The Python-SNMP module to query printers for their page counter.
       (http://pysnmp.sourceforge.net). 
-      IMPORTANT : version 3.4.3 (or 3.4.2) is REQUIRED. Versions 2.x or
-      4.x won't work for now.
+      IMPORTANT : version 3.4.4 (or 3.4.3 or 3.4.2) is REQUIRED.
+      Versions 2.x or 4.x won't work for now.
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
     - SNMP tools (specifically the snmpget command) if you prefer to
