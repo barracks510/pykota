@@ -102,6 +102,7 @@ data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", "in
 ldapdirectory = os.sep.join([directory, "ldap"])
 data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", "initscripts/ldap/pykota.schema", "initscripts/ldap/pykota-sample.ldif"]))
 
+os.umask(022)
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",
       description = __doc__,
