@@ -46,8 +46,8 @@ options :
   -v | --version       Prints pkturnkey version number then exits.
   -h | --help          Prints this message then exits.
   
-  -d | --dryrun        Doesn't modify the database at all, but instead prints
-                       what it would do.
+  -f | --force         Modifies the database instead of printing what
+                       it would do.
                        
   -u | --uidmin uid    Only adds users whose uid is greater than or equal to
                        uid. You can pass an username there as well, and its
@@ -63,16 +63,18 @@ examples :
 
   $ pkturnkey --uidmin jerome
 
-  Will initialize PyKota's database will all existing printers and
-  create print accounts for all users whose uid is greater than or
-  equal to jerome's one.
+  Will simulate the initialization of PyKota's database will all existing
+  printers and print accounts for all users whose uid is greater than
+  or equal to jerome's one.
+  To REALLY initialize the database instead of simulating it, please
+  use the -f | --force command line switch.
 """)
         
 class PKTurnKey(Tool) :
     """A class for an initialization tool."""
     def listPrinters(self) :
         """Returns a list of tuples (queuename, deviceuri) for all existing print queues."""
-        self.logdebug("Extracting all print queues.")
+        self.printInfo("Extracting all print queues.")
         result = os.popen("lpstat -v", "r")
         lines = result.readlines()
         result.close()
@@ -86,15 +88,13 @@ class PKTurnKey(Tool) :
         
     def listUsers(self, uidmin, uidmax) :    
         """Returns a list of usernames whose uids are between uidmin and uidmax."""
-        self.logdebug("Extracting all users whose uid is between %s and %s." % (uidmin, uidmax))
+        self.printInfo("Extracting all users whose uid is between %s and %s." % (uidmin, uidmax))
         return [entry[0] for entry in pwd.getpwall() if uidmin <= entry[2] <= uidmax]
         
     def runCommand(self, command, dryrun) :    
         """Launches an external command."""
-        if dryrun :
-            self.printInfo("%s" % command)
-        else :    
-            self.logdebug("%s" % command)
+        self.printInfo("%s" % command)
+        if not dryrun :    
             os.system(command)
             
     def createPrinters(self, printers, dryrun=0) :    
@@ -121,6 +121,13 @@ class PKTurnKey(Tool) :
         if not names :
             names = ["*"]
             
+        self.printInfo("Please be patient...")
+        dryrun = not options["force"]
+        if dryrun :
+            self.printInfo("Don't worry, the database WILL NOT BE MODIFIED.")
+        else :    
+            self.printInfo("Please WORRY NOW, the database WILL BE MODIFIED.")
+            
         if not options["uidmin"] :    
             self.printInfo(_("System users will have a print account as well !"), "warn")
             uidmin = 0
@@ -143,26 +150,27 @@ class PKTurnKey(Tool) :
                     uidmax = pwd.getpwnam(options["uidmax"])[2]
                 except KeyError, msg :    
                     raise PyKotaToolError, _("Unknown username %s : %s") % (options["uidmax"], msg)
-                    
+        
         if uidmin > uidmax :            
             (uidmin, uidmax) = (uidmax, uidmin)
         users = self.listUsers(uidmin, uidmax)
         printers = self.listPrinters()                    
         
-        print "Please be patient..."
-        
         if printers :
-            self.createPrinters(printers, options["dryrun"])
-            self.createUsers(users, options["dryrun"])
+            self.createPrinters(printers, dryrun)
+            self.createUsers(users, dryrun)
         
-        print "Database initialized."
+        if dryrun :
+            self.printInfo("Simulation terminated.")
+        else :    
+            self.printInfo("Database initialized !")
                     
                      
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvdu:U:"
-        long_options = ["help", "version", "dryrun", "uidmin=", "uidmax="]
+        short_options = "hvfu:U:"
+        long_options = ["help", "version", "force", "uidmin=", "uidmax="]
         
         # Initializes the command line tool
         manager = PKTurnKey(doc=__doc__)
@@ -177,7 +185,7 @@ if __name__ == "__main__" :
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
-        options["dryrun"] = options["d"] or options["dryrun"]
+        options["force"] = options["f"] or options["force"]
         options["uidmin"] = options["u"] or options["uidmin"]
         options["uidmax"] = options["U"] or options["uidmax"]
         

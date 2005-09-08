@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha27 :
+    
+        - Replaced the --dryrun command line option by the --force
+          command line option in pkturnkey, with exactly the opposite
+          effect (for security reasons).
+          
     - 1.23alpha26 :
     
         - Allows parametrized pjl and snmp hardware accounting methods,
