@@ -23,7 +23,7 @@ PyKota NEWS :
        
     - 1.23alpha28 :
     
-        - Added group management to pkturnkey.
+        - Added users groups management to pkturnkey.
         
         - Fixed umask in setup script.
         
