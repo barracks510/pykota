@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha28 :
+    
+        - Added group management to pkturnkey.
+        
+        - Fixed umask in setup script.
+        
     - 1.23alpha27 :
     
         - Replaced the --dryrun command line option by the --force
