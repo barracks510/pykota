@@ -207,6 +207,7 @@ if __name__ == "__main__" :
                 
         class fakeAccounter :        
             def __init__(self) :
+                self.arguments = "snmp:public"
                 self.filter = fakeFilter()
                 self.protocolHandler = Handler(self, sys.argv[1])
             
