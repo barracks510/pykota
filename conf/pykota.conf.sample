@@ -722,8 +722,8 @@ policy: deny
 # PYKOTADIRECTORY : The directory containing cupspykota's temporary files
 # PYKOTADATAFILE : The name of the temporary file which contains the 
 #                  job's datas
-# PYKOTAINPUTFILE : The name of the file which contains the job's datas or 
-#                   empty if datas come from stdin
+# PYKOTAFILENAME : The name of the file which contains the job's datas or 
+#                  empty if datas come from stdin
 # PYKOTACONTROLFILE : The name of the IPP message file
 # PYKOTAMD5SUM : Contains an hexadecimal digest of the md5 sum of the job's datas
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
@@ -733,7 +733,6 @@ policy: deny
 # PYKOTAPGROUPS : list of printers groups the current printer is a member of
 # PYKOTAJOBID : job's id
 # PYKOTATITLE : job's title
-# PYKOTAFILENAME : job's filename
 # PYKOTACOPIES : number of copies
 # PYKOTAOPTIONS : job's options
 # PYKOTABALANCE : user's account balance
