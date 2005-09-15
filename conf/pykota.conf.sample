@@ -112,7 +112,7 @@ disablehistory: No
 # cacert points to the CA Certificate file to use for TLS.
 # Ensure that every user who can launch PyKota commands can read this file.
 # There's NO default value for this directive.
-#cacert /etc/pykota/mycertfile
+#cacert: /etc/pykota/mycertfile
 #
 #
 # Here we define some helpers to know where 
