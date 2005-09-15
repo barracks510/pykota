@@ -987,6 +987,7 @@ class CUPSBackend(PyKotaTool) :
             os._exit(-1)
         self.dropPriv()    
         
+        self.logdebug("Waiting for original backend to exit...")    
         killed = 0
         status = -1
         while status == -1 :
