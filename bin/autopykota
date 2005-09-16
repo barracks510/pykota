@@ -62,25 +62,31 @@ class AutoPyKota(PyKotaTool) :
         if (username is None) or (printername is None) :
             raise PyKotaToolError, "Either the username or the printername is undefined. Fatal Error."
         else :
+            printer = self.storage.getPrinter(printername)
             user = self.storage.getUser(username)
             if user.Exists :
                 self.logdebug("User %s already exits." % username) 
-                printer = self.storage.getPrinter(printername)
                 if printer.Exists :
                     userpquota = self.storage.getUserPQuota(user, printer)
                     if userpquota.Exists :
+                        # we should never get there, unless autopykota was launched manually
                         self.logdebug("User %s's quota entry on printer %s already exists. Nothing to do." % (username, printername))
                         return 0
                     else :    
-                        self.logdebug("Creating a quota entry for user %s on printer %s." % (username, printername))
-                        return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
+                        printersnames = [printer.Name] + [p.Name for p in self.storage.getParentPrinters(printer)]
+                        self.logdebug("Creating a quota entry for user %s on printers %s" % (username, printersnames))
+                        return os.system('edpykota --add --printer "%s" "%s"' % (','.join(printersnames), username))
                 else :
                     self.logdebug("Printer %s doesn't exist. Creating printer %s and a quota entry for user %s on printer %s." % (printername, printername, username, printername))
                     return os.system('edpykota --add --printer "%s" "%s"' % (printername, username))
             else :
+                if printer.Exists :
+                    printersnames = [printer.Name] + [p.Name for p in self.storage.getParentPrinters(printer)]
+                else :    
+                    printersnames = [printer.Name]
                 self.logdebug("User %s doesn't exist yet." % username)
-                self.logdebug("Creating user %s's account with balance %s and quota entries on printer %s." % (username, options["initbalance"], printername))
-                return os.system('edpykota --add --limitby balance --balance "%s" --printer "%s" "%s"' % (options["initbalance"], printername, username))
+                self.logdebug("Creating user %s's account with balance %s and quota entries on printers %s" % (username, options["initbalance"], printersnames))
+                return os.system('edpykota --add --limitby balance --balance "%s" --printer "%s" "%s"' % (options["initbalance"], ','.join(printersnames), username))
     
 if __name__ == "__main__" :    
     retcode = 0

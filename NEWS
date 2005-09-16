@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha29 :
+    
+        - Now autopykota also creates print quota entries for the user on the
+          printers groups the current printer is a member of.
+          
     - 1.23alpha28 :
     
         - Added users groups management to pkturnkey.
