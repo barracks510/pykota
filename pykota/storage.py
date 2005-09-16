@@ -98,6 +98,7 @@ class StorageUser(StorageObject) :
             raise PyKotaStorageError, msg
         else :    
             self.parent.commitTransaction()
+            self.parent.flushEntry("USERS", self.Name)
             self.Exists = 0
         
 class StorageGroup(StorageObject) :        
@@ -129,6 +130,7 @@ class StorageGroup(StorageObject) :
             raise PyKotaStorageError, msg
         else :    
             self.parent.commitTransaction()
+            self.parent.flushEntry("GROUPS", self.Name)
             self.Exists = 0
         
 class StoragePrinter(StorageObject) :
@@ -195,6 +197,7 @@ class StoragePrinter(StorageObject) :
             raise PyKotaStorageError, msg
         else :    
             self.parent.commitTransaction()
+            self.parent.flushEntry("PRINTERS", self.Name)
             self.Exists = 0    
         
 class StorageUserPQuota(StorageObject) :
@@ -357,7 +360,12 @@ class StorageGroupPQuota(StorageObject) :
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
-        date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)
+        date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, \
+                                                  datelimit.month, \
+                                                  datelimit.day, \
+                                                  datelimit.hour, \
+                                                  datelimit.minute, \
+                                                  datelimit.second)
         self.parent.writeGroupPQuotaDateLimit(self, date)
         self.DateLimit = date
         
@@ -420,6 +428,7 @@ class StorageBillingCode(StorageObject) :
     def delete(self) :    
         """Deletes the billing code from the database."""
         self.parent.deleteBillingCode(self)
+        self.parent.flushEntry("BILLINGCODES", self.BillingCode)
         self.Exists = 0
         
     def reset(self, balance=0.0, pagecounter=0) :    
@@ -455,7 +464,14 @@ class BaseStorage :
             pykotatool.logdebug("Jobs' title, filename and options will be hidden because of privacy concerns.")
         if self.usecache :
             self.tool.logdebug("Caching enabled.")
-            self.caches = { "USERS" : {}, "GROUPS" : {}, "PRINTERS" : {}, "USERPQUOTAS" : {}, "GROUPPQUOTAS" : {}, "JOBS" : {}, "LASTJOBS" : {}, "BILLINGCODES" : {} }
+            self.caches = { "USERS" : {}, \
+                            "GROUPS" : {}, \
+                            "PRINTERS" : {}, \
+                            "USERPQUOTAS" : {}, \
+                            "GROUPPQUOTAS" : {}, \
+                            "JOBS" : {}, \
+                            "LASTJOBS" : {}, \
+                            "BILLINGCODES" : {} }
         
     def close(self) :    
         """Must be overriden in children classes."""
@@ -480,6 +496,16 @@ class BaseStorage :
         if self.usecache and getattr(value, "Exists", 0) :
             self.caches[cachetype][key] = value
             self.tool.logdebug("Cache store (%s->%s)" % (cachetype, key))
+            
+    def flushEntry(self, cachetype, key) :        
+        """Removes an entry from the cache."""
+        if self.usecache :
+            try :
+                del self.caches[cachetype][key]
+            except KeyError :    
+                pass
+            else :    
+                self.tool.logdebug("Cache flush (%s->%s)" % (cachetype, key))
             
     def getUser(self, username) :        
         """Returns the user from cache."""
