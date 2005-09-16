@@ -922,7 +922,7 @@ class CUPSBackend(PyKotaTool) :
                                     self.JobSizeBytes, self.JobMD5Sum, None, self.JobBillingCode)
             self.printInfo(_("Job added to history."))
             
-            if self.BillingCode and self.BillingCode.Exists :
+            if hasattr(self, "BillingCode") and self.BillingCode and self.BillingCode.Exists :
                 self.BillingCode.consume(self.JobSize, self.JobPrice)
                 self.printInfo(_("Billing code %s was updated.") % self.BillingCode.BillingCode)
         except :    

@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.23alpha29 :
     
+        - Fixed a small problem with billing codes.
+        
         - Exports some environment variables earlier, to render the script
           launched by the overwrite_jobticket directive more powerful.
           
