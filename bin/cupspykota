@@ -1033,8 +1033,9 @@ if __name__ == "__main__" :
             wrapper.saveDatasAndCheckSum()
             wrapper.accounter = openAccounter(wrapper)
             wrapper.precomputeJobSize()
+            wrapper.exportJobInfo() # exports a first time to give hints to external scripts 
             wrapper.overwriteJobAttributes()
-            wrapper.exportJobInfo()
+            wrapper.exportJobInfo() # re-exports in case it was overwritten
             retcode = wrapper.mainWork()
         except SystemExit, e :    
             retcode = e.code

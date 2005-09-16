@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.23alpha29 :
     
+        - Exports some environment variables earlier, to render the script
+          launched by the overwrite_jobticket directive more powerful.
+          
         - Now autopykota also creates print quota entries for the user on the
           printers groups the current printer is a member of.
           
