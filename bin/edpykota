@@ -138,6 +138,10 @@ options :
   -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
   
   -H | --hardlimit hl  Sets the quota hard limit to hl pages.
+  
+  -I | --increase v    Increase both Soft and Hard limits by the value
+                       of v. You can prefix v with + or -, if no sign is
+                       used, + is assumed.
 
   -U | --used usage    Sets the pagecounters for the user to usage pages;
                        useful for migrating users from a different system
@@ -269,16 +273,27 @@ class EdPyKota(PyKotaTool) :
                 int(used)
             except ValueError :
                 raise PyKotaToolError, _("Invalid used value %s.") % used
+                
+        increase = options["increase"]
+        if increase :
+            try :
+                increase = int(increase.strip())
+            except ValueError :
+                raise PyKotaToolError, _("Invalid increase value %s.") % increase
 
         if not options["noquota"] :
             if options["softlimit"] :
                 try :
                     softlimit = int(options["softlimit"].strip())
+                    if softlimit < 0 :
+                        raise ValueError
                 except ValueError :    
                     raise PyKotaToolError, _("Invalid softlimit value %s.") % options["softlimit"]
             if options["hardlimit"] :
                 try :
                     hardlimit = int(options["hardlimit"].strip())
+                    if hardlimit < 0 :
+                        raise ValueError
                 except ValueError :    
                     raise PyKotaToolError, _("Invalid hardlimit value %s.") % options["hardlimit"]
             if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
@@ -465,8 +480,20 @@ class EdPyKota(PyKotaTool) :
                 if not entrypquota.Exists :     
                     self.printInfo(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
                 else :    
-                    if options["noquota"] or options["prototype"] or ((softlimit is not None) and (hardlimit is not None)) :
+                    if options["noquota"] or options["prototype"] \
+                       or ((softlimit is not None) and (hardlimit is not None)) :
                         entrypquota.setLimits(softlimit, hardlimit)
+                    if increase :
+                       if (entrypquota.SoftLimit is None) \
+                           or (entrypquota.HardLimit is None) :
+                           self.printInfo(_("You can't increase limits by %s when no limit is set.") % increase, "error")
+                       else :
+                           newsoft = entrypquota.SoftLimit + increase         
+                           newhard = entrypquota.HardLimit + increase         
+                           if (newsoft >= 0) and (newhard >= 0) :
+                               entrypquota.setLimits(newsoft, newhard)
+                           else :    
+                               self.printInfo(_("You can't set negative limits."), "error")
                     if limitby :
                         if changed[entry.Name].get("limitby") is None :
                             entry.setLimitBy(limitby)
@@ -526,13 +553,13 @@ if __name__ == "__main__" :
                      "printer" : "*", \
                      "comment" : "", \
                    }
-        short_options = "vhdo:c:C:l:b:i:naugrp:P:S:H:G:RU:"
+        short_options = "vhdo:c:C:l:b:i:naugrp:P:S:H:G:RU:I:"
         long_options = ["help", "version", "comment=", \
                         "overcharge=", "charge=", "delete", "limitby=", \
                         "balance=", "ingroups=", "noquota", "add", "users", \
                         "groups", "reset", "hardreset", "prototype=", \
                         "printer=", "softlimit=", "hardlimit=", "pgroups=", \
-                        "used="]
+                        "increase=", "used="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -563,6 +590,7 @@ if __name__ == "__main__" :
         options["used"] = options["U"] or options["used"]
         options["overcharge"] = options["o"] or options["overcharge"]
         options["comment"] = options["C"] or options["comment"] or defaults["comment"]
+        options["increase"] = options["I"] or options["increase"]
         
         if options["help"] :
             editor.display_usage_and_quit()

@@ -48,8 +48,6 @@ TODO, in no particular order :
           (SambaEdu, SkoleLinux, K12LTSP, ...) to see how to
           better integrate PyKota with these.
           
-        - Allow soft and hard limits to be increased/decreased.
-        
         - Add most configuration directives to the database itself,
           while still allowing to overwrite them with the configuration
           files at run time.

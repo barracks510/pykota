@@ -39,6 +39,9 @@ PyKota NEWS :
           PyKota Administrators to only lists members of the specified
           group or groups (separated with commas).
           
+        - The -I | --increase command line switch to edpykota allows
+          to increase or decrease page limits.
+          
     - 1.23alpha29 :
     
         - Fixed a small problem with billing codes.
