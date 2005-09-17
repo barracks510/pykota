@@ -33,6 +33,7 @@ import os
 import types
 import time
 import md5
+import base64
 from mx import DateTime
 
 from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, \
@@ -388,7 +389,7 @@ class Storage(BaseStorage) :
                         (date, amount) = payment.split(" # ")
                         description = ""
                     else :    
-                        description = self.databaseToUserCharset(description)
+                        description = self.databaseToUserCharset(base64.decodestring(description))
                     user.Payments.append((date, float(amount), description))
             user.Exists = 1
         return user
@@ -975,7 +976,7 @@ class Storage(BaseStorage) :
         payments = []
         for payment in user.Payments :
             payments.append("%s # %s # %s" % (payment[0], str(payment[1]), payment[2]))
-        payments.append("%s # %s # %s" % (str(DateTime.now()), str(amount), self.userCharsetToDatabase(comment)))
+        payments.append("%s # %s # %s" % (str(DateTime.now()), str(amount), base64.encodestring(self.userCharsetToDatabase(comment)).strip()))
         fields = {
                    "pykotaPayments" : payments,
                  }
