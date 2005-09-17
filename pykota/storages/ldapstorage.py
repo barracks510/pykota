@@ -975,7 +975,7 @@ class Storage(BaseStorage) :
         """Adds a new payment to the payments history."""
         payments = []
         for payment in user.Payments :
-            payments.append("%s # %s # %s" % (payment[0], str(payment[1]), payment[2]))
+            payments.append("%s # %s # %s" % (payment[0], str(payment[1]), base64.encodestring(self.userCharsetToDatabase(payment[2])).strip()))
         payments.append("%s # %s # %s" % (str(DateTime.now()), str(amount), base64.encodestring(self.userCharsetToDatabase(comment)).strip()))
         fields = {
                    "pykotaPayments" : payments,
