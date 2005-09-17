@@ -414,13 +414,24 @@ class Storage(BaseStorage) :
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name : returns first matching printer."""
         printer = StoragePrinter(self, printername)
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" % (printername, self.info["printerrdn"], printername), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember", "description"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" \
+                      % (printername, self.info["printerrdn"], printername), \
+                        ["pykotaPrinterName", "pykotaPricePerPage", \
+                         "pykotaPricePerJob", "pykotaMaxJobSize", \
+                         "pykotaPassThrough", "uniqueMember", "description"], \
+                      base=self.info["printerbase"])
         if result :
             fields = result[0][1]       # take only first matching printer, ignore the rest
             printer.ident = result[0][0]
             printer.Name = fields.get("pykotaPrinterName", [printername])[0] 
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0])
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0])
+            printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
+            printer.PassThrough = fields.get("pykotaPassThrough", [None])[0]
+            if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+                printer.PassThrough = 1
+            else :
+                printer.PassThrough = 0
             printer.uniqueMember = fields.get("uniqueMember", [])
             printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
             printer.Exists = 1
@@ -637,7 +648,7 @@ class Storage(BaseStorage) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
         # see comment at the same place in pgstorage.py
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "uniqueMember", "description"], base=self.info["printerbase"])
+        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern.split(",")]), ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "pykotaMaxJobSize", "pykotaPassThrough", "uniqueMember", "description"], base=self.info["printerbase"])
         if result :
             for (printerid, fields) in result :
                 printername = fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0]
@@ -645,6 +656,12 @@ class Storage(BaseStorage) :
                 printer.ident = printerid
                 printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
                 printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
+                printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
+                printer.PassThrough = fields.get("pykotaPassThrough", [None])[0]
+                if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+                    printer.PassThrough = 1
+                else :
+                    printer.PassThrough = 0
                 printer.uniqueMember = fields.get("uniqueMember", [])
                 printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                 printer.Exists = 1
@@ -716,6 +733,8 @@ class Storage(BaseStorage) :
                    "pykotaPrinterName" : printername,
                    "pykotaPricePerPage" : "0.0",
                    "pykotaPricePerJob" : "0.0",
+                   "pykotaMaxJobSize" : "0",
+                   "pykotaPassThrough" : "0",
                  } 
         dn = "%s=%s,%s" % (self.info["printerrdn"], printername, self.info["printerbase"])
         self.doAdd(dn, fields)
@@ -1292,9 +1311,13 @@ class Storage(BaseStorage) :
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("dn", "printername", "priceperpage", "priceperjob", "description") ]
+            result = [ ("dn", "printername", "priceperpage", "priceperjob", "description", "maxjobsize", "passthrough") ]
             for entry in entries :
-                result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description))
+                if entry.PassThrough in (1, "1", "t", "true", "T", "TRUE", "True") :
+                    passthrough = "t"
+                else :    
+                    passthrough = "f"
+                result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description, entry.MaxJobSize, passthrough))
             return result 
         
     def extractUsers(self, extractonly={}) :

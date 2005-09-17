@@ -213,6 +213,12 @@ class SQLStorage :
             printer.Name = fields.get("printername", printername)
             printer.PricePerJob = fields.get("priceperjob") or 0.0
             printer.PricePerPage = fields.get("priceperpage") or 0.0
+            printer.MaxJobSize = fields.get("maxjobsize") or 0
+            printer.PassThrough = fields.get("passthrough") or 0
+            if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+                printer.PassThrough = 1
+            else :
+                printer.PassThrough = 0
             printer.Description = self.databaseToUserCharset(fields.get("description") or "")
             printer.Exists = 1
         return printer    
@@ -351,6 +357,12 @@ class SQLStorage :
                     printer.PricePerJob = record.get("priceperjob") or 0.0
                     printer.PricePerPage = record.get("priceperpage") or 0.0
                     printer.Description = self.databaseToUserCharset(record.get("description") or "") 
+                    printer.MaxJobSize = record.get("maxjobsize") or 0
+                    printer.PassThrough = record.get("passthrough") or 0
+                    if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+                        printer.PassThrough = 1
+                    else :
+                        printer.PassThrough = 0
                     printer.Exists = 1
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)

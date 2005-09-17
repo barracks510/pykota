@@ -149,6 +149,7 @@ class StoragePrinter(StorageObject) :
         self.PricePerJob = None
         self.Description = None
         self.MaxJobSize = None
+        self.PassThrough = None
         self.Coefficients = None
         
     def __getattr__(self, name) :    
