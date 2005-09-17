@@ -999,7 +999,7 @@ class Storage(BaseStorage) :
                    "pykotaPages" : jobpages,            # don't add this attribute if it is not set, so no string conversion
                    "pykotaBillingCode" : self.userCharsetToDatabase(jobbilling), # don't add this attribute if it is not set, so no string conversion
                    "pykotaPrecomputedJobSize" : str(precomputedsize),
-                   "pykotaPrecomputedPrice" : str(precomputedprice),
+                   "pykotaPrecomputedJobPrice" : str(precomputedprice),
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         
