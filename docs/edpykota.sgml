@@ -59,6 +59,32 @@ $ edpykota --add --noquota jerome
   </para>
   
   <para>
+    In addition to <literal>balance</literal> and <literal>quota</literal>, several other values
+    are allowed for the <literal>--limitby</literal> command line option :
+    <itemizedlist>
+      <listitem>
+        <para>
+          <literal>noquota</literal> : the user or group can print without any limitation, but
+          accounting continues to be done.
+        </para>
+      </listitem>  
+      <listitem>
+        <para>
+          <literal>nochange</literal> : the user can print without any limitation, but
+          accounting is not done.
+          This value is not supported for users groups.
+        </para>
+      </listitem>  
+      <listitem>
+        <para>
+          <literal>noprint</literal> : the user can not print.
+          This value is not supported for users groups.
+        </para>
+      </listitem>  
+    </itemizedlist>  
+  </para>
+  
+  <para>
     Here's an incomplete list of features :
     
     <itemizedlist>
@@ -100,12 +126,12 @@ $ edpykota --add --noquota jerome
       </listitem>
       <listitem>
         <para>
-          Choose the way you will limit printing : either by page quota or by account balance value ;
+          Choose the way you will limit printing ;
         </para>
       </listitem>
       <listitem>
         <para>
-          Reset page counters.
+          Reset page counters ;
         </para>
       </listitem>
       <listitem>

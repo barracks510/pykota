@@ -21,6 +21,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha30 :
+    
+        - Database changes : you MUST use upgrade-to-1.23.sql again if you
+          use PostgreSQL, or copy the new schema and restart your LDAP
+          server if you use LDAP.
+          
+        - The -C | --comment command line switch was added to edpykota to  
+          attach textual information to modifications done to a user's
+          account balance.
+          
+        - The -l | --limitby command line switch to edpykota was modified  
+          to allow 'noquota', 'nochange', and 'noprint'. See the edpykota
+          command's help or manual page for details.
+          
+        - The -i | --ingroups command line switch to repykota allows  
+          PyKota Administrators to only lists members of the specified
+          group or groups (separated with commas).
+          
     - 1.23alpha29 :
     
         - Fixed a small problem with billing codes.

@@ -513,9 +513,9 @@ class SQLStorage :
         else :    
             self.doModify("UPDATE users SET balance=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(user.ident)))
             
-    def writeNewPayment(self, user, amount) :        
+    def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
-        self.doModify("INSERT INTO payments (userid, amount) VALUES (%s, %s)" % (self.doQuote(user.ident), self.doQuote(amount)))
+        self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(comment)))
         
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""

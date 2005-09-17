@@ -28,13 +28,6 @@ TODO, in no particular order :
           a freemoney/freepages attribute which will be decremented/incremented
           **before** the real one.
           
-        - Very good idea from Martin Oesterund : comment field for
-          payments !!!
-          
-        - Another one : add a third value like 'nocheck' or something
-          like that to allow an user to print with no limitation while
-          still updating the balance and number of pages printed.
-          
         - Make the SNMP and PJL delay and number of loops a new configuration
           directive.
         
@@ -81,15 +74,9 @@ TODO, in no particular order :
           possibilities, like embedding a small web server in
           PyKota for example, or something like that.
         
-        - Finish implementation of quota-then-balance and 
-          balance-then-quota.
-          
         - Introduce the pkusers command.
           pkusers --nogroup
           pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
-          
-        - Allow the --ingroups command line option to repykota, to
-          report only users members of the specified groups.
           
         - Documentation...
           

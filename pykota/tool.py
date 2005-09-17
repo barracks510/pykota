@@ -484,15 +484,17 @@ class PyKotaTool(Tool) :
         
         # first we check any group the user is a member of
         for group in self.storage.getUserGroups(user) :
-            grouppquota = self.storage.getGroupPQuota(group, printer)
-            # for the printer and all its parents
-            for gpquota in [ grouppquota ] + grouppquota.ParentPrintersGroupPQuota :
-                if gpquota.Exists :
-                    action = self.checkGroupPQuota(gpquota)
-                    if action == "DENY" :
-                        return action
-                    elif action == "WARN" :    
-                        warned = 1
+            # No need to check anything if the group is in noquota mode
+            if group.LimitBy != "noquota" :
+                grouppquota = self.storage.getGroupPQuota(group, printer)
+                # for the printer and all its parents
+                for gpquota in [ grouppquota ] + grouppquota.ParentPrintersGroupPQuota :
+                    if gpquota.Exists :
+                        action = self.checkGroupPQuota(gpquota)
+                        if action == "DENY" :
+                            return action
+                        elif action == "WARN" :    
+                            warned = 1
                         
         # Then we check the user's account balance
         # if we get there we are sure that policy is not EXTERNAL

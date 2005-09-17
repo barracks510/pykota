@@ -822,6 +822,11 @@ class CUPSBackend(PyKotaTool) :
         self.exportPhaseInfo("BEFORE")
         
         if self.Action != "DENY" :
+            if self.User.LimitBy == "noprint" :
+                self.printInfo(_("User %s is not allowed to print at this time.") % self.UserName, "warn")
+                self.Action = "DENY"
+                
+        if self.Action != "DENY" :
             # If printing is still allowed at this time, we
             # need to extract the billing code information from the database.
             # No need to do this if the job is denied, this way we
@@ -840,9 +845,12 @@ class CUPSBackend(PyKotaTool) :
             # need to check the user's print quota on the current printer.
             # No need to do this if the job is denied, this way we
             # save some database queries.
-            self.logdebug("Checking user %s print quota entry on printer %s" \
+            if self.User.LimitBy in ('noquota', 'nochange') :
+                self.logdebug("User %s is allowed to print with no limit, no need to check quota." % self.UserName)
+            else :
+                self.logdebug("Checking user %s print quota entry on printer %s" \
                                     % (self.UserName, self.PrinterName))
-            self.Action = self.warnUserPQuota(self.UserPQuota)
+                self.Action = self.warnUserPQuota(self.UserPQuota)
             
         # exports some new environment variables
         os.environ["PYKOTAACTION"] = str(self.Action)
@@ -911,9 +919,14 @@ class CUPSBackend(PyKotaTool) :
                 self.JobSize += self.BannerSize
             self.printInfo(_("Job size : %i") % self.JobSize)
             
-            # update the quota for the current user on this printer 
-            self.printInfo(_("Updating user %s's quota on printer %s") % (self.UserName, self.PrinterName))
-            self.JobPrice = self.UserPQuota.increasePagesUsage(self.JobSize)
+            if self.User.LimitBy == "nochange" :
+                # no need to update the quota for the current user on this printer
+                self.printInfo(_("User %s's quota on printer %s won't be modified") % (self.UserName, self.PrinterName))
+                self.JobPrice = self.UserPQuota.computeJobPrice(self.JobSize)
+            else :
+                # update the quota for the current user on this printer 
+                self.printInfo(_("Updating user %s's quota on printer %s") % (self.UserName, self.PrinterName))
+                self.JobPrice = self.UserPQuota.increasePagesUsage(self.JobSize)
             
             # adds the current job to history    
             self.Printer.addJobToHistory(self.JobId, self.User, self.accounter.getLastPageCounter(), \

@@ -54,6 +54,9 @@ options :
   
   -g | --groups        Generates a report on group quota instead of users.
   
+  -i | --ingroups g1[,g2...]  Only lists users who are members of these
+                              groups. Reserved to PyKota Administrators.
+  
   -P | --printer p     Report quotas on this printer only. Actually p can
                        use wildcards characters to select only
                        some printers. The default value is *, meaning
@@ -91,9 +94,23 @@ class RePyKota(PyKotaTool) :
             if not ugnames :
                 # no username, means all usernames
                 ugnames = [ "*" ]
+                
+            if options["ingroups"] :
+                groupsnames = options["ingroups"].split(",")
+                groups = [self.storage.getGroup(gname) for gname in groupsnames]
+                members = {}
+                for group in groups :
+                    if not group.Exists :
+                        self.printInfo("Group %s doesn't exist." % group.Name, "warn")
+                    else :    
+                        for user in self.storage.getGroupMembers(group) :
+                            members[user.Name] = user
+                ugnames = [ m for m in members.keys() if self.matchString(m, ugnames) ]
         else :        
-            # not the root user
             # reports only the current user
+            if options["ingroups"] :
+                raise PyKotaToolError, _("Option --ingroups is reserved to PyKota Administrators.")
+                
             username = pwd.getpwuid(os.geteuid())[0]
             if options["groups"] :
                 user = self.storage.getUser(username)
@@ -117,8 +134,8 @@ if __name__ == "__main__" :
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhugP:"
-        long_options = ["help", "version", "users", "groups", "printer="]
+        short_options = "vhugi:P:"
+        long_options = ["help", "version", "users", "groups", "ingroups=", "printer="]
         
         # Initializes the command line tool
         reportTool = RePyKota(doc=__doc__)
@@ -133,6 +150,7 @@ if __name__ == "__main__" :
         options["users"] = options["u"] or options["users"]
         options["groups"] = options["g"] or options["groups"]
         options["printer"] = options["P"] or options["printer"] or defaults["printer"]
+        options["ingroups"] = options["i"] or options["ingroups"]
         
         if options["help"] :
             reportTool.display_usage_and_quit()

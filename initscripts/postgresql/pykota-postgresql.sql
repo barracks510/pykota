@@ -86,7 +86,6 @@ CREATE TABLE userpquota(id SERIAL PRIMARY KEY NOT NULL,
                         hardlimit INT4,
                         datelimit TIMESTAMP,
                         maxjobsize INT4,
-                        temporarydenied BOOLEAN DEFAULT 'f',
                         warncount INT4 DEFAULT 0); 
 CREATE INDEX userpquota_u_id_ix ON userpquota (userid);
 CREATE INDEX userpquota_p_id_ix ON userpquota (printerid);
@@ -154,6 +153,7 @@ CREATE TABLE printergroupsmembers(groupid INT4 REFERENCES printers(id),
 CREATE TABLE payments (id SERIAL PRIMARY KEY NOT NULL,
                        userid INT4 REFERENCES users(id),
                        amount FLOAT,
+                       description TEXT,
                        date TIMESTAMP DEFAULT now());
 CREATE INDEX payments_date_ix ON payments (date);
 

@@ -381,8 +381,15 @@ class Storage(BaseStorage) :
                 user.LifeTimePaid = user.LifeTimePaid or 0.0        
                 user.Payments = []
                 for payment in fields.get("pykotaPayments", []) :
-                    (date, amount) = payment.split(" # ")
-                    user.Payments.append((date, float(amount)))
+                    try :
+                        (date, amount, description) = payment.split(" # ")
+                    except ValueError :
+                        # Payment with no description (old Payment)
+                        (date, amount) = payment.split(" # ")
+                        description = ""
+                    else :    
+                        description = self.databaseToUserCharset(description)
+                    user.Payments.append((date, float(amount), description))
             user.Exists = 1
         return user
        
@@ -934,12 +941,12 @@ class Storage(BaseStorage) :
             fields.update({ "pykotaLifeTimePaid" : str(newlifetimepaid) })
         return self.doModify(user.idbalance, fields)         
             
-    def writeNewPayment(self, user, amount) :        
+    def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
         payments = []
         for payment in user.Payments :
-            payments.append("%s # %s" % (payment[0], str(payment[1])))
-        payments.append("%s # %s" % (str(DateTime.now()), str(amount)))
+            payments.append("%s # %s # %s" % (payment[0], str(payment[1]), payment[2]))
+        payments.append("%s # %s # %s" % (str(DateTime.now()), str(amount), self.userCharsetToDatabase(comment)))
         fields = {
                    "pykotaPayments" : payments,
                  }
@@ -1303,10 +1310,10 @@ class Storage(BaseStorage) :
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("username", "amount", "date") ]
+            result = [ ("username", "amount", "date", "description") ]
             for entry in entries :
-                for (date, amount) in entry.Payments :
-                    result.append((entry.Name, amount, date))
+                for (date, amount, description) in entry.Payments :
+                    result.append((entry.Name, amount, date, description))
             return result        
         
     def extractUpquotas(self, extractonly={}) :

@@ -99,6 +99,7 @@ options :
                        print quotas
                        
   -n | --noquota       Doesn't set a quota but only does accounting.
+                       This is the same as --limitby noquota.
   
   -r | --reset         Resets the actual page counter for the user
                        or group to zero on the specified printers. 
@@ -111,10 +112,15 @@ options :
   -l | --limitby l     Choose if the user/group is limited in printing                     
                        by its account balance or by its page quota.
                        The default value is 'quota'. Allowed values
-                       are 'quota' 'balance' 'quota-then-balance' and
-                       'balance-then-quota'.
-                       WARNING : quota-then-balance and balance-then-quota
-                       are not yet implemented.
+                       are 'quota' 'balance' 'noquota' 'noprint' 
+                       and 'nochange' :
+                       
+                         - quota : limit by number of pages per printer.
+                         - balance : limit by number of credits in account.
+                         - noquota : no limit, accounting still done.
+                         - nochange : no limit, accounting not done. 
+                         - noprint : printing is denied. 
+                       NB : nochange and noprint are not supported for groups.
                        
   -b | --balance b     Sets the user's account balance to b.                     
                        Account balance may be increase or decreased
@@ -124,6 +130,10 @@ options :
                        too.
                        Groups don't have a real balance, but the
                        sum of their users' account balance.
+                       
+  -C | --comment txt   Defines some informational text to be associated
+                       with a change to an user's account balance.
+                       Only meaningful if -b | --balance is also used.
                        
   -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
   
@@ -236,6 +246,21 @@ class EdPyKota(PyKotaTool) :
         suffix = (options["groups"] and "Group") or "User"        
         
         softlimit = hardlimit = None
+        
+        if options["noquota"] :
+            options["limitby"] = "noquota"
+            
+        limitby = options["limitby"]
+        if limitby :
+            limitby = limitby.strip().lower()
+        if limitby :
+            if limitby not in ('quota', 'balance', 'noquota', \
+                                        'noprint', 'nochange') :
+                raise PyKotaToolError, _("Invalid limitby value %s") % options["limitby"]
+            if limitby in ('noquota', 'nochange') :    
+                options["noquota"] = 1
+            if (limitby in ('nochange', 'noprint')) and options["groups"] :    
+                raise PyKotaToolError, _("Invalid limitby value %s") % options["limitby"]
 
         used = options["used"]
         if used :
@@ -287,12 +312,6 @@ class EdPyKota(PyKotaTool) :
                 if len(charges) != 2 :
                     charges = [charges[0], None]
                     
-        limitby = options["limitby"]
-        if limitby :
-            limitby = limitby.strip().lower()
-        if limitby and (limitby not in ('quota', 'balance', 'quota-then-balance', 'balance-then-quota')) :    
-            raise PyKotaToolError, _("Invalid limitby value %s") % options["limitby"]
-            
         if options["ingroups"] :    
             groupnames = [gname.strip() for gname in options["ingroups"].split(',')]
         else :    
@@ -473,11 +492,11 @@ class EdPyKota(PyKotaTool) :
                                 if balance.startswith("+") or balance.startswith("-") :
                                     newbalance = float(entry.AccountBalance or 0.0) + balancevalue
                                     newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
-                                    entry.setAccountBalance(newbalance, newlifetimepaid)
+                                    entry.setAccountBalance(newbalance, newlifetimepaid, options["comment"])
                                 else :
                                     diff = balancevalue - float(entry.AccountBalance or 0.0)
                                     newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
-                                    entry.setAccountBalance(balancevalue, newlifetimepaid)
+                                    entry.setAccountBalance(balancevalue, newlifetimepaid, options["comment"])
                                 changed[entry.Name]["balance"] = balance
                                 
                         for groupname in groupnames :        
@@ -505,9 +524,15 @@ if __name__ == "__main__" :
     try :
         defaults = { \
                      "printer" : "*", \
+                     "comment" : "", \
                    }
-        short_options = "vhdo:c:l:b:i:naugrp:P:S:H:G:RU:"
-        long_options = ["help", "version", "overcharge=", "charge=", "delete", "limitby=", "balance=", "ingroups=", "noquota", "add", "users", "groups", "reset", "hardreset", "prototype=", "printer=", "softlimit=", "hardlimit=", "pgroups=", "used="]
+        short_options = "vhdo:c:C:l:b:i:naugrp:P:S:H:G:RU:"
+        long_options = ["help", "version", "comment=", \
+                        "overcharge=", "charge=", "delete", "limitby=", \
+                        "balance=", "ingroups=", "noquota", "add", "users", \
+                        "groups", "reset", "hardreset", "prototype=", \
+                        "printer=", "softlimit=", "hardlimit=", "pgroups=", \
+                        "used="]
         
         # Initializes the command line tool
         editor = EdPyKota(doc=__doc__)
@@ -537,6 +562,7 @@ if __name__ == "__main__" :
         options["hardreset"] = options["R"] or options["hardreset"] 
         options["used"] = options["U"] or options["used"]
         options["overcharge"] = options["o"] or options["overcharge"]
+        options["comment"] = options["C"] or options["comment"] or defaults["comment"]
         
         if options["help"] :
             editor.display_usage_and_quit()
@@ -551,6 +577,8 @@ if __name__ == "__main__" :
         elif options["noquota"] and (options["prototype"] or options["hardlimit"] or options["softlimit"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["groups"] and (options["balance"] or options["ingroups"] or options["used"] or options["overcharge"]) :
+            raise PyKotaToolError, _("incompatible options, see help.")
+        elif options["comment"] and not options["balance"] :    
             raise PyKotaToolError, _("incompatible options, see help.")
         else :
             retcode = editor.main(args, options)

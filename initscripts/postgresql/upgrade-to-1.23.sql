@@ -21,7 +21,7 @@
 --
 --
 -- This script has to be used if you already
--- have a pre-1.23alpha12 version of PyKota to upgrade
+-- have a pre-1.23alpha30 version of PyKota to upgrade
 -- your database schema. 
 --
 -- YOU DON'T NEED TO USE IT IF YOU'VE JUST INSTALLED PYKOTA
@@ -33,20 +33,20 @@
 ALTER TABLE users ADD COLUMN description TEXT;
 ALTER TABLE groups ADD COLUMN description TEXT;
 ALTER TABLE userpquota ADD COLUMN maxjobsize INT4;
-ALTER TABLE userpquota ADD COLUMN temporarydenied BOOLEAN;
-ALTER TABLE userpquota ALTER COLUMN temporarydenied SET DEFAULT 'f';
 ALTER TABLE grouppquota ADD COLUMN maxjobsize INT4;
 ALTER TABLE printers ADD COLUMN maxjobsize INT4;
 ALTER TABLE printers ADD COLUMN passthrough BOOLEAN;
 ALTER TABLE printers ALTER COLUMN passthrough SET DEFAULT 'f';
 ALTER TABLE jobhistory ADD COLUMN precomputedjobsize INT4;
 ALTER TABLE jobhistory ADD COLUMN precomputedjobprice FLOAT;
+ALTER TABLE payments ADD COLUMN description TEXT;
+
+ALTER TABLE userpquota DROP COLUMN temporarydenied;
 
 --
 -- Now updates existing datas
 --
 -- Just to be sure
-UPDATE userpquota SET temporarydenied='f';
 UPDATE printers SET passthrough='f';
 
 -- 

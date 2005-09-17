@@ -58,13 +58,13 @@ class StorageUser(StorageObject) :
         self.parent.decreaseUserAccountBalance(self, amount)
         self.AccountBalance = float(self.AccountBalance or 0.0) - amount
         
-    def setAccountBalance(self, balance, lifetimepaid) :    
+    def setAccountBalance(self, balance, lifetimepaid, comment="") :
         """Sets the user's account balance in case he pays more money."""
         diff = float(lifetimepaid or 0.0) - float(self.LifeTimePaid or 0.0)
         self.parent.beginTransaction()
         try :
             self.parent.writeUserAccountBalance(self, balance, lifetimepaid)
-            self.parent.writeNewPayment(self, diff)
+            self.parent.writeNewPayment(self, diff, comment)
         except PyKotaStorageError, msg :    
             self.parent.rollbackTransaction()
             raise PyKotaStorageError, msg
@@ -79,7 +79,8 @@ class StorageUser(StorageObject) :
             limitby = limitby.lower()
         except AttributeError :    
             limitby = "quota"
-        if limitby in ["quota", "balance", "quota-then-balance", "balance-then-quota"] :
+        if limitby in ["quota", "balance", \
+                       "noquota", "noprint", "nochange"] :
             self.parent.writeUserLimitBy(self, limitby)
             self.LimitBy = limitby
         
@@ -119,7 +120,7 @@ class StorageGroup(StorageObject) :
             limitby = limitby.lower()
         except AttributeError :    
             limitby = "quota"
-        if limitby in ["quota", "balance"] :
+        if limitby in ["quota", "balance", "noquota"] :
             self.parent.writeGroupLimitBy(self, limitby)
             self.LimitBy = limitby
         

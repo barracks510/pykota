@@ -56,8 +56,21 @@ Upgrade scripts :
   Some scripts to upgrade old PyKota databases to the new
   database schema are included. You may have to run all
   of them or only some of them, depending on your 
-  version of PyKota.
+  version of PyKota. Usually running them several times, for
+  example if you used several different development versions
+  of PyKota, won't do any harm.
   
+  * An SQL script to upgrade a 1.22 PyKota Storage DataBase to
+    1.23 is included. Launch it this way on the Quota Storage Server :
+    
+        $ psql -U postgres pykota
+        pykota=# \i upgrade-to-1.23.sql
+        pykota=# \q
+        $
+        
+    This script adds many fields to existing tables, and a table to
+    manage billing codes.
+    
   * An SQL script to upgrade a 1.20 PyKota Storage DataBase to
     1.21 is included. Launch it this way on the Quota Storage Server :
     

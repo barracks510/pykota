@@ -84,89 +84,7 @@ class BaseReporter :
         else :    
             warncount = int(quota.WarnCount or 0)
         
-        #balance
-        if entry.LimitBy and (entry.LimitBy.lower() == "balance") :    
-            if balance == 0.0 :
-                if entry.OverCharge > 0 :
-                    datelimit = "DENY"
-                    reached = "+B"
-                else :    
-                    # overcharging by a negative or nul factor means user is always allowed to print
-                    # TODO : do something when printer prices are negative as well !
-                    datelimit = ""
-                    reached = "-B"
-            elif balance < 0 :
-                datelimit = "DENY"
-                reached = "+B"
-            elif balance <= self.tool.config.getPoorMan() :
-                datelimit = "WARNING"
-                reached = "?B"
-            else :    
-                datelimit = ""
-                reached = "-B"
-
-        #balance-then-quota
-        elif entry.LimitBy and (entry.LimitBy.lower() == "balance-then-quota") :
-            if balance <= 0 :
-                if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :
-                    datelimit = "DENY"
-                elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-                    datelimit = "DENY"
-                elif quota.DateLimit is not None :
-                    now = DateTime.now()
-                    datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
-                    if now >= datelimit :
-                        datelimit = "QUOTA_DENY"
-                else :
-                    datelimit = ""
-                reached = ( ((datelimit == "DENY" ) and "+B") or "-Q")
-                datelimit = ( ((datelimit == "QUOTA_DENY") and "DENY") or datelimit)
-            elif balance <= self.tool.config.getPoorMan() :
-                if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :
-                    datelimit = "WARNING"
-                elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-                    datelimit = "WARNING"
-                elif quota.DateLimit is not None :
-                    now = DateTime.now()
-                    datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
-                    if now >= datelimit :
-                        datelimit = "QUOTA_DENY"
-                else :
-                    datelimit = ""
-                reached = ( ((datelimit == "WARNING" ) and "?B") or "+Q")
-                datelimit = ( ((datelimit == "QUOTA_DENY") and "WARNING") or datelimit)
-            else :
-                datelimit = ""
-                reached = "-B"
-
-        #Quota-then-balance
-        elif entry.LimitBy and (entry.LimitBy.lower() == "quota-then-balance") :
-            if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :
-                datelimit = "DENY"
-            elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
-                datelimit = "DENY"
-            elif quota.DateLimit is not None :
-                now = DateTime.now()
-                datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
-                if now >= datelimit :
-                    datelimit = "DENY"
-            else :
-                datelimit = ""
-                
-            reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
-
-            if (datelimit == "DENY") and (reached == "-Q") and (balance > self.tool.config.getPoorMan()) :
-                datelimit = ""
-                reached = "-B"
-            else :
-                reached = (((datelimit == "DENY") and (self.tool.config.getPoorMan() < balance ) and "-B") or reached)
-                if (datelimit == "DENY") and (self.tool.config.getPoorMan() < balance) :
-                    datelimit = ""
-                reached = (((datelimit == "DENY") and (0.0 < balance <= self.tool.config.getPoorMan()) and "?B") or reached)
-                datelimit = (((datelimit == "DENY") and (0.0 < balance <= self.tool.config.getPoorMan()) and "WARNING") or datelimit)
-
-        #Quota
-        else :
+        if (not entry.LimitBy) or (entry.LimitBy.lower() == "quota") :
             if (quota.HardLimit is not None) and (pagecounter >= quota.HardLimit) :    
                 datelimit = "DENY"
             elif (quota.HardLimit is None) and (quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) :
@@ -179,6 +97,36 @@ class BaseReporter :
             else :    
                 datelimit = ""
             reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
+        else :
+            if entry.LimitBy.lower() == "balance" :
+                if balance == 0.0 :
+                    if entry.OverCharge > 0 :
+                        datelimit = "DENY"
+                        reached = "+B"
+                    else :    
+                        # overcharging by a negative or nul factor means user is always allowed to print
+                        # TODO : do something when printer prices are negative as well !
+                        datelimit = ""
+                        reached = "-B"
+                elif balance < 0 :
+                    datelimit = "DENY"
+                    reached = "+B"
+                elif balance <= self.tool.config.getPoorMan() :
+                    datelimit = "WARNING"
+                    reached = "?B"
+                else :    
+                    datelimit = ""
+                    reached = "-B"
+            elif entry.LimitBy.lower() == "noquota" :
+                reached = "NQ"
+                datelimit = ""
+            elif entry.LimitBy.lower() == "nochange" :
+                reached = "NC"
+                datelimit = ""
+            else :
+                # noprint
+                reached = "NP"
+                datelimit = "DENY"
             
         strbalance = ("%5.2f" % balance)[:10]
         strlifetimepaid = ("%6.2f" % lifetimepaid)[:10]

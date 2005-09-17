@@ -243,13 +243,8 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.35 NAME 'pykotaMaxJobSize'
         EQUALITY integerMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
 
-# pykotaTemporaryDenied
-attributetype ( 1.3.6.1.4.1.16868.1.1.36 NAME 'pykotaTemporaryDenied'
-        DESC 'Indicates if the user is temporarily denied to print'
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
-
 # pykotaPassThrough
-attributetype ( 1.3.6.1.4.1.16868.1.1.37 NAME 'pykotaPassThrough'
+attributetype ( 1.3.6.1.4.1.16868.1.1.36 NAME 'pykotaPassThrough'
         DESC 'Indicates if the printer is in pass through mode'
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
 
@@ -279,7 +274,7 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.3 NAME 'pykotaPrinter' SUP top AUXILIARY
 objectclass ( 1.3.6.1.4.1.16868.1.2.4 NAME 'pykotaUserPQuota' SUP top AUXILIARY
         DESC 'PyKota User Quota on a Printer'
         MUST ( cn $ pykotaUserName $ pykotaPrinterName )
-        MAY  ( pykotaMaxJobSize $ pykotaTemporaryDenied $ pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit $ pykotaWarnCount ) )
+        MAY  ( pykotaMaxJobSize $ pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit $ pykotaWarnCount ) )
         
 # pykotaGroupPQuota        
 objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
