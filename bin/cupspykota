@@ -932,7 +932,8 @@ class CUPSBackend(PyKotaTool) :
             self.Printer.addJobToHistory(self.JobId, self.User, self.accounter.getLastPageCounter(), \
                                     self.Action, self.JobSize, self.JobPrice, self.InputFile, \
                                     self.Title, self.Copies, self.Options, self.ClientHost, \
-                                    self.JobSizeBytes, self.JobMD5Sum, None, self.JobBillingCode)
+                                    self.JobSizeBytes, self.JobMD5Sum, None, self.JobBillingCode, \
+                                    self.softwareJobSize, self.softwareJobPrice)
             self.printInfo(_("Job added to history."))
             
             if hasattr(self, "BillingCode") and self.BillingCode and self.BillingCode.Exists :

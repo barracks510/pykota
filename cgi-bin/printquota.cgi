@@ -214,7 +214,7 @@ class PyKotaReportGUI(PyKotaTool) :
                                _("JobPrice"), _("Copies"), _("JobBytes"), \
                                _("PageCounter"), _("Title"), _("Filename"), \
                                _("Options"), _("MD5Sum"), _("BillingCode"), \
-                               _("Pages")]
+                               _("PrecomputedJobSize"), _("PrecomputedJobPrice"), _("Pages")]
                     self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
                     oddeven = 0
                     for job in history :
@@ -256,6 +256,8 @@ class PyKotaReportGUI(PyKotaTool) :
                                                             job.JobOptions, \
                                                             job.JobMD5Sum, \
                                                             billingcode_url, \
+                                                            job.PrecomputedJobSize, \
+                                                            job.PrecomputedJobPrice, \
                                                             job.JobPages)])))
                     self.report.append('</table>')
                     d = DateTime.ISO.ParseDateTime(job.JobDate)       

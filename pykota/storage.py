@@ -148,6 +148,7 @@ class StoragePrinter(StorageObject) :
         self.PricePerPage = None
         self.PricePerJob = None
         self.Description = None
+        self.MaxJobSize = None
         self.Coefficients = None
         
     def __getattr__(self, name) :    
@@ -158,9 +159,9 @@ class StoragePrinter(StorageObject) :
         else :
             raise AttributeError, name
             
-    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None) :
+    def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None, precomputedsize=None, precomputedprice=None) :
         """Adds a job to the printer's history."""
-        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost, jobsizebytes, jobmd5sum, jobpages, jobbilling)
+        self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost, jobsizebytes, jobmd5sum, jobpages, jobbilling, precomputedsize, precomputedprice)
         # TODO : update LastJob object ? Probably not needed.
         
     def addPrinterToGroup(self, printer) :    
@@ -225,6 +226,7 @@ class StorageUserPQuota(StorageObject) :
         self.HardLimit = None
         self.DateLimit = None
         self.WarnCount = None
+        self.MaxJobSize = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
@@ -330,6 +332,7 @@ class StorageGroupPQuota(StorageObject) :
         self.SoftLimit = None
         self.HardLimit = None
         self.DateLimit = None
+        self.MaxJobSize = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
@@ -410,6 +413,8 @@ class StorageJob(StorageObject) :
         self.JobMD5Sum = None
         self.JobPages = None
         self.JobBillingCode = None
+        self.PrecomputedJobSize = None
+        self.PrecomputedJobPrice = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""

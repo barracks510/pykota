@@ -534,6 +534,8 @@ class Storage(BaseStorage) :
                                                                   "pykotaBillingCode", 
                                                                   "pykotaPages", 
                                                                   "pykotaMD5Sum", 
+                                                                  "pykotaPrecomputedJobSize",
+                                                                  "pykotaPrecomputedJobPrice",
                                                                   "createTimestamp" ], 
                                                                 base="cn=%s,%s" % (lastjobident, self.info["jobbase"]), scope=ldap.SCOPE_BASE)
             except PyKotaStorageError :    
@@ -562,6 +564,14 @@ class Storage(BaseStorage) :
                 lastjob.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
                 lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 lastjob.JobPages = fields.get("pykotaPages", [""])[0]
+                try :
+                    lastjob.PrecomputedJobSize = int(fields.get("pykotaPrecomputedJobSize", [0])[0])
+                except ValueError :    
+                    lastjob.PrecomputedJobSize = None
+                try :    
+                    lastjob.PrecomputedJobPrice = float(fields.get("pykotaPrecomputedJobPrice", [0.0])[0])
+                except ValueError :    
+                    lastjob.PrecomputedJobPrice = None
                 if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
                     (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
@@ -960,7 +970,7 @@ class Storage(BaseStorage) :
                  }
         self.doModify(lastjob.ident, fields)         
         
-    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None) :
+    def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None, precomputedsize=None, precomputedprice=None) :
         """Adds a job in a printer's history."""
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
@@ -988,6 +998,8 @@ class Storage(BaseStorage) :
                    "pykotaMD5Sum" : str(jobmd5sum),
                    "pykotaPages" : jobpages,            # don't add this attribute if it is not set, so no string conversion
                    "pykotaBillingCode" : self.userCharsetToDatabase(jobbilling), # don't add this attribute if it is not set, so no string conversion
+                   "pykotaPrecomputedJobSize" : str(precomputedsize),
+                   "pykotaPrecomputedPrice" : str(precomputedprice),
                  }
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :         
@@ -1101,6 +1113,8 @@ class Storage(BaseStorage) :
                                                "pykotaBillingCode", 
                                                "pykotaPages", 
                                                "pykotaMD5Sum", 
+                                               "pykotaPrecomputedJobSize",
+                                               "pykotaPrecomputedJobPrice",
                                                "createTimestamp" ], 
                                       base=self.info["jobbase"])
         if result :
@@ -1127,6 +1141,14 @@ class Storage(BaseStorage) :
                 job.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
                 job.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 job.JobPages = fields.get("pykotaPages", [""])[0]
+                try :
+                    job.PrecomputedJobSize = int(fields.get("pykotaPrecomputedJobSize", [0])[0])
+                except ValueError :    
+                    job.PrecomputedJobSize = None
+                try :    
+                    job.PrecomputedJobPrice = float(fields.get("pykotaPrecomputedJobPrice", [0.0])[0])
+                except ValueError :
+                    job.PrecomputedJobPrice = None
                 if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
                     (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000"])[0]
@@ -1383,9 +1405,9 @@ class Storage(BaseStorage) :
         (startdate, enddate) = self.cleanDates(startdate, enddate)
         entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), limit=None, start=startdate, end=enddate)
         if entries :
-            result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode") ] 
+            result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode", "precomputedjobsize", "precomputedjobprice") ] 
             for entry in entries :
-                result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes, entry.JobMD5Sum, entry.JobPages, entry.JobBillingCode)) 
+                result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes, entry.JobMD5Sum, entry.JobPages, entry.JobBillingCode, entry.PrecomputedJobSize, entry.PrecomputedJobPrice)) 
             return result
             
     def getBillingCodeFromBackend(self, label) :

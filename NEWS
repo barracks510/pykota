@@ -42,6 +42,9 @@ PyKota NEWS :
         - The -I | --increase command line switch to edpykota allows
           to increase or decrease page limits.
           
+        - Added the precomputed job's size and price to the history
+          for controlling purpose.
+        
     - 1.23alpha29 :
     
         - Fixed a small problem with billing codes.
