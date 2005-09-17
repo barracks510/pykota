@@ -36,7 +36,7 @@ ALTER TABLE userpquota ADD COLUMN maxjobsize INT4;
 ALTER TABLE grouppquota ADD COLUMN maxjobsize INT4;
 ALTER TABLE printers ADD COLUMN maxjobsize INT4;
 ALTER TABLE printers ADD COLUMN passthrough BOOLEAN;
-ALTER TABLE printers ALTER COLUMN passthrough SET DEFAULT 'f';
+ALTER TABLE printers ALTER COLUMN passthrough SET DEFAULT FALSE;
 ALTER TABLE jobhistory ADD COLUMN precomputedjobsize INT4;
 ALTER TABLE jobhistory ADD COLUMN precomputedjobprice FLOAT;
 ALTER TABLE payments ADD COLUMN description TEXT;
@@ -47,7 +47,7 @@ ALTER TABLE userpquota DROP COLUMN temporarydenied;
 -- Now updates existing datas
 --
 -- Just to be sure
-UPDATE printers SET passthrough='f';
+UPDATE printers SET passthrough=FALSE;
 
 -- 
 -- Create the table for the billing codes

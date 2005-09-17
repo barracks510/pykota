@@ -71,7 +71,7 @@ CREATE TABLE printers(id SERIAL PRIMARY KEY NOT NULL,
                       description TEXT,
                       priceperpage FLOAT DEFAULT 0.0,
                       priceperjob FLOAT DEFAULT 0.0,
-                      passthrough BOOLEAN DEFAULT 'f',
+                      passthrough BOOLEAN DEFAULT FALSE,
                       maxjobsize INT4);
                     
 --
