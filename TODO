@@ -68,10 +68,6 @@ TODO, in no particular order :
           for current job. I did some testing but wasn't able to
           make it work...
           
-        - Think about some possible client <=> PyKota dialog
-          possibilities, like embedding a small web server in
-          PyKota for example, or something like that.
-        
         - Introduce the pkusers command.
           pkusers --nogroup
           pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
