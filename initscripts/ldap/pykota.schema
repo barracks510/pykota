@@ -246,7 +246,8 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.35 NAME 'pykotaMaxJobSize'
 # pykotaPassThrough
 attributetype ( 1.3.6.1.4.1.16868.1.1.36 NAME 'pykotaPassThrough'
         DESC 'Indicates if the printer is in pass through mode'
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
 #        
 # PyKota Object Classes
