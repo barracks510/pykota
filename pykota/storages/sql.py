@@ -476,6 +476,14 @@ class SQLStorage :
         description = self.userCharsetToDatabase(printer.Description)
         self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(description), self.doQuote(printer.ident)))
         
+    def setPrinterMaxJobSize(self, printer, maxjobsize) :     
+        """Write the printer's maxjobsize attribute."""
+        self.doModify("UPDATE printers SET maxjobsize=%s WHERE id=%s" % (self.doQuote(maxjobsize), self.doQuote(printer.ident)))
+        
+    def setPrinterPassThroughMode(self, printer, passthrough) :
+        """Write the printer's passthrough attribute."""
+        self.doModify("UPDATE printers SET passthrough=%s WHERE id=%s" % (self.doQuote((passthrough and "t") or "f"), self.doQuote(printer.ident)))
+        
     def writeUserOverCharge(self, user, factor) :
         """Sets the user's overcharging coefficient."""
         self.doModify("UPDATE users SET overcharge=%s WHERE id=%s" % (self.doQuote(factor), self.doQuote(user.ident)))

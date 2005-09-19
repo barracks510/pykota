@@ -901,6 +901,20 @@ class Storage(BaseStorage) :
                  }
         if fields["description"] :
             self.doModify(printer.ident, fields)
+            
+    def setPrinterMaxJobSize(self, printer, maxjobsize) :     
+        """Write the printer's maxjobsize attribute."""
+        fields = {
+                   "pykotaMaxJobSize" : (maxjobsize and str(maxjobsize)) or "0",
+                 }
+        self.doModify(printer.ident, fields)
+        
+    def setPrinterPassThroughMode(self, printer, passthrough) :
+        """Write the printer's passthrough attribute."""
+        fields = {
+                   "pykotaPassThrough" : (passthrough and "t") or "f",
+                 }
+        self.doModify(printer.ident, fields)
         
     def writeUserOverCharge(self, user, factor) :
         """Sets the user's overcharging coefficient."""
