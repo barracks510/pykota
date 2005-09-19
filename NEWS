@@ -30,6 +30,9 @@ PyKota NEWS :
           be treated by pkturnkey by passing queues' names as additionnal 
           arguments on pkturnkey's command line.
           
+        - pkturnkey now supersedes pkhint with the help of the -c | --doconf
+          command line option.   
+          
     - 1.23alpha30 :
     
         - Database changes : you MUST use upgrade-to-1.23.sql again if you
