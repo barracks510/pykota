@@ -8,7 +8,6 @@
   <!entity PYKOTME system "pykotme.sgml">
   <!entity WARNPYKOTA system "warnpykota.sgml">
   <!entity SCRIPTS system "scripts.sgml">
-  <!entity PKHINT system "pkhint.sgml">
   <!entity PYKOSD system "pykosd.sgml">
   <!entity DUMPYKOTA system "dumpykota.sgml">
   <!entity AUTOPYKOTA system "autopykota.sgml">
@@ -124,8 +123,6 @@
   &WARNPYKOTA;
   
   &DUMPYKOTA;
-  
-  &PKHINT;
   
   &PYKOSD;
   

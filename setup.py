@@ -110,5 +110,5 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.librelogiciel.com/software/",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", "bin/pkbanner", "bin/autopykota", "bin/dumpykota", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters", "bin/pkhint" ],
+      scripts = [ "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", "bin/pkbanner", "bin/autopykota", "bin/dumpykota", "bin/pykosd", "bin/edpykota", "bin/repykota", "bin/warnpykota", "bin/pykotme", "bin/pkprinters" ],
       data_files = data_files)

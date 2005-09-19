@@ -519,17 +519,24 @@ The rest of the installation depends on your printing system :
         printer you've just added, unless you have set
         all options globally.
         
-        The new pkhint command can help you with correct settings 
+        The new pkturnkey command can help you with correct settings 
         for your printers, but don't rely on it because it is still
-        experimental work. To use pkhint, you have to feed it with
-        CUPS' printers.conf file this way :
+        experimental work. To have pkturnkey give you some hints
+        about what to put into pykota.conf, just use its --doconf
+        command line switch :
         
-          $ pkhint </etc/cups/printers.conf
+          $ pkturnkey --doconf
         
-        pkhint will try to tell you what is the best accounting
+        pkturnkey will try to tell you what is the best accounting
         method for each printer and will print some lines you'll
         just have to copy&paste in the appropriate sections in
         /etc/pykota/pykota.conf
+        
+        For more informations about what pkturnkey can do for you,
+        see pkturnkey's manual page or use the --help command
+        line switch :
+        
+          $ pkturnkey --help | less
         
         That's all.
     
