@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23alpha31 :
+    
+        - Added support for --maxjobsize, --passthrough and --nopassthrough
+          in pkprinters. These modes are now also honored when printing.
+          
     - 1.23alpha30 :
     
         - Database changes : you MUST use upgrade-to-1.23.sql again if you

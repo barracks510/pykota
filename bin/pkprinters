@@ -79,6 +79,17 @@ options :
                        
   -s | --skipexisting  In combination with the --add option above, tells
                        pkprinters to not modify existing printers.
+                       
+  -m | --maxjobsize s  Sets the maximum job size allowed on the printer
+                       to s pages.
+                       
+  -p | --passthrough   Activate passthrough mode for the printer. In this
+                       mode, users are allowed to print without any impact
+                       on their quota or account balance.
+                       
+  -n | --nopassthrough Deactivate passthrough mode for the printer.
+                       Without -p or -n, printers are created in 
+                       normal mode, i.e. no passthrough.
   
   printer1 through printerN can contain wildcards if the --add option 
   is not set.
@@ -137,6 +148,17 @@ class PKPrinters(PyKotaTool) :
                     charges = [charges[0], None]
                 (perpage, perjob) = charges
                 
+        if options["maxjobsize"] :        
+            try :
+                maxjobsize = int(options["maxjobsize"])
+                if maxjobsize < 0 :
+                    raise ValueError
+            except ValueError :    
+                raise PyKotaToolError, _("Invalid maximum job size value %s") % options["maxjobsize"]
+        else :        
+            maxjobsize = None
+                
+                
         if options["add"] :    
             printers = []
             for pname in names :
@@ -180,6 +202,12 @@ class PKPrinters(PyKotaTool) :
                     printer.setPrices(perpage, perjob)    
                 if options["description"] is not None :
                     printer.setDescription(options["description"].strip())
+                if options["nopassthrough"] and printer.PassThrough :    
+                    self.storage.setPrinterPassThroughMode(printer, 0)
+                if options["passthrough"] and not printer.PassThrough :    
+                    self.storage.setPrinterPassThroughMode(printer, 1)
+                if (maxjobsize is not None) and (printer.MaxJobSize != maxjobsize) :    
+                    self.storage.setPrinterMaxJobSize(printer, maxjobsize)
                 if options["groups"] :    
                     for pgroup in printersgroups :
                         if options["remove"] :
@@ -190,8 +218,11 @@ class PKPrinters(PyKotaTool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvac:D:dg:lrs"
-        long_options = ["help", "version", "add", "charge=", "description=", "delete", "groups=", "list", "remove", "skipexisting"]
+        short_options = "hvac:D:dg:lrsnpm:"
+        long_options = ["help", "version", "add", "charge=", "description=", \
+                        "delete", "groups=", "list", "remove", \
+                        "skipexisting", "passthrough", "nopassthrough", \
+                        "maxjobsize="]
         
         # Initializes the command line tool
         manager = PKPrinters(doc=__doc__)
@@ -211,6 +242,9 @@ if __name__ == "__main__" :
         options["list"] = options["l"] or options["list"]
         options["remove"] = options["r"] or options["remove"]
         options["skipexisting"] = options["s"] or options["skipexisting"]
+        options["maxjobsize"] = options["m"] or options["maxjobsize"]
+        options["passthrough"] = options["p"] or options["passthrough"]
+        options["nopassthrough"] = options["n"] or options["nopassthrough"]
         
         if options["help"] :
             manager.display_usage_and_quit()
@@ -218,7 +252,8 @@ if __name__ == "__main__" :
             manager.display_version_and_quit()
         elif (options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) \
            or (options["skipexisting"] and not options["add"]) \
-           or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) :
+           or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) \
+           or (options["passthrough"] and options["nopassthrough"]) :
             raise PyKotaToolError, _("incompatible options, see help.")
         elif options["remove"] and not options["groups"] :    
             raise PyKotaToolError, _("You have to pass printer groups names on the command line")
