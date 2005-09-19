@@ -26,6 +26,10 @@ PyKota NEWS :
         - Added support for --maxjobsize, --passthrough and --nopassthrough
           in pkprinters. These modes are now also honored when printing.
           
+        - Allows the admin to restrict the number of print queues which will
+          be treated by pkturnkey by passing queues' names as additionnal 
+          arguments on pkturnkey's command line.
+          
     - 1.23alpha30 :
     
         - Database changes : you MUST use upgrade-to-1.23.sql again if you

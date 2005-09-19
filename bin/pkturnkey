@@ -40,7 +40,7 @@ for, but not limited.
 
 command line usage :
 
-  pkturnkey [options]
+  pkturnkey [options] [printqueues names]
 
 options :
 
@@ -91,11 +91,14 @@ examples :
   
   To REALLY initialize the database instead of simulating it, please
   use the -f | --force command line switch.
+  
+  You can limit the initialization to only a subset of the existing
+  printers, by passing their names at the end of the command line.
 """)
         
 class PKTurnKey(Tool) :
     """A class for an initialization tool."""
-    def listPrinters(self) :
+    def listPrinters(self, namestomatch) :
         """Returns a list of tuples (queuename, deviceuri) for all existing print queues."""
         self.printInfo("Extracting all print queues.")
         result = os.popen("lpstat -v", "r")
@@ -106,7 +109,10 @@ class PKTurnKey(Tool) :
             (begin, end) = line.split(':', 1)
             deviceuri = end.strip()
             queuename = begin.split()[-1]
-            printers.append((queuename, deviceuri))
+            if self.matchString(queuename, namestomatch) :
+                printers.append((queuename, deviceuri))
+            else :    
+                self.printInfo("Print queue %s skipped." % queuename)
         return printers    
         
     def listUsers(self, uidmin, uidmax) :    
@@ -159,16 +165,20 @@ class PKTurnKey(Tool) :
             for p in needswarning :
                 self.printInfo(_("Printer %s is not managed by PyKota yet. Please modify printers.conf and restart CUPS.") % p, "warn")
         
-    def createUsers(self, users, dryrun=0) :
+    def createUsers(self, users, printers, dryrun=0) :
         """Creates all users in PyKota's database."""
         if users :
-            command = "edpykota --add --noquota %s" % " ".join(['"%s"' % u for u in users])
+            printersnames = [p[0] for p in printers]
+            command = "edpykota --add --noquota --printer %s %s" % (",".join(['"%s"' % p for p in printersnames]), \
+                                                                    " ".join(['"%s"' % u for u in users]))
             self.runCommand(command, dryrun)
             
-    def createGroups(self, groups, dryrun=0) :
+    def createGroups(self, groups, printers, dryrun=0) :
         """Creates all groups in PyKota's database."""
         if groups :
-            commands = ["edpykota --groups --add --noquota %s" % " ".join(['"%s"' % g for g in groups.keys()])]
+            printersnames = [p[0] for p in printers]
+            commands = ["edpykota --add --groups --noquota --printer %s %s" % (",".join(['"%s"' % p for p in printersnames]), \
+                                                                               " ".join(['"%s"' % g for g in groups.keys()]))]
             revmembership = {}
             for (groupname, usernames) in groups.items() :
                 for username in usernames :
@@ -183,7 +193,6 @@ class PKTurnKey(Tool) :
         if not self.config.isAdmin :
             raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
-        # TODO : names not used for now    
         if not names :
             names = ["*"]
             
@@ -258,11 +267,11 @@ class PKTurnKey(Tool) :
         else :    
             groups = []
             
-        printers = self.listPrinters()                    
+        printers = self.listPrinters(names)
         if printers :
             self.createPrinters(printers, dryrun)
-            self.createUsers([entry[0] for entry in users], dryrun)
-            self.createGroups(groups, dryrun)
+            self.createUsers([entry[0] for entry in users], printers, dryrun)
+            self.createGroups(groups, printers, dryrun)
         
         if dryrun :
             self.printInfo(_("Simulation terminated."))
