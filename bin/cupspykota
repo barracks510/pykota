@@ -821,6 +821,12 @@ class CUPSBackend(PyKotaTool) :
         self.exportPrinterInfo()
         self.exportPhaseInfo("BEFORE")
         
+        if self.Action != "DENY" : 
+            if self.Printer.MaxJobSize and (self.softwareJobSize > self.Printer.MaxJobSize) :
+                # This printer was set to refuse jobs this large.
+                self.printInfo(_("Precomputed job size (%s pages) too large for printer %s.") % (self.softwareJobSize, self.PrinterName), "warn")
+                self.Action = "DENY"
+            
         if self.Action != "DENY" :
             if self.User.LimitBy == "noprint" :
                 self.printInfo(_("User %s is not allowed to print at this time.") % self.UserName, "warn")
@@ -847,6 +853,8 @@ class CUPSBackend(PyKotaTool) :
             # save some database queries.
             if self.User.LimitBy in ('noquota', 'nochange') :
                 self.logdebug("User %s is allowed to print with no limit, no need to check quota." % self.UserName)
+            elif self.Printer.PassThrough :    
+                self.logdebug("Printer %s is in PassThrough mode, no need to check quota." % self.PrinterName)
             else :
                 self.logdebug("Checking user %s print quota entry on printer %s" \
                                     % (self.UserName, self.PrinterName))
@@ -919,7 +927,7 @@ class CUPSBackend(PyKotaTool) :
                 self.JobSize += self.BannerSize
             self.printInfo(_("Job size : %i") % self.JobSize)
             
-            if self.User.LimitBy == "nochange" :
+            if (self.User.LimitBy == "nochange") or self.Printer.PassThrough :
                 # no need to update the quota for the current user on this printer
                 self.printInfo(_("User %s's quota on printer %s won't be modified") % (self.UserName, self.PrinterName))
                 self.JobPrice = self.UserPQuota.computeJobPrice(self.JobSize)

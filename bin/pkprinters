@@ -168,9 +168,13 @@ class PKPrinters(PyKotaTool) :
                 parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
                 if parents : 
                     parents = "%s %s" % (_("in"), parents)
-                print "%s [%s] (%s + #*%s) %s" % \
+                print "%s [%s] (%s + #*%s)" % \
                       (printer.Name, printer.Description, printer.PricePerJob, \
-                       printer.PricePerPage, parents)
+                       printer.PricePerPage)
+                print "    %s" % (_("Passthrough mode : %s") % ((printer.PassThrough and _("ON")) or _("OFF")))
+                print "    %s" % (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited")))
+                if parents :       
+                    print "    %s" % parents
             else :    
                 if options["charge"] :
                     printer.setPrices(perpage, perjob)    
