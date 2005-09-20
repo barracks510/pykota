@@ -80,7 +80,7 @@ for dir in modirs :
 
 directory = os.sep.join(["share", "pykota"])
 data_files.append((directory, ["checkdeps.py", "bin/cupspykota", \
-                               "bin/lprngpykota", "bin/waitprinter.sh", \
+                               "bin/waitprinter.sh", \
                                "bin/papwaitprinter.sh", \
                                "bin/mailandpopup.sh", \
                                "contributed/pagecount.pl", \
