@@ -111,6 +111,8 @@ PyKota features :
         - Both soft and hard limit with configurable grace delay  
           can be set for page quota.
           
+        - Both soft and hard limits can be increased or decreased at will.  
+        
         - Possibility to disable quota enforcement for any user
           or group, while still keeping page accounting.
           
@@ -120,9 +122,24 @@ PyKota features :
           
         - Specific pages and credits counters can be defined per billing code,
           and can be reset independantly of the printing history.
-        
+          
+        - Supports a passthrough mode for printers, which doesn't modify  
+          users quota when they print.
+          
+        - Supports a maximum number of pages per job, configurable for each  
+          printer.
+          
+        - Each user can be completely forbidden to print, independantly from
+          other users.
+          
+        - A transparent printing mode is supported for users, in which 
+          their quota is not modified when they print.
+          
     Administration :        
     
+        - Almost turn-key solution, with the help of the pkturnkey command
+          line tool for database initialization and initial configuration.
+          
         - Powerful delegation of administrative priviledges.
         
         - Powerful administration tools can be used to
@@ -573,7 +590,7 @@ The rest of the installation depends on your printing system :
         
         Save the file and restart CUPS.
         
-        Here too, you may find it interesting to use the pkhint command as
+        Here too, you may find it interesting to use the pkturnkey command as
         described above to help with manual configuration of the file
         /etc/pykota/pykota.conf
 
@@ -602,17 +619,13 @@ The rest of the installation depends on your printing system :
           
         or any similar command depending on your operating system.  
         
-    NB : the pkhint command can't be used with LPRng for now, so you    
-         have to modify /etc/pykota/pykota.conf carefully. The comments
-         in this file will help you.
-      
 Now you can begin to populate the PyKota's database with printers,
 users and groups :
   
 Add printers and users to the quota system and set their quota values : 
 
-Starting from version 1.18alpha2, the preferred command to manage
-printers is named pkprinters
+You can either use pkturnkey, or do the same things manually by
+using the pkprinters and edpykota command line tools :
 
     $ pkprinters --help
     
