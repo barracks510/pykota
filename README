@@ -43,7 +43,10 @@ PyKota features :
     Printing systems :
     
         - Supports both CUPS and LPRng as the printing system.
-        
+          NB : LPRng is only supported with versions 
+	  of PyKota <= v1.22HotFix1, but support for LPRng 
+	  may be reintroduced at a later date.
+       
     Databases :
     
         - Supports PostgreSQL as the Quota Storage backend.
