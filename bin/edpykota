@@ -538,9 +538,9 @@ class EdPyKota(PyKotaTool) :
                         
         # Now outputs the list of nonexistent users and groups                
         for name in missingusers.keys() :
-            self.printInfo(_("Nonexistent user %s") % name, level="warn")
+            self.printInfo(_("Nonexistent user %s or missing print quota entry.") % name, level="warn")
         for name in missinggroups.keys() :
-            self.printInfo(_("Nonexistent group %s") % name, level="warn")
+            self.printInfo(_("Nonexistent group %s or missing print quota entry.") % name, level="warn")
         
         # Now delete what has to be deleted                
         for (name, entry) in todelete.items() :                
