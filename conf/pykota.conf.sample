@@ -757,6 +757,8 @@ policy: deny
 #                   page was still printed on the current printer.                   
 # PYKOTAOVERCHARGE : user's overcharging factor.
 # PYKOTAJOBBILLING : Job's billing code if present (CUPS only)
+# PYKOTAREASON : if the job was denied or a warning needs to be issued, contains
+#                the message to send to the user.
 #
 
 # PreHook : gets executed after being sure the user, printer and user quota

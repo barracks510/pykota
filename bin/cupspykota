@@ -35,6 +35,8 @@ import signal
 import md5
 import fnmatch
 import pwd
+import socket
+import smtplib
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
@@ -187,6 +189,7 @@ class CUPSBackend(PyKotaTool) :
             printerhostname = destination.split("/")[0].split(":")[0]
         
         self.Action = "ALLOW"   # job allowed by default
+        self.Reason = None
         self.JobId = sys.argv[1].strip()
         # use CUPS' user when printing test pages from CUPS' web interface
         self.UserName = sys.argv[2].strip() or pwd.getpwuid(os.geteuid())[0]
@@ -291,6 +294,7 @@ class CUPSBackend(PyKotaTool) :
             # now overwrite the job's ticket if new data was supplied
             if action :
                 self.Action = action
+                self.Reason = _("You are not allowed to print at this time.")
             if username :
                 self.UserName = username
             # NB : we overwrite the billing code even if empty    
@@ -516,6 +520,14 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Exporting job's size and price information to the environment...")
         os.environ["PYKOTAJOBSIZE"] = str(self.JobSize)
         os.environ["PYKOTAJOBPRICE"] = str(self.JobPrice)
+        self.logdebug("Environment updated.")
+        
+    def exportReason(self) :
+        """Exports the job's action status and optional reason."""
+        self.logdebug("Exporting job's action status...")
+        os.environ["PYKOTAACTION"] = str(self.Action)
+        if self.Reason :
+            os.environ["PYKOTAREASON"] = str(self.Reason)
         self.logdebug("Environment updated.")
         
     def acceptJob(self) :        
@@ -767,6 +779,7 @@ class CUPSBackend(PyKotaTool) :
             if denyduplicates == 1 :
                 self.printInfo("%s : %s." % (msg, _("Printing is denied by configuration")), "warn")
                 self.Action = "DENY"
+                self.Reason = _("Duplicate print jobs are not allowed on printer %s.") % self.PrinterName
             else :    
                 self.logdebug("Launching subprocess [%s] to see if dupes should be allowed or not." % denyduplicates)
                 fanswer = os.popen(denyduplicates, "r")
@@ -774,12 +787,52 @@ class CUPSBackend(PyKotaTool) :
                 fanswer.close()
                 if self.Action == "DENY" :     
                     self.printInfo("%s : %s." % (msg, _("Subprocess denied printing of a dupe")), "warn")
+                    self.Reason = _("Duplicate print jobs are not allowed on printer %s at this time.") % self.PrinterName
                 else :    
                     self.printInfo("%s : %s." % (msg, _("Subprocess allowed printing of a dupe")), "warn")
         else :            
             self.logdebug("Job doesn't seem to be a dupe.")
         self.logdebug("Checking if the job is a dupe done.")
         
+    def tellUser(self) :
+        """Sends a message to an user."""
+        self.logdebug("Sending some feedback to user %s..." % self.UserName)  
+        if not self.Reason :
+            self.logdebug("No feedback to send to user %s." % self.UserName)
+        else :    
+            (mailto, arguments) = self.config.getMailTo(self.PrinterName)
+            if mailto == "EXTERNAL" :
+                # TODO : clean this again
+                self.externalMailTo(arguments, self.Action, self.User, self.Printer, self.Reason)
+            else :    
+                # TODO : clean this again
+                admin = self.config.getAdmin(self.PrinterName)
+                adminmail = self.config.getAdminMail(self.PrinterName)
+                usermail = self.User.Email or self.User.Name
+                if "@" not in usermail :
+                    usermail = "%s@%s" % (usermail, self.maildomain or self.smtpserver)
+                destination = []
+                if mailto in ("BOTH", "ADMIN") :
+                    destination.append(adminmail)
+                if mailto in ("BOTH", "USER") :    
+                    destination.append(usermail)
+                    
+                fullmessage = self.Reason + (_("\n\nYour system administrator :\n\n\t%s - <%s>\n") % (admin, adminmail))
+                try :    
+                    server = smtplib.SMTP(self.smtpserver)
+                except socket.error, msg :    
+                    self.printInfo(_("Impossible to connect to SMTP server : %s") % msg, "error")
+                else :
+                    try :
+                        server.sendmail(adminmail, destination, \
+                          "From: %s\nTo: %s\nCc: %s\nSubject: %s\n\n%s" \
+                          % (adminmail, usermail, adminmail, _("Print Quota"), fullmessage))
+                    except smtplib.SMTPException, answer :    
+                        for (k, v) in answer.recipients.items() :
+                            self.printInfo(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
+                    server.quit()
+            self.logdebug("Feedback sent to user %s." % self.UserName)
+                
     def mainWork(self) :    
         """Main work is done here."""
         if not self.JobSizeBytes :
@@ -826,11 +879,15 @@ class CUPSBackend(PyKotaTool) :
                 # This printer was set to refuse jobs this large.
                 self.printInfo(_("Precomputed job size (%s pages) too large for printer %s.") % (self.softwareJobSize, self.PrinterName), "warn")
                 self.Action = "DENY"
+                # here we don't put the precomputed job size in the message
+                # because in case of error the user could complain :-)
+                self.Reason = _("You are not allowed to print so many pages on printer %s at this time.") % self.PrinterName
             
         if self.Action != "DENY" :
             if self.User.LimitBy == "noprint" :
                 self.printInfo(_("User %s is not allowed to print at this time.") % self.UserName, "warn")
                 self.Action = "DENY"
+                self.Reason = _("Your account settings forbid you to print at this time.")
                 
         if self.Action != "DENY" :
             # If printing is still allowed at this time, we
@@ -858,10 +915,24 @@ class CUPSBackend(PyKotaTool) :
             else :
                 self.logdebug("Checking user %s print quota entry on printer %s" \
                                     % (self.UserName, self.PrinterName))
-                self.Action = self.warnUserPQuota(self.UserPQuota)
+                self.Action = self.checkUserPQuota(self.UserPQuota)
+                if self.Action.startswith("POLICY_") :
+                    self.Action = self.Action[7:]
+                if self.Action == "DENY" :
+                    self.printInfo(_("Print Quota exceeded for user %s on printer %s") % (self.UserName, self.PrinterName))
+                    self.Reason = self.config.getHardWarn(self.PrinterName)
+                elif self.Action == "WARN" :    
+                    self.printInfo(_("Print Quota low for user %s on printer %s") % (self.UserName, self.PrinterName))
+                    if self.User.LimitBy and (self.User.LimitBy.lower() == "balance") : 
+                        self.Reason = self.config.getPoorWarn()
+                    else :     
+                        self.Reason = self.config.getSoftWarn(self.PrinterName)
             
         # exports some new environment variables
-        os.environ["PYKOTAACTION"] = str(self.Action)
+        self.exportReason()
+        
+        # now tell the user if he needs to know something
+        self.tellUser()
         
         # launches the pre hook
         self.launchPreHook()

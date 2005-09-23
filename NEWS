@@ -21,6 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23beta :
+    
+        - Now the mailto directive is honored in all cases where the job is
+          denied or a warning has to be issued, and the correct reason
+          can be sent back to the user.
+          
+        - The PYKOTAREASON environment variable, if defined, contains the  
+          textual reason why the job was denied or a warning has to be
+          issued.
+        
     - 1.23alpha31 :
     
         - Added support for --maxjobsize, --passthrough and --nopassthrough
