@@ -210,11 +210,11 @@ class PyKotaReportGUI(PyKotaTool) :
                 else :
                     self.report.append('<table class="pykotatable" border="1">')
                     headers = [_("Date"), _("Action"), _("User"), _("Printer"), \
-                               _("Hostname"), _("JobId"), _("JobSize"), \
-                               _("JobPrice"), _("Copies"), _("JobBytes"), \
-                               _("PageCounter"), _("Title"), _("Filename"), \
-                               _("Options"), _("MD5Sum"), _("BillingCode"), \
-                               _("PrecomputedJobSize"), _("PrecomputedJobPrice"), _("Pages")]
+                               _("Hostname"), _("JobId"), _("Number of pages"), \
+                               _("Cost"), _("Copies"), _("Number of bytes"), \
+                               _("Printer's internal counter"), _("Title"), _("Filename"), \
+                               _("Options"), _("MD5Sum"), _("Billing code"), \
+                               _("Precomputed number of pages"), _("Precomputed cost"), _("Pages details") + " " + _("(not supported yet)")]
                     self.report.append('<tr class="pykotacolsheader">%s</tr>' % "".join(["<th>%s</th>" % h for h in headers]))
                     oddeven = 0
                     for job in history :
