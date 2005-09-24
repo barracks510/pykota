@@ -7,12 +7,15 @@ Standards-Version: 3.6.1
 
 Package: pykota
 Architecture: all
-Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys | lprng, python-pygresql | python-ldap, jaxml, python-osd, python-reportlab
+Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys,  python-pygresql | python-ldap, jaxml, python-osd, python-reportlab
 Recommends: snmp, netatalk, python-psyco, npadmin
-Description: Print Quota/Accounting system for CUPS and LPRng
+Description: Print Quota/Accounting system for CUPS
  PyKota is a full featured, internationalized, centralized and extensible 
- Print Quota system for CUPS and LPRng. It supports both PostgreSQL and 
+ Print Quota system for CUPS. It supports both PostgreSQL and 
  OpenLDAP (or other LDAP servers) as the quota database backend. 
+ Older versions of this software also support LPRng as the printing 
+ system, but this release doesn't. LPRng support might be reintroduced
+ at a later date.
  .
  This software features most of what you might expect from a modern Print 
  Quota and Accounting Solution. 
