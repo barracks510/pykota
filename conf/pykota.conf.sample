@@ -249,8 +249,8 @@ maildomain: example.com
 # still case sensitive.
 #
 # If utolower is Yes, the usernames received from the printing
-# system is converted to lowercase at the start of the cupspykota
-# backend or of the lprngpykota filter.
+# system is converted to lowercase at the start of printing,
+# BUT ONLY when printing.
 #
 # If utolower is No, which is the default, strict case checking
 # is done, this means that users 'Jerome' and 'jerome' are
