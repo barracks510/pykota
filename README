@@ -1,6 +1,6 @@
 # $Id$
 
-PyKota - Print Quota for CUPS and LPRng
+PyKota - Print Quotas for CUPS and LPRng
 
 (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
 This program is free software; you can redistribute it and/or modify
@@ -44,8 +44,9 @@ PyKota features :
     
         - Supports both CUPS and LPRng as the printing system.
           NB : LPRng is only supported with versions 
-	  of PyKota <= v1.22HotFix1, but support for LPRng 
-	  may be reintroduced at a later date.
+          of PyKota <= v1.22HotFix1, but support for LPRng 
+          may be reintroduced at a later date.
+          This version DOES NOT support LPRng !
        
     Databases :
     
@@ -334,7 +335,7 @@ Prerequisite :
    
   You need to have the following tools installed on the CUPS Server :
   
-    - CUPS (http://www.cups.org) or LPRng (http://www.lprng.com)
+    - CUPS (http://www.cups.org)
     - Python v2.1 or above (http://www.python.org)
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The pkpgcounter command line tool, version 1.56 or higher. This
@@ -599,28 +600,10 @@ The rest of the installation depends on your printing system :
 
   - LPRng Printing System :
   
-    For each printer on which you want to use PyKota :
+    IMPORTANT : This release of PyKota DOES NOT support LPRng.
     
-        Modify the printer's entry in /etc/printcap : you have to add
-        the three following lines :
-        
-          :achk=true:\
-          :as=/usr/share/pykota/lprngpykota:\
-          :ae=/usr/share/pykota/lprngpykota:\
-          
-        This will tell LPRng to activate accounting, and use the lprngpykota 
-        accounting filter both at the start and at the end of printing. 
-        
-    When all modifications are done, just save the /etc/printcap file and    
-    restart LPRng :
-    
-          $ /etc/init.d/lprng restart
-          
-        or :    
-      
-          $ /etc/rc.d/init.d/lprng restart
-          
-        or any similar command depending on your operating system.  
+    If you want to use PyKota with LPRng, you have to download
+    an earlier release of PyKota, for example v1.22HotFix1.
         
 Now you can begin to populate the PyKota's database with printers,
 users and groups :
@@ -665,14 +648,10 @@ Now set quotas for users on this printer :
     but you can define a "poorman"'s threshold in /etc/pykota/pykota.conf
     to obtain a similar result (warning message when quota is low).
 
-Restart CUPS or LPRng, for example under Debian GNU/Linux systems :          
+Restart CUPS, for example under Debian GNU/Linux systems :          
 
     $ /etc/init.d/cupsys restart
     
-  or :
-  
-    $ /etc/init.d/lprng restart
-        
 Your users now should be able to print but not exceed their 
 printing quota.
 

@@ -21,8 +21,7 @@
     For the print job history's datas, a special format identical to <application>CUPS</application>' <literal>page_log</literal>
     format is also supported.
     This allows you to interface <application>PyKota</application> with third party tools like
-    <application>phpPrintAnalyzer</application> which is a logfile analyzer for <application>CUPS</application>,
-    even in the case where you use <application>LPRng</application> instead of <application>CUPS</application>.
+    <application>phpPrintAnalyzer</application> which is a logfile analyzer for <application>CUPS</application>.
   </para>  
   
   <para>

@@ -437,10 +437,10 @@ $ /etc/init.d/slapd restart
     <para>
       For each Print Server on which you plan to implement the print quota
       mechanism, you have, of course, to have an already working printing environment. 
-      Currently <application>PyKota</application> works with either 
+      Currently <application>PyKota</application> works with 
       <ulink url="http://www.cups.org"><application>CUPS</application></ulink>
-      or <ulink url="http://lprng.sourceforge.net"><application>LPRng</application></ulink>,
-      but more printing systems may be added in the future.
+      but older releases also supported <ulink url="http://lprng.sourceforge.net"><application>LPRng</application></ulink>.
+      <application>LPRng</application> support might be re-added in the future.
     </para>
     
     <para>
@@ -450,10 +450,8 @@ $ /etc/init.d/slapd restart
       <itemizedlist>
         <listitem>
           <para>
-            <application>CUPS</application> version 1.1.14 or above, or <application>LPRng</application>
-            version 3.8.27 or above (it probably works with older versions but this is untested).
-            You can download them from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
-            or <ulink url="http://lprng.sourceforge.net">http://lprng.sourceforge.net</ulink>
+            <application>CUPS</application> version 1.1.14 or above.
+            You can download it from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
           </para>
         </listitem>  
         <listitem>
@@ -516,12 +514,12 @@ $ /etc/init.d/slapd restart
               </listitem>
               <listitem>
                 <para>
-                  MySQL backend : TODO
+                  MySQL backend : Not supported yet.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                  Berkeley DB backend : TODO
+                  Berkeley DB backend : Not supported yet.
                 </para>
               </listitem>
             </itemizedlist>  
@@ -559,7 +557,7 @@ $ /etc/init.d/slapd restart
         </listitem>  
         <listitem>
           <para>
-            The <application>pysnmp</application> Python module version 3.4.2 or 3.4.3 exclusively. 
+            The <application>pysnmp</application> Python module version 3.4.2, 3.4.3 or 3.4.4 exclusively. 
             You can download it from <ulink url="http://pysnmp.sourceforge.net">http://pysnmp.sourceforge.net</ulink>.
           </para>
         </listitem>  
@@ -585,6 +583,12 @@ $ /etc/init.d/slapd restart
           <para>
             The <application>PyOSD</application> Python module. 
             You can download it from <ulink url="http://repose.cx/pyosd/">http://repose.cx/pyosd/</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            The <application>pkpgcounter</application> Generic Page Description Language parser. 
+            You can download it from <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
           </para>
         </listitem>  
       </itemizedlist>  
@@ -683,8 +687,8 @@ $ python setup.py install
       file contains the read-write user's identity and password. You must then
       ensure that no normal user can read this file. It should only be readable
       by the <literal>root</literal> user, which is always the case, and by 
-      <application>PyKota</application> administrators. In addition, <application>LPRng</application>
-      users, or users for which <application>CUPS</application> doesn't run as user <literal>root</literal> will 
+      <application>PyKota</application> administrators. In addition,
+      users for which <application>CUPS</application> doesn't run as user <literal>root</literal> will 
       have to ensure that the user their printing system is run as
       can read both of these files. An easy way to do so is to put the <literal>lp</literal> user
       (for example) into the <literal>pykota</literal> system group, then
@@ -827,59 +831,6 @@ $ /etc/init.d/cupsys restart
 /join #pykota
           </screen>
         </para>  
-      </sect3>  
-      
-    </sect2>
-    
-    <sect2>
-      <title>With LPRng</title>
-      
-      <para>
-        For each printer on which you want to use <application>PyKota</application>, just modify the printer's 
-        entry in <filename>/etc/printcap</filename> : you have to add
-        the three following lines :
-        
-<screen>        
-  :achk=true:\
-  :as=/usr/share/pykota/lprngpykota:\
-  :ae=/usr/share/pykota/lprngpykota:\
-</screen>          
-
-        This will tell <application>LPRng</application> to activate accounting, and use the <filename>lprngpykota</filename> 
-        accounting filter both at the start and at the end of printing. 
-      </para>
-      
-      
-      <para>
-        Repeat the above procedure for each print queue on which you want to use
-        PyKota. That's all !
-      </para>
-      
-      <para>
-        When all modifications are done, just save the <filename>/etc/printcap</filename> file 
-        and restart <application>LPRng</application> for the changes to take effect : 
-        <screen>
-$ /etc/init.d/lprng restart        
-        </screen>
-      </para>
-      
-      <sect3>
-        <title>Troubleshooting</title>
-        <para>
-          In case of problem, the simplest way to solve it is currently
-          to ask on PyKota's mailing list, describing the symptoms, as
-          well as the hardware and software you use.
-          In a future release of this document, a section dedicated to 
-          Frequently Asked Questions will be included.
-        </para>
-        
-        <para>
-          You can now also ask us questions on IRC :
-          <screen>
-/server irc.freenode.net          
-/join #pykota
-          </screen>
-        </para>
       </sect3>  
       
     </sect2>

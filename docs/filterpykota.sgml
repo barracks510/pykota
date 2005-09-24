@@ -1,9 +1,9 @@
-<!-- $Id$ -->
+<!-- $Id: filterpykota.sgml 1454 2005-03-06 16:52:43Z jerome $ -->
 
 <chapter>
   <title id="filter">PyKota's internals</title>
   
-  <para>Last modified on $Date$</para>
+  <para>Last modified on $Date: 2005-03-06 17:52:43 +0100 (dim, 06 mar 2005) $</para>
   
   <para>
     To account for pages or eventually ink usage 
@@ -14,8 +14,7 @@
       </para>  
     </footnote>  
     , you must plug your accounting
-    system somewhere into the printing system you use, be it either <application>CUPS</application>
-    or <application>LPRng</application>. One way to do this without having
+    system somewhere into the printing system you use. One way to do this without having
     to modify the printing system itself, is by using a <firstterm>filter</firstterm>.
   </para>
   
@@ -25,7 +24,7 @@
     contains many filters. For example there's one filter named <filename>pstops</filename> which accepts 
     PostScript data as its input, and, as its name implies, outputs PostScript data too, but after having
     eventually rearranged the pages to fit several pages on a single sheet of paper, or other manipulations
-    like that. <application>LPRng</application> also contains several filters like this.
+    like that.
   </para>
   
   <para>
@@ -35,16 +34,8 @@
   </para>
   
   <para>
-    <application>LPRng</application> can also use filters, often used in combination with
-    <application>LPRng</application> are <application>magicfilter</application> which can convert 
-    different input formats to native printers languages like PostScript or ESC/P2 and 
-    <application>ifhp</application> which can do low-level accounting.
-  </para>  
-  
-  <para>
     So to do its own accounting, <application>PyKota</application> has its own filters, for <application>CUPS</application>
-    it's named <filename>cupspykota</filename>, which is in fact a <application>CUPS</application> backends wrapper,
-    and for <application>LPRng</application> it's named <filename>lprngpykota</filename>, as you have probably guessed.
+    it's named <filename>cupspykota</filename>, which is in fact a <application>CUPS</application> backends wrapper.
     The procedure to plug the correct filter into your printing system is described in the 
     <xref linkend="installation" endterm="installation"> chapter.
   </para>

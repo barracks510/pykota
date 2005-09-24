@@ -21,7 +21,7 @@
 <book lang="en">
   <bookinfo>
     <title>PyKota Documentation</title>
-    <subtitle>A full featured Print Quota Solution for CUPS and LPRng</subtitle>
+    <subtitle>A full featured Print Quota Solution for CUPS</subtitle>
     <copyright>
       <year>2003</year>
       <year>2004</year>
@@ -52,7 +52,7 @@
       <title>Abstract</title>
       <para>
         This document will describe the setup of the PyKota Print Quota system
-        for the Common UNIX Printing Environment and LPRng, and its day-to-day use.
+        for the Common UNIX Printing System, and its day-to-day use.
       </para>
     </abstract>
 
