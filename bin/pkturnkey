@@ -37,7 +37,8 @@ __doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
 A turn key tool for PyKota. When launched, this command will initialize
 PyKota's database with all existing print queues and some or all users.
 For now, no prices or limits are set, so printing is fully accounted
-for, but not limited.
+for, but not limited. That's why you'll probably want to also use
+edpykota once the database has been initialized.
 
 command line usage :
 
