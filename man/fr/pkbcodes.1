@@ -5,61 +5,64 @@ pkbcodes \- page de manuel de pkbcodes 1.23beta_unofficial
 .SH DESCRIPTION
 pkbcodes v1.23beta_unofficial (c) 2003, 2004, 2005 Jerome Alet \- alet@librelogiciel.com
 .PP
-A billing codes Manager for PyKota.
+Un gestionnaire de codes de facturation pour PyKota.
 .PP
-command line usage :
+ligne de commande :
 .IP
 pkbcodes [options] code1 code2 code3 ... codeN
 .PP
 options :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pkbcodes version number then exits.
+Affiche le numéro de version de pkbcodes et quitte.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Affiche ce message et quitte.
 .TP
 \fB\-a\fR | \fB\-\-add\fR
-Adds billing codes if they don't exist in PyKota's
-database. If they exist, they are modified
-unless \fB\-s\fR|\-\-skipexisting is also used.
+Ajoute les codes de facturations s'ils n'existent pas
+déjà dans la base de données de PyKota.
+S'ils existent déjà, ils sont modifiés sauf si vous
+utilisez aussi \fB\-s\fR|\-\-skipexisting.
 .TP
 \fB\-d\fR | \fB\-\-delete\fR
-Deletes billing codes from PyKota's database.
-NB : the history entries with this billing code
-are not deleted, voluntarily.
+Efface les codes de facturation de la base de données
+de PyKota.
+NB : les entrées de l'historique correspondant à ces
+codes de facturation ne sont volontairement pas
+effacées.
 .HP
-\fB\-D\fR | \fB\-\-description\fR d Adds a textual description to billing codes.
+\fB\-D\fR | \fB\-\-description\fR d Ajoute un texte descriptif à un code de facturation.
 .TP
 \fB\-l\fR | \fB\-\-list\fR
-List informations about the billing codes.
+Liste les informations sur les codes de facturation.
 .TP
 \fB\-s\fR | \fB\-\-reset\fR
-Resets the billing codes' balance and page counters
-to 0.
+Réinitialise à 0 le solde et le compteur de pages des
+codes de facturation.
 .TP
 \fB\-s\fR | \fB\-\-skipexisting\fR
-In combination with the \fB\-\-add\fR option above, tells
-pkbcodes to not modify existing billing codes.
+Combiné à l'option \fB\-\-add\fR ci\-dessus, indique à pkbcodes
+de ne pas modifier les codes de facturation existants.
 .IP
-code1 through codeN can contain wildcards if the \fB\-\-add\fR option
-is not set.
+Les codes de facturation peuvent contenir des caractères jokers si l'option
+\fB\-\-add\fR n'est pas utilisée.
 .PP
-examples :
+exemples :
 .IP
-\f(CW$ pkbcodes --add -D "My project" myproj\fR
+\f(CW$ pkbcodes --add -D "Mon projet" monproj\fR
 .IP
-Will create the myproj billing code with "My project"
-as the description.
+Va créer le code de facturation monproj avec "Mon projet"
+comme descriptif.
 .IP
 \f(CW$ pkbcodes --delete "*"\fR
 .IP
-This will completely delete all the billing codes, but without
-removing any matching job from the history. USE WITH CARE ANYWAY !
+Ceci va complètement effacer tous les codes de facturation, mais sans
+effacer aucune entrée de l'historique. UTILISEZ QUAND MEME AVEC PARCIMONIE !
 .IP
-\f(CW$ pkbcodes --list "my*"\fR
+\f(CW$ pkbcodes --list "mo*"\fR
 .IP
-This will list all billing codes which name begins with 'my'.
+Ceci va lister tous les codes de facturation dont le nom commence par 'mo'.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
