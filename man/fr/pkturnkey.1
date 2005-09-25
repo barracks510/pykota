@@ -5,81 +5,89 @@ pkturnkey \- page de manuel de pkturnkey 1.23beta_unofficial
 .SH DESCRIPTION
 pkturnkey v1.23beta_unofficial (c) 2003, 2004, 2005 Jerome Alet \- alet@librelogiciel.com
 .PP
-A turn key tool for PyKota. When launched, this command will initialize
-PyKota's database with all existing print queues and some or all users.
-For now, no prices or limits are set, so printing is fully accounted
-for, but not limited.
+Un outil pour transformer PyKota en une solution clefs en main.
+Lorsqu'elle est lancée, cette commande va initialiser la base de données
+de PyKota avec toutes les files d'impressions et plusieurs ou tous les
+utilisateurs. Pour l'instant aucun quota n'est défini, aussi les impressions
+sont bien décomptées, mais non limitées.
 .PP
-command line usage :
+ligne de commande :
 .IP
-pkturnkey [options] [printqueues names]
+pkturnkey [options] [noms des files d'impression]
 .PP
 options :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pkturnkey version number then exits.
+Affiche le numéro de version de pkturnkey et quitte.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Affiche ce message et quitte.
 .TP
 \fB\-c\fR | \fB\-\-doconf\fR
-Give hints about what to put into pykota.conf
+Donne des conseils sur quoi mettre dans pykota.conf
 .TP
 \fB\-d\fR | \fB\-\-dousers\fR
-Manages users accounts as well.
+Gère aussi les comptes utilisateurs.
 .TP
 \fB\-D\fR | \fB\-\-dogroups\fR
-Manages users groups as well.
-Implies \fB\-d\fR | \fB\-\-dousers\fR.
+Gère aussi les groupes d'utilisateurs.
+Implique \fB\-d\fR | \fB\-\-dousers\fR.
 .TP
 \fB\-e\fR | \fB\-\-emptygroups\fR
-Includes empty groups.
+Inclure même les groupes vides.
 .TP
 \fB\-f\fR | \fB\-\-force\fR
-Modifies the database instead of printing what
-it would do.
+Modifie la base de données plutôt que d'afficher ce
+qui serait fait.
 .TP
 \fB\-u\fR | \fB\-\-uidmin\fR uid
-Only adds users whose uid is greater than or equal to
-uid. You can pass an username there as well, and its
-uid will be used automatically.
-If not set, 0 will be used automatically.
-Implies \fB\-d\fR | \fB\-\-dousers\fR.
+Ajoute seulement les utilisateurs dont l'uid est
+supérieur ou égal à la valeur de uid. Vous pouvez
+aussi indiquer un nom d'utilisateur, et sont uid sera
+utilisé automatiquement.
+Si non positionné, 0 sera utilisé automatiquement.
+Implique \fB\-d\fR | \fB\-\-dousers\fR.
 .TP
 \fB\-U\fR | \fB\-\-uidmax\fR uid
-Only adds users whose uid is lesser than or equal to
-uid. You can pass an username there as well, and its
-uid will be used automatically.
-If not set, a large value will be used automatically.
-Implies \fB\-d\fR | \fB\-\-dousers\fR.
+Ajoute seulement les utilisateurs dont l'uid est
+inférieur ou égal à la valeur de uid. Vous pouvez
+aussi indiquer un nom d'utilisateur, et sont uid sera
+utilisé automatiquement.
+Si non positionné, une grande valeur sera utilisée
+automatiquement.
+Implique \fB\-d\fR | \fB\-\-dousers\fR.
 .TP
 \fB\-g\fR | \fB\-\-gidmin\fR gid
-Only adds groups whose gid is greater than or equal to
-gid. You can pass a groupname there as well, and its
-gid will be used automatically.
-If not set, 0 will be used automatically.
-Implies \fB\-D\fR | \fB\-\-dogroups\fR.
+Ajoute seulement les groupes dont le gid est
+supérieur ou égal à la valeur de gid. Vous pouvez
+aussi indiquer un nom de groupe, et sont gid sera
+utilisé automatiquement.
+Si non positionné, 0 sera utilisé automatiquement.
+Implique \fB\-D\fR | \fB\-\-dogroups\fR.
 .TP
 \fB\-G\fR | \fB\-\-gidmax\fR gid
-Only adds groups whose gid is lesser than or equal to
-gid. You can pass a groupname there as well, and its
-gid will be used automatically.
-If not set, a large value will be used automatically.
-Implies \fB\-D\fR | \fB\-\-dogroups\fR.
+Ajoute seulement les groupes dont le gid est
+inférieur ou égal à la valeur de gid. Vous pouvez
+aussi indiquer un nom de groupe, et sont gid sera
+utilisé automatiquement.
+Si non positionné, une grande valeur sera utilisée
+automatiquement.
+Implique \fB\-D\fR | \fB\-\-dogroups\fR.
 .PP
-examples :
+exemples :
 .IP
 \f(CW$ pkturnkey --dousers --uidmin jerome\fR
 .IP
-Will simulate the initialization of PyKota's database will all existing
-printers and print accounts for all users whose uid is greater than
-or equal to jerome's one. Won't manage any users group.
+Ceci va simuler l'initialisation de la base de données de PyKota avec
+toutes les files d'impression existantes et les comptes d'impression pour
+tous les utilisateurs ayant un uid supérieur ou égal à celui de jerome.
+Aucun groupe ne sera créé.
 .IP
-To REALLY initialize the database instead of simulating it, please
-use the \fB\-f\fR | \fB\-\-force\fR command line switch.
+Pour VRAIMENT initialiser la base de données plutôt que de le simuler,
+vous voudrez bien utiliser l'option de ligne de commande \fB\-f\fR|\-\-force.
 .IP
-You can limit the initialization to only a subset of the existing
-printers, by passing their names at the end of the command line.
+Vous pouvez limiter l'initialisation à un sous ensemble des files
+d'impression, en passant leurs noms à la fin de la ligne de commande.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
