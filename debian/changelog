@@ -1,3 +1,9 @@
+pykota (1.23beta) unstable; urgency=low
+
+  * Update from SVN.
+  
+ -- Jerome Alet <alet@librelogiciel.com>  Sun, 25 Sept 2005 17:19:00 +0200
+ 
 pykota (1.22) unstable; urgency=low
 
   * Update from SVN.
