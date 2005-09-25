@@ -25,7 +25,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PyKota v1.23n"
+"Project-Id-Version: PyKota v1.23\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2004-11-25 10:16+0100\n"
 "PO-Revision-Date: 2005-09-24 14:36:00+0100\n"
