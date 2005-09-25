@@ -1962,3 +1962,12 @@ msgstr ""
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+

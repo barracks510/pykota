@@ -2003,6 +2003,15 @@ msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
 "Kunde ej hitta existerande post för att binda pykotaGroup objectclass %s"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr ""
 #~ "Filnummer %s oregistrerat två gånger från utfrågning av objekt, ignoreras."

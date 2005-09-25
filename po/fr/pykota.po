@@ -2816,3 +2816,12 @@ msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
 "Impossible de trouver une entrée existante à laquelle attacher l'objectClass "
 "pykotaGroup %s"
+
+msgid "ALLOW"
+msgstr "Accepté"
+
+msgid "WARN"
+msgstr "Avertissement"
+
+msgid "DENY"
+msgstr "Rejeté"

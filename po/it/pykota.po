@@ -2020,6 +2020,15 @@ msgstr ""
 "Impossibile trovare una entry esistente a cui aggiungere objectclass "
 "pykotaGroup %s"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "Numero file %s rimosso due volte dall'oggetto polling, ignorato."
 

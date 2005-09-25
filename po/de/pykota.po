@@ -2027,6 +2027,15 @@ msgstr ""
 "Unmöglich einen existierenden Eintrag zu finden, um pykotaGroup objectClass %"
 "s anzufügen"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr ""
 #~ "Datei Nummer %s zweimal vom Abfrage Objekt abgemeldet, wird ignoriert."

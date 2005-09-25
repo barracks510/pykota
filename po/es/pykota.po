@@ -2058,6 +2058,15 @@ msgstr ""
 "No se ha podido encontrar una entrada existente para anexionar el "
 "objectClass pykotaGroup %s"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "Job is a duplicate. Printing is denied."
 #~ msgstr "El trabajo es un duplicado. La impresión se ha denegado."
 

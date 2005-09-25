@@ -2006,6 +2006,15 @@ msgstr ""
 "Impossível encontrar uma entrada existente para anexar ao objectClass "
 "pykotaGroup %s"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr ""
 #~ "Arquivo número %s descadastrado duas vezes do objeto de consulta. Ignorado"

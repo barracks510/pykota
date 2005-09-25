@@ -1980,6 +1980,15 @@ msgstr ""
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr "未能尋找現存的紀錄連繫到pykotaGroup objectclass %s"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "檔案編號 %s 在polling object上已兩次未能成功註冊，因此被忽略"
 

@@ -1993,6 +1993,15 @@ msgstr ""
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr "ไม่สามารถค้นพบสิ่งใดที่เข้าถึงเพื่อเชื่อมต่อกับ pykotaGroup ออปเจ็กคลาส %s"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "แฟ้มข้อมูลหมายเลข %s ไม่ได้รับการลงทะเบียน 2 ครั้งจากขั้นเตรียมการ ,ข้ามไป"
 

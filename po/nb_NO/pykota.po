@@ -2013,6 +2013,15 @@ msgstr ""
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "Job is a duplicate. Printing is denied."
 #~ msgstr "Utskriften er en duplikat. Utskriften blir ikke skrevet."
 

@@ -2025,6 +2025,15 @@ msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
 msgstr ""
 "pykotaGroup %s objectclass'ına eklenekcek mevcut olan bir giriş bulunamadı"
 
+msgid "ALLOW"
+msgstr ""
+
+msgid "WARN"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "%s dosya numarası yoklama nesnesinde kayıtlı değil, yok sayılıyor."
 

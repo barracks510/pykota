@@ -241,7 +241,7 @@ class PyKotaReportGUI(PyKotaTool) :
                                               (oddevenclass, \
                                                "".join(["<td>%s</td>" % (h or "&nbsp;") \
                                                   for h in (job.JobDate[:19], \
-                                                            job.JobAction, \
+                                                            _(job.JobAction), \
                                                             username_url, \
                                                             printername_url, \
                                                             hostname_url, \
