@@ -5,56 +5,61 @@ pkbanner \- page de manuel de pkbanner 1.23beta_unofficial
 .SH DESCRIPTION
 pkbanner v1.23beta_unofficial (c) 2003, 2004, 2005 Jerome Alet \- alet@librelogiciel.com
 .PP
-Generates banners.
+Génère des bannières.
 .PP
-command line usage :
+ligne de commande :
 .TP
 pkbanner
-[options]  [more info]
+[options]  [plus d'info]
 .PP
 options :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pkbanner's version number then exits.
+Affiche le numéro de version de pkbanner et quitte.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Affiche ce message et quitte.
 .TP
 \fB\-l\fR | \fB\-\-logo\fR img
-Use the image as the banner's logo. The logo will
-be drawn at the center top of the page. The default
-logo is /usr/share/pykota/logos/pykota.jpeg
+Utilise l'image img comme logo pour la bannière.
+Le logo sera dessiné en haut et au centre de la page.
+Le logo par défaut est
+.IP
+/usr/share/pykota/logos/pykota.jpeg
 .TP
 \fB\-p\fR | \fB\-\-pagesize\fR sz
-Sets sz as the page size. Most well known
-page sizes are recognized, like 'A4' or 'Letter'
-to name a few. The default size is A4.
+Positionne la taille de la page à sz. La plupart des
+tailles sont reconnues, comme 'A4' ou 'Letter' par
+exemple. La taille par défaut est A4.
 .TP
 \fB\-s\fR | \fB\-\-savetoner\fR s
-Sets the text luminosity factor to s%. This can be
-used to save toner. The default value is 0, which
-means that no toner saving will be done.
+Positionne le facteur de luminosité du texte à s%.
+Cela peut être utilisé pour économiser du toner. La
+valeur par défaut est 0, qui signifie qu'aucune
+économie de toner ne sera réalisée.
 .TP
 \fB\-u\fR | \fB\-\-url\fR u
-Uses u as an url to be written at the bottom of
-the banner page. The default url is :
+Utilise u comme une url qui sera imprimée en base de
+la page bannière. L'url par défaut est :
+.IP
 http://www.librelogiciel.com/software/
 .PP
-examples :
+exemples :
 .IP
-Using pkbanner directly from the command line is not recommended,
-excepted for testing purposes. You should use pkbanner in the
-\&'startingbanner' or 'endingbanner' directives in pykota.conf
+L'utilisation directe de pkbanner depuis la ligne de commande n'est pas
+conseillée, sauf pour effectuer des tests. Vous devriez plutôt utiliser
+pkbanner depuis les directives 'startingbanner' ou 'endingbanner' du
+fichier pykota.conf
 .IP
 startingbanner: /usr/bin/pkbanner \fB\-\-logo=\fR"" \fB\-\-savetoner\fR=\fI75\fR
 .IP
-With such a setting in pykota.conf, all print jobs will be
-prefixed with an A4 banner with no logo, and text luminosity will
-be increased by 75%. The PostScript output will be directly sent
-to your printer.
+Avec une telle configuration dans pykota.conf, tous les travaux
+d'impression seront précédés d'une bannière au format A4 sans logo,
+et la luminosité du texte sera accrue de 75%. La sortie PostScript
+de cette commande sera directement envoyée à votre imprimante.
 .IP
-You'll find more examples in the sample configuration file included
-in PyKota.
+Vous trouverez plus d'exemples dans le fichier de configuration exemple
+qui est inclus dans PyKota.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
