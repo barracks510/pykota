@@ -198,20 +198,63 @@ class PKTurnKey(Tool) :
         
     def supportsSNMP(self, hostname, community) :
         """Returns 1 if the printer accepts SNMP queries, else 0."""
-        # TODO : do some real testing here !
-        return 0
-        snmpsupport = 0
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try :
-            s.connect((hostname, socket.getservbyname("snmp", "udp")))
-            for i in range(2) :
-                s.send("")
-        except :
-            pass
-        else :    
-            snmpsupport = 1    
-        s.close()
-        return snmpsupport
+            from pysnmp.asn1.encoding.ber.error import TypeMismatchError
+            from pysnmp.mapping.udp.error import SnmpOverUdpError
+            from pysnmp.mapping.udp.role import Manager
+            from pysnmp.proto.api import alpha
+        except ImportError :    
+            sys.stderr.write("pysnmp doesn't seem to be installed. SNMP checks will be ignored !\n")
+            return 0
+            
+        pageCounterOID = ".1.3.6.1.2.1.43.10.2.1.4.1.1"  # SNMPv2-SMI::mib-2.43.10.2.1.4.1.1
+        def retrieveSNMPValues(hostname, community) :    
+            """Retrieves a printer's internal page counter and status via SNMP."""
+            ver = alpha.protoVersions[alpha.protoVersionId1]
+            req = ver.Message()
+            req.apiAlphaSetCommunity(community)
+            req.apiAlphaSetPdu(ver.GetRequestPdu())
+            req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()))
+            tsp = Manager()
+            try :
+                tsp.sendAndReceive(req.berEncode(), \
+                                   (hostname, 161), \
+                                   (handleAnswer, req))
+            except :    
+                raise "No SNMP !"
+            tsp.close()
+        
+        def handleAnswer(wholeMsg, notusedhere, req):
+            """Decodes and handles the SNMP answer."""
+            ver = alpha.protoVersions[alpha.protoVersionId1]
+            rsp = ver.Message()
+            try :
+                rsp.berDecode(wholeMsg)
+            except TypeMismatchError, msg :    
+                raise "No SNMP !"
+            else :
+                if req.apiAlphaMatch(rsp):
+                    errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
+                    if errorStatus:
+                        raise "No SNMP !"
+                    else:
+                        self.values = []
+                        for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
+                            self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
+                        try :    
+                            pagecounter = self.values[0]
+                        except :
+                            raise "No SNMP !"
+                        else :    
+                            self.SNMPOK = 1
+                            return 1
+            
+        self.SNMPOK = 0
+        try :
+            retrieveSNMPValues(hostname, community)
+        except :    
+            self.SNMPOK = 0
+        return self.SNMPOK
         
     def supportsPJL(self, hostname, port) :
         """Returns 1 if the printer accepts PJL queries over TCP, else 0."""
@@ -282,14 +325,14 @@ class PKTurnKey(Tool) :
                     else :    
                         (hostname, port) = parts[0], 9100
                         
-                    if self.supportsPJL(hostname, 9100) :
+                    if self.supportsSNMP(hostname, "public") :
+                        accounter = "hardware(snmp)"
+                    elif self.supportsPJL(hostname, 9100) :
                         accounter = "hardware(pjl)"
                     elif self.supportsPJL(hostname, 9101) :
                         accounter = "hardware(pjl:9101)"
                     elif self.supportsPJL(hostname, port) :    
                         accounter = "hardware(pjl:%s)" % port
-                    elif self.supportsSNMP(hostname, "public") :
-                        accounter = "hardware(snmp)"
                     
             print "accounter : %s" % accounter
             print
