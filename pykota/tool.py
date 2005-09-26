@@ -141,7 +141,7 @@ class Tool :
         self.softwareJobPrice = 0.0
         
         if self.defaultToCLocale :
-            self.printInfo("Incorrect locale settings. PyKota falls back to the 'C' locale.", "warn")
+            self.printInfo("Incorrect locale settings. PyKota falls back to the default locale.", "warn")
         if missingUser :     
             self.printInfo("The 'pykota' system account is missing. Configuration files were searched in /etc/pykota instead.", "warn")
         
