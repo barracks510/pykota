@@ -186,6 +186,29 @@ else :
                     self.parent.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
             return self.printerInternalPageCounter
             
+def main(hostname) :
+    """Tries SNMP accounting for a printer host."""
+    class fakeFilter :
+        def __init__(self) :
+            self.PrinterName = "FakePrintQueue"
+            self.JobSizeBytes = 1
+            
+        def printInfo(self, msg, level="info") :
+            sys.stderr.write("%s : %s\n" % (level.upper(), msg))
+            sys.stderr.flush()
+            
+        def logdebug(self, msg) :    
+            self.printInfo(msg, "debug")
+            
+    class fakeAccounter :        
+        def __init__(self) :
+            self.arguments = "snmp:public"
+            self.filter = fakeFilter()
+            self.protocolHandler = Handler(self, hostname)
+        
+    acc = fakeAccounter()            
+    return acc.protocolHandler.retrieveInternalPageCounter()
+        
 if __name__ == "__main__" :            
     if len(sys.argv) != 2 :    
         sys.stderr.write("Usage :  python  %s  printer_ip_address\n" % sys.argv[0])
@@ -193,23 +216,5 @@ if __name__ == "__main__" :
         def _(msg) :
             return msg
             
-        class fakeFilter :
-            def __init__(self) :
-                self.PrinterName = "FakePrintQueue"
-                self.JobSizeBytes = 1
-                
-            def printInfo(self, msg, level="info") :
-                sys.stderr.write("%s : %s\n" % (level.upper(), msg))
-                sys.stderr.flush()
-                
-            def logdebug(self, msg) :    
-                self.printInfo(msg, "debug")
-                
-        class fakeAccounter :        
-            def __init__(self) :
-                self.arguments = "snmp:public"
-                self.filter = fakeFilter()
-                self.protocolHandler = Handler(self, sys.argv[1])
-            
-        acc = fakeAccounter()            
-        print "Internal page counter's value is : %s" % acc.protocolHandler.retrieveInternalPageCounter()
+        pagecounter = main(sys.argv[1])
+        print "Internal page counter's value is : %s" % pagecounter
