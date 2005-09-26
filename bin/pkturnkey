@@ -29,6 +29,7 @@ import os
 import pwd
 import grp
 import socket
+import signal
 
 from pykota.tool import Tool, PyKotaToolError, crashed, N_
 
@@ -195,6 +196,47 @@ class PKTurnKey(Tool) :
             for command in commands :
                 self.runCommand(command, dryrun)
         
+    def supportsSNMP(self, hostname, community) :
+        """Returns 1 if the printer accepts SNMP queries, else 0."""
+        # TODO : do some real testing here !
+        return 0
+        snmpsupport = 0
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try :
+            s.connect((hostname, socket.getservbyname("snmp", "udp")))
+            for i in range(2) :
+                s.send("")
+        except :
+            pass
+        else :    
+            snmpsupport = 1    
+        s.close()
+        return snmpsupport
+        
+    def supportsPJL(self, hostname, port) :
+        """Returns 1 if the printer accepts PJL queries over TCP, else 0."""
+        def alarmHandler(signum, frame) :
+            raise "Timeout !"
+        
+        pjlsupport = 0
+        signal.signal(signal.SIGALRM, alarmHandler)
+        signal.alarm(2) # wait at most 2 seconds
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try :
+            s.connect((hostname, port))
+            s.send("\033%-12345X@PJL INFO STATUS\r\n\033%-12345X")
+            answer = s.recv(1024)
+            if not answer.startswith("@PJL") :
+                raise "No PJL !"
+        except :    
+            pass
+        else :    
+            pjlsupport = 1
+        s.close()
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, signal.SIG_IGN)
+        return pjlsupport
+            
     def hintConfig(self, printers) :    
         """Gives some hints about what to put into pykota.conf"""
         if not printers :
@@ -240,39 +282,14 @@ class PKTurnKey(Tool) :
                     else :    
                         (hostname, port) = parts[0], 9100
                         
-                    # check udp/161 (SNMP)
-                    # TODO : this doesn't work as expected if the host
-                    # TODO : is down, I must find another solution.
-                    trysnmp = 0
-                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    try :
-                        s.connect((hostname, socket.getservbyname("snmp", "udp")))
-                        for i in range(2) :
-                            s.send("")
-                    except :
-                        pass
-                    else :    
-                        trysnmp = 1    
-                    s.close()
-                    
-                    # check tcp/9100
-                    trypjl = 0
-                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    try :
-                        s.connect((hostname, port))
-                    except :    
-                        pass
-                    else :    
-                        trypjl = 1
-                    s.close()
-                        
-                    if trysnmp :
+                    if self.supportsPJL(hostname, 9100) :
+                        accounter = "hardware(pjl)"
+                    elif self.supportsPJL(hostname, 9101) :
+                        accounter = "hardware(pjl:9101)"
+                    elif self.supportsPJL(hostname, port) :    
+                        accounter = "hardware(pjl:%s)" % port
+                    elif self.supportsSNMP(hostname, "public") :
                         accounter = "hardware(snmp)"
-                    elif trypjl :    
-                        if port != 9100 :
-                            accounter = "hardware(pjl:%s)" % port
-                        else :    
-                            accounter = "hardware(pjl)" % port
                     
             print "accounter : %s" % accounter
             print
