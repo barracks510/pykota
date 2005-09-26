@@ -83,7 +83,7 @@ class Tool :
         try :
             locale.setlocale(locale.LC_ALL, lang)
         except (locale.Error, IOError) :
-            locale.setlocale(locale.LC_ALL, "C")
+            # locale.setlocale(locale.LC_ALL, "C")
             self.defaultToCLocale = 1
         try :
             gettext.install("pykota")
