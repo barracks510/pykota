@@ -305,7 +305,7 @@ class StorageUserPQuota(StorageObject) :
                     totalprice += price
         if self.User.OverCharge != 1.0 : # TODO : beware of rounding errors
             overcharged = totalprice * self.User.OverCharge        
-            self.parent.tool.printInfo("Overcharging %s by a factor of %s ===> User %s will be charged for %s units." % (totalprice, self.User.OverCharge, self.User.Name, overcharged))
+            self.parent.tool.logdebug("Overcharging %s by a factor of %s ===> User %s will be charged for %s units." % (totalprice, self.User.OverCharge, self.User.Name, overcharged))
             return overcharged
         else :    
             return totalprice
