@@ -27,7 +27,7 @@
 import sys
 import os
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""autopykota v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -114,11 +114,13 @@ if __name__ == "__main__" :
         elif options["version"] :
             automat.display_version_and_quit()
         elif args :    
-            raise PyKotaToolError, "autopykota doesn't accept non option arguments !"
+            raise PyKotaCommandLineError, "autopykota doesn't accept non option arguments !"
         else :
             retcode = automat.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

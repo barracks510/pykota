@@ -28,7 +28,7 @@ import os
 import sys
 import pwd
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pkbcodes v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -86,7 +86,7 @@ class PKBcodes(PyKotaTool) :
     def main(self, names, options) :
         """Manage billing codes."""
         if (not self.config.isAdmin) and (not options["list"]) :
-            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         if (options["list"] or options["reset"]) and not names :
             names = ["*"]
@@ -110,7 +110,7 @@ class PKBcodes(PyKotaTool) :
         else :        
             billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
             if not billingcodes :
-                raise PyKotaToolError, _("There's no billingcode matching %s") % " ".join(names)
+                raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
                     
         for billingcode in billingcodes :        
             if options["delete"] :
@@ -159,13 +159,15 @@ if __name__ == "__main__" :
         elif (options["delete"] and (options["add"] or options["reset"] or options["description"])) \
            or (options["skipexisting"] and not options["add"]) \
            or (options["list"] and (options["add"] or options["delete"] or options["reset"] or options["description"])) :
-            raise PyKotaToolError, _("incompatible options, see help.")
+            raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif (not args) and (options["add"] or options["delete"]) :    
-            raise PyKotaToolError, _("You have to pass billing codes on the command line")
+            raise PyKotaCommandLineError, _("You have to pass billing codes on the command line")
         else :
             retcode = manager.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

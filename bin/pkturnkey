@@ -31,7 +31,7 @@ import grp
 import socket
 import signal
 
-from pykota.tool import Tool, PyKotaToolError, crashed, N_
+from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -341,7 +341,7 @@ class PKTurnKey(Tool) :
     def main(self, names, options) :
         """Intializes PyKota's database."""
         if not self.config.isAdmin :
-            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0],\
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0],\
                                    _("You're not allowed to use this command."))
             
         if not names :
@@ -365,7 +365,7 @@ class PKTurnKey(Tool) :
                     try :
                         uidmin = pwd.getpwnam(options["uidmin"])[2]
                     except KeyError, msg :    
-                        raise PyKotaToolError, _("Unknown username %s : %s") \
+                        raise PyKotaCommandLineError, _("Unknown username %s : %s") \
                                                    % (options["uidmin"], msg)
                         
             if not options["uidmax"] :    
@@ -377,7 +377,7 @@ class PKTurnKey(Tool) :
                     try :
                         uidmax = pwd.getpwnam(options["uidmax"])[2]
                     except KeyError, msg :    
-                        raise PyKotaToolError, _("Unknown username %s : %s") \
+                        raise PyKotaCommandLineError, _("Unknown username %s : %s") \
                                                    % (options["uidmax"], msg)
             
             if uidmin > uidmax :            
@@ -397,7 +397,7 @@ class PKTurnKey(Tool) :
                     try :
                         gidmin = grp.getgrnam(options["gidmin"])[2]
                     except KeyError, msg :    
-                        raise PyKotaToolError, _("Unknown groupname %s : %s") \
+                        raise PyKotaCommandLineError, _("Unknown groupname %s : %s") \
                                                    % (options["gidmin"], msg)
                         
             if not options["gidmax"] :    
@@ -409,7 +409,7 @@ class PKTurnKey(Tool) :
                     try :
                         gidmax = grp.getgrnam(options["gidmax"])[2]
                     except KeyError, msg :    
-                        raise PyKotaToolError, _("Unknown groupname %s : %s") \
+                        raise PyKotaCommandLineError, _("Unknown groupname %s : %s") \
                                                    % (options["gidmax"], msg)
             
             if gidmin > gidmax :            
@@ -491,6 +491,8 @@ if __name__ == "__main__" :
             retcode = manager.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

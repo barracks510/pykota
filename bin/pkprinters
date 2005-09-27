@@ -28,7 +28,7 @@ import os
 import sys
 import pwd
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pkprinters v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -126,7 +126,7 @@ class PKPrinters(PyKotaTool) :
     def main(self, names, options) :
         """Manage printers."""
         if (not self.config.isAdmin) and (not options["list"]) :
-            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         if options["list"] and not names :
             names = ["*"]
@@ -134,13 +134,13 @@ class PKPrinters(PyKotaTool) :
         if options["groups"] :        
             printersgroups = self.storage.getMatchingPrinters(options["groups"])
             if not printersgroups :
-                raise PyKotaToolError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
+                raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
             
         if options["charge"] :
             try :
                 charges = [float(part) for part in options["charge"].split(',', 1)]
             except ValueError :    
-                raise PyKotaToolError, _("Invalid charge amount value %s") % options["charge"]
+                raise PyKotaCommandLineError, _("Invalid charge amount value %s") % options["charge"]
             else :    
                 if len(charges) > 2 :
                     charges = charges[:2]
@@ -154,7 +154,7 @@ class PKPrinters(PyKotaTool) :
                 if maxjobsize < 0 :
                     raise ValueError
             except ValueError :    
-                raise PyKotaToolError, _("Invalid maximum job size value %s") % options["maxjobsize"]
+                raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options["maxjobsize"]
         else :        
             maxjobsize = None
                 
@@ -177,11 +177,11 @@ class PKPrinters(PyKotaTool) :
                         else :    
                             printers.append(printer)
                     else :    
-                        raise PyKotaToolError, _("Invalid printer name %s") % pname
+                        raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
         else :        
             printers = self.storage.getMatchingPrinters(",".join(names))
             if not printers :
-                raise PyKotaToolError, _("There's no printer matching %s") % " ".join(names)
+                raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
                     
         for printer in printers :        
             if options["delete"] :
@@ -254,15 +254,17 @@ if __name__ == "__main__" :
            or (options["skipexisting"] and not options["add"]) \
            or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) \
            or (options["passthrough"] and options["nopassthrough"]) :
-            raise PyKotaToolError, _("incompatible options, see help.")
+            raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif options["remove"] and not options["groups"] :    
-            raise PyKotaToolError, _("You have to pass printer groups names on the command line")
+            raise PyKotaCommandLineError, _("You have to pass printer groups names on the command line")
         elif (not args) and (not options["list"]) :    
-            raise PyKotaToolError, _("You have to pass printer names on the command line")
+            raise PyKotaCommandLineError, _("You have to pass printer names on the command line")
         else :
             retcode = manager.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

@@ -28,7 +28,7 @@ import sys
 import os
 
 from pykota import version
-from pykota.tool import PyKotaToolError, crashed, N_
+from pykota.tool import PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.dumper import DumPyKota
 
 __doc__ = N_("""dumpykota v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -153,11 +153,13 @@ if __name__ == "__main__" :
         elif options["version"] :
             dumper.display_version_and_quit()
         elif options["data"] is None :    
-            raise PyKotaToolError, _("The -d | --data command line option is mandatory, see help.")
+            raise PyKotaCommandLineError, _("The -d | --data command line option is mandatory, see help.")
         else :
             retcode = dumper.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

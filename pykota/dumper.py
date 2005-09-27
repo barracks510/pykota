@@ -38,7 +38,7 @@ else :
     hasJAXML = 1
 
 from pykota import version
-from pykota.tool import PyKotaTool, PyKotaToolError, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, N_
 
 class DumPyKota(PyKotaTool) :        
     """A class for dumpykota."""
@@ -71,7 +71,7 @@ class DumPyKota(PyKotaTool) :
     def main(self, arguments, options, restricted=1) :
         """Print Quota Data Dumper."""
         if restricted and not self.config.isAdmin :
-            raise PyKotaToolError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         extractonly = {}
         for filterexp in arguments :
@@ -81,24 +81,24 @@ class DumPyKota(PyKotaTool) :
                     if filterkey not in self.validfilterkeys :
                         raise ValueError                
                 except ValueError :    
-                    raise PyKotaToolError, _("Invalid filter value [%s], see help.") % filterexp
+                    raise PyKotaCommandLineError, _("Invalid filter value [%s], see help.") % filterexp
                 else :    
                     extractonly.update({ filterkey : filtervalue })
             
         datatype = options["data"]
         if datatype not in self.validdatatypes.keys() :
-            raise PyKotaToolError, _("Invalid modifier [%s] for --data command line option, see help.") % datatype
+            raise PyKotaCommandLineError, _("Invalid modifier [%s] for --data command line option, see help.") % datatype
                     
         format = options["format"]
         if (format not in self.validformats.keys()) \
               or ((format == "cups") and ((datatype != "history") or options["sum"])) :
-            raise PyKotaToolError, _("Invalid modifier [%s] for --format command line option, see help.") % format
+            raise PyKotaCommandLineError, _("Invalid modifier [%s] for --format command line option, see help.") % format
             
         if (format == "xml") and not hasJAXML :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
             
         if options["sum"] and datatype not in ("payments", "history") : 
-            raise PyKotaToolError, _("Invalid data type [%s] for --sum command line option, see help.") % datatype
+            raise PyKotaCommandLineError, _("Invalid data type [%s] for --sum command line option, see help.") % datatype
             
         entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
         if entries :

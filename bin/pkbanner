@@ -46,7 +46,7 @@ except ImportError :
 else :    
     hasPIL = 1
     
-from pykota.tool import Tool, PyKotaToolError, crashed, N_
+from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pkbanner v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -311,6 +311,8 @@ if __name__ == "__main__" :
             retcode = banner.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

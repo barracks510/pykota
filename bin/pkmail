@@ -30,7 +30,7 @@ import popen2
 import smtplib
 import email
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
     
 __doc__ = N_("""pkmail v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -86,7 +86,7 @@ class PKMail(PyKotaTool) :
         try :
             (command, arguments) = (cmdargs[0].capitalize(), cmdargs[1:])
         except IndexError :    
-            raise PyKotaToolError, "No command found !"
+            raise PyKotaCommandLineError, "No command found !"
         
         badchars = """/<>&"'#!%*$,;\\"""
         cheatmeonce = 0
@@ -158,6 +158,8 @@ if __name__ == "__main__" :
             retcode = mailparser.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :

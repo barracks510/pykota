@@ -35,7 +35,7 @@ except ImportError :
     sys.stderr.write("Sorry ! You need both xosd and the Python OSD library (pyosd) for this software to work.\n")
     sys.exit(-1)
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pykosd v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -82,24 +82,30 @@ class PyKOSD(PyKotaTool) :
         """Main function starts here."""
         try :    
             duration = int(options["duration"])
+            if duration <= 0 :
+                raise ValueError 
         except :    
-            raise PyKotaToolError, _("Invalid duration option %s") % str(options["duration"])
+            raise PyKotaCommandLineError, _("Invalid duration option %s") % str(options["duration"])
             
         try :    
             loop = int(options["loop"])
+            if loop < 0 :
+                raise ValueError
         except :    
-            raise PyKotaToolError, _("Invalid loop option %s") % str(options["loop"])
+            raise PyKotaCommandLineError, _("Invalid loop option %s") % str(options["loop"])
             
         try :    
             sleep = float(options["sleep"])
+            if sleep <= 0 :
+                raise ValueError
         except :    
-            raise PyKotaToolError, _("Invalid sleep option %s") % str(options["sleep"])
+            raise PyKotaCommandLineError, _("Invalid sleep option %s") % str(options["sleep"])
             
         color = options["color"]    
         if not color.startswith("#") :
             color = "#%s" % color
         if len(color) != 7 :    
-            raise PyKotaToolError, _("Invalid color option %s") % str(color)
+            raise PyKotaCommandLineError, _("Invalid color option %s") % str(color)
         savecolor = color
         
         uname = pwd.getpwuid(os.getuid())[0]
@@ -107,7 +113,7 @@ class PyKOSD(PyKotaTool) :
             color = savecolor
             user = cmd.storage.getUserFromBackend(uname)        # don't use cache
             if not user.Exists :
-                raise PyKotaToolError, _("User %s doesn't exist in PyKota's database") % uname
+                raise PyKotaCommandLineError, _("User %s doesn't exist in PyKota's database") % uname
             if user.LimitBy == "quota" :    
                 printers = cmd.storage.getMatchingPrinters("*")
                 upquotas = [ cmd.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache
@@ -176,6 +182,8 @@ if __name__ == "__main__" :
         retcode = 0
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
     except SystemExit :        
         pass
     except :    

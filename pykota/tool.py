@@ -52,13 +52,17 @@ def N_(message) :
     return message
 
 class PyKotaToolError(Exception):
-    """An exception for PyKota config related stuff."""
+    """An exception for PyKota related stuff."""
     def __init__(self, message = ""):
         self.message = message
         Exception.__init__(self, message)
     def __repr__(self):
         return self.message
     __str__ = __repr__
+    
+class PyKotaCommandLineError(PyKotaToolError) :    
+    """An exception for Pykota command line tools."""
+    pass
     
 def crashed(message="Bug in PyKota") :    
     """Minimal crash method."""
