@@ -761,11 +761,11 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Retrieval of billing code information done.")
         
     def checkIfDupe(self) :    
-        """Checks if the job is a dupe, and handles the situation."""
-        self.logdebug("Checking if the job is a dupe...")
+        """Checks if the job is a duplicate, and handles the situation."""
+        self.logdebug("Checking if the job is a duplicate...")
         denyduplicates = self.config.getDenyDuplicates(self.PrinterName)
         if not denyduplicates :
-            self.logdebug("We don't care about dupes after all.")
+            self.logdebug("We don't care about duplicate jobs after all.")
         elif self.Printer.LastJob.Exists \
              and (self.Printer.LastJob.UserName == self.UserName) \
              and (self.Printer.LastJob.JobMD5Sum == self.JobMD5Sum) :
@@ -774,14 +774,14 @@ class CUPSBackend(PyKotaTool) :
             # TODO : better but requires an additional database query
             # TODO : with SQL, and is much more complex with the 
             # TODO : actual LDAP schema. Maybe this is not very
-            # TODO : important, because usually dupes are rapidly sucessive.
+            # TODO : important, because usually duplicate jobs are sucessive.
             msg = _("Job is a dupe")
             if denyduplicates == 1 :
                 self.printInfo("%s : %s." % (msg, _("Printing is denied by configuration")), "warn")
                 self.Action = "DENY"
                 self.Reason = _("Duplicate print jobs are not allowed on printer %s.") % self.PrinterName
             else :    
-                self.logdebug("Launching subprocess [%s] to see if dupes should be allowed or not." % denyduplicates)
+                self.logdebug("Launching subprocess [%s] to see if duplicate jobs should be allowed or not." % denyduplicates)
                 fanswer = os.popen(denyduplicates, "r")
                 self.Action = fanswer.read().strip().upper()
                 fanswer.close()
@@ -791,8 +791,8 @@ class CUPSBackend(PyKotaTool) :
                 else :    
                     self.printInfo("%s : %s." % (msg, _("Subprocess allowed printing of a dupe")), "warn")
         else :            
-            self.logdebug("Job doesn't seem to be a dupe.")
-        self.logdebug("Checking if the job is a dupe done.")
+            self.logdebug("Job doesn't seem to be a duplicate.")
+        self.logdebug("Checking if the job is a duplicate done.")
         
     def tellUser(self) :
         """Sends a message to an user."""
