@@ -85,7 +85,11 @@ utilisateurs.
 pour positionner le quota d'impression.
 .TP
 \fB\-n\fR | \fB\-\-noquota\fR
-Ne définit aucun quota, mais laisse le décompte actif. Fait la même chose que \fB\-\-limitby\fR noquota.
+Fixe les limites souples et dures à None pour une
+entrée de quota d'impression particulière.
+NE FAIT PAS la même chose que \fB\-\-limitby\fR noquota qui
+agit sur toutes les entrées de quotas d'impression
+d'un utilisateur donné.
 .TP
 \fB\-r\fR | \fB\-\-reset\fR
 Remet à zéro le compteur de pages courant pour
@@ -136,7 +140,7 @@ Fixe la limite souple à sl pages.
 Fixe la limite dure à hl pages.
 .TP
 \fB\-I\fR | \fB\-\-increase\fR v
-Incrément à la fois les limites souple et dure de la
+Incrémente à la fois les limites souple et dure de la
 valeur de v. Vous pouvez préfixer v avec + ou \-, si
 aucun signe n'est présent, + est utilisé.
 .TP

@@ -81,8 +81,11 @@ Edit users groups print quotas instead of users.
 print quotas
 .TP
 \fB\-n\fR | \fB\-\-noquota\fR
-Doesn't set a quota but only does accounting.
-This is the same as \fB\-\-limitby\fR noquota.
+Sets both soft and hard limits to None for a
+particular print quota entry.
+This is NOT the same as \fB\-\-limitby\fR noquota
+which acts on ALL print quota entries for a
+particular user.
 .TP
 \fB\-r\fR | \fB\-\-reset\fR
 Resets the actual page counter for the user
