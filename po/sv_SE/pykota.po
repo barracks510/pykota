@@ -81,7 +81,8 @@ msgstr ""
 
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
-msgstr "Uppmärksamma : beräknad jobbstorlek (%s) != förberäknad jobbstorlek (%s)"
+msgstr ""
+"Uppmärksamma : beräknad jobbstorlek (%s) != förberäknad jobbstorlek (%s)"
 
 msgid ""
 "The job size will be trusted anyway according to the 'trustjobsize' directive"
@@ -93,8 +94,8 @@ msgid ""
 "The job size will be trusted because it is inferior to the 'trustjobsize' "
 "directive's limit %s"
 msgstr ""
-"Jobbets storlek kommer att litas på eftersom det är lägre än direktivet 'trustjobsize' "
-"gräns %s"
+"Jobbets storlek kommer att litas på eftersom det är lägre än direktivet "
+"'trustjobsize' gräns %s"
 
 #, python-format
 msgid ""
@@ -187,14 +188,15 @@ msgstr "Utskrifter nekade av konfigurationen"
 
 #, python-format
 msgid "Duplicate print jobs are not allowed on printer %s."
-msgstr "Kopior av utskriftsjobb är inte tillåtna för skrivaren %s.""
+msgstr "Kopior av utskriftsjobb är inte tillåtna för skrivaren %s."
 
 msgid "Subprocess denied printing of a dupe"
 msgstr "Underprocess nekar utskrift av kopia"
 
 #, python-format
 msgid "Duplicate print jobs are not allowed on printer %s at this time."
-msgstr "Kopior av utskriftsjobb är för tillfället ej tillåtet mot skrivaren %s."
+msgstr ""
+"Kopior av utskriftsjobb är för tillfället ej tillåtet mot skrivaren %s."
 
 msgid "Subprocess allowed printing of a dupe"
 msgstr "Underprocess godkände utskrift av kopia"
@@ -240,7 +242,9 @@ msgstr "Förberäknad jobbstorlek (%s sidor) är för högt mot skrivaren %s."
 
 #, python-format
 msgid "You are not allowed to print so many pages on printer %s at this time."
-msgstr "Du är ej tillåten att skriva ut så många sidor mot skrivaren %s för tillfället."
+msgstr ""
+"Du är ej tillåten att skriva ut så många sidor mot skrivaren %s för "
+"tillfället."
 
 #, python-format
 msgid "User %s is not allowed to print at this time."
@@ -1552,8 +1556,8 @@ msgid ""
 "The exact cost of a print job can only be determined for a particular user. "
 "Please retry while logged-in."
 msgstr ""
-"Exakt kostnad av ett utskriftsjobb kan endast utföras för en specifik användare. "
-"Var god och försök igen när du är inloggad."
+"Exakt kostnad av ett utskriftsjobb kan endast utföras för en specifik "
+"användare. Var god och försök igen när du är inloggad."
 
 #, python-format
 msgid "Unsupported accounter backend %s"
@@ -1564,8 +1568,8 @@ msgid ""
 "Configuration file %s can't be read. Please check that the file exists and "
 "that your permissions are sufficient."
 msgstr ""
-"Konfigurationsfil %s går ej att läsa. Se efter att filen existerar och "
-"att rättigheterna är rätt."
+"Konfigurationsfil %s går ej att läsa. Se efter att filen existerar och att "
+"rättigheterna är rätt."
 
 #, python-format
 msgid "Configuration file %s not found."
@@ -1807,7 +1811,7 @@ msgid "Impossible to regain priviledges : %s"
 msgstr "Omöjligt att återta privilegier : %s"
 
 msgid "Regained priviledges. Now running as root."
-msgstr "Återtog privilegier. Kör nu som root.""
+msgstr "Återtog privilegier. Kör nu som root."
 
 msgid "Please report bugs to :"
 msgstr "Vänligen rapportera buggar till :"
@@ -1870,8 +1874,8 @@ msgid ""
 "Couldn't retrieve printer %s's internal page counter either before or after "
 "printing."
 msgstr ""
-"Kunde ej hämta skrivarens %s interna sidräknare varken före eller efter utskriften."
-
+"Kunde ej hämta skrivarens %s interna sidräknare varken före eller efter "
+"utskriften."
 
 #, python-format
 msgid "Job's size forced to 1 page for printer %s."
