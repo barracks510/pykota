@@ -98,8 +98,11 @@ options :
   -p | --prototype u|g Uses user u or group g as a prototype to set
                        print quotas
                        
-  -n | --noquota       Doesn't set a quota but only does accounting.
-                       This is the same as --limitby noquota.
+  -n | --noquota       Sets both soft and hard limits to None for a
+                       particular print quota entry.
+                       This is NOT the same as --limitby noquota
+                       which acts on ALL print quota entries for a
+                       particular user.
   
   -r | --reset         Resets the actual page counter for the user
                        or group to zero on the specified printers. 
@@ -251,9 +254,6 @@ class EdPyKota(PyKotaTool) :
         
         softlimit = hardlimit = None
         
-        if options["noquota"] :
-            options["limitby"] = "noquota"
-            
         limitby = options["limitby"]
         if limitby :
             limitby = limitby.strip().lower()
