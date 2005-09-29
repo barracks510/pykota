@@ -1,0 +1,24 @@
+<!-- $Id$ -->
+
+<chapter>
+  <title id="introduction">Introduction to PyKota</title>
+  
+  <para>Last modified on $Date$</para>
+  
+  <para>
+    This chapter will briefly introduce you to PyKota, and will familiarize
+    you with this software and its components.
+  </para>
+  
+  
+  <sect1>
+    <title>What is PyKota ?</title>
+    
+    <para>
+    </para>
+    
+  </sect1>  
+  
+  
+</chapter>
+

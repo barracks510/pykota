@@ -1,5 +1,6 @@
 <!DOCTYPE Book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
 
+  <!entity INTRODUCTION system "introduction.sgml">
   <!entity INSTALLATION system "installation.sgml">
   <!entity FILTERPYKOTA system "filterpykota.sgml">
   <!entity PKPRINTERS system "pkprinters.sgml">
@@ -106,6 +107,8 @@
 
   </bookinfo>
 
+  &INTRODUCTION;
+  
   &INSTALLATION;
   
   &FILTERPYKOTA;
