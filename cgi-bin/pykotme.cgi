@@ -154,13 +154,13 @@ class PyKotMeGUI(PyKotaTool) :
             else :    
                 self.body += "<p>%s</p>" % (_("Job size : %i pages") % jobsize)
                 
-            remuser = os.environ.get("REMOTE_USER", "root")    
+            remuser = os.environ.get("REMOTE_USER")
             # special hack to accomodate mod_auth_ldap Apache module
             try :
                 remuser = remuser.split("=")[1].split(",")[0]
-            except IndexError :    
+            except :    
                 pass
-            if remuser == "root" :    
+            if not remuser :    
                 self.body += "<p>%s</p>" % _("The exact cost of a print job can only be determined for a particular user. Please retry while logged-in.")
             else :    
                 try :    
