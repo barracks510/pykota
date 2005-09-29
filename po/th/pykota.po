@@ -2006,6 +2006,12 @@ msgstr ""
 msgid "DENY"
 msgstr ""
 
+msgid "won't be charged, printer is in passthrough mode"
+msgstr ""
+
+msgid "won't be charged, your account is immutable"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "แฟ้มข้อมูลหมายเลข %s ไม่ได้รับการลงทะเบียน 2 ครั้งจากขั้นเตรียมการ ,ข้ามไป"
 

@@ -2970,3 +2970,9 @@ msgstr "Avertissement"
 
 msgid "DENY"
 msgstr "Rejeté"
+
+msgid "won't be charged, printer is in passthrough mode"
+msgstr "non décompté, imprimante en mode 'passthrough'"
+
+msgid "won't be charged, your account is immutable"
+msgstr "non décompté, votre compte est immuable"

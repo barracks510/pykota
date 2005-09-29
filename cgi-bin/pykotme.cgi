@@ -166,11 +166,22 @@ class PyKotMeGUI(PyKotaTool) :
                 try :    
                     user = self.storage.getUser(remuser)
                     if user.Exists :
-                        for printer in printers :
-                            upquota = self.storage.getUserPQuota(user, printer)
-                            if upquota.Exists :
-                                cost = upquota.computeJobPrice(jobsize)
-                                self.body += "<p>%s</p>" % (_("Cost on printer %s : %.2f") % (printer.Name, cost))
+                        if user.LimitBy == "noprint" :
+                            self.body += "<p>%s</p>" % _("Your account settings forbid you to print at this time.")
+                        else :    
+                            for printer in printers :
+                                upquota = self.storage.getUserPQuota(user, printer)
+                                if upquota.Exists :
+                                    if printer.MaxJobSize and (jobsize > printer.MaxJobSize) :
+                                        msg = _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
+                                    else :    
+                                        cost = upquota.computeJobPrice(jobsize)
+                                        msg = _("Cost on printer %s : %.2f") % (printer.Name, cost)
+                                        if printer.PassThrough :
+                                            msg = "%s (%s)" % (msg, _("won't be charged, printer is in passthrough mode"))
+                                        elif user.LimitBy == "nochange" :    
+                                            msg = "%s (%s)" % (msg, _("won't be charged, your account is immutable"))
+                                    self.body += "<p>%s</p>" % msg
                 except :
                     self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             

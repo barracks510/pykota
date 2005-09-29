@@ -2071,6 +2071,12 @@ msgstr ""
 msgid "DENY"
 msgstr ""
 
+msgid "won't be charged, printer is in passthrough mode"
+msgstr ""
+
+msgid "won't be charged, your account is immutable"
+msgstr ""
+
 #~ msgid "Job is a duplicate. Printing is denied."
 #~ msgstr "El trabajo es un duplicado. La impresión se ha denegado."
 

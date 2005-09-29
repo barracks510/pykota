@@ -1975,3 +1975,8 @@ msgstr ""
 msgid "DENY"
 msgstr ""
 
+msgid "won't be charged, printer is in passthrough mode"
+msgstr ""
+
+msgid "won't be charged, your account is immutable"
+msgstr ""

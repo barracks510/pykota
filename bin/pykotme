@@ -104,11 +104,22 @@ class PyKotMe(PyKotaTool) :
             
         print _("Job size : %i pages") % totalsize    
         if user.Exists :
-            for printer in printers :
-                userpquota = self.storage.getUserPQuota(user, printer)
-                if userpquota.Exists :
-                    cost = userpquota.computeJobPrice(totalsize)
-                    print _("Cost on printer %s : %.2f") % (printer.Name, cost)
+            if user.LimitBy == "noprint" :
+                print _("Your account settings forbid you to print at this time.")
+            else :    
+                for printer in printers :
+                    userpquota = self.storage.getUserPQuota(user, printer)
+                    if userpquota.Exists :
+                        if printer.MaxJobSize and (totalsize > printer.MaxJobSize) :
+                            print _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
+                        else :    
+                            cost = userpquota.computeJobPrice(totalsize)
+                            msg = _("Cost on printer %s : %.2f") % (printer.Name, cost)
+                            if printer.PassThrough :
+                                msg = "%s (%s)" % (msg, _("won't be charged, printer is in passthrough mode"))
+                            elif user.LimitBy == "nochange" :    
+                                msg = "%s (%s)" % (msg, _("won't be charged, your account is immutable"))
+                            print msg    
             
 if __name__ == "__main__" : 
     retcode = 0
