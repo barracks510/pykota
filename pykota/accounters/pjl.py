@@ -77,13 +77,13 @@ class Handler :
         try :
             sock.connect((self.printerHostname, self.port))
         except socket.error, msg :
-            self.parent.filter.printInfo(_("Problem during connection to %s:%s : %s") % (self.printerHostname, self.port, msg), "warn")
+            self.parent.filter.printInfo(_("Problem during connection to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
         else :
             self.parent.filter.logdebug("Connected to printer %s" % self.printerHostname)
             try :
                 sock.send(pjlMessage)
             except socket.error, msg :
-                self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, msg), "warn")
+                self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
                 self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
                 actualpagecount = self.printerStatus = None
@@ -96,8 +96,8 @@ class Handler :
                     except IOError, msg :    
                         self.parent.filter.logdebug("I/O Error [%s] : alarm handler probably called" % msg)
                         break   # our alarm handler was launched, probably
-                    except socket.error :    
-                        self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, msg), "warn")
+                    except socket.error, msg :
+                        self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
                     else :    
                         readnext = 0
                         self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
