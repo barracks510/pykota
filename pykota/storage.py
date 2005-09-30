@@ -136,9 +136,10 @@ class StorageGroup(StorageObject) :
         else :    
             self.parent.commitTransaction()
             self.parent.flushEntry("GROUPS", self.Name)
-            for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
-                if v.Group.Name == self.Name :
-                    self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
+            if self.parent.usecache :
+                for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
+                    if v.Group.Name == self.Name :
+                        self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
             self.Exists = 0
         
 class StoragePrinter(StorageObject) :
@@ -208,12 +209,13 @@ class StoragePrinter(StorageObject) :
         else :    
             self.parent.commitTransaction()
             self.parent.flushEntry("PRINTERS", self.Name)
-            for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
-                if v.Printer.Name == self.Name :
-                    self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
-            for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
-                if v.Printer.Name == self.Name :
-                    self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
+            if self.parent.usecache :
+                for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
+                    if v.Printer.Name == self.Name :
+                        self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
+                for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
+                    if v.Printer.Name == self.Name :
+                        self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
             self.Exists = 0    
         
 class StorageUserPQuota(StorageObject) :
