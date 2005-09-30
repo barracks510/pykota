@@ -57,7 +57,7 @@
             <footnote>
               <para>If your <filename>/etc/passwd</filename> contains something like
                 <literal>pykota:x:1001:1001:PyKota Admin,,,:/etc/pykota:/bin/sh</literal>
-                then the home directory is <filename>/etc/pykota/</filename>
+                then the home directory is <filename>/etc/pykota</filename>
               </para>
             </footnote> :
             <itemizedlist>
