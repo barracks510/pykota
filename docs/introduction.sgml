@@ -53,7 +53,13 @@
         <listitem>
           <para>
             Configuration files, which must be placed into the system user
-            <literal>pykota</literal>'s home directory :
+            <literal>pykota</literal>'s home directory as defined in <filename>/etc/passwd</filename>
+            <footnote>
+              <para>If your <filename>/etc/passwd</filename> contains something like
+                <literal>pykota:x:1001:1001:PyKota Admin,,,:/etc/pykota:/bin/sh</literal>
+                then the home directory is <filename>/etc/pykota/</filename>
+              </para>
+            </footnote> :
             <itemizedlist>
               <listitem>
                 <para>
@@ -151,20 +157,21 @@
               </listitem>  
               <listitem>
                 <para>
-                   <filename>autopykota</filename> : to automate the creation of user accounts on
+                   <filename>autopykota</filename> : to automate the creation of user print accounts on
                    first print. This command is not meant to be used from the command line, but
                    instead from <filename>pykota.conf</filename>'s <literal>policy</literal> directive.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pykosd</filename> : an X Window application to display their remaining credits or
-                  pages to end users.
+                  <filename>pykosd</filename> : to display their remaining credits or
+                  pages to end users. This is an <acronym>OSD</acronym> <footnote><para>On Screen Display</para></footnote>
+                  application which works under the X Window system.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pykotme</filename> : to help end user obtain quotes before printing, this way
+                  <filename>pykotme</filename> : to give detailed quotes to end users before they print, this way
                   they know in advance how much a print job will cost to them and can decide to route it to
                   a less costly printer.
                 </para>
@@ -213,13 +220,13 @@
               <listitem>
                 <para>
                   <filename>dumpykota.cgi</filename> : identical to the <filename>dumpykota</filename>
-                  command line tool, but works over the web.
+                  command line tool, but works from within a web browser.
                 </para>
               </listitem>  
               <listitem>
                 <para>
                   <filename>pykotme.cgi</filename> : identical to the <filename>pykotme</filename>
-                  command line tool, but works over the web.
+                  command line tool, but works from within a web browser.
                 </para>
               </listitem>  
             </itemizedlist>
@@ -227,8 +234,8 @@
         </listitem>  
         <listitem>
           <para>
-            Several helper scripts and contributed stuff to help manage particular configurations.
-            Please visit the subdirectories of the <filename>pykota/</filename> directory, and
+            Several helper scripts and contributed stuff to handle very specific configurations.
+            Please visit the subdirectories of the <filename>pykota/</filename> source directory, and
             you may find interesting things...
           </para>
         </listitem>  
