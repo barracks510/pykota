@@ -100,7 +100,7 @@ class StorageUser(StorageObject) :
         else :    
             self.parent.commitTransaction()
             self.parent.flushEntry("USERS", self.Name)
-            if self.usecache :
+            if self.parent.usecache :
                 for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
                     if v.User.Name == self.Name :
                         self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
