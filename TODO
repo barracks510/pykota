@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Fix timezone problem in printquota.cgi + LDAP.
+        
         - Growl notifications for MacOSX users (while printing) :
         
           http://the.taoofmac.com/space/Projects/netgrowl.py
