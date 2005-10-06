@@ -586,14 +586,9 @@ class Storage(BaseStorage) :
                     lastjob.PrecomputedJobPrice = None
                 if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
                     (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
-                date = fields.get("createTimestamp", ["19700101000000"])[0]
-                year = int(date[:4])
-                month = int(date[4:6])
-                day = int(date[6:8])
-                hour = int(date[8:10])
-                minute = int(date[10:12])
-                second = int(date[12:14])
-                lastjob.JobDate = "%04i-%02i-%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
+                date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
+                mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
+                lastjob.JobDate = mxtime.strftime("%Y%m%d %H:%M:%S")
                 lastjob.Exists = 1
         return lastjob
         
@@ -1185,14 +1180,9 @@ class Storage(BaseStorage) :
                     job.PrecomputedJobPrice = None
                 if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
                     (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
-                date = fields.get("createTimestamp", ["19700101000000"])[0]
-                year = int(date[:4])
-                month = int(date[4:6])
-                day = int(date[6:8])
-                hour = int(date[8:10])
-                minute = int(date[10:12])
-                second = int(date[12:14])
-                job.JobDate = "%04i%02i%02i %02i:%02i:%02i" % (year, month, day, hour, minute, second)
+                date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
+                mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
+                job.JobDate = mxtime.strftime("%Y%m%d %H:%M:%S")
                 if ((start is None) and (end is None)) or \
                    ((start is None) and (job.JobDate <= end)) or \
                    ((end is None) and (job.JobDate >= start)) or \
