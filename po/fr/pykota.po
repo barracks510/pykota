@@ -2976,3 +2976,12 @@ msgstr "non décompté, imprimante en mode 'passthrough'"
 
 msgid "won't be charged, your account is immutable"
 msgstr "non décompté, votre compte est immuable"
+
+msgid "Printing denied."
+msgstr "Impression interdite."
+
+msgid "Printing not limited."
+msgstr "Impression illimitée."
+
+msgid "Printing not limited, no accounting."
+msgstr "Impression illimitée, aucun décompte."

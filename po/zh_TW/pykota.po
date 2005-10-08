@@ -1999,6 +1999,15 @@ msgstr ""
 msgid "won't be charged, your account is immutable"
 msgstr ""
 
+msgid "Printing denied."
+msgstr ""
+
+msgid "Printing not limited."
+msgstr ""
+
+msgid "Printing not limited, no accounting."
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "檔案編號 %s 在polling object上已兩次未能成功註冊，因此被忽略"
 
