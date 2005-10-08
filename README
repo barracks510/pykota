@@ -227,8 +227,8 @@ PyKota features :
           command line option which prints all the available 
           options and show usage examples.
           
-        - Completely internationalized. Actually supports the  
-          English, French, Spanish, Portuguese, Brazilian, Swedish,
+        - Completely internationalized. Actually supports at least partially
+          English, French, Polish, Spanish, Portuguese, Brazilian, Swedish,
           Thai, Greek, German, Italian, Norwegian (Bokmål), Turkish 
           and traditional Chinese languages. 
           More to come.
