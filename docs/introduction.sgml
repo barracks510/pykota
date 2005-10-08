@@ -48,6 +48,12 @@
     </para>
     
     <para>
+      Beginning on October 10th 2005, this document won't be <application>PyKota</application>'s reference documentation anymore.
+      <application>PyKota</application>'s reference documentation is now at :
+      <ulink url="http://www.librelogiciel.com/software/PyKota/WiKota">http://www.librelogiciel.com/software/PyKota/WiKota</ulink>
+    </para>
+    
+    <para>
       <application>PyKota</application> is made of the following components :
       <itemizedlist>
         <listitem>
