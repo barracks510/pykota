@@ -570,35 +570,38 @@ class PyKotaTool(Tool) :
         admin = self.config.getAdmin(printer.Name)
         adminmail = self.config.getAdminMail(printer.Name)
         (mailto, arguments) = self.config.getMailTo(printer.Name)
-        action = self.checkGroupPQuota(grouppquota)
-        if action.startswith("POLICY_") :
-            action = action[7:]
-        if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for group %s on printer %s") % (group.Name, printer.Name)
-            self.printInfo(adminmessage)
-            if mailto in [ "BOTH", "ADMIN" ] :
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-            if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                for user in self.storage.getGroupMembers(group) :
-                    if mailto != "EXTERNAL" :
-                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
-                    else :    
-                        self.externalMailTo(arguments, action, user, printer, self.config.getHardWarn(printer.Name))
-        elif action == "WARN" :    
-            adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
-            self.printInfo(adminmessage)
-            if mailto in [ "BOTH", "ADMIN" ] :
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-            if group.LimitBy and (group.LimitBy.lower() == "balance") : 
-                message = self.config.getPoorWarn()
-            else :     
-                message = self.config.getSoftWarn(printer.Name)
-            if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                for user in self.storage.getGroupMembers(group) :
-                    if mailto != "EXTERNAL" :
-                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
-                    else :    
-                        self.externalMailTo(arguments, action, user, printer, message)
+        if group.LimitBy in ("noquota", "nochange") :
+            action = "ALLOW"
+        else :    
+            action = self.checkGroupPQuota(grouppquota)
+            if action.startswith("POLICY_") :
+                action = action[7:]
+            if action == "DENY" :
+                adminmessage = _("Print Quota exceeded for group %s on printer %s") % (group.Name, printer.Name)
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    for user in self.storage.getGroupMembers(group) :
+                        if mailto != "EXTERNAL" :
+                            self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printer.Name))
+                        else :    
+                            self.externalMailTo(arguments, action, user, printer, self.config.getHardWarn(printer.Name))
+            elif action == "WARN" :    
+                adminmessage = _("Print Quota low for group %s on printer %s") % (group.Name, printer.Name)
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+                if group.LimitBy and (group.LimitBy.lower() == "balance") : 
+                    message = self.config.getPoorWarn()
+                else :     
+                    message = self.config.getSoftWarn(printer.Name)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    for user in self.storage.getGroupMembers(group) :
+                        if mailto != "EXTERNAL" :
+                            self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
+                        else :    
+                            self.externalMailTo(arguments, action, user, printer, message)
         return action        
         
     def warnUserPQuota(self, userpquota) :
@@ -608,34 +611,48 @@ class PyKotaTool(Tool) :
         admin = self.config.getAdmin(printer.Name)
         adminmail = self.config.getAdminMail(printer.Name)
         (mailto, arguments) = self.config.getMailTo(printer.Name)
-        action = self.checkUserPQuota(userpquota)
-        if action.startswith("POLICY_") :
-            action = action[7:]
-            
-        if action == "DENY" :
-            adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
-            self.printInfo(adminmessage)
+        
+        if user.LimitBy in ("noquota", "nochange") :
+            action = "ALLOW"
+        elif user.LimitBy == "noprint" :
+            action = "DENY"
             if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                message = self.config.getHardWarn(printer.Name)
+                message = _("User %s is not allowed to print at this time.") % user.Name
                 if mailto != "EXTERNAL" :
-                    self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
+                    self.sendMessageToUser(admin, adminmail, user, _("Printing denied."), message)
                 else :    
                     self.externalMailTo(arguments, action, user, printer, message)
             if mailto in [ "BOTH", "ADMIN" ] :
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
-        elif action == "WARN" :    
-            adminmessage = _("Print Quota low for user %s on printer %s") % (user.Name, printer.Name)
-            self.printInfo(adminmessage)
-            if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                if user.LimitBy and (user.LimitBy.lower() == "balance") : 
-                    message = self.config.getPoorWarn()
-                else :     
-                    message = self.config.getSoftWarn(printer.Name)
-                if mailto != "EXTERNAL" :    
-                    self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
-                else :    
-                    self.externalMailTo(arguments, action, user, printer, message)
-            if mailto in [ "BOTH", "ADMIN" ] :
-                self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), message)
+        else :
+            action = self.checkUserPQuota(userpquota)
+            if action.startswith("POLICY_") :
+                action = action[7:]
+                
+            if action == "DENY" :
+                adminmessage = _("Print Quota exceeded for user %s on printer %s") % (user.Name, printer.Name)
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    message = self.config.getHardWarn(printer.Name)
+                    if mailto != "EXTERNAL" :
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
+                    else :    
+                        self.externalMailTo(arguments, action, user, printer, message)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            elif action == "WARN" :    
+                adminmessage = _("Print Quota low for user %s on printer %s") % (user.Name, printer.Name)
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    if user.LimitBy and (user.LimitBy.lower() == "balance") : 
+                        message = self.config.getPoorWarn()
+                    else :     
+                        message = self.config.getSoftWarn(printer.Name)
+                    if mailto != "EXTERNAL" :    
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
+                    else :    
+                        self.externalMailTo(arguments, action, user, printer, message)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
         return action        
         

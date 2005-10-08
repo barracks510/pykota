@@ -121,7 +121,7 @@ class WarnPyKota(PyKotaTool) :
                        userpquota.PageCounter or userpquota.LifePageCounter or \
                        self.storage.getUserNbJobsFromHistory(user) :
                         done = alreadydone.get(user.Name)
-                        if (user.LimitBy.lower() != 'balance') or not done :
+                        if (user.LimitBy == 'quota') or not done :
                             action = self.warnUserPQuota(userpquota)
                             if not done :
                                 alreadydone[user.Name] = (action in ('WARN', 'DENY'))
