@@ -1,0 +1,21 @@
+<!-- $Id: -->
+
+<chapter>
+  <title>Manage billing codes with pkbcodes</title>
+  <para>Last modified on $Date$</para>
+  
+  <para>
+  </para>  
+  
+  <sect1>
+    <title>Reference</title>
+    <para>
+      <cmdsynopsis>
+        <command>pkmail</command>
+        <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
+        <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+      </cmdsynopsis>
+    </para>
+  </sect1>
+</chapter>
+

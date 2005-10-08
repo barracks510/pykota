@@ -12,6 +12,8 @@
   <!entity PYKOSD system "pykosd.sgml">
   <!entity DUMPYKOTA system "dumpykota.sgml">
   <!entity AUTOPYKOTA system "autopykota.sgml">
+  <!entity PKTURNKEY system "pkturnkey.sgml">
+  <!entity PKBCODES system "pkbcodes.sgml">
   <!entity PKMAIL system "pkmail.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
@@ -111,6 +113,8 @@
   
   &INSTALLATION;
   
+  &PKTURNKEY;
+  
   &FILTERPYKOTA;
   
   &PKPRINTERS;
@@ -126,6 +130,8 @@
   &WARNPYKOTA;
   
   &DUMPYKOTA;
+  
+  &PKBCODES;
   
   &PYKOSD;
   
