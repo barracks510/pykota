@@ -129,11 +129,22 @@ class PyKOSD(PyKotaTool) :
                     else :        
                         percent = "%s%%" % min((upq.PageCounter * 100) / upq.HardLimit, 100)
                     display.display(_("Pages used on %s : %s") % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)
-            else :
+            elif user.LimitBy == "balance" :
                 if user.AccountBalance <= 0 :
                     color = "#FF0000"
                 display = pyosd.osd(font=options["font"], colour=color, timeout=duration, shadow=2)
                 display.display(_("PyKota Units left : %.2f") % user.AccountBalance, type=pyosd.TYPE_STRING)
+            elif user.LimitBy == "noprint" :    
+                display = pyosd.osd(font=options["font"], colour="#FF0000", timeout=duration, shadow=2)
+                display.display(_("Printing denied."), type=pyosd.TYPE_STRING)
+            elif user.LimitBy == "noquota" :    
+                display = pyosd.osd(font=options["font"], colour=savecolor, timeout=duration, shadow=2)
+                display.display(_("Printing not limited."), type=pyosd.TYPE_STRING)
+            elif user.LimitBy == "nochange" :    
+                display = pyosd.osd(font=options["font"], colour=savecolor, timeout=duration, shadow=2)
+                display.display(_("Printing not limited, no accounting."), type=pyosd.TYPE_STRING)
+            else :    
+                raise PyKotaToolError, "Incorrect limitation factor %s for user %s" % (repr(user.LimitBy), user.Name)
                 
             time.sleep(duration + 1)
             if loop :
