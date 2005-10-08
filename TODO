@@ -84,6 +84,9 @@ TODO, in no particular order :
         - Multidatabase support, e.g. store users in LDAP, quota  
           related datas in PostgreSQL, history in text file,
           and so on... For 2.0, probably not before.
+          
+        - Re-add support for LPRng if interest is high enough (it is
+          not for now)
         
         
 ============================================================
