@@ -18,88 +18,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ============================================================
-Download :
 
-  * PyKota is distributed under the "GNU General Public License":/GPL
+Licensing information :
 
-  * You can access to PyKota's source code by using SubVersion (aka SVN) :
+  * PyKota is licensed under the terms of the GNU General Public License of 
+    the Free Software Foundation, version 2, or at your option, any higher
+    version.
+
+  * You can access to PyKota's latest development tree by using 
+    SubVersion (aka SVN) :
   
       $ svn co svn://svn.librelogiciel.com/pykota/trunk pykota
 
-  * Clients who purchased an **Official PyKota Package** can directly access to "the tarballs HERE":
-http://www.librelogiciel.com/software/PyKota/tarballs .
-               
-Why no tarball is available for free :
-
-  * The SVN version will always be labelled as **unofficial** and the word **unofficial**
-    will appear whenever you run PyKota command line tools with the *--version* command line
-    argument.
-
+  * You are encouraged to support the project by purchasing yearly 
+    subscriptions to 'OFFICIAL' packages, or Technical Support contracts.
+    
   * I ask you to not label or present a version of PyKota downloaded 
     from SVN as being the 'OFFICIAL' one. 
 
-  * I encourage you to buy an 'OFFICIAL' PyKota package. See below for 
-    the benefits of doing so. 
-
-  * A PyKota version obtained either from SVN (unofficial) or by 
-    purchasing an official package, **IS FREELY REDISTRIBUTABLE AND 
-    MODIFIABLE, AT NO COST, UNDER THE TERMS OF THE GNU GENERAL PUBLIC 
-    LICENSE.** 
-
-  * Version number excepted, **THERE'S NO SOURCE CODE DIFFERENCE 
-    BETWEEN 'OFFICIAL' AND 'UNOFFICIAL' VERSIONS OF PyKota.** However it 
-    should be clear to you that the latest version you can find in SVN 
-    may be somewhat unstable or unfinished, since this software is a 
-    work in progress, and that it's up to you to download working 
-    revisions from the SVN tree. That's why I suggest that you purchase 
-    an **'OFFICIAL'** version, because it will be simpler for you (and 
-    better for me). Also the documentation included in the 
-    **'UNOFFICIAL'** version is only delivered in DocBook XML/SGML 
-    source form, and not in compiled forms like HTML or PDF. 
-
-  * You can obtain an **'OFFICIAL'** version of PyKota in two forms :
-
-    * Electronic form :
-
-      * You pay me any amount of money starting at **25$ (US Dollars)**
-
-      * Then I send you the latest **PyKota 'OFFICIAL'** tarball, 
-        including the latest version of the electronic documentation in 
-        SGML, HTML and PDF formats, by email. 
-
-    * CDROM + Paper documentation *(not yet available, documentation 
-      still under works)* : 
-
-      * You pay me any amount of money starting at **30$ (US Dollars)**
-
-      * Then I send you the latest **PyKota 'OFFICIAL'** tarball, 
-        including the latest version of the electronic documentation in 
-        SGML, HTML and PDF formats, on CDROM, accompanied with the latest 
-        version of the printed documentation. No additionnal shipping costs 
-        will be asked to you, unless you require a specific delivery mode. 
-
-  * The "purchase":/software/PyKota/Purchase of an **'OFFICIAL'** 
-    version also allows you to : 
-
-    * Modify or redistribute the **'OFFICIAL'** version you purchased, 
-      under the terms of the GNU General Public License of the Free 
-      Software Foundation. I just ask you to remove the 'OFFICIAL' word 
-      from the version number if you redistribute a modified official 
-      version. 
-
-    * Obtain free technical support for a year starting at your purchase 
-      date : This includes bug fixes and new official versions, as well as 
-      priority email support. 
-
-    * Obtain half of **your money back** in case you contribute source 
-      code or documentation which I accept in the source tree. If you're a 
-      motivated developper, you've got strong chances to get half of your 
-      money back. *NB : You will have to send me a signed copyright 
-      assignment on paper in order for me to be able to accept your 
-      patches on PyKota.* 
-
-    * By purchasing an official package, your karma will also be better.
-
-I sincerely hope that you will find this proposition as fair as I do 
-think it is. 
-
+  * For more informations, please read :
+  
+        http://www.librelogiciel.com/software/PyKota/action_Download
+        http://www.librelogiciel.com/software/PyKota/Purchase
+        http://www.librelogiciel.com/software/PyKota/contracts
+        
