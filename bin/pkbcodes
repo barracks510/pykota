@@ -55,7 +55,7 @@ options :
 
   -l | --list          List informations about the billing codes.
 
-  -s | --reset         Resets the billing codes' balance and page counters
+  -r | --reset         Resets the billing codes' balance and page counters
                        to 0.
 
   -s | --skipexisting  In combination with the --add option above, tells
