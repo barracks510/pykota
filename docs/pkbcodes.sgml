@@ -32,6 +32,22 @@ $ lp -o job-billing=smith the_file_to_print.ps
     existing billing codes.
   </para>
   
+  <para>
+    With the help of the <literal>unknown_billingcode</literal> directive in
+    <filename>pykota.conf</filename>, you can decide what happens when a billing
+    code is encountered when printing, and this billing code is not yet in
+    <application>PyKota</application>'s database. Automatically adding it to
+    the database is a common choice, which saves time for the <application>PyKota</application>
+    administrator.
+  </para>
+  
+  <para>
+    Finally, the <literal>overwrite_jobticket</literal> directive in
+    <filename>pykota.conf</filename> allows you to overwrite the job billing
+    information at the latest stage of printing, for example if the application used to print
+    doesn't allow end users to give a value to the billing code when submitting the print job.
+  </para>
+  
   <sect1>
     <title>Reference</title>
     <para>
