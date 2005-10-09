@@ -616,8 +616,9 @@ class PyKotaTool(Tool) :
             action = "ALLOW"
         elif user.LimitBy == "noprint" :
             action = "DENY"
+            message = _("User %s is not allowed to print at this time.") % user.Name
+            self.printInfo(message)
             if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
-                message = _("User %s is not allowed to print at this time.") % user.Name
                 if mailto != "EXTERNAL" :
                     self.sendMessageToUser(admin, adminmail, user, _("Printing denied."), message)
                 else :    
