@@ -39,6 +39,15 @@ $ lp -o job-billing=smith the_file_to_print.ps
         <command>pkbcodes</command>
         <group choice="opt"><arg>-v</arg><arg>--version</arg></group>
         <group choice="opt"><arg>-h</arg><arg>--help</arg></group>
+        <group choice="opt"><arg>-a</arg><arg>--add</arg></group>
+        <group choice="opt"><arg>-d</arg><arg>--delete</arg></group>
+        <group choice="opt">
+          <arg>-D <replaceable>desc</replaceable></arg>
+          <arg>--description <replaceable>desc</replaceable></arg>
+        </group>
+        <group choice="opt"><arg>-l</arg><arg>--list</arg></group>
+        <group choice="opt"><arg>-r</arg><arg>--reset</arg></group>
+        <group choice="opt"><arg>-s</arg><arg>--skipexisting</arg></group>
       </cmdsynopsis>
     </para>
   </sect1>
