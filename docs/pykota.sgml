@@ -113,9 +113,9 @@
   
   &INSTALLATION;
   
-  &PKTURNKEY;
-  
   &FILTERPYKOTA;
+  
+  &PKTURNKEY;
   
   &PKPRINTERS;
 
