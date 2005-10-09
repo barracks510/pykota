@@ -14,6 +14,9 @@
     The very first thing you have to do once <application>PyKota</application> is installed but before it can work, 
     is to add into <application>PyKota</application>'s database an entry for each of the print queues on
     which you want to have print quota or accounting.
+    Although the <filename>pkturnkey</filename> command can be used to initialize your database and import
+    printers into it, the <filename>pkprinters</filename> command offers additionnal functionnalities
+    like full management of printers.
   </para>
   
   <para>
@@ -93,6 +96,12 @@ StylusColor2 [Stylus Color 900 Second floor] (0.0 + #*0.25)
         <group choice="opt"><arg>-l</arg><arg>--list</arg></group>
         <group choice="opt"><arg>-r</arg><arg>--remove</arg></group>
         <group choice="opt"><arg>-s</arg><arg>--skipexisting</arg></group>
+        <group choice="opt">
+          <arg>-m <replaceable>s</replaceable></arg>
+          <arg>--maxjobsize <replaceable>s</replaceable></arg>
+        </group>  
+        <group choice="opt"><arg>-p</arg><arg>--passthrough</arg></group>
+        <group choice="opt"><arg>-n</arg><arg>--nopassthrough</arg></group>
       </cmdsynopsis>
     </para>
   </sect1>
