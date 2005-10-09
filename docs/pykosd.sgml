@@ -5,12 +5,12 @@
   <para>Last modified on $Date$</para>
   
   <para>
-    <filename>pykosd</filename> is a graphical <application>X Window</application> application which when launched 
+    <command>pykosd</command> is a graphical <application>X Window</application> application which when launched 
     will display print quota information for the current user.
   </para>  
   
   <para>
-    Whenever you launch <filename>pykosd</filename>, it will display the current user's print quota
+    Whenever you launch <command>pykosd</command>, it will display the current user's print quota
     information in the top-left corner of the screen, above all existing windows, and with
     a transparent background. 
   </para>

@@ -5,7 +5,7 @@
   <para>Last modified on $Date$</para>
   
   <para>
-    <filename>pkprinters</filename> is the preferred tool to manage printers in <application>PyKota</application>.  
+    <command>pkprinters</command> is the preferred tool to manage printers in <application>PyKota</application>.  
     It only manages printers, and do it well. With it you can add or delete printers or printer groups, or modify
     existing printers or printers groups. This is also the tool to use to put printers into one or more printers groups.
   </para>  
@@ -14,8 +14,8 @@
     The very first thing you have to do once <application>PyKota</application> is installed but before it can work, 
     is to add into <application>PyKota</application>'s database an entry for each of the print queues on
     which you want to have print quota or accounting.
-    Although the <filename>pkturnkey</filename> command can be used to initialize your database and import
-    printers into it, the <filename>pkprinters</filename> command offers additionnal functionnalities
+    Although the <command>pkturnkey</command> command can be used to initialize your database and import
+    printers into it, the <command>pkprinters</command> command offers additionnal functionnalities
     like full management of printers.
   </para>
   

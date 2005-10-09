@@ -40,14 +40,14 @@
   
   <para>
     <command>pykotme</command>'s functionnality is also available through the
-    use of the <filename>pykotme.cgi</filename> <acronym>CGI</acronym> script.
-    However without authentication <filename>pykotme.cgi</filename> will only
+    use of the <command>pykotme.cgi</command> <acronym>CGI</acronym> script.
+    However without authentication <command>pykotme.cgi</command> will only
     return the print job's size and not its cost, because the cost depends on
     the value of the user's overcharging factor and the printer being used. 
     That's why if you want to 
     obtain the same functionnality with the <acronym>CGI</acronym> script than 
     with the command line tool, you must configure your web server to force
-    users to authenticate whevenver they access to <filename>pykotme.cgi</filename>.
+    users to authenticate whevenver they access to <command>pykotme.cgi</command>.
     Then they will be able to choose one or more printers (all by default), 
     and also to enter their username,
     and the exact cost of the print job will be computed.

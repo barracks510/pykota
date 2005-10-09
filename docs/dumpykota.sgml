@@ -87,7 +87,7 @@
   
   <para>
     Finally, <command>dumpykota</command>'s functionnality is now also available remotely through
-    the use of the <filename>dumpykota.cgi</filename> <acronym>CGI</acronym> script.
+    the use of the <command>dumpykota.cgi</command> <acronym>CGI</acronym> script.
   </para>
   
   <warning>

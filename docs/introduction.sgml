@@ -108,7 +108,7 @@
         </listitem>  
         <listitem>
           <para>
-            A generic <acronym>CUPS</acronym> backend wrapper, named <filename>cupspykota</filename> :
+            A generic <acronym>CUPS</acronym> backend wrapper, named <command>cupspykota</command> :
             this software captures all print jobs passing through the print queues it manages,
             and does the accounting and quota checking. It can reject print jobs in a number
             of circumstances like the user being over quota, and interact with the end user through the use of external
@@ -128,34 +128,34 @@
             <itemizedlist>
               <listitem>
                 <para>
-                  <filename>pkturnkey</filename> : to help you do the initial
+                  <command>pkturnkey</command> : to help you do the initial
                   configuration and database initialization. This command almost transforms <application>PyKota</application>
                   into a turn-key solution, hence the name.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pkprinters</filename> : to manage printers and printers groups.
+                  <command>pkprinters</command> : to manage printers and printers groups.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>edpykota</filename> : to manage users, users groups and quotas.
+                  <command>edpykota</command> : to manage users, users groups and quotas.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pkbcodes</filename> : to manage billing codes.
+                  <command>pkbcodes</command> : to manage billing codes.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>repykota</filename> : to do some basic print quota reporting.
+                  <command>repykota</command> : to do some basic print quota reporting.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                   <filename>dumpykota</filename> : to dump the database's contents in a portable
+                   <command>dumpykota</command> : to dump the database's contents in a portable
                    way. This command can be used to export <application>PyKota</application>'s
                    datas to third party software, like print log analyzers or spreadsheets, and
                    numerous output formats are supported.
@@ -163,28 +163,28 @@
               </listitem>  
               <listitem>
                 <para>
-                   <filename>autopykota</filename> : to automate the creation of user print accounts on
+                   <command>autopykota</command> : to automate the creation of user print accounts on
                    first print. This command is not meant to be used from the command line, but
                    instead from <filename>pykota.conf</filename>'s <literal>policy</literal> directive.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pykosd</filename> : to display their remaining credits or
+                  <command>pykosd</command> : to display their remaining credits or
                   pages to end users. This is an <acronym>OSD</acronym> <footnote><para>On Screen Display</para></footnote>
                   application which works under the X Window system.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pykotme</filename> : to give detailed quotes to end users before they print, this way
+                  <command>pykotme</command> : to give detailed quotes to end users before they print, this way
                   they know in advance how much a print job will cost to them and can decide to route it to
                   a less costly printer.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                   <filename>pkbanner</filename> : to generate dynamic banner pages when printing.
+                   <command>pkbanner</command> : to generate dynamic banner pages when printing.
                    This command is
                    not meant to be used from the command line, but
                    instead from <filename>pykota.conf</filename>'s <literal>startingbanner</literal> 
@@ -194,14 +194,14 @@
               </listitem>  
               <listitem>
                 <para>
-                  <filename>warnpykota</filename> : to warn users over quota from time to time, for example
+                  <command>warnpykota</command> : to warn users over quota from time to time, for example
                   from <filename>crontab</filename>. Users are warned while printing in any case, so
                   this command is meant to be used as a periodic reminder.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pkmail</filename> : to let users obtain their print quota situation by email.
+                  <command>pkmail</command> : to let users obtain their print quota situation by email.
                   In the future other functionnalities will be added.
                   This command is not meant to be used from the command line, but
                   instead as a pipe from your mail server's <filename>/etc/aliases</filename> file.
@@ -219,19 +219,19 @@
             <itemizedlist>
               <listitem>
                 <para>
-                  <filename>printquota.cgi</filename> : to do basic print quota reports like repykota, 
+                  <command>printquota.cgi</command> : to do basic print quota reports like repykota, 
                   and also to examine the printing history, which is not possible with repykota for now.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>dumpykota.cgi</filename> : identical to the <filename>dumpykota</filename>
+                  <command>dumpykota.cgi</command> : identical to the <command>dumpykota</command>
                   command line tool, but works from within a web browser.
                 </para>
               </listitem>  
               <listitem>
                 <para>
-                  <filename>pykotme.cgi</filename> : identical to the <filename>pykotme</filename>
+                  <command>pykotme.cgi</command> : identical to the <command>pykotme</command>
                   command line tool, but works from within a web browser.
                 </para>
               </listitem>  

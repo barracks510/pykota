@@ -605,7 +605,7 @@ $ /etc/init.d/slapd restart
     </para>
     
     <para>
-       You can check that all needed software is installed by launching the <filename>checkdeps.py</filename>
+       You can check that all needed software is installed by launching the <command>checkdeps.py</command>
        command :
       <screen>      
 $ python checkdeps.py      
@@ -770,7 +770,7 @@ $ chmod 640 ~pykota/pykotadmin.conf
       </para>
       
       <para>
-        You just have to create a symbolic link to the <filename>cupspykota</filename>
+        You just have to create a symbolic link to the <command>cupspykota</command>
         command in <application>CUPS</application>' backend directory :
         <screen>        
 $ cd /usr/lib/cups/backend        

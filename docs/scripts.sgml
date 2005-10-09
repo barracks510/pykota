@@ -27,7 +27,7 @@
     </para>
     
     <para>
-      <filename>waitprinter.sh</filename> can be used to be sure that <application>PyKota</application>
+      <command>waitprinter.sh</command> can be used to be sure that <application>PyKota</application>
       waits until no job is being printed, and no paper sheet is travelling inside the printer. 
     </para>
     
@@ -55,7 +55,7 @@
     </para>
     
     <para>
-      <filename>papwaitprinter.sh</filename> can be used to be sure that <application>PyKota</application>
+      <command>papwaitprinter.sh</command> can be used to be sure that <application>PyKota</application>
       waits until no job is being printed, and no paper sheet is travelling inside the printer. 
     </para>  
     
