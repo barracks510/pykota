@@ -2,7 +2,7 @@
 Template: pykota/upgrading_1.23
 Type: note
 Description: Upgrading from a pre-1.23 to >=1.23
- Warning: if you ar upgrading from a pre-1.23 to
+ Warning: if you are upgrading from a pre-1.23 to
  1.23 or above and use the postgreSQL backend,
  then you have to modify your database schema using
  /usr/share/doc/pykota/initscripts/postgresql/upgrade-to-1.23.sql

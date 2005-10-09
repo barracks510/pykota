@@ -21,6 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.23 :
+    
+        - Many minor bug fixes and code cleaning.
+        
+        - Improved documentation.
+        
+        - Added Polish translation.
+        
+        - Improved French and Swedish translations.
+        
     - 1.23beta :
     
         - Now the mailto directive is honored in all cases where the job is
