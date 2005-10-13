@@ -33,6 +33,12 @@ and read the next one.
           database template1 as a PostgreSQL administrator
           (i.e. the postgres user) :
           
+          as user 'root' :
+          
+            $ su - postgres
+            
+          you're now user 'postgres', then continue with :   
+          
             $ psql -h localhost -U postgres template1
           
         - Executes the pykota-postgresql.sql script :  
@@ -59,6 +65,14 @@ Upgrade scripts :
   version of PyKota. Usually running them several times, for
   example if you used several different development versions
   of PyKota, won't do any harm.
+  
+  If you're connected as user 'root', you have to be user 'postgres'
+  instead :
+          
+            $ su - postgres
+            
+  You're now user 'postgres', then continue the upgrade by following
+  the instructions below, depending on the version you actually use :
   
   * An SQL script to upgrade a 1.22 PyKota Storage DataBase to
     1.23 is included. Launch it this way on the Quota Storage Server :
