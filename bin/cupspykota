@@ -110,7 +110,7 @@ class CUPSBackend(PyKotaTool) :
             lockfile.write("%i" % self.pid)
             lockfile.close()
             allbackends = [ os.path.join(directory, b) \
-                                for b in os.listdir(directory) 
+                                for b in os.listdir(directory) \
                                     if os.access(os.path.join(directory, b), os.X_OK) \
                                         and (b != myname)] 
             for backend in allbackends :                            
