@@ -194,7 +194,7 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.27 NAME 'pykotaOverCharge'
         
 # pykotaWarnCount
 attributetype ( 1.3.6.1.4.1.16868.1.1.28 NAME 'pykotaWarnCount'
-        DESC 'Number of times the user was warned'
+        DESC 'Number of times the user was warned because a banner was denied'
         EQUALITY integerMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
         
