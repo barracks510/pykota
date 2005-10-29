@@ -1,0 +1,149 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Coefficients manager
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# $Id$
+#
+#
+
+import os
+import sys
+import pwd
+
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+
+__doc__ = N_("""pykoef v%(__version__)s (c) %(__years__)s %(__author__)s
+
+A coefficients Manager for PyKota.
+
+command line usage :
+
+  pykoef [options] cofficient1 coefficient2 ... coefficientN
+
+options :
+
+  -v | --version       Prints pykoef version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -a | --add           Adds coefficients if they don't exist in PyKota's
+                       database. If they exist, they are modified
+                       unless -s|--skipexisting is also used.
+
+  -d | --delete        Deletes coefficients from PyKota's database.
+
+  -l | --list          List informations about the coefficients.
+  
+  -P | --printer P     Only apply the command to printer P's coefficients.
+                       P can be a comma separated list of printers' names
+                       or wildcards.
+
+  -s | --skipexisting  In combination with the --add option above, tells
+                       pykoef to not modify existing coefficients.
+                       
+  -V | --value v       Sets the coefficients' value to v. This value can                     
+                       be any real number, positive or negative.
+
+  coefficient1 through coefficientN can contain wildcards if the --add option
+  is not set.
+
+examples :                              
+
+  # TODO
+""")
+        
+class PyKOef(PyKotaTool) :        
+    """A class for a coefficients manager."""
+    def main(self, names, options) :
+        """Manage printers coefficients."""
+        if (not self.config.isAdmin) and (not options["list"]) :
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
+        if options["list"] and not names :
+            names = ["*"]
+            
+        try :     
+            value = float(options["value"])
+        except :    
+            raise PyKotaCommandLineError, _("Coefficients' values must be numeric. See help.")
+            
+        #
+        # TODO    
+        #
+        raise RuntimeError, "Not implemented yet ! Please come back later..."
+                     
+if __name__ == "__main__" : 
+    retcode = 0
+    try :
+        defaults = { \
+                     "printer" : "*", \
+                     "value" : "1.0", \
+                   }
+        short_options = "hvadlsP:V:"
+        long_options = ["help", "version", "add", "delete", "list", "printer=", "skipexisting", "value="]
+        
+        # Initializes the command line tool
+        manager = PyKoef(doc=__doc__)
+        manager.deferredInit()
+        
+        # parse and checks the command line
+        (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["add"] = options["a"] or options["add"]
+        options["delete"] = options["d"] or options["delete"] 
+        options["list"] = options["l"] or options["list"]
+        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
+        options["value"] = options["V"] or options["value"] or defaults["value"]
+        options["skipexisting"] = options["s"] or options["skipexisting"]
+        
+        if options["help"] :
+            manager.display_usage_and_quit()
+        elif options["version"] :
+            manager.display_version_and_quit()
+        elif (options["delete"] and options["add"]) \
+           or (options["skipexisting"] and not options["add"]) \
+           or (options["list"] and (options["add"] or options["delete"])) :
+            raise PyKotaCommandLineError, _("incompatible options, see help.")
+        elif (not args) and (options["add"] or options["delete"]) :    
+            raise PyKotaCommandLineError, _("You have to pass coefficients on the command line")
+        else :
+            retcode = manager.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+    except SystemExit :        
+        pass
+    except :
+        try :
+            manager.crashed("pykoef failed")
+        except :    
+            crashed("pykoef failed")
+        retcode = -1
+
+    try :
+        manager.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    
