@@ -21,6 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha1 :
+    
+        - The sample LDIF file now contains the two necessary user
+          entries to have an LDAP PyKota Admin and an LDAP PyKota
+          ReadOnly user. The sample configuration files were updated
+          to contain the default passwords used in the LDIF file.
+          
+        - dumpykota is now more strict when checking arguments.   
+        
     - 1.23 :
     
         - Many minor bug fixes and code cleaning.

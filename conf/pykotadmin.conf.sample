@@ -57,11 +57,19 @@
 
 [global]
 
-# Quota Storage administrator's name and password
+# PostgreSQL's Quota Storage administrator's name and password
+# Please comment these lines out and see further below if you use LDAP.
 storageadmin: pykotaadmin
 # storageadminpw: Comment out if unused, or set to Quota Storage admin password
+
 
 # storagebackend: ldapstorage
 # storageserver: ldap://ldapmaster.example.com:389
 # storagename: dc=example,dc=com
+#
+# NB : the user and password below are the ones contained in 
+# the sample LDIF file pykota/initscripts/ldap/pykota-sample.ldif
+# Please adapt these lines to your own needs.
+# storageadmin: cn=pykotaadmin,dc=example,dc=com
+# storageadminpw: BlfUPg7t
 

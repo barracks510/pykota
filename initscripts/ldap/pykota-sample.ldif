@@ -9,6 +9,22 @@
 # $Id$
 #
  
+# The encrypted password below in clear text is : BlfUPg7t
+dn: cn=pykotaadmin,dc=example,dc=com
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: pykotaadmin
+description: PyKota Administrator
+userPassword:: e1NNRDV9WkdTNXlobUNaVFdkY0lZWDdrOFUxc1VGOHY0PQ==
+
+# The encrypted password below in clear text is : ls88DT5j
+dn: cn=pykotauser,dc=example,dc=com
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: pykotauser
+description: PyKota ReadOnly User
+userPassword:: e1NNRDV9ZFZrRjJWOG1QWGo1L3pTQkplSS9TK0hpYURBPQ==
+
 dn: ou=People,dc=example,dc=com
 ou: People
 objectClass: organizationalUnit

@@ -62,20 +62,37 @@ pykota.schema :
         index pykotaBillingCode pres,eq,sub
         index pykotaLastJobIdent eq
         
-    Now you must ensure that the DN you use to bind to    
+    Now you must ensure that the DNs PyKota will use to bind to
     your OpenLDAP server don't have search queries size limits,
     which gives for example (OpenLDAP 2.1.x or above) :
     
-        limits dn="cn=RWadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
-        limits dn="cn=ROadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+        limits dn="cn=pykotaadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+        limits dn="cn=pykotauser,dc=example,dc=com" size.soft=-1 size.hard=soft
     
-    Where RWadmin and ROadmin are the usernames used to bind to your
-    OpenLDAP server within PyKota, respectively in ReadWrite mode 
+    Where pykotaadmin and pykotauser are the usernames used to bind to your
+    OpenLDAP server within PyKota, respectively in complete ReadWrite mode 
     (as set in pykotadmin.conf) and in ReadOnly mode (pykota.conf).
     
-    Finally, restart the OpenLDAP server :    
+    NB : YOU have to define the ACLs necessary for user pykotaadmin to
+    have unlimited Read+Write access to your LDAP tree, and for user
+    pykotauser to have unlimited ReadOnly access to your LDAP tree.
+    In the sentence above, "unlimited" means no limit with regard to
+    the number of records returned by a search operation. Of course
+    you may want to restrict the access to only some attributes, but
+    this is up to you to decide. That's why we don't suggest any
+    ACL there, at least for now.
     
-        $ /etc/init.d/slapd restart
+    Now, stop the OpenLDAP server :    
+    
+        $ /etc/init.d/slapd stop
+        
+    Generate the index files :    
+    
+        $ slapindex
+        
+    And finally restart the OpenLDAP server :    
+    
+        $ /etc/init.d/slapd start
 
 pykota-sample.ldif :
 

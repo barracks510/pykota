@@ -100,8 +100,12 @@ disablehistory: No
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.example.com:389
 #storagename: dc=example,dc=com
-#storageuser: cn=notadmin,dc=example,dc=com
-#storageuserpw: abc.123
+# 
+# NB : the user and password below are the ones contained in 
+# the sample LDIF file pykota/initscripts/ldap/pykota-sample.ldif
+# Please adapt these lines to your own needs.
+#storageuser: cn=pykotauser,dc=example,dc=com
+#storageuserpw: ls88DT5j
 #
 # TLS support for LDAP
 #
