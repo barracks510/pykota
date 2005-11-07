@@ -342,19 +342,22 @@ index pykotaLastJobIdent eq
         
 <screen>        
 # No Limits for PyKota's administrator and read-only user
-limits dn="cn=RWadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
-limits dn="cn=ROadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+limits dn="cn=pykotaadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
+limits dn="cn=pykotauser,dc=example,dc=com" size.soft=-1 size.hard=soft
 </screen>        
 
-        Where RWadmin and ROadmin are the usernames used to bind to your
+        Where pykotaadmin and pykotauser are the usernames used to bind to your
         OpenLDAP server within PyKota, respectively in ReadWrite mode 
         (as set in pykotadmin.conf) and in ReadOnly mode (as set in pykota.conf).
       </para>
       
       <para>
-        Finally, restart the <application>OpenLDAP</application> server :    
+        Finally, stop the <application>OpenLDAP</application> server, generate
+        the index files, and restart <application>OpenLDAP</application>
         <screen>    
-$ /etc/init.d/slapd restart
+$ /etc/init.d/slapd stop
+$ slapindex
+$ /etc/init.d/slapd start
         </screen>
       </para>
       
