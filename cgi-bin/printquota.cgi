@@ -186,7 +186,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 if username is not None :    
                     user = self.storage.getUser(username)
                 else :    
-                    user =None
+                    user = None
                 if self.form.has_key("printername") :
                     printer = self.storage.getPrinter(self.form["printername"].value)
                 else :    
