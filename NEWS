@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.24alpha1 :
     
+        - Fixed a problem which caused backend errors to be ignored.
+        
         - The sample LDIF file now contains the two necessary user
           entries to have an LDAP PyKota Admin and an LDAP PyKota
           ReadOnly user. The sample configuration files were updated
