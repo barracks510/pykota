@@ -1045,10 +1045,11 @@ class CUPSBackend(PyKotaTool) :
             infile = open(self.DataFile, "rb")
         else :    
             infile = None
-        self.runOriginalBackend(infile)
+        retcode = self.runOriginalBackend(infile)
         if self.InputFile is None :
             infile.close()
         self.logdebug("Job's datas sent to real backend.")
+        return retcode
         
     def runOriginalBackend(self, filehandle=None, isBanner=0) :
         """Launches the original backend."""
