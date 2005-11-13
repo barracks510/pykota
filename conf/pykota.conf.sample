@@ -300,6 +300,19 @@ utolower: No
 # [global] section.
 privacy : no
 
+# When the real CUPS backend fail, should we modify the
+# user's page counters and account balance or not ?
+# If you trust your users, set it to "nocharge".
+# If you think they found some mean to kill the real CUPS backend, 
+# then set it to "charge".
+# If unset, the default value is "nocharge", meaning that users won't be
+# charged whenever a CUPS backend fails. This is the OPPOSITE
+# behavior compared to PyKota versions prior to 1.24alpha2.
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+# onbackenderror : charge
+onbackenderror : nocharge
+
 # Should we strip off some characters from the beginning of
 # print jobs' titles ? This can be used to remove smbprn.??????
 # which sometimes appear when printing in raw mode from Windows

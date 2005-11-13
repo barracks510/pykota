@@ -267,6 +267,19 @@ class PyKotaConfig :
                 raise PyKotaConfigError, _("Option enforcement in section %s only supports values in %s") % (printername, str(validenforcements))
             return enforcement    
             
+    def getPrinterOnBackendError(self, printername) :    
+        """Returns what must be done whenever the real CUPS backend fails."""
+        validactions = [ "CHARGE", "NOCHARGE" ]     
+        try :
+            action = self.getPrinterOption(printername, "onbackenderror")
+        except PyKotaConfigError :    
+            return "NOCHARGE"
+        else :    
+            action = action.upper()
+            if action not in validactions :
+                raise PyKotaConfigError, _("Option onbackenderror in section %s only supports values in %s") % (printername, str(validactions))
+            return action  
+            
     def getPrinterOnAccounterError(self, printername) :    
         """Returns what must be done whenever the accounter fails."""
         validactions = [ "CONTINUE", "STOP" ]     
