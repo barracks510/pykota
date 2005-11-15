@@ -21,6 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha2 :
+    
+        - Introduce the "onbackenderror" directive in pykota.conf, to
+          control if the user must be charged or not whenever a real
+          CUPS backend fails. The default value is 'nocharge'.
+          Set it to 'charge' if you think your users can cause a CUPS
+          backend to fail.
+          
+        - Now mark original backends related problems as such in the 
+          printing history. Modified printquota.cgi and pykota.css
+          to make them be more visible.
+          
     - 1.24alpha1 :
     
         - Fixed a problem which caused backend errors to be ignored.

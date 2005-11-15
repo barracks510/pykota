@@ -227,6 +227,8 @@ class PyKotaReportGUI(PyKotaTool) :
                             oddevenclass = "deny"
                         elif job.JobAction == "WARN" :    
                             oddevenclass = "warn"
+                        elif job.JobAction == "PROBLEM" :
+                            oddevenclass = "problem"
                         username_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
                         printername_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "printername" : job.PrinterName}), job.PrinterName)
                         if job.JobHostName :

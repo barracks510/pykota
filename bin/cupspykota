@@ -987,18 +987,33 @@ class CUPSBackend(PyKotaTool) :
         # All the code below doesn't take much time, so it's fine.
         self.storage.beginTransaction()
         try :
+            onbackenderror = self.config.getPrinterOnBackendError(self.PrinterName)
+            if retcode :
+                # NB : We don't send any feedback to the end user. Only the admin
+                # has to know that the real CUPS backend failed.
+                self.Action = "PROBLEM"
+                self.exportReason()
+                if onbackenderror == "NOCHARGE" :
+                    self.JobSize = 0
+                    self.printInfo(_("Job size forced to 0 because the real CUPS backend failed. No accounting will be done."), "warn")
+                else :    
+                    self.printInfo(_("The real CUPS backend failed, but the job will be accounted for anyway."), "warn")
+                    
             # retrieve the job size    
             if self.Action == "DENY" :
                 self.JobSize = 0
                 self.printInfo(_("Job size forced to 0 because printing is denied."))
             else :    
                 self.UserPQuota.resetDenyBannerCounter()
-                self.JobSize = self.accounter.getJobSize(self.Printer)
-                self.sanitizeJobSize()
-                self.JobSize += self.BannerSize
+                if (self.Action != "PROBLEM") or (onbackenderror == "CHARGE") : 
+                    self.JobSize = self.accounter.getJobSize(self.Printer)
+                    self.sanitizeJobSize()
+                    self.JobSize += self.BannerSize
             self.printInfo(_("Job size : %i") % self.JobSize)
             
-            if (self.User.LimitBy == "nochange") or self.Printer.PassThrough :
+            if (self.Action == "PROBLEM") and (onbackenderror == "NOCHARGE") :
+                self.JobPrice = 0.0
+            elif (self.User.LimitBy == "nochange") or self.Printer.PassThrough :
                 # no need to update the quota for the current user on this printer
                 self.printInfo(_("User %s's quota on printer %s won't be modified") % (self.UserName, self.PrinterName))
                 self.JobPrice = self.UserPQuota.computeJobPrice(self.JobSize)
@@ -1016,8 +1031,9 @@ class CUPSBackend(PyKotaTool) :
             self.printInfo(_("Job added to history."))
             
             if hasattr(self, "BillingCode") and self.BillingCode and self.BillingCode.Exists :
-                self.BillingCode.consume(self.JobSize, self.JobPrice)
-                self.printInfo(_("Billing code %s was updated.") % self.BillingCode.BillingCode)
+                if (self.Action != "PROBLEM") or (onbackenderror == "CHARGE") :
+                    self.BillingCode.consume(self.JobSize, self.JobPrice)
+                    self.printInfo(_("Billing code %s was updated.") % self.BillingCode.BillingCode)
         except :    
             self.storage.rollbackTransaction()
             raise
@@ -1063,6 +1079,8 @@ class CUPSBackend(PyKotaTool) :
             arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:6]
         arguments[2] = self.UserName # in case it was overwritten by external script
         # TODO : do something about job-billing option, in case it was overwritten as well...
+        # TODO : do something about the job title : if we are printing a banner and the backend
+        # TODO : uses the job's title to name an output file (cups-pdf:// for example), we're stuck !
         
         self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a for a in arguments])))
         self.regainPriv()    
@@ -1094,20 +1112,22 @@ class CUPSBackend(PyKotaTool) :
                     
         if os.WIFEXITED(status) :
             status = os.WEXITSTATUS(status)
+            message = "CUPS backend %s returned %d." % \
+                            (originalbackend, status)
             if status :
                 level = "error"
+                self.Reason = message
             else :    
                 level = "info"
-            self.printInfo("CUPS backend %s returned %d." % \
-                                     (originalbackend, status), level)
+            self.printInfo(message, level)
             return status
         elif not killed :
-            self.printInfo("CUPS backend %s died abnormally." % \
-                               originalbackend, "error")
+            self.Reason = "CUPS backend %s died abnormally." % originalbackend
+            self.printInfo(self.Reason, "error")
             return -1
         else :
-            self.printInfo("CUPS backend %s was killed." % \
-                               originalbackend, "warn")
+            self.Reason = "CUPS backend %s was killed." % originalbackend
+            self.printInfo(self.Reason, "warn")
             return 1
         
 if __name__ == "__main__" :    

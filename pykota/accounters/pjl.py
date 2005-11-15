@@ -172,7 +172,7 @@ class Handler :
         """Returns the page counter from the printer via internal PJL handling."""
         try :
             if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
-               (os.environ.get("PYKOTAACTION") != "DENY") and \
+               (os.environ.get("PYKOTAACTION") == "ALLOW") and \
                (os.environ.get("PYKOTAPHASE") == "AFTER") and \
                self.parent.filter.JobSizeBytes :
                 self.waitPrinting()
