@@ -82,6 +82,10 @@ footer = """
       <font size="-2">
         <a href="http://www.librelogiciel.com/software/">%s</a>
         &copy; %s %s 
+        <br />
+        <pre>
+%s
+        </pre>
       </font>
     </p>
   </body>
@@ -99,7 +103,7 @@ class PyKotaReportGUI(PyKotaTool) :
                         version.__version__, _("PyKota Reports"), \
                         _("Report"))
         print self.body
-        print footer % (_("Report"), version.__doc__, version.__years__, version.__author__)
+        print footer % (_("Report"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""

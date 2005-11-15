@@ -83,6 +83,10 @@ footer = """
       <font size="-2">
         <a href="http://www.librelogiciel.com/software/">%s</a>
         &copy; %s %s 
+        <br />
+        <pre>
+%s
+        </pre>
       </font>
     </p>
   </body>
@@ -106,7 +110,7 @@ class PyKotaDumperGUI(DumPyKota) :
         print self.htmlFilterInput(" ".join(self.arguments))
         print "<br />"
         print self.htmlSumCheckbox(self.options.get("sum", ""))
-        print footer % (_("Dump"), version.__doc__, version.__years__, version.__author__)
+        print footer % (_("Dump"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
         
     def htmlListDataTypes(self, selected="") :    
         """Displays the datatype selection list."""
