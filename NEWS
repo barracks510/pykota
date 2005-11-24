@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha3 :
+    
+        - Fix for mailandpopup.sh : smbstatus can't be run setuid, 
+          so we regain priviledges before running an external 
+          mailto directive.
+        
     - 1.24alpha2 :
     
         - Introduce the "onbackenderror" directive in pykota.conf, to

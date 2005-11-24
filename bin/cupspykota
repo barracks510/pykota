@@ -803,7 +803,9 @@ class CUPSBackend(PyKotaTool) :
             (mailto, arguments) = self.config.getMailTo(self.PrinterName)
             if mailto == "EXTERNAL" :
                 # TODO : clean this again
+                self.regainPriv()
                 self.externalMailTo(arguments, self.Action, self.User, self.Printer, self.Reason)
+                self.dropPriv()
             else :    
                 # TODO : clean this again
                 admin = self.config.getAdmin(self.PrinterName)
