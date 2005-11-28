@@ -5,6 +5,8 @@
 
 if [ "$1" = "install" ]; then
         chown -R pykota.pykota /etc/pykota
+        chmod 640 /etc/pykota/pykota.conf
+        chmod 600 /etc/pykota/pykotadmin.conf
 fi
 
 exit 0
