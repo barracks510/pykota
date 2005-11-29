@@ -594,7 +594,7 @@ class SQLStorage :
             where.append("jobdate<=%s" % self.doQuote(end))
         if where :    
             query += " AND %s" % " AND ".join(where)
-        query += " ORDER BY id DESC"
+        query += " ORDER BY jobhistory.id DESC"
         if limit :
             query += " LIMIT %s" % self.doQuote(int(limit))
         jobs = []    
