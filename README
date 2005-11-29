@@ -50,16 +50,23 @@ PyKota features :
        
     Databases :
     
-        - Supports PostgreSQL as the Quota Storage backend.
-          Complete database creation script in SQL is included.
+        - Supports PostgreSQL as the database backend.
+          An SQL script to create the database is included.
         
-        - Supports any LDAP server as the Quota Storage backend.
+        - Supports any LDAP server as the database backend.
           Complete LDAP schema and sample empty tree are included.
           Plugging PyKota into your existing LDAP infrastructure
           is really easy thanks to PyKota's great configurability.
           
+        - Supports SQLite as the database backend.
+          An SQL script to create the database is included.
+          
         - The print jobs history can be stored in any database  
           of your choice (or in plain text files) if needed. 
+          
+        - Master and slave databases are supported : master  
+          in read+write mode, slave in readonly mode.
+          Master and slave databases can be of different types !
             
     Printers :        
     
@@ -365,13 +372,17 @@ Prerequisite :
       (http://www.pythonware.com/downloads) if you want to have PyKota 
       generate nice banners for you.
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
-      libraries if you plan to use PostgreSQL as the Quota Storage
-      backend.
+      libraries if you plan to use PostgreSQL as the database backend.
       (http://www.postgresql.org and http://www.pygreql.org)
  or     
     - python-ldap Python module and the OpenLDAP client libraries  
-      if you plan to use an LDAP server as the Quota Storage backend.
+      if you plan to use an LDAP server as the database backend.
       (http://www.openldap.org and http://python-ldap.sourceforge.net)
+ or 
+    - SQLite v3.2.7 and the SQLite libraries if you plan to use SQLite
+      as the database backend (http://www.sqlite.org). You also need the 
+      PySQLite module v2.0.5 or higher (http://www.pysqlite.org)
+      
     
   On Intel i386 architecture, and for performance reasons, it is
   strongly suggested that you install the Python accelerator Psyco, 
@@ -401,8 +412,8 @@ Prerequisite :
     - netcat
     - ghostscript
     
-  You need to have the following tools installed on the Quota Storage  
-  Server :
+  You need to have the following tools installed on the database
+  server :
   
     - PostgreSQL (http://www.postgresql.org)
     
@@ -410,26 +421,33 @@ Prerequisite :
   
     - OpenLDAP, or any other LDAP server (http://www.openldap.org)
     
+  or   
+  
+    - SQLite, v3.2.7 or higher (http://www.sqlite.org).
+      Beware : with SQLite the database server and the print
+      servers MUST be the very same machine.
+    
 NB :    
 
   PygreSQL must be linked with the PostgreSQL client libraries on 
   the Print Server. The PostgreSQL client libraries' version must 
-  match the PostgreSQL version used on the Quota Storage Server. 
+  match the PostgreSQL version used on the database server. 
   
 or  
 
   python-ldap must be linked with the OpenLDAP client libraries on the 
   Print Server. The OpenLDAP client libraries' version should match the 
-  OpenLDAP version used on the Quota Storage Server, if applicable.
+  OpenLDAP version used on the database server, if applicable.
   
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
   alternatives.
   
-  Of course the Print Server and the Quota Storage Server can be the 
+  Of course the Print Server and the database server can be the 
   very same machine if you've got a tiny network, or you can have 
-  multiple Print Servers all storing their quotas on the same Quota 
-  Storage Server if you've got a bigger network. 
+  multiple Print Servers all storing their quotas on the same database
+  server if you've got a bigger network. (NB : with SQLite, the database
+  can't be shared between several print servers)
   
 Hint :  
 ------
@@ -476,7 +494,7 @@ Put the user your printing system is run as in the pykota system group :
 Go to the initscripts subdirectory of PyKota's sources, and choose
 the appropriate storage backend for your configuration. Read carefully
 the associated README file and execute the initialization script
-to create an empty PyKota Storage. Upgrade scripts may be 
+to create an empty PyKota database. Upgrade scripts may be 
 provided as well. NB : if you use PostgreSQL, a good way to
 make PyKota work first time is to modify PostgreSQL's pg_hba.conf
 to allow the 'trust' database connection mode. However once PyKota
