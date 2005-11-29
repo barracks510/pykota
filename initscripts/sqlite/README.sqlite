@@ -58,9 +58,10 @@ pykota.sqlite :
                 
       - Create an SQLite3 database for PyKota :
 
-                # sqlite3 /etc/pykota/pykota.db <pykota.sqlite
-                # chown pykota.pykota /etc/pykota/pykota.db
-                # chmod 660 /etc/pykota/pykota.db
+                # sqlite3 ~pykota/pykota.db <pykota.sqlite
+                # chown pykota.pykota ~pykota/pykota.db
+                # chmod 660 ~pykota/pykota.db
+                # chown pykota.pykota ~pykota       (seems to be necessary)
                 
         NB : adapt the permissions so that the user your printing
              system runs as (e.g. user 'lp') can read and write
