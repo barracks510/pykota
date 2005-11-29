@@ -45,6 +45,8 @@ pykota.sqlite :
         for example on my Debian box :
         
                 # apt-get install sqlite3 libsqlite3-dev
+                
+        You can also download SQLite from http://www.sqlite.org        
 
       - Download and install PySQLite v2.0.5 or higher from :
       
