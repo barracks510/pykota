@@ -117,3 +117,19 @@ class Storage(BaseStorage, SQLStorage) :
         else :    
             typ = "text"
         return pg._quote(field, typ)
+        
+    def prepareRawResult(self, result) :
+        """Prepares a raw result by including the headers."""
+        if result.ntuples() > 0 :
+            entries = [result.listfields()]
+            entries.extend(result.getresult())
+            nbfields = len(entries[0])
+            for i in range(1, len(entries)) :
+                fields = list(entries[i])
+                for j in range(nbfields) :
+                    field = fields[j]
+                    if type(field) == StringType :
+                        fields[j] = self.databaseToUserCharset(field) 
+                entries[i] = tuple(fields)    
+            return entries
+        

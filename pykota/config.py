@@ -94,11 +94,19 @@ class PyKotaConfig :
     def getStorageBackend(self) :    
         """Returns the storage backend information as a Python mapping."""        
         backendinfo = {}
-        for option in [ "storagebackend", "storageserver", \
-                        "storagename", "storageuser", \
-                      ] :
-            backendinfo[option] = self.getGlobalOption(option)
-        backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=1)  # password is optional
+        backend = self.getGlobalOption("storagebackend").lower()
+        backendinfo["storagebackend"] = backend
+        if backend == "sqlitestorage" :
+            issqlite = 1
+            backendinfo["storagename"] = self.getGlobalOption("storagename")
+            for option in ["storageserver", "storageuser", "storageuserpw"] :
+                backendinfo[option] = None          
+        else :
+            issqlite = 0
+            for option in ["storageserver", "storagename", "storageuser"] :
+                backendinfo[option] = self.getGlobalOption(option)
+            backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=1)  # password is optional
+            
         backendinfo["storageadmin"] = None
         backendinfo["storageadminpw"] = None
         if self.isAdmin :
@@ -108,7 +116,8 @@ class PyKotaConfig :
                 try :
                     backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1)
                 except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
-                    raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", self.adminfilename)
+                    if not issqlite :
+                        raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", self.adminfilename)
                 try :
                     backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1)
                 except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    

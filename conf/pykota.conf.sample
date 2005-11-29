@@ -47,10 +47,21 @@
 
 [global]
 # Storage backend for quotas
-# only PGStorage (PostgreSQL) and LDAPStorage (OpenLDAP) are supported.
+# only PGStorage (PostgreSQL), LDAPStorage (OpenLDAP or else),
+# and SQLiteStorage (SQLite 3) are supported.
+#
 # MySQL and BerkeleyDB are planned.
 
-# the 'postgresql' value is deprecated, use 'pgstorage' instead.
+####################################################################
+# SQLite3 : comment this section out if you use another backend    #
+####################################################################
+
+#storagebackend : sqlitestorage
+#storagename: /etc/pykota/pykota.db
+
+####################################################################
+# PostgreSQL : comment this section out if you use another backend #
+####################################################################
 storagebackend: pgstorage
 
 # Quota Storage Server hostname (and optional port)
@@ -73,29 +84,9 @@ storagename: pykota
 storageuser: pykotauser
 # storageuserpw: Comment out if unused, or set to Quota Storage user password
 
-# Should the database caching mechanism be enabled or not ?
-# If unset, caching is disabled. Possible values Y/N/YES/NO
-# caching mechanism works with both PostgreSQL and OpenLDAP backends
-# but may be really interesting only with OpenLDAP.
-#
-# ACTIVATING CACHE MAY CAUSE PRECISION PROBLEMS IN PRINT ACCOUNTING
-# IF AN USER PRINTS ON SEVERAL PRINTERS AT THE SAME TIME.
-# YOU MAY FIND IT INTERESTING ANYWAY, ESPECIALLY FOR LDAP.
-#
-# FYI, I ALWAYS SET IT TO YES !
-#
-storagecaching: No
-
-# Should full job history be disabled ?
-# If unset or set to No, full job history is kept in the database.
-# This will be useful in the future when the report generator
-# will be written.
-# Disabling the job history can be useful with heavily loaded
-# LDAP servers, to not make the LDAP tree grow out of control.
-# Disabling the job history with the PostgreSQL backend works too
-# but it's probably less useful than with LDAP.
-disablehistory: No
-
+####################################################################
+# LDAP : comment this section out if you use another backend       #
+####################################################################
 # LDAP example, uncomment and adapt it to your own configuration :
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.example.com:389
@@ -182,6 +173,34 @@ disablehistory: No
 # BEWARE : SETTING THIS TO 'YES' CAUSES PROBLEMS FOR NOW
 # BETTER TO LET IT SET TO 'NO'
 # ldapcache: no
+
+#############################################################
+# ALL directives below are common to ALL storage backends   #
+#############################################################
+
+# Should the database caching mechanism be enabled or not ?
+# If unset, caching is disabled. Possible values Y/N/YES/NO
+# caching mechanism works with both PostgreSQL and OpenLDAP backends
+# but may be really interesting only with OpenLDAP.
+#
+# ACTIVATING CACHE MAY CAUSE PRECISION PROBLEMS IN PRINT ACCOUNTING
+# IF AN USER PRINTS ON SEVERAL PRINTERS AT THE SAME TIME.
+# YOU MAY FIND IT INTERESTING ANYWAY, ESPECIALLY FOR LDAP.
+#
+# FYI, I ALWAYS SET IT TO YES !
+#
+storagecaching: No
+
+# Should full job history be disabled ?
+# If unset or set to No, full job history is kept in the database.
+# This will be useful in the future when the report generator
+# will be written.
+# Disabling the job history can be useful with heavily loaded
+# LDAP servers, to not make the LDAP tree grow out of control.
+# Disabling the job history with the PostgreSQL backend works too
+# but it's probably less useful than with LDAP.
+disablehistory: No
+
 
 # Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 'syslog' here)

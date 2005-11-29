@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha4 :
+    
+        - Added support for the SQLite3 backend.
+          See pykota/initscripts/sqlite/README.sqlite
+        
     - 1.24alpha3 :
     
         - Fix for mailandpopup.sh : smbstatus can't be run setuid, 

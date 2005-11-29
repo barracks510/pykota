@@ -122,3 +122,19 @@ class Storage(BaseStorage, SQLStorage) :
             return ("'%s'" % field.replace("'", "''")).decode("UTF-8")
         else :     
             return "NULL"
+            
+    def prepareRawResult(self, result) :
+        """Prepares a raw result by including the headers."""
+        if result :
+            entries = [tuple([f[0] for f in self.cursor.description])]
+            for entry in result :    
+                row = []
+                for value in entry :
+                    try :
+                        value = value.encode("UTF-8")
+                    except :
+                        pass
+                    row.append(value)
+                entries.append(tuple(row))    
+            return entries   
+        
