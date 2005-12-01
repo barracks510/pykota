@@ -22,7 +22,6 @@
 #
 #
 
-from types import StringType
 from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, \
                            StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
