@@ -52,6 +52,7 @@ class DumPyKota(PyKotaTool) :
                        "pmembers" : N_("Printers Groups Membership"), 
                        "umembers" : N_("Users Groups Membership"),
                        "billingcodes" : N_("Billing Codes"),
+                       "all": N_("All"),
                      }
     validformats = { "csv" : N_("Comma Separated Values"),
                      "ssv" : N_("Semicolon Separated Values"),
@@ -73,22 +74,28 @@ class DumPyKota(PyKotaTool) :
         if restricted and not self.config.isAdmin :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
-        extractonly = {}
-        for filterexp in arguments :
-            if filterexp.strip() :
-                try :
-                    (filterkey, filtervalue) = [part.strip() for part in filterexp.split("=")]
-                    if filterkey not in self.validfilterkeys :
-                        raise ValueError                
-                except ValueError :    
-                    raise PyKotaCommandLineError, _("Invalid filter value [%s], see help.") % filterexp
-                else :    
-                    extractonly.update({ filterkey : filtervalue })
-            
         datatype = options["data"]
         if datatype not in self.validdatatypes.keys() :
             raise PyKotaCommandLineError, _("Invalid modifier [%s] for --data command line option, see help.") % datatype
                     
+        extractonly = {}
+        if datatype == "all" :            
+            if (options["format"] != "xml") or options["sum"] or arguments :
+                self.printInfo(_("Dumping all PyKota's datas forces format to XML, and disables --sum and filters."), "warn")
+            options["format"] = "xml"
+            options["sum"] = None
+        else :    
+            for filterexp in arguments :
+                if filterexp.strip() :
+                    try :
+                        (filterkey, filtervalue) = [part.strip() for part in filterexp.split("=")]
+                        if filterkey not in self.validfilterkeys :
+                            raise ValueError                
+                    except ValueError :    
+                        raise PyKotaCommandLineError, _("Invalid filter value [%s], see help.") % filterexp
+                    else :    
+                        extractonly.update({ filterkey : filtervalue })
+            
         format = options["format"]
         if (format not in self.validformats.keys()) \
            or ((format == "cups") \
@@ -101,22 +108,40 @@ class DumPyKota(PyKotaTool) :
         if options["sum"] and datatype not in ("payments", "history") : 
             raise PyKotaCommandLineError, _("Invalid data type [%s] for --sum command line option, see help.") % datatype
             
-        entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
-        if entries :
-            mustclose = 0    
-            if options["output"].strip() == "-" :    
-                self.outfile = sys.stdout
-            else :    
-                self.outfile = open(options["output"], "w")
-                mustclose = 1
-                
-            retcode = getattr(self, "dump%s" % format.title())(self.summarizeDatas(entries, datatype, extractonly, options["sum"]), datatype)
             
-            if mustclose :
-                self.outfile.close()
+        retcode = 0
+        nbentries = 0    
+        mustclose = 0    
+        if options["output"].strip() == "-" :    
+            self.outfile = sys.stdout
+        else :    
+            self.outfile = open(options["output"], "w")
+            mustclose = 1
+            
+        if datatype == "all" :    
+            # NB : order does matter to allow easier or faster restore
+            allentries = []
+            datatypes = [ "printers", "pmembers", "users", "groups", \
+                          "billingcodes", "umembers", "upquotas", \
+                          "gpquotas", "payments", "history" ]
+            for datatype in datatypes :
+                entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
+                nbentries += len(entries)
+                allentries.append(entries)
+            retcode = self.dumpXml(allentries, datatypes)
+                         
+        else :    
+            entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
+            if entries :
+                nbentries = len(entries)
+                retcode = getattr(self, "dump%s" % format.title())([self.summarizeDatas(entries, datatype, extractonly, options["sum"])], [datatype])
                 
-            return retcode    
-        return 0
+        if mustclose :
+            self.outfile.close()
+            if not nbentries : 
+                os.remove(options["output"])
+            
+        return retcode
         
     def summarizeDatas(self, entries, datatype, extractonly, sum=0) :    
         """Transforms the datas into a summarized view (with totals).
@@ -180,36 +205,38 @@ class DumPyKota(PyKotaTool) :
             newentries.append(summary)
             return newentries
             
-    def dumpWithSeparator(self, separator, entries) :    
+    def dumpWithSeparator(self, separator, allentries) :    
         """Dumps datas with a separator."""
-        for entry in entries :
-            line = []
-            for value in entry :
-                if type(value).__name__ in ("str", "NoneType") :
-                    line.append('"%s"' % str(value).replace(separator, "\\%s" % separator).replace('"', '\\"'))
-                else :    
-                    line.append(str(value))
-            try :
-                self.outfile.write("%s\n" % separator.join(line))
-            except IOError, msg :    
-                sys.stderr.write("%s : %s\n" % (_("PyKota data dumper failed : I/O error"), msg))
-                return -1
+        for entries in allentries :
+            for entry in entries :
+                line = []
+                for value in entry :
+                    if type(value).__name__ in ("str", "NoneType") :
+                        line.append('"%s"' % str(value).replace(separator, "\\%s" % separator).replace('"', '\\"'))
+                    else :    
+                        line.append(str(value))
+                try :
+                    self.outfile.write("%s\n" % separator.join(line))
+                except IOError, msg :    
+                    sys.stderr.write("%s : %s\n" % (_("PyKota data dumper failed : I/O error"), msg))
+                    return -1
         return 0        
         
-    def dumpCsv(self, entries, dummy) :    
+    def dumpCsv(self, allentries, dummy) :    
         """Dumps datas with a comma as the separator."""
-        return self.dumpWithSeparator(",", entries)
+        return self.dumpWithSeparator(",", allentries)
                            
-    def dumpSsv(self, entries, dummy) :    
+    def dumpSsv(self, allentries, dummy) :    
         """Dumps datas with a comma as the separator."""
-        return self.dumpWithSeparator(";", entries)
+        return self.dumpWithSeparator(";", allentries)
                            
-    def dumpTsv(self, entries, dummy) :    
+    def dumpTsv(self, allentries, dummy) :    
         """Dumps datas with a comma as the separator."""
-        return self.dumpWithSeparator("\t", entries)
+        return self.dumpWithSeparator("\t", allentries)
         
-    def dumpCups(self, entries, dummy) :    
+    def dumpCups(self, allentries, dummy) :    
         """Dumps history datas as CUPS' page_log format."""
+        entries = allentries[0]
         fieldnames = entries[0]
         fields = {}
         for i in range(len(fieldnames)) :
@@ -230,27 +257,32 @@ class DumPyKota(PyKotaTool) :
             billingcode = entry[fields["billingcode"]] or "-"
             for pagenum in range(1, jobsize+1) :
                 self.outfile.write("%s %s %s [%s] %s %s %s %s\n" % (printername, username, jobid, jobdate, pagenum, copies, billingcode, hostname))
+        return 0        
         
-    def dumpXml(self, entries, datatype) :    
+    def dumpXml(self, allentries, datatypes) :
         """Dumps datas as XML."""
         x = jaxml.XML_document(encoding="UTF-8")
         x.pykota(version=version.__version__, author=version.__author__)
-        x.dump(storage=self.config.getStorageBackend()["storagebackend"], type=datatype)
-        headers = entries[0]
-        for entry in entries[1:] :
+        for (entries, datatype) in zip(allentries, datatypes) :
             x._push()
-            x.entry()
-            for (header, value) in zip(headers, entry) :
-                strvalue = str(value)
-                typval = type(value).__name__
-                if header in ("filename", "title", "options", "billingcode") \
-                          and (typval == "str") :
-                    try :
-                        strvalue = unicode(strvalue, self.getCharset()).encode("UTF-8")
-                    except UnicodeError :    
-                        pass
-                    strvalue = saxutils.escape(strvalue, { "'" : "&apos;", \
-                                                           '"' : "&quot;" })
-                x.attribute(strvalue, type=typval, name=header)
+            x.dump(storage=self.config.getStorageBackend()["storagebackend"], type=datatype)
+            headers = entries[0]
+            for entry in entries[1:] :
+                x._push()
+                x.entry()
+                for (header, value) in zip(headers, entry) :
+                    strvalue = str(value)
+                    typval = type(value).__name__
+                    if header in ("filename", "title", "options", "billingcode") \
+                              and (typval == "str") :
+                        try :
+                            strvalue = unicode(strvalue, self.getCharset()).encode("UTF-8")
+                        except UnicodeError :    
+                            pass
+                        strvalue = saxutils.escape(strvalue, { "'" : "&apos;", \
+                                                               '"' : "&quot;" })
+                    x.attribute(strvalue, type=typval, name=header)
+                x._pop()    
             x._pop()    
         x._output(self.outfile)
+        return 0        

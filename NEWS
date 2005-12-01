@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha5 :
+    
+        - dumpykota can now dump the complete database in XML 
+          format.
+          
     - 1.24alpha4 :
     
         - Added support for the SQLite3 backend.

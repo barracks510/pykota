@@ -56,6 +56,8 @@ options :
                          - pmembers : dumps printer groups members.
                          - umembers : dumps user groups members.
                          - billingcodes : dumps billing codes.
+                         - all : dumps all PyKota datas. The output format
+                                 is always XML in this case.
                          
                        NB : the -d | --data command line option   
                        is MANDATORY.
@@ -68,7 +70,7 @@ options :
                          - csv : separate datas with commas
                          - ssv : separate datas with semicolons
                          - tsv : separate datas with tabs
-                         - xml : dump data as XML
+                         - xml : dump data as XML 
                          - cups : dump datas in CUPS' page_log format :
                                   ONLY AVAILABLE WITH --data history
                          
