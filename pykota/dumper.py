@@ -126,8 +126,9 @@ class DumPyKota(PyKotaTool) :
                           "gpquotas", "payments", "history" ]
             for datatype in datatypes :
                 entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
-                nbentries += len(entries)
-                allentries.append(entries)
+                if entries :
+                    nbentries += len(entries)
+                    allentries.append(entries)
             retcode = self.dumpXml(allentries, datatypes)
                          
         else :    
