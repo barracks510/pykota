@@ -17,14 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-
-============================================================
-
-        NB : FOR NOW SQLITE SUPPORT IS EXPERIMENTAL
-
-        USE AT YOUR OWN RISK !!!
-
-============================================================
+===================================================================
 
 Documentation :
 ---------------
@@ -50,7 +43,7 @@ pykota.sqlite :
 
       - Download and install PySQLite v2.0.5 or higher from :
       
-                http://initd.org/tracker/pysqlite
+                http://www.pysqlite.org
 
         Install it this way :
 
