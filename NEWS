@@ -23,6 +23,13 @@ PyKota NEWS :
        
     - 1.24alpha5 :
     
+        - All command line tools now accept -A | --arguments filename.args
+          as a way to bypass the shell's maximal command line size :
+          just put each argument on a line by itself in a file, and
+          pass the file's name as the -A | --arguments command line
+          option's argument. For now this won't be documented in
+          commands' helps.
+          
         - dumpykota can now dump the complete database in XML 
           format.
           

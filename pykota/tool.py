@@ -253,6 +253,8 @@ class Tool :
     def parseCommandline(self, argv, short, long, allownothing=0) :
         """Parses the command line, controlling options."""
         # split options in two lists: those which need an argument, those which don't need any
+        short = "%sA:" % short
+        long.append("arguments=")
         withoutarg = []
         witharg = []
         lgs = len(short)
@@ -276,37 +278,52 @@ class Tool :
                 # doesn't need an argument
                 withoutarg.append(option)
         
-        # we begin with all possible options unset
-        parsed = {}
-        for option in withoutarg + witharg :
-            parsed[option] = None
-        
         # then we parse the command line
-        args = []       # to not break if something unexpected happened
-        try :
-            options, args = getopt.getopt(argv, short, long)
-            if options :
-                for (o, v) in options :
-                    # we skip the '-' chars
-                    lgo = len(o)
-                    i = 0
-                    while (i < lgo) and (o[i] == '-') :
-                        i = i + 1
-                    o = o[i:]
-                    if o in witharg :
-                        # needs an argument : set it
-                        parsed[o] = v
-                    elif o in withoutarg :
-                        # doesn't need an argument : boolean
-                        parsed[o] = 1
-                    else :
-                        # should never occur
-                        raise PyKotaToolError, "Unexpected problem when parsing command line"
-            elif (not args) and (not allownothing) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
+        done = 0
+        while not done :
+            # we begin with all possible options unset
+            parsed = {}
+            for option in withoutarg + witharg :
+                parsed[option] = None
+            args = []       # to not break if something unexpected happened
+            try :
+                options, args = getopt.getopt(argv, short, long)
+                if options :
+                    for (o, v) in options :
+                        # we skip the '-' chars
+                        lgo = len(o)
+                        i = 0
+                        while (i < lgo) and (o[i] == '-') :
+                            i = i + 1
+                        o = o[i:]
+                        if o in witharg :
+                            # needs an argument : set it
+                            parsed[o] = v
+                        elif o in withoutarg :
+                            # doesn't need an argument : boolean
+                            parsed[o] = 1
+                        else :
+                            # should never occur
+                            raise PyKotaToolError, "Unexpected problem when parsing command line"
+                elif (not args) and (not allownothing) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
+                    self.display_usage_and_quit()
+            except getopt.error, msg :
+                self.printInfo(msg)
                 self.display_usage_and_quit()
-        except getopt.error, msg :
-            self.printInfo(msg)
-            self.display_usage_and_quit()
+            else :    
+                if parsed["arguments"] or parsed["A"] :
+                    # arguments are in a file, we ignore all other arguments
+                    # and reset the list of arguments to the lines read from
+                    # the file.
+                    argsfile = open(parsed["arguments"] or parsed["A"], "r")
+                    argv = [ l.strip() for l in argsfile.readlines() ]
+                    argsfile.close()
+                    for i in range(len(argv)) :
+                        argi = argv[i]
+                        if argi.startswith('"') and argi.endswith('"') :
+                            argv[i] = argi[1:-1]
+                else :    
+                    done = 1
         return (parsed, args)
     
 class PyKotaTool(Tool) :    
