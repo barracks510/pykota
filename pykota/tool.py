@@ -304,12 +304,11 @@ class Tool :
                             parsed[o] = 1
                         else :
                             # should never occur
-                            raise PyKotaToolError, "Unexpected problem when parsing command line"
+                            raise PyKotaCommandLineError, "Unexpected problem when parsing command line"
                 elif (not args) and (not allownothing) and sys.stdin.isatty() : # no option and no argument, we display help if we are a tty
                     self.display_usage_and_quit()
             except getopt.error, msg :
-                self.printInfo(msg)
-                self.display_usage_and_quit()
+                raise PyKotaCommandLineError, str(msg)
             else :    
                 if parsed["arguments"] or parsed["A"] :
                     # arguments are in a file, we ignore all other arguments
