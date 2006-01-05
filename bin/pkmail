@@ -158,8 +158,10 @@ if __name__ == "__main__" :
             retcode = mailparser.main(args, options)
     except KeyboardInterrupt :        
         sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+        retcode = -3
     except PyKotaCommandLineError, msg :    
         sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        retcode = -2
     except SystemExit :        
         pass
     except :

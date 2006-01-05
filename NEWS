@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha6 :
+    
+        - Now command line errors and Ctrl+C repectively cause
+          PyKota commands to exit with status -2 and -3.
+          
     - 1.24alpha5 :
     
         - All command line tools now accept -A | --arguments filename.args
