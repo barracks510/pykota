@@ -39,5 +39,3 @@ CREATE TABLE IF NOT EXISTS history (
 -- 
 -- Dumping data for table `history`
 -- 
-
-INSERT INTO history VALUES (1, '23971', 'hyclak', 'print325', 'math-laser', 1, 0, 'ALLOW', 'mysql_history.py', 1, '', 'localhost', 'f5775c4bad32c999074e2eb5d8374aac', 1, 0, '20060110142024');
