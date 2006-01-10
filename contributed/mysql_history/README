@@ -1,0 +1,14 @@
+This is a simple mysql history script contributed by 
+Matt Hyclak <hyclak@math.ohiou.edu>
+
+To use, place the mysql_history.conf file in your pykota config directory. 
+This is located in the pykota user's home directory, or as a last resort in 
+/etc/pykota. Modify the variables to match your setup.
+
+The mysql_history.py should be called from a posthook script. No variables need
+be passed to the script, as it extracts everything from the environment 
+variables set by Pykota.
+
+The history.sql file includes the SQL statements to create the database used
+by the mysql_history.py program. This can be extended fairly trivially if you 
+wish to capture extra data.
