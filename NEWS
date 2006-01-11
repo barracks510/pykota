@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.24alpha6 :
     
+        - Now waitprinter.sh accepts SNMP version number and 
+          community name as arguments, thanks to Brandon
+          Holbrook.
+          
         - Now command line errors and Ctrl+C repectively cause
           PyKota commands to exit with status -2 and -3.
           

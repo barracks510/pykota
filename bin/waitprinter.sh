@@ -38,14 +38,18 @@ function log_msg() {
 #--------------------------------------------------------------------------
 function printer_status_get() {
         local printer="$1"
-        PRINTER_STATUS=`snmpget -v1 -c public -Ov ${printer} HOST-RESOURCES-MIB::hrPrinterStatus.1`
+        local comm="$2"
+        local version="$3"
+        PRINTER_STATUS=`snmpget -v${version} -c ${comm} -Ov ${printer} HOST-RESOURCES-MIB::hrPrinterStatus.1`
 }
 #--------------------------------------------------------------------------
 function printing_wait() {
         local printer="$1"
-        log_msg "CICLE: printing_wait"
+        local comm="$2"
+        local version="$3"
+        log_msg "CYCLE: printing_wait"
         while [ 1 ]; do
-                printer_status_get "${printer}"
+                printer_status_get "${printer}" "${comm}" "${version}"
                 log_msg "${PRINTER_STATUS}"
                 echo "${PRINTER_STATUS}" | grep -iE '(printing)|(idle)' >/dev/null && break
                 sleep ${SNMP_DELAY}
@@ -54,9 +58,11 @@ function printing_wait() {
 #--------------------------------------------------------------------------
 function idle_wait() {
         local printer="$1" idle_num=0 idle_flag=0
-        log_msg "CICLE: idle_wait"
+        local comm="$2"
+        local version="$3"
+        log_msg "CYCLE: idle_wait"
         while [ ${idle_num} -lt ${IDLE_WAIT_NUM} ]; do
-                printer_status_get "${printer}"
+                printer_status_get "${printer}" "${comm}" "${version}"
                 log_msg "${PRINTER_STATUS}"
                 idle_flag=0
                 echo "${PRINTER_STATUS}" | grep -iE '(idle)' >/dev/null && idle_flag=1
@@ -71,13 +77,21 @@ function idle_wait() {
 #--------------------------------------------------------------------------
 function main() {
         local printer="$1"
+        local comm="$2"
+        local version="$3"
+        if [ x${comm} == "x" ]; then
+                comm="public"
+        fi
+        if [ x${version} == "x" ]; then
+                version="1"
+        fi
         log_msg "BEGIN"
         ##log_msg "`ls -la /var/spool/{cups,samba}`"
         log_msg "Pykota Phase: ${PYKOTAPHASE}"
         if [ x$PYKOTASTATUS != "xCANCELLED" ] && [ x$PYKOTAACTION = "xALLOW" ] && [ x$PYKOTAPHASE = "xAFTER" ] ; then
-                printing_wait "${printer}"
+                printing_wait "${printer}" "${comm}" "${version}"
         fi
-        idle_wait "${printer}" #in any case
+        idle_wait "${printer}" "${comm}" "${version}" #in any case
         ##log_msg "`ls -la /var/spool/{cups,samba}`"
         log_msg "END"
 }
@@ -85,5 +99,5 @@ function main() {
 # MAIN
 #==========================================================================
 PRINTER_STATUS=""
-main "$1"
+main "$1" "$2" "$3"
 exit $?
