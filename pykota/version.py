@@ -27,7 +27,7 @@ __doc__ = "PyKota : a complete Printing Quota Solution for CUPS."
 
 __author__ = "Jerome Alet - alet@librelogiciel.com"
 
-__years__ = "2003, 2004, 2005"
+__years__ = "2003, 2004, 2005, 2006"
 
 __gplblurb__ = """This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
