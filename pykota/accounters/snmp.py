@@ -120,8 +120,8 @@ else :
                             self.deviceStatus = self.values[2]
                             self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'" \
                                  % (self.printerInternalPageCounter, \
-                                    printerStatusValues.get(self.printerStatus, "ILLEGAL VALUE"), \
-                                    deviceStatusValues.get(self.deviceStatus, "ILLEGAL VALUE")))
+                                    printerStatusValues.get(self.printerStatus), \
+                                    deviceStatusValues.get(self.deviceStatus)))
                         except IndexError :    
                             self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass
@@ -153,16 +153,21 @@ else :
                             break
                         elif (time.time() - timebefore) > NOPRINTINGMAXDELAY :
                             # More than X seconds without the printer being in 'printing' mode
-                            # We can safely assume this won't change
-                            if self.printerInternalPageCounter == previousValue :
-                                # Here the job won't be printed, because probably
-                                # the printer rejected it for some reason.
-                                self.parent.filter.printInfo("Printer %s probably won't print this job !!!" % self.parent.filter.PrinterName, "warn")
-                            else :     
-                                # Here the job has already been entirely printed, and
-                                # the printer has already passed from 'idle' to 'printing' to 'idle' again.
-                                self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
-                            break
+                            # We can safely assume this won't change if printer is now 'idle'
+                            pstatusAsString = printerStatusValues.get(self.printerStatus)
+                            dstatusAsString = deviceStatusValues.get(self.deviceStatus)
+                            if (pstatusAsString == 'idle') or \
+                                ((pstatusAsString == 'other') and \
+                                 (dstatusAsString == 'running')) :
+                                if self.printerInternalPageCounter == previousValue :
+                                    # Here the job won't be printed, because probably
+                                    # the printer rejected it for some reason.
+                                    self.parent.filter.printInfo("Printer %s probably won't print this job !!!" % self.parent.filter.PrinterName, "warn")
+                                else :     
+                                    # Here the job has already been entirely printed, and
+                                    # the printer has already passed from 'idle' to 'printing' to 'idle' again.
+                                    self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
+                                break
                 self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)    
                 time.sleep(ITERATIONDELAY)
             
@@ -190,6 +195,7 @@ else :
                 
         def retrieveInternalPageCounter(self) :
             """Returns the page counter from the printer via internal SNMP handling."""
+            self.waitPrinting()
             try :
                 if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
                    (os.environ.get("PYKOTAACTION") == "ALLOW") and \
