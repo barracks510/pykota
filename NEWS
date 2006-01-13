@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.24alpha6 :
     
+        - Fixed internal SNMP and PJL handling code for very fast
+          printers : PyKota didn't see them going from 'idle'
+          to 'printing' to 'idle' again.
+          
         - Now waitprinter.sh accepts SNMP version number and 
           community name as arguments, thanks to Brandon
           Holbrook.

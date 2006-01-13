@@ -32,6 +32,7 @@ import signal
 # is in fact wasted in the sock.recv() blocking call, with the timeout
 ITERATIONDELAY = 1   # 1 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
+NOPRINTINGMAXDELAY = 30 # The printer must begin to print within 30 seconds.
 
 # Here's the real thing :
 TIMEOUT = 5
@@ -129,6 +130,8 @@ class Handler :
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
+        previousValue = self.parent.getLastPageCounter()
+        timebefore = time.time()
         firstvalue = None
         while 1:
             self.retrievePJLValues()
@@ -146,6 +149,18 @@ class Handler :
                         # BUT the page counter increases !!!
                         # So we can probably quit being sure it is printing.
                         self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.PrinterName, "warn")
+                        break
+                    elif (time.time() - timebefore) > NOPRINTINGMAXDELAY :
+                        # More than X seconds without the printer being in 'printing' mode
+                        # We can safely assume this won't change
+                        if self.printerInternalPageCounter == previousValue :
+                            # Here the job won't be printed, because probably
+                            # the printer rejected it for some reason.
+                            self.parent.filter.printInfo("Printer %s probably won't print this job !!!" % self.parent.filter.PrinterName, "warn")
+                        else :     
+                            # Here the job has already been entirely printed, and
+                            # the printer has already passed from 'idle' to 'printing' to 'idle' again.
+                            self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                         break
             self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)
             time.sleep(ITERATIONDELAY)
@@ -203,6 +218,9 @@ def main(hostname) :
             self.arguments = "pjl:9100"
             self.filter = fakeFilter()
             self.protocolHandler = Handler(self, sys.argv[1])
+            
+        def getLastPageCounter(self) :    
+            return 0
         
     acc = fakeAccounter()            
     return acc.protocolHandler.retrieveInternalPageCounter()

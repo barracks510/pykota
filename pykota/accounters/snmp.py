@@ -24,6 +24,7 @@
 
 ITERATIONDELAY = 1.5   # 1.5 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
+NOPRINTINGMAXDELAY = 30 # The printer must begin to print within 30 seconds.
 
 import sys
 import os
@@ -96,7 +97,7 @@ else :
     
         def handleAnswer(self, wholeMsg, notusedhere, req):
             """Decodes and handles the SNMP answer."""
-            self.parent.filter.logdebug("SNMP message : '%s'" % repr(wholeMsg))
+            self.parent.filter.logdebug("SNMP answer : '%s'" % repr(wholeMsg))
             ver = alpha.protoVersions[alpha.protoVersionId1]
             rsp = ver.Message()
             try :
@@ -117,7 +118,10 @@ else :
                             self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
                             self.printerStatus = self.values[1]
                             self.deviceStatus = self.values[2]
-                            self.parent.filter.logdebug("SNMP answer is decoded : PageCounter : %s  PrinterStatus : %s  DeviceStatus : %s" % tuple(self.values))
+                            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'" \
+                                 % (self.printerInternalPageCounter, \
+                                    printerStatusValues.get(self.printerStatus, "ILLEGAL VALUE"), \
+                                    deviceStatusValues.get(self.deviceStatus, "ILLEGAL VALUE")))
                         except IndexError :    
                             self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass
@@ -126,6 +130,8 @@ else :
                         
         def waitPrinting(self) :
             """Waits for printer status being 'printing'."""
+            previousValue = self.parent.getLastPageCounter()
+            timebefore = time.time()
             firstvalue = None
             while 1:
                 self.retrieveSNMPValues()
@@ -144,6 +150,18 @@ else :
                             # BUT the page counter increases !!!
                             # So we can probably quit being sure it is printing.
                             self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.PrinterName, "warn")
+                            break
+                        elif (time.time() - timebefore) > NOPRINTINGMAXDELAY :
+                            # More than X seconds without the printer being in 'printing' mode
+                            # We can safely assume this won't change
+                            if self.printerInternalPageCounter == previousValue :
+                                # Here the job won't be printed, because probably
+                                # the printer rejected it for some reason.
+                                self.parent.filter.printInfo("Printer %s probably won't print this job !!!" % self.parent.filter.PrinterName, "warn")
+                            else :     
+                                # Here the job has already been entirely printed, and
+                                # the printer has already passed from 'idle' to 'printing' to 'idle' again.
+                                self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                             break
                 self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)    
                 time.sleep(ITERATIONDELAY)
@@ -205,6 +223,9 @@ def main(hostname) :
             self.arguments = "snmp:public"
             self.filter = fakeFilter()
             self.protocolHandler = Handler(self, hostname)
+            
+        def getLastPageCounter(self) :    
+            return 0
         
     acc = fakeAccounter()            
     return acc.protocolHandler.retrieveInternalPageCounter()
