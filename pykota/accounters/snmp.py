@@ -195,7 +195,6 @@ else :
                 
         def retrieveInternalPageCounter(self) :
             """Returns the page counter from the printer via internal SNMP handling."""
-            self.waitPrinting()
             try :
                 if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
                    (os.environ.get("PYKOTAACTION") == "ALLOW") and \
