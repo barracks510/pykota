@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.24alpha7 :
      
+        - Matt Hyclak contributed the possibility to store the printing
+          history in a MySQL database. See the contributed/ directory
+          for details.
+          
         - Added 2006 to the copyright's years.
         
     - 1.24alpha6 :
