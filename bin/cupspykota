@@ -58,6 +58,7 @@ class CUPSBackend(PyKotaTool) :
         """Deferred initialization."""
         PyKotaTool.deferredInit(self)
         self.gotSigTerm = 0
+        self.disableSigInt()
         self.installSigTermHandler()
         
     def sigtermHandler(self, signum, frame) :
@@ -77,6 +78,18 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Installing SIGTERM handler...")
         signal.signal(signal.SIGTERM, self.sigtermHandler)
         self.logdebug("SIGTERM handler installed.")
+        
+    def disableSigInt(self) :    
+        """Disables the SIGINT signal (which raises KeyboardInterrupt)."""
+        self.logdebug("Disabling SIGINT...")
+        self.oldSigIntHandler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+        self.logdebug("SIGINT disabled.")
+        
+    def enableSigInt(self) :    
+        """Enables the SIGINT signal (which raises KeyboardInterrupt)."""
+        self.logdebug("Enabling SIGINT...")
+        signal.signal(signal.SIGINT, self.oldSigIntHandler)
+        self.logdebug("SIGINT enabled.")
         
     def discoverOtherBackends(self) :    
         """Discovers the other CUPS backends.
@@ -237,6 +250,7 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("JobBillingCode : %s" % self.JobBillingCode)
         self.logdebug("JobOriginatingHostName : %s" % self.ClientHost)
         
+        self.enableSigInt()
         self.logdebug("Backend initialized.")
         
     def overwriteJobAttributes(self) :
@@ -1153,6 +1167,9 @@ if __name__ == "__main__" :
             wrapper.overwriteJobAttributes()
             wrapper.exportJobInfo() # re-exports in case it was overwritten
             retcode = wrapper.mainWork()
+        except KeyboardInterrupt :    
+            wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.JobId, "warn")
+            retcode = 0
         except SystemExit, e :    
             retcode = e.code
         except :    

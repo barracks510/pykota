@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.24alpha7 :
      
+        - The cupspykota backend wrapper now accepts to be interrupted
+          with a kill -INT. This causes an immediate and clean abort
+          of the current print job.
+          
         - Matt Hyclak contributed the possibility to store the printing
           history in a MySQL database. See the contributed/ directory
           for details.
