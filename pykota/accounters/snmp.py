@@ -203,10 +203,8 @@ else :
                     self.waitPrinting()
                 self.waitIdle()    
             except :    
-                if self.printerInternalPageCounter is None :
-                    raise
-                else :    
-                    self.parent.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
+                self.parent.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
+                raise
             return self.printerInternalPageCounter
             
 def main(hostname) :
