@@ -21,11 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
-        - Allow (some ?) commands to read their arguments from a file
-          instead of from the command line because of command line
-          size limitations (128 Kb under Linux it seems) : impossible
-          to add 30000 users with a single command !!!
-          
         - Improve the speed of edpykota and/or introduce pkusers
         
         - Growl notifications for MacOSX users (while printing) :
