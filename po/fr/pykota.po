@@ -2985,3 +2985,15 @@ msgstr "Impression illimitée."
 
 msgid "Printing not limited, no accounting."
 msgstr "Impression illimitée, aucun décompte."
+
+msgid "No Accounting"
+msgstr "Aucun Décompte"
+
+msgid "No Limit"
+msgstr "Aucune Limite"
+
+msgid "Forbidden"
+msgstr "Interdit"
+
+msgid "Printing Mode"
+msgstr "Mode d'Impression"

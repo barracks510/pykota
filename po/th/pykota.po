@@ -2021,6 +2021,18 @@ msgstr ""
 msgid "Printing not limited, no accounting."
 msgstr ""
 
+msgid "No Accounting"
+msgstr ""
+
+msgid "No Limit"
+msgstr ""
+
+msgid "Forbidden"
+msgstr ""
+
+msgid "Printing Mode"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr "แฟ้มข้อมูลหมายเลข %s ไม่ได้รับการลงทะเบียน 2 ครั้งจากขั้นเตรียมการ ,ข้ามไป"
 

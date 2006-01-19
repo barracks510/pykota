@@ -2034,6 +2034,18 @@ msgstr ""
 msgid "Printing not limited, no accounting."
 msgstr ""
 
+msgid "No Accounting"
+msgstr ""
+
+msgid "No Limit"
+msgstr ""
+
+msgid "Forbidden"
+msgstr ""
+
+msgid "Printing Mode"
+msgstr ""
+
 #~ msgid "File number %s unregistered twice from polling object, ignored."
 #~ msgstr ""
 #~ "Arquivo número %s descadastrado duas vezes do objeto de consulta. Ignorado"

@@ -208,10 +208,20 @@ class PyKotaBanner(Tool) :
         limitby = self.getVar("PYKOTALIMITBY")
         if limitby == "balance" :  
             ypos -= self.printVar(c, xcenter, ypos, _("Account balance"), self.getVar("PYKOTABALANCE"), 14, savetoner) 
-        else :
+        elif limitby == "quota" :
             ypos -= self.printVar(c, xcenter, ypos, _("Soft Limit"), self.getVar("PYKOTASOFTLIMIT"), 14, savetoner) 
             ypos -= self.printVar(c, xcenter, ypos, _("Hard Limit"), self.getVar("PYKOTAHARDLIMIT"), 14, savetoner) 
             ypos -= self.printVar(c, xcenter, ypos, _("Date Limit"), self.getVar("PYKOTADATELIMIT"), 14, savetoner) 
+        else :
+            if limitby == "noquota" :
+                msg = _("No Limit")
+            elif limitby == "nochange" :    
+                msg = _("No Accounting")
+            elif limitby == "noprint" :    
+                msg = _("Forbidden")
+            else :    
+                msg = _("Unknown")
+            ypos -= self.printVar(c, xcenter, ypos, _("Printing Mode"), msg, 14, savetoner)
             
         # URL
         if url :

@@ -1989,3 +1989,16 @@ msgstr ""
 
 msgid "Printing not limited, no accounting."
 msgstr ""
+
+msgid "No Accounting"
+msgstr ""
+
+msgid "No Limit"
+msgstr ""
+
+msgid "Forbidden"
+msgstr ""
+
+msgid "Printing Mode"
+msgstr ""
+

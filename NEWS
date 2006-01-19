@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.24alpha7 :
      
+        - pkbanner now handles new print limiting modes correctly.
+        
         - The cupspykota backend wrapper now accepts to be interrupted
           with a kill -INT. This causes an immediate and clean abort
           of the current print job.
