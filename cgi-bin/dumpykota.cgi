@@ -175,6 +175,8 @@ class PyKotaDumperGUI(DumPyKota) :
                         if self.options["data"] not in ["printers", "pmembers", "groups", "gpquotas"] :
                             self.arguments.append("username=%s" % remuser)
                         
+                    fname = "error"    
+                    ctype = "text/plain"
                     if self.options["format"] in ("csv", "ssv") :
                         #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
                         ctype = "text/comma-separated-values"
