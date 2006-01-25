@@ -76,7 +76,7 @@ if __name__ == "__main__" :
                        ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
                        ("Python-ReportLab", "reportlab.pdfgen.canvas", "Python-ReportLab is required if you plan to have PyKota generate banners.\nSee http://www.reportlab.org/"),
                        ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners.\nSee http://www.pythonware.com/downloads/"),
-                       ("Python-Psyco", "psyco", "Python-Psyco speedups parsing of print files, you should use it.\nSee http://psyco.sourceforge.net/"),
+                       ("Python-Psyco", "psyco", "Python-Psyco speeds up parsing of print files, you should use it.\nSee http://psyco.sourceforge.net/"),
                        ("Python-pkpgcounter", "pkpgpdls", "Python-pkpgcounter is mandatory.\nGrab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download"),
                      ]
     commandstocheck = [ ("GhostScript", "gs", "Depending on your configuration, GhostScript may be needed in different parts of PyKota."),
