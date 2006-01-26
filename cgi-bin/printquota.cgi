@@ -223,18 +223,13 @@ class PyKotaReportGUI(PyKotaTool) :
                     oddeven = 0
                     for job in history :
                         oddeven += 1
-                        if oddeven % 2 :
-                            oddevenclass = "odd"
-                        else :    
-                            oddevenclass = "even"
-                        if job.JobAction == "DENY" :
-                            oddevenclass = "deny"
-                        elif job.JobAction == "WARN" :    
-                            oddevenclass = "warn"
-                        elif job.JobAction == "PROBLEM" :
-                            oddevenclass = "problem"
-                        elif job.JobAction == "CANCEL" :
-                            oddevenclass = "cancel"
+                        if job.JobAction == "ALLOW" :    
+                            if oddeven % 2 :
+                                oddevenclass = "odd"
+                            else :    
+                                oddevenclass = "even"
+                        else :
+                            oddevenclass = (job.JobAction or "UNKNOWN").lower()
                         username_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "username" : job.UserName}), job.UserName)
                         printername_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "printername" : job.PrinterName}), job.PrinterName)
                         if job.JobHostName :
