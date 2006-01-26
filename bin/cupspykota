@@ -315,6 +315,7 @@ class CUPSBackend(PyKotaTool) :
             elif action == "CANCEL" :
                 self.Action = action
                 self.Reason = _("Print job cancelled.")
+                os.environ["PYKOTASTATUS"] = "CANCELLED"
             if username :
                 self.UserName = username
             # NB : we overwrite the billing code even if empty    
