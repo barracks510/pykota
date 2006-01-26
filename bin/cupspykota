@@ -295,6 +295,9 @@ class CUPSBackend(PyKotaTool) :
                 if line == "DENY" :
                     self.logdebug("Seen DENY command.")
                     action = "DENY"
+                elif line == "CANCEL" :
+                    self.logdebug("Seen CANCEL command.")
+                    action = "CANCEL"
                 elif line.startswith("USERNAME=") :    
                     username = line.split("=", 1)[1].strip()
                     self.logdebug("Seen new username [%s]" % username)
@@ -306,9 +309,12 @@ class CUPSBackend(PyKotaTool) :
             inputfile.close()    
             
             # now overwrite the job's ticket if new data was supplied
-            if action :
+            if action == "DENY" :
                 self.Action = action
                 self.Reason = _("You are not allowed to print at this time.")
+            elif action == "CANCEL" :
+                self.Action = action
+                self.Reason = _("Print job cancelled.")
             if username :
                 self.UserName = username
             # NB : we overwrite the billing code even if empty    
@@ -890,7 +896,7 @@ class CUPSBackend(PyKotaTool) :
         self.exportPrinterInfo()
         self.exportPhaseInfo("BEFORE")
         
-        if self.Action != "DENY" : 
+        if self.Action not in ("DENY", "CANCEL") : 
             if self.Printer.MaxJobSize and (self.softwareJobSize > self.Printer.MaxJobSize) :
                 # This printer was set to refuse jobs this large.
                 self.printInfo(_("Precomputed job size (%s pages) too large for printer %s.") % (self.softwareJobSize, self.PrinterName), "warn")
@@ -899,27 +905,27 @@ class CUPSBackend(PyKotaTool) :
                 # because in case of error the user could complain :-)
                 self.Reason = _("You are not allowed to print so many pages on printer %s at this time.") % self.PrinterName
             
-        if self.Action != "DENY" :
+        if self.Action not in ("DENY", "CANCEL") :
             if self.User.LimitBy == "noprint" :
                 self.printInfo(_("User %s is not allowed to print at this time.") % self.UserName, "warn")
                 self.Action = "DENY"
                 self.Reason = _("Your account settings forbid you to print at this time.")
                 
-        if self.Action != "DENY" :
+        if self.Action not in ("DENY", "CANCEL") :
             # If printing is still allowed at this time, we
             # need to extract the billing code information from the database.
             # No need to do this if the job is denied, this way we
             # save some database queries.
             self.getBillingCode()
             
-        if self.Action != "DENY" :
+        if self.Action not in ("DENY", "CANCEL") :
             # If printing is still allowed at this time, we
             # need to check if the job is a dupe or not, and what to do then.
             # No need to do this if the job is denied, this way we
             # save some database queries.
             self.checkIfDupe()
                     
-        if self.Action != "DENY" :
+        if self.Action not in ("DENY", "CANCEL") :
             # If printing is still allowed at this time, we
             # need to check the user's print quota on the current printer.
             # No need to do this if the job is denied, this way we
@@ -961,6 +967,8 @@ class CUPSBackend(PyKotaTool) :
         
         if self.Action == "DENY" :
             self.printInfo(_("Job denied, no accounting will be done."))
+        elif self.Action == "CANCEL" :    
+            self.printInfo(_("Job cancelled, no accounting will be done."))
         else :
             self.printInfo(_("Job accounting begins."))
             self.deinstallSigTermHandler()
@@ -989,6 +997,8 @@ class CUPSBackend(PyKotaTool) :
         # stops accounting
         if self.Action == "DENY" :
             self.printInfo(_("Job denied, no accounting has been done."))
+        elif self.Action == "CANCEL" :    
+            self.printInfo(_("Job cancelled, no accounting has been done."))
         else :
             self.deinstallSigTermHandler()
             self.accounter.endJob(self.Printer)
@@ -1019,6 +1029,9 @@ class CUPSBackend(PyKotaTool) :
             if self.Action == "DENY" :
                 self.JobSize = 0
                 self.printInfo(_("Job size forced to 0 because printing is denied."))
+            elif self.Action == "CANCEL" :     
+                self.JobSize = 0
+                self.printInfo(_("Job size forced to 0 because printing was cancelled."))
             else :    
                 self.UserPQuota.resetDenyBannerCounter()
                 if (self.Action != "PROBLEM") or (onbackenderror == "CHARGE") : 
@@ -1027,7 +1040,8 @@ class CUPSBackend(PyKotaTool) :
                     self.JobSize += self.BannerSize
             self.printInfo(_("Job size : %i") % self.JobSize)
             
-            if (self.Action == "PROBLEM") and (onbackenderror == "NOCHARGE") :
+            if ((self.Action == "PROBLEM") and (onbackenderror == "NOCHARGE")) or \
+                (self.Action in ("DENY", "CANCEL")) :
                 self.JobPrice = 0.0
             elif (self.User.LimitBy == "nochange") or self.Printer.PassThrough :
                 # no need to update the quota for the current user on this printer
@@ -1047,7 +1061,8 @@ class CUPSBackend(PyKotaTool) :
             self.printInfo(_("Job added to history."))
             
             if hasattr(self, "BillingCode") and self.BillingCode and self.BillingCode.Exists :
-                if (self.Action != "PROBLEM") or (onbackenderror == "CHARGE") :
+                if (self.Action in ("ALLOW", "WARN")) or \
+                   ((self.Action == "PROBLEM") and (onbackenderror == "CHARGE")) :
                     self.BillingCode.consume(self.JobSize, self.JobPrice)
                     self.printInfo(_("Billing code %s was updated.") % self.BillingCode.BillingCode)
         except :    

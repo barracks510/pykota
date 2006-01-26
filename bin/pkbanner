@@ -187,6 +187,12 @@ class PyKotaBanner(Tool) :
             action = _("Denied")
         elif action == "WARN" :    
             action = _("Allowed with Warning")
+        elif action == "PROBLEM" :    
+            # should never occur
+            action = _("Problem")
+        elif action == "CANCEL" :    
+            # should never occur
+            action = _("Cancelled")
         ypos -= self.printVar(c, xcenter, ypos, _("Result"), action, 14, savetoner) 
         
         # skip some space

@@ -345,7 +345,7 @@ onbackenderror : nocharge
 
 # Should we launch a command to overwrite the job's ticket ?
 # This allows a command to overwrite the username and/or the
-# billing code used, or to deny the job.
+# billing code used, or to deny or cancel the job.
 # If unset no command is launched and the job's username and
 # billing code are used as they are received.
 # To overwrite the job's ticket, the command has to print
@@ -355,6 +355,7 @@ onbackenderror : nocharge
 #    USERNAME=the_username_we_want_to_overwrite_with
 #    BILLINGCODE=the_billingcode_we_want_to_overwrite_with
 #    DENY 
+#    CANCEL
 #
 # NB : the output is entirely read, and the latest value
 # seen is used, so you command can output several usernames
@@ -363,8 +364,8 @@ onbackenderror : nocharge
 # if any, is used unchanged.
 # If only BILLINGCODE= lines are printed, the username is
 # used unchanged.
-# If DENY is output, but is followed by new USERNAME= or
-# BILLINGCODE= lines, the job is not denied.
+# If DENY or CANCEL is output, but is followed by new USERNAME= or
+# BILLINGCODE= lines, the job is not denied nor cancelled.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
@@ -387,6 +388,8 @@ onbackenderror : nocharge
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
 #
+# unknown_billingcode : deny
+# unknown_billingcode : deny(/path/to/some/script)
 # unknown_billingcode : create
 
 # Where should we store our (temporary) files when printing ?

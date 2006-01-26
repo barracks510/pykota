@@ -103,7 +103,7 @@ attributetype ( 1.3.6.1.4.1.16868.1.1.13 NAME 'pykotaJobSize'
 
 # pykotaAction
 attributetype ( 1.3.6.1.4.1.16868.1.1.14 NAME 'pykotaAction'
-        DESC 'Was the job allowed, denied, or failed : ( "ALLOW" |  "DENY" | "PROBLEM" )'
+        DESC 'Was the job allowed, denied, warned, cancelled or failed : ( "ALLOW" |  "DENY" | "WARN" | "CANCEL" | "PROBLEM" )'
         EQUALITY caseExactIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
         
