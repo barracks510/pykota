@@ -23,6 +23,11 @@ PyKota NEWS :
        
     - 1.24alpha8 :
     
+        - The 'preaccounter' configuration directive was introduced to control
+          which parser to use for precomputation of the job's size. When unset,
+          the internal parser is used just like it was previously. See
+          conf/pykota.conf.sample for more details.
+          
         - Now subprocesses launched through the overwrite_jobticket directive
           can also output 'CANCEL', to represent the user's own choice to
           cancel the print job.

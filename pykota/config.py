@@ -189,12 +189,28 @@ class PyKotaConfig :
                    "http://www.librelogiciel.com/software/"
         return url.strip()           
     
-    def getAccounterBackend(self, printername) :    
-        """Returns the accounter backend to use for a given printer.
+    def getPreAccounterBackend(self, printername) :    
+        """Returns the preaccounter backend to use for a given printer."""
+        validaccounters = [ "software" ]     
+        try :
+            fullaccounter = self.getPrinterOption(printername, "preaccounter").strip()
+        except PyKotaConfigError :    
+            return ("software", "")
+        else :    
+            flower = fullaccounter.lower()
+            if flower.startswith("software") :    
+                try :
+                    (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
+                except ValueError :    
+                    raise PyKotaConfigError, _("Invalid preaccounter %s for printer %s") % (fullaccounter, printername)
+                if args.endswith(')') :
+                    args = args[:-1].strip()
+                return ("software", args)
+            else :
+                raise PyKotaConfigError, _("Option preaccounter in section %s only supports values in %s") % (printername, str(validaccounters))
         
-           if it is not set, it defaults to 'hardware' which means ask printer
-           for its internal lifetime page counter.
-        """   
+    def getAccounterBackend(self, printername) :    
+        """Returns the accounter backend to use for a given printer."""
         validaccounters = [ "hardware", "software" ]     
         fullaccounter = self.getPrinterOption(printername, "accounter").strip()
         flower = fullaccounter.lower()

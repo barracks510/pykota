@@ -379,31 +379,9 @@ class CUPSBackend(PyKotaTool) :
     def precomputeJobSize(self) :    
         """Computes the job size with a software method."""
         self.logdebug("Precomputing job's size...")
-        jobsize = 0
-        if self.JobSizeBytes :
-            try :
-                from pkpgpdls import analyzer, pdlparser
-            except ImportError :    
-                self.printInfo("pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download", "error")
-                self.printInfo("Precomputed job size will be forced to 0 pages.", "error")
-            else :     
-                infile = open(self.DataFile, "rb")
-                try :
-                    parser = analyzer.PDLAnalyzer(infile)
-                    jobsize = parser.getJobSize()
-                except pdlparser.PDLParserError, msg :    
-                    # Here we just log the failure, but
-                    # we finally ignore it and return 0 since this
-                    # computation is just an indication of what the
-                    # job's size MAY be.
-                    self.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
-                else :    
-                    if self.InputFile is not None :
-                        # when a filename is passed as an argument, the backend 
-                        # must generate the correct number of copies.
-                        jobsize *= self.Copies
-                infile.close()        
-        self.softwareJobSize = jobsize
+        self.preaccounter.beginJob(None)
+        self.preaccounter.endJob(None)
+        self.softwareJobSize = self.preaccounter.getJobSize(None)
         self.logdebug("Precomputed job's size is %s pages." % self.softwareJobSize)
         
     def precomputeJobPrice(self) :    
@@ -1177,6 +1155,7 @@ if __name__ == "__main__" :
             wrapper.deferredInit()
             wrapper.initBackendParameters()
             wrapper.saveDatasAndCheckSum()
+            wrapper.preaccounter = openAccounter(wrapper, ispreaccounter=1)
             wrapper.accounter = openAccounter(wrapper)
             wrapper.precomputeJobSize()
             wrapper.exportJobInfo() # exports a first time to give hints to external scripts 

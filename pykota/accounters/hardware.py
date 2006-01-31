@@ -30,7 +30,7 @@ from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.accounters import snmp, pjl
 
 class Accounter(AccounterBase) :
-    def __init__(self, kotabackend, arguments) :
+    def __init__(self, kotabackend, arguments, ispreaccounter=0) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments)
         self.isSoftware = 0

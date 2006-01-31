@@ -35,12 +35,13 @@ class PyKotaAccounterError(Exception):
     
 class AccounterBase :    
     """A class to account print usage by querying printers."""
-    def __init__(self, kotafilter, arguments) :
+    def __init__(self, kotafilter, arguments, ispreaccounter=0) :
         """Sets instance vars depending on the current printer."""
         self.filter = kotafilter
         self.arguments = arguments
         self.onerror = self.filter.config.getPrinterOnAccounterError(self.filter.PrinterName)
         self.isSoftware = 1 # by default software accounting
+        self.isPreAccounter = ispreaccounter 
         
     def getLastPageCounter(self) :    
         """Returns last internal page counter value (possibly faked)."""
@@ -57,14 +58,16 @@ class AccounterBase :
             self.JobSize *= self.filter.Copies
         
         # get last job information for this printer
-        if not printer.LastJob.Exists :
-            # The printer hasn't been used yet, from PyKota's point of view
-            self.LastPageCounter = 0
-        else :    
-            # get last job size and page counter from Quota Storage
-            # Last lifetime page counter before actual job is 
-            # last page counter + last job size
-            self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
+        if not self.isPreAccounter :
+            # TODO : check if this code is still needed
+            if not printer.LastJob.Exists :
+                # The printer hasn't been used yet, from PyKota's point of view
+                self.LastPageCounter = 0
+            else :    
+                # get last job size and page counter from Quota Storage
+                # Last lifetime page counter before actual job is 
+                # last page counter + last job size
+                self.LastPageCounter = int(printer.LastJob.PrinterPageCounter or 0) + int(printer.LastJob.JobSize or 0)
         
     def fakeBeginJob(self) :    
         """Do nothing."""
@@ -85,12 +88,15 @@ class AccounterBase :
         """Must be overriden in children classes."""
         raise RuntimeError, "AccounterBase.computeJobSize() must be overriden !"
         
-def openAccounter(kotafilter) :
+def openAccounter(kotafilter, ispreaccounter=0) :
     """Returns a connection handle to the appropriate accounter."""
-    (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.PrinterName)
+    if ispreaccounter :
+        (backend, args) = kotafilter.config.getPreAccounterBackend(kotafilter.PrinterName)
+    else :
+        (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.PrinterName)
     try :
         exec "from pykota.accounters import %s as accounterbackend" % backend.lower()
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
     else :    
-        return accounterbackend.Accounter(kotafilter, args)
+        return accounterbackend.Accounter(kotafilter, args, ispreaccounter)

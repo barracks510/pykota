@@ -563,6 +563,23 @@ keepfiles : no
 # and uses pkpgcounter's code internally.
 accounter: software()
 
+# What is the "pre"-accounter used for precomputing the job's size.
+#
+# Supported values are :
+#
+#  preaccounter: software()       
+#  preaccounter: software(/path/to/your/script)
+#
+# NB : the preaccounter directive doesn't support hardware() for obvious reasons.
+# If unset, "software()" is assumed. If you use your own script, ensure that it
+# only prints the job's number of pages (or an estimation of it) on its standard output.
+#
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+#
+preaccounter: software()
+
+
 # What should we do if the accounter's subprocess doesn't return
 # a valid result (for example doesn't return an integer on its stdout)
 #
