@@ -37,6 +37,7 @@ import fnmatch
 import pwd
 import socket
 import smtplib
+from email.MIMEText import MIMEText
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
@@ -825,9 +826,12 @@ class CUPSBackend(PyKotaTool) :
                     self.printInfo(_("Impossible to connect to SMTP server : %s") % msg, "error")
                 else :
                     try :
-                        server.sendmail(adminmail, destination, \
-                          "From: %s\nTo: %s\nCc: %s\nSubject: %s\n\n%s" \
-                          % (adminmail, usermail, adminmail, _("Print Quota"), fullmessage))
+                        msg = MIMEText(fullmessage, _charset=self.charset)
+                        msg["Subject"] = _("Print Quota") # TODO : use correct encoding for Subject header
+                        msg["From"] = adminmail
+                        msg["To"] = usermail
+                        msg["Cc"] = adminmail
+                        server.sendmail(adminmail, destination, msg.as_string())
                     except smtplib.SMTPException, answer :    
                         for (k, v) in answer.recipients.items() :
                             self.printInfo(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
