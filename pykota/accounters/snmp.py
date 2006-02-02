@@ -24,7 +24,7 @@
 
 ITERATIONDELAY = 1.5   # 1.5 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
-NOPRINTINGMAXDELAY = 30 # The printer must begin to print within 30 seconds.
+NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds.
 
 import sys
 import os
