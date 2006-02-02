@@ -48,9 +48,9 @@
 [global]
 # Storage backend for quotas
 # only PGStorage (PostgreSQL), LDAPStorage (OpenLDAP or else),
-# and SQLiteStorage (SQLite 3) are supported.
+# MySQLStorage (MySQL) and SQLiteStorage (SQLite 3) are supported.
 #
-# MySQL and BerkeleyDB are planned.
+# BerkeleyDB is planned.
 
 ####################################################################
 # SQLite3 : comment this section out if you use another backend    #
@@ -59,10 +59,11 @@
 #storagebackend : sqlitestorage
 #storagename: /etc/pykota/pykota.db
 
-####################################################################
-# PostgreSQL : comment this section out if you use another backend #
-####################################################################
+############################################################################
+# PostgreSQL or MySQL: comment this section out if you use another backend #
+############################################################################
 storagebackend: pgstorage
+# storagebackend: mysqlstorage
 
 # Quota Storage Server hostname (and optional port)
 # e.g. db.example.com:5432

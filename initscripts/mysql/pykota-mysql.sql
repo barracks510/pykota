@@ -30,55 +30,68 @@
 --
 -- Create the print quota database
 --
+CREATE DATABASE pykota;
 
 --
 -- Create the print quota database users
 -- 
--- TODO : CREATE USER pykotaadmin;
--- TODO : CREATE USER pykotauser;
+GRANT USAGE ON *.* TO 'pykotauser'@'localhost' IDENTIFIED BY 'readonly';
+GRANT USAGE ON *.* TO 'pykotaadmin'@'localhost' IDENTIFIED BY 'readwrite';
 
 -- 
 -- Now connect to the new database
 -- 
-\u pykota
+use pykota;
 
 --
 -- Create the users table
 --
-CREATE TABLE users(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+CREATE TABLE users (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                    username VARCHAR(255) UNIQUE NOT NULL,
                    email TEXT, 
                    balance FLOAT DEFAULT 0.0,
                    lifetimepaid FLOAT DEFAULT 0.0,
-                   limitby VARCHAR(30) DEFAULT 'quota');
+                   limitby VARCHAR(30) DEFAULT 'quota',
+		   description TEXT,
+		   overcharge FLOAT NOT NULL DEFAULT 1.0) TYPE=INNODB;
                    
 --
 -- Create the groups table
 --
-CREATE TABLE groups(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+CREATE TABLE groups (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                     groupname VARCHAR(255) UNIQUE NOT NULL,
-                    limitby VARCHAR(30) DEFAULT 'quota');
+		    description TEXT,
+                    limitby VARCHAR(30) DEFAULT 'quota') TYPE=INNODB;
                     
 --
 -- Create the printers table
 --
-CREATE TABLE printers(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+CREATE TABLE printers (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                       printername VARCHAR(255) UNIQUE NOT NULL,
                       description TEXT,
                       priceperpage FLOAT DEFAULT 0.0,
-                      priceperjob FLOAT DEFAULT 0.0);
+                      priceperjob FLOAT DEFAULT 0.0,
+		      passthrough ENUM('t','f') DEFAULT 'f',
+		      maxjobsize INT4) TYPE=INNODB;
                     
 --
 -- Create the print quota table for users
 --
-CREATE TABLE userpquota(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                        userid INT4 REFERENCES users(id),
-                        printerid INT4 REFERENCES printers(id),
+CREATE TABLE userpquota (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+                        userid INT4, 
+                        printerid INT4, 
                         lifepagecounter INT4 DEFAULT 0,
                         pagecounter INT4 DEFAULT 0,
                         softlimit INT4,
                         hardlimit INT4,
-                        datelimit TIMESTAMP);
+                        datelimit TIMESTAMP,
+			maxjobsize INT4,
+                        warncount INT4 DEFAULT 0, 
+			FOREIGN KEY (userid) REFERENCES users(id),
+			FOREIGN KEY (printerid) REFERENCES printers(id)) 
+			TYPE=INNODB;
+CREATE INDEX userpquota_u_id_ix ON userpquota (userid);
+CREATE INDEX userpquota_p_id_ix ON userpquota (printerid);
 CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
                         
 --
@@ -98,9 +111,14 @@ CREATE TABLE jobhistory(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                         copies INT4,
                         options TEXT,
                         hostname VARCHAR(255),
-                        jobdate TIMESTAMP,
-                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) 
-                                                           REFERENCES userpquota(userid, printerid));
+			md5sum TEXT,
+			pages TEXT,
+			billingcode TEXT,
+			precomputedjobsize INT4,
+			precomputedjobprice FLOAT,
+                        jobdate TIMESTAMP DEFAULT,
+                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid)) TYPE=INNODB;
+CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
 CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
@@ -109,42 +127,68 @@ CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
 -- Create the print quota table for groups
 --
 CREATE TABLE grouppquota(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                         groupid INT4 REFERENCES groups(id),
-                         printerid INT4 REFERENCES printers(id),
+                         groupid INT4, 
+                         printerid INT4,
                          softlimit INT4,
                          hardlimit INT4,
-                         datelimit TIMESTAMP);
+			 maxjobsize INT4,
+                         datelimit TIMESTAMP,
+			 FOREIGN KEY (groupid) REFERENCES groups(id),
+			 FOREIGN KEY (printerid) REFERENCES printers(id))
+			 TYPE=INNODB;
+CREATE INDEX grouppquota_g_id_ix ON grouppquota (groupid);
+CREATE INDEX grouppquota_p_id_ix ON grouppquota (printerid);
 CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
                         
 --                         
 -- Create the groups/members relationship
 --
-CREATE TABLE groupsmembers(groupid INT4 REFERENCES groups(id),
-                           userid INT4 REFERENCES users(id),
-                           PRIMARY KEY (groupid, userid));
+CREATE TABLE groupsmembers(groupid INT4,
+                           userid INT4,
+			   FOREIGN KEY (groupid) REFERENCES groups(id),
+			   FOREIGN KEY (userid) REFERENCES users(id),
+                           PRIMARY KEY (groupid, userid)) TYPE=INNODB;
                            
 --                         
 -- Create the printer groups relationship
 --
-CREATE TABLE printergroupsmembers(groupid INT4 REFERENCES printers(id),
-                           printerid INT4 REFERENCES printers(id),
-                           PRIMARY KEY (groupid, printerid));
+CREATE TABLE printergroupsmembers(groupid INT4,
+                           printerid INT4,
+			   FOREIGN KEY (groupid) REFERENCES groups(id),
+			   FOREIGN KEY (printerid) REFERENCES printers(id),
+                           PRIMARY KEY (groupid, printerid)) TYPE=INNODB;
 --
 -- Create the table for payments
 -- 
 CREATE TABLE payments (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                       userid INT4 REFERENCES users(id),
+                       userid INT4,
                        amount FLOAT,
-                       date TIMESTAMP DEFAULT now());
+		       description TEXT,
+                       date TIMESTAMP DEFAULT now(),
+		       FOREIGN KEY (userid) REFERENCES users(id)) TYPE=INNODB;
 CREATE INDEX payments_date_ix ON payments (date);
 
+--
+-- Create the table for coefficients wrt paper sizes and the like
+--
+CREATE TABLE coefficients (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+			   printerid INT4 NOT NULL,
+			   label VARCHAR(255) NOT NULL,
+			   coefficient FLOAT DEFAULT 1.0,
+			   FOREIGN KEY (printerid) REFERENCES printers(id),
+			   CONSTRAINT coeffconstraint UNIQUE (printerid, label));
+
+-- 
+-- Create the table for the billing codes
+--
+CREATE TABLE billingcodes (id INT4 PRIMARY KEY NOT NULL,
+                           billingcode VARCHAR(255) UNIQUE NOT NULL,
+                           description TEXT,
+                           balance FLOAT DEFAULT 0.0,
+                           pagecounter INT4 DEFAULT 0) TYPE=INNODB;
 --                        
 -- Set some ACLs                        
 --
--- TODO : REVOKE ALL ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments FROM public;                        
--- TODO : REVOKE ALL ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq FROM public;
-
--- TODO : GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments TO pykotaadmin;
--- TODO : GRANT SELECT, UPDATE ON users_id_seq, groups_id_seq, printers_id_seq, userpquota_id_seq, grouppquota_id_seq, jobhistory_id_seq, payments_id_seq TO pykotaadmin;
--- TODO : GRANT SELECT ON users, groups, printers, userpquota, grouppquota, groupsmembers, printergroupsmembers, jobhistory, payments TO pykotauser;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON `pykota`.* TO 'pykotaadmin'@'localhost';
+GRANT SELECT ON `pykota`.* TO 'pykotauser'@'localhost';
 

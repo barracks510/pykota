@@ -61,6 +61,9 @@ PyKota features :
         - Supports SQLite as the database backend.
           An SQL script to create the database is included.
           
+        - Supports MySQL as the database backend.
+          An SQL script to create the database is included.
+
         - The print jobs history can be stored in any database  
           of your choice (or in plain text files) if needed. 
           
@@ -382,6 +385,10 @@ Prerequisite :
     - SQLite v3.2.7 and the SQLite libraries if you plan to use SQLite
       as the database backend (http://www.sqlite.org). You also need the 
       PySQLite module v2.0.5 or higher (http://www.pysqlite.org)
+ or
+    - MySQL 4.0 or higher and the MySQL-python bindings. 
+      IMPORTANT: If you are using MySQL 4.1, then MySQL-python must be 
+      version 1.2 or greater. Version 1.0 does not work correctly with 4.1.
       
     
   On Intel i386 architecture, and for performance reasons, it is

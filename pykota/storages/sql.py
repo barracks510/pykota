@@ -225,7 +225,7 @@ class SQLStorage :
         """Extracts a user print quota."""
         userpquota = StorageUserPQuota(self, user, printer)
         if printer.Exists and user.Exists :
-            result = self.doSearch("SELECT * FROM userpquota WHERE userid=%s AND printerid=%s" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
+            result = self.doSearch("SELECT * FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
             if result :
                 fields = result[0]
                 userpquota.ident = fields.get("id")

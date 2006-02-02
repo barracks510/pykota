@@ -59,7 +59,7 @@
 
 # For SQLite3, you can comment out all the lines in this file.
 
-# PostgreSQL's Quota Storage administrator's name and password
+# PostgreSQL's or MySQL's Quota Storage administrator's name and password
 # Please comment these lines out and see further below if you use LDAP.
 storageadmin: pykotaadmin
 # storageadminpw: Comment out if unused, or set to Quota Storage admin password
