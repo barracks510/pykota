@@ -41,7 +41,7 @@ GRANT USAGE ON *.* TO 'pykotaadmin'@'localhost' IDENTIFIED BY 'readwrite';
 -- 
 -- Now connect to the new database
 -- 
-use pykota;
+USE pykota;
 
 --
 -- Create the users table
@@ -116,8 +116,9 @@ CREATE TABLE jobhistory(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
 			billingcode TEXT,
 			precomputedjobsize INT4,
 			precomputedjobprice FLOAT,
-                        jobdate TIMESTAMP DEFAULT,
-                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota(userid, printerid)) TYPE=INNODB;
+                        jobdate TIMESTAMP DEFAULT now(),
+                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota (userid, printerid)
+			) TYPE=INNODB;
 CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
