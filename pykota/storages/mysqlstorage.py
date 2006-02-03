@@ -59,7 +59,7 @@ class Storage(BaseStorage, SQLStorage) :
         
     def beginTransaction(self) :    
         """Starts a transaction."""
-        self.database.begin()
+        self.cursor.execute("BEGIN;")
         self.tool.logdebug("Transaction begins...")
         
     def commitTransaction(self) :    
