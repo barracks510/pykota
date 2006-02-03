@@ -3,8 +3,8 @@
 #
 # PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003-2004 Jerome Alet <alet@librelogiciel.com>
-# (c) 2005 Matt Hyclak <hyclak@math.ohiou.edu>
+# (c) 2003, 2004, 2005, 2006 Jerome Alet <alet@librelogiciel.com>
+# (c) 2005, 2006 Matt Hyclak <hyclak@math.ohiou.edu>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -41,18 +41,18 @@ class Storage(BaseStorage, SQLStorage) :
             (host, port) = host.split(":")
             port = int(port)
         except ValueError :    
-            port = -1		# Use the default MySQL port
+            port = -1           # Use the default MySQL port
         
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd)
-	self.cursor = self.database.cursor()
+        self.cursor = self.database.cursor()
         self.closed = 0
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
             
     def close(self) :    
         """Closes the database connection."""
         if not self.closed :
-	    self.cursor.close()
+            self.cursor.close()
             self.database.close()
             self.closed = 1
             self.tool.logdebug("Database closed.")
@@ -83,29 +83,29 @@ class Storage(BaseStorage, SQLStorage) :
         except self.database.Error, msg :    
             raise PyKotaStorageError, str(msg)
         else :    
-	    # This returns a list of lists. Integers are returned as longs.
+            # This returns a list of lists. Integers are returned as longs.
             return self.cursor.fetchall()
             
     def doSearch(self, query) :        
         """Does a search query."""
         result = self.doRawSearch(query)
-	if result :
-	    rows = []
+        if result :
+            rows = []
             fields = {}
             for i in range(len(self.cursor.description)) :
-		fields[i] = self.cursor.description[i][0]
-	    for row in result :
+                fields[i] = self.cursor.description[i][0]
+            for row in result :
                 rowdict = {}
                 for field in fields.keys() :
-		    value = row[field]
-		    try :
-			value = value.encode("UTF-8")
-		    except:
-			pass
-		    rowdict[fields[field]] = value
-		rows.append(rowdict)
-	    # returns a list of dicts
-	    return rows
+                    value = row[field]
+                    try :
+                        value = value.encode("UTF-8")
+                    except:
+                        pass
+                    rowdict[fields[field]] = value
+                rows.append(rowdict)
+            # returns a list of dicts
+            return rows
 
     def doModify(self, query) :
         """Does a (possibly multiple) modify query."""
@@ -129,14 +129,14 @@ class Storage(BaseStorage, SQLStorage) :
         elif field is not None :
             return (self.database.string_literal(field)).encode("UTF-8")
         else :
-	    self.tool.logdebug("WARNING: field has no type, returning NULL")
+            self.tool.logdebug("WARNING: field has no type, returning NULL")
             return "NULL"
 
     def prepareRawResult(self, result) :
         """Prepares a raw result by including the headers."""
         if result :
             entries = [tuple([f[0] for f in self.cursor.description])]
-	    for entry in result :
+            for entry in result :
                 row = []
                 for value in entry :
                     try :
