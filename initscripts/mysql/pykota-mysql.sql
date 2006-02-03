@@ -177,7 +177,8 @@ CREATE TABLE coefficients (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
 			   label VARCHAR(255) NOT NULL,
 			   coefficient FLOAT DEFAULT 1.0,
 			   FOREIGN KEY (printerid) REFERENCES printers(id),
-			   CONSTRAINT coeffconstraint UNIQUE (printerid, label));
+			   CONSTRAINT coeffconstraint UNIQUE (printerid, label)
+			   ) TYPE=INNODB;
 
 -- 
 -- Create the table for the billing codes
