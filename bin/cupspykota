@@ -38,6 +38,7 @@ import pwd
 import socket
 import smtplib
 from email.MIMEText import MIMEText
+from email.Header import Header
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
@@ -827,7 +828,7 @@ class CUPSBackend(PyKotaTool) :
                 else :
                     try :
                         msg = MIMEText(fullmessage, _charset=self.charset)
-                        msg["Subject"] = _("Print Quota") # TODO : use correct encoding for Subject header
+                        msg["Subject"] = str(Header(_("Print Quota"), charset=self.charset))
                         msg["From"] = adminmail
                         msg["To"] = usermail
                         msg["Cc"] = adminmail
