@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha9 :
+    
+        - Preliminary support for MySQL, thanks to Matt Hyclak.
+        
     - 1.24alpha8 :
     
         - The 'preaccounter' configuration directive was introduced to control
