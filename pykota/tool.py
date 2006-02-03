@@ -36,6 +36,8 @@ import tempfile
 import md5
 import ConfigParser
 import popen2
+from email.MIMEText import MIMEText
+from email.Header import Header
 
 from mx import DateTime
 
