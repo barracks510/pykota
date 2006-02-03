@@ -45,6 +45,7 @@ class Storage(BaseStorage, SQLStorage) :
         
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd)
+	self.database.autocommit(1)
         self.cursor = self.database.cursor()
         self.closed = 0
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
