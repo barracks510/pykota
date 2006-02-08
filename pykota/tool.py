@@ -205,11 +205,14 @@ class Tool :
         sys.stderr.flush()
         
     def matchString(self, s, patterns) :
-        """Returns 1 if the string s matches one of the patterns, else 0."""
-        for pattern in patterns :
-            if fnmatch.fnmatchcase(s, pattern) :
-                return 1
-        return 0
+        """Returns True if the string s matches one of the patterns, else False."""
+        if not patterns :
+            return True # No pattern, always matches.
+        else :    
+            for pattern in patterns :
+                if fnmatch.fnmatchcase(s, pattern) :
+                    return True
+            return False
         
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""
