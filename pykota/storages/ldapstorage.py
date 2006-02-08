@@ -356,7 +356,6 @@ class Storage(BaseStorage) :
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
-            user.Name = fields.get("pykotaUserName", [self.databaseToUserCharset(username)])[0] 
             user.Email = fields.get(self.info["usermail"], [None])[0]
             user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
             user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
@@ -669,30 +668,112 @@ class Storage(BaseStorage) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
         # see comment at the same place in pgstorage.py
-        printerpattern = [self.userCharsetToDatabase(p) for p in printerpattern.split(",")]
-        result = self.doSearch("(&(objectClass=pykotaPrinter)(|%s))" % \
-                                  "".join(["(pykotaPrinterName=%s)(%s=%s)" % (pname, self.info["printerrdn"], pname) for pname in printerpattern]), \
+        result = self.doSearch("objectClass=pykotaPrinter", \
                                   ["pykotaPrinterName", "pykotaPricePerPage", "pykotaPricePerJob", "pykotaMaxJobSize", "pykotaPassThrough", "uniqueMember", "description"], \
                                   base=self.info["printerbase"])
         if result :
+            patterns = printerpattern.split(",")
             for (printerid, fields) in result :
                 printername = self.databaseToUserCharset(fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0])
-                printer = StoragePrinter(self, printername)
-                printer.ident = printerid
-                printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
-                printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
-                printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
-                printer.PassThrough = fields.get("pykotaPassThrough", [None])[0]
-                if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
-                    printer.PassThrough = 1
-                else :
-                    printer.PassThrough = 0
-                printer.uniqueMember = fields.get("uniqueMember", [])
-                printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
-                printer.Exists = 1
-                printers.append(printer)
-                self.cacheEntry("PRINTERS", printer.Name, printer)
+                if self.tool.matchString(printername, patterns) :
+                    printer = StoragePrinter(self, printername)
+                    printer.ident = printerid
+                    printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
+                    printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
+                    printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
+                    printer.PassThrough = fields.get("pykotaPassThrough", [None])[0]
+                    if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+                        printer.PassThrough = 1
+                    else :
+                        printer.PassThrough = 0
+                    printer.uniqueMember = fields.get("uniqueMember", [])
+                    printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
+                    printer.Exists = 1
+                    printers.append(printer)
+                    self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
+        
+    def getMatchingUsers(self, userpattern) :
+        """Returns the list of all users for which name matches a certain pattern."""
+        users = []
+        # see comment at the same place in pgstorage.py
+        result = self.doSearch("objectClass=pykotaAccount", \
+                                  ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge"], \
+                                  base=self.info["userbase"])
+        if result :
+            patterns = userpattern.split(",")
+            for (userid, fields) in result :
+                username = self.databaseToUserCharset(fields.get("pykotaUserName", [""])[0] or fields.get(self.info["userrdn"], [""])[0])
+                if self.tool.matchString(username, patterns) :
+                    user = StorageUser(self, username)
+                    user.ident = userid
+                    user.Email = fields.get(self.info["usermail"], [None])[0]
+                    user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
+                    uname = self.userCharsetToDatabase(username)
+                    result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % \
+                                              (uname, self.info["balancerdn"], uname), \
+                                              ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], \
+                                              base=self.info["balancebase"])
+                    if not result :
+                        raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
+                    else :
+                        fields = result[0][1]
+                        user.idbalance = result[0][0]
+                        user.AccountBalance = fields.get("pykotaBalance")
+                        if user.AccountBalance is not None :
+                            if user.AccountBalance[0].upper() == "NONE" :
+                                user.AccountBalance = None
+                            else :    
+                                user.AccountBalance = float(user.AccountBalance[0])
+                        user.AccountBalance = user.AccountBalance or 0.0        
+                        user.LifeTimePaid = fields.get("pykotaLifeTimePaid")
+                        if user.LifeTimePaid is not None :
+                            if user.LifeTimePaid[0].upper() == "NONE" :
+                                user.LifeTimePaid = None
+                            else :    
+                                user.LifeTimePaid = float(user.LifeTimePaid[0])
+                        user.LifeTimePaid = user.LifeTimePaid or 0.0        
+                        user.Payments = []
+                        for payment in fields.get("pykotaPayments", []) :
+                            try :
+                                (date, amount, description) = payment.split(" # ")
+                            except ValueError :
+                                # Payment with no description (old Payment)
+                                (date, amount) = payment.split(" # ")
+                                description = ""
+                            else :    
+                                description = self.databaseToUserCharset(base64.decodestring(description))
+                            user.Payments.append((date, float(amount), description))
+                    user.Exists = 1
+                    users.append(user)
+                    self.cacheEntry("USERS", user.Name, user)
+        return users       
+        
+    def getMatchingGroups(self, grouppattern) :
+        """Returns the list of all groups for which name matches a certain pattern."""
+        groups = []
+        # see comment at the same place in pgstorage.py
+        result = self.doSearch("objectClass=pykotaGroup", \
+                                  ["pykotaGroupName", "pykotaLimitBy"], \
+                                  base=self.info["groupbase"])
+        if result :
+            patterns = grouppattern.split(",")
+            for (groupid, fields) in result :
+                groupname = self.databaseToUserCharset(fields.get("pykotaGroupName", [""])[0] or fields.get(self.info["grouprdn"], [""])[0])
+                if self.tool.matchString(groupname, patterns) :
+                    group = StorageGroup(self, groupname)
+                    group.ident = groupid
+                    group.Name = fields.get("pykotaGroupName", [self.databaseToUserCharset(groupname)])[0] 
+                    group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    group.AccountBalance = 0.0
+                    group.LifeTimePaid = 0.0
+                    for member in self.getGroupMembers(group) :
+                        if member.Exists :
+                            group.AccountBalance += member.AccountBalance
+                            group.LifeTimePaid += member.LifeTimePaid
+                    group.Exists = 1
+        return groups
         
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
@@ -1544,23 +1625,23 @@ class Storage(BaseStorage) :
     def getMatchingBillingCodes(self, billingcodepattern) :
         """Returns the list of all billing codes which match a certain pattern."""
         codes = []
-        billingcodepattern = [self.userCharsetToDatabase(b) for b in billingcodepattern.split(",")]
-        result = self.doSearch("(&(objectClass=pykotaBilling)(|%s))" % \
-                                "".join(["(pykotaBillingCode=%s)" % bcode for bcode in billingcodepattern]), \
+        result = self.doSearch("objectClass=pykotaBilling", \
                                 ["pykotaBillingCode", "description", "pykotaPageCounter", "pykotaBalance"], \
                                 base=self.info["billingcodebase"])
         if result :
+            patterns = billingcodepattern.split(",")
             for (codeid, fields) in result :
-                codename = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
-                code = StorageBillingCode(self, codename)
-                code.ident = codeid
-                code.BillingCode = codename
-                code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
-                code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
-                code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
-                code.Exists = 1
-                codes.append(code)
-                self.cacheEntry("BILLINGCODES", code.BillingCode, code)
+                bcode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
+                if self.tool.matchString(bcode, patterns) :
+                    code = StorageBillingCode(self, codename)
+                    code.ident = codeid
+                    code.BillingCode = codename
+                    code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
+                    code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
+                    code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
+                    code.Exists = 1
+                    codes.append(code)
+                    self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
         
     def setBillingCodeValues(self, code, newpagecounter, newbalance) :

@@ -194,6 +194,12 @@ class Tool :
         """Returns the charset in use."""
         return self.charset
         
+    def display(self, message) :
+        """Display a message but only if stdout is a tty."""
+        if sys.stdout.isatty() :
+            sys.stdout.write(message)
+            sys.stdout.flush()
+            
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
         if self.debug :

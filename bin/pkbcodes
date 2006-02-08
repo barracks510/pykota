@@ -88,46 +88,55 @@ class PKBcodes(PyKotaTool) :
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
-        if (options["list"] or options["reset"]) and not names :
-            names = ["*"]
-            
-        if options["add"] :    
-            billingcodes = []
-            for bname in names :
-                billingcode = self.storage.getBillingCode(bname)
-                if billingcode.Exists :
-                    if options["skipexisting"] :
-                        self.printInfo(_("Billing code [%s] already exists, skipping.") % billingcode.BillingCode)
-                    else :    
-                        self.printInfo(_("Billing code [%s] already exists, will be modified.") % billingcode.BillingCode)
-                        billingcodes.append(billingcode)
-                else :
-                    billingcode = self.storage.addBillingCode(bname)
-                    if not billingcode.Exists :
-                        raise PyKotaToolError, _("Impossible to add billingcode %s") % bname
-                    else :     
-                        billingcodes.append(billingcode)
-        else :        
-            billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
-            if not billingcodes :
-                raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
-                    
-        for billingcode in billingcodes :        
-            if options["delete"] :
-                billingcode.delete()
-            elif options["list"] :    
-                print "%s [%s] %s %s %s %.2f %s" % \
-                      (billingcode.BillingCode, billingcode.Description, \
-                       billingcode.PageCounter, \
-                       _("pages"), \
-                       _("and"), \
-                       billingcode.Balance, \
-                       _("credits"))
-            else :    
-                if options["reset"] :
-                    billingcode.reset()    
-                if options["description"] is not None :
-                    billingcode.setDescription(options["description"].strip())
+        if options["delete"] :    
+            self.display("Processing...\n")
+            todelete = self.storage.getMatchingBillingCodes(",".join(names))
+            nbtotal = len(todelete)
+            for i in range(nbtotal) :
+                todelete[i].delete()
+                percent = 100.0 * float(i) / float(nbtotal)
+                self.display("\r%.02f%%" % percent)
+            self.display("\r100.00%%\r        ")
+            self.display("\r%s\n" % _("Done."))
+        else :
+            if (options["list"] or options["reset"]) and not names :
+                names = ["*"]
+                
+            if options["add"] :    
+                billingcodes = []
+                for bname in names :
+                    billingcode = self.storage.getBillingCode(bname)
+                    if billingcode.Exists :
+                        if options["skipexisting"] :
+                            self.printInfo(_("Billing code [%s] already exists, skipping.") % billingcode.BillingCode)
+                        else :    
+                            self.printInfo(_("Billing code [%s] already exists, will be modified.") % billingcode.BillingCode)
+                            billingcodes.append(billingcode)
+                    else :
+                        billingcode = self.storage.addBillingCode(bname)
+                        if not billingcode.Exists :
+                            raise PyKotaToolError, _("Impossible to add billingcode %s") % bname
+                        else :     
+                            billingcodes.append(billingcode)
+            else :        
+                billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
+                if not billingcodes :
+                    raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
+                        
+            for billingcode in billingcodes :        
+                if options["list"] :    
+                    print "%s [%s] %s %s %s %.2f %s" % \
+                          (billingcode.BillingCode, billingcode.Description, \
+                           billingcode.PageCounter, \
+                           _("pages"), \
+                           _("and"), \
+                           billingcode.Balance, \
+                           _("credits"))
+                else :    
+                    if options["reset"] :
+                        billingcode.reset()    
+                    if options["description"] is not None :
+                        billingcode.setDescription(options["description"].strip())
                      
 if __name__ == "__main__" : 
     retcode = 0

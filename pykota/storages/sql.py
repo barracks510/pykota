@@ -202,11 +202,11 @@ class SQLStorage :
         if result :
             fields = result[0]
             user.ident = fields.get("id")
-            user.Name = self.databaseToUserCharset(fields.get("username", username))
             user.LimitBy = fields.get("limitby") or "quota"
             user.AccountBalance = fields.get("balance")
             user.LifeTimePaid = fields.get("lifetimepaid")
             user.Email = fields.get("email")
+            user.Description = self.databaseToUserCharset(fields.get("description"))
             user.OverCharge = fields.get("overcharge", 1.0)
             user.Exists = 1
         return user
@@ -219,10 +219,10 @@ class SQLStorage :
         if result :
             fields = result[0]
             group.ident = fields.get("id")
-            group.Name = self.databaseToUserCharset(fields.get("groupname", groupname))
             group.LimitBy = fields.get("limitby") or "quota"
             group.AccountBalance = fields.get("balance")
             group.LifeTimePaid = fields.get("lifetimepaid")
+            group.Description = self.databaseToUserCharset(fields.get("description"))
             group.Exists = 1
         return group
        
@@ -234,7 +234,6 @@ class SQLStorage :
         if result :
             fields = result[0]
             printer.ident = fields.get("id")
-            printer.Name = self.databaseToUserCharset(fields.get("printername", printername))
             printer.PricePerJob = fields.get("priceperjob") or 0.0
             printer.PricePerPage = fields.get("priceperpage") or 0.0
             printer.MaxJobSize = fields.get("maxjobsize") or 0
@@ -254,7 +253,6 @@ class SQLStorage :
         if result :
             fields = result[0]
             code.ident = fields.get("id")
-            code.BillingCode = self.databaseToUserCharset(fields.get("billingcode"))
             code.Description = self.databaseToUserCharset(fields.get("description") or "")
             code.Balance = fields.get("balance") or 0.0
             code.PageCounter = fields.get("pagecounter") or 0
@@ -374,9 +372,10 @@ class SQLStorage :
         # storage should use fnmatch to match patterns and be storage agnostic
         result = self.doSearch("SELECT * FROM printers")
         if result :
+            patterns = printerpattern.split(",")
             for record in result :
                 pname = self.databaseToUserCharset(record["printername"])
-                if self.tool.matchString(pname, printerpattern.split(",")) :
+                if self.tool.matchString(pname, patterns) :
                     printer = StoragePrinter(self, pname)
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob") or 0.0
@@ -393,14 +392,63 @@ class SQLStorage :
                     self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
         
+    def getMatchingUsers(self, userpattern) :
+        """Returns the list of all users for which name matches a certain pattern."""
+        users = []
+        # We 'could' do a SELECT username FROM users WHERE username LIKE ...
+        # but we don't because other storages semantics may be different, so every
+        # storage should use fnmatch to match patterns and be storage agnostic
+        result = self.doSearch("SELECT * FROM users")
+        if result :
+            patterns = userpattern.split(",")
+            for record in result :
+                uname = self.databaseToUserCharset(record["username"])
+                if self.tool.matchString(uname, patterns) :
+                    user = StorageUser(self, uname)
+                    user.ident = record.get("id")
+                    user.LimitBy = record.get("limitby") or "quota"
+                    user.AccountBalance = record.get("balance")
+                    user.LifeTimePaid = record.get("lifetimepaid")
+                    user.Email = record.get("email")
+                    user.Description = self.databaseToUserCharset(record.get("description"))
+                    user.OverCharge = record.get("overcharge", 1.0)
+                    user.Exists = 1
+                    users.append(user)
+                    self.cacheEntry("USERS", user.Name, user)
+        return users        
+        
+    def getMatchingGroups(self, grouppattern) :
+        """Returns the list of all groups for which name matches a certain pattern."""
+        groups = []
+        # We 'could' do a SELECT groupname FROM groups WHERE groupname LIKE ...
+        # but we don't because other storages semantics may be different, so every
+        # storage should use fnmatch to match patterns and be storage agnostic
+        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby,groups.description")
+        if result :
+            patterns = grouppattern.split(",")
+            for record in result :
+                gname = self.databaseToUserCharset(record["groupname"])
+                if self.tool.matchString(gname, patterns) :
+                    group = StorageGroup(self, gname)
+                    group.ident = record.get("id")
+                    group.LimitBy = record.get("limitby") or "quota"
+                    group.AccountBalance = record.get("balance")
+                    group.LifeTimePaid = record.get("lifetimepaid")
+                    group.Description = self.databaseToUserCharset(record.get("description"))
+                    group.Exists = 1
+                    groups.append(group)
+                    self.cacheEntry("GROUPS", group.Name, group)
+        return groups        
+        
     def getMatchingBillingCodes(self, billingcodepattern) :
         """Returns the list of all billing codes for which the label matches a certain pattern."""
         codes = []
         result = self.doSearch("SELECT * FROM billingcodes")
         if result :
+            patterns = billingcodepattern.split(",")
             for record in result :
                 bcode = self.databaseToUserCharset(record["billingcode"])
-                if self.tool.matchString(bcode, billingcodepattern.split(",")) :
+                if self.tool.matchString(bcode, patterns) :
                     code = StorageBillingCode(self, bcode)
                     code.ident = record.get("id")
                     code.Balance = record.get("balance") or 0.0
