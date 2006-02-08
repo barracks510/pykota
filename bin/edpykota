@@ -371,6 +371,8 @@ class EdPyKota(PyKotaTool) :
                     balance = None
                 overcharge = getattr(protoentry, "OverCharge", None)
             
+        sys.stdout.write(_("Managing print quotas... (this may take a lot of time)"))
+        sys.stdout.flush()
         missingusers = {}
         missinggroups = {}    
         todelete = {}    
@@ -545,6 +547,7 @@ class EdPyKota(PyKotaTool) :
         # Now delete what has to be deleted                
         for (name, entry) in todelete.items() :                
             entry.delete()
+        sys.stdout.write("\nDone.\n")    
                      
 if __name__ == "__main__" : 
     retcode = 0
