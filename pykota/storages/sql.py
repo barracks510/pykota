@@ -134,21 +134,58 @@ class SQLStorage :
         result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid %s ORDER BY jobhistory.id ASC" % thefilter)
         return self.prepareRawResult(result)
             
-    def getAllUsersNames(self) :    
+    def filterNames(self, records, attribute, patterns=None) :
+        """Returns a list of 'attribute' from a list of records.
+        
+           Logs any missing attribute.
+        """   
+        result = []
+        for record in records :
+            attrval = record.get(attribute, [None])
+            if attrval is None :
+                self.tool.printInfo("Object %s has no %s attribute !" % (repr(record), attribute), "error")
+            else :
+                if patterns :
+                    if (not isinstance(patterns, type([]))) and (not isinstance(patterns, type(()))) :
+                        patterns = [ patterns ]
+                    patterns = [self.userCharsetToDatabase(p) for p in patterns]
+                    if self.tool.matchString(attrval, patterns) :
+                        result.append(attrval)
+                else :    
+                    result.append(attrval)
+        return result   
+                
+    def getAllBillingCodes(self, billingcode=None) :    
+        """Extracts all billing codes or only the billing codes matching the optional parameter."""
+        result = self.doSearch("SELECT billingcode FROM billingcodes")
+        if result :
+            return self.filterNames(result, "billingcode", billingcode)
+        else :    
+            return []
+        
+    def getAllPrintersNames(self, printername=None) :    
+        """Extracts all printer names or only the printers' names matching the optional parameter."""
+        result = self.doSearch("SELECT printername FROM printers")
+        if result :
+            return self.filterNames(result, "printername", printername)
+        else :    
+            return []
+    
+    def getAllUsersNames(self, username=None) :    
         """Extracts all user names."""
-        usernames = []
         result = self.doSearch("SELECT username FROM users")
         if result :
-            usernames = [record["username"] for record in result]
-        return usernames
+            return self.filterNames(result, "username", username)
+        else :    
+            return []
         
-    def getAllGroupsNames(self) :    
+    def getAllGroupsNames(self, groupname=None) :    
         """Extracts all group names."""
-        groupnames = []
         result = self.doSearch("SELECT groupname FROM groups")
         if result :
-            groupnames = [record["groupname"] for record in result]
-        return groupnames
+            return self.filterNames(result, "groupname", groupname)
+        else :
+            return []
         
     def getUserNbJobsFromHistory(self, user) :
         """Returns the number of jobs the user has in history."""
