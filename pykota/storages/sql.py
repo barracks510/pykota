@@ -197,11 +197,12 @@ class SQLStorage :
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
+        username = self.userCharsetToDatabase(username)
         result = self.doSearch("SELECT * FROM users WHERE username=%s LIMIT 1" % self.doQuote(username))
         if result :
             fields = result[0]
             user.ident = fields.get("id")
-            user.Name = fields.get("username", username)
+            user.Name = self.databaseToUserCharset(fields.get("username", username))
             user.LimitBy = fields.get("limitby") or "quota"
             user.AccountBalance = fields.get("balance")
             user.LifeTimePaid = fields.get("lifetimepaid")
@@ -213,11 +214,12 @@ class SQLStorage :
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
+        groupname = self.userCharsetToDatabase(groupname)
         result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description LIMIT 1" % self.doQuote(groupname))
         if result :
             fields = result[0]
             group.ident = fields.get("id")
-            group.Name = fields.get("groupname", groupname)
+            group.Name = self.databaseToUserCharset(fields.get("groupname", groupname))
             group.LimitBy = fields.get("limitby") or "quota"
             group.AccountBalance = fields.get("balance")
             group.LifeTimePaid = fields.get("lifetimepaid")
@@ -227,11 +229,12 @@ class SQLStorage :
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
         printer = StoragePrinter(self, printername)
+        printername = self.userCharsetToDatabase(printername)
         result = self.doSearch("SELECT * FROM printers WHERE printername=%s LIMIT 1" % self.doQuote(printername))
         if result :
             fields = result[0]
             printer.ident = fields.get("id")
-            printer.Name = fields.get("printername", printername)
+            printer.Name = self.databaseToUserCharset(fields.get("printername", printername))
             printer.PricePerJob = fields.get("priceperjob") or 0.0
             printer.PricePerPage = fields.get("priceperpage") or 0.0
             printer.MaxJobSize = fields.get("maxjobsize") or 0
@@ -302,7 +305,7 @@ class SQLStorage :
             fields = result[0]
             lastjob.ident = fields.get("id")
             lastjob.JobId = fields.get("jobid")
-            lastjob.UserName = fields.get("username")
+            lastjob.UserName = self.databaseToUserCharset(fields.get("username"))
             lastjob.PrinterPageCounter = fields.get("pagecounter")
             lastjob.JobSize = fields.get("jobsize")
             lastjob.JobPrice = fields.get("jobprice")
@@ -330,7 +333,7 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM groupsmembers JOIN users ON groupsmembers.userid=users.id WHERE groupid=%s" % self.doQuote(group.ident))
         if result :
             for record in result :
-                user = StorageUser(self, record.get("username"))
+                user = StorageUser(self, self.databaseToUserCharset(record.get("username")))
                 user.ident = record.get("userid")
                 user.LimitBy = record.get("limitby") or "quota"
                 user.AccountBalance = record.get("balance")
@@ -348,7 +351,7 @@ class SQLStorage :
         result = self.doSearch("SELECT groupname FROM groupsmembers JOIN groups ON groupsmembers.groupid=groups.id WHERE userid=%s" % self.doQuote(user.ident))
         if result :
             for record in result :
-                groups.append(self.getGroup(record.get("groupname")))
+                groups.append(self.getGroup(self.databaseToUserCharset(record.get("groupname"))))
         return groups        
         
     def getParentPrintersFromBackend(self, printer) :    
@@ -358,7 +361,7 @@ class SQLStorage :
         if result :
             for record in result :
                 if record["groupid"] != printer.ident : # in case of integrity violation
-                    parentprinter = self.getPrinter(record.get("printername"))
+                    parentprinter = self.getPrinter(self.databaseToUserCharset(record.get("printername")))
                     if parentprinter.Exists :
                         pgroups.append(parentprinter)
         return pgroups
@@ -372,8 +375,9 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM printers")
         if result :
             for record in result :
-                if self.tool.matchString(record["printername"], printerpattern.split(",")) :
-                    printer = StoragePrinter(self, record["printername"])
+                pname = self.databaseToUserCharset(record["printername"])
+                if self.tool.matchString(pname, printerpattern.split(",")) :
+                    printer = StoragePrinter(self, pname)
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob") or 0.0
                     printer.PricePerPage = record.get("priceperpage") or 0.0
@@ -413,8 +417,9 @@ class SQLStorage :
         result = self.doSearch("SELECT users.id as uid,username,balance,lifetimepaid,limitby,email,overcharge,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit,warncount FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                if self.tool.matchString(record.get("username"), names) :
-                    user = StorageUser(self, record.get("username"))
+                uname = self.databaseToUserCharset(record.get("username"))
+                if self.tool.matchString(uname, names) :
+                    user = StorageUser(self, uname)
                     user.ident = record.get("uid")
                     user.LimitBy = record.get("limitby") or "quota"
                     user.AccountBalance = record.get("balance")
@@ -442,15 +447,16 @@ class SQLStorage :
         result = self.doSearch("SELECT groupname FROM groups JOIN grouppquota ON groups.id=grouppquota.groupid AND printerid=%s ORDER BY groupname ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                if self.tool.matchString(record.get("groupname"), names) :
-                    group = self.getGroup(record.get("groupname"))
+                gname = self.databaseToUserCharset(record.get("groupname"))
+                if self.tool.matchString(gname, names) :
+                    group = self.getGroup(gname)
                     grouppquota = self.getGroupPQuota(group, printer)
                     groupsandquotas.append((group, grouppquota))
         return groupsandquotas
         
     def addPrinter(self, printername) :        
         """Adds a printer to the quota storage, returns it."""
-        self.doModify("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(printername))
+        self.doModify("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(self.userCharsetToDatabase(printername)))
         return self.getPrinter(printername)
         
     def addBillingCode(self, label) :        
@@ -460,12 +466,14 @@ class SQLStorage :
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns it."""
-        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge) VALUES (%s, %s, %s, %s, %s, %s)" % (self.doQuote(user.Name), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email), self.doQuote(user.OverCharge)))
+        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge) VALUES (%s, %s, %s, %s, %s, %s)" % \
+                                         (self.doQuote(self.userCharsetToDatabase(user.Name)), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email), self.doQuote(user.OverCharge)))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
         """Adds a group to the quota storage, returns it."""
-        self.doModify("INSERT INTO groups (groupname, limitby) VALUES (%s, %s)" % (self.doQuote(group.Name), self.doQuote(group.LimitBy or "quota")))
+        self.doModify("INSERT INTO groups (groupname, limitby) VALUES (%s, %s)" % \
+                                          (self.doQuote(self.userCharsetToDatabase(group.Name)), self.doQuote(group.LimitBy or "quota")))
         return self.getGroup(group.Name)
 
     def addUserToGroup(self, user, group) :    
@@ -558,7 +566,7 @@ class SQLStorage :
             
     def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
-        self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(comment)))
+        self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))
         
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
@@ -656,8 +664,8 @@ class SQLStorage :
                 job.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode") or "")
                 job.PrecomputedJobSize = fields.get("precomputedjobsize")
                 job.PrecomputedJobPrice = fields.get("precomputedjobprice")
-                job.UserName = fields.get("username")
-                job.PrinterName = fields.get("printername")
+                job.UserName = self.databaseToUserCharset(fields.get("username"))
+                job.PrinterName = self.databaseToUserCharset(fields.get("printername"))
                 if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
                     (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 job.Exists = 1
