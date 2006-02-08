@@ -145,10 +145,10 @@ class SQLStorage :
             if attrval is None :
                 self.tool.printInfo("Object %s has no %s attribute !" % (repr(record), attribute), "error")
             else :
+                attrval = self.databaseToUserCharset(attrval)
                 if patterns :
                     if (not isinstance(patterns, type([]))) and (not isinstance(patterns, type(()))) :
                         patterns = [ patterns ]
-                    patterns = [self.userCharsetToDatabase(p) for p in patterns]
                     if self.tool.matchString(attrval, patterns) :
                         result.append(attrval)
                 else :    
