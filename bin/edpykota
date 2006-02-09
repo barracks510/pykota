@@ -253,9 +253,7 @@ class EdPyKota(PyKotaTool) :
         suffix = (options["groups"] and "Group") or "User"        
         
         if options["delete"] :    
-            if not names :
-                raise PyKotaCommandLineError, _("You have to pass user or group names on the command line")
-            self.display("Processing...\n")
+            self.display("%s...\n" % _("Processing"))
             todelete = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
             nbtotal = len(todelete)
             for i in range(nbtotal) :
@@ -615,6 +613,8 @@ if __name__ == "__main__" :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif options["comment"] and not options["balance"] :    
             raise PyKotaCommandLineError, _("incompatible options, see help.")
+        elif options["delete"] and not args :
+            raise PyKotaCommandLineError, _("You have to pass user or group names on the command line")
         else :
             retcode = editor.main(args, options)
     except KeyboardInterrupt :        

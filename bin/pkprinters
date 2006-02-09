@@ -129,7 +129,7 @@ class PKPrinters(PyKotaTool) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         if options["delete"] :    
-            self.display("Processing...\n")
+            self.display("%s...\n" % _("Processing"))
             todelete = self.storage.getMatchingPrinters(",".join(names))
             nbtotal = len(todelete)
             for i in range(nbtotal) :
