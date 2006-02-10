@@ -27,7 +27,24 @@
 import sys
 import os
 import pwd
-import grp
+import cStringIO
+
+try :
+    from reportlab.pdfgen import canvas
+    from reportlab.lib import pagesizes
+    from reportlab.lib.units import cm
+except ImportError :    
+    hasRL = 0
+else :    
+    hasRL = 1
+    
+try :
+    import PIL.Image 
+except ImportError :    
+    hasPIL = 0
+else :    
+    hasPIL = 1
+
 from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
@@ -92,8 +109,78 @@ examples :
         
 class PKInvoice(PyKotaTool) :        
     """A class for pkinvoice."""
+    def getPageSize(self, pgsize) :
+        """Returns the correct page size or None if not found."""
+        try :
+            return getattr(pagesizes, pgsize.upper())
+        except AttributeError :    
+            try :
+                return getattr(pagesizes, pgsize.lower())
+            except AttributeError :
+                pass
+                
+    def pagePDF(self, invoicenumber, name, amount, vatamount) :
+        """Generates a new page in the PDF document."""
+        sys.stderr.write("#%06i    %s     %.2f    %.2f\n" % (invoicenumber, name, amount, vatamount))
+        self.canvas.doForm("background")
+        self.canvas.showPage()
+        
+    def initPDF(self, pagesize, logo) :
+        """Initializes the PDF document."""
+        self.pdfDocument = cStringIO.StringIO()        
+        self.canvas = c = canvas.Canvas(self.pdfDocument, pagesize=pagesize, pageCompression=1)
+        
+        c.setAuthor(pwd.getpwuid(os.geteuid())[0])
+        c.setTitle("PyKota invoices")
+        c.setSubject("This is an invoice generated with PyKota")
+        
+        xcenter = pagesize[0] / 2.0
+        ycenter = pagesize[1] / 2.0
+                    
+        ypos = pagesize[1] - (2 * cm)            
+        
+        self.canvas.beginForm("background")
+        self.canvas.saveState()
+        
+        if logo :
+            try :    
+                imglogo = PIL.Image.open(logo)
+            except :    
+                self.printInfo("Unable to open image %s" % logo, "warn")
+            else :
+                (width, height) = imglogo.size
+                multi = float(width) / (8 * cm) 
+                width = float(width) / multi
+                height = float(height) / multi
+                xpos = xcenter - (width / 2.0)
+                ypos -= height
+                c.drawImage(logo, xpos, ypos, width, height)
+        
+        # New top
+        xpos = pagesize[0] / 5.0
+        ypos -= (1 * cm) + 20
+        
+        self.canvas.restoreState()
+        self.canvas.endForm()
+        
+    def endPDF(self, fname) :    
+        """Flushes the PDF generator."""
+        self.canvas.save()
+        if fname != "-" :        
+            outfile = open(fname, "w")
+            outfile.write(self.pdfDocument.getvalue())
+            outfile.close()
+        else :    
+            sys.stdout.write(self.pdfDocument.getvalue())
+            sys.stdout.flush()
+        
     def main(self, names, options) :
         """Generate invoices."""
+        if not hasRL :
+            raise PyKotaToolError, "The ReportLab module is missing. Download it from http://www.reportlab.org"
+        if not hasPIL :
+            raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
+            
         if not self.config.isAdmin :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
         
@@ -116,6 +203,11 @@ class PKInvoice(PyKotaTool) :
         except :    
             raise PyKotaCommandLineError, _("Incorrect value '%s' for the --number command line option") % options["number"]
             
+        pagesize = self.getPageSize(options["pagesize"])
+        if pagesize is None :
+            pagesize = self.getPageSize("a4")
+            self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options["pagesize"], "warn")
+            
         if not names :
             names = [ "*" ]
             
@@ -125,20 +217,25 @@ class PKInvoice(PyKotaTool) :
             
         suffix = (options["groups"] and "Group") or "User"        
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-        nbtotal = len(entries)
-        for i in range(nbtotal) :
-            entry = entries[i]
-            amount = reference - entry.AccountBalance
-            if amount > 0.0 :
-                # There's something due !
-                ht = ((amount * 10000.0) / (100.0 + vat)) / 100.0
-                sys.stderr.write("%s => Due : %.2f including %.2f VAT\n" % (entry.Name, amount, amount-ht))
-                
-            if outfname != "-" :
-                percent = 100.0 * float(i) / float(nbtotal)
-                self.display("\r%.02f%%" % percent)
-                
-        if outfname != "-" :        
+        if entries :
+            self.initPDF(pagesize, options["logo"].strip())
+            nbtotal = len(entries)
+            for i in range(nbtotal) :
+                entry = entries[i]
+                amount = reference - entry.AccountBalance
+                if amount > 0.0 :
+                    # There's something due !
+                    ht = ((amount * 10000.0) / (100.0 + vat)) / 100.0
+                    vatamount = amount - ht
+                    self.pagePDF(number, entry.Name, amount, vatamount)
+                    number += 1
+                if outfname != "-" :
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+                    
+            self.endPDF(outfname)
+            
+        if outfname != "-" :
             self.display("\r100.00%%\r        ")
             self.display("\r%s\n" % _("Done."))
                      
