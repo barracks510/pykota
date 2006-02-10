@@ -72,9 +72,9 @@ options :
                        The default unit is 'Credits', optionally translated
                        to your native language if it is supported by PyKota.
   
-  -V | --vat p         Sets the percent value of the applicable VAT.
-                       The default is 0.0, meaning no VAT information
-                       will be included.
+  -V | --vat p         Sets the percent value of the applicable VAT to be
+                       exposed. The default is 0.0, meaning no VAT
+                       information will be included.
                        
   user1 through userN and group1 through groupN can use wildcards if 
   needed. If no user argument is used, a wildcard of '*' is assumed, 
@@ -86,8 +86,8 @@ examples :
   
   Will generate a PDF document containing invoices for all users whose
   account balance is below 15.0 credits. For each user the amount due
-  will be (15.0 - AccountBalance) EURO. No VAT information will be 
-  included.
+  will be (15.0 - AccountBalance) EURO when that value is positive. 
+  No VAT information will be included.
 """) 
         
 class PKInvoice(PyKotaTool) :        
@@ -126,12 +126,18 @@ class PKInvoice(PyKotaTool) :
         suffix = (options["groups"] and "Group") or "User"        
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
         nbtotal = len(entries)
-        self.printInfo("Not implemented yet !", "warn")
         for i in range(nbtotal) :
-            # TODO 
-            percent = 100.0 * float(i) / float(nbtotal)
+            entry = entries[i]
+            amount = reference - entry.AccountBalance
+            if amount > 0.0 :
+                # There's something due !
+                ht = ((amount * 10000.0) / (100.0 + vat)) / 100.0
+                sys.stderr.write("%s => Due : %.2f including %.2f VAT\n" % (entry.Name, amount, amount-ht))
+                
             if outfname != "-" :
+                percent = 100.0 * float(i) / float(nbtotal)
                 self.display("\r%.02f%%" % percent)
+                
         if outfname != "-" :        
             self.display("\r100.00%%\r        ")
             self.display("\r%s\n" % _("Done."))
@@ -141,13 +147,13 @@ if __name__ == "__main__" :
     try :
         defaults = { "reference" : "0.0",
                      "vat" : "0.0",
-                     "unit" : _("Credits"),
+                     "unit" : N_("Credits"),
                      "output" : "-",
                      "pagesize" : "a4", \
                      "logo" : "/usr/share/pykota/logos/pykota.jpeg",
                      "number" : "1",
                    }
-        short_options = "vho:gr:u:V:p:l:"
+        short_options = "vho:gr:u:V:p:l:n:"
         long_options = ["help", "version", \
                         "groups", "reference=", "unit=", "output=", \
                         "pagesize=", "logo=", "vat=", "number="]
@@ -157,7 +163,7 @@ if __name__ == "__main__" :
         invoiceGenerator.deferredInit()
         
         # parse and checks the command line
-        (options, args) = invoiceGenerator.parseCommandline(sys.argv[1:], short_options, long_options)
+        (options, args) = invoiceGenerator.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=True)
         
         # sets long options
         options["help"] = options["h"] or options["help"]
