@@ -47,6 +47,17 @@ options :
   
   -g | --groups        Generate invoices for users groups instead of users.
   
+  -l | --logo img      Use the image as the banner's logo. The logo will
+                       be drawn at the center top of the page. The default
+                       logo is /usr/share/pykota/logos/pykota.jpeg
+                       
+  -p | --pagesize sz   Sets sz as the page size. Most well known
+                       page sizes are recognized, like 'A4' or 'Letter'
+                       to name a few. The default size is A4.
+                       
+  -n | --number N      Sets the number of the first invoice. This number
+                       will automatically be incremented for each invoice.
+                       
   -r | --reference v   Uses v as the initial reference value : an invoice
                        will be generated for any account balance's value
                        lower or equal to the reference value. The
@@ -86,9 +97,31 @@ class PKInvoice(PyKotaTool) :
         if not self.config.isAdmin :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
         
-        self.display("%s...\n" % _("Processing"))
+        try :    
+            vat = float(options["vat"])
+            if not (0.0 <= vat < 100.0) :
+                raise ValueError
+        except :    
+            raise PyKotaCommandLineError, _("Incorrect value '%s' for the --vat command line option") % options["vat"]
+            
+        try :    
+            reference = float(options["reference"])
+        except :    
+            raise PyKotaCommandLineError, _("Incorrect value '%s' for the --reference command line option") % options["reference"]
+            
+        try :    
+            number = float(options["number"])
+            if number <= 0 :
+                raise ValueError
+        except :    
+            raise PyKotaCommandLineError, _("Incorrect value '%s' for the --number command line option") % options["number"]
+            
         if not names :
             names = [ "*" ]
+            
+        outfname = options["output"]    
+        if outfname != "-" :
+            self.display("%s...\n" % _("Processing"))
             
         suffix = (options["groups"] and "Group") or "User"        
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
@@ -97,9 +130,11 @@ class PKInvoice(PyKotaTool) :
         for i in range(nbtotal) :
             # TODO 
             percent = 100.0 * float(i) / float(nbtotal)
-            self.display("\r%.02f%%" % percent)
-        self.display("\r100.00%%\r        ")
-        self.display("\r%s\n" % _("Done."))
+            if outfname != "-" :
+                self.display("\r%.02f%%" % percent)
+        if outfname != "-" :        
+            self.display("\r100.00%%\r        ")
+            self.display("\r%s\n" % _("Done."))
                      
 if __name__ == "__main__" : 
     retcode = 0
@@ -108,11 +143,14 @@ if __name__ == "__main__" :
                      "vat" : "0.0",
                      "unit" : _("Credits"),
                      "output" : "-",
+                     "pagesize" : "a4", \
+                     "logo" : "/usr/share/pykota/logos/pykota.jpeg",
+                     "number" : "1",
                    }
-        short_options = "vho:gr:u:V:"
+        short_options = "vho:gr:u:V:p:l:"
         long_options = ["help", "version", \
                         "groups", "reference=", "unit=", "output=", \
-                        "vat=", ]
+                        "pagesize=", "logo=", "vat=", "number="]
         
         # Initializes the command line tool
         invoiceGenerator = PKInvoice(doc=__doc__)
@@ -130,6 +168,11 @@ if __name__ == "__main__" :
         options["vat"] = options["V"] or options["vat"] or defaults["vat"]
         options["unit"] = options["u"] or options["unit"] or defaults["unit"]
         options["output"] = options["o"] or options["output"] or defaults["output"]
+        options["pagesize"] = options["p"] or options["pagesize"] or defaults["pagesize"]
+        options["number"] = options["n"] or options["number"] or defaults["number"]
+        options["logo"] = options["l"] or options["logo"]
+        if options["logo"] is None : # Allows --logo="" to disable the logo entirely
+            options["logo"] = defaults["logo"]  
         
         if options["help"] :
             invoiceGenerator.display_usage_and_quit()
