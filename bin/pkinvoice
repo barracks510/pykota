@@ -1,0 +1,160 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Invoice generator
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005, 2006 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# $Id$
+#
+#
+
+import sys
+import os
+import pwd
+import grp
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.config import PyKotaConfigError
+from pykota.storage import PyKotaStorageError
+
+__doc__ = N_("""pkinvoice v%(__version__)s (c) %(__years__)s %(__author__)s
+
+An invoice generator for PyKota.
+
+command line usage :
+
+  pkinvoice [options] user1 user2 ... userN
+
+options :
+
+  -v | --version       Prints edpykota's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -g | --groups        Generate invoices for users groups instead of users.
+  
+  -r | --reference v   Uses v as the initial reference value : an invoice
+                       will be generated for any account balance's value
+                       lower or equal to the reference value. The
+                       default reference value is of course 0.0 credits.
+                       
+  -o | --output f.pdf  Defines the name of the invoice file which will
+                       be generated as a PDF document. If not set or
+                       set to '-', the PDF document is sent to standard
+                       output. 
+                       
+  -u | --unit u        Defines the name of the unit to use on the invoice.                       
+                       The default unit is 'Credits', optionally translated
+                       to your native language if it is supported by PyKota.
+  
+  -V | --vat p         Sets the percent value of the applicable VAT.
+                       The default is 0.0, meaning no VAT information
+                       will be included.
+                       
+  user1 through userN and group1 through groupN can use wildcards if 
+  needed. If no user argument is used, a wildcard of '*' is assumed, 
+  meaning include all users or groups.
+  
+examples :                       
+
+  $ pkinvoice --reference 15.0 --unit EURO --output invoices.pdf
+  
+  Will generate a PDF document containing invoices for all users whose
+  account balance is below 15.0 credits. For each user the amount due
+  will be (15.0 - AccountBalance) EURO. No VAT information will be 
+  included.
+""") 
+        
+class PKInvoice(PyKotaTool) :        
+    """A class for pkinvoice."""
+    def main(self, names, options) :
+        """Generate invoices."""
+        if not self.config.isAdmin :
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+        
+        self.display("%s...\n" % _("Processing"))
+        if not names :
+            names = [ "*" ]
+            
+        suffix = (options["groups"] and "Group") or "User"        
+        entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+        nbtotal = len(entries)
+        self.printInfo("Not implemented yet !", "warn")
+        for i in range(nbtotal) :
+            # TODO 
+            percent = 100.0 * float(i) / float(nbtotal)
+            self.display("\r%.02f%%" % percent)
+        self.display("\r100.00%%\r        ")
+        self.display("\r%s\n" % _("Done."))
+                     
+if __name__ == "__main__" : 
+    retcode = 0
+    try :
+        defaults = { "reference" : "0.0",
+                     "vat" : "0.0",
+                     "unit" : _("Credits"),
+                     "output" : "-",
+                   }
+        short_options = "vho:gr:u:V:"
+        long_options = ["help", "version", \
+                        "groups", "reference=", "unit=", "output=", \
+                        "vat=", ]
+        
+        # Initializes the command line tool
+        invoiceGenerator = PKInvoice(doc=__doc__)
+        invoiceGenerator.deferredInit()
+        
+        # parse and checks the command line
+        (options, args) = invoiceGenerator.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        
+        options["groups"] = options["g"] or options["groups"]
+        options["reference"] = options["r"] or options["reference"] or defaults["reference"]
+        options["vat"] = options["V"] or options["vat"] or defaults["vat"]
+        options["unit"] = options["u"] or options["unit"] or defaults["unit"]
+        options["output"] = options["o"] or options["output"] or defaults["output"]
+        
+        if options["help"] :
+            invoiceGenerator.display_usage_and_quit()
+        elif options["version"] :
+            invoiceGenerator.display_version_and_quit()
+        else :
+            retcode = invoiceGenerator.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+        retcode = -3
+    except PyKotaCommandLineError, msg :     
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        retcode = -2
+    except SystemExit :        
+        pass
+    except :
+        try :
+            invoiceGenerator.crashed("pkinvoice failed")
+        except :    
+            crashed("pkinvoice failed")
+        retcode = -1
+
+    try :
+        invoiceGenerator.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    
