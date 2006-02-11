@@ -128,7 +128,7 @@ class PKBcodes(PyKotaTool) :
                         
             nbtotal = len(billingcodes)            
             if not options["list"] :
-                self.display("Modification...\n")
+                self.display("%s...\n" % _("Modification"))
             for i in range(nbtotal) :        
                 billingcode = billingcodes[i]
                 if options["list"] :    
