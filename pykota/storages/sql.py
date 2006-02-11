@@ -129,8 +129,10 @@ class SQLStorage :
         if thefilter :
             thefilter = "AND %s" % thefilter
         (startdate, enddate) = self.cleanDates(startdate, enddate)
-        if startdate and enddate : 
-            thefilter = "%s AND jobdate>=%s AND jobdate<=%s" % (thefilter, self.doQuote(startdate), self.doQuote(enddate))
+        if startdate : 
+            thefilter = "%s AND jobdate>=%s" % (thefilter, self.doQuote(startdate))
+        if enddate : 
+            thefilter = "%s AND jobdate<=%s" % (thefilter, self.doQuote(enddate))
         result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid %s ORDER BY jobhistory.id ASC" % thefilter)
         return self.prepareRawResult(result)
             
