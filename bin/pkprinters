@@ -129,24 +129,54 @@ class PKPrinters(PyKotaTool) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
         if options["delete"] :    
-            self.display("%s...\n" % _("Processing"))
+            self.display("%s...\n" % _("Deletion"))
             todelete = self.storage.getMatchingPrinters(",".join(names))
             nbtotal = len(todelete)
             for i in range(nbtotal) :
                 todelete[i].delete()
                 percent = 100.0 * float(i) / float(nbtotal)
                 self.display("\r%.02f%%" % percent)
-            self.display("\r100.00%%\r        ")
-            self.display("\r%s\n" % _("Done."))
         else :
-            if options["list"] and not names :
-                names = ["*"]
+            if options["add"] :    
+                self.display("%s...\n" % _("Creation"))
+                printers = []
+                nbtotal = len(names)
+                for i in range(nbtotal) :
+                    pname = names[i]
+                    printer = self.storage.getPrinter(pname)
+                    if printer.Exists :
+                        if options["skipexisting"] :
+                            self.printInfo(_("Printer %s already exists, skipping.") % printer.Name)
+                        else :    
+                            self.printInfo(_("Printer %s already exists, will be modified.") % printer.Name)
+                            printers.append(printer)
+                    else :
+                        if self.isValidName(pname) :
+                            printer = self.storage.addPrinter(pname)
+                            if not printer.Exists :
+                                raise PyKotaToolError, _("Impossible to add printer %s") % pname
+                            else :    
+                                printers.append(printer)
+                        else :    
+                            raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+                self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+            else :        
+                if not names :
+                    names = ["*"]
+                printers = self.storage.getMatchingPrinters(",".join(names))
+                if not printers :
+                    raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
+                        
+            if not options["list"] :
+                self.display("%s...\n" % _("Modification"))
                 
             if options["groups"] :        
                 printersgroups = self.storage.getMatchingPrinters(options["groups"])
                 if not printersgroups :
                     raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
-                
+                    
             if options["charge"] :
                 try :
                     charges = [float(part) for part in options["charge"].split(',', 1)]
@@ -169,32 +199,9 @@ class PKPrinters(PyKotaTool) :
             else :        
                 maxjobsize = None
                     
-                    
-            if options["add"] :    
-                printers = []
-                for pname in names :
-                    printer = self.storage.getPrinter(pname)
-                    if printer.Exists :
-                        if options["skipexisting"] :
-                            self.printInfo(_("Printer %s already exists, skipping.") % printer.Name)
-                        else :    
-                            self.printInfo(_("Printer %s already exists, will be modified.") % printer.Name)
-                            printers.append(printer)
-                    else :
-                        if self.isValidName(pname) :
-                            printer = self.storage.addPrinter(pname)
-                            if not printer.Exists :
-                                raise PyKotaToolError, _("Impossible to add printer %s") % pname
-                            else :    
-                                printers.append(printer)
-                        else :    
-                            raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
-            else :        
-                printers = self.storage.getMatchingPrinters(",".join(names))
-                if not printers :
-                    raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
-                        
-            for printer in printers :        
+            nbtotal = len(printers)
+            for i in range(nbtotal) :        
+                printer = printers[i]
                 if options["list"] :    
                     parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
                     if parents : 
@@ -223,6 +230,11 @@ class PKPrinters(PyKotaTool) :
                                 pgroup.delPrinterFromGroup(printer)
                             else :
                                 pgroup.addPrinterToGroup(printer)    
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+                                
+        if not options["list"] :                
+            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
                      
 if __name__ == "__main__" : 
     retcode = 0
