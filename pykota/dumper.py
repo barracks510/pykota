@@ -168,6 +168,8 @@ class DumPyKota(PyKotaTool) :
                 totalize = [ ("jobsize", int), 
                              ("jobprice", float),
                              ("jobsizebytes", int),
+                             ("precomputedjobsize", int),
+                             ("precomputedjobprice", float),
                            ]
                 keys = [ k for k in ("username", "printername", "hostname", "billingcode") if k in extractonly.keys() ]
                 
@@ -197,7 +199,7 @@ class DumPyKota(PyKotaTool) :
                         totals[k]["value"] = totals[k]["convert"](entry[fieldnumber[k]])
                 else :    
                     for k in totals.keys() :    
-                        totals[k]["value"] += totals[k]["convert"](entry[fieldnumber[k]])
+                        totals[k]["value"] += totals[k]["convert"](entry[fieldnumber[k]] or 0.0)
                 for k in keys :
                     prevkeys[k] = entry[fieldnumber[k]]
             summary = [ "*" ] * nbheaders
