@@ -115,7 +115,7 @@ class Storage(BaseStorage) :
         
            TODO : this one is not unique accross several print servers, but should be sufficient for testing.
         """
-        return md5.md5("%s-%s" % (time.time(), random.random()).hexdigest()
+        return md5.md5("%s-%s" % (time.time(), random.random())).hexdigest()
         
     def normalizeFields(self, fields) :    
         """Ensure all items are lists."""
