@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.24alpha11 :
     
+        - Both pkbcodes and pkprinters now display the percent done
+          for all actions.
+          
         - The pkinvoice invoice generator command line utility is now
           included.
           
