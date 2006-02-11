@@ -129,25 +129,27 @@ class PKBcodes(PyKotaTool) :
             if not options["list"] :
                 self.display("%s...\n" % _("Modification"))
                 
-            nbtotal = len(billingcodes)            
-            for i in range(nbtotal) :        
-                billingcode = billingcodes[i]
-                if options["list"] :    
-                    print "%s [%s] %s %s %s %.2f %s" % \
-                          (billingcode.BillingCode, billingcode.Description, \
-                           billingcode.PageCounter, \
-                           _("pages"), \
-                           _("and"), \
-                           billingcode.Balance, \
-                           _("credits"))
-                else :    
-                    if options["reset"] :
-                        billingcode.reset()    
-                    if options["description"] is not None :
-                        billingcode.setDescription(options["description"].strip())
-                    billingcode.save()    
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
+            if (not options["add"]) \
+                or options["description"] or options["reset"] : # optimize when nothing to do
+                nbtotal = len(billingcodes)            
+                for i in range(nbtotal) :        
+                    billingcode = billingcodes[i]
+                    if options["list"] :    
+                        print "%s [%s] %s %s %s %.2f %s" % \
+                              (billingcode.BillingCode, billingcode.Description, \
+                               billingcode.PageCounter, \
+                               _("pages"), \
+                               _("and"), \
+                               billingcode.Balance, \
+                               _("credits"))
+                    else :    
+                        if options["reset"] :
+                            billingcode.reset()    
+                        if options["description"] is not None :
+                            billingcode.setDescription(options["description"].strip())
+                        billingcode.save()    
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
                         
         if not options["list"] :                
             self.display("\r100.00%%\r        \r%s\n" % _("Done."))
