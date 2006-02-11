@@ -13,7 +13,7 @@
 #
 # $Id$
 #
-for prog in pkturnkey pkbcodes pkmail pkbanner autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pykosd ; do 
+for prog in pkinvoice pkturnkey pkbcodes pkmail pkbanner autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pykosd ; do 
     echo $prog ;
     help2man --no-info --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
     cd ../po ;
