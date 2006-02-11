@@ -126,9 +126,10 @@ class PKBcodes(PyKotaTool) :
                 if not billingcodes :
                     raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
                         
-            nbtotal = len(billingcodes)            
             if not options["list"] :
                 self.display("%s...\n" % _("Modification"))
+                
+            nbtotal = len(billingcodes)            
             for i in range(nbtotal) :        
                 billingcode = billingcodes[i]
                 if options["list"] :    
