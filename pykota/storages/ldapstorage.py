@@ -1614,13 +1614,14 @@ class Storage(BaseStorage) :
         self.doAdd(dn, fields)
         return self.getBillingCode(label)
         
-    def writeBillingCodeDescription(self, code) :
+    def saveBillingCode(self, code) :
         """Sets the new description for a billing code."""
         fields = {
                    "description" : self.userCharsetToDatabase(code.Description or ""), 
+                   "pykotaPageCounter" : str(code.PageCounter),
+                   "pykotaBalance" : str(code.Balance),
                  }
-        if fields["description"] :
-            self.doModify(code.ident, fields)
+        self.doModify(code.ident, fields)
             
     def getMatchingBillingCodes(self, billingcodepattern) :
         """Returns the list of all billing codes which match a certain pattern."""
@@ -1644,14 +1645,6 @@ class Storage(BaseStorage) :
                     self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
         
-    def setBillingCodeValues(self, code, newpagecounter, newbalance) :
-        """Sets the new page counter and balance for a billing code."""
-        fields = {
-                   "pykotaPageCounter" : str(newpagecounter),
-                   "pykotaBalance" : str(newbalance),
-                 }  
-        return self.doModify(code.ident, fields)         
-       
     def consumeBillingCode(self, code, pagecounter, balance) :
         """Consumes from a billing code."""
         fields = {

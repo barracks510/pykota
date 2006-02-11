@@ -39,7 +39,8 @@ class StorageObject :
         "Initialize minimal data."""
         self.parent = parent
         self.ident = None
-        self.Exists = 0
+        self.isDirty = False
+        self.Exists = False
         
 class StorageUser(StorageObject) :        
     """User class."""
@@ -451,13 +452,17 @@ class StorageBillingCode(StorageObject) :
         """Deletes the billing code from the database."""
         self.parent.deleteBillingCode(self)
         self.parent.flushEntry("BILLINGCODES", self.BillingCode)
-        self.Exists = 0
+        self.Exists = False
+        self.isDirty = False
         
     def reset(self, balance=0.0, pagecounter=0) :    
         """Resets the pagecounter and balance for this billing code."""
-        self.parent.setBillingCodeValues(self, pagecounter, balance)
-        self.Balance = balance
-        self.PageCounter = pagecounter
+        if self.Balance != balance :
+            self.Balance = balance
+            self.isDirty = True
+        if self.PageCounter != pagecounter :
+            self.PageCounter = pagecounter
+            self.isDirty = True
         
     def setDescription(self, description=None) :
         """Modifies the description for this billing code."""
@@ -465,7 +470,13 @@ class StorageBillingCode(StorageObject) :
             description = self.Description
         else :    
             self.Description = str(description)
-        self.parent.writeBillingCodeDescription(self)
+        self.isDirty = True    
+        
+    def save(self) :    
+        """Saves the billing code to disk in a single operation."""
+        if self.isDirty :
+            self.parent.saveBillingCode(self)
+            self.isDirty = False
         
     def consume(self, pages, price) :
         """Consumes some pages and credits for this billing code."""

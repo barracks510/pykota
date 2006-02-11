@@ -591,13 +591,13 @@ class SQLStorage :
         """Sets the new page counters permanently for a user print quota."""
         self.doModify("UPDATE userpquota SET pagecounter=%s, lifepagecounter=%s, warncount=0, datelimit=NULL WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
        
-    def writeBillingCodeDescription(self, code) :
-        """Sets the new description for a billing code."""
-        self.doModify("UPDATE billingcodes SET description=%s WHERE id=%s" % (self.doQuote(self.userCharsetToDatabase(code.Description or "")), self.doQuote(code.ident)))
-       
-    def setBillingCodeValues(self, code, newpagecounter, newbalance) :    
-        """Sets the new page counter and balance for a billing code."""
-        self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newpagecounter), self.doQuote(code.ident)))
+    def saveBillingCode(self, code) :    
+        """Saves the billing code to the database."""
+        self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s, description=%s WHERE id=%s" \
+                            % (self.doQuote(code.Balance), \
+                               self.doQuote(code.PageCounter), \
+                               self.doQuote(self.userCharsetToDatabase(code.Description)), \
+                               self.doQuote(code.ident)))
        
     def consumeBillingCode(self, code, pagecounter, balance) :
         """Consumes from a billing code."""
