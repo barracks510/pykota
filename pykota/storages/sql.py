@@ -449,9 +449,9 @@ class SQLStorage :
         if result :
             patterns = billingcodepattern.split(",")
             for record in result :
-                bcode = self.databaseToUserCharset(record["billingcode"])
-                if self.tool.matchString(bcode, patterns) :
-                    code = StorageBillingCode(self, bcode)
+                codename = self.databaseToUserCharset(record["billingcode"])
+                if self.tool.matchString(codename, patterns) :
+                    code = StorageBillingCode(self, codename)
                     code.ident = record.get("id")
                     code.Balance = record.get("balance") or 0.0
                     code.PageCounter = record.get("pagecounter") or 0

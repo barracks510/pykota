@@ -1632,11 +1632,10 @@ class Storage(BaseStorage) :
         if result :
             patterns = billingcodepattern.split(",")
             for (codeid, fields) in result :
-                bcode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
-                if self.tool.matchString(bcode, patterns) :
+                codename = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
+                if self.tool.matchString(codename, patterns) :
                     code = StorageBillingCode(self, codename)
                     code.ident = codeid
-                    code.BillingCode = codename
                     code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
                     code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
                     code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
