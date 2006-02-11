@@ -27,6 +27,7 @@
 import sys
 import os
 import pwd
+import time
 import cStringIO
 
 try :
@@ -133,10 +134,24 @@ class PKInvoice(DumPyKota) :
             except AttributeError :
                 pass
                 
-    def pagePDF(self, invoicenumber, entry, vat, start, end) :
-        """Generates a new page in the PDF document."""
-        self.canvas.doForm("background")
+    def printVar(self, label, value, size) :
+        """Outputs a variable onto the PDF canvas.
         
+           Returns the number of points to substract to current Y coordinate.
+        """   
+        xcenter = (self.pagesize[0] / 2.0) - 1*cm
+        self.canvas.saveState()
+        self.canvas.setFont("Helvetica-Bold", size)
+        self.canvas.setFillColorRGB(0, 0, 0)
+        self.canvas.drawRightString(xcenter, self.ypos, "%s :" % label)
+        self.canvas.setFont("Courier-Bold", size)
+        self.canvas.setFillColorRGB(0, 0, 1)
+        self.canvas.drawString(xcenter + 0.5*cm, self.ypos, value)
+        self.canvas.restoreState()
+        self.ypos -= (size + 4)
+        
+    def pagePDF(self, invoicenumber, entry, vat, start, end, unitname) :
+        """Generates a new page in the PDF document."""
         extractonly = { "username" : entry.Name }
         if start :
             extractonly["start"] = start
@@ -146,6 +161,8 @@ class PKInvoice(DumPyKota) :
         amount = vatamount = 0.0
         vatamount = 0.0
         if records :
+            self.canvas.doForm("background")
+            self.ypos = self.yorigine - (cm + 20)
             records = self.summarizeDatas(records, "history", extractonly, True)
             fieldnames = records[0]
             fields = {}
@@ -158,9 +175,26 @@ class PKInvoice(DumPyKota) :
                 # There's something due !
                 ht = ((amount * 10000.0) / (100.0 + vat)) / 100.0
                 vatamount = amount - ht
-            sys.stderr.write("#%06i    %s     %s    %s    %.2f    %.2f\n" % (invoicenumber, entry.Name, numberofpages, numberofbytes, amount, vatamount))
-        
-        self.canvas.showPage()
+            self.printVar(_("Invoice"), "#%s" % invoicenumber, 22)
+            self.printVar(_("Username"), entry.Name, 22)
+            self.ypos -= 20
+            if start : 
+                self.printVar(_("Since"), start, 14)
+            if end :
+                self.printVar(_("Until"), end, 14)
+            self.printVar(_("Edited on"), time.strftime("%c", time.localtime()), 14)
+                
+            self.ypos -= 20
+            self.printVar(_("Number of bytes"), str(numberofbytes), 14)
+            self.printVar(_("Number of pages"), str(numberofpages), 14)
+            self.ypos -= 20
+            self.printVar(_("Amount due"), "%.2f %s" % (amount, unitname), 22)
+            if vat :
+                self.ypos += 8
+                self.printVar("%s (%.2f%%)" % (_("Included VAT"), vat), "%.2f %s" % (vatamount, unitname), 14)
+            self.canvas.showPage()
+            return 1
+        return 0    
         
     def initPDF(self, logo) :
         """Initializes the PDF document."""
@@ -171,16 +205,15 @@ class PKInvoice(DumPyKota) :
         
         c.setAuthor(pwd.getpwuid(os.geteuid())[0])
         c.setTitle("PyKota invoices")
-        c.setSubject("This is an invoice generated with PyKota")
+        c.setSubject("Invoices generated with PyKota")
         
-        xcenter = self.pagesize[0] / 2.0
-        ycenter = self.pagesize[1] / 2.0
-                    
-        ypos = self.pagesize[1] - (2 * cm)            
         
         self.canvas.beginForm("background")
         self.canvas.saveState()
         
+        self.ypos = self.pagesize[1] - (2 * cm)            
+        
+        xcenter = self.pagesize[0] / 2.0
         if logo :
             try :    
                 imglogo = PIL.Image.open(logo)
@@ -191,14 +224,17 @@ class PKInvoice(DumPyKota) :
                 multi = float(width) / (8 * cm) 
                 width = float(width) / multi
                 height = float(height) / multi
-                xpos = xcenter - (width / 2.0)
-                ypos -= height
-                c.drawImage(logo, xpos, ypos, width, height)
+                self.ypos -= height
+                c.drawImage(logo, xcenter - (width / 2.0), \
+                                  self.ypos, \
+                                  width, height)
         
-        # New top
-        xpos = self.pagesize[0] / 5.0
-        ypos -= (1 * cm) + 20
+        self.ypos -= (cm + 20)
+        self.canvas.setFont("Helvetica-Bold", 14)
+        self.canvas.setFillColorRGB(0, 0, 0)
+        self.canvas.drawCentredString(xcenter, self.ypos, "%s :" % _("Here's the invoice for your printouts"))
         
+        self.yorigine = self.ypos
         self.canvas.restoreState()
         self.canvas.endForm()
         
@@ -231,7 +267,7 @@ class PKInvoice(DumPyKota) :
             raise PyKotaCommandLineError, _("Incorrect value '%s' for the --vat command line option") % options["vat"]
             
         try :    
-            number = float(options["number"])
+            firstnumber = number = int(options["number"])
             if number <= 0 :
                 raise ValueError
         except :    
@@ -255,13 +291,13 @@ class PKInvoice(DumPyKota) :
             nbtotal = len(entries)
             for i in range(nbtotal) :
                 entry = entries[i]
-                self.pagePDF(number, entry, vat, options["start"], options["end"])
-                number += 1
+                number += self.pagePDF(number, entry, vat, options["start"], options["end"], options["unit"])
                 if outfname != "-" :
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
                     
-            self.endPDF(outfname)
+            if number > firstnumber :
+                self.endPDF(outfname)
             
         if outfname != "-" :
             self.display("\r100.00%%\r        ")

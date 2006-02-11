@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha11 :
+    
+        - The pkinvoice invoice generator command line utility is now
+          included.
+          
     - 1.24alpha10 :   
     
         - Huge speed improvements when deleting users, printers, and
