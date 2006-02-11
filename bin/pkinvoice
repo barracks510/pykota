@@ -45,7 +45,8 @@ except ImportError :
 else :    
     hasPIL = 1
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.dumper import DumPyKota
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
 
@@ -62,8 +63,6 @@ options :
   -v | --version       Prints edpykota's version number then exits.
   -h | --help          Prints this message then exits.
   
-  -g | --groups        Generate invoices for users groups instead of users.
-  
   -l | --logo img      Use the image as the banner's logo. The logo will
                        be drawn at the center top of the page. The default
                        logo is /usr/share/pykota/logos/pykota.jpeg
@@ -74,11 +73,6 @@ options :
                        
   -n | --number N      Sets the number of the first invoice. This number
                        will automatically be incremented for each invoice.
-                       
-  -r | --reference v   Uses v as the initial reference value : an invoice
-                       will be generated for any account balance's value
-                       lower or equal to the reference value. The
-                       default reference value is of course 0.0 credits.
                        
   -o | --output f.pdf  Defines the name of the invoice file which will
                        be generated as a PDF document. If not set or
@@ -93,21 +87,41 @@ options :
                        exposed. The default is 0.0, meaning no VAT
                        information will be included.
                        
-  user1 through userN and group1 through groupN can use wildcards if 
-  needed. If no user argument is used, a wildcard of '*' is assumed, 
-  meaning include all users or groups.
+  -s | --start date    Sets the starting date for the print jobs invoiced.
   
+  -e | --end date      Sets the ending date for the print jobs invoiced.
+                       
+  user1 through userN can use wildcards if needed. If no user argument is
+  used, a wildcard of '*' is assumed, meaning include all users.
+  
+  Dates formating with --start and --end :
+  
+    YYYY : year boundaries
+    YYYYMM : month boundaries
+    YYYYMMDD : day boundaries
+    YYYYMMDDhh : hour boundaries
+    YYYYMMDDhhmm : minute boundaries
+    YYYYMMDDhhmmss : second boundaries
+    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)
+    today[+-NbDays] : today more or less N days (e.g. : today-15)
+    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)
+    now[+-NbDays] : now more or less N days (e.g. now-15)
+
+  'now' and 'today' are not exactly the same since today represents the first
+  or last second of the day depending on if it's used in a start= or end=
+  date expression. The utility to be able to specify dates in the future is
+  a question which remains to be answered :-)
+                                        
 examples :                       
 
-  $ pkinvoice --reference 15.0 --unit EURO --output invoices.pdf
+  $ pkinvoice --unit EURO --output invoices.pdf --start=now-30
   
-  Will generate a PDF document containing invoices for all users whose
-  account balance is below 15.0 credits. For each user the amount due
-  will be (15.0 - AccountBalance) EURO when that value is positive. 
-  No VAT information will be included.
+  Will generate a PDF document containing invoices for all users
+  who have spent some credits last month. Invoices will be done in
+  EURO.  No VAT information will be included.
 """) 
         
-class PKInvoice(PyKotaTool) :        
+class PKInvoice(DumPyKota) :        
     """A class for pkinvoice."""
     def getPageSize(self, pgsize) :
         """Returns the correct page size or None if not found."""
@@ -119,25 +133,50 @@ class PKInvoice(PyKotaTool) :
             except AttributeError :
                 pass
                 
-    def pagePDF(self, invoicenumber, name, amount, vatamount) :
+    def pagePDF(self, invoicenumber, entry, vat, start, end) :
         """Generates a new page in the PDF document."""
-        sys.stderr.write("#%06i    %s     %.2f    %.2f\n" % (invoicenumber, name, amount, vatamount))
         self.canvas.doForm("background")
+        
+        extractonly = { "username" : entry.Name }
+        if start :
+            extractonly["start"] = start
+        if end :    
+            extractonly["end"] = end
+        records = self.storage.extractHistory(extractonly)
+        amount = vatamount = 0.0
+        vatamount = 0.0
+        if records :
+            records = self.summarizeDatas(records, "history", extractonly, True)
+            fieldnames = records[0]
+            fields = {}
+            for i in range(len(fieldnames)) :
+                fields[fieldnames[i]] = i
+            numberofbytes = records[1][fields["jobsizebytes"]]
+            numberofpages = records[1][fields["jobsize"]]
+            amount = records[1][fields["jobprice"]]
+            if amount > 0.0 :
+                # There's something due !
+                ht = ((amount * 10000.0) / (100.0 + vat)) / 100.0
+                vatamount = amount - ht
+            sys.stderr.write("#%06i    %s     %s    %s    %.2f    %.2f\n" % (invoicenumber, entry.Name, numberofpages, numberofbytes, amount, vatamount))
+        
         self.canvas.showPage()
         
-    def initPDF(self, pagesize, logo) :
+    def initPDF(self, logo) :
         """Initializes the PDF document."""
         self.pdfDocument = cStringIO.StringIO()        
-        self.canvas = c = canvas.Canvas(self.pdfDocument, pagesize=pagesize, pageCompression=1)
+        self.canvas = c = canvas.Canvas(self.pdfDocument, \
+                                        pagesize=self.pagesize, \
+                                        pageCompression=1)
         
         c.setAuthor(pwd.getpwuid(os.geteuid())[0])
         c.setTitle("PyKota invoices")
         c.setSubject("This is an invoice generated with PyKota")
         
-        xcenter = pagesize[0] / 2.0
-        ycenter = pagesize[1] / 2.0
+        xcenter = self.pagesize[0] / 2.0
+        ycenter = self.pagesize[1] / 2.0
                     
-        ypos = pagesize[1] - (2 * cm)            
+        ypos = self.pagesize[1] - (2 * cm)            
         
         self.canvas.beginForm("background")
         self.canvas.saveState()
@@ -157,7 +196,7 @@ class PKInvoice(PyKotaTool) :
                 c.drawImage(logo, xpos, ypos, width, height)
         
         # New top
-        xpos = pagesize[0] / 5.0
+        xpos = self.pagesize[0] / 5.0
         ypos -= (1 * cm) + 20
         
         self.canvas.restoreState()
@@ -192,20 +231,15 @@ class PKInvoice(PyKotaTool) :
             raise PyKotaCommandLineError, _("Incorrect value '%s' for the --vat command line option") % options["vat"]
             
         try :    
-            reference = float(options["reference"])
-        except :    
-            raise PyKotaCommandLineError, _("Incorrect value '%s' for the --reference command line option") % options["reference"]
-            
-        try :    
             number = float(options["number"])
             if number <= 0 :
                 raise ValueError
         except :    
             raise PyKotaCommandLineError, _("Incorrect value '%s' for the --number command line option") % options["number"]
             
-        pagesize = self.getPageSize(options["pagesize"])
-        if pagesize is None :
-            pagesize = self.getPageSize("a4")
+        self.pagesize = self.getPageSize(options["pagesize"])
+        if self.pagesize is None :
+            self.pagesize = self.getPageSize("a4")
             self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options["pagesize"], "warn")
             
         if not names :
@@ -215,20 +249,14 @@ class PKInvoice(PyKotaTool) :
         if outfname != "-" :
             self.display("%s...\n" % _("Processing"))
             
-        suffix = (options["groups"] and "Group") or "User"        
-        entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+        entries = self.storage.getMatchingUsers(",".join(names))
         if entries :
-            self.initPDF(pagesize, options["logo"].strip())
+            self.initPDF(options["logo"].strip())
             nbtotal = len(entries)
             for i in range(nbtotal) :
                 entry = entries[i]
-                amount = reference - entry.AccountBalance
-                if amount > 0.0 :
-                    # There's something due !
-                    ht = ((amount * 10000.0) / (100.0 + vat)) / 100.0
-                    vatamount = amount - ht
-                    self.pagePDF(number, entry.Name, amount, vatamount)
-                    number += 1
+                self.pagePDF(number, entry, vat, options["start"], options["end"])
+                number += 1
                 if outfname != "-" :
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
@@ -242,17 +270,16 @@ class PKInvoice(PyKotaTool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        defaults = { "reference" : "0.0",
-                     "vat" : "0.0",
+        defaults = { "vat" : "0.0",
                      "unit" : N_("Credits"),
                      "output" : "-",
                      "pagesize" : "a4", \
                      "logo" : "/usr/share/pykota/logos/pykota.jpeg",
                      "number" : "1",
                    }
-        short_options = "vho:gr:u:V:p:l:n:"
-        long_options = ["help", "version", \
-                        "groups", "reference=", "unit=", "output=", \
+        short_options = "vho:r:u:V:p:l:n:s:e:"
+        long_options = ["help", "version", "start=", "end=", \
+                        "reference=", "unit=", "output=", \
                         "pagesize=", "logo=", "vat=", "number="]
         
         # Initializes the command line tool
@@ -266,8 +293,8 @@ if __name__ == "__main__" :
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
         
-        options["groups"] = options["g"] or options["groups"]
-        options["reference"] = options["r"] or options["reference"] or defaults["reference"]
+        options["start"] = options["s"] or options["start"]
+        options["end"] = options["e"] or options["end"]
         options["vat"] = options["V"] or options["vat"] or defaults["vat"]
         options["unit"] = options["u"] or options["unit"] or defaults["unit"]
         options["output"] = options["o"] or options["output"] or defaults["output"]
