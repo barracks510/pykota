@@ -137,14 +137,17 @@ class PKBcodes(PyKotaTool) :
                            _("credits"))
             else :               
                 self.display("%s...\n" % _("Modification"))
-                if options["description"] or options["reset"] : # optimize when nothing to do
+                reset = options["reset"]
+                if reset or options["description"] : # optimize when nothing to do
+                    if options["description"] :
+                        description = options["description"].strip()
                     nbtotal = len(billingcodes)            
                     for i in range(nbtotal) :        
                         billingcode = billingcodes[i]
-                        if options["reset"] :
+                        if reset :
                             billingcode.reset()    
-                        if options["description"] is not None :
-                            billingcode.setDescription(options["description"].strip())
+                        if description is not None : # NB : "" is allowed !
+                            billingcode.setDescription(description)
                         billingcode.save()    
                         percent = 100.0 * float(i) / float(nbtotal)
                         self.display("\r%.02f%%" % percent)
