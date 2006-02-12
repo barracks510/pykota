@@ -126,23 +126,21 @@ class PKBcodes(PyKotaTool) :
                 if not billingcodes :
                     raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
                         
-            if not options["list"] :
+            if options["list"] :
+                for billingcode in billingcodes :
+                    print "%s [%s] %s %s %s %.2f %s" % \
+                          (billingcode.BillingCode, billingcode.Description, \
+                           billingcode.PageCounter, \
+                           _("pages"), \
+                           _("and"), \
+                           billingcode.Balance, \
+                           _("credits"))
+            else :               
                 self.display("%s...\n" % _("Modification"))
-                
-            if (not options["add"]) \
-                or options["description"] or options["reset"] : # optimize when nothing to do
-                nbtotal = len(billingcodes)            
-                for i in range(nbtotal) :        
-                    billingcode = billingcodes[i]
-                    if options["list"] :    
-                        print "%s [%s] %s %s %s %.2f %s" % \
-                              (billingcode.BillingCode, billingcode.Description, \
-                               billingcode.PageCounter, \
-                               _("pages"), \
-                               _("and"), \
-                               billingcode.Balance, \
-                               _("credits"))
-                    else :    
+                if options["description"] or options["reset"] : # optimize when nothing to do
+                    nbtotal = len(billingcodes)            
+                    for i in range(nbtotal) :        
+                        billingcode = billingcodes[i]
                         if options["reset"] :
                             billingcode.reset()    
                         if options["description"] is not None :
