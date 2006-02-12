@@ -1030,7 +1030,7 @@ class CUPSBackend(PyKotaTool) :
             elif (self.User.LimitBy == "nochange") or self.Printer.PassThrough :
                 # no need to update the quota for the current user on this printer
                 self.printInfo(_("User %s's quota on printer %s won't be modified") % (self.UserName, self.PrinterName))
-                self.JobPrice = self.UserPQuota.computeJobPrice(self.JobSize)
+                self.JobPrice = 0.0
             else :
                 # update the quota for the current user on this printer 
                 self.printInfo(_("Updating user %s's quota on printer %s") % (self.UserName, self.PrinterName))
