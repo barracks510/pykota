@@ -209,11 +209,15 @@ disablehistory: No
 logger: system
 
 # Enable debugging ? Put YES or NO there.
-# debug is set to yes in this sample
-# configuration file, so debugging is activated
-# when configuring PyKota. After all works, just
-# put NO instead to save some disk space in your
-# logs.
+# debug is set to YES in this sample configuration file, so debugging
+# is activated when configuring PyKota, which helps a lot. After all 
+# works, just put NO instead to save some disk space in your logs.
+# NB : When set to YES, there is a very significant impact on performance
+# when managing many users, printers or billing codes at once, because
+# hundreds of thousands of log lines can be generated.
+# When printing a job, typically around 250-300 log lines are generated,
+# so the impact per job is really minimal. Note however that this will
+# add up over a large number of jobs.
 debug : Yes
 
 #
