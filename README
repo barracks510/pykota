@@ -181,6 +181,8 @@ PyKota features :
         - Print quote generator can tell users how much  
           a print job will cost them in advance.
           
+        - PDF invoice generator to charge back users.
+          
         - Policy with regard to unregistered users can   
           be configured for each printer to either deny
           printing, allow printing, or delegate the
