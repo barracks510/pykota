@@ -391,6 +391,7 @@ class EdPyKota(PyKotaTool) :
                 if options["charge"] :
                     (perpage, perjob) = charges
                     printer.setPrices(perpage, perjob)    
+                    printer.save()
                     
                 if options["prototype"] :
                     protoquota = getattr(self.storage, "get%sPQuota" % suffix)(protoentry, printer)

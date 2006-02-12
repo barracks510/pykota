@@ -23,7 +23,8 @@ PyKota NEWS :
        
     - 1.24alpha11 :
     
-        - Huge speed improvements when modifying billing codes.
+        - Huge speed improvements when modifying billing codes and
+          printers.
         
         - Both pkbcodes and pkprinters now display the percent done
           for all actions.

@@ -169,40 +169,8 @@ class PKPrinters(PyKotaTool) :
                 if not printers :
                     raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
                         
-            if not options["list"] :
-                self.display("%s...\n" % _("Modification"))
-                
-            if options["groups"] :        
-                printersgroups = self.storage.getMatchingPrinters(options["groups"])
-                if not printersgroups :
-                    raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
-                    
-            if options["charge"] :
-                try :
-                    charges = [float(part) for part in options["charge"].split(',', 1)]
-                except ValueError :    
-                    raise PyKotaCommandLineError, _("Invalid charge amount value %s") % options["charge"]
-                else :    
-                    if len(charges) > 2 :
-                        charges = charges[:2]
-                    if len(charges) != 2 :
-                        charges = [charges[0], None]
-                    (perpage, perjob) = charges
-                    
-            if options["maxjobsize"] :        
-                try :
-                    maxjobsize = int(options["maxjobsize"])
-                    if maxjobsize < 0 :
-                        raise ValueError
-                except ValueError :    
-                    raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options["maxjobsize"]
-            else :        
-                maxjobsize = None
-                    
-            nbtotal = len(printers)
-            for i in range(nbtotal) :        
-                printer = printers[i]
-                if options["list"] :    
+            if options["list"] :
+                for printer in printers :
                     parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
                     if parents : 
                         parents = "%s %s" % (_("in"), parents)
@@ -213,23 +181,61 @@ class PKPrinters(PyKotaTool) :
                     print "    %s" % (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited")))
                     if parents :       
                         print "    %s" % parents
-                else :    
+            else :
+                self.display("%s...\n" % _("Modification"))
+                
+                if options["groups"] :        
+                    printersgroups = self.storage.getMatchingPrinters(options["groups"])
+                    if not printersgroups :
+                        raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
+                else :         
+                    printersgroups = []
+                        
+                if options["charge"] :
+                    try :
+                        charges = [float(part) for part in options["charge"].split(',', 1)]
+                    except ValueError :    
+                        raise PyKotaCommandLineError, _("Invalid charge amount value %s") % options["charge"]
+                    else :    
+                        if len(charges) > 2 :
+                            charges = charges[:2]
+                        if len(charges) != 2 :
+                            charges = [charges[0], None]
+                        (perpage, perjob) = charges
+                        
+                if options["maxjobsize"] :        
+                    try :
+                        maxjobsize = int(options["maxjobsize"])
+                        if maxjobsize < 0 :
+                            raise ValueError
+                    except ValueError :    
+                        raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options["maxjobsize"]
+                else :        
+                    maxjobsize = None
+                        
+                if options["description"] :
+                    description = options["description"].strip()
+                nopassthrough = options["nopassthrough"]    
+                passthrough = options["passthrough"]
+                nbtotal = len(printers)
+                for i in range(nbtotal) :        
+                    printer = printers[i]
                     if options["charge"] :
                         printer.setPrices(perpage, perjob)    
-                    if options["description"] is not None :
-                        printer.setDescription(options["description"].strip())
-                    if options["nopassthrough"] and printer.PassThrough :    
-                        self.storage.setPrinterPassThroughMode(printer, 0)
-                    if options["passthrough"] and not printer.PassThrough :    
-                        self.storage.setPrinterPassThroughMode(printer, 1)
+                    if description is not None :        # NB : "" is allowed !
+                        printer.setDescription(description)
+                    if nopassthrough and printer.PassThrough :    
+                        printer.setPassThrough(False)
+                    if passthrough and not printer.PassThrough :    
+                        printer.setPassThrough(True)
                     if (maxjobsize is not None) and (printer.MaxJobSize != maxjobsize) :    
-                        self.storage.setPrinterMaxJobSize(printer, maxjobsize)
-                    if options["groups"] :    
-                        for pgroup in printersgroups :
-                            if options["remove"] :
-                                pgroup.delPrinterFromGroup(printer)
-                            else :
-                                pgroup.addPrinterToGroup(printer)    
+                        printer.setMaxJobSize(maxjobsize)
+                    printer.save()    
+                    for pgroup in printersgroups :
+                        if options["remove"] :
+                            pgroup.delPrinterFromGroup(printer)
+                        else :
+                            pgroup.addPrinterToGroup(printer)    
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
                                 

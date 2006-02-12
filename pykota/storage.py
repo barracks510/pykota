@@ -163,6 +163,12 @@ class StoragePrinter(StorageObject) :
         else :
             raise AttributeError, name
             
+    def save(self) :    
+        """Saves the billing code to disk in a single operation."""
+        if self.isDirty :
+            self.parent.savePrinter(self)
+            self.isDirty = False
+            
     def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None, precomputedsize=None, precomputedprice=None) :
         """Adds a job to the printer's history."""
         self.parent.writeJobNew(self, user, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, clienthost, jobsizebytes, jobmd5sum, jobpages, jobbilling, precomputedsize, precomputedprice)
@@ -189,7 +195,7 @@ class StoragePrinter(StorageObject) :
             priceperjob = self.PricePerJob or 0.0
         else :    
             self.PricePerJob = float(priceperjob)
-        self.parent.writePrinterPrices(self)
+        self.isDirty = True    
         
     def setDescription(self, description=None) :
         """Sets the printer's description."""
@@ -197,7 +203,17 @@ class StoragePrinter(StorageObject) :
             description = self.Description
         else :    
             self.Description = str(description)
-        self.parent.writePrinterDescription(self)
+        self.isDirty = True    
+        
+    def setPassThrough(self, passthrough) :
+        """Sets the printer's passthrough mode."""
+        self.PassThrough = passthrough
+        self.isDirty = True
+        
+    def setMaxJobSize(self, maxjobsize) :
+        """Sets the printer's maximal job size."""
+        self.MaxJobSize = maxjobsize
+        self.isDirty = True
         
     def delete(self) :    
         """Deletes a printer from the Quota Storage."""
@@ -217,7 +233,8 @@ class StoragePrinter(StorageObject) :
                 for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
                     if v.Printer.Name == self.Name :
                         self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
-            self.Exists = 0    
+            self.isDirty = False            
+            self.Exists = False
         
 class StorageUserPQuota(StorageObject) :
     """User Print Quota class."""
@@ -452,17 +469,14 @@ class StorageBillingCode(StorageObject) :
         """Deletes the billing code from the database."""
         self.parent.deleteBillingCode(self)
         self.parent.flushEntry("BILLINGCODES", self.BillingCode)
-        self.Exists = False
         self.isDirty = False
+        self.Exists = False
         
     def reset(self, balance=0.0, pagecounter=0) :    
         """Resets the pagecounter and balance for this billing code."""
-        if self.Balance != balance :
-            self.Balance = balance
-            self.isDirty = True
-        if self.PageCounter != pagecounter :
-            self.PageCounter = pagecounter
-            self.isDirty = True
+        self.Balance = balance
+        self.PageCounter = pagecounter
+        self.isDirty = True
         
     def setDescription(self, description=None) :
         """Modifies the description for this billing code."""

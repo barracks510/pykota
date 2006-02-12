@@ -546,22 +546,15 @@ class SQLStorage :
         self.doModify("INSERT INTO grouppquota (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
         return self.getGroupPQuota(group, printer)
         
-    def writePrinterPrices(self, printer) :    
-        """Write the printer's prices back into the storage."""
-        self.doModify("UPDATE printers SET priceperpage=%s, priceperjob=%s WHERE id=%s" % (self.doQuote(printer.PricePerPage), self.doQuote(printer.PricePerJob), self.doQuote(printer.ident)))
-        
-    def writePrinterDescription(self, printer) :    
-        """Write the printer's description back into the storage."""
-        description = self.userCharsetToDatabase(printer.Description)
-        self.doModify("UPDATE printers SET description=%s WHERE id=%s" % (self.doQuote(description), self.doQuote(printer.ident)))
-        
-    def setPrinterMaxJobSize(self, printer, maxjobsize) :     
-        """Write the printer's maxjobsize attribute."""
-        self.doModify("UPDATE printers SET maxjobsize=%s WHERE id=%s" % (self.doQuote(maxjobsize), self.doQuote(printer.ident)))
-        
-    def setPrinterPassThroughMode(self, printer, passthrough) :
-        """Write the printer's passthrough attribute."""
-        self.doModify("UPDATE printers SET passthrough=%s WHERE id=%s" % (self.doQuote((passthrough and "t") or "f"), self.doQuote(printer.ident)))
+    def savePrinter(self, printer) :    
+        """Saves the printer to the database in a single operation."""
+        self.doModify("UPDATE printers SET passthrough=%s, maxjobsize=%s, description=%s, priceperpage=%s, priceperjob=%s WHERE id=%s" \
+                              % (self.doQuote((printer.PassThrough and "t") or "f"), \
+                                 self.doQuote(printer.MaxJobSize), \
+                                 self.doQuote(self.userCharsetToDatabase(printer.Description)), \
+                                 self.doQuote(printer.PricePerPage), \
+                                 self.doQuote(printer.PricePerJob), \
+                                 self.doQuote(printer.ident)))
         
     def writeUserOverCharge(self, user, factor) :
         """Sets the user's overcharging coefficient."""

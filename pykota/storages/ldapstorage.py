@@ -1016,33 +1016,14 @@ class Storage(BaseStorage) :
         self.doAdd(dn, fields)
         return self.getGroupPQuota(group, printer)
         
-    def writePrinterPrices(self, printer) :    
-        """Write the printer's prices back into the storage."""
+    def savePrinter(self, printer) :    
+        """Saves the printer to the database in a single operation."""
         fields = {
+                   "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
+                   "pykotaMaxJobSize" : (printer.MaxJobSize and str(printer.MaxJobSize)) or "0",
+                   "description" : self.userCharsetToDatabase(printer.Description or ""),
                    "pykotaPricePerPage" : str(printer.PricePerPage),
                    "pykotaPricePerJob" : str(printer.PricePerJob),
-                 }
-        self.doModify(printer.ident, fields)
-        
-    def writePrinterDescription(self, printer) :    
-        """Write the printer's description back into the storage."""
-        fields = {
-                   "description" : self.userCharsetToDatabase(printer.Description or ""),
-                 }
-        if fields["description"] :
-            self.doModify(printer.ident, fields)
-            
-    def setPrinterMaxJobSize(self, printer, maxjobsize) :     
-        """Write the printer's maxjobsize attribute."""
-        fields = {
-                   "pykotaMaxJobSize" : (maxjobsize and str(maxjobsize)) or "0",
-                 }
-        self.doModify(printer.ident, fields)
-        
-    def setPrinterPassThroughMode(self, printer, passthrough) :
-        """Write the printer's passthrough attribute."""
-        fields = {
-                   "pykotaPassThrough" : (passthrough and "t") or "f",
                  }
         self.doModify(printer.ident, fields)
         
