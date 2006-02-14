@@ -183,7 +183,7 @@ CREATE TABLE coefficients (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
 -- 
 -- Create the table for the billing codes
 --
-CREATE TABLE billingcodes (id INT4 PRIMARY KEY NOT NULL,
+CREATE TABLE billingcodes (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                            billingcode VARCHAR(255) UNIQUE NOT NULL,
                            description TEXT,
                            balance FLOAT DEFAULT 0.0,
