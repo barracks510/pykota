@@ -99,7 +99,8 @@ class BaseReporter :
             reached = (((quota.SoftLimit is not None) and (pagecounter >= quota.SoftLimit) and "+") or "-") + "Q"
         else :
             if entry.LimitBy.lower() == "balance" :
-                if balance == 0.0 :
+                balancezero = self.tool.config.getBalanceZero()
+                if balance == balancezero :
                     if entry.OverCharge > 0 :
                         datelimit = "DENY"
                         reached = "+B"
@@ -108,7 +109,7 @@ class BaseReporter :
                         # TODO : do something when printer prices are negative as well !
                         datelimit = ""
                         reached = "-B"
-                elif balance < 0 :
+                elif balance < balancezero :
                     datelimit = "DENY"
                     reached = "+B"
                 elif balance <= self.tool.config.getPoorMan() :

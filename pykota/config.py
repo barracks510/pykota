@@ -438,6 +438,17 @@ class PyKotaConfig :
         except (TypeError, ValueError) :    
             raise PyKotaConfigError, _("Invalid poor man's threshold %s") % pm
             
+    def getBalanceZero(self) :    
+        """Returns the value of the zero for balance limitation."""
+        try :
+            bz = self.getGlobalOption("balancezero")
+        except PyKotaConfigError :    
+            bz = 0.0    # default value, zero is 0.0
+        try :
+            return float(bz)
+        except (TypeError, ValueError) :    
+            raise PyKotaConfigError, _("Invalid balancezero value %s") % bz
+            
     def getPoorWarn(self) :    
         """Returns the poor man's warning message."""
         try :
@@ -515,6 +526,18 @@ class PyKotaConfig :
             else :    
                 # it's a command to run.
                 return denyduplicates
+                
+    def getDuplicatesDelay(self, printername) :          
+        """Returns the number of seconds after which two identical jobs are not considered a duplicate anymore."""
+        try : 
+            duplicatesdelay = self.getPrinterOption(printername, "duplicatesdelay")
+        except PyKotaConfigError :    
+            return 0
+        else :    
+            try :
+                return int(duplicatesdelay)
+            except (TypeError, ValueError) :
+                raise PyKotaConfigError, _("Incorrect value %s for the duplicatesdelay directive in section %s") % (str(duplicatesdelay), printername)
         
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""

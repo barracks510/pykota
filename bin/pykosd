@@ -111,12 +111,12 @@ class PyKOSD(PyKotaTool) :
         uname = pwd.getpwuid(os.getuid())[0]
         while 1 :
             color = savecolor
-            user = cmd.storage.getUserFromBackend(uname)        # don't use cache
+            user = self.storage.getUserFromBackend(uname)        # don't use cache
             if not user.Exists :
                 raise PyKotaCommandLineError, _("User %s doesn't exist in PyKota's database") % uname
             if user.LimitBy == "quota" :    
-                printers = cmd.storage.getMatchingPrinters("*")
-                upquotas = [ cmd.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache
+                printers = self.storage.getMatchingPrinters("*")
+                upquotas = [ self.storage.getUserPQuotaFromBackend(user, p) for p in printers ] # don't use cache
                 nblines = len(upquotas)
                 display = pyosd.osd(font=options["font"], colour=color, timeout=duration, shadow=2, lines=nblines)
                 for line in range(nblines) :
@@ -130,7 +130,7 @@ class PyKOSD(PyKotaTool) :
                         percent = "%s%%" % min((upq.PageCounter * 100) / upq.HardLimit, 100)
                     display.display(_("Pages used on %s : %s") % (upq.Printer.Name, percent), type=pyosd.TYPE_STRING, line=line)
             elif user.LimitBy == "balance" :
-                if user.AccountBalance <= 0 :
+                if user.AccountBalance <= self.config.getBalanceZero() :
                     color = "#FF0000"
                 display = pyosd.osd(font=options["font"], colour=color, timeout=duration, shadow=2)
                 display.display(_("PyKota Units left : %.2f") % user.AccountBalance, type=pyosd.TYPE_STRING)

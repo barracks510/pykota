@@ -457,13 +457,14 @@ class PyKotaTool(Tool) :
             val = group.AccountBalance or 0.0
             if enforcement == "STRICT" : 
                 val -= self.softwareJobPrice # use precomputed size.
-            if val <= 0.0 :
+            balancezero = self.config.getBalanceZero()
+            if val <= balancezero :
                 action = "DENY"
             elif val <= self.config.getPoorMan() :    
                 action = "WARN"
             else :    
                 action = "ALLOW"
-            if (enforcement == "STRICT") and (val == 0.0) :
+            if (enforcement == "STRICT") and (val == balancezero) :
                 action = "WARN" # we can still print until account is 0
         else :
             val = grouppquota.PageCounter or 0
@@ -548,13 +549,14 @@ class PyKotaTool(Tool) :
                     enforcement = self.config.getPrinterEnforcement(printer.Name)
                     if enforcement == "STRICT" : 
                         val -= self.softwareJobPrice # use precomputed size.
-                    if val <= 0.0 :
+                    balancezero = self.config.getBalanceZero()    
+                    if val <= balancezero :
                         action = "DENY"
                     elif val <= self.config.getPoorMan() :    
                         action = "WARN"
                     else :
                         action = "ALLOW"
-                    if (enforcement == "STRICT") and (val == 0.0) :
+                    if (enforcement == "STRICT") and (val == balancezero) :
                         action = "WARN" # we can still print until account is 0
                 return action    
         else :

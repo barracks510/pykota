@@ -681,6 +681,16 @@ gracedelay: 7
 # This option can only appear in the global section
 poorman: 2.0
 
+# The value of the zero for account balance limitations.
+# If an user his limited by balance, he can print until
+# his balance reaches the value defined here. If unset,
+# the default value is 0. Any floating point value
+# is accepted.
+#
+# This option can only appear in the global section
+# balancezero : -0.25
+balancezero: 0.0
+
 # Poor man's warning message
 # The warning message that is sent if the "poorman" value is reached
 # Again this must appear in the global section
@@ -1001,4 +1011,12 @@ trustjobsize : yes
 # denyduplicates : /usr/bin/myowncommand with some arguments
 # denyduplicates : yes
 denyduplicates : no
+
+# Sets the delay in seconds after which two identical jobs are 
+# not considered as being a duplicate.
+# 
+# This can be defined either globally or on a per printer basis
+# The default value if not set is 0, for 0 seconds.
+# duplicatesdelay : 300
+duplicatesdelay : 0
 

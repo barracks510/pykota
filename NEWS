@@ -21,6 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha12 :
+    
+        - Introduced the 'duplicatesdelay' directive to specify after
+          which duration two duplicate jobs are not considered duplicate
+          jobs anymore.
+          
+        - Introduced the 'balancezero' directive to specify any value  
+          as the balance limit instead of 0.0. This can allow admins to
+          give a few free credits to users, for example.
+          
     - 1.24alpha11 :
     
         - Huge speed improvements when modifying billing codes and
