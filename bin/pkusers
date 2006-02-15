@@ -1,0 +1,343 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Users Manager
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005, 2006 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# $Id$
+#
+#
+
+import os
+import sys
+import pwd
+
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+
+__doc__ = N_("""pkusers v%(__version__)s (c) %(__years__)s %(__author__)s
+
+An Users and Groups Manager for PyKota.
+
+command line usage :
+
+  pkusers [options] user1 user2 user3 ... userN
+  
+or :  
+
+  pkusers --groups [options] group1 group2 group3 ... groupN
+
+options :
+
+  -v | --version       Prints pkusers's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+  -a | --add           Adds users if they don't exist on the database.
+                       If they exist, they are modified unless
+                       -s|--skipexisting is also used.
+                       
+  -d | --delete        Deletes users from the quota storage.
+  
+  -D | --description d Adds a textual description to users or groups.
+                       
+  -g | --groups        Edit users groups instead of users.
+                          
+  -p | --prototype u|g Uses user u or group g as a prototype to create
+                       or modify datas.
+                       
+  -o | --overcharge f  Sets the overcharging factor applied to the user 
+                       when computing the cost of a print job. Positive or 
+                       negative floating point values are allowed,
+                       this allows you to do some really creative
+                       things like giving money to an user whenever
+                       he prints. The number of pages in a print job
+                       is not modified by this coefficient, only the
+                       cost of the job for a particular user.
+                       Only users have such a coefficient.
+  
+  -i | --ingroups g1[,g2...]  Puts the users into each of the groups
+                              listed, separated by commas. The groups
+                              must already exist in the Quota Storage.
+                       
+  -l | --limitby l     Choose if the user/group is limited in printing                     
+                       by its account balance or by its page quota.
+                       The default value is 'quota'. Allowed values
+                       are 'quota' 'balance' 'noquota' 'noprint' 
+                       and 'nochange' :
+                       
+                         - quota : limit by number of pages per printer.
+                         - balance : limit by number of credits in account.
+                         - noquota : no limit, accounting still done.
+                         - nochange : no limit, accounting not done. 
+                         - noprint : printing is denied. 
+                       NB : nochange and noprint are not supported for groups.
+                       
+  -b | --balance b     Sets the user's account balance to b.                     
+                       Account balance may be increase or decreased
+                       if b is prefixed with + or -.
+                       WARNING : when decreasing account balance,
+                       the total paid so far by the user is decreased
+                       too.
+                       Groups don't have a real balance, but the
+                       sum of their users' account balance.
+                       
+  -C | --comment txt   Defines some informational text to be associated
+                       with a change to an user's account balance.
+                       Only meaningful if -b | --balance is also used.
+                       
+                       
+  -r | --remove        In combination with the --groups option above,                       
+                       remove users from the specified users groups.
+                       
+  -s | --skipexisting  In combination with the --add option above, tells
+                       pkusers to not modify existing users.
+                       
+  user1 through userN and group1 through groupN can use wildcards
+  if the --add option is not set.
+  
+examples :                              
+
+  TODO...
+""")
+        
+class PKUsers(PyKotaTool) :        
+    """A class for a users and users groups manager."""
+    def main(self, names, options) :
+        """Manage users or groups."""
+        if not self.config.isAdmin :
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
+        suffix = (options["groups"] and "Group") or "User"        
+        
+        if options["delete"] :    
+            self.display("%s...\n" % _("Deletion"))
+            todelete = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+            nbtotal = len(todelete)
+            for i in range(nbtotal) :
+                todelete[i].delete()
+                percent = 100.0 * float(i) / float(nbtotal)
+                self.display("\r%.02f%%" % percent)
+        else :
+            if options["add"] :    
+                self.display("%s...\n" % _("Creation"))
+                rejectunknown = self.config.getRejectUnknown()    
+                entries = []
+                nbtotal = len(names)
+                for i in range(nbtotal) :
+                    ename = names[i]
+                    email = ""
+                    if not options["groups"] :
+                        splitname = ename.split('/', 1)     # username/email
+                        if len(splitname) == 1 :
+                            splitname.append("")
+                        (ename, email) = splitname
+                        if email and (email.count('@') != 1) :
+                            self.printInfo(_("Invalid email address %s") % email)
+                            email = ""
+                    entry = getattr(self.storage, "get%s" % suffix)(ename)
+                    if entry.Exists :
+                        if options["skipexisting"] :
+                            self.printInfo(_("%s %s already exists, skipping.") % (suffix, entry.Name))
+                        else :    
+                            self.printInfo(_("%s %s already exists, will be modified.") % (suffix, entry.Name))
+                            entries.append(entry)
+                    else :
+                        if self.isValidName(entry.Name) :
+                            reject = 0
+                            if rejectunknown :
+                                if options["groups"] :
+                                    try :
+                                        grp.getgrnam(entry.Name)
+                                    except KeyError :    
+                                        self.printInfo(_("Unknown group %s") % entry.Name, "error")
+                                        reject = 1
+                                else :    
+                                    try :
+                                        pwd.getpwnam(entry.Name)
+                                    except KeyError :    
+                                        self.printInfo(_("Unknown user %s") % entry.Name, "error")
+                                        reject = 1
+                            if not reject :        
+                                if email :
+                                    entry.Email = email
+                                entry = getattr(self.storage, "add%s" % suffix)(entry)
+                                entries.append(entry)
+                        else :    
+                            if options["groups"] :
+                                self.printInfo(_("Invalid group name %s") % entry.Name)
+                            else :    
+                                self.printInfo(_("Invalid user name %s") % entry.Name)
+                                
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+                self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+            else :        
+                if not names :
+                    names = ["*"]
+                entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+                if not entries :
+                    raise PyKotaCommandLineError, _("There's no %s matching %s") % (suffix.lower(), " ".join(names))
+                        
+            if options["list"] :
+                for entry in entries :
+                    print "%s - <%s>" % (entry.Name, entry.Email)
+            else :
+                self.display("%s...\n" % _("Modification"))
+                
+                limitby = options["limitby"]
+                if limitby :
+                    limitby = limitby.strip().lower()
+                if limitby :
+                    if limitby not in ('quota', 'balance', 'noquota', \
+                                                'noprint', 'nochange') :
+                        raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
+                    if limitby in ('noquota', 'nochange') :    
+                        options["noquota"] = 1
+                    if (limitby in ('nochange', 'noprint')) and options["groups"] :    
+                        raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
+                    
+                overcharge = options["overcharge"]
+                if overcharge :
+                    try :
+                        overcharge = float(overcharge.strip())
+                    except (ValueError, AttributeError) :    
+                        raise PyKotaCommandLineError, _("Invalid overcharge value %s") % options["overcharge"]
+                        
+                balance = options["balance"]
+                if balance :
+                    balance = balance.strip()
+                    try :
+                        balancevalue = float(balance)
+                    except ValueError :    
+                        raise PyKotaCommandLineError, _("Invalid balance value %s") % options["balance"]
+                    
+                if options["ingroups"] :
+                    usersgroups = self.storage.getMatchingGroups(options["ingroups"])
+                    if not usersgroups :
+                        raise PyKotaCommandLineError, _("There's no users group matching %s") % " ".join(options["ingroups"].split(','))
+                else :         
+                    usersgroups = []
+                        
+                if options["description"] :
+                    description = options["description"].strip()
+                    
+                if options["prototype"] :    
+                    protoentry = getattr(self.storage, "get%s" % suffix)(options["prototype"])
+                    if not protoentry.Exists :
+                        raise PyKotaCommandLineError, _("Prototype object %s not found in Quota Storage.") % protoentry.Name
+                    else :    
+                        limitby = protoentry.LimitBy
+                        balancevalue = protoentry.AccountBalance
+                        if balancevalue is not None :
+                            balance = str(abs(balancevalue))
+                        else :    
+                            balance = None
+                        overcharge = getattr(protoentry, "OverCharge", None)
+                    
+                nbtotal = len(entries)
+                for i in range(nbtotal) :        
+                    entry = entries[i]
+                    if description is not None :        # NB : "" is allowed !
+                        entry.setDescription(description)
+                    entry.save()    
+                    if not options["groups"] :
+                        for ugroup in usersgroups :
+                            if options["remove"] :
+                                ugroup.delUserFromGroup(entry)
+                            else :
+                                ugroup.addUserToGroup(entry)
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+                                
+        if not options["list"] :                
+            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+                     
+if __name__ == "__main__" : 
+    retcode = 0
+    try :
+        defaults = { \
+                     "comment" : "", \
+                   }
+        short_options = "hvaD:dgl:rsp:o:i:b:C:L"
+        long_options = ["help", "version", "add", "description=", \
+                        "delete", "groups", "list", "remove", \
+                        "skipexisting", "overcharge=", "prototype=", \
+                        "ingroups=", "limitby=", "balance=", "comment=", \
+                       ]
+                        
+        
+        # Initializes the command line tool
+        manager = PKUsers(doc=__doc__)
+        manager.deferredInit()
+        
+        # parse and checks the command line
+        (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        options["add"] = options["a"] or options["add"]
+        options["description"] = options["D"] or options["description"]
+        options["delete"] = options["d"] or options["delete"] 
+        options["groups"] = options["g"] or options["groups"]
+        options["list"] = options["L"] or options["list"]
+        options["remove"] = options["r"] or options["remove"]
+        options["skipexisting"] = options["s"] or options["skipexisting"]
+        options["prototype"] = options["p"] or options["prototype"]
+        options["limitby"] = options["l"] or options["limitby"]
+        options["balance"] = options["b"] or options["balance"] 
+        options["ingroups"] = options["i"] or options["ingroups"]
+        options["overcharge"] = options["o"] or options["overcharge"]
+        options["comment"] = options["C"] or options["comment"] or defaults["comment"]
+        
+        if options["help"] :
+            manager.display_usage_and_quit()
+        elif options["version"] :
+            manager.display_version_and_quit()
+        elif (options["delete"] and (options["add"] or options["groups"] or options["remove"] or options["description"])) \
+           or (options["skipexisting"] and not options["add"]) \
+           or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["remove"] or options["description"])) \
+           or (options["groups"] and (options["balance"] or options["ingroups"] or options["overcharge"])) :
+            raise PyKotaCommandLineError, _("incompatible options, see help.")
+        elif options["remove"] and not options["ingroups"] :    
+            raise PyKotaCommandLineError, _("You have to pass user groups names on the command line")
+        elif (not args) and options["add"] :
+            raise PyKotaCommandLineError, _("You have to pass user or group names on the command line")
+        else :
+            retcode = manager.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+        retcode = -3
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        retcode = -2
+    except SystemExit :        
+        pass
+    except :
+        try :
+            manager.crashed("pkusers failed")
+        except :    
+            crashed("pkusers failed")
+        retcode = -1
+
+    try :
+        manager.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
+        
+    sys.exit(retcode)    

@@ -48,6 +48,12 @@ class StorageObject :
         if description is not None :
             self.Description = str(description)
             self.isDirty = True    
+            
+    def save(self) :        
+        """Saves the object to the database."""
+        if self.isDirty :
+            getattr(self.parent, "save%s" % self.__class__.__name__[7:])(self)
+            self.isDirty = False
         
 class StorageUser(StorageObject) :        
     """User class."""
@@ -168,12 +174,6 @@ class StoragePrinter(StorageObject) :
             return self.LastJob
         else :
             raise AttributeError, name
-            
-    def save(self) :    
-        """Saves the billing code to disk in a single operation."""
-        if self.isDirty :
-            self.parent.savePrinter(self)
-            self.isDirty = False
             
     def addJobToHistory(self, jobid, user, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None, precomputedsize=None, precomputedprice=None) :
         """Adds a job to the printer's history."""
@@ -474,12 +474,6 @@ class StorageBillingCode(StorageObject) :
         self.Balance = balance
         self.PageCounter = pagecounter
         self.isDirty = True
-        
-    def save(self) :    
-        """Saves the billing code to disk in a single operation."""
-        if self.isDirty :
-            self.parent.saveBillingCode(self)
-            self.isDirty = False
         
     def consume(self, pages, price) :
         """Consumes some pages and credits for this billing code."""
