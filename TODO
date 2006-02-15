@@ -29,11 +29,6 @@ TODO, in no particular order :
           
         - PJL for non-networked backends (see ML's history)
         
-        - --freemoney/--freepages command line option for edpykota : 
-          don't modify the totals or payments, but instead set
-          a freemoney/freepages attribute which will be decremented/incremented
-          **before** the real one.
-          
         - Make the SNMP and PJL delay and number of loops a new configuration
           directive.
         
