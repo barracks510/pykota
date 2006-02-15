@@ -870,6 +870,8 @@ class Storage(BaseStorage) :
                        
         if user.Email :
             newfields.update({self.info["usermail"]: user.Email})
+        if user.Description is not None : 
+            newfields.update({"description": self.userCharsetToDatabase(user.Description)})
         mustadd = 1
         if self.info["newuser"].lower() != 'below' :
             try :
@@ -931,6 +933,8 @@ class Storage(BaseStorage) :
                       "pykotaGroupName" : gname,
                       "pykotaLimitBy" : (group.LimitBy or "quota"),
                     } 
+        if group.Description is not None : 
+            newfields.update({"description": self.userCharsetToDatabase(group.Description)})
         mustadd = 1
         if self.info["newgroup"].lower() != 'below' :
             try :

@@ -516,14 +516,22 @@ class SQLStorage :
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns it."""
-        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge) VALUES (%s, %s, %s, %s, %s, %s)" % \
-                                         (self.doQuote(self.userCharsetToDatabase(user.Name)), self.doQuote(user.LimitBy or 'quota'), self.doQuote(user.AccountBalance or 0.0), self.doQuote(user.LifeTimePaid or 0.0), self.doQuote(user.Email), self.doQuote(user.OverCharge)))
+        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
+                                         (self.doQuote(self.userCharsetToDatabase(user.Name)), \
+                                          self.doQuote(user.LimitBy or 'quota'), \
+                                          self.doQuote(user.AccountBalance or 0.0), \
+                                          self.doQuote(user.LifeTimePaid or 0.0), \
+                                          self.doQuote(user.Email), \
+                                          self.doQuote(user.OverCharge), \
+                                          self.doQuote(self.userCharsetToDatabase(user.Description)))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
         """Adds a group to the quota storage, returns it."""
-        self.doModify("INSERT INTO groups (groupname, limitby) VALUES (%s, %s)" % \
-                                          (self.doQuote(self.userCharsetToDatabase(group.Name)), self.doQuote(group.LimitBy or "quota")))
+        self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
+                                          (self.doQuote(self.userCharsetToDatabase(group.Name)), \
+                                           self.doQuote(group.LimitBy or "quota"), \
+                                           self.doQuote(self.userCharsetToDatabase(group.Description)))
         return self.getGroup(group.Name)
 
     def addUserToGroup(self, user, group) :    

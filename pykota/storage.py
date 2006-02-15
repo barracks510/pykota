@@ -39,6 +39,7 @@ class StorageObject :
         "Initialize minimal data."""
         self.parent = parent
         self.ident = None
+        self.Description = None
         self.isDirty = False
         self.Exists = False
         
@@ -53,7 +54,6 @@ class StorageUser(StorageObject) :
     def __init__(self, parent, name) :
         StorageObject.__init__(self, parent)
         self.Name = name
-        self.Description = None
         self.LimitBy = None
         self.AccountBalance = None
         self.LifeTimePaid = None
@@ -122,7 +122,6 @@ class StorageGroup(StorageObject) :
         self.LimitBy = None
         self.AccountBalance = None
         self.LifeTimePaid = None
-        self.Description = None
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""
@@ -158,7 +157,6 @@ class StoragePrinter(StorageObject) :
         self.Name = name
         self.PricePerPage = None
         self.PricePerJob = None
-        self.Description = None
         self.MaxJobSize = None
         self.PassThrough = None
         self.Coefficients = None
@@ -461,7 +459,6 @@ class StorageBillingCode(StorageObject) :
     def __init__(self, parent, name) :
         StorageObject.__init__(self, parent)
         self.BillingCode = name
-        self.Description = None
         self.PageCounter = None
         self.Balance = None
         
