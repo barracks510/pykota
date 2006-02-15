@@ -42,11 +42,18 @@ class StorageObject :
         self.isDirty = False
         self.Exists = False
         
+    def setDescription(self, description=None) :
+        """Sets the object's description."""
+        if description is not None :
+            self.Description = str(description)
+            self.isDirty = True    
+        
 class StorageUser(StorageObject) :        
     """User class."""
     def __init__(self, parent, name) :
         StorageObject.__init__(self, parent)
         self.Name = name
+        self.Description = None
         self.LimitBy = None
         self.AccountBalance = None
         self.LifeTimePaid = None
@@ -115,6 +122,7 @@ class StorageGroup(StorageObject) :
         self.LimitBy = None
         self.AccountBalance = None
         self.LifeTimePaid = None
+        self.Description = None
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""
@@ -195,14 +203,6 @@ class StoragePrinter(StorageObject) :
             priceperjob = self.PricePerJob or 0.0
         else :    
             self.PricePerJob = float(priceperjob)
-        self.isDirty = True    
-        
-    def setDescription(self, description=None) :
-        """Sets the printer's description."""
-        if description is None :
-            description = self.Description
-        else :    
-            self.Description = str(description)
         self.isDirty = True    
         
     def setPassThrough(self, passthrough) :
@@ -477,14 +477,6 @@ class StorageBillingCode(StorageObject) :
         self.Balance = balance
         self.PageCounter = pagecounter
         self.isDirty = True
-        
-    def setDescription(self, description=None) :
-        """Modifies the description for this billing code."""
-        if description is None :
-            description = self.Description
-        else :    
-            self.Description = str(description)
-        self.isDirty = True    
         
     def save(self) :    
         """Saves the billing code to disk in a single operation."""
