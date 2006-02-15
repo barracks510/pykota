@@ -34,9 +34,10 @@ CREATE DATABASE pykota;
 
 --
 -- Create the print quota database users
+-- NOTE: Change the "IDENTIFIED BY" string to the password you would like.
 -- 
-GRANT USAGE ON *.* TO 'pykotauser'@'localhost' IDENTIFIED BY 'readonly';
-GRANT USAGE ON *.* TO 'pykotaadmin'@'localhost' IDENTIFIED BY 'readwrite';
+GRANT USAGE ON *.* TO 'pykotauser'@'localhost' IDENTIFIED BY 'readonlypw';
+GRANT USAGE ON *.* TO 'pykotaadmin'@'localhost' IDENTIFIED BY 'readwritepw';
 
 -- 
 -- Now connect to the new database
