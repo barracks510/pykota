@@ -77,7 +77,7 @@ CREATE TABLE printers (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
 --
 -- Create the print quota table for users
 --
-CREATE TABLE userpquota (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+CREATE TABLE userpquota (id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                         userid INT4, 
                         printerid INT4, 
                         lifepagecounter INT4 DEFAULT 0,
@@ -127,7 +127,7 @@ CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
 --
 -- Create the print quota table for groups
 --
-CREATE TABLE grouppquota(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
+CREATE TABLE grouppquota(id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                          groupid INT4, 
                          printerid INT4,
                          softlimit INT4,
