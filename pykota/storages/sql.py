@@ -523,7 +523,7 @@ class SQLStorage :
                                           self.doQuote(user.LifeTimePaid or 0.0), \
                                           self.doQuote(user.Email), \
                                           self.doQuote(user.OverCharge), \
-                                          self.doQuote(self.userCharsetToDatabase(user.Description)))
+                                          self.doQuote(self.userCharsetToDatabase(user.Description))))
         return self.getUser(user.Name)
         
     def addGroup(self, group) :        
@@ -531,7 +531,7 @@ class SQLStorage :
         self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
                                           (self.doQuote(self.userCharsetToDatabase(group.Name)), \
                                            self.doQuote(group.LimitBy or "quota"), \
-                                           self.doQuote(self.userCharsetToDatabase(group.Description)))
+                                           self.doQuote(self.userCharsetToDatabase(group.Description))))
         return self.getGroup(group.Name)
 
     def addUserToGroup(self, user, group) :    
