@@ -112,7 +112,47 @@ options :
   
 examples :                              
 
-  TODO...
+  $ pkusers --add -p jerome john paul george ringo/ringo@example.com
+  
+  This will add users john, paul, george and ringo to the quota
+  database, and set their account information based on user 
+  jerome's own account. User jerome must already exist.
+  User ringo's email address will also be set to 'ringo@example.com'
+  
+  $ pkusers --ingroups coders,it jerome
+  
+  User jerome is put into the groups "coders" and "it" which must
+  already exist in the quota database.
+            
+  $ pkusers --limitby balance jerome
+  
+  This will tell PyKota to limit jerome by his account's balance
+  when printing.
+  
+  $ pkusers --balance +10.0 jerome
+  
+  This will increase jerome's account balance by 10.0 (in your
+  own currency). You can decrease the account balance with a
+  dash prefix, and set it to a fixed amount with no prefix.
+  
+  $ pkusers --delete jerome rachel
+  
+  This will completely delete jerome and rachel from the quota
+  database. All their quotas and jobs will be deleted too.
+  
+  $ pkusers --overcharge 2.5 poorstudent
+  
+  This will overcharge the poorstudent user by a factor of 2.5.
+  
+  $ pkusers --overcharge -1 jerome
+  
+  User jerome will actually earn money whenever he prints.
+  
+  $ pkusers --overcharge 0 boss
+  
+  User boss can print at will, it won't cost him anything because the
+  cost of each print job will be multiplied by zero before charging
+  his account.
 """)
         
 class PKUsers(PyKotaTool) :        
