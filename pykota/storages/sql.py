@@ -544,6 +544,11 @@ class SQLStorage :
         if not mexists :    
             self.doModify("INSERT INTO groupsmembers (groupid, userid) VALUES (%s, %s)" % (self.doQuote(group.ident), self.doQuote(user.ident)))
             
+    def delUserFromGroup(self, user, group) :    
+        """Removes an user from a group."""
+        self.doModify("DELETE FROM groupsmembers WHERE groupid=%s AND userid=%s" % \
+                       (self.doQuote(group.ident), self.doQuote(user.ident)))
+            
     def addUserPQuota(self, user, printer) :
         """Initializes a user print quota on a printer."""
         self.doModify("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
@@ -563,18 +568,22 @@ class SQLStorage :
                                  self.doQuote(printer.PricePerPage), \
                                  self.doQuote(printer.PricePerJob), \
                                  self.doQuote(printer.ident)))
-        
-    def writeUserOverCharge(self, user, factor) :
-        """Sets the user's overcharging coefficient."""
-        self.doModify("UPDATE users SET overcharge=%s WHERE id=%s" % (self.doQuote(factor), self.doQuote(user.ident)))
-        
-    def writeUserLimitBy(self, user, limitby) :    
-        """Sets the user's limiting factor."""
-        self.doModify("UPDATE users SET limitby=%s WHERE id=%s" % (self.doQuote(limitby), self.doQuote(user.ident)))
-        
-    def writeGroupLimitBy(self, group, limitby) :    
-        """Sets the group's limiting factor."""
-        self.doModify("UPDATE groups SET limitby=%s WHERE id=%s" % (self.doQuote(limitby), self.doQuote(group.ident)))
+                                 
+    def saveUser(self, user) :        
+        """Saves the user to the database in a single operation."""
+        self.doModify("UPDATE users SET limitby=%s, email=%s, overcharge=%s, description=%s WHERE id=%s" \
+                               % (self.doQuote(user.LimitBy or 'quota'), \
+                                  self.doQuote(user.Email), \
+                                  self.doQuote(user.OverCharge), \
+                                  self.doQuote(self.userCharsetToDatabase(user.Description)), \
+                                  self.doQuote(user.ident)))
+                                  
+    def saveGroup(self, group) :        
+        """Saves the group to the database in a single operation."""
+        self.doModify("UPDATE groups SET limitby=%s, description=%s WHERE id=%s" \
+                               % (self.doQuote(group.LimitBy or 'quota'), \
+                                  self.doQuote(self.userCharsetToDatabase(group.Description)), \
+                                  self.doQuote(group.ident)))
         
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
         """Sets the date limit permanently for a user print quota."""

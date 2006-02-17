@@ -296,21 +296,45 @@ class PKUsers(PyKotaTool) :
                 else :         
                     usersgroups = []
                         
-                if options["description"] :
+                description = options["description"]
+                if description :
                     description = options["description"].strip()
+                    
+                comment = options["comment"]
+                if comment :
+                    comment = options["comment"].strip()
                     
                 nbtotal = len(entries)
                 for i in range(nbtotal) :        
                     entry = entries[i]
-                    if description is not None :        # NB : "" is allowed !
+                    if description is not None : # NB : "" is allowed !
                         entry.setDescription(description)
+                    if limitby :    
+                        entry.setLimitBy(limitby)
+                        
+                    if suffix == "User" :    
+                        if overcharge is not None : # NB : 0 is allowed !     
+                            entry.setOverChargeFactor(overcharge)
+                            
                     entry.save()    
-                    if not options["groups"] :
+                    
+                    if suffix == "User" :
+                        if balance :
+                            if balance.startswith("+") or balance.startswith("-") :
+                                newbalance = float(entry.AccountBalance or 0.0) + balancevalue
+                                newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
+                                entry.setAccountBalance(newbalance, newlifetimepaid, comment)
+                            else :
+                                diff = balancevalue - float(entry.AccountBalance or 0.0)
+                                newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
+                                entry.setAccountBalance(balancevalue, newlifetimepaid, comment)
+                                        
                         for ugroup in usersgroups :
                             if options["remove"] :
                                 ugroup.delUserFromGroup(entry)
                             else :
                                 ugroup.addUserToGroup(entry)
+                                
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
                                 

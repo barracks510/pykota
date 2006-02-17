@@ -95,13 +95,13 @@ class StorageUser(StorageObject) :
             limitby = "quota"
         if limitby in ["quota", "balance", \
                        "noquota", "noprint", "nochange"] :
-            self.parent.writeUserLimitBy(self, limitby)
             self.LimitBy = limitby
+            self.isDirty = True
         
     def setOverChargeFactor(self, factor) :    
         """Sets the user's overcharging coefficient."""
-        self.parent.writeUserOverCharge(self, factor)
         self.OverCharge = factor
+        self.isDirty = True
         
     def delete(self) :    
         """Deletes an user from the Quota Storage."""
@@ -136,8 +136,16 @@ class StorageGroup(StorageObject) :
         except AttributeError :    
             limitby = "quota"
         if limitby in ["quota", "balance", "noquota"] :
-            self.parent.writeGroupLimitBy(self, limitby)
             self.LimitBy = limitby
+            self.isDirty = True
+        
+    def addUserToGroup(self, user) :
+        """Adds an user to an users group."""
+        self.parent.addUserToGroup(user, self)
+        
+    def delUserFromGroup(self, user) :
+        """Removes an user from an users group."""
+        self.parent.delUserFromGroup(user, self)
         
     def delete(self) :    
         """Deletes a group from the Quota Storage."""

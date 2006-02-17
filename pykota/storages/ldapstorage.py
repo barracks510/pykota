@@ -981,6 +981,10 @@ class Storage(BaseStorage) :
                 self.doModify(group.ident, fields)
                 group.Members.append(user)
                 
+    def delUserFromGroup(self, user, group) :    
+        """Removes an user from a group."""
+        raise "Not Implemented !" # TODO !!!
+                
     def addUserPQuota(self, user, printer) :
         """Initializes a user print quota on a printer."""
         uuid = self.genUUID()
@@ -1031,26 +1035,26 @@ class Storage(BaseStorage) :
                  }
         self.doModify(printer.ident, fields)
         
-    def writeUserOverCharge(self, user, factor) :
-        """Sets the user's overcharging coefficient."""
-        fields = {
-                   "pykotaOverCharge" : str(factor),
-                 }
-        self.doModify(user.ident, fields)
+    def saveUser(self, user) :
+        """Saves the user to the database in a single operation."""
+        newfields = {
+                       "pykotaLimitBy" : (user.LimitBy or "quota"),
+                       "pykotaOverCharge" : str(user.OverCharge),
+                    }   
+        if user.Email :
+            newfields.update({self.info["usermail"]: user.Email})
+        if user.Description is not None : 
+            newfields.update({"description": self.userCharsetToDatabase(user.Description)})
+        self.doModify(user.ident, newfields)
         
-    def writeUserLimitBy(self, user, limitby) :    
-        """Sets the user's limiting factor."""
-        fields = {
-                   "pykotaLimitBy" : limitby,
-                 }
-        self.doModify(user.ident, fields)         
-        
-    def writeGroupLimitBy(self, group, limitby) :    
-        """Sets the group's limiting factor."""
-        fields = {
-                   "pykotaLimitBy" : limitby,
-                 }
-        self.doModify(group.ident, fields)         
+    def saveGroup(self, group) :
+        """Saves the group to the database in a single operation."""
+        newfields = {
+                       "pykotaLimitBy" : (group.LimitBy or "quota"),
+                    }   
+        if group.Description is not None : 
+            newfields.update({"description": self.userCharsetToDatabase(group.Description)})
+        self.doModify(group.ident, newfields)
         
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
         """Sets the date limit permanently for a user print quota."""

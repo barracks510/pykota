@@ -64,14 +64,14 @@ def createUsers(number) :
         argsfile.write("%s\n" % uname)
     argsfile.close()    
     before = time.time()
-    os.system('edpykota --arguments arguments.list') 
+    os.system('pkusers --arguments arguments.list') 
     showTiming(number, before)
 
 def deleteUsers(number) :
     """Deletes all test users."""
     sys.stdout.write("Deleting users...\n")
     before = time.time()
-    os.system('edpykota --delete "test-user-*"') 
+    os.system('pkusers --delete "test-user-*"') 
     showTiming(number, before)
     
 if __name__ == "__main__" :    
