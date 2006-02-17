@@ -58,9 +58,6 @@ options :
                        
   -g | --groups        Edit users groups instead of users.
                           
-  -p | --prototype u|g Uses user u or group g as a prototype to create
-                       or modify datas.
-                       
   -o | --overcharge f  Sets the overcharging factor applied to the user 
                        when computing the cost of a print job. Positive or 
                        negative floating point values are allowed,
@@ -113,12 +110,11 @@ options :
   
 examples :                              
 
-  $ pkusers --add -p jerome john paul george ringo/ringo@example.com
+  $ pkusers --add john paul george ringo/ringo@example.com
   
   This will add users john, paul, george and ringo to the quota
-  database, and set their account information based on user 
-  jerome's own account. User jerome must already exist.
-  User ringo's email address will also be set to 'ringo@example.com'
+  database. User ringo's email address will also be set to 
+  'ringo@example.com'
   
   $ pkusers --ingroups coders,it jerome
   
@@ -130,11 +126,12 @@ examples :
   This will tell PyKota to limit jerome by his account's balance
   when printing.
   
-  $ pkusers --balance +10.0 jerome
+  $ pkusers --balance +10.0 --comment "He paid with his blood !" jerome
   
   This will increase jerome's account balance by 10.0 (in your
   own currency). You can decrease the account balance with a
   dash prefix, and set it to a fixed amount with no prefix.
+  A comment will be stored for this balance change.
   
   $ pkusers --delete jerome rachel
   
@@ -274,8 +271,6 @@ class PKUsers(PyKotaTool) :
                     if limitby not in ('quota', 'balance', 'noquota', \
                                                 'noprint', 'nochange') :
                         raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
-                    if limitby in ('noquota', 'nochange') :    
-                        options["noquota"] = 1
                     if (limitby in ('nochange', 'noprint')) and options["groups"] :    
                         raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
                     
@@ -304,19 +299,6 @@ class PKUsers(PyKotaTool) :
                 if options["description"] :
                     description = options["description"].strip()
                     
-                if options["prototype"] :    
-                    protoentry = getattr(self.storage, "get%s" % suffix)(options["prototype"])
-                    if not protoentry.Exists :
-                        raise PyKotaCommandLineError, _("Prototype object %s not found in Quota Storage.") % protoentry.Name
-                    else :    
-                        limitby = protoentry.LimitBy
-                        balancevalue = protoentry.AccountBalance
-                        if balancevalue is not None :
-                            balance = str(abs(balancevalue))
-                        else :    
-                            balance = None
-                        overcharge = getattr(protoentry, "OverCharge", None)
-                    
                 nbtotal = len(entries)
                 for i in range(nbtotal) :        
                     entry = entries[i]
@@ -341,10 +323,10 @@ if __name__ == "__main__" :
         defaults = { \
                      "comment" : "", \
                    }
-        short_options = "hvaD:dgl:rsp:o:i:b:C:L"
+        short_options = "hvaD:dgl:rso:i:b:C:L"
         long_options = ["help", "version", "add", "description=", \
                         "delete", "groups", "list", "remove", \
-                        "skipexisting", "overcharge=", "prototype=", \
+                        "skipexisting", "overcharge=", \
                         "ingroups=", "limitby=", "balance=", "comment=", \
                        ]
                         
@@ -366,7 +348,6 @@ if __name__ == "__main__" :
         options["list"] = options["L"] or options["list"]
         options["remove"] = options["r"] or options["remove"]
         options["skipexisting"] = options["s"] or options["skipexisting"]
-        options["prototype"] = options["p"] or options["prototype"]
         options["limitby"] = options["l"] or options["limitby"]
         options["balance"] = options["b"] or options["balance"] 
         options["ingroups"] = options["i"] or options["ingroups"]

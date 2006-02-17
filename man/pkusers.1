@@ -36,9 +36,6 @@ Deletes users from the quota storage.
 \fB\-g\fR | \fB\-\-groups\fR
 Edit users groups instead of users.
 .TP
-\fB\-p\fR | \fB\-\-prototype\fR u|g Uses user u or group g as a prototype to create
-or modify datas.
-.TP
 \fB\-o\fR | \fB\-\-overcharge\fR f
 Sets the overcharging factor applied to the user
 when computing the cost of a print job. Positive or
@@ -98,12 +95,11 @@ if the \fB\-\-add\fR option is not set.
 .PP
 examples :
 .IP
-\f(CW$ pkusers --add -p jerome john paul george ringo/ringo@example.com\fR
+\f(CW$ pkusers --add john paul george ringo/ringo@example.com\fR
 .IP
 This will add users john, paul, george and ringo to the quota
-database, and set their account information based on user
-jerome's own account. User jerome must already exist.
-User ringo's email address will also be set to 'ringo@example.com'
+database. User ringo's email address will also be set to
+\&'ringo@example.com'
 .IP
 \f(CW$ pkusers --ingroups coders,it jerome\fR
 .IP
@@ -115,11 +111,12 @@ already exist in the quota database.
 This will tell PyKota to limit jerome by his account's balance
 when printing.
 .IP
-\f(CW$ pkusers --balance +10.0 jerome\fR
+\f(CW$ pkusers --balance +10.0 --comment "He paid with his blood !" jerome\fR
 .IP
 This will increase jerome's account balance by 10.0 (in your
 own currency). You can decrease the account balance with a
 dash prefix, and set it to a fixed amount with no prefix.
+A comment will be stored for this balance change.
 .IP
 \f(CW$ pkusers --delete jerome rachel\fR
 .IP
