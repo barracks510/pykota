@@ -27,6 +27,7 @@
 import os
 import sys
 import pwd
+import grp
 
 from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
@@ -376,7 +377,7 @@ if __name__ == "__main__" :
             manager.display_usage_and_quit()
         elif options["version"] :
             manager.display_version_and_quit()
-        elif (options["delete"] and (options["add"] or options["groups"] or options["remove"] or options["description"])) \
+        elif (options["delete"] and (options["add"] or options["remove"] or options["description"])) \
            or (options["skipexisting"] and not options["add"]) \
            or (options["list"] and (options["add"] or options["delete"] or options["remove"] or options["description"])) \
            or (options["groups"] and (options["balance"] or options["ingroups"] or options["overcharge"])) :
