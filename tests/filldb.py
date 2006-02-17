@@ -8,6 +8,12 @@ import sys
 import os
 import time
 
+def showTiming(number, before) :
+    """Displays timing information."""
+    elapsed = time.time() - before
+    persecond = int(float(number) / elapsed)
+    sys.stdout.write("\nTime elapsed : %.2f seconds (%i entries per second)\n\n" % (elapsed, persecond))
+    
 def createBillingCodes(number) :
     """Creates a number of billing codes."""
     sys.stdout.write("Adding %i billing codes...\n" % number)
@@ -19,16 +25,14 @@ def createBillingCodes(number) :
     argsfile.close()    
     before = time.time()
     os.system('pkbcodes --arguments arguments.list') 
-    after = time.time()
-    sys.stdout.write("\nTime elapsed : %.2f seconds\n\n" % (after - before))
+    showTiming(number, before)
 
-def deleteBillingCodes() :
+def deleteBillingCodes(number) :
     """Deletes all test billing codes."""
     sys.stdout.write("Deleting billing codes...\n")
     before = time.time()
     os.system('pkbcodes --delete "test-billingcode-*"') 
-    after = time.time()
-    sys.stdout.write("\nTime elapsed : %.2f seconds\n\n" % (after - before))
+    showTiming(number, before)
     
 def createPrinters(number) :
     """Creates a number of printers."""
@@ -41,16 +45,14 @@ def createPrinters(number) :
     argsfile.close()    
     before = time.time()
     os.system('pkprinters --arguments arguments.list') 
-    after = time.time()
-    sys.stdout.write("\nTime elapsed : %.2f seconds\n\n" % (after - before))
+    showTiming(number, before)
 
-def deletePrinters() :
+def deletePrinters(number) :
     """Deletes all test printers."""
     sys.stdout.write("Deleting printers...\n")
     before = time.time()
     os.system('pkprinters --delete "test-printer-*"') 
-    after = time.time()
-    sys.stdout.write("\nTime elapsed : %.2f seconds\n\n" % (after - before))
+    showTiming(number, before)
     
 def createUsers(number) :
     """Creates a number of users."""
@@ -63,16 +65,14 @@ def createUsers(number) :
     argsfile.close()    
     before = time.time()
     os.system('edpykota --arguments arguments.list') 
-    after = time.time()
-    sys.stdout.write("\nTime elapsed : %.2f seconds\n\n" % (after - before))
+    showTiming(number, before)
 
-def deleteUsers() :
+def deleteUsers(number) :
     """Deletes all test users."""
     sys.stdout.write("Deleting users...\n")
     before = time.time()
     os.system('edpykota --delete "test-user-*"') 
-    after = time.time()
-    sys.stdout.write("\nTime elapsed : %.2f seconds\n\n" % (after - before))
+    showTiming(number, before)
     
 if __name__ == "__main__" :    
     if len(sys.argv) == 1 :
@@ -88,10 +88,10 @@ if __name__ == "__main__" :
         if nbusers :    
             createUsers(nbusers)
         if nbbillingcodes :    
-            deleteBillingCodes()
+            deleteBillingCodes(nbbillingcodes)
         if nbusers :    
-            deleteUsers()           # NB : either this one or the one below
+            deleteUsers(nbusers)           # NB : either this one or the one below
         if nbprinters :    
-            deletePrinters()        # also delete user print quota entries.
+            deletePrinters(nbprinters)        # also delete user print quota entries.
         os.remove("arguments.list")
         
