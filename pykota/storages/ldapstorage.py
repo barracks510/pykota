@@ -1047,6 +1047,11 @@ class Storage(BaseStorage) :
             newfields.update({"description": self.userCharsetToDatabase(user.Description)})
         self.doModify(user.ident, newfields)
         
+        newfields = { "pykotaBalance" : str(user.AccountBalance or 0.0),
+                      "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), 
+                    }
+        self.doModify(user.idbalance, newfields)
+        
     def saveGroup(self, group) :
         """Saves the group to the database in a single operation."""
         newfields = {
@@ -1095,15 +1100,6 @@ class Storage(BaseStorage) :
                  }
         return self.doModify(user.idbalance, fields, flushcache=1)         
        
-    def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
-        """Sets the new account balance and eventually new lifetime paid."""
-        fields = {
-                   "pykotaBalance" : str(newbalance),
-                 }
-        if newlifetimepaid is not None :
-            fields.update({ "pykotaLifeTimePaid" : str(newlifetimepaid) })
-        return self.doModify(user.idbalance, fields)         
-            
     def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
         payments = []

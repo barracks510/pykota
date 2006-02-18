@@ -571,8 +571,10 @@ class SQLStorage :
                                  
     def saveUser(self, user) :        
         """Saves the user to the database in a single operation."""
-        self.doModify("UPDATE users SET limitby=%s, email=%s, overcharge=%s, description=%s WHERE id=%s" \
+        self.doModify("UPDATE users SET limitby=%s, balance=%s, lifetimepaid=%s, email=%s, overcharge=%s, description=%s WHERE id=%s" \
                                % (self.doQuote(user.LimitBy or 'quota'), \
+                                  self.doQuote(user.AccountBalance or 0.0), \
+                                  self.doQuote(user.LifeTimePaid or 0.0), \
                                   self.doQuote(user.Email), \
                                   self.doQuote(user.OverCharge), \
                                   self.doQuote(self.userCharsetToDatabase(user.Description)), \
@@ -617,13 +619,6 @@ class SQLStorage :
         """Decreases user's account balance from an amount."""
         self.doModify("UPDATE users SET balance=balance - %s WHERE id=%s" % (self.doQuote(amount), self.doQuote(user.ident)))
        
-    def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
-        """Sets the new account balance and eventually new lifetime paid."""
-        if newlifetimepaid is not None :
-            self.doModify("UPDATE users SET balance=%s, lifetimepaid=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newlifetimepaid), self.doQuote(user.ident)))
-        else :    
-            self.doModify("UPDATE users SET balance=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(user.ident)))
-            
     def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
         self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))

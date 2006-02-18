@@ -307,34 +307,43 @@ class PKUsers(PyKotaTool) :
                 nbtotal = len(entries)
                 for i in range(nbtotal) :        
                     entry = entries[i]
-                    if description is not None : # NB : "" is allowed !
-                        entry.setDescription(description)
-                    if limitby :    
-                        entry.setLimitBy(limitby)
-                        
-                    if suffix == "User" :    
-                        if overcharge is not None : # NB : 0 is allowed !     
-                            entry.setOverChargeFactor(overcharge)
-                            
-                    entry.save()    
                     
-                    if suffix == "User" :
-                        if balance :
-                            if balance.startswith("+") or balance.startswith("-") :
-                                newbalance = float(entry.AccountBalance or 0.0) + balancevalue
-                                newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
-                                entry.setAccountBalance(newbalance, newlifetimepaid, comment)
-                            else :
-                                diff = balancevalue - float(entry.AccountBalance or 0.0)
-                                newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
-                                entry.setAccountBalance(balancevalue, newlifetimepaid, comment)
-                                        
-                        for ugroup in usersgroups :
-                            if options["remove"] :
-                                ugroup.delUserFromGroup(entry)
-                            else :
-                                ugroup.addUserToGroup(entry)
-                                
+                    # We need a transaction because we may have to create a record
+                    # in the payments' table at the same time we modify the user's balance.
+                    self.storage.beginTransaction()
+                    try :
+                        if description is not None : # NB : "" is allowed !
+                            entry.setDescription(description)
+                        if limitby :    
+                            entry.setLimitBy(limitby)
+                            
+                        if suffix == "User" :    
+                            if overcharge is not None : # NB : 0 is allowed !     
+                                entry.setOverChargeFactor(overcharge)
+                        
+                        if suffix == "User" :
+                            if balance :
+                                if balance.startswith("+") or balance.startswith("-") :
+                                    newbalance = float(entry.AccountBalance or 0.0) + balancevalue
+                                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
+                                    entry.setAccountBalance(newbalance, newlifetimepaid, comment)
+                                else :
+                                    diff = balancevalue - float(entry.AccountBalance or 0.0)
+                                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
+                                    entry.setAccountBalance(balancevalue, newlifetimepaid, comment)
+                                            
+                            for ugroup in usersgroups :
+                                if options["remove"] :
+                                    ugroup.delUserFromGroup(entry)
+                                else :
+                                    ugroup.addUserToGroup(entry)
+                        entry.save()    
+                    except :
+                        self.storage.rollbackTransaction()
+                        raise
+                    else :    
+                        self.storage.commitTransaction()
+
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
                                 

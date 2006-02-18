@@ -75,17 +75,10 @@ class StorageUser(StorageObject) :
     def setAccountBalance(self, balance, lifetimepaid, comment="") :
         """Sets the user's account balance in case he pays more money."""
         diff = float(lifetimepaid or 0.0) - float(self.LifeTimePaid or 0.0)
-        self.parent.beginTransaction()
-        try :
-            self.parent.writeUserAccountBalance(self, balance, lifetimepaid)
-            self.parent.writeNewPayment(self, diff, comment)
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
-            self.AccountBalance = balance
-            self.LifeTimePaid = lifetimepaid
+        self.AccountBalance = balance
+        self.LifeTimePaid = lifetimepaid
+        self.parent.writeNewPayment(self, diff, comment)
+        self.isDirty = True
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""
