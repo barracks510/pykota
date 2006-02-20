@@ -29,6 +29,8 @@ they don't exist in database.
 Deletes users or groups print quota entries.
 Users or groups are never deleted, you have
 to use the pkusers command to delete them.
+The history will be purge from all matching
+jobs, unless \fB\-g\fR | \fB\-\-groups\fR is used.
 .TP
 \fB\-P\fR | \fB\-\-printer\fR p
 Edit quotas on printer p only. Actually p can
@@ -41,6 +43,9 @@ by separating them with commas.
 \fB\-g\fR | \fB\-\-groups\fR
 Edit groups print quota entries instead of
 users print quota entries.
+.TP
+\fB\-L\fR | \fB\-\-list\fR
+Lists users or groups print quota entries.
 .TP
 \fB\-n\fR | \fB\-\-noquota\fR
 Sets both soft and hard limits to None for users
