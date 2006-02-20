@@ -21,12 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
-        - Improve the speed of edpykota and/or introduce pkusers
+        - Add a pkrefund command line tool & optional CGI script.
         
-        - Growl notifications for MacOSX users (while printing) :
-        
-          http://the.taoofmac.com/space/Projects/netgrowl.py
-          
         - PJL for non-networked backends (see ML's history)
         
         - Make the SNMP and PJL delay and number of loops a new configuration
@@ -68,10 +64,6 @@ TODO, in no particular order :
           data : use this to tell CUPS what action has been taken
           for current job. I did some testing but wasn't able to
           make it work...
-          
-        - Introduce the pkusers command.
-          pkusers --nogroup
-          pkusers --ingroups gr1,gr2,... --outgroups gr3,gr4,...
           
         - Documentation...
           
