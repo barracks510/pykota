@@ -728,7 +728,7 @@ class SQLStorage :
         return jobs
         
     def deleteUser(self, user) :    
-        """Completely deletes an user from the Quota Storage."""
+        """Completely deletes an user from the database."""
         # TODO : What should we do if we delete the last person who used a given printer ?
         # TODO : we can't reassign the last job to the previous one, because next user would be
         # TODO : incorrectly charged (overcharged).
@@ -740,9 +740,24 @@ class SQLStorage :
                     "DELETE FROM users WHERE id=%s" % self.doQuote(user.ident),
                   ] :
             self.doModify(q)
+            
+    def deleteUserPQuota(self, upquota) :    
+        """Completely deletes an user print quota entry from the database."""
+        for q in [ 
+                    "DELETE FROM jobhistory WHERE userid=%s" % self.doQuote(upquota.User.ident),
+                    "DELETE FROM userpquota WHERE userid=%s" % self.doQuote(upquota.ident),
+                  ] :
+            self.doModify(q)
+        
+    def deleteGroupPQuota(self, gpquota) :    
+        """Completely deletes a group print quota entry from the database."""
+        for q in [ 
+                    "DELETE FROM grouppquota WHERE groupid=%s" % self.doQuote(gpquota.ident),
+                  ] :
+            self.doModify(q)
         
     def deleteGroup(self, group) :    
-        """Completely deletes a group from the Quota Storage."""
+        """Completely deletes a group from the database."""
         for q in [
                    "DELETE FROM groupsmembers WHERE groupid=%s" % self.doQuote(group.ident),
                    "DELETE FROM grouppquota WHERE groupid=%s" % self.doQuote(group.ident),
@@ -751,7 +766,7 @@ class SQLStorage :
             self.doModify(q)
             
     def deletePrinter(self, printer) :    
-        """Completely deletes a printer from the Quota Storage."""
+        """Completely deletes a printer from the database."""
         for q in [ 
                     "DELETE FROM printergroupsmembers WHERE groupid=%s OR printerid=%s" % (self.doQuote(printer.ident), self.doQuote(printer.ident)),
                     "DELETE FROM jobhistory WHERE printerid=%s" % self.doQuote(printer.ident),
@@ -762,7 +777,7 @@ class SQLStorage :
             self.doModify(q)
             
     def deleteBillingCode(self, code) :    
-        """Completely deletes a billing code from the Quota Storage."""
+        """Completely deletes a billing code from the database."""
         for q in [
                    "DELETE FROM billingcodes WHERE id=%s" % self.doQuote(code.ident),
                  ] :  

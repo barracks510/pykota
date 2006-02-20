@@ -1404,6 +1404,21 @@ class Storage(BaseStorage) :
             else :    
                 self.doDelete(group.ident)
                 
+    def deleteUserPQuota(self, upquota) :    
+        """Completely deletes an user print quota entry from the database."""
+        uname = self.userCharsetToDatabase(upquota.User.Name)
+        pname = self.userCharsetToDatabase(upquota.Printer.Name)
+        result = self.doSearch("(&(objectClass=pykotaJob)(pykotaUserName=%s)(pykotaPrinterName=%s))" \
+                                   % (uname, pname), \
+                                   base=self.info["jobbase"])
+        for (ident, fields) in result :
+            self.doDelete(ident)
+        self.doDelete(upquota.ident)
+        
+    def deleteGroupPQuota(self, gpquota) :    
+        """Completely deletes a group print quota entry from the database."""
+        self.doDelete(gpquota.ident)
+                
     def deletePrinter(self, printer) :    
         """Completely deletes a printer from the Quota Storage."""
         pname = self.userCharsetToDatabase(printer.Name)

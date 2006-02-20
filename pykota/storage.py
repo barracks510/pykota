@@ -25,7 +25,7 @@
 from mx import DateTime
 
 class PyKotaStorageError(Exception):
-    """An exception for Quota Storage related stuff."""
+    """An exception for database related stuff."""
     def __init__(self, message = ""):
         self.message = message
         Exception.__init__(self, message)
@@ -34,7 +34,7 @@ class PyKotaStorageError(Exception):
     __str__ = __repr__
         
 class StorageObject :
-    """Object present in the Quota Storage."""
+    """Object present in the database."""
     def __init__(self, parent) :
         "Initialize minimal data."""
         self.parent = parent
@@ -97,7 +97,7 @@ class StorageUser(StorageObject) :
         self.isDirty = True
         
     def delete(self) :    
-        """Deletes an user from the Quota Storage."""
+        """Deletes an user from the database."""
         self.parent.beginTransaction()
         try :
             self.parent.deleteUser(self)
@@ -141,7 +141,7 @@ class StorageGroup(StorageObject) :
         self.parent.delUserFromGroup(user, self)
         
     def delete(self) :    
-        """Deletes a group from the Quota Storage."""
+        """Deletes a group from the database."""
         self.parent.beginTransaction()
         try :
             self.parent.deleteGroup(self)
@@ -215,7 +215,7 @@ class StoragePrinter(StorageObject) :
         self.isDirty = True
         
     def delete(self) :    
-        """Deletes a printer from the Quota Storage."""
+        """Deletes a printer from the database."""
         self.parent.beginTransaction()
         try :
             self.parent.deletePrinter(self)
@@ -342,6 +342,22 @@ class StorageUserPQuota(StorageObject) :
                 upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
         return jobprice
         
+    def delete(self) :    
+        """Deletes an user print quota entry from the database."""
+        self.parent.beginTransaction()
+        try :
+            self.parent.deleteUserPQuota(self)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+            if self.parent.usecache :
+                for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
+                    if v.User.Name == self.User.Name :
+                        self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
+            self.Exists = 0
+        
 class StorageGroupPQuota(StorageObject) :
     """Group Print Quota class."""
     def __init__(self, parent, group, printer) :
@@ -412,6 +428,22 @@ class StorageGroupPQuota(StorageObject) :
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
         self.DateLimit = None
+        
+    def delete(self) :    
+        """Deletes a group print quota entry from the database."""
+        self.parent.beginTransaction()
+        try :
+            self.parent.deleteGroupPQuota(self)
+        except PyKotaStorageError, msg :    
+            self.parent.rollbackTransaction()
+            raise PyKotaStorageError, msg
+        else :    
+            self.parent.commitTransaction()
+            if self.parent.usecache :
+                for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
+                    if v.Group.Name == self.Group.Name :
+                        self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
+            self.Exists = 0
         
 class StorageJob(StorageObject) :
     """Printer's Job class."""
@@ -772,7 +804,7 @@ class BaseStorage :
         return (start, end)    
         
 def openConnection(pykotatool) :
-    """Returns a connection handle to the appropriate Quota Storage Database."""
+    """Returns a connection handle to the appropriate database."""
     backendinfo = pykotatool.config.getStorageBackend()
     backend = backendinfo["storagebackend"]
     try :
