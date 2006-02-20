@@ -169,7 +169,9 @@ class PKUsers(PyKotaTool) :
             todelete = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
             nbtotal = len(todelete)
             for i in range(nbtotal) :
-                todelete[i].delete()
+                entry = todelete[i]
+                if entry.Exists :
+                    entry.delete()
                 percent = 100.0 * float(i) / float(nbtotal)
                 self.display("\r%.02f%%" % percent)
         else :
