@@ -213,8 +213,10 @@ class PKPrinters(PyKotaTool) :
                 else :        
                     maxjobsize = None
                         
-                if options["description"] :
-                    description = options["description"].strip()
+                description = options["description"]
+                if description :
+                    description = description.strip()
+                    
                 nopassthrough = options["nopassthrough"]    
                 passthrough = options["passthrough"]
                 nbtotal = len(printers)
