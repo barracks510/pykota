@@ -183,6 +183,7 @@ class PKPrinters(PyKotaTool) :
                     print "    %s" % (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited")))
                     if parents :       
                         print "    %s" % parents
+                    print    
             else :
                 self.display("%s...\n" % _("Modification"))
                 

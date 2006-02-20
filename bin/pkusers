@@ -256,6 +256,7 @@ class PKUsers(PyKotaTool) :
                         print "    %s" % (_("Account balance : %.2f") % (entry.AccountBalance or 0.0))
                         print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
                         print "    %s" % (_("Overcharging factor : %.2f") % entry.OverCharge)
+                        print
                 else :    
                     for entry in entries :
                         msg = "%s" % entry.Name
@@ -265,6 +266,7 @@ class PKUsers(PyKotaTool) :
                         print "    %s" % (_("Limited by : %s") % entry.LimitBy)
                         print "    %s" % (_("Group balance : %.2f") % (entry.AccountBalance or 0.0))
                         print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
+                        print
             else :
                 self.display("%s...\n" % _("Modification"))
                 
