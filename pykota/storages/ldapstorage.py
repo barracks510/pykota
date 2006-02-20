@@ -826,6 +826,36 @@ class Storage(BaseStorage) :
         usersandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return usersandquotas
                 
+    def getMatchingUserPQuotas(self, pnames = ["*"], unames=["*"]) :    
+        """Returns all printers, users and users print quota entries which match a set of names."""
+        printers = {}
+        users = {}
+        upquotas = {}
+        for printer in self.getMatchingPrinters(",".join(pnames)) :
+            printers[printer.Name] = printer
+        for user in self.getMatchingUsers(",".join(unames)) :
+            users[user.Name] = user
+        for (p, printer) in printers.items() :
+            for (u, user) in users.items() :
+                upqkey = "%s@%s" % (u, p)
+                upquotas[upqkey] = self.getUserPQuota(user, printer)
+        return (printers, users, upquotas)
+        
+    def getMatchingGroupPQuotas(self, pnames = ["*"], gnames=["*"]) :    
+        """Returns all printers, groups and groups print quota entries which match a set of names."""
+        printers = {}
+        groups = {}
+        gpquotas = {}
+        for printer in self.getMatchingPrinters(",".join(pnames)) :
+            printers[printer.Name] = printer
+        for group in self.getMatchingGroups(",".join(gnames)) :
+            groups[group.Name] = group
+        for (p, printer) in printers.items() :
+            for (g, group) in groups.items() :
+                gpqkey = "%s@%s" % (g, p)
+                gpquotas[gpqkey] = self.getGroupPQuota(group, printer)
+        return (printers, groups, gpquotas)
+        
     def getPrinterGroupsAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of groups which uses a given printer, along with their quotas."""
         groupsandquotas = []
