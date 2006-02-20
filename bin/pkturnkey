@@ -440,6 +440,8 @@ class PKTurnKey(Tool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
+        raise PyKotaCommandLineError, "This version is not stable, download an earlier one. Operation aborted."
+        
         short_options = "hvdDefu:U:g:G:c"
         long_options = ["help", "version", "dousers", "dogroups", \
                         "emptygroups", "force", "uidmin=", "uidmax=", \

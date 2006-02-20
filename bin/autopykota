@@ -91,6 +91,8 @@ class AutoPyKota(PyKotaTool) :
 if __name__ == "__main__" :    
     retcode = 0
     try :
+        raise PyKotaCommandLineError, "This version is not stable, download an earlier one. Operation aborted."
+        
         defaults = { \
                      "initbalance" : 0.0
                    }
