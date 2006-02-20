@@ -72,6 +72,8 @@ options :
                               listed, separated by commas. The groups
                               must already exist in the Quota Storage.
                        
+  -L | --list          Lists users or groups.
+  
   -l | --limitby l     Choose if the user/group is limited in printing                     
                        by its account balance or by its page quota.
                        The default value is 'quota'. Allowed values
