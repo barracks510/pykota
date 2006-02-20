@@ -1413,6 +1413,8 @@ class Storage(BaseStorage) :
                                    base=self.info["jobbase"])
         for (ident, fields) in result :
             self.doDelete(ident)
+        if upquota.Printer.LastJob.UserName == upquota.User.Name :
+            self.doDelete(upquota.Printer.LastJob.lastjobident)
         self.doDelete(upquota.ident)
         
     def deleteGroupPQuota(self, gpquota) :    

@@ -744,15 +744,16 @@ class SQLStorage :
     def deleteUserPQuota(self, upquota) :    
         """Completely deletes an user print quota entry from the database."""
         for q in [ 
-                    "DELETE FROM jobhistory WHERE userid=%s" % self.doQuote(upquota.User.ident),
-                    "DELETE FROM userpquota WHERE userid=%s" % self.doQuote(upquota.ident),
+                    "DELETE FROM jobhistory WHERE userid=%s AND printerid=%s" \
+                                 % (self.doQuote(upquota.User.ident), self.doQuote(upquota.Printer.ident)),
+                    "DELETE FROM userpquota WHERE id=%s" % self.doQuote(upquota.ident),
                   ] :
             self.doModify(q)
         
     def deleteGroupPQuota(self, gpquota) :    
         """Completely deletes a group print quota entry from the database."""
         for q in [ 
-                    "DELETE FROM grouppquota WHERE groupid=%s" % self.doQuote(gpquota.ident),
+                    "DELETE FROM grouppquota WHERE id=%s" % self.doQuote(gpquota.ident),
                   ] :
             self.doModify(q)
         
