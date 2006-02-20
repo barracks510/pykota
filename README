@@ -319,7 +319,12 @@ INSTALLATION:
 NB :
 ====
 
-  PyKota's documentation is now at :
+  PyKota's documentation is available as DocBook SGML sources
+  files in the pykota/docs directory. If you obtained an
+  Official package, in the same directory you'll also find
+  the documentation in HTML and PDF formats.
+  
+  PyKota's collaborative documentation is available from :
   
     http://www.librelogiciel.com/software/PyKota/WiKota/
     
@@ -341,7 +346,7 @@ NB :
   
   Finally, SuSe users may find the following document to best describe
   how to install PyKota on their favorite distribution. It's a Spanish
-  document written by Dennis Romero :
+  document written by Dennis Romero, and is mostly outdated now :
   
     http://www.cvr.espol.edu.ec/people/dennis/Pykota1.19-SuSE9.1.pdf
   
@@ -349,6 +354,12 @@ NB :
 Prerequisite : 
 --------------
    
+  See :
+  
+    http://www.librelogiciel.com/software/PyKota/WiKota/Dependencies
+    
+  for an up-to-date list, or see below (maybe not up-to-date) :
+  
   You need to have the following tools installed on the CUPS Server :
   
     - CUPS (http://www.cups.org)
@@ -388,7 +399,7 @@ Prerequisite :
       as the database backend (http://www.sqlite.org). You also need the 
       PySQLite module v2.0.5 or higher (http://www.pysqlite.org)
  or
-    - MySQL 4.0 or higher and the MySQL-python bindings. 
+    - The MySQL-python bindings. 
       IMPORTANT: If you are using MySQL 4.1, then MySQL-python must be 
       version 1.2 or greater. Version 1.0 does not work correctly with 4.1.
       
@@ -435,19 +446,11 @@ Prerequisite :
     - SQLite, v3.2.7 or higher (http://www.sqlite.org).
       Beware : with SQLite the database server and the print
       servers MUST be the very same machine.
+      
+  or     
+  
+    - MySQL 4.0 or higher.
     
-NB :    
-
-  PygreSQL must be linked with the PostgreSQL client libraries on 
-  the Print Server. The PostgreSQL client libraries' version must 
-  match the PostgreSQL version used on the database server. 
-  
-or  
-
-  python-ldap must be linked with the OpenLDAP client libraries on the 
-  Print Server. The OpenLDAP client libraries' version should match the 
-  OpenLDAP version used on the database server, if applicable.
-  
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
   alternatives.
@@ -594,21 +597,7 @@ The rest of the installation depends on your printing system :
     
     For existing printers :
     
-        If you had already installed a version of PyKota earlier 
-        than 1.16alpha7, then remove the *cupsFilter lines in your 
-        PPD files for each already managed printer. Each 
-        line to remove is of the form :
-        
-          *cupsFilter: "application/vnd.cups-postscript 0 /usr/share/pykota/pykota"
-        
-        This means that each time the pstops filter will be executed, it will
-        pass the job's data through the pykota filter which is present in 
-        /usr/share/pykota
-        
-        Don't touch anything else, especially any other *cupsFilter line.
-        Then save each of these files.
-        
-        Then, the easiest is to directly modify the DeviceURI lines 
+        The easiest is to directly modify the DeviceURI lines 
         in /etc/cups/printers.conf, you just have to put 
         'cupspykota:' in front of what is already on these lines. 
         For example, replace :
@@ -642,7 +631,9 @@ users and groups :
 Add printers and users to the quota system and set their quota values : 
 
 You can either use pkturnkey, or do the same things manually by
-using the pkprinters and edpykota command line tools :
+using the pkprinters, pkusers and edpykota command line tools :
+
+Create printers :
 
     $ pkprinters --help
     
@@ -654,31 +645,24 @@ using the pkprinters and edpykota command line tools :
     would add the printer named hp2100 with a price per page
     of 0.05 unit.
 
-Now set quotas for users on this printer :     
+Create users :
 
-    $ edpykota --add -P hp2100 -S 40 -H 50 user1 ... userN
+    $ pkusers --add --limitby balance --balane 10.0 jerome
+    
+    would create user jerome and give him ten credits to spend
+    on any printer.
+    
+Finally create print quota entries :
+
+    $ edpykota --add -P hp2100 jerome
         
-    launching edpykota without any argument or with the --help
-    command line option will show you all the possibilities.
+    This will create a print quota entry for user jerome on    
+    printer hp2100. The print quota entry holds the number of
+    pages printed on a particular printer for a particular
+    user, as well as optional page limits to be used instead
+    of balance limits. See pkusers and edpykota's manual
+    pages for details.
     
-    by default, each user is limited by "quota", this means that on
-    each printer he can have a different soft and hard limit.
-    You may want to limit the user by his account balance value, 
-    in which case, the print quota is shared between all printers
-    instead of being different. To do this, use the following :
-    
-    $ edpykota --add -P hp2100 --limitby balance --balance 10 user1 ... userN
-    
-    This will put 10 $ (or Euros, PyKota doesn't care) on each user's account
-    balance, and tell PyKota to limit them by their account balance value.
-    Whenever they print on any printer, their account balance value is
-    decreased by an amount which depends on the particular price per page
-    and per job that you may have defined on the printer with edpykota's
-    --charge command line option.
-    Soft and Hard limits are not used if "--limitby balance" is used,
-    but you can define a "poorman"'s threshold in /etc/pykota/pykota.conf
-    to obtain a similar result (warning message when quota is low).
-
 Restart CUPS, for example under Debian GNU/Linux systems :          
 
     $ /etc/init.d/cupsys restart
