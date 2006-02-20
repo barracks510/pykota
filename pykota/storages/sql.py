@@ -476,6 +476,7 @@ class SQLStorage :
                     user.LifeTimePaid = record.get("lifetimepaid")
                     user.Email = record.get("email") 
                     user.OverCharge = record.get("overcharge")
+                    user.Description = self.databaseToUserCharset(record.get("description"))
                     user.Exists = 1
                     userpquota = StorageUserPQuota(self, user, printer)
                     userpquota.ident = record.get("id")

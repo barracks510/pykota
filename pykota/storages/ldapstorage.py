@@ -354,10 +354,11 @@ class Storage(BaseStorage) :
         """Extracts user information given its name."""
         user = StorageUser(self, username)
         username = self.userCharsetToDatabase(username)
-        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge"], base=self.info["userbase"])
+        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge", "description"], base=self.info["userbase"])
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
+            user.Description = self.databaseToUserCharset(fields.get("description", [None])[0])
             user.Email = fields.get(self.info["usermail"], [None])[0]
             user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
             user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
@@ -399,11 +400,12 @@ class Storage(BaseStorage) :
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
         groupname = self.userCharsetToDatabase(groupname)
-        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaGroupName", "pykotaLimitBy"], base=self.info["groupbase"])
+        result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaGroupName", "pykotaLimitBy", "description"], base=self.info["groupbase"])
         if result :
             fields = result[0][1]
             group.ident = result[0][0]
             group.Name = fields.get("pykotaGroupName", [self.databaseToUserCharset(groupname)])[0] 
+            group.Description = self.databaseToUserCharset(fields.get("description", [None])[0])
             group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
@@ -700,7 +702,7 @@ class Storage(BaseStorage) :
         users = []
         # see comment at the same place in pgstorage.py
         result = self.doSearch("objectClass=pykotaAccount", \
-                                  ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge"], \
+                                  ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge", "description"], \
                                   base=self.info["userbase"])
         if result :
             patterns = userpattern.split(",")
@@ -712,6 +714,7 @@ class Storage(BaseStorage) :
                     user.Email = fields.get(self.info["usermail"], [None])[0]
                     user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
                     user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
+                    user.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                     uname = self.userCharsetToDatabase(username)
                     result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % \
                                               (uname, self.info["balancerdn"], uname), \
@@ -757,7 +760,7 @@ class Storage(BaseStorage) :
         groups = []
         # see comment at the same place in pgstorage.py
         result = self.doSearch("objectClass=pykotaGroup", \
-                                  ["pykotaGroupName", "pykotaLimitBy"], \
+                                  ["pykotaGroupName", "pykotaLimitBy", "description"], \
                                   base=self.info["groupbase"])
         if result :
             patterns = grouppattern.split(",")
@@ -768,6 +771,7 @@ class Storage(BaseStorage) :
                     group.ident = groupid
                     group.Name = fields.get("pykotaGroupName", [self.databaseToUserCharset(groupname)])[0] 
                     group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    group.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                     group.AccountBalance = 0.0
                     group.LifeTimePaid = 0.0
                     for member in self.getGroupMembers(group) :
@@ -866,12 +870,11 @@ class Storage(BaseStorage) :
                        "pykotaUserName" : uname,
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
                        "pykotaOverCharge" : str(user.OverCharge),
+                       "description" : self.userCharsetToDatabase(user.Description or "")
                     }   
                        
         if user.Email :
             newfields.update({self.info["usermail"]: user.Email})
-        if user.Description is not None : 
-            newfields.update({"description": self.userCharsetToDatabase(user.Description)})
         mustadd = 1
         if self.info["newuser"].lower() != 'below' :
             try :
@@ -932,9 +935,8 @@ class Storage(BaseStorage) :
         newfields = { 
                       "pykotaGroupName" : gname,
                       "pykotaLimitBy" : (group.LimitBy or "quota"),
+                      "description" : self.userCharsetToDatabase(group.Description or "")
                     } 
-        if group.Description is not None : 
-            newfields.update({"description": self.userCharsetToDatabase(group.Description)})
         mustadd = 1
         if self.info["newgroup"].lower() != 'below' :
             try :
@@ -1040,11 +1042,10 @@ class Storage(BaseStorage) :
         newfields = {
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
                        "pykotaOverCharge" : str(user.OverCharge),
+                       "description" : self.userCharsetToDatabase(user.Description or ""), 
                     }   
         if user.Email :
             newfields.update({self.info["usermail"]: user.Email})
-        if user.Description is not None : 
-            newfields.update({"description": self.userCharsetToDatabase(user.Description)})
         self.doModify(user.ident, newfields)
         
         newfields = { "pykotaBalance" : str(user.AccountBalance or 0.0),
@@ -1056,9 +1057,8 @@ class Storage(BaseStorage) :
         """Saves the group to the database in a single operation."""
         newfields = {
                        "pykotaLimitBy" : (group.LimitBy or "quota"),
+                       "description" : self.userCharsetToDatabase(group.Description or ""), 
                     }   
-        if group.Description is not None : 
-            newfields.update({"description": self.userCharsetToDatabase(group.Description)})
         self.doModify(group.ident, newfields)
         
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
@@ -1479,9 +1479,9 @@ class Storage(BaseStorage) :
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email") ]
+            result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email", "description") ]
             for entry in entries :
-                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email))
+                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email, entry.Description))
             return result 
         
     def extractBillingcodes(self, extractonly={}) :
@@ -1499,9 +1499,9 @@ class Storage(BaseStorage) :
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
         if entries :
-            result = [ ("dn", "groupname", "limitby", "balance", "lifetimepaid") ]
+            result = [ ("dn", "groupname", "limitby", "balance", "lifetimepaid", "description") ]
             for entry in entries :
-                result.append((entry.ident, entry.Name, entry.LimitBy, entry.AccountBalance, entry.LifeTimePaid))
+                result.append((entry.ident, entry.Name, entry.LimitBy, entry.AccountBalance, entry.LifeTimePaid, entry.Description))
             return result 
         
     def extractPayments(self, extractonly={}) :
