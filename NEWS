@@ -21,6 +21,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha13 :
+    
+        - Introduced the pkusers command line tool to manage users and  
+          users groups. This command doesn't deal with print quota entries,
+          which continue to be managed through the edpykota command line
+          tool.
+          
+        - Major rewrite and incompatible changes to command line options
+          in edpykota. This command now only deals with print quota
+          entries. Printers, users (or users groups) now have to be created
+          first using pkprinters or pkusers.
+          
     - 1.24alpha12 :
     
         - Introduced the 'duplicatesdelay' directive to specify after
