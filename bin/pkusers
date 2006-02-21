@@ -240,33 +240,35 @@ class PKUsers(PyKotaTool) :
                     maildomain = self.config.getMailDomain()
                     smtpserver = self.config.getSMTPServer()
                     for entry in entries :
-                        email = entry.Email
-                        if not email :
-                            if maildomain :     
-                                email = "%s@%s" % (entry.Name, maildomain)
-                            elif smtpserver :    
-                                email = "%s@%s" % (entry.Name, smtpserver)
-                            else :    
-                                email = "%s@%s" % (entry.Name, "localhost")
-                        msg = "%s - <%s>" % (entry.Name, email)
-                        if entry.Description :
-                            msg += " - %s" % entry.Description
-                        print msg    
-                        print "    %s" % (_("Limited by : %s") % entry.LimitBy)
-                        print "    %s" % (_("Account balance : %.2f") % (entry.AccountBalance or 0.0))
-                        print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
-                        print "    %s" % (_("Overcharging factor : %.2f") % entry.OverCharge)
-                        print
+                        if entry.Exists :
+                            email = entry.Email
+                            if not email :
+                                if maildomain :     
+                                    email = "%s@%s" % (entry.Name, maildomain)
+                                elif smtpserver :    
+                                    email = "%s@%s" % (entry.Name, smtpserver)
+                                else :    
+                                    email = "%s@%s" % (entry.Name, "localhost")
+                            msg = "%s - <%s>" % (entry.Name, email)
+                            if entry.Description :
+                                msg += " - %s" % entry.Description
+                            print msg    
+                            print "    %s" % (_("Limited by : %s") % entry.LimitBy)
+                            print "    %s" % (_("Account balance : %.2f") % (entry.AccountBalance or 0.0))
+                            print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
+                            print "    %s" % (_("Overcharging factor : %.2f") % entry.OverCharge)
+                            print
                 else :    
                     for entry in entries :
-                        msg = "%s" % entry.Name
-                        if entry.Description :
-                            msg += " - %s" % entry.Description
-                        print msg    
-                        print "    %s" % (_("Limited by : %s") % entry.LimitBy)
-                        print "    %s" % (_("Group balance : %.2f") % (entry.AccountBalance or 0.0))
-                        print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
-                        print
+                        if entry.Exists :
+                            msg = "%s" % entry.Name
+                            if entry.Description :
+                                msg += " - %s" % entry.Description
+                            print msg    
+                            print "    %s" % (_("Limited by : %s") % entry.LimitBy)
+                            print "    %s" % (_("Group balance : %.2f") % (entry.AccountBalance or 0.0))
+                            print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
+                            print
             else :
                 self.display("%s...\n" % _("Modification"))
                 

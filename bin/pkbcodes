@@ -130,7 +130,8 @@ class PKBcodes(PyKotaTool) :
                         
             if options["list"] :
                 for billingcode in billingcodes :
-                    print "%s [%s] %s %s %s %.2f %s" % \
+                    if billingcode.Exists :
+                        print "%s [%s] %s %s %s %.2f %s" % \
                           (billingcode.BillingCode, billingcode.Description, \
                            billingcode.PageCounter, \
                            _("pages"), \
