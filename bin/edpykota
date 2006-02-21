@@ -176,8 +176,10 @@ class EdPyKota(PyKotaTool) :
             skipexisting = options["skipexisting"]
             if options["add"] :
                 self.display("%s...\n" % _("Creation"))
-                mprinters = self.storage.getMatchingPrinters(options["printer"])
                 mentries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+                if not mentries :
+                    raise PyKotaCommandLineError, _("Impossible to create print quota entries if the user or group object doesn't exist first. Please use pkusers to create it.")
+                mprinters = self.storage.getMatchingPrinters(options["printer"])
                 nbtotal = len(mprinters) * len(mentries)
                 i = 0
                 for printer in mprinters :
@@ -268,7 +270,7 @@ class EdPyKota(PyKotaTool) :
                     
                 nbtotal = len(pqentries)    
                 i = 0
-                for pqentry in pqentries :    
+                for (pqkey, pqentry) in pqentries.items() :
                     ename = getattr(pqentry, suffix).Name
                     pname = pqentry.Printer.Name
                     if pqentry.Exists :     
