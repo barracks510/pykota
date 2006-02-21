@@ -158,21 +158,25 @@ class EdPyKota(PyKotaTool) :
         
         suffix = (options["groups"] and "Group") or "User"        
         printernames = options["printer"].split(",")
-        if not names :
-            names = ["*"]
-        (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(printernames, names)
         
         if options["delete"] :    
             self.display("%s...\n" % _("Deletion"))
-            nbtotal = len(pqentries)
+            printers = self.storage.getMatchingPrinters(options["printer"])
+            entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+            nbtotal = len(entries) * len(printers)
             i = 0
-            for (pqkey, pqentry) in pqentries.items() :
-                if pqentry.Exists :
-                    pqentry.delete()
-                i += 1    
-                percent = 100.0 * float(i) / float(nbtotal)
-                self.display("\r%.02f%%" % percent)
+            for printer in printers :
+                for entry in entries :
+                    pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                    if pqentry.Exists :
+                        pqentry.delete()
+                    i += 1    
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
         else :
+            if not names :
+                names = ["*"]
+            (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(printernames, names)
             skipexisting = options["skipexisting"]
             if options["add"] :
                 self.display("%s...\n" % _("Creation"))
