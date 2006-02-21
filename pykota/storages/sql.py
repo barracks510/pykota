@@ -461,7 +461,7 @@ class SQLStorage :
                     self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
         
-    def getMatchingUserPQuotas(self, pnames = ["*"], unames=["*"]) :    
+    def getPrintersUsersAndPQuotas(self, pnames = ["*"], unames=["*"]) :    
         """Returns all printers, users and users print quota entries which match a set of names."""
         printers = {}
         users = {}
@@ -516,7 +516,7 @@ class SQLStorage :
                         self.cacheEntry("USERPQUOTAS", upqkey, userpquota)
         return (printers, users, upquotas)
         
-    def getMatchingGroupPQuotas(self, pnames = ["*"], gnames=["*"]) :    
+    def getPrintersGroupsAndPQuotas(self, pnames = ["*"], gnames=["*"]) :    
         """Returns all printers, groups and groups print quota entries which match a set of names."""
         printers = {}
         groups = {}

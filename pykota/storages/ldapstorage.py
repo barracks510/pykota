@@ -826,7 +826,7 @@ class Storage(BaseStorage) :
         usersandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return usersandquotas
                 
-    def getMatchingUserPQuotas(self, pnames = ["*"], unames=["*"]) :    
+    def getPrintersUsersAndPQuotas(self, pnames = ["*"], unames=["*"]) :    
         """Returns all printers, users and users print quota entries which match a set of names."""
         printers = {}
         users = {}
@@ -841,7 +841,7 @@ class Storage(BaseStorage) :
                 upquotas[upqkey] = self.getUserPQuota(user, printer)
         return (printers, users, upquotas)
         
-    def getMatchingGroupPQuotas(self, pnames = ["*"], gnames=["*"]) :    
+    def getPrintersGroupsAndPQuotas(self, pnames = ["*"], gnames=["*"]) :    
         """Returns all printers, groups and groups print quota entries which match a set of names."""
         printers = {}
         groups = {}
