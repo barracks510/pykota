@@ -165,33 +165,55 @@ class PKTurnKey(Tool) :
         """Creates all printers in PyKota's database."""
         if printers :
             needswarning = [p[0] for p in printers if p[1].find("cupspykota") == -1]
-            command = "pkprinters --add %s" % " ".join(['"%s"' % p[0] for p in printers])
-            self.runCommand(command, dryrun)
+            args = open("/tmp/pkprinters.args", "w")
+            args.write('--add\n--skipexisting\n--description\n"printer created from pkturnkey"\n')
+            args.write("%s\n" % "\n".join(['"%s"' % p[0] for p in printers]))
+            args.close()
+            self.runCommand("pkprinters --arguments /tmp/pkprinters.args", dryrun)
             for p in needswarning :
                 self.printInfo(_("Printer %s is not managed by PyKota yet. Please modify printers.conf and restart CUPS.") % p, "warn")
         
     def createUsers(self, users, printers, dryrun=0) :
         """Creates all users in PyKota's database."""
         if users :
+            args = open("/tmp/pkusers.users.args", "w")
+            args.write('--add\n--skipexisting\n--description\n"user created from pkturnkey"\n--limitby\nnoquota\n')
+            args.write("%s\n" % "\n".join(['"%s"' % u for u in users]))
+            args.close()
+            self.runCommand("pkusers --arguments /tmp/pkusers.users.args", dryrun)
+            
             printersnames = [p[0] for p in printers]
-            command = "edpykota --add --noquota --printer %s %s" \
-                          % (",".join(['"%s"' % p for p in printersnames]), \
-                             " ".join(['"%s"' % u for u in users]))
-            self.runCommand(command, dryrun)
+            args = open("/tmp/edpykota.users.args", "w")
+            args.write('--add\n--skipexisting\n--noquota\n--printer\n')
+            args.write("%s\n" % ",".join(['"%s"' % p for p in printersnames]))
+            args.write("%s\n" % "\n".join(['"%s"' % u for u in users]))
+            args.close()
+            self.runCommand("edpykota --arguments /tmp/edpykota.users.args", dryrun)
             
     def createGroups(self, groups, printers, dryrun=0) :
         """Creates all groups in PyKota's database."""
         if groups :
+            args = open("/tmp/pkusers.groups.args", "w")
+            args.write('--groups\n--add\n--skipexisting\n--description\n"group created from pkturnkey"\n--limitby\nnoquota\n')
+            args.write("%s\n" % "\n".join(['"%s"' % g for g in groups]))
+            args.close()
+            self.runCommand("pkusers --arguments /tmp/pkusers.groups.args", dryrun)
+            
             printersnames = [p[0] for p in printers]
-            commands = ["edpykota --add --groups --noquota --printer %s %s" \
-                            % (",".join(['"%s"' % p for p in printersnames]), \
-                               " ".join(['"%s"' % g for g in groups.keys()]))]
+            args = open("/tmp/edpykota.groups.args", "w")
+            args.write('--groups\n--add\n--skipexisting\n--noquota\n--printer\n')
+            args.write("%s\n" % ",".join(['"%s"' % p for p in printersnames]))
+            args.write("%s\n" % "\n".join(['"%s"' % g for g in groups]))
+            args.close()
+            self.runCommand("edpykota --arguments /tmp/edpykota.groups.args", dryrun)
+            
             revmembership = {}
             for (groupname, usernames) in groups.items() :
                 for username in usernames :
                     revmembership.setdefault(username, []).append(groupname)
+            commands = []        
             for (username, groupnames) in revmembership.items() :        
-                commands.append('edpykota --ingroups %s "%s"' \
+                commands.append('pkusers --ingroups %s "%s"' \
                     % (",".join(['"%s"' % g for g in groupnames]), username))
             for command in commands :
                 self.runCommand(command, dryrun)
@@ -440,8 +462,6 @@ class PKTurnKey(Tool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        raise PyKotaCommandLineError, "This version is not stable, download an earlier one. Operation aborted."
-        
         short_options = "hvdDefu:U:g:G:c"
         long_options = ["help", "version", "dousers", "dogroups", \
                         "emptygroups", "force", "uidmin=", "uidmax=", \
