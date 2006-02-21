@@ -157,26 +157,52 @@ class EdPyKota(PyKotaTool) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
         
         suffix = (options["groups"] and "Group") or "User"        
+        printernames = options["printer"].split(",")
+        if not names :
+            names = ["*"]
+        (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(printernames, names)
         
         if options["delete"] :    
             self.display("%s...\n" % _("Deletion"))
-            (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(options["printer"].split(","), names)
             nbtotal = len(pqentries)
             for i in range(nbtotal) :
-                pqentry = pqentries[i]
+                (pqkey, pqentry) = pqentries.popitem()
                 if pqentry.Exists :
                     pqentry.delete()
                 percent = 100.0 * float(i) / float(nbtotal)
                 self.display("\r%.02f%%" % percent)
         else :
+            skipexisting = options["skipexisting"]
             if options["add"] :
-                raise PyKotaCommandLineError, "Not implemented yet."
-            else :        
-                if not names :
-                    names = ["*"]
-                (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(options["printer"].split(","), names)
-                if not pqentries :
-                    raise PyKotaCommandLineError, _("There's no %s print quota entry matching %s") % (suffix.lower(), " ".join(names))
+                self.display("%s...\n" % _("Creation"))
+                mprinters = self.storage.getMatchingPrinters(options["printer"])
+                mentries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+                nbtotal = len(mprinters) * len(mentries)
+                i = 0
+                for printer in mprinters :
+                    pname = printer.Name
+                    for entry in mentries :
+                        ename = entry.Name
+                        pqkey = "%s@%s" % (ename, pname)
+                        if pqentries.has_key(pqkey) and pqentries[pqkey].Exists :
+                            if skipexisting :
+                                self.printInfo(_("%s print quota entry %s@%s already exists, skipping.") % (suffix, ename, pname))
+                                del pqentries[pqkey]
+                            else :    
+                                self.printInfo(_("%s print quota entry %s@%s already exists, will be modified.") % (suffix, ename, pname))
+                        else :        
+                            newpqentry = getattr(self.storage, "add%sPQuota" % suffix)(entry, printer)
+                            if not newpqentry.Exists :
+                                self.printInfo(_("Impossible to create a print quota entry for %s@%s") % (ename, pname))
+                            else :
+                                pqentries[pqkey] = newpqentry
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+                        i += 1
+                self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+                
+            if not pqentries :
+                raise PyKotaCommandLineError, _("There's no %s print quota entry matching %s") % (suffix.lower(), " ".join(names))
                     
             if options["list"] :
                 for (name, entry) in pqentries.items() :
