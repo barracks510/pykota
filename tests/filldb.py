@@ -118,7 +118,7 @@ def deleteUserPQuotas(usernames, printernames) :
     argsfile.close()    
     before = time.time()
     os.system('edpykota --arguments arguments.list') 
-    showTiming(len(usernames), before)
+    showTiming(number, before)
     
 if __name__ == "__main__" :    
     if len(sys.argv) == 1 :
