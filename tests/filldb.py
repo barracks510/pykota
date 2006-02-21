@@ -26,13 +26,19 @@ def createBillingCodes(number) :
     before = time.time()
     os.system('pkbcodes --arguments arguments.list') 
     showTiming(number, before)
+    return billingcodes
 
-def deleteBillingCodes(number) :
+def deleteBillingCodes(billingcodes) :
     """Deletes all test billing codes."""
     sys.stdout.write("Deleting billing codes...\n")
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--delete\n')
+    for bname in billingcodes :
+        argsfile.write("%s\n" % bname)
+    argsfile.close()    
     before = time.time()
-    os.system('pkbcodes --delete "test-billingcode-*"') 
-    showTiming(number, before)
+    os.system('pkbcodes --arguments arguments.list') 
+    showTiming(len(billingcodes), before)
     
 def createPrinters(number) :
     """Creates a number of printers."""
@@ -46,13 +52,19 @@ def createPrinters(number) :
     before = time.time()
     os.system('pkprinters --arguments arguments.list') 
     showTiming(number, before)
+    return printernames
 
-def deletePrinters(number) :
+def deletePrinters(printernames) :
     """Deletes all test printers."""
     sys.stdout.write("Deleting printers...\n")
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--delete\n')
+    for pname in printernames :
+        argsfile.write("%s\n" % pname)
+    argsfile.close()    
     before = time.time()
-    os.system('pkprinters --delete "test-printer-*"') 
-    showTiming(number, before)
+    os.system('pkprinters --arguments arguments.list') 
+    showTiming(len(printernames), before)
     
 def createUsers(number) :
     """Creates a number of users."""
@@ -66,13 +78,47 @@ def createUsers(number) :
     before = time.time()
     os.system('pkusers --arguments arguments.list') 
     showTiming(number, before)
+    return usernames
 
-def deleteUsers(number) :
+def deleteUsers(usernames) :
     """Deletes all test users."""
     sys.stdout.write("Deleting users...\n")
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--delete\n')
+    for uname in usernames :
+        argsfile.write("%s\n" % uname)
+    argsfile.close()    
     before = time.time()
-    os.system('pkusers --delete "test-user-*"') 
+    os.system('pkusers --arguments arguments.list') 
+    showTiming(len(usernames), before)
+    
+def createUserPQuotas(usernames, printernames) :
+    """Creates a number of user print quota entries."""
+    number = len(usernames) * len(printernames)
+    sys.stdout.write("Adding %i user print quota entries...\n" % number)
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--add\n--softlimit\n100\n--hardlimit\n110\n--reset\n--hardreset\n--printer\n')
+    argsfile.write("%s\n" % ",".join(printernames))
+    for uname in usernames :
+        argsfile.write("%s\n" % uname)
+    argsfile.close()    
+    before = time.time()
+    os.system('edpykota --arguments arguments.list') 
     showTiming(number, before)
+
+def deleteUserPQuotas(usernames, printernames) :
+    """Deletes all test user print quota entries."""
+    number = len(usernames) * len(printernames)
+    sys.stdout.write("Deleting user print quota entries...\n")
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--delete\n--printer\n')
+    argsfile.write("%s\n" % ",".join(printernames))
+    for uname in usernames :
+        argsfile.write("%s\n" % uname)
+    argsfile.close()    
+    before = time.time()
+    os.system('edpykota --arguments arguments.list') 
+    showTiming(len(usernames), before)
     
 if __name__ == "__main__" :    
     if len(sys.argv) == 1 :
@@ -82,16 +128,21 @@ if __name__ == "__main__" :
         nbprinters = int(sys.argv[2])
         nbusers = int(sys.argv[3])
         if nbbillingcodes :
-            createBillingCodes(nbbillingcodes)
+            bcodes = createBillingCodes(nbbillingcodes)
         if nbprinters :
-            createPrinters(nbprinters)
+            printers = createPrinters(nbprinters)
         if nbusers :    
-            createUsers(nbusers)
-        if nbbillingcodes :    
-            deleteBillingCodes(nbbillingcodes)
-        if nbusers :    
-            deleteUsers(nbusers)           # NB : either this one or the one below
-        if nbprinters :    
-            deletePrinters(nbprinters)        # also delete user print quota entries.
+            users = createUsers(nbusers)
+            
+        if users and printers :    
+            createUserPQuotas(users, printers)
+            deleteUserPQuotas(users, printers)
+            
+        if bcodes :    
+            deleteBillingCodes(bcodes)
+        if users :    
+            deleteUsers(users)           # NB : either this one or the one below
+        if printers :    
+            deletePrinters(printers)     # also delete user print quota entries.
         os.remove("arguments.list")
         
