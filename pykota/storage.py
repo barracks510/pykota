@@ -353,9 +353,7 @@ class StorageUserPQuota(StorageObject) :
         else :    
             self.parent.commitTransaction()
             if self.parent.usecache :
-                for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
-                    if v.User.Name == self.User.Name :
-                        self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
+                self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (self.User.Name, self.Printer.Name))
             self.Exists = 0
         
 class StorageGroupPQuota(StorageObject) :
@@ -440,9 +438,7 @@ class StorageGroupPQuota(StorageObject) :
         else :    
             self.parent.commitTransaction()
             if self.parent.usecache :
-                for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
-                    if v.Group.Name == self.Group.Name :
-                        self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
+                self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (self.Group.Name, self.Printer.Name))
             self.Exists = 0
         
 class StorageJob(StorageObject) :
