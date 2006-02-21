@@ -134,15 +134,15 @@ if __name__ == "__main__" :
         if nbusers :    
             users = createUsers(nbusers)
             
-        if users and printers :    
+        if nbusers and nbprinters :    
             createUserPQuotas(users, printers)
             deleteUserPQuotas(users, printers)
             
-        if bcodes :    
+        if nbbillingcodes :    
             deleteBillingCodes(bcodes)
-        if users :    
+        if nbusers :    
             deleteUsers(users)           # NB : either this one or the one below
-        if printers :    
+        if nbprinters :    
             deletePrinters(printers)     # also delete user print quota entries.
         os.remove("arguments.list")
         
