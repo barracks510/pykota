@@ -472,48 +472,45 @@ class SQLStorage :
                 uname = self.databaseToUserCharset(record.get("username"))
                 pname = self.databaseToUserCharset(record.get("printername"))
                 if self.tool.matchString(pname, pnames) and self.tool.matchString(uname, unames) :
-                    if not printers.has_key(pname) :
-                        printer = StoragePrinter(self, pname)
-                        printer.ident = record.get("pid")
-                        printer.PricePerJob = record.get("priceperjob") or 0.0
-                        printer.PricePerPage = record.get("priceperpage") or 0.0
-                        printer.Description = self.databaseToUserCharset(record.get("pdesc") or "") 
-                        printer.MaxJobSize = record.get("pmaxjobsize") or 0
-                        printer.PassThrough = record.get("passthrough") or 0
-                        if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
-                            printer.PassThrough = 1
-                        else :
-                            printer.PassThrough = 0
-                        printer.Exists = 1
-                        printers[pname] = printer
-                        self.cacheEntry("PRINTERS", pname, printer)
+                    printer = StoragePrinter(self, pname)
+                    printer.ident = record.get("pid")
+                    printer.PricePerJob = record.get("priceperjob") or 0.0
+                    printer.PricePerPage = record.get("priceperpage") or 0.0
+                    printer.Description = self.databaseToUserCharset(record.get("pdesc") or "") 
+                    printer.MaxJobSize = record.get("pmaxjobsize") or 0
+                    printer.PassThrough = record.get("passthrough") or 0
+                    if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+                        printer.PassThrough = 1
+                    else :
+                        printer.PassThrough = 0
+                    printer.Exists = 1
+                    printers[pname] = printer
+                    self.cacheEntry("PRINTERS", pname, printer)
                     
-                    if not users.has_key(uname) :
-                        user = StorageUser(self, uname)
-                        user.ident = record.get("uid")
-                        user.LimitBy = record.get("limitby") or "quota"
-                        user.AccountBalance = record.get("balance")
-                        user.LifeTimePaid = record.get("lifetimepaid")
-                        user.Email = record.get("email") 
-                        user.OverCharge = record.get("overcharge")
-                        user.Description = self.databaseToUserCharset(record.get("udesc"))
-                        user.Exists = 1
-                        users[uname] = user
-                        self.cacheEntry("USERS", uname, user)
+                    user = StorageUser(self, uname)
+                    user.ident = record.get("uid")
+                    user.LimitBy = record.get("limitby") or "quota"
+                    user.AccountBalance = record.get("balance")
+                    user.LifeTimePaid = record.get("lifetimepaid")
+                    user.Email = record.get("email") 
+                    user.OverCharge = record.get("overcharge")
+                    user.Description = self.databaseToUserCharset(record.get("udesc"))
+                    user.Exists = 1
+                    users[uname] = user
+                    self.cacheEntry("USERS", uname, user)
                     
                     upqkey = "%s@%s" % (uname, pname)
-                    if not upquotas.has_key(upqkey) : # NB : should always be verified.
-                        userpquota = StorageUserPQuota(self, users[uname], printers[pname])
-                        userpquota.ident = record.get("id")
-                        userpquota.PageCounter = record.get("pagecounter")
-                        userpquota.LifePageCounter = record.get("lifepagecounter")
-                        userpquota.SoftLimit = record.get("softlimit")
-                        userpquota.HardLimit = record.get("hardlimit")
-                        userpquota.DateLimit = record.get("datelimit")
-                        userpquota.WarnCount = record.get("warncount")
-                        userpquota.Exists = 1
-                        upquotas[upqkey] = userpquota
-                        self.cacheEntry("USERPQUOTAS", upqkey, userpquota)
+                    userpquota = StorageUserPQuota(self, user, printer)
+                    userpquota.ident = record.get("id")
+                    userpquota.PageCounter = record.get("pagecounter")
+                    userpquota.LifePageCounter = record.get("lifepagecounter")
+                    userpquota.SoftLimit = record.get("softlimit")
+                    userpquota.HardLimit = record.get("hardlimit")
+                    userpquota.DateLimit = record.get("datelimit")
+                    userpquota.WarnCount = record.get("warncount")
+                    userpquota.Exists = 1
+                    upquotas[upqkey] = userpquota
+                    self.cacheEntry("USERPQUOTAS", upqkey, userpquota)
         return (printers, users, upquotas)
         
     def getPrintersGroupsAndPQuotas(self, pnames = ["*"], gnames=["*"]) :    
@@ -527,15 +524,12 @@ class SQLStorage :
                 gname = self.databaseToUserCharset(record.get("groupname"))
                 pname = self.databaseToUserCharset(record.get("printername"))
                 if self.tool.matchString(pname, pnames) and self.tool.matchString(gname, gnames) :
-                    if not printers.has_key(pname) :
-                        printers[pname] = self.getPrinter(pname)
-                    
-                    if not groups.has_key(gname) :
-                        groups[gname] = self.getGroup(gname)
-                    
+                    printer = self.getPrinter(pname)
+                    printers[pname] = printer
+                    group = self.getGroup(gname)
+                    groups[gname] = group
                     gpqkey = "%s@%s" % (gname, pname)
-                    if not gpquotas.has_key(gpqkey) : # NB : should always be verified.
-                        gpquotas[upqkey] = self.getGroupPQuota(groups[gname], printers[pname])
+                    gpquotas[upqkey] = self.getGroupPQuota(group, printer)
         return (printers, groups, gpquotas)
         
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
