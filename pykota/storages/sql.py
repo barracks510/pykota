@@ -466,7 +466,11 @@ class SQLStorage :
         printers = {}
         users = {}
         upquotas = {}
+        import time
+        before = time.time()
         result = self.doSearch("SELECT users.id AS uid, users.description AS udesc, printers.id AS pid, printers.description AS pdesc, printers.maxjobsize AS pmaxjobsize, userpquota.id AS upqid, userpquota.maxjobsize AS upqmaxjobsize, users.*, printers.*, userpquota.* FROM users, printers, userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid;")
+        after = time.time()
+        self.tool.printInfo("SELECT took %.4f seconds." % (after - before))
         if result :
             for record in result :
                 uname = self.databaseToUserCharset(record.get("username"))

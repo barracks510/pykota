@@ -28,6 +28,7 @@ import sys
 import os
 import pwd
 import grp
+import time
 from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError
@@ -161,18 +162,19 @@ class EdPyKota(PyKotaTool) :
         
         if options["delete"] :    
             self.display("%s...\n" % _("Deletion"))
-            printers = self.storage.getMatchingPrinters(options["printer"])
-            entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-            nbtotal = len(entries) * len(printers)
-            i = 0
-            for printer in printers :
-                for entry in entries :
-                    pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
-                    if pqentry.Exists :
-                        pqentry.delete()
-                    i += 1    
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
+            #printers = self.storage.getMatchingPrinters(options["printer"])
+            #entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+            before = time.time()
+            (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(printernames, names)
+            after = time.time()
+            self.printInfo("Data extraction took %.4f seconds" % (after - before))
+            nbtotal = len(pqentries)
+            for i in range(nbtotal) :
+                (pqkey, pqentry) = pqentries.popitem()
+                if pqentry.Exists :
+                    pqentry.delete()
+                percent = 100.0 * float(i) / float(nbtotal)
+                self.display("\r%.02f%%" % percent)
         else :
             if not names :
                 names = ["*"]
@@ -316,6 +318,11 @@ class EdPyKota(PyKotaTool) :
             self.display("\r100.00%%\r        \r%s\n" % _("Done."))
                      
 if __name__ == "__main__" : 
+    try : 
+       import psyco
+       psyco.profile()
+    except :   
+       pass
     retcode = 0
     try :
         defaults = { \
