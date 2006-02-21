@@ -53,6 +53,8 @@ options :
   -d | --delete        Deletes users or groups print quota entries.
                        Users or groups are never deleted, you have
                        to use the pkusers command to delete them.
+                       The history will be purge from all matching
+                       jobs, unless -g | --groups is used.
   
   -P | --printer p     Edit quotas on printer p only. Actually p can
                        use wildcards characters to select only
@@ -64,6 +66,8 @@ options :
   -g | --groups        Edit groups print quota entries instead of 
                        users print quota entries.
                           
+  -L | --list          Lists users or groups print quota entries.
+  
   -n | --noquota       Sets both soft and hard limits to None for users
                        or groups print quota entries.
   
@@ -74,6 +78,9 @@ options :
   -R | --hardreset     Resets the actual and life time page counters
                        for the user or group to zero on the specified 
                        printers. This is a shortcut for '--used 0'.
+                       
+  -s | --skipexisting  In combination with the --add option above, tells
+                       edpykota to not modify existing print quota entries.
                        
   -S | --softlimit sl  Sets the quota soft limit to sl pages.                       
   
@@ -152,145 +159,170 @@ class EdPyKota(PyKotaTool) :
         suffix = (options["groups"] and "Group") or "User"        
         
         if options["delete"] :    
-            self.display("%s...\n" % _("Processing"))
-            todelete = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-            nbtotal = len(todelete)
+            self.display("%s...\n" % _("Deletion"))
+            (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(options["printer"].split(","), names)
+            nbtotal = len(pqentries)
             for i in range(nbtotal) :
-                todelete[i].delete()
+                pqentry = pqentries[i]
+                if pqentry.Exists :
+                    pqentry.delete()
                 percent = 100.0 * float(i) / float(nbtotal)
                 self.display("\r%.02f%%" % percent)
-            self.display("\r100.00%%\r        ")
-            self.display("\r%s\n" % _("Done."))
         else :
-            softlimit = hardlimit = None
-            
-            used = options["used"]
-            if used :
-                used = used.strip()
-                try :
-                    int(used)
-                except ValueError :
-                    raise PyKotaCommandLineError, _("Invalid used value %s.") % used
+            if options["add"] :
+                raise PyKotaCommandLineError, "Not implemented yet."
+            else :        
+                if not names :
+                    names = ["*"]
+                (printers, entries, pqentries) = getattr(self.storage, "getPrinters%ssAndPQuotas" % suffix)(options["printer"].split(","), names)
+                if not pqentries :
+                    raise PyKotaCommandLineError, _("There's no %s print quota entry matching %s") % (suffix.lower(), " ".join(names))
                     
-            increase = options["increase"]
-            if increase :
-                try :
-                    increase = int(increase.strip())
-                except ValueError :
-                    raise PyKotaCommandLineError, _("Invalid increase value %s.") % increase
-            
-            if not options["noquota"] :
-                if options["softlimit"] :
-                    try :
-                        softlimit = int(options["softlimit"].strip())
-                        if softlimit < 0 :
-                            raise ValueError
-                    except ValueError :    
-                        raise PyKotaCommandLineError, _("Invalid softlimit value %s.") % options["softlimit"]
-                if options["hardlimit"] :
-                    try :
-                        hardlimit = int(options["hardlimit"].strip())
-                        if hardlimit < 0 :
-                            raise ValueError
-                    except ValueError :    
-                        raise PyKotaCommandLineError, _("Invalid hardlimit value %s.") % options["hardlimit"]
-                if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
-                    # error, exchange them
-                    self.printInfo(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
-                    (softlimit, hardlimit) = (hardlimit, softlimit)
+            if options["list"] :
+                for (name, entry) in pqentries.items() :
+                    if entry.Exists :
+                        print name
+                        print "    %s" % (_("Page counter : %s") % entry.PageCounter)
+                        print "    %s" % (_("Lifetime page counter : %s") % entry.LifePageCounter)
+                        print "    %s" % (_("Soft limit : %s") % entry.SoftLimit)
+                        print "    %s" % (_("Hard limit : %s") % entry.HardLimit)
+                        print "    %s" % (_("Date limit : %s") % entry.DateLimit)
+                        # TODO : print "    %s" % (_("Maximum job size : %s") % ((entry.MaxJobSize and (_("%s pages") % entry.MaxJobSize)) or _("Unlimited")))
+                        if hasattr(entry, "WarnCount") :
+                            print "    %s" % (_("Warning banners printed : %s") % entry.WarnCount)
+                        print
+            else :
+                self.display("%s...\n" % _("Modification"))
+                raise PyKotaCommandLineError, "Not implemented yet."
+                softlimit = hardlimit = None
                 
-            sys.stdout.write(_("Managing print quotas... (this may take a lot of time)"))
-            sys.stdout.flush()
-            missingusers = {}
-            missinggroups = {}    
-            changed = {} # tracks changes made at the user/group level
-            for printer in printers :
-                if not options["noquota"] :    
-                    if hardlimit is None :    
-                        hardlimit = softlimit
-                        if hardlimit is not None :
-                            self.printInfo(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer.Name))
-                    if softlimit is None :    
-                        softlimit = hardlimit
-                        if softlimit is not None :
-                            self.printInfo(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer.Name))
-                            
-                if options["add"] :    
-                    allentries = []    
-                    for name in names :
-                        email = ""
-                        if not options["groups"] :
-                            splitname = name.split('/', 1)     # username/email
-                            if len(splitname) == 1 :
-                                splitname.append("")
-                            (name, email) = splitname
-                            if email and (email.count('@') != 1) :
-                                self.printInfo(_("Invalid email address %s") % email)
-                                email = ""
-                        entry = getattr(self.storage, "get%s" % suffix)(name)
-                        if email and not options["groups"] :
-                            entry.Email = email
-                        entrypquota = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
-                        allentries.append((entry, entrypquota))
-                else :   
-                    allentries = getattr(self.storage, "getPrinter%ssAndQuotas" % suffix)(printer, names)
-                    
-                for (entry, entrypquota) in allentries :
-                    if not changed.has_key(entry.Name) :
-                        changed[entry.Name] = {}
-                        if not options["groups"] :
-                            changed[entry.Name]["ingroups"] = []
-                            
-                    if entry.Exists and (not entrypquota.Exists) :
-                        # not found
-                        if options["add"] :
-                            entrypquota = getattr(self.storage, "add%sPQuota" % suffix)(entry, printer)
-                            
-                    if not entrypquota.Exists :     
-                        self.printInfo(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
-                    else :    
-                        if options["noquota"] \
-                           or ((softlimit is not None) and (hardlimit is not None)) :
-                            entrypquota.setLimits(softlimit, hardlimit)
-                            
-                        if increase :
-                           if (entrypquota.SoftLimit is None) \
-                               or (entrypquota.HardLimit is None) :
-                               self.printInfo(_("You can't increase limits by %s when no limit is set.") % increase, "error")
-                           else :
-                               newsoft = entrypquota.SoftLimit + increase         
-                               newhard = entrypquota.HardLimit + increase         
-                               if (newsoft >= 0) and (newhard >= 0) :
-                                   entrypquota.setLimits(newsoft, newhard)
-                               else :    
-                                   self.printInfo(_("You can't set negative limits."), "error")
+                used = options["used"]
+                if used :
+                    used = used.strip()
+                    try :
+                        int(used)
+                    except ValueError :
+                        raise PyKotaCommandLineError, _("Invalid used value %s.") % used
                         
-                        if options["reset"] :
-                            entrypquota.reset()
-                            
-                        if options["hardreset"] :    
-                            entrypquota.hardreset()
-                            
-                        if not options["groups"] :
-                            if used :
-                                entrypquota.setUsage(used)
+                increase = options["increase"]
+                if increase :
+                    try :
+                        increase = int(increase.strip())
+                    except ValueError :
+                        raise PyKotaCommandLineError, _("Invalid increase value %s.") % increase
+                
+                if not options["noquota"] :
+                    if options["softlimit"] :
+                        try :
+                            softlimit = int(options["softlimit"].strip())
+                            if softlimit < 0 :
+                                raise ValueError
+                        except ValueError :    
+                            raise PyKotaCommandLineError, _("Invalid softlimit value %s.") % options["softlimit"]
+                    if options["hardlimit"] :
+                        try :
+                            hardlimit = int(options["hardlimit"].strip())
+                            if hardlimit < 0 :
+                                raise ValueError
+                        except ValueError :    
+                            raise PyKotaCommandLineError, _("Invalid hardlimit value %s.") % options["hardlimit"]
+                    if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :        
+                        # error, exchange them
+                        self.printInfo(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
+                        (softlimit, hardlimit) = (hardlimit, softlimit)
+                    
+                sys.stdout.write(_("Managing print quotas... (this may take a lot of time)"))
+                sys.stdout.flush()
+                missingusers = {}
+                missinggroups = {}    
+                changed = {} # tracks changes made at the user/group level
+                for printer in printers :
+                    if not options["noquota"] :    
+                        if hardlimit is None :    
+                            hardlimit = softlimit
+                            if hardlimit is not None :
+                                self.printInfo(_("Undefined hard limit set to soft limit (%s) on printer %s.") % (str(hardlimit), printer.Name))
+                        if softlimit is None :    
+                            softlimit = hardlimit
+                            if softlimit is not None :
+                                self.printInfo(_("Undefined soft limit set to hard limit (%s) on printer %s.") % (str(softlimit), printer.Name))
                                 
-            sys.stdout.write("\nDone.\n")    
+                    if options["add"] :    
+                        allentries = []    
+                        for name in names :
+                            email = ""
+                            if not options["groups"] :
+                                splitname = name.split('/', 1)     # username/email
+                                if len(splitname) == 1 :
+                                    splitname.append("")
+                                (name, email) = splitname
+                                if email and (email.count('@') != 1) :
+                                    self.printInfo(_("Invalid email address %s") % email)
+                                    email = ""
+                            entry = getattr(self.storage, "get%s" % suffix)(name)
+                            if email and not options["groups"] :
+                                entry.Email = email
+                            entrypquota = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                            allentries.append((entry, entrypquota))
+                    else :   
+                        allentries = getattr(self.storage, "getPrinter%ssAndQuotas" % suffix)(printer, names)
+                        
+                    for (entry, entrypquota) in allentries :
+                        if not changed.has_key(entry.Name) :
+                            changed[entry.Name] = {}
+                            if not options["groups"] :
+                                changed[entry.Name]["ingroups"] = []
+                                
+                        if entry.Exists and (not entrypquota.Exists) :
+                            # not found
+                            if options["add"] :
+                                entrypquota = getattr(self.storage, "add%sPQuota" % suffix)(entry, printer)
+                                
+                        if not entrypquota.Exists :     
+                            self.printInfo(_("Quota not found for object %s on printer %s.") % (entry.Name, printer.Name))
+                        else :    
+                            if options["noquota"] \
+                               or ((softlimit is not None) and (hardlimit is not None)) :
+                                entrypquota.setLimits(softlimit, hardlimit)
+                                
+                            if increase :
+                               if (entrypquota.SoftLimit is None) \
+                                   or (entrypquota.HardLimit is None) :
+                                   self.printInfo(_("You can't increase limits by %s when no limit is set.") % increase, "error")
+                               else :
+                                   newsoft = entrypquota.SoftLimit + increase         
+                                   newhard = entrypquota.HardLimit + increase         
+                                   if (newsoft >= 0) and (newhard >= 0) :
+                                       entrypquota.setLimits(newsoft, newhard)
+                                   else :    
+                                       self.printInfo(_("You can't set negative limits."), "error")
+                            
+                            if options["reset"] :
+                                entrypquota.reset()
+                                
+                            if options["hardreset"] :    
+                                entrypquota.hardreset()
+                                
+                            if not options["groups"] :
+                                if used :
+                                    entrypquota.setUsage(used)
+                                
+        if not options["list"] :                
+            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
                      
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        raise PyKotaCommandLineError, "This version is not stable, download an earlier one. Operation aborted."
         defaults = { \
                      "printer" : "*", \
                    }
-        short_options = "vhdnagrP:S:H:G:RU:I:"
+        short_options = "vhdnagrLP:S:H:G:RU:I:s"
         long_options = ["help", "version", \
-                        "delete", \
+                        "delete", "list", \
                         "noquota", "add", \
                         "groups", "reset", "hardreset", \
                         "printer=", "softlimit=", "hardlimit=", \
-                        "increase=", "used="]
+                        "increase=", "used=", "skipexisting"]
         
         # Initializes the command line tool
         manager = EdPyKota(doc=__doc__)
@@ -313,16 +345,17 @@ if __name__ == "__main__" :
         options["hardreset"] = options["R"] or options["hardreset"] 
         options["used"] = options["U"] or options["used"]
         options["increase"] = options["I"] or options["increase"]
+        options["list"] = options["L"] or options["list"]
+        options["skipexisting"] = options["s"] or options["skipexisting"]
         
         if options["help"] :
             manager.display_usage_and_quit()
         elif options["version"] :
             manager.display_version_and_quit()
-        elif options["add"] and options["delete"] :    
-            raise PyKotaCommandLineError, _("incompatible options, see help.")
-        elif options["noquota"] and (options["hardlimit"] or options["softlimit"]) :
-            raise PyKotaCommandLineError, _("incompatible options, see help.")
-        elif options["groups"] and options["used"] :
+        elif (options["add"] and options["delete"]) \
+             or (options["noquota"] and (options["hardlimit"] or options["softlimit"])) \
+             or (options["groups"] and options["used"]) \
+             or (options["skipexisting"] and not options["add"]) :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif options["delete"] and not args :
             raise PyKotaCommandLineError, _("You have to pass user or group names on the command line")
