@@ -177,8 +177,12 @@ class EdPyKota(PyKotaTool) :
             if options["add"] :
                 self.display("%s...\n" % _("Creation"))
                 mentries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-                if not mentries :
-                    raise PyKotaCommandLineError, _("Impossible to create print quota entries if the user or group object doesn't exist first. Please use pkusers to create it.")
+                dicnames = {}
+                for m in mentries :
+                    dicnames[m.Name] = None
+                for name in names :
+                    if not dicnames.has_key(name) :
+                        self.printInfo(_("Impossible to create print quota entries if the user or group object %s doesn't already exist. Please use pkusers to create it first.") % name, "warn")
                 mprinters = self.storage.getMatchingPrinters(options["printer"])
                 nbtotal = len(mprinters) * len(mentries)
                 i = 0
