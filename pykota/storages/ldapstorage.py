@@ -1113,16 +1113,6 @@ class Storage(BaseStorage) :
                  }
         return self.doModify(userpquota.ident, fields)         
         
-    def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
-        """Sets the new page counters permanently for a user print quota."""
-        fields = {
-                   "pykotaPageCounter" : str(newpagecounter),
-                   "pykotaLifePageCounter" : str(newlifepagecounter),
-                   "pykotaDateLimit" : None,
-                   "pykotaWarnCount" : "0",
-                 }  
-        return self.doModify(userpquota.ident, fields)         
-       
     def decreaseUserAccountBalance(self, user, amount) :    
         """Decreases user's account balance from an amount."""
         fields = {
@@ -1207,13 +1197,15 @@ class Storage(BaseStorage) :
                      }  
             self.doAdd(lastjdn, fields)          
             
-    def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
-        """Sets soft and hard limits for a user quota."""
+    def saveUserPQuota(self, userpquota) :
+        """Saves an user print quota entry."""
         fields = { 
-                   "pykotaSoftLimit" : str(softlimit),
-                   "pykotaHardLimit" : str(hardlimit),
-                   "pykotaDateLimit" : "None",
-                   "pykotaWarnCount" : "0",
+                   "pykotaSoftLimit" : str(userpquota.SoftLimit),
+                   "pykotaHardLimit" : str(userpquota.HardLimit),
+                   "pykotaDateLimit" : str(userpquota.DateLimit),
+                   "pykotaWarnCount" : str(userpquota.WarnCount),
+                   "pykotaPageCounter" : str(userpquota.PageCounter),
+                   "pykotaLifePageCounter" : str(userpquota.LifePageCounter),
                  }
         self.doModify(userpquota.ident, fields)
         
@@ -1231,12 +1223,12 @@ class Storage(BaseStorage) :
                  }
         return self.doModify(userpquota.ident, fields)         
         
-    def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
-        """Sets soft and hard limits for a group quota on a specific printer."""
+    def saveGroupPQuota(self, grouppquota) :
+        """Saves a group print quota entry."""
         fields = { 
-                   "pykotaSoftLimit" : str(softlimit),
-                   "pykotaHardLimit" : str(hardlimit),
-                   "pykotaDateLimit" : "None",
+                   "pykotaSoftLimit" : str(grouppquota.SoftLimit),
+                   "pykotaHardLimit" : str(grouppquota.HardLimit),
+                   "pykotaDateLimit" : str(grouppquota.DateLimit),
                  }
         self.doModify(grouppquota.ident, fields)
             

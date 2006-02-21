@@ -265,33 +265,23 @@ class StorageUserPQuota(StorageObject) :
         
     def setLimits(self, softlimit, hardlimit) :    
         """Sets the soft and hard limit for this quota."""
-        self.parent.writeUserPQuotaLimits(self, softlimit, hardlimit)
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
         self.DateLimit = None
         self.WarnCount = 0
+        self.isDirty = True
         
     def setUsage(self, used) :
         """Sets the PageCounter and LifePageCounter to used, or if used is + or - prefixed, changes the values of {Life,}PageCounter by that amount."""
         vused = int(used)
         if used.startswith("+") or used.startswith("-") :
-            self.parent.beginTransaction()
-            try :
-                self.parent.increaseUserPQuotaPagesCounters(self, vused)
-                self.parent.writeUserPQuotaDateLimit(self, None)
-                self.parent.writeUserPQuotaWarnCount(self, 0)
-            except PyKotaStorageError, msg :    
-                self.parent.rollbackTransaction()
-                raise PyKotaStorageError, msg
-            else :
-                self.parent.commitTransaction()
             self.PageCounter += vused
             self.LifePageCounter += vused
         else :
-            self.parent.writeUserPQuotaPagesCounters(self, vused, vused)
             self.PageCounter = self.LifePageCounter = vused
         self.DateLimit = None
         self.WarnCount = 0
+        self.isDirty = 1
 
     def incDenyBannerCounter(self) :
         """Increment the deny banner counter for this user quota."""
@@ -305,15 +295,15 @@ class StorageUserPQuota(StorageObject) :
         
     def reset(self) :    
         """Resets page counter to 0."""
-        self.parent.writeUserPQuotaPagesCounters(self, 0, int(self.LifePageCounter or 0))
         self.PageCounter = 0
         self.DateLimit = None
+        self.isDirty = True
         
     def hardreset(self) :    
         """Resets actual and life time page counters to 0."""
-        self.parent.writeUserPQuotaPagesCounters(self, 0, 0)
         self.PageCounter = self.LifePageCounter = 0
         self.DateLimit = None
+        self.isDirty = True
         
     def computeJobPrice(self, jobsize) :    
         """Computes the job price as the sum of all parent printers' prices + current printer's ones."""
@@ -384,7 +374,7 @@ class StorageGroupPQuota(StorageObject) :
             for user in self.parent.getGroupMembers(self.Group) :
                 uq = self.parent.getUserPQuota(user, self.Printer)
                 uq.reset()
-            self.parent.writeGroupPQuotaDateLimit(self, None)
+                uq.save()
         except PyKotaStorageError, msg :    
             self.parent.rollbackTransaction()
             raise PyKotaStorageError, msg
@@ -392,6 +382,7 @@ class StorageGroupPQuota(StorageObject) :
             self.parent.commitTransaction()
         self.PageCounter = 0
         self.DateLimit = None
+        self.isDirty = True
         
     def hardreset(self) :    
         """Resets actual and life time page counters to 0."""
@@ -400,7 +391,7 @@ class StorageGroupPQuota(StorageObject) :
             for user in self.parent.getGroupMembers(self.Group) :
                 uq = self.parent.getUserPQuota(user, self.Printer)
                 uq.hardreset()
-            self.parent.writeGroupPQuotaDateLimit(self, None)
+                uq.save()
         except PyKotaStorageError, msg :    
             self.parent.rollbackTransaction()
             raise PyKotaStorageError, msg
@@ -408,6 +399,7 @@ class StorageGroupPQuota(StorageObject) :
             self.parent.commitTransaction()
         self.PageCounter = self.LifePageCounter = 0
         self.DateLimit = None
+        self.isDirty = True
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
@@ -422,10 +414,10 @@ class StorageGroupPQuota(StorageObject) :
         
     def setLimits(self, softlimit, hardlimit) :    
         """Sets the soft and hard limit for this quota."""
-        self.parent.writeGroupPQuotaLimits(self, softlimit, hardlimit)
         self.SoftLimit = softlimit
         self.HardLimit = hardlimit
         self.DateLimit = None
+        self.isDirty = True
         
     def delete(self) :    
         """Deletes a group print quota entry from the database."""

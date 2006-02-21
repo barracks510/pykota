@@ -671,10 +671,6 @@ class SQLStorage :
         """Increase page counters for a user print quota."""
         self.doModify("UPDATE userpquota SET pagecounter=pagecounter + %s,lifepagecounter=lifepagecounter + %s WHERE id=%s" % (self.doQuote(nbpages), self.doQuote(nbpages), self.doQuote(userpquota.ident)))
        
-    def writeUserPQuotaPagesCounters(self, userpquota, newpagecounter, newlifepagecounter) :    
-        """Sets the new page counters permanently for a user print quota."""
-        self.doModify("UPDATE userpquota SET pagecounter=%s, lifepagecounter=%s, warncount=0, datelimit=NULL WHERE id=%s" % (self.doQuote(newpagecounter), self.doQuote(newlifepagecounter), self.doQuote(userpquota.ident)))
-       
     def saveBillingCode(self, code) :    
         """Saves the billing code to the database."""
         self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s, description=%s WHERE id=%s" \
@@ -717,9 +713,16 @@ class SQLStorage :
             # here we explicitly want to reset jobsize to NULL if needed
             self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobsizebytes=%s, md5sum=%s, pages=%s, billingcode=%s, precomputedjobsize=%s, precomputedjobprice=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes), self.doQuote(jobmd5sum), self.doQuote(jobpages), self.doQuote(jobbilling), self.doQuote(precomputedsize), self.doQuote(precomputedprice), self.doQuote(printer.LastJob.ident)))
             
-    def writeUserPQuotaLimits(self, userpquota, softlimit, hardlimit) :
-        """Sets soft and hard limits for a user quota."""
-        self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=0, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(userpquota.ident)))
+    def saveUserPQuota(self, userpquota) :
+        """Saves an user print quota entry."""
+        self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=%s, datelimit=%s, pagecounter=%s, lifepagecounter=%s WHERE id=%s" \
+                              % (self.doQuote(userpquota.SoftLimit), \
+                                 self.doQuote(userpquota.HardLimit), \
+                                 self.doQuote(userpquota.WarnCount), \
+                                 self.doQuote(userpquota.DateLimit), \
+                                 self.doQuote(userpquota.PageCounter), \
+                                 self.doQuote(userpquota.LifePageCounter), \
+                                 self.doQuote(userpquota.ident)))
         
     def writeUserPQuotaWarnCount(self, userpquota, warncount) :
         """Sets the warn counter value for a user quota."""
@@ -729,9 +732,13 @@ class SQLStorage :
         """Increases the warn counter value for a user quota."""
         self.doModify("UPDATE userpquota SET warncount=warncount+1 WHERE id=%s" % self.doQuote(userpquota.ident))
         
-    def writeGroupPQuotaLimits(self, grouppquota, softlimit, hardlimit) :
-        """Sets soft and hard limits for a group quota on a specific printer."""
-        self.doModify("UPDATE grouppquota SET softlimit=%s, hardlimit=%s, datelimit=NULL WHERE id=%s" % (self.doQuote(softlimit), self.doQuote(hardlimit), self.doQuote(grouppquota.ident)))
+    def saveGroupPQuota(self, grouppquota) :
+        """Saves a group print quota entry."""
+        self.doModify("UPDATE grouppquota SET softlimit=%s, hardlimit=%s, datelimit=%s WHERE id=%s" \
+                              % (self.doQuote(grouppquota.SoftLimit), \
+                                 self.doQuote(grouppquota.HardLimit), \
+                                 self.doQuote(grouppquota.DateLimit), \
+                                 self.doQuote(grouppquota.ident)))
 
     def writePrinterToGroup(self, pgroup, printer) :
         """Puts a printer into a printer group."""
