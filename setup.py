@@ -65,10 +65,6 @@ docfiles += glob.glob(os.sep.join(["openoffice", "*.png"]))
 docfiles += glob.glob(os.sep.join(["openoffice", "README"]))
 data_files.append((os.path.join(docdir, "openoffice"), docfiles))
 
-data_files.append((os.path.join(docdir, "postgresql"), ["initscripts/postgresql/README.postgresql"]))
-data_files.append((os.path.join(docdir, "ldap"), ["initscripts/ldap/README.ldap"]))
-data_files.append((os.path.join(docdir, "mysql"), ["initscripts/mysql/README.mysql"]))
-
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    
 data_files.append((directory, manpages))
@@ -107,6 +103,9 @@ data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", "initscripts/
 
 mysqldirectory = os.sep.join([directory, "mysql"])
 data_files.append((mysqldirectory, ["initscripts/mysql/README.mysql", "initscripts/mysql/pykota-mysql.sql"]))
+
+sqlitedirectory = os.sep.join([directory, "sqlite"])
+data_files.append((sqlitedirectory, ["initscripts/sqlite/README.sqlite", "initscripts/sqlite/pykota-sqlite.sql"]))
 
 os.umask(022)
 setup(name = "pykota", version = __version__,

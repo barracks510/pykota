@@ -122,11 +122,16 @@ def deleteUserPQuotas(usernames, printernames) :
     
 if __name__ == "__main__" :    
     if len(sys.argv) == 1 :
-        sys.stderr.write("usage :  %s  NbBillingCodes  NbPrinters  NbUsers\n" % sys.argv[0])
+        sys.stderr.write("usage :  %s  [--nodelete]  NbBillingCodes  NbPrinters  NbUsers\n" % sys.argv[0])
     else :    
-        nbbillingcodes = int(sys.argv[1])
-        nbprinters = int(sys.argv[2])
-        nbusers = int(sys.argv[3])
+        delete = True
+        args = sys.argv[1:]
+        if args[0] == "--nodelete" :
+            args = args[1:]
+            delete = False
+        nbbillingcodes = int(args[0])
+        nbprinters = int(args[1])
+        nbusers = int(args[2])
         if nbbillingcodes :
             bcodes = createBillingCodes(nbbillingcodes)
         if nbprinters :
@@ -136,13 +141,15 @@ if __name__ == "__main__" :
             
         if nbusers and nbprinters :    
             createUserPQuotas(users, printers)
-            deleteUserPQuotas(users, printers)
+            if delete :
+                deleteUserPQuotas(users, printers)
             
-        if nbbillingcodes :    
-            deleteBillingCodes(bcodes)
-        if nbusers :    
-            deleteUsers(users)           # NB : either this one or the one below
-        if nbprinters :    
-            deletePrinters(printers)     # also delete user print quota entries.
+        if delete :    
+            if nbbillingcodes :    
+                deleteBillingCodes(bcodes)
+            if nbusers :    
+                deleteUsers(users)           # NB : either this one or the one below
+            if nbprinters :    
+                deletePrinters(printers)     # also delete user print quota entries.
         os.remove("arguments.list")
         
