@@ -795,6 +795,8 @@ class Storage(BaseStorage) :
                             group.AccountBalance += member.AccountBalance
                             group.LifeTimePaid += member.LifeTimePaid
                     group.Exists = 1
+                    groups.append(group)
+                    self.cacheEntry("GROUPS", group.Name, group)
         return groups
         
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
