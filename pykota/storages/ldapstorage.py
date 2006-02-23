@@ -191,7 +191,7 @@ class Storage(BaseStorage) :
                 self.tool.logdebug("%s" % entry)
                 self.database.add_s(dn, entry)
             except ldap.ALREADY_EXISTS, msg :        
-                raise PyKotaStorageError
+                raise PyKotaStorageError, "Entry %s already exists : %s" % (dn, str(msg))
             except ldap.LDAPError, msg :
                 message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
@@ -212,6 +212,8 @@ class Storage(BaseStorage) :
             try :
                 self.tool.logdebug("QUERY : Delete(%s)" % dn)
                 self.database.delete_s(dn)
+            except ldap.NO_SUCH_OBJECT :    
+                self.tool.printInfo("Entry %s was already missing before we deleted it. This **MAY** be normal." % dn, "info")
             except ldap.LDAPError, msg :
                 message = (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
