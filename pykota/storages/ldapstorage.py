@@ -1033,7 +1033,7 @@ class Storage(BaseStorage) :
                 
     def delUserFromGroup(self, user, group) :    
         """Removes an user from a group."""
-        if user.Name not in [u.Name for u in self.getGroupMembers(group)] :
+        if user.Name in [u.Name for u in self.getGroupMembers(group)] :
             result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)
             if result :
                 fields = result[0][1]
