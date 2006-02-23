@@ -1029,7 +1029,19 @@ class Storage(BaseStorage) :
                 
     def delUserFromGroup(self, user, group) :    
         """Removes an user from a group."""
-        raise "Not Implemented !" # TODO !!!
+        if user.Name not in [u.Name for u in self.getGroupMembers(group)] :
+            result = self.doSearch("objectClass=pykotaGroup", None, base=group.ident, scope=ldap.SCOPE_BASE)
+            if result :
+                fields = result[0][1]
+                if not fields.has_key(self.info["groupmembers"]) :
+                    fields[self.info["groupmembers"]] = []
+                try :    
+                    fields[self.info["groupmembers"]].remove(self.userCharsetToDatabase(user.Name))
+                except ValueError :
+                    pass # TODO : Strange, shouldn't it be there ?
+                else :
+                    self.doModify(group.ident, fields)
+                    group.Members.remove(user)
                 
     def addUserPQuota(self, upq) :
         """Initializes a user print quota on a printer."""
