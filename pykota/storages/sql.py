@@ -375,9 +375,16 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM printers")
         if result :
             patterns = printerpattern.split(",")
+            try :
+                patdict = {}.fromkeys(patterns)
+            except AttributeError :    
+                # Python v2.2 or earlier
+                patdict = {}
+                for p in patterns :
+                    patdict[p] = None
             for record in result :
                 pname = self.databaseToUserCharset(record["printername"])
-                if self.tool.matchString(pname, patterns) :
+                if patdict.has_key(pname) or self.tool.matchString(pname, patterns) :
                     printer = StoragePrinter(self, pname)
                     printer.ident = record.get("id")
                     printer.PricePerJob = record.get("priceperjob") or 0.0
@@ -403,9 +410,16 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM users")
         if result :
             patterns = userpattern.split(",")
+            try :
+                patdict = {}.fromkeys(patterns)
+            except AttributeError :    
+                # Python v2.2 or earlier
+                patdict = {}
+                for p in patterns :
+                    patdict[p] = None
             for record in result :
                 uname = self.databaseToUserCharset(record["username"])
-                if self.tool.matchString(uname, patterns) :
+                if patdict.has_key(uname) or self.tool.matchString(uname, patterns) :
                     user = StorageUser(self, uname)
                     user.ident = record.get("id")
                     user.LimitBy = record.get("limitby") or "quota"
@@ -428,9 +442,16 @@ class SQLStorage :
         result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby,groups.description")
         if result :
             patterns = grouppattern.split(",")
+            try :
+                patdict = {}.fromkeys(patterns)
+            except AttributeError :    
+                # Python v2.2 or earlier
+                patdict = {}
+                for p in patterns :
+                    patdict[p] = None
             for record in result :
                 gname = self.databaseToUserCharset(record["groupname"])
-                if self.tool.matchString(gname, patterns) :
+                if patdict.has_key(gname) or self.tool.matchString(gname, patterns) :
                     group = StorageGroup(self, gname)
                     group.ident = record.get("id")
                     group.LimitBy = record.get("limitby") or "quota"
