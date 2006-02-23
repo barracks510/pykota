@@ -190,6 +190,8 @@ class Storage(BaseStorage) :
                 entry = ldap.modlist.addModlist(fields)
                 self.tool.logdebug("%s" % entry)
                 self.database.add_s(dn, entry)
+            except ldap.ALREADY_EXISTS, msg :        
+                raise PyKotaStorageError
             except ldap.LDAPError, msg :
                 message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
@@ -453,7 +455,7 @@ class Storage(BaseStorage) :
                 base = self.info["userquotabase"]
             result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % \
                                       (self.userCharsetToDatabase(user.Name), self.userCharsetToDatabase(printer.Name)), \
-                                      ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaWarnCount"], \
+                                      ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaWarnCount", "pykotaMaxJobSize"], \
                                       base=base)
             if result :
                 fields = result[0][1]
@@ -479,6 +481,12 @@ class Storage(BaseStorage) :
                         userpquota.DateLimit = None
                     else :    
                         userpquota.DateLimit = userpquota.DateLimit[0]
+                userpquota.MaxJobSize = fields.get("pykotaMaxJobSize")
+                if userpquota.MaxJobSize is not None :
+                    if userpquota.MaxJobSize[0].upper() == "NONE" :
+                        userpquota.MaxJobSize = None
+                    else :    
+                        userpquota.MaxJobSize = int(userpquota.MaxJobSize[0])
                 userpquota.Exists = 1
         return userpquota
         
@@ -492,7 +500,7 @@ class Storage(BaseStorage) :
                 base = self.info["groupquotabase"]
             result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % \
                                       (self.userCharsetToDatabase(group.Name), self.userCharsetToDatabase(printer.Name)), \
-                                      ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], \
+                                      ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaMaxJobSize"], \
                                       base=base)
             if result :
                 fields = result[0][1]
@@ -515,6 +523,12 @@ class Storage(BaseStorage) :
                         grouppquota.DateLimit = None
                     else :    
                         grouppquota.DateLimit = grouppquota.DateLimit[0]
+                grouppquota.MaxJobSize = fields.get("pykotaMaxJobSize")
+                if grouppquota.MaxJobSize is not None :
+                    if grouppquota.MaxJobSize[0].upper() == "NONE" :
+                        grouppquota.MaxJobSize = None
+                    else :    
+                        grouppquota.MaxJobSize = int(grouppquota.MaxJobSize[0])
                 grouppquota.PageCounter = 0
                 grouppquota.LifePageCounter = 0
                 usernamesfilter = "".join(["(pykotaUserName=%s)" % self.userCharsetToDatabase(member.Name) for member in self.getGroupMembers(group)])
@@ -1017,32 +1031,43 @@ class Storage(BaseStorage) :
         """Removes an user from a group."""
         raise "Not Implemented !" # TODO !!!
                 
-    def addUserPQuota(self, user, printer) :
+    def addUserPQuota(self, upq) :
         """Initializes a user print quota on a printer."""
+        # first check if an entry already exists
+        oldentry = self.getUserPQuota(upq.User, upq.Printer)
+        if oldentry.Exists :
+            return oldentry # we return the existing entry
         uuid = self.genUUID()
-        uname = self.userCharsetToDatabase(user.Name)
-        pname = self.userCharsetToDatabase(printer.Name)
+        uname = self.userCharsetToDatabase(upq.User.Name)
+        pname = self.userCharsetToDatabase(upq.Printer.Name)
         fields = { "cn" : uuid,
                    "objectClass" : ["pykotaObject", "pykotaUserPQuota"],
                    "pykotaUserName" : uname,
                    "pykotaPrinterName" : pname,
-                   "pykotaDateLimit" : "None",
-                   "pykotaPageCounter" : "0",
-                   "pykotaLifePageCounter" : "0",
-                   "pykotaWarnCount" : "0",
+                   "pykotaSoftLimit" : str(upq.SoftLimit),
+                   "pykotaHardLimit" : str(upq.HardLimit),
+                   "pykotaDateLimit" : str(upq.DateLimit),
+                   "pykotaPageCounter" : str(upq.PageCounter or 0),
+                   "pykotaLifePageCounter" : str(upq.LifePageCounter or 0),
+                   "pykotaWarnCount" : str(upq.WarnCount or 0),
+                   "pykotaMaxJobSize" : str(upq.MaxJobSize or 0),
                  } 
         if self.info["userquotabase"].lower() == "user" :
-            dn = "cn=%s,%s" % (uuid, user.ident)
+            dn = "cn=%s,%s" % (uuid, upq.User.ident)
         else :    
             dn = "cn=%s,%s" % (uuid, self.info["userquotabase"])
         self.doAdd(dn, fields)
-        return self.getUserPQuota(user, printer)
+        upq.isDirty = False
+        return None # the entry created doesn't need further modification
         
-    def addGroupPQuota(self, group, printer) :
+    def addGroupPQuota(self, gpq) :
         """Initializes a group print quota on a printer."""
+        oldentry = self.getGroupPQuota(gpq.Group, gpq.Printer)
+        if oldentry.Exists :
+            return oldentry # we return the existing entry
         uuid = self.genUUID()
-        gname = self.userCharsetToDatabase(group.Name)
-        pname = self.userCharsetToDatabase(printer.Name)
+        gname = self.userCharsetToDatabase(gpq.Group.Name)
+        pname = self.userCharsetToDatabase(gpq.Printer.Name)
         fields = { "cn" : uuid,
                    "objectClass" : ["pykotaObject", "pykotaGroupPQuota"],
                    "pykotaGroupName" : gname,
@@ -1050,11 +1075,12 @@ class Storage(BaseStorage) :
                    "pykotaDateLimit" : "None",
                  } 
         if self.info["groupquotabase"].lower() == "group" :
-            dn = "cn=%s,%s" % (uuid, group.ident)
+            dn = "cn=%s,%s" % (uuid, gpq.Group.ident)
         else :    
             dn = "cn=%s,%s" % (uuid, self.info["groupquotabase"])
         self.doAdd(dn, fields)
-        return self.getGroupPQuota(group, printer)
+        gpq.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def savePrinter(self, printer) :    
         """Saves the printer to the database in a single operation."""
@@ -1203,9 +1229,10 @@ class Storage(BaseStorage) :
                    "pykotaSoftLimit" : str(userpquota.SoftLimit),
                    "pykotaHardLimit" : str(userpquota.HardLimit),
                    "pykotaDateLimit" : str(userpquota.DateLimit),
-                   "pykotaWarnCount" : str(userpquota.WarnCount),
-                   "pykotaPageCounter" : str(userpquota.PageCounter),
-                   "pykotaLifePageCounter" : str(userpquota.LifePageCounter),
+                   "pykotaWarnCount" : str(userpquota.WarnCount or 0),
+                   "pykotaPageCounter" : str(userpquota.PageCounter or 0),
+                   "pykotaLifePageCounter" : str(userpquota.LifePageCounter or 0),
+                   "pykotaMaxJobSize" : str(userpquota.MaxJobSize or 0),
                  }
         self.doModify(userpquota.ident, fields)
         
@@ -1229,6 +1256,7 @@ class Storage(BaseStorage) :
                    "pykotaSoftLimit" : str(grouppquota.SoftLimit),
                    "pykotaHardLimit" : str(grouppquota.HardLimit),
                    "pykotaDateLimit" : str(grouppquota.DateLimit),
+                   "pykotaMaxJobSize" : str(userpquota.MaxJobSize or 0),
                  }
         self.doModify(grouppquota.ident, fields)
             
@@ -1425,6 +1453,24 @@ class Storage(BaseStorage) :
                 self.doModify(group.ident, fields, ignoreold=0)        
             else :    
                 self.doDelete(group.ident)
+                
+    def deleteManyUserPQuotas(self, printers, users) :        
+        """Deletes many user print quota entries."""
+        # TODO : grab all with a single (possibly VERY huge) filter if possible (might depend on the LDAP server !)
+        for printer in printers :
+            for user in users :
+                upq = self.getUserPQuota(user, printer)
+                if upq.Exists :
+                    upq.delete()
+            
+    def deleteManyGroupPQuotas(self, printers, groups) :
+        """Deletes many group print quota entries."""
+        # TODO : grab all with a single (possibly VERY huge) filter if possible (might depend on the LDAP server !)
+        for printer in printers :
+            for group in groups :
+                gpq = self.getGroupPQuota(group, printer)
+                if gpq.Exists :
+                    gpq.delete()
                 
     def deleteUserPQuota(self, upquota) :    
         """Completely deletes an user print quota entry from the database."""

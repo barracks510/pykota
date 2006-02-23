@@ -643,15 +643,44 @@ class SQLStorage :
         self.doModify("DELETE FROM groupsmembers WHERE groupid=%s AND userid=%s" % \
                        (self.doQuote(group.ident), self.doQuote(user.ident)))
             
-    def addUserPQuota(self, user, printer) :
+    def addUserPQuota(self, upq) :
         """Initializes a user print quota on a printer."""
-        self.doModify("INSERT INTO userpquota (userid, printerid) VALUES (%s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
-        return self.getUserPQuota(user, printer)
+        try :
+            self.doModify("INSERT INTO userpquota (userid, printerid, softlimit, hardlimit, warncount, datelimit, pagecounter, lifepagecounter, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)" \
+                              % (self.doQuote(upq.User.ident), \
+                                 self.doQuote(upq.Printer.ident), \
+                                 self.doQuote(upq.SoftLimit), \
+                                 self.doQuote(upq.HardLimit), \
+                                 self.doQuote(upq.WarnCount), \
+                                 self.doQuote(upq.DateLimit), \
+                                 self.doQuote(upq.PageCounter), \
+                                 self.doQuote(upq.LifePageCounter), \
+                                 self.doQuote(upq.MaxJobSize)))
+        except PyKotaStorageError :                         
+            # TODO : check if this is an error different from a duplicate insert
+            # return the existing entry which has to be modified
+            return self.getUserPQuota(upq.User, upq.Printer)
+        else :    
+            upq.isDirty = False
+            return None # the entry created doesn't need further modification
         
-    def addGroupPQuota(self, group, printer) :
+    def addGroupPQuota(self, gpq) :
         """Initializes a group print quota on a printer."""
-        self.doModify("INSERT INTO grouppquota (groupid, printerid) VALUES (%s, %s)" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
-        return self.getGroupPQuota(group, printer)
+        try :
+            self.doModify("INSERT INTO grouppquota (groupid, printerid, softlimit, hardlimit, datelimit, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s)" \
+                              % (self.doQuote(gpq.Group.ident), \
+                                 self.doQuote(gpq.Printer.ident), \
+                                 self.doQuote(gpq.SoftLimit), \
+                                 self.doQuote(gpq.HardLimit), \
+                                 self.doQuote(gpq.DateLimit), \
+                                 self.doQuote(gpq.MaxJobSize)))
+        except PyKotaStorageError :                         
+            # TODO : check if this is an error different from a duplicate insert
+            # return the existing entry which has to be modified
+            return self.getGroupPQuota(gpq.Group, gpq.Printer)
+        else :    
+            gpq.isDirty = False
+            return None # the entry created doesn't need further modification
         
     def savePrinter(self, printer) :    
         """Saves the printer to the database in a single operation."""
@@ -737,13 +766,14 @@ class SQLStorage :
             
     def saveUserPQuota(self, userpquota) :
         """Saves an user print quota entry."""
-        self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=%s, datelimit=%s, pagecounter=%s, lifepagecounter=%s WHERE id=%s" \
+        self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=%s, datelimit=%s, pagecounter=%s, lifepagecounter=%s, maxjobsize=%s WHERE id=%s" \
                               % (self.doQuote(userpquota.SoftLimit), \
                                  self.doQuote(userpquota.HardLimit), \
                                  self.doQuote(userpquota.WarnCount), \
                                  self.doQuote(userpquota.DateLimit), \
                                  self.doQuote(userpquota.PageCounter), \
                                  self.doQuote(userpquota.LifePageCounter), \
+                                 self.doQuote(userpquota.MaxJobSize), \
                                  self.doQuote(userpquota.ident)))
         
     def writeUserPQuotaWarnCount(self, userpquota, warncount) :
@@ -842,6 +872,28 @@ class SQLStorage :
                   ] :
             self.doModify(q)
             
+    def deleteManyUserPQuotas(self, printers, users) :        
+        """Deletes many user print quota entries."""
+        printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
+        userids = ", ".join(["%s" % self.doQuote(u.ident) for u in users])
+        for q in [ 
+                    "DELETE FROM jobhistory WHERE userid IN (%s) AND printerid IN (%s)" \
+                                 % (userids, printerids),
+                    "DELETE FROM userpquota WHERE userid IN (%s) AND printerid IN (%s)" \
+                                 % (userids, printerids),
+                  ] :
+            self.doModify(q)
+            
+    def deleteManyGroupPQuotas(self, printers, groups) :
+        """Deletes many group print quota entries."""
+        printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
+        groupids = ", ".join(["%s" % self.doQuote(g.ident) for g in groups])
+        for q in [ 
+                    "DELETE FROM grouppquota WHERE groupid IN (%s) AND printerid IN (%s)" \
+                                 % (groupids, printerids),
+                  ] :
+            self.doModify(q)
+        
     def deleteUserPQuota(self, upquota) :    
         """Completely deletes an user print quota entry from the database."""
         for q in [ 
