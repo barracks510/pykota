@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha14 :
+    
+        - Finished optimizations in edpykota and fixed some minor
+          problems with LDAP.
+          
     - 1.24alpha13 :
     
         - Introduced the pkusers command line tool to manage users and  

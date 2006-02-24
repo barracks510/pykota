@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/python
 # -*- coding: ISO-8859-15 -*-
 
 # PyKota Print Quota Editor 
@@ -152,6 +152,25 @@ examples :
         
 class EdPyKota(PyKotaTool) :        
     """A class for edpykota."""
+    def modifyPQEntry(self, pqkey, pqentry, noquota, softlimit, hardlimit, increase, reset, hardreset, suffix, used) :
+        """Modifies a print quota entry."""
+        if noquota or ((softlimit is not None) and (hardlimit is not None)) :
+            pqentry.setLimits(softlimit, hardlimit)
+        if increase :
+            newsoft = (pqentry.SoftLimit or 0) + increase         
+            newhard = (pqentry.HardLimit or 0) + increase         
+            if (newsoft >= 0) and (newhard >= 0) :
+                pqentry.setLimits(newsoft, newhard)
+            else :    
+                self.printInfo(_("You can't set negative limits for %s") % pqkey, "error")
+        if reset :
+            pqentry.reset()
+        if hardreset :    
+            pqentry.hardreset()
+        if suffix == "User" :
+            if used :
+                pqentry.setUsage(used)
+    
     def main(self, names, options) :
         """Edit user or group quotas."""
         if not self.config.isAdmin :
@@ -172,7 +191,23 @@ class EdPyKota(PyKotaTool) :
             getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
             self.display("\n")
             self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+        elif options["list"] :
+            for printer in printers :
+                for entry in entries :
+                    pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                    if pqentry.Exists :
+                        print "%s@%s" % (entry.Name, printer.Name)
+                        print "    %s" % (_("Page counter : %s") % pqentry.PageCounter)
+                        print "    %s" % (_("Lifetime page counter : %s") % pqentry.LifePageCounter)
+                        print "    %s" % (_("Soft limit : %s") % pqentry.SoftLimit)
+                        print "    %s" % (_("Hard limit : %s") % pqentry.HardLimit)
+                        print "    %s" % (_("Date limit : %s") % pqentry.DateLimit)
+                        print "    %s (Not supported yet)" % (_("Maximum job size : %s") % ((pqentry.MaxJobSize and (_("%s pages") % pqentry.MaxJobSize)) or _("Unlimited")))
+                        if hasattr(pqentry, "WarnCount") :
+                            print "    %s" % (_("Warning banners printed : %s") % pqentry.WarnCount)
+                        print
         else :
+            self.display("\n")    
             skipexisting = options["skipexisting"]
             used = options["used"]
             if used :
@@ -189,8 +224,10 @@ class EdPyKota(PyKotaTool) :
                 except ValueError :
                     raise PyKotaCommandLineError, _("Invalid increase value %s.") % increase
             
-            softlimit = hardlimit = None
             noquota = options["noquota"]
+            reset = options["reset"]        
+            hardreset = options["hardreset"]
+            softlimit = hardlimit = None
             if not noquota :
                 if options["softlimit"] :
                     try :
@@ -219,9 +256,8 @@ class EdPyKota(PyKotaTool) :
                     if softlimit is not None :
                         self.printInfo(_("Undefined soft limit set to hard limit (%s).") % str(softlimit))
                         
-            pqentries = []            
             if options["add"] :
-                self.display("\n%s...\n" % _("Creation"))
+                self.display("%s...\n" % _("Creation"))
                 dicnames = {}
                 for m in entries :
                     dicnames[m.Name] = None
@@ -238,94 +274,43 @@ class EdPyKota(PyKotaTool) :
                         ename = entry.Name
                         pqkey = "%s@%s" % (ename, pname)
                         pqentry = factory(self.storage, entry, printer)
-                        if noquota or ((softlimit is not None) and (hardlimit is not None)) :
-                            pqentry.setLimits(softlimit, hardlimit)
-                            
-                        if increase :
-                            newsoft = (pqentry.SoftLimit or 0) + increase         
-                            newhard = (pqentry.HardLimit or 0) + increase         
-                            if (newsoft >= 0) and (newhard >= 0) :
-                                pqentry.setLimits(newsoft, newhard)
-                            else :    
-                                self.printInfo(_("You can't set negative limits."), "error")
-                        
-                        if options["reset"] :
-                            pqentry.reset()
-                            
-                        if options["hardreset"] :    
-                            pqentry.hardreset()
-                            
-                        if not options["groups"] :
-                            if used :
-                                pqentry.setUsage(used)
-                        
+                        self.modifyPQEntry(pqkey, pqentry, noquota, \
+                                                    softlimit, hardlimit, \
+                                                    increase, reset, \
+                                                    hardreset, suffix, used)
                         oldpqentry = getattr(self.storage, "add%sPQuota" % suffix)(pqentry)
                         if oldpqentry is not None :    
                             if skipexisting :
-                                self.printInfo(_("%s print quota entry %s@%s already exists, skipping.") % (suffix, ename, pname))
+                                self.logdebug("%s print quota entry %s@%s already exists, skipping." % (suffix, ename, pname))
                             else :    
-                                self.printInfo(_("%s print quota entry %s@%s already exists, will be modified.") % (suffix, ename, pname))
-                                pqentries.append(oldpqentry)
+                                self.logdebug("%s print quota entry %s@%s already exists, will be modified." % (suffix, ename, pname))
+                                self.modifyPQEntry(pqkey, oldpqentry, noquota, \
+                                                    softlimit, hardlimit, \
+                                                    increase, reset, \
+                                                    hardreset, suffix, used)
+                                oldpqentry.save()                    
                         i += 1
                         percent = 100.0 * float(i) / float(nbtotal)
                         self.display("\r%.02f%%" % percent)
-                self.display("\r100.00%%\r        \r%s" % _("Done."))
-            else :    
-                for printer in printers :
-                    for entry in entries :
-                        pqentries.append(getattr(self.storage, "get%sPQuota" % suffix)(entry, printer))
-                if not pqentries :        
-                    raise PyKotaCommandLineError, _("There's no %s print quota entry matching %s") % (suffix.lower(), " ".join(names))
-                    
-            if options["list"] :
-                for pqentry in pqentries :
-                    if pqentry.Exists :
-                        print "%s@%s" % (getattr(pqentry, suffix).Name, pqentry.Printer.Name)
-                        print "    %s" % (_("Page counter : %s") % pqentry.PageCounter)
-                        print "    %s" % (_("Lifetime page counter : %s") % pqentry.LifePageCounter)
-                        print "    %s" % (_("Soft limit : %s") % pqentry.SoftLimit)
-                        print "    %s" % (_("Hard limit : %s") % pqentry.HardLimit)
-                        print "    %s" % (_("Date limit : %s") % pqentry.DateLimit)
-                        print "    %s (Not supported yet)" % (_("Maximum job size : %s") % ((pqentry.MaxJobSize and (_("%s pages") % pqentry.MaxJobSize)) or _("Unlimited")))
-                        if hasattr(pqentry, "WarnCount") :
-                            print "    %s" % (_("Warning banners printed : %s") % pqentry.WarnCount)
-                        print
-            else :
-                self.display("\n")
-                nbtotal = len(pqentries)    
+            else :        
+                nbtotal = len(entries) * len(printers)
                 if nbtotal :
                     self.display("%s...\n" % _("Modification"))
                     i = 0
-                    for pqentry in pqentries :
-                        ename = getattr(pqentry, suffix).Name
-                        pname = pqentry.Printer.Name
-                        if pqentry.Exists :     
-                            if noquota or ((softlimit is not None) and (hardlimit is not None)) :
-                                pqentry.setLimits(softlimit, hardlimit)
-                                
-                            if increase :
-                                newsoft = (pqentry.SoftLimit or 0) + increase         
-                                newhard = (pqentry.HardLimit or 0) + increase         
-                                if (newsoft >= 0) and (newhard >= 0) :
-                                    pqentry.setLimits(newsoft, newhard)
-                                else :    
-                                    self.printInfo(_("You can't set negative limits for %s@%s") % (ename, pname), "error")
-                            
-                            if options["reset"] :
-                                pqentry.reset()
-                                
-                            if options["hardreset"] :    
-                                pqentry.hardreset()
-                                
-                            if not options["groups"] :
-                                if used :
-                                    pqentry.setUsage(used)
-                                    
-                            pqentry.save()        
-                        i += 1            
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
-                    self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+                    for printer in printers :
+                        for entry in entries :
+                            pqkey = "%s@%s" % (entry.Name, printer.Name)
+                            pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                            if pqentry.Exists :     
+                                self.modifyPQEntry(pqkey, pqentry, noquota, \
+                                                    softlimit, hardlimit, \
+                                                    increase, reset, \
+                                                    hardreset, suffix, used)
+                                pqentry.save()        
+                            i += 1            
+                            percent = 100.0 * float(i) / float(nbtotal)
+                            self.display("\r%.02f%%" % percent)
+            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
                      
 if __name__ == "__main__" : 
     retcode = 0
