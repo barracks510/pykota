@@ -101,7 +101,7 @@ options :
                        Only meaningful if -b | --balance is also used.
                        
                        
-  -r | --remove        In combination with the --groups option above,                       
+  -r | --remove        In combination with the --ingroups option above,                       
                        remove users from the specified users groups.
                        
   -s | --skipexisting  In combination with the --add option above, tells
