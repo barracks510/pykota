@@ -298,11 +298,21 @@ class PyKotaConfig :
         try :
             action = self.getPrinterOption(printername, "onbackenderror")
         except PyKotaConfigError :    
-            return "NOCHARGE"
+            return ["NOCHARGE"]
         else :    
-            action = action.upper()
-            if action not in validactions :
-                raise PyKotaConfigError, _("Option onbackenderror in section %s only supports values in %s") % (printername, str(validactions))
+            action = action.upper().split(",")
+            error = False
+            for act in action :
+                if act not in validactions :
+                    if act.startswith("RETRY:") :
+                        try :
+                            (num, delay) = [int(p) for p in act[6:].split(":", 2)]
+                        except ValueError :    
+                            error = True
+                    else :        
+                        error = True
+            if error :
+                raise PyKotaConfigError, _("Option onbackenderror in section %s only supports values 'charge', 'nocharge', and 'retry:num:delay'") % printername
             return action  
             
     def getPrinterOnAccounterError(self, printername) :    

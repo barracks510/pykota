@@ -326,14 +326,27 @@ privacy : no
 
 # When the real CUPS backend fail, should we modify the
 # user's page counters and account balance or not ?
+# Also should we retry and if yes then how often and how many times ?
 # If you trust your users, set it to "nocharge".
 # If you think they found some mean to kill the real CUPS backend, 
 # then set it to "charge".
+# If your print queues get regularly disabled by CUPS when the printers
+# are switched off, you might want to set it to "retry:N:S" where
+# N is the number of times the operation should be retried, and S is
+# the delay in seconds during which PyKota will sleep before trying again.
+# If N is 0, PyKota will retry indefinitely each S seconds until the
+# backend succeeds, so you should use this with caution. If N is 0,
+# of course neither "charge" nor "nocharge" will be honored.
+# You can combine "charge" or "nocharge" with "retry:N:S" if you want,
+# by separating the values with a comma as shown in the examples below.
 # If unset, the default value is "nocharge", meaning that users won't be
 # charged whenever a CUPS backend fails. This is the OPPOSITE
 # behavior compared to PyKota versions prior to 1.24alpha2.
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
+# onbackenderror : charge,retry:5:60
+# onbackenderror : retry:0:300
+# onbackenderror : retry:3:300,nocharge
 # onbackenderror : charge
 onbackenderror : nocharge
 

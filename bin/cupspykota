@@ -26,6 +26,7 @@
 
 import sys
 import os
+import time
 import errno
 import tempfile
 import popen2
@@ -1017,7 +1018,7 @@ class CUPSBackend(PyKotaTool) :
                 # has to know that the real CUPS backend failed.
                 self.Action = "PROBLEM"
                 self.exportReason()
-                if onbackenderror == "NOCHARGE" :
+                if "NOCHARGE" in onbackenderror :
                     self.JobSize = 0
                     self.printInfo(_("Job size forced to 0 because the real CUPS backend failed. No accounting will be done."), "warn")
                 else :    
@@ -1032,13 +1033,13 @@ class CUPSBackend(PyKotaTool) :
                 self.printInfo(_("Job size forced to 0 because printing was cancelled."))
             else :    
                 self.UserPQuota.resetDenyBannerCounter()
-                if (self.Action != "PROBLEM") or (onbackenderror == "CHARGE") : 
+                if (self.Action != "PROBLEM") or ("CHARGE" in onbackenderror) : 
                     self.JobSize = self.accounter.getJobSize(self.Printer)
                     self.sanitizeJobSize()
                     self.JobSize += self.BannerSize
             self.printInfo(_("Job size : %i") % self.JobSize)
             
-            if ((self.Action == "PROBLEM") and (onbackenderror == "NOCHARGE")) or \
+            if ((self.Action == "PROBLEM") and ("NOCHARGE" in onbackenderror)) or \
                 (self.Action in ("DENY", "CANCEL")) :
                 self.JobPrice = 0.0
             elif (self.User.LimitBy == "nochange") or self.Printer.PassThrough :
@@ -1060,7 +1061,7 @@ class CUPSBackend(PyKotaTool) :
             
             if hasattr(self, "BillingCode") and self.BillingCode and self.BillingCode.Exists :
                 if (self.Action in ("ALLOW", "WARN")) or \
-                   ((self.Action == "PROBLEM") and (onbackenderror == "CHARGE")) :
+                   ((self.Action == "PROBLEM") and ("CHARGE" in onbackenderror)) :
                     self.BillingCode.consume(self.JobSize, self.JobPrice)
                     self.printInfo(_("Billing code %s was updated.") % self.BillingCode.BillingCode)
         except :    
@@ -1086,13 +1087,40 @@ class CUPSBackend(PyKotaTool) :
     def printJobDatas(self) :           
         """Sends the job's datas to the real backend."""
         self.logdebug("Sending job's datas to real backend...")
-        if self.InputFile is None :
-            infile = open(self.DataFile, "rb")
-        else :    
-            infile = None
-        retcode = self.runOriginalBackend(infile)
-        if self.InputFile is None :
-            infile.close()
+        
+        delay = 0
+        number = 1
+        for onb in self.config.getPrinterOnBackendError(self.PrinterName) :
+            if onb.startswith("RETRY:") :
+                try :
+                    (number, delay) = [int(p) for p in onb[6:].split(":", 2)]
+                    if (number < 0) or (delay < 0) :
+                        raise ValueError
+                except ValueError :    
+                    self.printInfo(_("Incorrect value for the 'onbackenderror' directive in section [%s]") % self.PrinterName, "error")
+                    delay = 0
+                    number = 1
+                else :    
+                    break
+        loopcnt = 1 
+        while True :            
+            if self.InputFile is None :
+                infile = open(self.DataFile, "rb")
+            else :    
+                infile = None
+            retcode = self.runOriginalBackend(infile)
+            if self.InputFile is None :
+                infile.close()
+            if not retcode :
+                break
+            else :
+                if (not number) or (loopcnt < number) :
+                    self.logdebug(_("The real backend produced an error, we will try again in %s seconds.") % delay)
+                    time.sleep(delay)
+                    loopcnt += 1
+                else :    
+                    break
+            
         self.logdebug("Job's datas sent to real backend.")
         return retcode
         

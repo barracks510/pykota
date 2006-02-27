@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha15 :
+    
+        - Extended the functionnality of the 'onbackenderror' directive to
+          allow for configurable retries.
+          
     - 1.24alpha14 :
     
         - Finished optimizations in edpykota and fixed some minor
