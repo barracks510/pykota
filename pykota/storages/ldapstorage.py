@@ -1461,6 +1461,26 @@ class Storage(BaseStorage) :
             else :    
                 self.doDelete(group.ident)
                 
+    def deleteManyBillingCodesFromNames(self, billingcodes) :        
+        """Deletes many billing codes from their names."""
+        for bcode in self.getMatchingBillingCodes(",".join(billingcodes)) :
+            bcode.delete()
+        
+    def deleteManyUsersFromNames(self, usernames) :        
+        """Deletes many users from their names."""
+        for user in self.getMatchingUsers(",".join(usernames)) : 
+            user.delete()
+            
+    def deleteManyGroupsFromNames(self, groupnames) :        
+        """Deletes many groups from their names."""
+        for group in self.getMatchingGroups(",".join(groupnames)) : 
+            group.delete()
+        
+    def deleteManyPrintersFromNames(self, printernames) :        
+        """Deletes many printers from their names."""
+        for printer in self.getMatchingPrinters(",".join(printernames)) :
+            printer.delete()
+        
     def deleteManyUserPQuotas(self, printers, users) :        
         """Deletes many user print quota entries."""
         # TODO : grab all with a single (possibly VERY huge) filter if possible (might depend on the LDAP server !)

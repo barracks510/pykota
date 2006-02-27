@@ -800,27 +800,61 @@ class SQLStorage :
                   ] :
             self.doModify(q)
             
+    def deleteInTransaction(self, queries) :        
+        """Does many deletions in a single transaction."""
+        self.beginTransaction()
+        try :
+            for q in queries :
+                self.doModify(q)
+        except :    
+            self.rollbackTransaction()
+            raise
+        else :    
+            self.commitTransaction()
+            
+    def deleteManyBillingCodesFromNames(self, billingcodes) :        
+        """Deletes many billing codes from their names."""
+        codelabels = ", ".join(["%s" % self.doQuote(b) for b in billingcodes])
+        self.deleteInTransaction([ 
+                    "DELETE FROM billingcodes WHERE billingcode IN (%s)" % codelabels,])
+            
+    def deleteManyUsersFromNames(self, usernames) :        
+        """Deletes many users from their names."""
+        usernames = ", ".join(["%s" % self.doQuote(u) for u in usernames])
+        self.deleteInTransaction([ 
+                    "DELETE FROM payments WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
+                    "DELETE FROM groupsmembers WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
+                    "DELETE FROM jobhistory WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
+                    "DELETE FROM userpquota WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
+                    "DELETE FROM users WHERE username IN %s" % usernames,])
+        
+    def deleteManyPrintersFromNames(self, printernames) :        
+        """Deletes many printers from their names."""
+        printernames = ", ".join(["%s" % self.doQuote(p) for p in printernames])
+        self.deleteInTransaction([ 
+                    "DELETE FROM printergroupsmembers WHERE groupid=%s OR printerid=%s" % (self.doQuote(printer.ident), self.doQuote(printer.ident)),
+                    "DELETE FROM jobhistory WHERE printerid=%s" % self.doQuote(printer.ident),
+                    "DELETE FROM grouppquota WHERE printerid=%s" % self.doQuote(printer.ident),
+                    "DELETE FROM userpquota WHERE printerid=%s" % self.doQuote(printer.ident),
+                    "DELETE FROM printers WHERE id=%s" % self.doQuote(printer.ident),])
+        
     def deleteManyUserPQuotas(self, printers, users) :        
         """Deletes many user print quota entries."""
         printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
         userids = ", ".join(["%s" % self.doQuote(u.ident) for u in users])
-        for q in [ 
+        self.deleteInTransaction([ 
                     "DELETE FROM jobhistory WHERE userid IN (%s) AND printerid IN (%s)" \
                                  % (userids, printerids),
                     "DELETE FROM userpquota WHERE userid IN (%s) AND printerid IN (%s)" \
-                                 % (userids, printerids),
-                  ] :
-            self.doModify(q)
+                                 % (userids, printerids),])
             
     def deleteManyGroupPQuotas(self, printers, groups) :
         """Deletes many group print quota entries."""
         printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
         groupids = ", ".join(["%s" % self.doQuote(g.ident) for g in groups])
-        for q in [ 
+        self.deleteInTransaction([ 
                     "DELETE FROM grouppquota WHERE groupid IN (%s) AND printerid IN (%s)" \
-                                 % (groupids, printerids),
-                  ] :
-            self.doModify(q)
+                                 % (groupids, printerids),])
         
     def deleteUserPQuota(self, upquota) :    
         """Completely deletes an user print quota entry from the database."""
