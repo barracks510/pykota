@@ -179,11 +179,15 @@ class EdPyKota(PyKotaTool) :
                 raise PyKotaCommandLineError, "%s : %s" % (username, _("You're not allowed to use this command."))
             else :
                 names = [ username ]
-                
+                if options["groups"] :
+                    user = self.storage.getUser(username)
+                    if user.Exists :
+                        names = [ g.Name for g in self.storage.getUserGroups(user) ]
+        elif not names :        
+            names = ["*"]
+            
         suffix = (options["groups"] and "Group") or "User"        
         printernames = options["printer"].split(",")
-        if not names :
-            names = ["*"]
             
         if not options["list"] :
             self.display(_("Extracting datas..."))
