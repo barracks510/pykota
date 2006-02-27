@@ -159,9 +159,7 @@ class PKUsers(PyKotaTool) :
     """A class for a users and users groups manager."""
     def main(self, names, options) :
         """Manage users or groups."""
-        if not self.config.isAdmin :
-            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
-            
+        names = self.sanitizeNames(options, names)
         suffix = (options["groups"] and "Group") or "User"        
         
         if options["delete"] :    
@@ -229,8 +227,6 @@ class PKUsers(PyKotaTool) :
                     self.display("\r%.02f%%" % percent)
                 self.display("\r100.00%%\r        \r%s\n" % _("Done."))
             else :        
-                if not names :
-                    names = ["*"]
                 entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
                 if not entries :
                     raise PyKotaCommandLineError, _("There's no %s matching %s") % (suffix.lower(), " ".join(names))
@@ -406,7 +402,7 @@ if __name__ == "__main__" :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif options["remove"] and not options["ingroups"] :    
             raise PyKotaCommandLineError, _("You have to pass user groups names on the command line")
-        elif (not args) and options["add"] :
+        elif (not args) and (options["add"] or options["delete"]) :
             raise PyKotaCommandLineError, _("You have to pass user or group names on the command line")
         else :
             retcode = manager.main(args, options)

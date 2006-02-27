@@ -22,9 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 PyKota NEWS :
        
     - 1.24alpha15 :
-    
-        - edpykota --list is now authorized to mere mortal users, but
-          restricts the list to the current user's information.
+        
+        - 'edpykota --list' and 'pkusers --list' are now authorized 
+          to mere mortal users, but the list is restricted to informations
+          about the current user.
         
         - Extended the functionnality of the 'onbackenderror' directive to
           allow for configurable retries.
