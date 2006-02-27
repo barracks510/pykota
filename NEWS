@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.24alpha15 :
     
+        - edpykota --list is now authorized to mere mortal users, but
+          restricts the list to the current user's information.
+        
         - Extended the functionnality of the 'onbackenderror' directive to
           allow for configurable retries.
           

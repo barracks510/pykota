@@ -174,8 +174,12 @@ class EdPyKota(PyKotaTool) :
     def main(self, names, options) :
         """Edit user or group quotas."""
         if not self.config.isAdmin :
-            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
-        
+            username = pwd.getpwuid(os.geteuid())[0]
+            if not options["list"] :
+                raise PyKotaCommandLineError, "%s : %s" % (username, _("You're not allowed to use this command."))
+            else :
+                names = [ username ]
+                
         suffix = (options["groups"] and "Group") or "User"        
         printernames = options["printer"].split(",")
         if not names :
