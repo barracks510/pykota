@@ -581,8 +581,8 @@ class SQLStorage :
                                  self.doQuote(upq.HardLimit), \
                                  self.doQuote(upq.WarnCount), \
                                  self.doQuote(upq.DateLimit), \
-                                 self.doQuote(upq.PageCounter), \
-                                 self.doQuote(upq.LifePageCounter), \
+                                 self.doQuote(upq.PageCounter or 0), \
+                                 self.doQuote(upq.LifePageCounter or 0), \
                                  self.doQuote(upq.MaxJobSize)))
         except PyKotaStorageError :                         
             # TODO : check if this is an error different from a duplicate insert
@@ -653,8 +653,8 @@ class SQLStorage :
     def saveBillingCode(self, code) :    
         """Saves the billing code to the database."""
         self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s, description=%s WHERE id=%s" \
-                            % (self.doQuote(code.Balance), \
-                               self.doQuote(code.PageCounter), \
+                            % (self.doQuote(code.Balance or 0.0), \
+                               self.doQuote(code.PageCounter or 0), \
                                self.doQuote(self.userCharsetToDatabase(code.Description)), \
                                self.doQuote(code.ident)))
        
@@ -699,8 +699,8 @@ class SQLStorage :
                                  self.doQuote(userpquota.HardLimit), \
                                  self.doQuote(userpquota.WarnCount), \
                                  self.doQuote(userpquota.DateLimit), \
-                                 self.doQuote(userpquota.PageCounter), \
-                                 self.doQuote(userpquota.LifePageCounter), \
+                                 self.doQuote(userpquota.PageCounter or 0), \
+                                 self.doQuote(userpquota.LifePageCounter or 0), \
                                  self.doQuote(userpquota.MaxJobSize), \
                                  self.doQuote(userpquota.ident)))
         
