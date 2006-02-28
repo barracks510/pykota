@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
-    - 1.24alpha15 :
+    - 1.24alpha15 (2006-03-01) :
         
         - optimized pkbcodes using edpykota as the model.
         
