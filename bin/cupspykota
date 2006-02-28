@@ -751,7 +751,8 @@ class CUPSBackend(PyKotaTool) :
                 (newaction, script) = self.config.getUnknownBillingCode(self.PrinterName)
                 if newaction == "CREATE" :
                     self.logdebug(msg + "will be created.")
-                    self.BillingCode = self.storage.addBillingCode(self.JobBillingCode)
+                    self.storage.addBillingCode(self.BillingCode)
+                    self.BillingCode = self.storage.getBillingCode(self.JobBillingCode)
                     if self.BillingCode.Exists :
                         self.logdebug(msg + "has been created.")
                     else :    
