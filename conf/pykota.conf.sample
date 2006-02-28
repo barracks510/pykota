@@ -334,6 +334,10 @@ privacy : no
 # are switched off, you might want to set it to "retry:N:S" where
 # N is the number of times the operation should be retried, and S is
 # the delay in seconds during which PyKota will sleep before trying again.
+# This 'retry' feature works in a way similar to Till Kamppeter's beh
+# backend wrapper which offers this functionnality but is actually not 
+# compatible with PyKota (because of my own inability to master regular
+# expressions).
 # If N is 0, PyKota will retry indefinitely each S seconds until the
 # backend succeeds, so you should use this with caution. If N is 0,
 # of course neither "charge" nor "nocharge" will be honored.
