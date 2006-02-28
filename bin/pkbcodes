@@ -29,6 +29,7 @@ import sys
 import pwd
 
 from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.storage import StorageBillingCode
 
 __doc__ = N_("""pkbcodes v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -83,51 +84,54 @@ examples :
         
 class PKBcodes(PyKotaTool) :        
     """A class for a billing codes manager."""
+    def modifyBillingCode(self, billingcode, reset, description) :
+        """Modifies a billing code."""
+        if reset :
+            billingcode.reset()    
+        if description is not None : # NB : "" is allowed !
+            billingcode.setDescription(description)
+        
     def main(self, names, options) :
         """Manage billing codes."""
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
+        if not options["add"] :
+            if not options["list"] :
+                self.display(_("Extracting datas..."))
+            if not names :      # NB : can't happen for --delete because it's catched earlier
+                names = ["*"]
+            billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
+            if not billingcodes :
+                raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
+                        
+        reset = options["reset"]
+        description = options["description"]
+        if description :
+            description = options["description"].strip()
+                
         if options["delete"] :    
-            self.display("%s...\n" % _("Deletion"))
-            todelete = self.storage.getMatchingBillingCodes(",".join(names))
-            nbtotal = len(todelete)
+            self.display("\n%s..." % _("Deletion"))
+            self.storage.deleteManyBillingCodes(billingcodes)
+            self.display("\n")
+        elif options["add"] :    
+            self.display("%s...\n" % _("Creation"))
+            nbtotal = len(names)
             for i in range(nbtotal) :
-                entry = todelete[i]
-                if entry.Exists :
-                    entry.delete()
+                bname = names[i]
+                billingcode = StorageBillingCode(self.storage, bname)
+                self.modifyBillingCode(billingcode, reset, description)
+                oldbillingcode = self.storage.addBillingCode(billingcode)
+                if oldbillingcode is not None :
+                    if options["skipexisting"] :
+                        self.printInfo(_("Billing code [%s] already exists, skipping.") % bname)
+                    else :    
+                        self.printInfo(_("Billing code [%s] already exists, will be modified.") % bname)
+                        self.modifyBillingCode(oldbillingcode, reset, description)
+                        oldbillingcode.save()
                 percent = 100.0 * float(i) / float(nbtotal)
                 self.display("\r%.02f%%" % percent)
-        else :
-            if options["add"] :    
-                self.display("%s...\n" % _("Creation"))
-                billingcodes = []
-                nbtotal = len(names)
-                for i in range(nbtotal) :
-                    bname = names[i]
-                    billingcode = self.storage.getBillingCode(bname)
-                    if billingcode.Exists :
-                        if options["skipexisting"] :
-                            self.printInfo(_("Billing code [%s] already exists, skipping.") % billingcode.BillingCode)
-                        else :    
-                            self.printInfo(_("Billing code [%s] already exists, will be modified.") % billingcode.BillingCode)
-                            billingcodes.append(billingcode)
-                    else :
-                        billingcode = self.storage.addBillingCode(bname)
-                        if not billingcode.Exists :
-                            raise PyKotaToolError, _("Impossible to add billingcode %s") % bname
-                        else :     
-                            billingcodes.append(billingcode)
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
-                self.display("\r100.00%%\r        \r%s\n" % _("Done."))
-            else :        
-                if not names :
-                    names = ["*"]
-                billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
-                if not billingcodes :
-                    raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
-                        
+        else :        
             if options["list"] :
                 for billingcode in billingcodes :
                     if billingcode.Exists :
@@ -139,24 +143,17 @@ class PKBcodes(PyKotaTool) :
                            billingcode.Balance, \
                            _("credits"))
             else :               
-                self.display("%s...\n" % _("Modification"))
-                reset = options["reset"]
-                if reset or options["description"] : # optimize when nothing to do
-                    if options["description"] :
-                        description = options["description"].strip()
-                    nbtotal = len(billingcodes)            
-                    for i in range(nbtotal) :        
-                        billingcode = billingcodes[i]
-                        if reset :
-                            billingcode.reset()    
-                        if description is not None : # NB : "" is allowed !
-                            billingcode.setDescription(description)
-                        billingcode.save()    
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
-                        
+                self.display("\n%s...\n" % _("Modification"))
+                nbtotal = len(billingcodes)            
+                for i in range(nbtotal) :        
+                    billingcode = billingcodes[i]
+                    self.modifyBillingCode(billingcode, reset, description)
+                    billingcode.save()    
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+                    
         if not options["list"] :                
-            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+            self.done()
                      
 if __name__ == "__main__" : 
     retcode = 0

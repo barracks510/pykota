@@ -200,6 +200,10 @@ class Tool :
             sys.stdout.write(message)
             sys.stdout.flush()
             
+    def done(self) :    
+        """Displays the 'done' message."""
+        self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+        
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
         if self.debug :

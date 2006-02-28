@@ -1461,24 +1461,24 @@ class Storage(BaseStorage) :
             else :    
                 self.doDelete(group.ident)
                 
-    def deleteManyBillingCodesFromNames(self, billingcodes) :        
-        """Deletes many billing codes from their names."""
-        for bcode in self.getMatchingBillingCodes(",".join(billingcodes)) :
+    def deleteManyBillingCodes(self, billingcodes) :
+        """Deletes many billing codes."""
+        for bcode in billingcodes :
             bcode.delete()
         
-    def deleteManyUsersFromNames(self, usernames) :        
-        """Deletes many users from their names."""
-        for user in self.getMatchingUsers(",".join(usernames)) : 
+    def deleteManyUsers(self, users) :        
+        """Deletes many users."""
+        for user in users :
             user.delete()
             
-    def deleteManyGroupsFromNames(self, groupnames) :        
-        """Deletes many groups from their names."""
-        for group in self.getMatchingGroups(",".join(groupnames)) : 
+    def deleteManyGroups(self, groups) :        
+        """Deletes many groups."""
+        for group in groups :
             group.delete()
         
-    def deleteManyPrintersFromNames(self, printernames) :        
-        """Deletes many printers from their names."""
-        for printer in self.getMatchingPrinters(",".join(printernames)) :
+    def deleteManyPrinters(self, printers) :        
+        """Deletes many printers."""
+        for printer in printers :
             printer.delete()
         
     def deleteManyUserPQuotas(self, printers, users) :        
@@ -1700,27 +1700,32 @@ class Storage(BaseStorage) :
             code.Exists = 1
         return code    
         
-    def addBillingCode(self, label) :
+    def addBillingCode(self, bcode) :
         """Adds a billing code to the quota storage, returns it."""
+        oldentry = self.getBillingCode(bcode.BillingCode)
+        if oldentry.Exists :
+            return oldentry # we return the existing entry
         uuid = self.genUUID()
         dn = "cn=%s,%s" % (uuid, self.info["billingcodebase"])
         fields = { "objectClass" : ["pykotaObject", "pykotaBilling"],
                    "cn" : uuid,
-                   "pykotaBillingCode" : self.userCharsetToDatabase(label),
-                   "pykotaPageCounter" : "0",
-                   "pykotaBalance" : "0.0",
+                   "pykotaBillingCode" : self.userCharsetToDatabase(bcode.BillingCode),
+                   "pykotaPageCounter" : str(bcode.PageCounter or 0),
+                   "pykotaBalance" : str(bcode.Balance or 0.0),
+                   "description" : self.userCharsetToDatabase(bcode.Description or ""), 
                  } 
         self.doAdd(dn, fields)
-        return self.getBillingCode(label)
+        bcode.isDirty = False
+        return None # the entry created doesn't need further modification
         
-    def saveBillingCode(self, code) :
+    def saveBillingCode(self, bcode) :
         """Sets the new description for a billing code."""
         fields = {
-                   "description" : self.userCharsetToDatabase(code.Description or ""), 
-                   "pykotaPageCounter" : str(code.PageCounter),
-                   "pykotaBalance" : str(code.Balance),
+                   "description" : self.userCharsetToDatabase(bcode.Description or ""), 
+                   "pykotaPageCounter" : str(bcode.PageCounter or 0),
+                   "pykotaBalance" : str(bcode.Balance or 0.0),
                  }
-        self.doModify(code.ident, fields)
+        self.doModify(bcode.ident, fields)
             
     def getMatchingBillingCodes(self, billingcodepattern) :
         """Returns the list of all billing codes which match a certain pattern."""
@@ -1743,11 +1748,11 @@ class Storage(BaseStorage) :
                     self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
         
-    def consumeBillingCode(self, code, pagecounter, balance) :
+    def consumeBillingCode(self, bcode, pagecounter, balance) :
         """Consumes from a billing code."""
         fields = {
                    "pykotaBalance" : { "operator" : "-", "value" : balance, "convert" : float },
                    "pykotaPageCounter" : { "operator" : "+", "value" : pagecounter, "convert" : int },
                  }
-        return self.doModify(code.ident, fields)         
+        return self.doModify(bcode.ident, fields)         
 

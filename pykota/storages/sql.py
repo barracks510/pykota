@@ -531,10 +531,21 @@ class SQLStorage :
         self.doModify("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(self.userCharsetToDatabase(printername)))
         return self.getPrinter(printername)
         
-    def addBillingCode(self, label) :        
-        """Adds a billing code to the quota storage, returns it."""
-        self.doModify("INSERT INTO billingcodes (billingcode) VALUES (%s)" % self.doQuote(self.userCharsetToDatabase(label)))
-        return self.getBillingCode(label)
+    def addBillingCode(self, bcode) :
+        """Adds a billing code to the quota storage, returns the old value if it already exists."""
+        try :
+            self.doModify("INSERT INTO billingcodes (billingcode, balance, pagecounter, description) VALUES (%s, %s, %s, %s)" \
+                               % (self.doQuote(self.userCharsetToDatabase(bcode.BillingCode)), 
+                                  self.doQuote(bcode.Balance or 0.0), \
+                                  self.doQuote(bcode.PageCounter or 0), \
+                                  self.doQuote(self.userCharsetToDatabase(bcode.Description))))
+        except PyKotaStorageError :    
+            # TODO : check if this is an error different from a duplicate insert
+            # return the existing entry which has to be modified
+            return self.getBillingCode(bcode.BillingCode)
+        else :    
+            bcode.isDirty = False
+            return None # the entry created doesn't need further modification
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns it."""
@@ -650,17 +661,17 @@ class SQLStorage :
         """Increase page counters for a user print quota."""
         self.doModify("UPDATE userpquota SET pagecounter=pagecounter + %s,lifepagecounter=lifepagecounter + %s WHERE id=%s" % (self.doQuote(nbpages), self.doQuote(nbpages), self.doQuote(userpquota.ident)))
        
-    def saveBillingCode(self, code) :    
+    def saveBillingCode(self, bcode) :    
         """Saves the billing code to the database."""
         self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s, description=%s WHERE id=%s" \
-                            % (self.doQuote(code.Balance or 0.0), \
-                               self.doQuote(code.PageCounter or 0), \
-                               self.doQuote(self.userCharsetToDatabase(code.Description)), \
-                               self.doQuote(code.ident)))
+                            % (self.doQuote(bcode.Balance or 0.0), \
+                               self.doQuote(bcode.PageCounter or 0), \
+                               self.doQuote(self.userCharsetToDatabase(bcode.Description)), \
+                               self.doQuote(bcode.ident)))
        
-    def consumeBillingCode(self, code, pagecounter, balance) :
+    def consumeBillingCode(self, bcode, pagecounter, balance) :
         """Consumes from a billing code."""
-        self.doModify("UPDATE billingcodes SET balance=balance + %s, pagecounter=pagecounter + %s WHERE id=%s" % (self.doQuote(balance), self.doQuote(pagecounter), self.doQuote(code.ident)))
+        self.doModify("UPDATE billingcodes SET balance=balance + %s, pagecounter=pagecounter + %s WHERE id=%s" % (self.doQuote(balance), self.doQuote(pagecounter), self.doQuote(bcode.ident)))
        
     def decreaseUserAccountBalance(self, user, amount) :    
         """Decreases user's account balance from an amount."""
@@ -812,31 +823,39 @@ class SQLStorage :
         else :    
             self.commitTransaction()
             
-    def deleteManyBillingCodesFromNames(self, billingcodes) :        
-        """Deletes many billing codes from their names."""
-        codelabels = ", ".join(["%s" % self.doQuote(b) for b in billingcodes])
+    def deleteManyBillingCodes(self, billingcodes) :        
+        """Deletes many billing codes."""
+        codeids = ", ".join(["%s" % self.doQuote(b.ident) for b in billingcodes])
         self.deleteInTransaction([ 
-                    "DELETE FROM billingcodes WHERE billingcode IN (%s)" % codelabels,])
+                    "DELETE FROM billingcodes WHERE id IN (%s)" % codeids,])
             
-    def deleteManyUsersFromNames(self, usernames) :        
-        """Deletes many users from their names."""
-        usernames = ", ".join(["%s" % self.doQuote(u) for u in usernames])
+    def deleteManyUsers(self, users) :        
+        """Deletes many users."""
+        userids = ", ".join(["%s" % self.doQuote(u.ident) for u in users])
         self.deleteInTransaction([ 
-                    "DELETE FROM payments WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
-                    "DELETE FROM groupsmembers WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
-                    "DELETE FROM jobhistory WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
-                    "DELETE FROM userpquota WHERE userid IN (SELECT id FROM users WHERE username IN %s)" % usernames,
-                    "DELETE FROM users WHERE username IN %s" % usernames,])
+                    "DELETE FROM payments WHERE userid IN (%s)" % userids,
+                    "DELETE FROM groupsmembers WHERE userid IN (%s)" % userids,
+                    "DELETE FROM jobhistory WHERE userid IN (%s)" % userids,
+                    "DELETE FROM userpquota WHERE userid IN (%s)" % userids,
+                    "DELETE FROM users WHERE id IN (%s)" % userids,])
+                    
+    def deleteManyGroups(self, groups) :        
+        """Deletes many groups."""
+        groupids = ", ".join(["%s" % self.doQuote(g.ident) for g in groups])
+        self.deleteInTransaction([ 
+                    "DELETE FROM groupsmembers WHERE groupid IN (%s)" % groupids,
+                    "DELETE FROM grouppquota WHERE groupid IN (%s)" % groupids,
+                    "DELETE FROM groups WHERE id IN (%s)" % groupids,])
         
-    def deleteManyPrintersFromNames(self, printernames) :        
-        """Deletes many printers from their names."""
-        printernames = ", ".join(["%s" % self.doQuote(p) for p in printernames])
+    def deleteManyPrinters(self, printers) :
+        """Deletes many printers."""
+        printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
         self.deleteInTransaction([ 
-                    "DELETE FROM printergroupsmembers WHERE groupid=%s OR printerid=%s" % (self.doQuote(printer.ident), self.doQuote(printer.ident)),
-                    "DELETE FROM jobhistory WHERE printerid=%s" % self.doQuote(printer.ident),
-                    "DELETE FROM grouppquota WHERE printerid=%s" % self.doQuote(printer.ident),
-                    "DELETE FROM userpquota WHERE printerid=%s" % self.doQuote(printer.ident),
-                    "DELETE FROM printers WHERE id=%s" % self.doQuote(printer.ident),])
+                    "DELETE FROM printergroupsmembers WHERE groupid IN (%s) OR printerid IN (%s)" % printerids,
+                    "DELETE FROM jobhistory WHERE printerid IN (%s)" % printerids,
+                    "DELETE FROM grouppquota WHERE printerid IN (%s)" % printerids,
+                    "DELETE FROM userpquota WHERE printerid IN (%s)" % printerids,
+                    "DELETE FROM printers WHERE id IN (%s)" % printerids,])
         
     def deleteManyUserPQuotas(self, printers, users) :        
         """Deletes many user print quota entries."""

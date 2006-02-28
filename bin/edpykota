@@ -184,7 +184,7 @@ class EdPyKota(PyKotaTool) :
             self.display("\n%s..." % _("Deletion"))
             getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
             self.display("\n")
-            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+            self.done()
         elif options["list"] :
             for printer in printers :
                 for entry in entries :
@@ -304,8 +304,7 @@ class EdPyKota(PyKotaTool) :
                             i += 1            
                             percent = 100.0 * float(i) / float(nbtotal)
                             self.display("\r%.02f%%" % percent)
-            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
-                     
+            self.done()         
 if __name__ == "__main__" : 
     retcode = 0
     try :

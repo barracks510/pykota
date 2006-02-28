@@ -225,7 +225,7 @@ class PKUsers(PyKotaTool) :
                                 
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
-                self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+                self.done()
             else :        
                 entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
                 if not entries :
@@ -352,7 +352,7 @@ class PKUsers(PyKotaTool) :
                     self.display("\r%.02f%%" % percent)
                                 
         if not options["list"] :                
-            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+            self.done()
                      
 if __name__ == "__main__" : 
     retcode = 0
