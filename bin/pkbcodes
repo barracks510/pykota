@@ -134,9 +134,9 @@ class PKBcodes(PyKotaTool) :
                     oldbillingcode = self.storage.addBillingCode(billingcode)
                     if oldbillingcode is not None :
                         if skipexisting :
-                            self.printInfo(_("Billing code [%s] already exists, skipping.") % bname)
+                            self.logdebug(_("Billing code [%s] already exists, skipping.") % bname)
                         else :    
-                            self.printInfo(_("Billing code [%s] already exists, will be modified.") % bname)
+                            self.logdebug(_("Billing code [%s] already exists, will be modified.") % bname)
                             self.modifyBillingCode(oldbillingcode, reset, description)
                             oldbillingcode.save()
                     percent = 100.0 * float(i) / float(nbtotal)

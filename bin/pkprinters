@@ -226,9 +226,9 @@ class PKPrinters(PyKotaTool) :
                         oldprinter = self.storage.addPrinter(printer)               
                         if oldprinter is not None :
                             if skipexisting :
-                                self.printInfo(_("Printer %s already exists, skipping.") % pname)
+                                self.logdebug(_("Printer %s already exists, skipping.") % pname)
                             else :    
-                                self.printInfo(_("Printer %s already exists, will be modified.") % pname)
+                                self.logdebug(_("Printer %s already exists, will be modified.") % pname)
                                 self.modifyPrinter(oldprinter, charges, \
                                            perpage, perjob, description, \
                                            passthrough, nopassthrough, \
