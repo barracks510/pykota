@@ -124,32 +124,40 @@ class PKBcodes(PyKotaTool) :
             if description :
                 description = options["description"].strip()
             skipexisting = options["skipexisting"]        
-            if options["add"] :    
-                self.display("%s...\n" % _("Creation"))
-                nbtotal = len(names)
-                for i in range(nbtotal) :
-                    bname = names[i]
-                    billingcode = StorageBillingCode(self.storage, bname)
-                    self.modifyBillingCode(billingcode, reset, description)
-                    oldbillingcode = self.storage.addBillingCode(billingcode)
-                    if oldbillingcode is not None :
-                        if skipexisting :
-                            self.logdebug(_("Billing code [%s] already exists, skipping.") % bname)
-                        else :    
-                            self.logdebug(_("Billing code [%s] already exists, will be modified.") % bname)
-                            self.modifyBillingCode(oldbillingcode, reset, description)
-                            oldbillingcode.save()
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
-            else :        
-                self.display("\n%s...\n" % _("Modification"))
-                nbtotal = len(billingcodes)            
-                for i in range(nbtotal) :        
-                    billingcode = billingcodes[i]
-                    self.modifyBillingCode(billingcode, reset, description)
-                    billingcode.save()    
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
+            
+            self.storage.beginTransaction()
+            try :
+                if options["add"] :    
+                    self.display("%s...\n" % _("Creation"))
+                    nbtotal = len(names)
+                    for i in range(nbtotal) :
+                        bname = names[i]
+                        billingcode = StorageBillingCode(self.storage, bname)
+                        self.modifyBillingCode(billingcode, reset, description)
+                        oldbillingcode = self.storage.addBillingCode(billingcode)
+                        if oldbillingcode is not None :
+                            if skipexisting :
+                                self.logdebug(_("Billing code [%s] already exists, skipping.") % bname)
+                            else :    
+                                self.logdebug(_("Billing code [%s] already exists, will be modified.") % bname)
+                                self.modifyBillingCode(oldbillingcode, reset, description)
+                                oldbillingcode.save()
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+                else :        
+                    self.display("\n%s...\n" % _("Modification"))
+                    nbtotal = len(billingcodes)            
+                    for i in range(nbtotal) :        
+                        billingcode = billingcodes[i]
+                        self.modifyBillingCode(billingcode, reset, description)
+                        billingcode.save()    
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+            except :                    
+                self.storage.rollbackTransaction()
+                raise
+            else :    
+                self.storage.commitTransaction()
                         
         if not options["list"] :                
             self.done()

@@ -213,49 +213,55 @@ class PKPrinters(PyKotaTool) :
             passthrough = options["passthrough"]
             remove = options["remove"]
             skipexisting = options["skipexisting"]
-            if options["add"] :    
-                self.display("%s...\n" % _("Creation"))
-                nbtotal = len(names)
-                for i in range(nbtotal) :
-                    pname = names[i]
-                    if self.isValidName(pname) :
-                        printer = StoragePrinter(self.storage, pname)
-                        self.modifyPrinter(printer, charges, perpage, perjob,\
-                                       description, passthrough, \
-                                       nopassthrough, maxjobsize)
-                        oldprinter = self.storage.addPrinter(printer)               
-                        if oldprinter is not None :
-                            if skipexisting :
-                                self.logdebug(_("Printer %s already exists, skipping.") % pname)
-                            else :    
-                                self.logdebug(_("Printer %s already exists, will be modified.") % pname)
-                                self.modifyPrinter(oldprinter, charges, \
-                                           perpage, perjob, description, \
-                                           passthrough, nopassthrough, \
-                                           maxjobsize)
-                                oldprinter.save()           
-                                self.managePrintersGroups(printersgroups, oldprinter, remove)
-                        elif printersgroups :        
-                            self.managePrintersGroups(printersgroups, \
-                                                      self.storage.getPrinter(pname), \
-                                                      remove)
-                    else :    
-                        raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
-            else :        
-                self.display("\n%s...\n" % _("Modification"))
-                nbtotal = len(printers)
-                for i in range(nbtotal) :        
-                    printer = printers[i]
-                    self.modifyPrinter(printer, charges, perpage, perjob, \
-                                       description, passthrough, \
-                                       nopassthrough, maxjobsize)
-                    printer.save()    
-                    self.managePrintersGroups(printersgroups, printer, remove)
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
-                                
+            self.storage.beginTransaction()
+            try :
+                if options["add"] :    
+                    self.display("%s...\n" % _("Creation"))
+                    nbtotal = len(names)
+                    for i in range(nbtotal) :
+                        pname = names[i]
+                        if self.isValidName(pname) :
+                            printer = StoragePrinter(self.storage, pname)
+                            self.modifyPrinter(printer, charges, perpage, perjob,\
+                                           description, passthrough, \
+                                           nopassthrough, maxjobsize)
+                            oldprinter = self.storage.addPrinter(printer)               
+                            if oldprinter is not None :
+                                if skipexisting :
+                                    self.logdebug(_("Printer %s already exists, skipping.") % pname)
+                                else :    
+                                    self.logdebug(_("Printer %s already exists, will be modified.") % pname)
+                                    self.modifyPrinter(oldprinter, charges, \
+                                               perpage, perjob, description, \
+                                               passthrough, nopassthrough, \
+                                               maxjobsize)
+                                    oldprinter.save()           
+                                    self.managePrintersGroups(printersgroups, oldprinter, remove)
+                            elif printersgroups :        
+                                self.managePrintersGroups(printersgroups, \
+                                                          self.storage.getPrinter(pname), \
+                                                          remove)
+                        else :    
+                            raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+                else :        
+                    self.display("\n%s...\n" % _("Modification"))
+                    nbtotal = len(printers)
+                    for i in range(nbtotal) :        
+                        printer = printers[i]
+                        self.modifyPrinter(printer, charges, perpage, perjob, \
+                                           description, passthrough, \
+                                           nopassthrough, maxjobsize)
+                        printer.save()    
+                        self.managePrintersGroups(printersgroups, printer, remove)
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+            except :                    
+                self.storage.rollbackTransaction()
+                raise
+            else :    
+                self.storage.commitTransaction()
         if not options["list"] :                
             self.done()
                      
