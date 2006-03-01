@@ -526,10 +526,23 @@ class SQLStorage :
                     groupsandquotas.append((group, grouppquota))
         return groupsandquotas
         
-    def addPrinter(self, printername) :        
-        """Adds a printer to the quota storage, returns it."""
-        self.doModify("INSERT INTO printers (printername) VALUES (%s)" % self.doQuote(self.userCharsetToDatabase(printername)))
-        return self.getPrinter(printername)
+    def addPrinter(self, printer) :        
+        """Adds a printer to the quota storage, returns the old value if it already exists."""
+        try :
+            self.doModify("INSERT INTO printers (printername, passthrough, maxjobsize, description, priceperpage, priceperjob) VALUES (%s, %s, %s, %s, %s, %s)" \
+                              % (self.doQuote(self.userCharsetToDatabase(printer.Name)), \
+                                 self.doQuote((printer.PassThrough and "t") or "f"), \
+                                 self.doQuote(printer.MaxJobSize or 0), \
+                                 self.doQuote(self.userCharsetToDatabase(printer.Description)), \
+                                 self.doQuote(printer.PricePerPage or 0.0), \
+                                 self.doQuote(printer.PricePerJob or 0.0)))
+        except PyKotaStorageError :    
+            # TODO : check if this is an error different from a duplicate insert
+            # return the existing entry which has to be modified
+            return self.getPrinter(printer.Name)
+        else :    
+            printer.isDirty = False
+            return None # the entry created doesn't need further modification
         
     def addBillingCode(self, bcode) :
         """Adds a billing code to the quota storage, returns the old value if it already exists."""
@@ -625,10 +638,10 @@ class SQLStorage :
         """Saves the printer to the database in a single operation."""
         self.doModify("UPDATE printers SET passthrough=%s, maxjobsize=%s, description=%s, priceperpage=%s, priceperjob=%s WHERE id=%s" \
                               % (self.doQuote((printer.PassThrough and "t") or "f"), \
-                                 self.doQuote(printer.MaxJobSize), \
+                                 self.doQuote(printer.MaxJobSize or 0), \
                                  self.doQuote(self.userCharsetToDatabase(printer.Description)), \
-                                 self.doQuote(printer.PricePerPage), \
-                                 self.doQuote(printer.PricePerJob), \
+                                 self.doQuote(printer.PricePerPage or 0.0), \
+                                 self.doQuote(printer.PricePerJob or 0.0), \
                                  self.doQuote(printer.ident)))
                                  
     def saveUser(self, user) :        
@@ -851,7 +864,7 @@ class SQLStorage :
         """Deletes many printers."""
         printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
         self.deleteInTransaction([ 
-                    "DELETE FROM printergroupsmembers WHERE groupid IN (%s) OR printerid IN (%s)" % printerids,
+                    "DELETE FROM printergroupsmembers WHERE groupid IN (%s) OR printerid IN (%s)" % (printerids, printerids),
                     "DELETE FROM jobhistory WHERE printerid IN (%s)" % printerids,
                     "DELETE FROM grouppquota WHERE printerid IN (%s)" % printerids,
                     "DELETE FROM userpquota WHERE printerid IN (%s)" % printerids,

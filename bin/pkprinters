@@ -29,6 +29,7 @@ import sys
 import pwd
 
 from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.storage import StoragePrinter
 
 __doc__ = N_("""pkprinters v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -123,128 +124,140 @@ examples :
         
 class PKPrinters(PyKotaTool) :        
     """A class for a printers manager."""
+    def modifyPrinter(self, printer, charges, perpage, perjob, description, passthrough, nopassthrough, maxjobsize) :
+        if charges :
+            printer.setPrices(perpage, perjob)    
+        if description is not None :        # NB : "" is allowed !
+            printer.setDescription(description)
+        if nopassthrough :    
+            printer.setPassThrough(False)
+        if passthrough :    
+            printer.setPassThrough(True)
+        if maxjobsize is not None :
+            printer.setMaxJobSize(maxjobsize)
+            
+    def managePrintersGroups(self, pgroups, printer, remove) :        
+        """Manage printer group membership."""
+        for pgroup in pgroups :
+            if remove :
+                pgroup.delPrinterFromGroup(printer)
+            else :
+                pgroup.addPrinterToGroup(printer)    
+                
     def main(self, names, options) :
         """Manage printers."""
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
-        if options["delete"] :    
-            self.display("%s...\n" % _("Deletion"))
-            todelete = self.storage.getMatchingPrinters(",".join(names))
-            nbtotal = len(todelete)
-            for i in range(nbtotal) :
-                entry = todelete[i]
-                if entry.Exists :
-                    entry.delete()
-                percent = 100.0 * float(i) / float(nbtotal)
-                self.display("\r%.02f%%" % percent)
+        if not options["add"] :
+            if not options["list"] :
+                self.display(_("Extracting datas..."))
+            if not names :      # NB : can't happen for --delete because it's catched earlier
+                names = ["*"]
+            printers = self.storage.getMatchingPrinters(",".join(names))
+            if not printers :
+                raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
+                
+        if options["list"] :
+            for printer in printers :
+                parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
+                print "%s [%s] (%s + #*%s)" % \
+                      (printer.Name, printer.Description, printer.PricePerJob, \
+                       printer.PricePerPage)
+                print "    %s" % (_("Passthrough mode : %s") % ((printer.PassThrough and _("ON")) or _("OFF")))
+                print "    %s" % (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited")))
+                if parents : 
+                    print "    %s %s" % (_("in"), parents)
+                print    
+        elif options["delete"] :    
+            self.display("\n%s..." % _("Deletion"))
+            self.storage.deleteManyPrinters(printers)
+            self.display("\n")
         else :
+            if options["groups"] :        
+                printersgroups = self.storage.getMatchingPrinters(options["groups"])
+                if not printersgroups :
+                    raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
+            else :         
+                printersgroups = []
+                    
+            if options["charge"] :
+                try :
+                    charges = [float(part) for part in options["charge"].split(',', 1)]
+                except ValueError :    
+                    raise PyKotaCommandLineError, _("Invalid charge amount value %s") % options["charge"]
+                else :    
+                    if len(charges) > 2 :
+                        charges = charges[:2]
+                    if len(charges) != 2 :
+                        charges = [charges[0], None]
+                    (perpage, perjob) = charges
+            else :        
+                charges = perpage = perjob = None
+                    
+            if options["maxjobsize"] :        
+                try :
+                    maxjobsize = int(options["maxjobsize"])
+                    if maxjobsize < 0 :
+                        raise ValueError
+                except ValueError :    
+                    raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options["maxjobsize"]
+            else :        
+                maxjobsize = None
+                    
+            description = options["description"]
+            if description :
+                description = description.strip()
+                
+            nopassthrough = options["nopassthrough"]    
+            passthrough = options["passthrough"]
+            remove = options["remove"]
+            skipexisting = options["skipexisting"]
             if options["add"] :    
                 self.display("%s...\n" % _("Creation"))
-                printers = []
                 nbtotal = len(names)
                 for i in range(nbtotal) :
                     pname = names[i]
-                    printer = self.storage.getPrinter(pname)
-                    if printer.Exists :
-                        if options["skipexisting"] :
-                            self.printInfo(_("Printer %s already exists, skipping.") % printer.Name)
-                        else :    
-                            self.printInfo(_("Printer %s already exists, will be modified.") % printer.Name)
-                            printers.append(printer)
-                    else :
-                        if self.isValidName(pname) :
-                            printer = self.storage.addPrinter(pname)
-                            if not printer.Exists :
-                                raise PyKotaToolError, _("Impossible to add printer %s") % pname
+                    if self.isValidName(pname) :
+                        printer = StoragePrinter(self.storage, pname)
+                        self.modifyPrinter(printer, charges, perpage, perjob,\
+                                       description, passthrough, \
+                                       nopassthrough, maxjobsize)
+                        oldprinter = self.storage.addPrinter(printer)               
+                        if oldprinter is not None :
+                            if skipexisting :
+                                self.printInfo(_("Printer %s already exists, skipping.") % pname)
                             else :    
-                                printers.append(printer)
-                        else :    
-                            raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
+                                self.printInfo(_("Printer %s already exists, will be modified.") % pname)
+                                self.modifyPrinter(oldprinter, charges, \
+                                           perpage, perjob, description, \
+                                           passthrough, nopassthrough, \
+                                           maxjobsize)
+                                oldprinter.save()           
+                                self.managePrintersGroups(printersgroups, oldprinter, remove)
+                        elif printersgroups :        
+                            self.managePrintersGroups(printersgroups, \
+                                                      self.storage.getPrinter(pname), \
+                                                      remove)
+                    else :    
+                        raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
-                self.display("\r100.00%%\r        \r%s\n" % _("Done."))
             else :        
-                if not names :
-                    names = ["*"]
-                printers = self.storage.getMatchingPrinters(",".join(names))
-                if not printers :
-                    raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
-                        
-            if options["list"] :
-                for printer in printers :
-                    if printer.Exists :
-                        parents = ", ".join([p.Name for p in self.storage.getParentPrinters(printer)])
-                        print "%s [%s] (%s + #*%s)" % \
-                              (printer.Name, printer.Description, printer.PricePerJob, \
-                               printer.PricePerPage)
-                        print "    %s" % (_("Passthrough mode : %s") % ((printer.PassThrough and _("ON")) or _("OFF")))
-                        print "    %s" % (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited")))
-                        if parents : 
-                            print "    %s %s" % (_("in"), parents)
-                        print    
-            else :
-                self.display("%s...\n" % _("Modification"))
-                
-                if options["groups"] :        
-                    printersgroups = self.storage.getMatchingPrinters(options["groups"])
-                    if not printersgroups :
-                        raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(options["groups"].split(','))
-                else :         
-                    printersgroups = []
-                        
-                if options["charge"] :
-                    try :
-                        charges = [float(part) for part in options["charge"].split(',', 1)]
-                    except ValueError :    
-                        raise PyKotaCommandLineError, _("Invalid charge amount value %s") % options["charge"]
-                    else :    
-                        if len(charges) > 2 :
-                            charges = charges[:2]
-                        if len(charges) != 2 :
-                            charges = [charges[0], None]
-                        (perpage, perjob) = charges
-                        
-                if options["maxjobsize"] :        
-                    try :
-                        maxjobsize = int(options["maxjobsize"])
-                        if maxjobsize < 0 :
-                            raise ValueError
-                    except ValueError :    
-                        raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options["maxjobsize"]
-                else :        
-                    maxjobsize = None
-                        
-                description = options["description"]
-                if description :
-                    description = description.strip()
-                    
-                nopassthrough = options["nopassthrough"]    
-                passthrough = options["passthrough"]
+                self.display("\n%s...\n" % _("Modification"))
                 nbtotal = len(printers)
                 for i in range(nbtotal) :        
                     printer = printers[i]
-                    if options["charge"] :
-                        printer.setPrices(perpage, perjob)    
-                    if description is not None :        # NB : "" is allowed !
-                        printer.setDescription(description)
-                    if nopassthrough and printer.PassThrough :    
-                        printer.setPassThrough(False)
-                    if passthrough and not printer.PassThrough :    
-                        printer.setPassThrough(True)
-                    if (maxjobsize is not None) and (printer.MaxJobSize != maxjobsize) :    
-                        printer.setMaxJobSize(maxjobsize)
+                    self.modifyPrinter(printer, charges, perpage, perjob, \
+                                       description, passthrough, \
+                                       nopassthrough, maxjobsize)
                     printer.save()    
-                    for pgroup in printersgroups :
-                        if options["remove"] :
-                            pgroup.delPrinterFromGroup(printer)
-                        else :
-                            pgroup.addPrinterToGroup(printer)    
+                    self.managePrintersGroups(printersgroups, printer, remove)
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
                                 
         if not options["list"] :                
-            self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+            self.done()
                      
 if __name__ == "__main__" : 
     retcode = 0
@@ -284,11 +297,12 @@ if __name__ == "__main__" :
         elif (options["delete"] and (options["add"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) \
            or (options["skipexisting"] and not options["add"]) \
            or (options["list"] and (options["add"] or options["delete"] or options["groups"] or options["charge"] or options["remove"] or options["description"])) \
-           or (options["passthrough"] and options["nopassthrough"]) :
+           or (options["passthrough"] and options["nopassthrough"]) \
+           or (options["remove"] and options["add"]) :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
-        elif options["remove"] and not options["groups"] :    
+        elif options["remove"] and not options["groups"] :
             raise PyKotaCommandLineError, _("You have to pass printer groups names on the command line")
-        elif (not args) and (not options["list"]) :    
+        elif (not args) and (options["add"] or options["delete"]) :
             raise PyKotaCommandLineError, _("You have to pass printer names on the command line")
         else :
             retcode = manager.main(args, options)

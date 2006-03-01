@@ -886,21 +886,26 @@ class Storage(BaseStorage) :
         groupsandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
         return groupsandquotas
         
-    def addPrinter(self, printername) :        
-        """Adds a printer to the quota storage, returns it."""
-        printername = self.userCharsetToDatabase(printername)
+    def addPrinter(self, printer) :
+        """Adds a printer to the quota storage, returns the old value if it already exists."""
+        oldentry = self.getPrinter(printer.Name)
+        if oldentry.Exists :
+            return oldentry # we return the existing entry
+        printername = self.userCharsetToDatabase(printer.Name)
         fields = { self.info["printerrdn"] : printername,
                    "objectClass" : ["pykotaObject", "pykotaPrinter"],
                    "cn" : printername,
                    "pykotaPrinterName" : printername,
-                   "pykotaPricePerPage" : "0.0",
-                   "pykotaPricePerJob" : "0.0",
-                   "pykotaMaxJobSize" : "0",
-                   "pykotaPassThrough" : "0",
+                   "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
+                   "pykotaMaxJobSize" : str(printer.MaxJobSize or 0),
+                   "description" : self.userCharsetToDatabase(printer.Description or ""),
+                   "pykotaPricePerPage" : str(printer.PricePerPage or 0.0),
+                   "pykotaPricePerJob" : str(printer.PricePerJob or 0.0),
                  } 
         dn = "%s=%s,%s" % (self.info["printerrdn"], printername, self.info["printerbase"])
         self.doAdd(dn, fields)
-        return self.getPrinter(printername)
+        printer.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns it."""
@@ -1093,10 +1098,10 @@ class Storage(BaseStorage) :
         """Saves the printer to the database in a single operation."""
         fields = {
                    "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
-                   "pykotaMaxJobSize" : (printer.MaxJobSize and str(printer.MaxJobSize)) or "0",
+                   "pykotaMaxJobSize" : str(printer.MaxJobSize or 0),
                    "description" : self.userCharsetToDatabase(printer.Description or ""),
-                   "pykotaPricePerPage" : str(printer.PricePerPage),
-                   "pykotaPricePerJob" : str(printer.PricePerJob),
+                   "pykotaPricePerPage" : str(printer.PricePerPage or 0.0),
+                   "pykotaPricePerJob" : str(printer.PricePerJob or 0.0),
                  }
         self.doModify(printer.ident, fields)
         

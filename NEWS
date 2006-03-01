@@ -23,7 +23,7 @@ PyKota NEWS :
        
     - 1.24alpha15 (2006-03-01) :
         
-        - optimized pkbcodes using edpykota as the model.
+        - optimized pkbcodes and pkprinters using edpykota as the model.
         
         - 'edpykota --list' and 'pkusers --list' are now authorized 
           to mere mortal users, but the list is restricted to informations

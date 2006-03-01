@@ -105,44 +105,43 @@ class PKBcodes(PyKotaTool) :
             if not billingcodes :
                 raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
                         
-        reset = options["reset"]
-        description = options["description"]
-        if description :
-            description = options["description"].strip()
-                
-        if options["delete"] :    
+        if options["list"] :
+            for billingcode in billingcodes :
+                print "%s [%s] %s %s %s %.2f %s" % \
+                      (billingcode.BillingCode, billingcode.Description, \
+                       billingcode.PageCounter, \
+                       _("pages"), \
+                       _("and"), \
+                       billingcode.Balance, \
+                       _("credits"))
+        elif options["delete"] :    
             self.display("\n%s..." % _("Deletion"))
             self.storage.deleteManyBillingCodes(billingcodes)
             self.display("\n")
-        elif options["add"] :    
-            self.display("%s...\n" % _("Creation"))
-            nbtotal = len(names)
-            for i in range(nbtotal) :
-                bname = names[i]
-                billingcode = StorageBillingCode(self.storage, bname)
-                self.modifyBillingCode(billingcode, reset, description)
-                oldbillingcode = self.storage.addBillingCode(billingcode)
-                if oldbillingcode is not None :
-                    if options["skipexisting"] :
-                        self.printInfo(_("Billing code [%s] already exists, skipping.") % bname)
-                    else :    
-                        self.printInfo(_("Billing code [%s] already exists, will be modified.") % bname)
-                        self.modifyBillingCode(oldbillingcode, reset, description)
-                        oldbillingcode.save()
-                percent = 100.0 * float(i) / float(nbtotal)
-                self.display("\r%.02f%%" % percent)
-        else :        
-            if options["list"] :
-                for billingcode in billingcodes :
-                    if billingcode.Exists :
-                        print "%s [%s] %s %s %s %.2f %s" % \
-                          (billingcode.BillingCode, billingcode.Description, \
-                           billingcode.PageCounter, \
-                           _("pages"), \
-                           _("and"), \
-                           billingcode.Balance, \
-                           _("credits"))
-            else :               
+        else :
+            reset = options["reset"]
+            description = options["description"]
+            if description :
+                description = options["description"].strip()
+            skipexisting = options["skipexisting"]        
+            if options["add"] :    
+                self.display("%s...\n" % _("Creation"))
+                nbtotal = len(names)
+                for i in range(nbtotal) :
+                    bname = names[i]
+                    billingcode = StorageBillingCode(self.storage, bname)
+                    self.modifyBillingCode(billingcode, reset, description)
+                    oldbillingcode = self.storage.addBillingCode(billingcode)
+                    if oldbillingcode is not None :
+                        if skipexisting :
+                            self.printInfo(_("Billing code [%s] already exists, skipping.") % bname)
+                        else :    
+                            self.printInfo(_("Billing code [%s] already exists, will be modified.") % bname)
+                            self.modifyBillingCode(oldbillingcode, reset, description)
+                            oldbillingcode.save()
+                    percent = 100.0 * float(i) / float(nbtotal)
+                    self.display("\r%.02f%%" % percent)
+            else :        
                 self.display("\n%s...\n" % _("Modification"))
                 nbtotal = len(billingcodes)            
                 for i in range(nbtotal) :        
@@ -151,7 +150,7 @@ class PKBcodes(PyKotaTool) :
                     billingcode.save()    
                     percent = 100.0 * float(i) / float(nbtotal)
                     self.display("\r%.02f%%" % percent)
-                    
+                        
         if not options["list"] :                
             self.done()
                      
