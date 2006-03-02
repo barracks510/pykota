@@ -1752,9 +1752,16 @@ class Storage(BaseStorage) :
                                 base=self.info["billingcodebase"])
         if result :
             patterns = billingcodepattern.split(",")
+            try :
+                patdict = {}.fromkeys(patterns)
+            except AttributeError :    
+                # Python v2.2 or earlier
+                patdict = {}
+                for p in patterns :
+                    patdict[p] = None
             for (codeid, fields) in result :
                 codename = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
-                if self.tool.matchString(codename, patterns) :
+                if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
                     code = StorageBillingCode(self, codename)
                     code.ident = codeid
                     code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
