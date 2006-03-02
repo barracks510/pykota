@@ -71,7 +71,7 @@ def createUsers(number) :
     sys.stdout.write("Adding %i users...\n" % number)
     usernames = [ "test-user-%05i" % i for i in range(number) ]
     argsfile = open("arguments.list", "w")
-    argsfile.write('--add\n--limitby\nbalance\n--balance\n50.0\n--description\n"an user"\n')
+    argsfile.write('--add\n--limitby\nbalance\n--balance\n50.0\n--description\n"an user"\n--comment\n"fake payment"\n')
     for uname in usernames :
         argsfile.write("%s\n" % uname)
     argsfile.close()    

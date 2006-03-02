@@ -908,7 +908,10 @@ class Storage(BaseStorage) :
         return None # the entry created doesn't need further modification
         
     def addUser(self, user) :        
-        """Adds a user to the quota storage, returns it."""
+        """Adds a user to the quota storage, returns the old value if it already exists."""
+        oldentry = self.getUser(user.Name)
+        if oldentry.Exists :
+            return oldentry # we return the existing entry
         uname = self.userCharsetToDatabase(user.Name)
         newfields = {
                        "pykotaUserName" : uname,
@@ -970,11 +973,19 @@ class Storage(BaseStorage) :
                          } 
                 dn = "%s=%s,%s" % (self.info["balancerdn"], uname, self.info["balancebase"])
                 self.doAdd(dn, fields)
-            
-        return self.getUser(user.Name)
+        user.idbalance = dn
+        if user.PaymentsBacklog :
+            for (value, comment) in user.PaymentsBacklog :
+                self.writeNewPayment(user, value, comment)
+            user.PaymentsBacklog = []
+        user.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addGroup(self, group) :        
-        """Adds a group to the quota storage, returns it."""
+        """Adds a group to the quota storage, returns the old value if it already exists."""
+        oldentry = self.getGroup(group.Name)
+        if oldentry.Exists :
+            return oldentry # we return the existing entry
         gname = self.userCharsetToDatabase(group.Name)
         newfields = { 
                       "pykotaGroupName" : gname,
@@ -1013,7 +1024,8 @@ class Storage(BaseStorage) :
             fields.update(newfields)         
             dn = "%s=%s,%s" % (self.info["grouprdn"], gname, self.info["groupbase"])
             self.doAdd(dn, fields)
-        return self.getGroup(group.Name)
+        group.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addUserToGroup(self, user, group) :    
         """Adds an user to a group."""

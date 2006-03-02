@@ -30,6 +30,7 @@ import pwd
 import grp
 
 from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.storage import StorageUser, StorageGroup
 
 __doc__ = N_("""pkusers v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -157,199 +158,214 @@ examples :
         
 class PKUsers(PyKotaTool) :        
     """A class for a users and users groups manager."""
+    def modifyEntry(self, entry, groups, limitby, description, overcharge=None, balance=None, balancevalue=None, comment=None, email=None) :
+        """Modifies an entry."""
+        if description is not None : # NB : "" is allowed !
+            entry.setDescription(description)
+        if limitby :    
+            entry.setLimitBy(limitby)
+        if not groups :
+            if email :
+                entry.Email = email
+            if overcharge is not None : # NB : 0 is allowed !     
+                entry.setOverChargeFactor(overcharge)
+            if balance :
+                if balance.startswith("+") or balance.startswith("-") :
+                    newbalance = float(entry.AccountBalance or 0.0) + balancevalue
+                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
+                    entry.setAccountBalance(newbalance, newlifetimepaid, comment)
+                else :
+                    diff = balancevalue - float(entry.AccountBalance or 0.0)
+                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
+                    entry.setAccountBalance(balancevalue, newlifetimepaid, comment)
+                    
+    def manageUsersGroups(self, ugroups, user, remove) :        
+        """Manage user group membership."""
+        for ugroup in ugroups :
+            if remove :
+                ugroup.delUserFromGroup(user)
+            else :
+                ugroup.addUserToGroup(user)
+                
     def main(self, names, options) :
         """Manage users or groups."""
         names = self.sanitizeNames(options, names)
         suffix = (options["groups"] and "Group") or "User"        
         
-        if options["delete"] :    
-            self.display("%s...\n" % _("Deletion"))
-            todelete = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-            nbtotal = len(todelete)
-            for i in range(nbtotal) :
-                entry = todelete[i]
-                if entry.Exists :
-                    entry.delete()
-                percent = 100.0 * float(i) / float(nbtotal)
-                self.display("\r%.02f%%" % percent)
-        else :
-            if options["add"] :    
-                self.display("%s...\n" % _("Creation"))
-                rejectunknown = self.config.getRejectUnknown()    
-                entries = []
-                nbtotal = len(names)
-                for i in range(nbtotal) :
-                    ename = names[i]
-                    email = ""
-                    if not options["groups"] :
-                        splitname = ename.split('/', 1)     # username/email
-                        if len(splitname) == 1 :
-                            splitname.append("")
-                        (ename, email) = splitname
-                        if email and (email.count('@') != 1) :
-                            self.printInfo(_("Invalid email address %s") % email)
-                            email = ""
-                    entry = getattr(self.storage, "get%s" % suffix)(ename)
-                    if entry.Exists :
-                        if options["skipexisting"] :
-                            self.printInfo(_("%s %s already exists, skipping.") % (suffix, entry.Name))
+        if not options["add"] :
+            if not options["list"] :
+                self.display(_("Extracting datas..."))
+            if not names :      # NB : can't happen for --delete because it's catched earlier
+                names = ["*"]
+            entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+            if not entries :
+                raise PyKotaCommandLineError, _("There's no %s matching %s") % (_(suffix.lower()), " ".join(names))
+                
+        if options["list"] :
+            if suffix == "User" :
+                maildomain = self.config.getMailDomain()
+                smtpserver = self.config.getSMTPServer()
+                for entry in entries :
+                    email = entry.Email
+                    if not email :
+                        if maildomain :     
+                            email = "%s@%s" % (entry.Name, maildomain)
+                        elif smtpserver :    
+                            email = "%s@%s" % (entry.Name, smtpserver)
                         else :    
-                            self.printInfo(_("%s %s already exists, will be modified.") % (suffix, entry.Name))
-                            entries.append(entry)
-                    else :
-                        if self.isValidName(entry.Name) :
+                            email = "%s@%s" % (entry.Name, "localhost")
+                    msg = "%s - <%s>" % (entry.Name, email)
+                    if entry.Description :
+                        msg += " - %s" % entry.Description
+                    print msg    
+                    print "    %s" % (_("Limited by : %s") % entry.LimitBy)
+                    print "    %s" % (_("Account balance : %.2f") % (entry.AccountBalance or 0.0))
+                    print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
+                    print "    %s" % (_("Overcharging factor : %.2f") % entry.OverCharge)
+                    print
+            else :    
+                for entry in entries :
+                    msg = "%s" % entry.Name
+                    if entry.Description :
+                        msg += " - %s" % entry.Description
+                    print msg    
+                    print "    %s" % (_("Limited by : %s") % entry.LimitBy)
+                    print "    %s" % (_("Group balance : %.2f") % (entry.AccountBalance or 0.0))
+                    print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
+                    print
+        elif options["delete"] :    
+            self.display("\n%s..." % _("Deletion"))
+            getattr(self.storage, "deleteMany%ss" % suffix)(entries)
+            self.display("\n")
+        else :
+            limitby = options["limitby"]
+            if limitby :
+                limitby = limitby.strip().lower()
+            if limitby :
+                if limitby not in ('quota', 'balance', 'noquota', \
+                                            'noprint', 'nochange') :
+                    raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
+                if (limitby in ('nochange', 'noprint')) and options["groups"] :    
+                    raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
+                
+            overcharge = options["overcharge"]
+            if overcharge :
+                try :
+                    overcharge = float(overcharge.strip())
+                except (ValueError, AttributeError) :    
+                    raise PyKotaCommandLineError, _("Invalid overcharge value %s") % options["overcharge"]
+                    
+            balance = options["balance"]
+            if balance :
+                balance = balance.strip()
+                try :
+                    balancevalue = float(balance)
+                except ValueError :    
+                    raise PyKotaCommandLineError, _("Invalid balance value %s") % options["balance"]
+                
+            if options["ingroups"] :
+                usersgroups = self.storage.getMatchingGroups(options["ingroups"])
+                if not usersgroups :
+                    raise PyKotaCommandLineError, _("There's no users group matching %s") % " ".join(options["ingroups"].split(','))
+            else :         
+                usersgroups = []
+                    
+            description = options["description"]
+            if description :
+                description = options["description"].strip()
+                
+            comment = options["comment"]
+            if comment :
+                comment = options["comment"].strip()
+            skipexisting = options["skipexisting"]    
+            groups = options["groups"]
+            remove = options["remove"]
+            self.storage.beginTransaction()
+            try :    
+                if options["add"] :    
+                    self.display("%s...\n" % _("Creation"))
+                    rejectunknown = self.config.getRejectUnknown()    
+                    nbtotal = len(names)
+                    for i in range(nbtotal) :
+                        ename = names[i]
+                        email = None
+                        if not groups :
+                            splitname = ename.split('/', 1)     # username/email
+                            if len(splitname) == 1 :
+                                splitname.append("")
+                            (ename, email) = splitname
+                            if email and (email.count('@') != 1) :
+                                raise PyKotaCommandLineError, _("Invalid email address %s") % email
+                        if self.isValidName(ename) :
                             reject = 0
                             if rejectunknown :
-                                if options["groups"] :
+                                if groups :
                                     try :
-                                        grp.getgrnam(entry.Name)
+                                        grp.getgrnam(ename)
                                     except KeyError :    
-                                        self.printInfo(_("Unknown group %s") % entry.Name, "error")
+                                        self.printInfo(_("Unknown group %s") % ename, "error")
                                         reject = 1
                                 else :    
                                     try :
-                                        pwd.getpwnam(entry.Name)
+                                        pwd.getpwnam(ename)
                                     except KeyError :    
-                                        self.printInfo(_("Unknown user %s") % entry.Name, "error")
+                                        self.printInfo(_("Unknown user %s") % ename, "error")
                                         reject = 1
                             if not reject :        
-                                if email :
-                                    entry.Email = email
-                                entry = getattr(self.storage, "add%s" % suffix)(entry)
-                                entries.append(entry)
-                        else :    
-                            if options["groups"] :
-                                self.printInfo(_("Invalid group name %s") % entry.Name)
-                            else :    
-                                self.printInfo(_("Invalid user name %s") % entry.Name)
-                                
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
-                self.done()
-            else :        
-                entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-                if not entries :
-                    raise PyKotaCommandLineError, _("There's no %s matching %s") % (suffix.lower(), " ".join(names))
-                        
-            if options["list"] :
-                if suffix == "User" :
-                    maildomain = self.config.getMailDomain()
-                    smtpserver = self.config.getSMTPServer()
-                    for entry in entries :
-                        if entry.Exists :
-                            email = entry.Email
-                            if not email :
-                                if maildomain :     
-                                    email = "%s@%s" % (entry.Name, maildomain)
-                                elif smtpserver :    
-                                    email = "%s@%s" % (entry.Name, smtpserver)
+                                entry = globals()["Storage%s" % suffix](self.storage, ename)
+                                if groups :
+                                    self.modifyEntry(entry, groups, limitby, \
+                                                     description)
                                 else :    
-                                    email = "%s@%s" % (entry.Name, "localhost")
-                            msg = "%s - <%s>" % (entry.Name, email)
-                            if entry.Description :
-                                msg += " - %s" % entry.Description
-                            print msg    
-                            print "    %s" % (_("Limited by : %s") % entry.LimitBy)
-                            print "    %s" % (_("Account balance : %.2f") % (entry.AccountBalance or 0.0))
-                            print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
-                            print "    %s" % (_("Overcharging factor : %.2f") % entry.OverCharge)
-                            print
-                else :    
-                    for entry in entries :
-                        if entry.Exists :
-                            msg = "%s" % entry.Name
-                            if entry.Description :
-                                msg += " - %s" % entry.Description
-                            print msg    
-                            print "    %s" % (_("Limited by : %s") % entry.LimitBy)
-                            print "    %s" % (_("Group balance : %.2f") % (entry.AccountBalance or 0.0))
-                            print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
-                            print
-            else :
-                self.display("%s...\n" % _("Modification"))
-                
-                limitby = options["limitby"]
-                if limitby :
-                    limitby = limitby.strip().lower()
-                if limitby :
-                    if limitby not in ('quota', 'balance', 'noquota', \
-                                                'noprint', 'nochange') :
-                        raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
-                    if (limitby in ('nochange', 'noprint')) and options["groups"] :    
-                        raise PyKotaCommandLineError, _("Invalid limitby value %s") % options["limitby"]
-                    
-                overcharge = options["overcharge"]
-                if overcharge :
-                    try :
-                        overcharge = float(overcharge.strip())
-                    except (ValueError, AttributeError) :    
-                        raise PyKotaCommandLineError, _("Invalid overcharge value %s") % options["overcharge"]
-                        
-                balance = options["balance"]
-                if balance :
-                    balance = balance.strip()
-                    try :
-                        balancevalue = float(balance)
-                    except ValueError :    
-                        raise PyKotaCommandLineError, _("Invalid balance value %s") % options["balance"]
-                    
-                if options["ingroups"] :
-                    usersgroups = self.storage.getMatchingGroups(options["ingroups"])
-                    if not usersgroups :
-                        raise PyKotaCommandLineError, _("There's no users group matching %s") % " ".join(options["ingroups"].split(','))
-                else :         
-                    usersgroups = []
-                        
-                description = options["description"]
-                if description :
-                    description = options["description"].strip()
-                    
-                comment = options["comment"]
-                if comment :
-                    comment = options["comment"].strip()
-                    
-                nbtotal = len(entries)
-                for i in range(nbtotal) :        
-                    entry = entries[i]
-                    
-                    # We need a transaction because we may have to create a record
-                    # in the payments' table at the same time we modify the user's balance.
-                    self.storage.beginTransaction()
-                    try :
-                        if description is not None : # NB : "" is allowed !
-                            entry.setDescription(description)
-                        if limitby :    
-                            entry.setLimitBy(limitby)
-                            
-                        if suffix == "User" :    
-                            if overcharge is not None : # NB : 0 is allowed !     
-                                entry.setOverChargeFactor(overcharge)
-                        
-                        if suffix == "User" :
-                            if balance :
-                                if balance.startswith("+") or balance.startswith("-") :
-                                    newbalance = float(entry.AccountBalance or 0.0) + balancevalue
-                                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + balancevalue
-                                    entry.setAccountBalance(newbalance, newlifetimepaid, comment)
-                                else :
-                                    diff = balancevalue - float(entry.AccountBalance or 0.0)
-                                    newlifetimepaid = float(entry.LifeTimePaid or 0.0) + diff
-                                    entry.setAccountBalance(balancevalue, newlifetimepaid, comment)
-                                            
-                            for ugroup in usersgroups :
-                                if options["remove"] :
-                                    ugroup.delUserFromGroup(entry)
-                                else :
-                                    ugroup.addUserToGroup(entry)
+                                    self.modifyEntry(entry, groups, limitby, \
+                                                     description, overcharge,\
+                                                     balance, balancevalue, \
+                                                     comment, email)
+                                oldentry = getattr(self.storage, "add%s" % suffix)(entry)
+                                if oldentry is not None :
+                                    if skipexisting :
+                                        self.printInfo(_("%s %s already exists, skipping.") % (_(suffix), ename))
+                                    else :    
+                                        self.printInfo(_("%s %s already exists, will be modified.") % (_(suffix), ename))
+                                        if groups :
+                                            self.modifyEntry(oldentry, groups, \
+                                                     limitby, description)
+                                        else :
+                                            self.modifyEntry(oldentry, groups, limitby, \
+                                                     description, overcharge,\
+                                                     balance, balancevalue, \
+                                                     comment, email)
+                                        oldentry.save()
+                                        if not groups :
+                                            self.manageUsersGroups(usersgroups, oldentry, remove)
+                                elif usersgroups and not groups :
+                                    self.manageUsersGroups(usersgroups, \
+                                                           self.storage.getUser(ename), \
+                                                           remove)
+                        else :
+                            raise PyKotaCommandLineError, _("Invalid name %s") % ename
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+                else :
+                    self.display("\n%s...\n" % _("Modification"))
+                    nbtotal = len(entries)
+                    for i in range(nbtotal) :        
+                        entry = entries[i]
+                        if groups :
+                            self.modifyEntry(entry, groups, limitby, description)
+                        else :    
+                            self.modifyEntry(entry, groups, limitby, description, \
+                                             overcharge, balance, balancevalue, \
+                                             comment)
+                            self.manageUsersGroups(usersgroups, entry, remove)                
                         entry.save()    
-                    except :
-                        self.storage.rollbackTransaction()
-                        raise
-                    else :    
-                        self.storage.commitTransaction()
-
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
+                        percent = 100.0 * float(i) / float(nbtotal)
+                        self.display("\r%.02f%%" % percent)
+            except :                    
+                self.storage.rollbackTransaction()
+                raise
+            else :    
+                self.storage.commitTransaction()
                                 
         if not options["list"] :                
             self.done()

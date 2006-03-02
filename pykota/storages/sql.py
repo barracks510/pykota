@@ -561,8 +561,9 @@ class SQLStorage :
             return None # the entry created doesn't need further modification
         
     def addUser(self, user) :        
-        """Adds a user to the quota storage, returns it."""
-        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
+        """Adds a user to the quota storage, returns the old value if it already exists."""
+        try :
+            self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
                                          (self.doQuote(self.userCharsetToDatabase(user.Name)), \
                                           self.doQuote(user.LimitBy or 'quota'), \
                                           self.doQuote(user.AccountBalance or 0.0), \
@@ -570,15 +571,32 @@ class SQLStorage :
                                           self.doQuote(user.Email), \
                                           self.doQuote(user.OverCharge), \
                                           self.doQuote(self.userCharsetToDatabase(user.Description))))
-        return self.getUser(user.Name)
+        except PyKotaStorageError :    
+            # TODO : check if this is an error different from a duplicate insert
+            # return the existing entry which has to be modified
+            return self.getUser(user.Name)
+        else :    
+            if user.PaymentsBacklog :
+                for (value, comment) in user.PaymentsBacklog :
+                    self.writeNewPayment(user, value, comment)
+                user.PaymentsBacklog = []
+            user.isDirty = False
+            return None # the entry created doesn't need further modification
         
     def addGroup(self, group) :        
-        """Adds a group to the quota storage, returns it."""
-        self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
-                                          (self.doQuote(self.userCharsetToDatabase(group.Name)), \
-                                           self.doQuote(group.LimitBy or "quota"), \
-                                           self.doQuote(self.userCharsetToDatabase(group.Description))))
-        return self.getGroup(group.Name)
+        """Adds a group to the quota storage, returns the old value if it already exists."""
+        try :
+            self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
+                                  (self.doQuote(self.userCharsetToDatabase(group.Name)), \
+                                   self.doQuote(group.LimitBy or "quota"), \
+                                   self.doQuote(self.userCharsetToDatabase(group.Description))))
+        except PyKotaStorageError :    
+            # TODO : check if this is an error different from a duplicate insert
+            # return the existing entry which has to be modified
+            return self.getGroup(group.Name)
+        else :    
+            group.isDirty = False
+            return None # the entry created doesn't need further modification
 
     def addUserToGroup(self, user, group) :    
         """Adds an user to a group."""
@@ -692,7 +710,10 @@ class SQLStorage :
        
     def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
-        self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))
+        if user.ident is not None :
+            self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))
+        else :    
+            self.doModify("INSERT INTO payments (userid, amount, description) VALUES ((SELECT id FROM users WHERE username=%s), %s, %s)" % (self.doQuote(self.userCharsetToDatabase(user.Name)), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))
         
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""

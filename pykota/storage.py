@@ -66,6 +66,7 @@ class StorageUser(StorageObject) :
         self.Email = None
         self.OverCharge = 1.0
         self.Payments = [] # TODO : maybe handle this smartly for SQL, for now just don't retrieve them
+        self.PaymentsBacklog = []
         
     def consumeAccountBalance(self, amount) :     
         """Consumes an amount of money from the user's account balance."""
@@ -77,8 +78,16 @@ class StorageUser(StorageObject) :
         diff = float(lifetimepaid or 0.0) - float(self.LifeTimePaid or 0.0)
         self.AccountBalance = balance
         self.LifeTimePaid = lifetimepaid
-        self.parent.writeNewPayment(self, diff, comment)
+        if diff :
+            self.PaymentsBacklog.append((diff, comment))
         self.isDirty = True
+        
+    def save(self) :    
+        """Saves an user and flush its payments backlog."""
+        for (value, comment) in self.PaymentsBacklog :
+            self.parent.writeNewPayment(self, value, comment)
+        self.PaymentsBacklog = []    
+        StorageObject.save(self)    
         
     def setLimitBy(self, limitby) :    
         """Sets the user's limiting factor."""

@@ -129,6 +129,7 @@ class Storage(BaseStorage, SQLStorage) :
             self.tool.logdebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
+            self.tool.logdebug("Query failed : %s" % repr(msg))
             raise PyKotaStorageError, str(msg)
         else :    
             after = time.time()
