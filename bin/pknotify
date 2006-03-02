@@ -1,0 +1,94 @@
+#! /usr/bin/env python
+# -*- coding: ISO-8859-15 -*-
+
+# A notifier for PyKota
+#
+# PyKota - Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005, 2006 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# $Id$
+#
+#
+
+import sys
+import os
+import popen2
+
+from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+
+__doc__ = N_("""pknotify v%(__version__)s (c) %(__years__)s %(__author__)s
+
+Notifies or ask questions to end users who launched the PyKotIcon application.
+
+command line usage :
+
+  pknotify  [options]  [arguments]
+
+options :
+
+  -v | --version       Prints pkbanner's version number then exits.
+  -h | --help          Prints this message then exits.
+  
+""")
+        
+class PyKotaNotify(Tool) :        
+    """A class for pknotify."""
+    def main(self, arguments, options) :
+        """Notifies or asks questions to end users through PyKotIcon."""
+        pass # TODO : do something !
+
+if __name__ == "__main__" :
+    retcode = 0
+    try :
+        defaults = { \
+                   }
+        short_options = "vh"
+        long_options = ["help", "version"]
+        
+        # Initializes the command line tool
+        notifier = PyKotaNotify(doc=__doc__)
+        notifier.deferredInit()
+        
+        # parse and checks the command line
+        (options, args) = notifier.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
+        
+        # sets long options
+        options["help"] = options["h"] or options["help"]
+        options["version"] = options["v"] or options["version"]
+        
+        if options["help"] :
+            notifier.display_usage_and_quit()
+        elif options["version"] :
+            notifier.display_version_and_quit()
+        else :
+            retcode = notifier.main(args, options)
+    except KeyboardInterrupt :        
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+        retcode = -3
+    except PyKotaCommandLineError, msg :    
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        retcode = -2
+    except SystemExit :        
+        pass
+    except :
+        try :
+            notifier.crashed("%s failed" % sys.argv[0])
+        except :    
+            crashed("%s failed" % sys.argv[0])
+        retcode = -1
+        
+    sys.exit(retcode)    
