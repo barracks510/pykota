@@ -262,6 +262,8 @@ class PKUsers(PyKotaTool) :
                     balancevalue = float(balance)
                 except ValueError :    
                     raise PyKotaCommandLineError, _("Invalid balance value %s") % options["balance"]
+            else :    
+                balancevalue = None
                 
             if options["ingroups"] :
                 usersgroups = self.storage.getMatchingGroups(options["ingroups"])
