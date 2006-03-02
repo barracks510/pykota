@@ -19,6 +19,62 @@ Prints pkbanner's version number then exits.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
 Prints this message then exits.
+.TP
+\fB\-d\fR | \fB\-\-destination\fR h[:p]
+Sets the destination hostname and optional
+port onto which contact the remote PyKotIcon
+application. This option is mandatory.
+When not specified, the port defaults to 7654.
+.TP
+\fB\-a\fR | \fB\-\-ask\fR
+Tells pknotify to ask something to the end
+user. Then pknotify will output the result.
+.TP
+\fB\-c\fR | \fB\-\-confirm\fR
+Tells pknotify to ask for either a confirmation
+or abortion.
+.TP
+\fB\-n\fR | \fB\-\-notify\fR
+Tells pknotify to send an informational message
+message to the end user.
+.TP
+\fB\-q\fR | \fB\-\-quit\fR
+Tells pknotify to send a message asking the
+PyKotIcon application to exit. This option can
+be combined with the other ones to make PyKotIcon
+exit after having sent the answer from the dialog.
+.IP
+You MUST specify either \fB\-\-ask\fR, \fB\-\-confirm\fR, \fB\-\-notify\fR or \fB\-\-quit\fR.
+.IP
+arguments :
+.HP
+\fB\-a\fR | \fB\-\-ask\fR : Several arguments are accepted, or the form
+.IP
+"label:varname:defaultvalue". The result will
+be printed to stdout in the following format :
+VAR1NAME=VAR1VALUE
+VAR2NAME=VAR2VALUE
+\&...
+If the dialog was cancelled, nothing will be
+printed. If one of the varname is 'password'
+then this field is asked as a password (you won't
+see what you type in).
+.TP
+\fB\-c\fR | \fB\-\-confirm\fR : A single argument is expected, representing the
+message to display. If the dialog is confirmed
+then pknotify will print OK, else CANCEL.
+.TP
+\fB\-n\fR | \fB\-\-notify\fR : A single argument is expected, representing the
+message to display. In this case pknotify will
+always print OK.
+.PP
+examples :
+.IP
+pknotify \fB\-d\fR client:7654 \fB\-\-confirm\fR "This job costs :
+.PP
+10 credits !"
+.IP
+would display the cost of a print job and asks for confirmation.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

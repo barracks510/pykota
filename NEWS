@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha16 (2006-03-02) :
+    
+        - Introduced the pknotify command line tool to dialog
+          with remote PyKotIcon applications.
+          
     - 1.24alpha15 (2006-03-02) :
         
         - optimized pkbcodes, pkprinters and pkusers using edpykota as 

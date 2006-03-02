@@ -27,6 +27,7 @@
 import sys
 import os
 import popen2
+import xmlrpclib
 
 from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
@@ -40,40 +41,135 @@ command line usage :
 
 options :
 
-  -v | --version       Prints pkbanner's version number then exits.
-  -h | --help          Prints this message then exits.
+  -v | --version             Prints pkbanner's version number then exits.
+  -h | --help                Prints this message then exits.
   
+  -d | --destination h[:p]   Sets the destination hostname and optional
+                             port onto which contact the remote PyKotIcon
+                             application. This option is mandatory.
+                             When not specified, the port defaults to 7654.
+                             
+  -a | --ask                 Tells pknotify to ask something to the end
+                             user. Then pknotify will output the result.
+                       
+  -c | --confirm             Tells pknotify to ask for either a confirmation                       
+                             or abortion.
+                             
+  -n | --notify              Tells pknotify to send an informational message
+                             message to the end user.
+                             
+  -q | --quit                Tells pknotify to send a message asking the
+                             PyKotIcon application to exit. This option can
+                             be combined with the other ones to make PyKotIcon
+                             exit after having sent the answer from the dialog.
+                             
+  You MUST specify either --ask, --confirm, --notify or --quit.
+
+  arguments :             
+  
+    -a | --ask : Several arguments are accepted, or the form
+                 "label:varname:defaultvalue". The result will
+                 be printed to stdout in the following format :
+                 VAR1NAME=VAR1VALUE
+                 VAR2NAME=VAR2VALUE
+                 ...
+                 If the dialog was cancelled, nothing will be 
+                 printed. If one of the varname is 'password'
+                 then this field is asked as a password (you won't
+                 see what you type in).
+                 
+    -c | --confirm : A single argument is expected, representing the
+                     message to display. If the dialog is confirmed
+                     then pknotify will print OK, else CANCEL.
+                     
+    -n | --notify : A single argument is expected, representing the                 
+                    message to display. In this case pknotify will
+                    always print OK.
+                    
+examples :                    
+
+  pknotify -d client:7654 --confirm "This job costs :\n10 credits !"
+  
+  would display the cost of a print job and asks for confirmation.
 """)
         
 class PyKotaNotify(Tool) :        
     """A class for pknotify."""
+    def sanitizeMessage(self, msg) :
+        """Replaces \\n and returns a messagee in xmlrpclib Binary format."""
+        return xmlrpclib.Binary(msg.replace("\\n", "\n"))
+        
     def main(self, arguments, options) :
         """Notifies or asks questions to end users through PyKotIcon."""
-        pass # TODO : do something !
-
+        try :
+            (destination, port) = options["destination"].split(":")
+        except ValueError :
+            destination = options["destination"]
+            port = 7654
+        server = xmlrpclib.ServerProxy("http://%s:%s" % (destination, port))
+        if options["ask"] :
+            labels = []
+            varnames = []
+            varvalues = {}
+            for arg in arguments :
+                try :
+                    (label, varname, varvalue) = arg.split(":", 2)
+                except ValueError :    
+                    raise PyKotaCommandLineError, "argument '%s' is invalid !" % arg
+                labels.append(self.sanitizeMessage(label))
+                varname = varname.lower()
+                varnames.append(varname)
+                varvalues[varname] = self.sanitizeMessage(varvalue)
+            result = server.askDatas(labels, varnames, varvalues)    
+            if result["isValid"] :
+                for varname in varnames :
+                    print "%s=%s" % (varname.upper(), result[varname])
+        elif options["confirm"] :
+            print server.showDialog(self.sanitizeMessage(arguments[0]), True)
+        elif options["notify"] :
+            print server.showDialog(self.sanitizeMessage(arguments[0]), False)
+            
+        if options["quit"] :    
+            server.quitApplication()
+        
 if __name__ == "__main__" :
     retcode = 0
     try :
         defaults = { \
                    }
-        short_options = "vh"
-        long_options = ["help", "version"]
+        short_options = "vhd:acnq"
+        long_options = ["help", "version", "destination=", \
+                        "ask", "confirm", "notify", "quit" ]
         
         # Initializes the command line tool
         notifier = PyKotaNotify(doc=__doc__)
         notifier.deferredInit()
         
         # parse and checks the command line
-        (options, args) = notifier.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
+        (options, args) = notifier.parseCommandline(sys.argv[1:], short_options, long_options)
         
         # sets long options
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
+        options["destination"] = options["d"] or options["destination"]
+        options["ask"] = options["a"] or options["ask"]
+        options["confirm"] = options["c"] or options["confirm"]
+        options["notify"] = options["n"] or options["notify"]
+        options["quit"] = options["q"] or options["quit"]
         
         if options["help"] :
             notifier.display_usage_and_quit()
         elif options["version"] :
             notifier.display_version_and_quit()
+        elif (options["ask"] and (options["confirm"] or options["notify"])) \
+             or (options["confirm"] and (options["ask"] or options["notify"])) \
+             or (options["notify"] and (options["ask"] or options["confirm"])) :
+            raise PyKotaCommandLineError, _("incompatible options, see help.")
+        elif (not options["destination"]) \
+             or not (options["quit"] or options["ask"] or options["confirm"] or options["notify"]) :
+            raise PyKotaCommandLineError, _("some options are mandatory, see help.")
+        elif (not args) and (not options["quit"]) :
+            raise PyKotaCommandLineError, _("some options require arguments, see help.")
         else :
             retcode = notifier.main(args, options)
     except KeyboardInterrupt :        
