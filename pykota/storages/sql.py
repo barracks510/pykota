@@ -469,9 +469,16 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM billingcodes")
         if result :
             patterns = billingcodepattern.split(",")
+            try :
+                patdict = {}.fromkeys(patterns)
+            except AttributeError :    
+                # Python v2.2 or earlier
+                patdict = {}
+                for p in patterns :
+                    patdict[p] = None
             for record in result :
                 codename = self.databaseToUserCharset(record["billingcode"])
-                if self.tool.matchString(codename, patterns) :
+                if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
                     code = StorageBillingCode(self, codename)
                     code.ident = record.get("id")
                     code.Balance = record.get("balance") or 0.0
