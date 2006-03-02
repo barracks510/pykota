@@ -180,12 +180,7 @@ class EdPyKota(PyKotaTool) :
         printers = self.storage.getMatchingPrinters(options["printer"])
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
         
-        if options["delete"] :    
-            self.display("\n%s..." % _("Deletion"))
-            getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
-            self.display("\n")
-            self.done()
-        elif options["list"] :
+        if options["list"] :
             for printer in printers :
                 for entry in entries :
                     pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
@@ -200,6 +195,10 @@ class EdPyKota(PyKotaTool) :
                         if hasattr(pqentry, "WarnCount") :
                             print "    %s" % (_("Warning banners printed : %s") % pqentry.WarnCount)
                         print
+        elif options["delete"] :    
+            self.display("\n%s..." % _("Deletion"))
+            getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
+            self.display("\n")
         else :
             self.display("\n")    
             skipexisting = options["skipexisting"]
@@ -250,61 +249,71 @@ class EdPyKota(PyKotaTool) :
                     if softlimit is not None :
                         self.printInfo(_("Undefined soft limit set to hard limit (%s).") % str(softlimit))
                         
-            if options["add"] :
-                self.display("%s...\n" % _("Creation"))
-                dicnames = {}
-                for m in entries :
-                    dicnames[m.Name] = None
-                for name in names :
-                    if not dicnames.has_key(name) :
-                        self.printInfo(_("Impossible to create print quota entries if the user or group object '%s' doesn't already exist. Please use pkusers to create it first.") % name, "warn")
-                        
-                factory = globals()["Storage%sPQuota" % suffix]
-                nbtotal = len(printers) * len(entries)
-                i = 0
-                for printer in printers :
-                    pname = printer.Name
-                    for entry in entries :
-                        ename = entry.Name
-                        pqkey = "%s@%s" % (ename, pname)
-                        pqentry = factory(self.storage, entry, printer)
-                        self.modifyPQEntry(pqkey, pqentry, noquota, \
-                                                    softlimit, hardlimit, \
-                                                    increase, reset, \
-                                                    hardreset, suffix, used)
-                        oldpqentry = getattr(self.storage, "add%sPQuota" % suffix)(pqentry)
-                        if oldpqentry is not None :    
-                            if skipexisting :
-                                self.logdebug("%s print quota entry %s@%s already exists, skipping." % (suffix, ename, pname))
-                            else :    
-                                self.logdebug("%s print quota entry %s@%s already exists, will be modified." % (suffix, ename, pname))
-                                self.modifyPQEntry(pqkey, oldpqentry, noquota, \
-                                                    softlimit, hardlimit, \
-                                                    increase, reset, \
-                                                    hardreset, suffix, used)
-                                oldpqentry.save()                    
-                        i += 1
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
-            else :        
-                nbtotal = len(entries) * len(printers)
-                if nbtotal :
-                    self.display("%s...\n" % _("Modification"))
+            self.storage.beginTransaction()            
+            try :
+                if options["add"] :
+                    self.display("%s...\n" % _("Creation"))
+                    dicnames = {}
+                    for m in entries :
+                        dicnames[m.Name] = None
+                    for name in names :
+                        if not dicnames.has_key(name) :
+                            self.printInfo(_("Impossible to create print quota entries if the user or group object '%s' doesn't already exist. Please use pkusers to create it first.") % name, "warn")
+                            
+                    factory = globals()["Storage%sPQuota" % suffix]
+                    nbtotal = len(printers) * len(entries)
                     i = 0
                     for printer in printers :
+                        pname = printer.Name
                         for entry in entries :
-                            pqkey = "%s@%s" % (entry.Name, printer.Name)
-                            pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
-                            if pqentry.Exists :     
-                                self.modifyPQEntry(pqkey, pqentry, noquota, \
-                                                    softlimit, hardlimit, \
-                                                    increase, reset, \
-                                                    hardreset, suffix, used)
-                                pqentry.save()        
-                            i += 1            
+                            ename = entry.Name
+                            pqkey = "%s@%s" % (ename, pname)
+                            pqentry = factory(self.storage, entry, printer)
+                            self.modifyPQEntry(pqkey, pqentry, noquota, \
+                                                        softlimit, hardlimit, \
+                                                        increase, reset, \
+                                                        hardreset, suffix, used)
+                            oldpqentry = getattr(self.storage, "add%sPQuota" % suffix)(pqentry)
+                            if oldpqentry is not None :    
+                                if skipexisting :
+                                    self.logdebug("%s print quota entry %s@%s already exists, skipping." % (suffix, ename, pname))
+                                else :    
+                                    self.logdebug("%s print quota entry %s@%s already exists, will be modified." % (suffix, ename, pname))
+                                    self.modifyPQEntry(pqkey, oldpqentry, noquota, \
+                                                        softlimit, hardlimit, \
+                                                        increase, reset, \
+                                                        hardreset, suffix, used)
+                                    oldpqentry.save()                    
+                            i += 1
                             percent = 100.0 * float(i) / float(nbtotal)
                             self.display("\r%.02f%%" % percent)
+                else :        
+                    nbtotal = len(entries) * len(printers)
+                    if nbtotal :
+                        self.display("%s...\n" % _("Modification"))
+                        i = 0
+                        for printer in printers :
+                            for entry in entries :
+                                pqkey = "%s@%s" % (entry.Name, printer.Name)
+                                pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                                if pqentry.Exists :     
+                                    self.modifyPQEntry(pqkey, pqentry, noquota, \
+                                                        softlimit, hardlimit, \
+                                                        increase, reset, \
+                                                        hardreset, suffix, used)
+                                    pqentry.save()        
+                                i += 1            
+                                percent = 100.0 * float(i) / float(nbtotal)
+                                self.display("\r%.02f%%" % percent)
+            except :                    
+                self.storage.rollbackTransaction()
+                raise
+            else :    
+                self.storage.commitTransaction()
+                            
+        if not options["list"] :
             self.done()         
+            
 if __name__ == "__main__" : 
     retcode = 0
     try :
