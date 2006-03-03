@@ -27,6 +27,7 @@
 import sys
 import os
 import popen2
+import socket
 import xmlrpclib
 
 from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
@@ -106,31 +107,34 @@ class PyKotaNotify(Tool) :
         except ValueError :
             destination = options["destination"]
             port = 7654
-        server = xmlrpclib.ServerProxy("http://%s:%s" % (destination, port))
-        if options["ask"] :
-            labels = []
-            varnames = []
-            varvalues = {}
-            for arg in arguments :
-                try :
-                    (label, varname, varvalue) = arg.split(":", 2)
-                except ValueError :    
-                    raise PyKotaCommandLineError, "argument '%s' is invalid !" % arg
-                labels.append(self.sanitizeMessage(label))
-                varname = varname.lower()
-                varnames.append(varname)
-                varvalues[varname] = self.sanitizeMessage(varvalue)
-            result = server.askDatas(labels, varnames, varvalues)    
-            if result["isValid"] :
-                for varname in varnames :
-                    print "%s=%s" % (varname.upper(), result[varname])
-        elif options["confirm"] :
-            print server.showDialog(self.sanitizeMessage(arguments[0]), True)
-        elif options["notify"] :
-            print server.showDialog(self.sanitizeMessage(arguments[0]), False)
-            
-        if options["quit"] :    
-            server.quitApplication()
+        try :    
+            server = xmlrpclib.ServerProxy("http://%s:%s" % (destination, port))
+            if options["ask"] :
+                labels = []
+                varnames = []
+                varvalues = {}
+                for arg in arguments :
+                    try :
+                        (label, varname, varvalue) = arg.split(":", 2)
+                    except ValueError :    
+                        raise PyKotaCommandLineError, "argument '%s' is invalid !" % arg
+                    labels.append(self.sanitizeMessage(label))
+                    varname = varname.lower()
+                    varnames.append(varname)
+                    varvalues[varname] = self.sanitizeMessage(varvalue)
+                result = server.askDatas(labels, varnames, varvalues)    
+                if result["isValid"] :
+                    for varname in varnames :
+                        print "%s=%s" % (varname.upper(), result[varname])
+            elif options["confirm"] :
+                print server.showDialog(self.sanitizeMessage(arguments[0]), True)
+            elif options["notify"] :
+                print server.showDialog(self.sanitizeMessage(arguments[0]), False)
+                
+            if options["quit"] :    
+                server.quitApplication()
+        except (socket.error, socket.gaierror), msg :
+            raise PyKotaCommandLineError, "%s : %s" % (_("Connexion error"), str(msg))
         
 if __name__ == "__main__" :
     retcode = 0
