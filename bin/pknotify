@@ -134,7 +134,7 @@ class PyKotaNotify(Tool) :
             if options["quit"] :    
                 server.quitApplication()
         except (socket.error, socket.gaierror), msg :
-            raise PyKotaCommandLineError, "%s : %s" % (_("Connexion error"), str(msg))
+            raise PyKotaCommandLineError, "%s : %s" % (_("Connection error"), str(msg))
         
 if __name__ == "__main__" :
     retcode = 0
