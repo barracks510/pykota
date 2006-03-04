@@ -28,7 +28,7 @@ import os
 import sys
 import pwd
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.storage import StorageBillingCode
 
 __doc__ = N_("""pkbcodes v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -115,9 +115,9 @@ class PKBcodes(PyKotaTool) :
                        billingcode.Balance, \
                        _("credits"))
         elif options["delete"] :    
-            self.display("\n%s..." % _("Deletion"))
+            percent = Percent(self, "\n%s..." % _("Deletion"), len(billingcodes))
             self.storage.deleteManyBillingCodes(billingcodes)
-            self.display("\n")
+            percent.display("\n")
         else :
             reset = options["reset"]
             description = options["description"]
@@ -128,10 +128,8 @@ class PKBcodes(PyKotaTool) :
             self.storage.beginTransaction()
             try :
                 if options["add"] :    
-                    self.display("%s...\n" % _("Creation"))
-                    nbtotal = len(names)
-                    for i in range(nbtotal) :
-                        bname = names[i]
+                    percent = Percent(self, "%s...\n" % _("Creation"), len(names))
+                    for bname in names :
                         billingcode = StorageBillingCode(self.storage, bname)
                         self.modifyBillingCode(billingcode, reset, description)
                         oldbillingcode = self.storage.addBillingCode(billingcode)
@@ -142,25 +140,23 @@ class PKBcodes(PyKotaTool) :
                                 self.logdebug(_("Billing code [%s] already exists, will be modified.") % bname)
                                 self.modifyBillingCode(oldbillingcode, reset, description)
                                 oldbillingcode.save()
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
+                        percent.oneMore()
                 else :        
-                    self.display("\n%s...\n" % _("Modification"))
-                    nbtotal = len(billingcodes)            
-                    for i in range(nbtotal) :        
-                        billingcode = billingcodes[i]
+                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(billingcodes))
+                    for billingcode in billingcodes :
                         self.modifyBillingCode(billingcode, reset, description)
                         billingcode.save()    
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
+                        percent.oneMore()
             except :                    
                 self.storage.rollbackTransaction()
                 raise
             else :    
                 self.storage.commitTransaction()
                         
-        if not options["list"] :                
-            self.done()
+        try :
+            percent.done()
+        except NameError :    
+            pass
                      
 if __name__ == "__main__" : 
     retcode = 0

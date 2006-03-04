@@ -28,7 +28,7 @@ import os
 import sys
 import pwd
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.storage import StoragePrinter
 
 __doc__ = N_("""pkprinters v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -170,9 +170,9 @@ class PKPrinters(PyKotaTool) :
                     print "    %s %s" % (_("in"), parents)
                 print    
         elif options["delete"] :    
-            self.display("\n%s..." % _("Deletion"))
+            percent = Percent(self, "\n%s..." % _("Deletion"), len(printers))
             self.storage.deleteManyPrinters(printers)
-            self.display("\n")
+            percent.display("\n")
         else :
             if options["groups"] :        
                 printersgroups = self.storage.getMatchingPrinters(options["groups"])
@@ -216,10 +216,8 @@ class PKPrinters(PyKotaTool) :
             self.storage.beginTransaction()
             try :
                 if options["add"] :    
-                    self.display("%s...\n" % _("Creation"))
-                    nbtotal = len(names)
-                    for i in range(nbtotal) :
-                        pname = names[i]
+                    percent = Percent(self, "%s...\n" % _("Creation"), len(names))
+                    for pname in names :
                         if self.isValidName(pname) :
                             printer = StoragePrinter(self.storage, pname)
                             self.modifyPrinter(printer, charges, perpage, perjob,\
@@ -243,27 +241,26 @@ class PKPrinters(PyKotaTool) :
                                                           remove)
                         else :    
                             raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
+                        percent.oneMore()
                 else :        
-                    self.display("\n%s...\n" % _("Modification"))
-                    nbtotal = len(printers)
-                    for i in range(nbtotal) :        
-                        printer = printers[i]
+                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(printers))
+                    for printer in printers :        
                         self.modifyPrinter(printer, charges, perpage, perjob, \
                                            description, passthrough, \
                                            nopassthrough, maxjobsize)
                         printer.save()    
                         self.managePrintersGroups(printersgroups, printer, remove)
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
+                        percent.oneMore()
             except :                    
                 self.storage.rollbackTransaction()
                 raise
             else :    
                 self.storage.commitTransaction()
-        if not options["list"] :                
-            self.done()
+                
+        try :
+            percent.done()
+        except NameError :    
+            pass
                      
 if __name__ == "__main__" : 
     retcode = 0

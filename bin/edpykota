@@ -27,7 +27,7 @@
 import sys
 import os
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.config import PyKotaConfigError
 from pykota.storage import PyKotaStorageError, StorageUserPQuota, StorageGroupPQuota
 
@@ -196,11 +196,10 @@ class EdPyKota(PyKotaTool) :
                             print "    %s" % (_("Warning banners printed : %s") % pqentry.WarnCount)
                         print
         elif options["delete"] :    
-            self.display("\n%s..." % _("Deletion"))
+            percent = Percent(self, "\n%s..." % _("Deletion"), len(printers) * len(entries))
             getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
-            self.display("\n")
+            percent.display("\n")
         else :
-            self.display("\n")    
             skipexisting = options["skipexisting"]
             used = options["used"]
             if used :
@@ -252,7 +251,7 @@ class EdPyKota(PyKotaTool) :
             self.storage.beginTransaction()            
             try :
                 if options["add"] :
-                    self.display("%s...\n" % _("Creation"))
+                    percent = Percent(self, "\n%s...\n" % _("Creation"), len(printers) * len(entries))
                     dicnames = {}
                     for m in entries :
                         dicnames[m.Name] = None
@@ -261,8 +260,6 @@ class EdPyKota(PyKotaTool) :
                             self.printInfo(_("Impossible to create print quota entries if the user or group object '%s' doesn't already exist. Please use pkusers to create it first.") % name, "warn")
                             
                     factory = globals()["Storage%sPQuota" % suffix]
-                    nbtotal = len(printers) * len(entries)
-                    i = 0
                     for printer in printers :
                         pname = printer.Name
                         for entry in entries :
@@ -284,35 +281,30 @@ class EdPyKota(PyKotaTool) :
                                                         increase, reset, \
                                                         hardreset, suffix, used)
                                     oldpqentry.save()                    
-                            i += 1
-                            percent = 100.0 * float(i) / float(nbtotal)
-                            self.display("\r%.02f%%" % percent)
+                            percent.oneMore()
                 else :        
-                    nbtotal = len(entries) * len(printers)
-                    if nbtotal :
-                        self.display("%s...\n" % _("Modification"))
-                        i = 0
-                        for printer in printers :
-                            for entry in entries :
-                                pqkey = "%s@%s" % (entry.Name, printer.Name)
-                                pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
-                                if pqentry.Exists :     
-                                    self.modifyPQEntry(pqkey, pqentry, noquota, \
-                                                        softlimit, hardlimit, \
-                                                        increase, reset, \
-                                                        hardreset, suffix, used)
-                                    pqentry.save()        
-                                i += 1            
-                                percent = 100.0 * float(i) / float(nbtotal)
-                                self.display("\r%.02f%%" % percent)
+                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(entries) * len(printers))
+                    for printer in printers :
+                        for entry in entries :
+                            pqkey = "%s@%s" % (entry.Name, printer.Name)
+                            pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
+                            if pqentry.Exists :     
+                                self.modifyPQEntry(pqkey, pqentry, noquota, \
+                                                    softlimit, hardlimit, \
+                                                    increase, reset, \
+                                                    hardreset, suffix, used)
+                                pqentry.save()        
+                            percent.oneMore()
             except :                    
                 self.storage.rollbackTransaction()
                 raise
             else :    
                 self.storage.commitTransaction()
                             
-        if not options["list"] :
-            self.done()         
+        try :
+            percent.done()
+        except NameError :    
+            pass
             
 if __name__ == "__main__" : 
     retcode = 0

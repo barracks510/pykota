@@ -77,6 +77,33 @@ def crashed(message="Bug in PyKota") :
     sys.stderr.flush()
     return msg
 
+class Percent :
+    """A class to display progress."""
+    def __init__(self, app, title, size) :
+        """Initializes the engine."""
+        self.app = app
+        self.size = size
+        self.number = 0
+        self.factor = 100.0 / float(size)
+        self.previous = None
+        self.display(title)
+        
+    def display(self, msg) :    
+        """Displays the value."""
+        self.app.display(msg)
+        
+    def oneMore(self) :    
+        """Increments internal counter."""
+        self.number += 1
+        percent = "%.02f" % (float(self.number) * self.factor)
+        if percent != self.previous : # optimize for large number of items
+            self.display("\r%s%%" % percent)
+            self.previous = percent
+            
+    def done(self) :         
+        """Displays the 'done' message."""
+        self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+        
 class Tool :
     """Base class for tools with no database access."""
     def __init__(self, lang="", charset=None, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
@@ -200,10 +227,6 @@ class Tool :
             sys.stdout.write(message)
             sys.stdout.flush()
             
-    def done(self) :    
-        """Displays the 'done' message."""
-        self.display("\r100.00%%\r        \r%s\n" % _("Done."))
-        
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
         if self.debug :

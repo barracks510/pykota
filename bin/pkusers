@@ -29,7 +29,7 @@ import sys
 import pwd
 import grp
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.storage import StorageUser, StorageGroup
 
 __doc__ = N_("""pkusers v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -234,9 +234,9 @@ class PKUsers(PyKotaTool) :
                     print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
                     print
         elif options["delete"] :    
-            self.display("\n%s..." % _("Deletion"))
+            percent = Percent(self, "\n%s..." % _("Deletion"), len(entries))
             getattr(self.storage, "deleteMany%ss" % suffix)(entries)
-            self.display("\n")
+            percent.display("\n")
         else :
             limitby = options["limitby"]
             if limitby :
@@ -285,11 +285,9 @@ class PKUsers(PyKotaTool) :
             self.storage.beginTransaction()
             try :    
                 if options["add"] :    
-                    self.display("%s...\n" % _("Creation"))
                     rejectunknown = self.config.getRejectUnknown()    
-                    nbtotal = len(names)
-                    for i in range(nbtotal) :
-                        ename = names[i]
+                    percent = Percent(self, "%s...\n" % _("Creation"), len(names))
+                    for ename in names :
                         email = None
                         if not groups :
                             splitname = ename.split('/', 1)     # username/email
@@ -346,13 +344,10 @@ class PKUsers(PyKotaTool) :
                                                            remove)
                         else :
                             raise PyKotaCommandLineError, _("Invalid name %s") % ename
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
+                        percent.oneMore()
                 else :
-                    self.display("\n%s...\n" % _("Modification"))
-                    nbtotal = len(entries)
-                    for i in range(nbtotal) :        
-                        entry = entries[i]
+                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(entries)) 
+                    for entry in entries :
                         if groups :
                             self.modifyEntry(entry, groups, limitby, description)
                         else :    
@@ -361,16 +356,17 @@ class PKUsers(PyKotaTool) :
                                              comment)
                             self.manageUsersGroups(usersgroups, entry, remove)                
                         entry.save()    
-                        percent = 100.0 * float(i) / float(nbtotal)
-                        self.display("\r%.02f%%" % percent)
+                        percent.oneMore()
             except :                    
                 self.storage.rollbackTransaction()
                 raise
             else :    
                 self.storage.commitTransaction()
-                                
-        if not options["list"] :                
-            self.done()
+                
+        try :
+            percent.done()
+        except NameError :    
+            pass
                      
 if __name__ == "__main__" : 
     retcode = 0
