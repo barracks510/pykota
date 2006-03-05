@@ -363,13 +363,15 @@ Prerequisite :
   You need to have the following tools installed on the CUPS Server :
   
     - CUPS (http://www.cups.org)
-    - Python v2.1 or above (http://www.python.org)
+    - Python v2.2 or higher (http://www.python.org)
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The pkpgcounter command line tool, version 1.56 or higher. This
       tool is now mandatory for PyKota to work. 
       (http://www.librelogiciel.com/software/)
     - The JAXML Python module to be able to dump datas in the XML format.
       (http://www.librelogiciel.com/software/)
+    - The Python-PAM module if you need the pknotify command to be able  
+      to check usernames and passwords.
     - The Python-SNMP module to query printers for their page counter.
       (http://pysnmp.sourceforge.net). 
       IMPORTANT : version 3.4.4 (or 3.4.3 or 3.4.2) is REQUIRED.

@@ -61,15 +61,15 @@ def checkWithPrompt(prompt, module=None, command=None, helper=None) :
 if __name__ == "__main__" :    
     print "Checking PyKota dependencies..."
     
-    # checks if Python version is correct, we need >= 2.1
-    if not (sys.version > "2.1") :
-        sys.stderr.write("PyKota needs at least Python v2.1 !\nYour version seems to be older than that, please update.\nAborted !\n")
+    # checks if Python version is correct, we need >= 2.2
+    if not (sys.version > "2.2") :
+        sys.stderr.write("PyKota needs at least Python v2.2 !\nYour version seems to be older than that, please update.\nAborted !\n")
         sys.exit(-1)
         
     # checks if some needed Python modules are there or not.
     modulestocheck = [ ("Python-PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota database backend.\nSee http://www.pygresql.org"),
                        ("Python-SQLite", "pysqlite2", "Python-SQLite is mandatory if you want to use SQLite as the quota database backend.\nSee http://www.pysqlite.org"),
-		       ("MySQL-Python", "MySQLdb", "MySQL-Python is mandatory if you want to use MySQL as the quota database backend.\nSee http://sourceforge.net/projects/mysql-python"),
+                       ("MySQL-Python", "MySQLdb", "MySQL-Python is mandatory if you want to use MySQL as the quota database backend.\nSee http://sourceforge.net/projects/mysql-python"),
                        ("Python-egenix-mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"),
                        ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota database backend.\nSee http://python-ldap.sf.net"),
                        ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd. See http://repose.cx/pyosd/"),
@@ -79,6 +79,7 @@ if __name__ == "__main__" :
                        ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners.\nSee http://www.pythonware.com/downloads/"),
                        ("Python-Psyco", "psyco", "Python-Psyco speeds up parsing of print files, you should use it.\nSee http://psyco.sourceforge.net/"),
                        ("Python-pkpgcounter", "pkpgpdls", "Python-pkpgcounter is mandatory.\nGrab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download"),
+                       ("Python-PAM", "PAM", "Python-PAM is recommended if you plan to use pknotify+PyKotIcon.\nGrab it from http://www.pangalactic.org/PyPAM/"),
                      ]
     commandstocheck = [ ("GhostScript", "gs", "Depending on your configuration, GhostScript may be needed in different parts of PyKota."),
                         ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), 
