@@ -30,6 +30,13 @@ import popen2
 import socket
 import xmlrpclib
 
+try :
+    import PAM
+except ImportError :    
+    hasPAM = 0
+else :    
+    hasPAM = 1
+
 from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pknotify v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -53,6 +60,14 @@ options :
   -a | --ask                 Tells pknotify to ask something to the end
                              user. Then pknotify will output the result.
                        
+  -C | --checkauth           When --ask is used and an 'username' and a 
+                             'password' are asked to the end user, then
+                             pknotify will try to authenticate the user
+                             through PAM. If authentified, this program
+                             will print "AUTH=YES", else "AUTH=NO".
+                             If a field is missing, "AUTH=IMPOSSIBLE" will
+                             be printed.
+                             
   -c | --confirm             Tells pknotify to ask for either a confirmation                       
                              or abortion.
                              
@@ -74,10 +89,12 @@ options :
                  VAR1NAME=VAR1VALUE
                  VAR2NAME=VAR2VALUE
                  ...
-                 If the dialog was cancelled, nothing will be 
+                 If the dialog was cancelled, nothing will be
                  printed. If one of the varname is 'password'
                  then this field is asked as a password (you won't
-                 see what you type in).
+                 see what you type in), and is NOT printed. Although
+                 it is not printed, it will be used to check if
+                 authentication is valid if you specify --checkauth.
                  
     -c | --confirm : A single argument is expected, representing the
                      message to display. If the dialog is confirmed
@@ -91,7 +108,15 @@ examples :
 
   pknotify -d client:7654 --confirm "This job costs :\n10 credits !"
   
-  would display the cost of a print job and asks for confirmation.
+  Would display the cost of a print job and asks for confirmation.
+  
+  pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 \\
+           --checkauth --ask "Your name:username:" "Your password:password:"
+           
+  Asks an username and password, and checks if they are valid.         
+  NB : The PYKOTAJOBORIGINATINGHOSTNAME environment variable is
+  only set if you launch pknotify from cupspykota through a directive
+  in ~pykota/pykota.conf
 """)
         
 class PyKotaNotify(Tool) :        
@@ -100,6 +125,44 @@ class PyKotaNotify(Tool) :
         """Replaces \\n and returns a messagee in xmlrpclib Binary format."""
         return xmlrpclib.Binary(msg.replace("\\n", "\n"))
         
+    def convPAM(self, auth, queries, userdata) :
+        """Prepares PAM datas."""
+        response = []
+        for (query, qtype) in queries :
+            if qtype == PAM.PAM_PROMPT_ECHO_OFF :
+                response.append((self.password, 0))
+            elif qtype in (PAM.PAM_PROMPT_ECHO_ON, PAM.PAM_ERROR_MSG, PAM.PAM_TEXT_INFO) :
+                self.printInfo("Unexpected PAM query : %s (%s)" % (query, qtype), "warn")
+                response.append(('', 0))
+            else:
+                return None
+        return response
+
+    def checkAuth(self, username, password) :    
+        """Checks if we could authenticate an username with a password."""
+        if not hasPAM :    
+            raise PyKotaCommandLineError, _("You MUST install PyPAM for this functionnality to work !")
+        else :    
+            retcode = False
+            self.password = password
+            self.regainPriv()
+            auth = PAM.pam()
+            auth.start("passwd")
+            auth.set_item(PAM.PAM_USER, username)
+            auth.set_item(PAM.PAM_CONV, self.convPAM)
+            try :
+                auth.authenticate()
+                auth.acct_mgmt()
+            except PAM.error, resp :
+                self.printInfo(_("Authentication error for user %s : %s") % (username, resp), "warn")
+            except :
+                self.printInfo(_("Internal error : can't authenticate user %s") % username, "error")
+            else :
+                self.logdebug(_("Password correct for user %s") % username)
+                retcode = True
+            self.dropPriv()    
+            return retcode
+            
     def main(self, arguments, options) :
         """Notifies or asks questions to end users through PyKotIcon."""
         try :
@@ -125,7 +188,17 @@ class PyKotaNotify(Tool) :
                 result = server.askDatas(labels, varnames, varvalues)    
                 if result["isValid"] :
                     for varname in varnames :
-                        print "%s=%s" % (varname.upper(), result[varname])
+                        result[varname] = result[varname].data
+                        if (varname != "password") :
+                            print "%s=%s" % (varname.upper(), result[varname])
+                    if options["checkauth"] :
+                        if ("username" in varnames) and ("password" in varnames) :
+                            if self.checkAuth(result["username"], result["password"]) :
+                                print "AUTH=YES"
+                            else :    
+                                print "AUTH=NO"
+                        else :        
+                            print "AUTH=IMPOSSIBLE"
             elif options["confirm"] :
                 print server.showDialog(self.sanitizeMessage(arguments[0]), True)
             elif options["notify"] :
@@ -141,9 +214,9 @@ if __name__ == "__main__" :
     try :
         defaults = { \
                    }
-        short_options = "vhd:acnq"
+        short_options = "vhd:acnqC"
         long_options = ["help", "version", "destination=", \
-                        "ask", "confirm", "notify", "quit" ]
+                        "ask", "checkauth", "confirm", "notify", "quit" ]
         
         # Initializes the command line tool
         notifier = PyKotaNotify(doc=__doc__)
@@ -160,6 +233,7 @@ if __name__ == "__main__" :
         options["confirm"] = options["c"] or options["confirm"]
         options["notify"] = options["n"] or options["notify"]
         options["quit"] = options["q"] or options["quit"]
+        options["checkauth"] = options["C"] or options["checkauth"]
         
         if options["help"] :
             notifier.display_usage_and_quit()
@@ -167,6 +241,7 @@ if __name__ == "__main__" :
             notifier.display_version_and_quit()
         elif (options["ask"] and (options["confirm"] or options["notify"])) \
              or (options["confirm"] and (options["ask"] or options["notify"])) \
+             or (options["checkauth"] and not options["ask"]) \
              or (options["notify"] and (options["ask"] or options["confirm"])) :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif (not options["destination"]) \
