@@ -149,14 +149,19 @@ class PKPrinters(PyKotaTool) :
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
+        if not options["list"] :    
+            percent = Percent(self)
+            
         if not options["add"] :
             if not options["list"] :
-                self.display(_("Extracting datas..."))
+                percent.display(_("Extracting datas..."))
             if not names :      # NB : can't happen for --delete because it's catched earlier
                 names = ["*"]
             printers = self.storage.getMatchingPrinters(",".join(names))
             if not printers :
                 raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
+            if not options["list"] :    
+                percent.setSize(len(printers))
                 
         if options["list"] :
             for printer in printers :
@@ -170,7 +175,7 @@ class PKPrinters(PyKotaTool) :
                     print "    %s %s" % (_("in"), parents)
                 print    
         elif options["delete"] :    
-            percent = Percent(self, "\n%s..." % _("Deletion"), len(printers))
+            percent.display("\n%s..." % _("Deletion"))
             self.storage.deleteManyPrinters(printers)
             percent.display("\n")
         else :
@@ -216,7 +221,8 @@ class PKPrinters(PyKotaTool) :
             self.storage.beginTransaction()
             try :
                 if options["add"] :    
-                    percent = Percent(self, "%s...\n" % _("Creation"), len(names))
+                    percent.display("%s...\n" % _("Creation"))
+                    percent.setSize(len(names))
                     for pname in names :
                         if self.isValidName(pname) :
                             printer = StoragePrinter(self.storage, pname)
@@ -243,7 +249,7 @@ class PKPrinters(PyKotaTool) :
                             raise PyKotaCommandLineError, _("Invalid printer name %s") % pname
                         percent.oneMore()
                 else :        
-                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(printers))
+                    percent.display("\n%s...\n" % _("Modification"))
                     for printer in printers :        
                         self.modifyPrinter(printer, charges, perpage, perjob, \
                                            description, passthrough, \
@@ -257,10 +263,8 @@ class PKPrinters(PyKotaTool) :
             else :    
                 self.storage.commitTransaction()
                 
-        try :
+        if not options["list"] :
             percent.done()
-        except NameError :    
-            pass
                      
 if __name__ == "__main__" : 
     retcode = 0

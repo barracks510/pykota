@@ -34,6 +34,7 @@ import signal
 import socket
 import tempfile
 import md5
+import time
 import ConfigParser
 import popen2
 from email.MIMEText import MIMEText
@@ -79,14 +80,20 @@ def crashed(message="Bug in PyKota") :
 
 class Percent :
     """A class to display progress."""
-    def __init__(self, app, title, size) :
+    def __init__(self, app, size=None) :
         """Initializes the engine."""
         self.app = app
-        self.size = size
-        self.number = 0
-        self.factor = 100.0 / float(size)
+        self.size = None
+        if size :
+            self.setSize(size)
         self.previous = None
-        self.display(title)
+        self.before = time.time()
+        
+    def setSize(self, size) :     
+        """Sets the total size."""
+        self.number = 0
+        self.size = size
+        self.factor = 100.0 / float(size)
         
     def display(self, msg) :    
         """Displays the value."""
@@ -94,15 +101,22 @@ class Percent :
         
     def oneMore(self) :    
         """Increments internal counter."""
-        self.number += 1
-        percent = "%.02f" % (float(self.number) * self.factor)
-        if percent != self.previous : # optimize for large number of items
-            self.display("\r%s%%" % percent)
-            self.previous = percent
+        if self.size :
+            self.number += 1
+            percent = "%.02f" % (float(self.number) * self.factor)
+            if percent != self.previous : # optimize for large number of items
+                self.display("\r%s%%" % percent)
+                self.previous = percent
             
     def done(self) :         
         """Displays the 'done' message."""
-        self.display("\r100.00%%\r        \r%s\n" % _("Done."))
+        after = time.time()
+        if self.size :
+            speed = int(self.size / (after - self.before))
+            self.display("\r100.00%%\r        \r%s. %s : %i %s.\n" \
+                     % (_("Done"), _("Average speed"), speed, _("entries per second")))
+        else :             
+            self.display("\r100.00%%\r        \r%s.\n" % _("Done"))
         
 class Tool :
     """Base class for tools with no database access."""

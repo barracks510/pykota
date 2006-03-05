@@ -176,9 +176,12 @@ class EdPyKota(PyKotaTool) :
         printernames = options["printer"].split(",")
             
         if not options["list"] :
-            self.display(_("Extracting datas..."))
+            percent = Percent(self)
+            percent.display(_("Extracting datas..."))
         printers = self.storage.getMatchingPrinters(options["printer"])
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
+        if not options["list"] :
+            percent.setSize(len(printers) * len(entries))
         
         if options["list"] :
             for printer in printers :
@@ -196,7 +199,7 @@ class EdPyKota(PyKotaTool) :
                             print "    %s" % (_("Warning banners printed : %s") % pqentry.WarnCount)
                         print
         elif options["delete"] :    
-            percent = Percent(self, "\n%s..." % _("Deletion"), len(printers) * len(entries))
+            percent.display("\n%s..." % _("Deletion"))
             getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
             percent.display("\n")
         else :
@@ -251,7 +254,7 @@ class EdPyKota(PyKotaTool) :
             self.storage.beginTransaction()            
             try :
                 if options["add"] :
-                    percent = Percent(self, "\n%s...\n" % _("Creation"), len(printers) * len(entries))
+                    percent.display("\n%s...\n" % _("Creation"))
                     dicnames = {}
                     for m in entries :
                         dicnames[m.Name] = None
@@ -283,7 +286,7 @@ class EdPyKota(PyKotaTool) :
                                     oldpqentry.save()                    
                             percent.oneMore()
                 else :        
-                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(entries) * len(printers))
+                    percent.display("\n%s...\n" % _("Modification"))
                     for printer in printers :
                         for entry in entries :
                             pqkey = "%s@%s" % (entry.Name, printer.Name)
@@ -301,10 +304,8 @@ class EdPyKota(PyKotaTool) :
             else :    
                 self.storage.commitTransaction()
                             
-        try :
+        if not options["list"] :
             percent.done()
-        except NameError :    
-            pass
             
 if __name__ == "__main__" : 
     retcode = 0

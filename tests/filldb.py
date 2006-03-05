@@ -6,14 +6,7 @@
 
 import sys
 import os
-import time
 
-def showTiming(number, before) :
-    """Displays timing information."""
-    elapsed = time.time() - before
-    persecond = int(float(number) / elapsed)
-    sys.stdout.write("\nTime elapsed : %.2f seconds (%i entries per second)\n\n" % (elapsed, persecond))
-    
 def createBillingCodes(number) :
     """Creates a number of billing codes."""
     sys.stdout.write("Adding %i billing codes...\n" % number)
@@ -23,9 +16,7 @@ def createBillingCodes(number) :
     for bname in billingcodes :
         argsfile.write("%s\n" % bname)
     argsfile.close()    
-    before = time.time()
     os.system('pkbcodes --arguments arguments.list') 
-    showTiming(number, before)
     return billingcodes
 
 def deleteBillingCodes(billingcodes) :
@@ -36,9 +27,7 @@ def deleteBillingCodes(billingcodes) :
     for bname in billingcodes :
         argsfile.write("%s\n" % bname)
     argsfile.close()    
-    before = time.time()
     os.system('pkbcodes --arguments arguments.list') 
-    showTiming(len(billingcodes), before)
     
 def createPrinters(number) :
     """Creates a number of printers."""
@@ -49,9 +38,7 @@ def createPrinters(number) :
     for pname in printernames :
         argsfile.write("%s\n" % pname)
     argsfile.close()    
-    before = time.time()
     os.system('pkprinters --arguments arguments.list') 
-    showTiming(number, before)
     return printernames
 
 def deletePrinters(printernames) :
@@ -62,9 +49,7 @@ def deletePrinters(printernames) :
     for pname in printernames :
         argsfile.write("%s\n" % pname)
     argsfile.close()    
-    before = time.time()
     os.system('pkprinters --arguments arguments.list') 
-    showTiming(len(printernames), before)
     
 def createUsers(number) :
     """Creates a number of users."""
@@ -75,9 +60,7 @@ def createUsers(number) :
     for uname in usernames :
         argsfile.write("%s\n" % uname)
     argsfile.close()    
-    before = time.time()
     os.system('pkusers --arguments arguments.list') 
-    showTiming(number, before)
     return usernames
 
 def deleteUsers(usernames) :
@@ -88,9 +71,7 @@ def deleteUsers(usernames) :
     for uname in usernames :
         argsfile.write("%s\n" % uname)
     argsfile.close()    
-    before = time.time()
     os.system('pkusers --arguments arguments.list') 
-    showTiming(len(usernames), before)
     
 def createUserPQuotas(usernames, printernames) :
     """Creates a number of user print quota entries."""
@@ -102,9 +83,7 @@ def createUserPQuotas(usernames, printernames) :
     for uname in usernames :
         argsfile.write("%s\n" % uname)
     argsfile.close()    
-    before = time.time()
     os.system('edpykota --arguments arguments.list') 
-    showTiming(number, before)
 
 def deleteUserPQuotas(usernames, printernames) :
     """Deletes all test user print quota entries."""
@@ -116,9 +95,7 @@ def deleteUserPQuotas(usernames, printernames) :
     for uname in usernames :
         argsfile.write("%s\n" % uname)
     argsfile.close()    
-    before = time.time()
     os.system('edpykota --arguments arguments.list') 
-    showTiming(number, before)
     
 if __name__ == "__main__" :    
     if len(sys.argv) == 1 :

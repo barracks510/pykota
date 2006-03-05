@@ -96,14 +96,19 @@ class PKBcodes(PyKotaTool) :
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
+        if not options["list"] :    
+            percent = Percent(self)
+            
         if not options["add"] :
             if not options["list"] :
-                self.display(_("Extracting datas..."))
+                percent.display(_("Extracting datas..."))
             if not names :      # NB : can't happen for --delete because it's catched earlier
                 names = ["*"]
             billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
             if not billingcodes :
                 raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
+            if not options["list"] :    
+                percent.setSize(len(billingcodes))
                         
         if options["list"] :
             for billingcode in billingcodes :
@@ -115,7 +120,7 @@ class PKBcodes(PyKotaTool) :
                        billingcode.Balance, \
                        _("credits"))
         elif options["delete"] :    
-            percent = Percent(self, "\n%s..." % _("Deletion"), len(billingcodes))
+            percent.display("\n%s..." % _("Deletion"))
             self.storage.deleteManyBillingCodes(billingcodes)
             percent.display("\n")
         else :
@@ -128,7 +133,8 @@ class PKBcodes(PyKotaTool) :
             self.storage.beginTransaction()
             try :
                 if options["add"] :    
-                    percent = Percent(self, "%s...\n" % _("Creation"), len(names))
+                    percent.display("%s...\n" % _("Creation"))
+                    percent.setSize(len(names))
                     for bname in names :
                         billingcode = StorageBillingCode(self.storage, bname)
                         self.modifyBillingCode(billingcode, reset, description)
@@ -142,7 +148,7 @@ class PKBcodes(PyKotaTool) :
                                 oldbillingcode.save()
                         percent.oneMore()
                 else :        
-                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(billingcodes))
+                    percent.display("\n%s...\n" % _("Modification"))
                     for billingcode in billingcodes :
                         self.modifyBillingCode(billingcode, reset, description)
                         billingcode.save()    
@@ -153,10 +159,8 @@ class PKBcodes(PyKotaTool) :
             else :    
                 self.storage.commitTransaction()
                         
-        try :
+        if not options["list"] :
             percent.done()
-        except NameError :    
-            pass
                      
 if __name__ == "__main__" : 
     retcode = 0

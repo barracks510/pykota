@@ -192,14 +192,19 @@ class PKUsers(PyKotaTool) :
         names = self.sanitizeNames(options, names)
         suffix = (options["groups"] and "Group") or "User"        
         
+        if not options["list"] :
+            percent = Percent(self)
+            
         if not options["add"] :
             if not options["list"] :
-                self.display(_("Extracting datas..."))
+                percent.display(_("Extracting datas..."))
             if not names :      # NB : can't happen for --delete because it's catched earlier
                 names = ["*"]
             entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
             if not entries :
                 raise PyKotaCommandLineError, _("There's no %s matching %s") % (_(suffix.lower()), " ".join(names))
+            if not options["list"] :    
+                percent.setSize(len(entries))
                 
         if options["list"] :
             if suffix == "User" :
@@ -234,7 +239,7 @@ class PKUsers(PyKotaTool) :
                     print "    %s" % (_("Total paid so far : %.2f") % (entry.LifeTimePaid or 0.0))
                     print
         elif options["delete"] :    
-            percent = Percent(self, "\n%s..." % _("Deletion"), len(entries))
+            percent.display("\n%s..." % _("Deletion"))
             getattr(self.storage, "deleteMany%ss" % suffix)(entries)
             percent.display("\n")
         else :
@@ -286,7 +291,8 @@ class PKUsers(PyKotaTool) :
             try :    
                 if options["add"] :    
                     rejectunknown = self.config.getRejectUnknown()    
-                    percent = Percent(self, "%s...\n" % _("Creation"), len(names))
+                    percent.display("%s...\n" % _("Creation"))
+                    percent.setSize(len(names))
                     for ename in names :
                         email = None
                         if not groups :
@@ -346,7 +352,7 @@ class PKUsers(PyKotaTool) :
                             raise PyKotaCommandLineError, _("Invalid name %s") % ename
                         percent.oneMore()
                 else :
-                    percent = Percent(self, "\n%s...\n" % _("Modification"), len(entries)) 
+                    percent.display("\n%s...\n" % _("Modification"))
                     for entry in entries :
                         if groups :
                             self.modifyEntry(entry, groups, limitby, description)
@@ -363,10 +369,8 @@ class PKUsers(PyKotaTool) :
             else :    
                 self.storage.commitTransaction()
                 
-        try :
+        if not options["list"] :
             percent.done()
-        except NameError :    
-            pass
                      
 if __name__ == "__main__" : 
     retcode = 0
