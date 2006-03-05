@@ -60,13 +60,14 @@ options :
   -a | --ask                 Tells pknotify to ask something to the end
                              user. Then pknotify will output the result.
                        
-  -C | --checkauth           When --ask is used and an 'username' and a 
+  -C | --checkauth           When --ask is used and both an 'username' and a
                              'password' are asked to the end user, then
                              pknotify will try to authenticate the user
                              through PAM. If authentified, this program
                              will print "AUTH=YES", else "AUTH=NO".
                              If a field is missing, "AUTH=IMPOSSIBLE" will
-                             be printed.
+                             be printed. If the user is authenticated, then
+                             "USERNAME=xxxx" will be printed as well.
                              
   -c | --confirm             Tells pknotify to ask for either a confirmation                       
                              or abortion.
@@ -187,18 +188,21 @@ class PyKotaNotify(Tool) :
                     varvalues[varname] = self.sanitizeMessage(varvalue)
                 result = server.askDatas(labels, varnames, varvalues)    
                 if result["isValid"] :
-                    for varname in varnames :
-                        result[varname] = result[varname].data
-                        if (varname != "password") :
-                            print "%s=%s" % (varname.upper(), result[varname])
+                    authok = None
                     if options["checkauth"] :
                         if ("username" in varnames) and ("password" in varnames) :
-                            if self.checkAuth(result["username"], result["password"]) :
-                                print "AUTH=YES"
+                            if self.checkAuth(result["username"].data, result["password"].data) :
+                                authok = "AUTH=YES"
                             else :    
-                                print "AUTH=NO"
+                                authok = "AUTH=NO"
                         else :        
-                            print "AUTH=IMPOSSIBLE"
+                            authok = "AUTH=IMPOSSIBLE"        
+                    for varname in varnames :
+                        if (varname != "password") \
+                           and ((varname != "username") or (authok == "AUTH=YES")) :
+                            print "%s=%s" % (varname.upper(), result[varname].data)
+                    if authok is not None :        
+                        print authok        
             elif options["confirm"] :
                 print server.showDialog(self.sanitizeMessage(arguments[0]), True)
             elif options["notify"] :

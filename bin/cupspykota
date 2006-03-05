@@ -294,11 +294,12 @@ class CUPSBackend(PyKotaTool) :
             username = billingcode = action = None
             self.logdebug("Launching subprocess [%s] to overwrite the job ticket." \
                                      % jobticketcommand)
+            self.regainPriv()                         
             inputfile = os.popen(jobticketcommand, "r")
             for line in inputfile.xreadlines() :
                 line = line.strip()
-                if line == "DENY" :
-                    self.logdebug("Seen DENY command.")
+                if line in ("DENY", "AUTH=NO", "AUTH=IMPOSSIBLE") :
+                    self.logdebug("Seen %s command." % line)
                     action = "DENY"
                 elif line == "CANCEL" :
                     self.logdebug("Seen CANCEL command.")
@@ -312,6 +313,7 @@ class CUPSBackend(PyKotaTool) :
                     self.logdebug("Seen new billing code [%s]" % billingcode)
                     action = None
             inputfile.close()    
+            self.dropPriv()
             
             # now overwrite the job's ticket if new data was supplied
             if action == "DENY" :
