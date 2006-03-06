@@ -177,7 +177,7 @@ class EdPyKota(PyKotaTool) :
             
         if not options["list"] :
             percent = Percent(self)
-            percent.display(_("Extracting datas..."))
+            percent.display("%s..." % _("Extracting datas"))
         printers = self.storage.getMatchingPrinters(options["printer"])
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
         if not options["list"] :

@@ -154,7 +154,7 @@ class PKPrinters(PyKotaTool) :
             
         if not options["add"] :
             if not options["list"] :
-                percent.display(_("Extracting datas..."))
+                percent.display("%s..." % _("Extracting datas"))
             if not names :      # NB : can't happen for --delete because it's catched earlier
                 names = ["*"]
             printers = self.storage.getMatchingPrinters(",".join(names))
