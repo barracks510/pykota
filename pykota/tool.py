@@ -93,7 +93,8 @@ class Percent :
         """Sets the total size."""
         self.number = 0
         self.size = size
-        self.factor = 100.0 / float(size)
+        if size :
+            self.factor = 100.0 / float(size)
         
     def display(self, msg) :    
         """Displays the value."""
