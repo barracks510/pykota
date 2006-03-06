@@ -330,9 +330,9 @@ class PKUsers(PyKotaTool) :
                                 oldentry = getattr(self.storage, "add%s" % suffix)(entry)
                                 if oldentry is not None :
                                     if skipexisting :
-                                        self.printInfo(_("%s %s already exists, skipping.") % (_(suffix), ename))
+                                        self.logdebug(_("%s %s already exists, skipping.") % (_(suffix), ename))
                                     else :    
-                                        self.printInfo(_("%s %s already exists, will be modified.") % (_(suffix), ename))
+                                        self.logdebug(_("%s %s already exists, will be modified.") % (_(suffix), ename))
                                         if groups :
                                             self.modifyEntry(oldentry, groups, \
                                                      limitby, description)
