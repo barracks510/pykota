@@ -535,75 +535,63 @@ class SQLStorage :
         
     def addPrinter(self, printer) :        
         """Adds a printer to the quota storage, returns the old value if it already exists."""
-        try :
-            self.doModify("INSERT INTO printers (printername, passthrough, maxjobsize, description, priceperpage, priceperjob) VALUES (%s, %s, %s, %s, %s, %s)" \
-                              % (self.doQuote(self.userCharsetToDatabase(printer.Name)), \
-                                 self.doQuote((printer.PassThrough and "t") or "f"), \
-                                 self.doQuote(printer.MaxJobSize or 0), \
-                                 self.doQuote(self.userCharsetToDatabase(printer.Description)), \
-                                 self.doQuote(printer.PricePerPage or 0.0), \
-                                 self.doQuote(printer.PricePerJob or 0.0)))
-        except PyKotaStorageError :    
-            # TODO : check if this is an error different from a duplicate insert
-            # return the existing entry which has to be modified
-            return self.getPrinter(printer.Name)
-        else :    
-            printer.isDirty = False
-            return None # the entry created doesn't need further modification
+        oldentry = self.getPrinter(printer.Name)
+        if oldentry.Exists :
+            return oldentry
+        self.doModify("INSERT INTO printers (printername, passthrough, maxjobsize, description, priceperpage, priceperjob) VALUES (%s, %s, %s, %s, %s, %s)" \
+                          % (self.doQuote(self.userCharsetToDatabase(printer.Name)), \
+                             self.doQuote((printer.PassThrough and "t") or "f"), \
+                             self.doQuote(printer.MaxJobSize or 0), \
+                             self.doQuote(self.userCharsetToDatabase(printer.Description)), \
+                             self.doQuote(printer.PricePerPage or 0.0), \
+                             self.doQuote(printer.PricePerJob or 0.0)))
+        printer.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addBillingCode(self, bcode) :
         """Adds a billing code to the quota storage, returns the old value if it already exists."""
-        try :
-            self.doModify("INSERT INTO billingcodes (billingcode, balance, pagecounter, description) VALUES (%s, %s, %s, %s)" \
-                               % (self.doQuote(self.userCharsetToDatabase(bcode.BillingCode)), 
-                                  self.doQuote(bcode.Balance or 0.0), \
-                                  self.doQuote(bcode.PageCounter or 0), \
-                                  self.doQuote(self.userCharsetToDatabase(bcode.Description))))
-        except PyKotaStorageError :    
-            # TODO : check if this is an error different from a duplicate insert
-            # return the existing entry which has to be modified
-            return self.getBillingCode(bcode.BillingCode)
-        else :    
-            bcode.isDirty = False
-            return None # the entry created doesn't need further modification
+        oldentry = self.getBillingCode(bcode.BillingCode)
+        if oldentry.Exists :
+            return oldentry
+        self.doModify("INSERT INTO billingcodes (billingcode, balance, pagecounter, description) VALUES (%s, %s, %s, %s)" \
+                           % (self.doQuote(self.userCharsetToDatabase(bcode.BillingCode)), 
+                              self.doQuote(bcode.Balance or 0.0), \
+                              self.doQuote(bcode.PageCounter or 0), \
+                              self.doQuote(self.userCharsetToDatabase(bcode.Description))))
+        bcode.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addUser(self, user) :        
         """Adds a user to the quota storage, returns the old value if it already exists."""
-        try :
-            self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
-                                         (self.doQuote(self.userCharsetToDatabase(user.Name)), \
-                                          self.doQuote(user.LimitBy or 'quota'), \
-                                          self.doQuote(user.AccountBalance or 0.0), \
-                                          self.doQuote(user.LifeTimePaid or 0.0), \
-                                          self.doQuote(user.Email), \
-                                          self.doQuote(user.OverCharge), \
-                                          self.doQuote(self.userCharsetToDatabase(user.Description))))
-        except PyKotaStorageError :    
-            # TODO : check if this is an error different from a duplicate insert
-            # return the existing entry which has to be modified
-            return self.getUser(user.Name)
-        else :    
-            if user.PaymentsBacklog :
-                for (value, comment) in user.PaymentsBacklog :
-                    self.writeNewPayment(user, value, comment)
-                user.PaymentsBacklog = []
-            user.isDirty = False
-            return None # the entry created doesn't need further modification
+        oldentry = self.getUser(user.Name)
+        if oldentry.Exists :
+            return oldentry
+        self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
+                                     (self.doQuote(self.userCharsetToDatabase(user.Name)), \
+                                      self.doQuote(user.LimitBy or 'quota'), \
+                                      self.doQuote(user.AccountBalance or 0.0), \
+                                      self.doQuote(user.LifeTimePaid or 0.0), \
+                                      self.doQuote(user.Email), \
+                                      self.doQuote(user.OverCharge), \
+                                      self.doQuote(self.userCharsetToDatabase(user.Description))))
+        if user.PaymentsBacklog :
+            for (value, comment) in user.PaymentsBacklog :
+                self.writeNewPayment(user, value, comment)
+            user.PaymentsBacklog = []
+        user.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addGroup(self, group) :        
         """Adds a group to the quota storage, returns the old value if it already exists."""
-        try :
-            self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
-                                  (self.doQuote(self.userCharsetToDatabase(group.Name)), \
-                                   self.doQuote(group.LimitBy or "quota"), \
-                                   self.doQuote(self.userCharsetToDatabase(group.Description))))
-        except PyKotaStorageError :    
-            # TODO : check if this is an error different from a duplicate insert
-            # return the existing entry which has to be modified
-            return self.getGroup(group.Name)
-        else :    
-            group.isDirty = False
-            return None # the entry created doesn't need further modification
+        oldentry = self.getGroup(group.Name)
+        if oldentry.Exists :
+            return oldentry
+        self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
+                              (self.doQuote(self.userCharsetToDatabase(group.Name)), \
+                               self.doQuote(group.LimitBy or "quota"), \
+                               self.doQuote(self.userCharsetToDatabase(group.Description))))
+        group.isDirty = False
+        return None # the entry created doesn't need further modification
 
     def addUserToGroup(self, user, group) :    
         """Adds an user to a group."""
@@ -622,42 +610,36 @@ class SQLStorage :
             
     def addUserPQuota(self, upq) :
         """Initializes a user print quota on a printer."""
-        try :
-            self.doModify("INSERT INTO userpquota (userid, printerid, softlimit, hardlimit, warncount, datelimit, pagecounter, lifepagecounter, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)" \
-                              % (self.doQuote(upq.User.ident), \
-                                 self.doQuote(upq.Printer.ident), \
-                                 self.doQuote(upq.SoftLimit), \
-                                 self.doQuote(upq.HardLimit), \
-                                 self.doQuote(upq.WarnCount), \
-                                 self.doQuote(upq.DateLimit), \
-                                 self.doQuote(upq.PageCounter or 0), \
-                                 self.doQuote(upq.LifePageCounter or 0), \
-                                 self.doQuote(upq.MaxJobSize)))
-        except PyKotaStorageError :                         
-            # TODO : check if this is an error different from a duplicate insert
-            # return the existing entry which has to be modified
-            return self.getUserPQuota(upq.User, upq.Printer)
-        else :    
-            upq.isDirty = False
-            return None # the entry created doesn't need further modification
+        oldentry = self.getUserPQuota(upq.User, upq.Printer)
+        if oldentry.Exists :
+            return oldentry
+        self.doModify("INSERT INTO userpquota (userid, printerid, softlimit, hardlimit, warncount, datelimit, pagecounter, lifepagecounter, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)" \
+                          % (self.doQuote(upq.User.ident), \
+                             self.doQuote(upq.Printer.ident), \
+                             self.doQuote(upq.SoftLimit), \
+                             self.doQuote(upq.HardLimit), \
+                             self.doQuote(upq.WarnCount), \
+                             self.doQuote(upq.DateLimit), \
+                             self.doQuote(upq.PageCounter or 0), \
+                             self.doQuote(upq.LifePageCounter or 0), \
+                             self.doQuote(upq.MaxJobSize)))
+        upq.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def addGroupPQuota(self, gpq) :
         """Initializes a group print quota on a printer."""
-        try :
-            self.doModify("INSERT INTO grouppquota (groupid, printerid, softlimit, hardlimit, datelimit, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s)" \
-                              % (self.doQuote(gpq.Group.ident), \
-                                 self.doQuote(gpq.Printer.ident), \
-                                 self.doQuote(gpq.SoftLimit), \
-                                 self.doQuote(gpq.HardLimit), \
-                                 self.doQuote(gpq.DateLimit), \
-                                 self.doQuote(gpq.MaxJobSize)))
-        except PyKotaStorageError :                         
-            # TODO : check if this is an error different from a duplicate insert
-            # return the existing entry which has to be modified
-            return self.getGroupPQuota(gpq.Group, gpq.Printer)
-        else :    
-            gpq.isDirty = False
-            return None # the entry created doesn't need further modification
+        oldentry = self.getGroupPQuota(gpq.Group, gpq.Printer)
+        if oldentry.Exists :
+            return oldentry
+        self.doModify("INSERT INTO grouppquota (groupid, printerid, softlimit, hardlimit, datelimit, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s)" \
+                          % (self.doQuote(gpq.Group.ident), \
+                             self.doQuote(gpq.Printer.ident), \
+                             self.doQuote(gpq.SoftLimit), \
+                             self.doQuote(gpq.HardLimit), \
+                             self.doQuote(gpq.DateLimit), \
+                             self.doQuote(gpq.MaxJobSize)))
+        gpq.isDirty = False
+        return None # the entry created doesn't need further modification
         
     def savePrinter(self, printer) :    
         """Saves the printer to the database in a single operation."""
