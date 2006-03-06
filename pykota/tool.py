@@ -112,8 +112,8 @@ class Percent :
         """Displays the 'done' message."""
         after = time.time()
         if self.size :
-            speed = int(self.size / (after - self.before))
-            self.display("\r100.00%%\r        \r%s. %s : %i %s.\n" \
+            speed = self.size / (after - self.before)
+            self.display("\r100.00%%\r        \r%s. %s : %.2f %s.\n" \
                      % (_("Done"), _("Average speed"), speed, _("entries per second")))
         else :             
             self.display("\r100.00%%\r        \r%s.\n" % _("Done"))
