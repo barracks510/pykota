@@ -46,10 +46,8 @@ except ImportError :
 else :    
     hasPIL = 1
 
-from pykota.tool import PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Percent, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 from pykota.dumper import DumPyKota
-from pykota.config import PyKotaConfigError
-from pykota.storage import PyKotaStorageError
 
 __doc__ = N_("""pkinvoice v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -281,27 +279,25 @@ class PKInvoice(DumPyKota) :
         if not names :
             names = [ "*" ]
             
+        percent = Percent(self)
         outfname = options["output"]    
         if outfname != "-" :
-            self.display("%s...\n" % _("Processing"))
-            
+            percent.display("%s..." % _("Extracting datas"))
         entries = self.storage.getMatchingUsers(",".join(names))
+        percent.setSize(len(entries))
         if entries :
+            percent.display("\n%s\n" % _("Generating invoices"))
             self.initPDF(options["logo"].strip())
-            nbtotal = len(entries)
-            for i in range(nbtotal) :
-                entry = entries[i]
+            for entry in entries :
                 number += self.pagePDF(number, entry, vat, options["start"], options["end"], options["unit"])
                 if outfname != "-" :
-                    percent = 100.0 * float(i) / float(nbtotal)
-                    self.display("\r%.02f%%" % percent)
+                    percent.oneMore()
                     
             if number > firstnumber :
                 self.endPDF(outfname)
             
         if outfname != "-" :
-            self.display("\r100.00%%\r        ")
-            self.display("\r%s\n" % _("Done."))
+            percent.done()
                      
 if __name__ == "__main__" : 
     retcode = 0
