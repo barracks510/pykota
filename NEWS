@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24alpha17 (2006-03-06) :
+    
+        - Fixed a major problem in the PostgreSQL backend.
+        
+        - pknotify can now check a remote user's name and password.
+        
     - 1.24alpha16 (2006-03-02) :
     
         - Introduced the pknotify command line tool to dialog
