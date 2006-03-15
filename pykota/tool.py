@@ -312,9 +312,13 @@ class Tool :
             if crashrecipient :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
                 server = smtplib.SMTP(self.smtpserver)
-                server.sendmail(admin, [admin, crashrecipient], \
-                                       "From: %s\nTo: %s\nCc: %s\nSubject: PyKota v%s crash traceback !\n\n%s" % \
-                                       (admin, crashrecipient, admin, __version__, fullmessage))
+                msg = MIMEText(fullmessage, _charset=self.charset)
+                msg["Subject"] = str(Header("PyKota v%s crash traceback !" \
+                                        % __version__, charset=self.charset))
+                msg["From"] = admin
+                msg["To"] = crashrecipient
+                msg["Cc"] = admin
+                server.sendmail(admin, [admin, crashrecipient], msg.as_string())
                 server.quit()
         except :
             pass
@@ -427,15 +431,13 @@ class PyKotaTool(Tool) :
         
     def sendMessage(self, adminmail, touser, fullmessage) :
         """Sends an email message containing headers to some user."""
-        if "@" not in touser :
-            touser = "%s@%s" % (touser, self.maildomain or self.smtpserver)
         try :    
             server = smtplib.SMTP(self.smtpserver)
         except socket.error, msg :    
             self.printInfo(_("Impossible to connect to SMTP server : %s") % msg, "error")
         else :
             try :
-                server.sendmail(adminmail, [touser], "From: %s\nTo: %s\n%s" % (adminmail, touser, fullmessage))
+                server.sendmail(adminmail, [touser], fullmessage)
             except smtplib.SMTPException, answer :    
                 for (k, v) in answer.recipients.items() :
                     self.printInfo(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
@@ -444,11 +446,24 @@ class PyKotaTool(Tool) :
     def sendMessageToUser(self, admin, adminmail, user, subject, message) :
         """Sends an email message to a user."""
         message += _("\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n") % (admin, adminmail)
-        self.sendMessage(adminmail, user.Email or user.Name, "Subject: %s\n\n%s" % (subject, message))
+        usermail = user.Email or user.Name
+        if "@" not in usermail :
+            usermail = "%s@%s" % (usermail, self.maildomain or self.smtpserver or "localhost")
+        msg = MIMEText(message, _charset=self.charset)
+        msg["Subject"] = str(Header(subject, charset=self.charset))
+        msg["From"] = adminmail
+        msg["To"] = usermail
+        self.sendMessage(adminmail, usermail, msg.as_string())
         
     def sendMessageToAdmin(self, adminmail, subject, message) :
         """Sends an email message to the Print Quota administrator."""
-        self.sendMessage(adminmail, adminmail, "Subject: %s\n\n%s" % (subject, message))
+        if "@" not in adminmail :
+            adminmail = "%s@%s" % (adminmail, self.maildomain or self.smtpserver or "localhost")
+        msg = MIMEText(message, _charset=self.charset)
+        msg["Subject"] = str(Header(subject, charset=self.charset))
+        msg["From"] = adminmail
+        msg["To"] = adminmail
+        self.sendMessage(adminmail, adminmail, msg.as_string())
         
     def _checkUserPQuota(self, userpquota) :            
         """Checks the user quota on a printer and deny or accept the job."""
