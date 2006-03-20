@@ -28,6 +28,7 @@ import sys
 import os
 import popen2
 import socket
+import signal
 import xmlrpclib
 
 try :
@@ -72,6 +73,13 @@ options :
   -c | --confirm             Tells pknotify to ask for either a confirmation                       
                              or abortion.
                              
+  -D | --denyafter N         With --checkauth above, makes pknotify loop                           
+                             up to N times if the password is incorrect.
+                             After having reached the limit, "DENY" will
+                             be printed, which effectively rejects the job.
+                             The default value of N is 1, meaning the job
+                             is denied after the first unsuccessful try.
+                             
   -n | --notify              Tells pknotify to send an informational message
                              message to the end user.
                              
@@ -79,6 +87,13 @@ options :
                              PyKotIcon application to exit. This option can
                              be combined with the other ones to make PyKotIcon
                              exit after having sent the answer from the dialog.
+                             
+  -t | --timeout T           Tells pknotify to ignore the end user's answer if
+                             it comes pas T seconds after the dialog box being
+                             opened. The default value is 0 seconds, which 
+                             tells pknotify to wait indefinitely.
+                             Use this option to avoid having an user who
+                             leaved his computer stall a whole print queue.
                              
   You MUST specify either --ask, --confirm, --notify or --quit.
 
@@ -118,8 +133,20 @@ examples :
   NB : The PYKOTAJOBORIGINATINGHOSTNAME environment variable is
   only set if you launch pknotify from cupspykota through a directive
   in ~pykota/pykota.conf
+  
+  The TCP port you'll use must be reachable on the client from the
+  print server.
 """)
         
+class TimeoutError(Exception) :        
+    """An exception for timeouts."""
+    def __init__(self, message = ""):
+        self.message = message
+        Exception.__init__(self, message)
+    def __repr__(self):
+        return self.message
+    __str__ = __repr__
+    
 class PyKotaNotify(Tool) :        
     """A class for pknotify."""
     def sanitizeMessage(self, msg) :
@@ -164,15 +191,39 @@ class PyKotaNotify(Tool) :
             self.dropPriv()    
             return retcode
             
+    def alarmHandler(self, signum, frame) :        
+        """Alarm handler."""
+        raise TimeoutError, "The end user at %s:%i didn't answer after %i seconds !" % (self.destination, self.port, self.timeout)
+        
     def main(self, arguments, options) :
         """Notifies or asks questions to end users through PyKotIcon."""
         try :
-            (destination, port) = options["destination"].split(":")
+            (self.destination, self.port) = options["destination"].split(":")
+            self.port = int(self.port)
         except ValueError :
-            destination = options["destination"]
-            port = 7654
+            self.destination = options["destination"]
+            self.port = 7654
+            
+        try :
+            denyafter = int(options["denyafter"])
+            if denyafter < 1 :
+                raise ValueError
+        except (ValueError, TypeError) :        
+            denyafter = 1
+            
         try :    
-            server = xmlrpclib.ServerProxy("http://%s:%s" % (destination, port))
+            self.timeout = int(options["timeout"])
+            if self.timeout < 0 :
+                raise ValueError
+        except (ValueError, TypeError) :
+            self.timeout = 0
+            
+        if self.timeout :
+            signal.signal(signal.SIGALRM, self.alarmHandler)
+            signal.alarm(self.timeout)
+            
+        try :    
+            server = xmlrpclib.ServerProxy("http://%s:%s" % (self.destination, self.port))
             if options["ask"] :
                 labels = []
                 varnames = []
@@ -199,7 +250,7 @@ class PyKotaNotify(Tool) :
                             authok = "AUTH=IMPOSSIBLE"        
                     for varname in varnames :
                         if (varname != "password") \
-                           and ((varname != "username") or (authok == "AUTH=YES")) :
+                           and ((varname != "username") or (authok in (None, "AUTH=YES"))) :
                             print "%s=%s" % (varname.upper(), result[varname].data)
                     if authok is not None :        
                         print authok        
@@ -212,15 +263,23 @@ class PyKotaNotify(Tool) :
                 server.quitApplication()
         except (socket.error, socket.gaierror), msg :
             raise PyKotaCommandLineError, "%s : %s" % (_("Connection error"), str(msg))
+        except TimeoutError, msg :    
+            self.printInfo(msg, "warn")
+            
+        if self.timeout :    
+            signal.alarm(0)    
         
 if __name__ == "__main__" :
     retcode = 0
     try :
         defaults = { \
+                     "denyafter" : 1,
+                     "timeout" : 0,
                    }
-        short_options = "vhd:acnqC"
-        long_options = ["help", "version", "destination=", \
-                        "ask", "checkauth", "confirm", "notify", "quit" ]
+        short_options = "vhd:acnqCD:t:"
+        long_options = ["help", "version", "destination=", "denyafter=", \
+                        "timeout=", "ask", "checkauth", "confirm", "notify", \
+                        "quit" ]
         
         # Initializes the command line tool
         notifier = PyKotaNotify(doc=__doc__)
@@ -238,6 +297,8 @@ if __name__ == "__main__" :
         options["notify"] = options["n"] or options["notify"]
         options["quit"] = options["q"] or options["quit"]
         options["checkauth"] = options["C"] or options["checkauth"]
+        options["denyafter"] = options["D"] or options["denyafter"] or defaults["denyafter"]
+        options["timeout"] = options["t"] or options["timeout"] or defaults["timeout"]
         
         if options["help"] :
             notifier.display_usage_and_quit()
@@ -245,7 +306,7 @@ if __name__ == "__main__" :
             notifier.display_version_and_quit()
         elif (options["ask"] and (options["confirm"] or options["notify"])) \
              or (options["confirm"] and (options["ask"] or options["notify"])) \
-             or (options["checkauth"] and not options["ask"]) \
+             or ((options["checkauth"] or options["denyafter"]) and not options["ask"]) \
              or (options["notify"] and (options["ask"] or options["confirm"])) :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif (not options["destination"]) \
