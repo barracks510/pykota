@@ -48,6 +48,22 @@ from pykota.accounter import openAccounter
 from pykota.ipp import IPPRequest, IPPError
 from pykota.storage import PyKotaStorageError
         
+class FakeObject :        
+    def __init__(self, name) :
+        """Fake init."""
+        self.Name = name
+        
+class FakePrinter(FakeObject) :        
+    """Fake printer instance."""
+    pass
+    
+class FakeUser(FakeObject) :    
+    """Fake user instance."""
+    def __init__(self, name) :
+        """Fake init."""
+        self.Email = name
+        FakeObject.__init__(self, name)
+    
 class CUPSBackend(PyKotaTool) :
     """Base class for tools with no database access."""
     def __init__(self) :
@@ -254,6 +270,11 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("ControlFile : %s" % self.ControlFile)
         self.logdebug("JobBillingCode : %s" % self.JobBillingCode)
         self.logdebug("JobOriginatingHostName : %s" % self.ClientHost)
+        
+        # fakes some entries to allow for external mailto
+        # before real entries are extracted from the database.
+        self.User = FakeUser(self.UserName)
+        self.Printer = FakePrinter(self.PrinterName)
         
         self.enableSigInt()
         self.logdebug("Backend initialized.")
@@ -848,8 +869,12 @@ class CUPSBackend(PyKotaTool) :
                         msg = MIMEText(fullmessage, _charset=self.charset)
                         msg["Subject"] = str(Header(_("Print Quota"), charset=self.charset))
                         msg["From"] = adminmail
-                        msg["To"] = usermail
-                        msg["Cc"] = adminmail
+                        if mailto in ("BOTH", "USER") :
+                            msg["To"] = usermail
+                            if mailto == "BOTH" :
+                                msg["Cc"] = adminmail
+                        else :    
+                            msg["To"] = adminmail
                         server.sendmail(adminmail, destination, msg.as_string())
                     except smtplib.SMTPException, answer :    
                         for (k, v) in answer.recipients.items() :
@@ -863,32 +888,47 @@ class CUPSBackend(PyKotaTool) :
             # if no data to pass to real backend, probably a filter
             # higher in the chain failed because of a misconfiguration.
             # we deny the job in this case (nothing to print anyway)
-            self.printInfo(_("Job contains no data. Printing is denied."), "error")
+            self.Reason = _("Job contains no data. Printing is denied.")
+            self.printInfo(self.Reason, "error")
+            self.tellUser()
             return self.removeJob()
             
         self.getPrinterUserAndUserPQuota()
         if self.Policy == "EXTERNALERROR" :
             # Policy was 'EXTERNAL' and the external command returned an error code
+            self.Reason = _("Error in external policy script. Printing is denied.")
+            self.printInfo(self.Reason, "error")
+            self.tellUser()
             return self.removeJob()
         elif self.Policy == "EXTERNAL" :
             # Policy was 'EXTERNAL' and the external command wasn't able
             # to add either the printer, user or user print quota
+            self.Reason = _("Still no print quota entry for user %s on printer %s after external policy. Printing is denied.") % (self.UserName, self.PrinterName)
+            self.printInfo(self.Reason, "warn")
+            self.tellUser()
             return self.removeJob()
         elif self.Policy == "DENY" :    
             # Either printer, user or user print quota doesn't exist,
             # and the job should be rejected.
+            self.Reason = _("Printing is denied by printer policy.")
+            self.printInfo(self.Reason, "warn")
+            self.tellUser()
             return self.removeJob()
         elif self.Policy == "ALLOW" :
             # ALLOW means : Either printer, user or user print quota doesn't exist,
             #               but the job should be allowed anyway.
-            self.printInfo(_("Job allowed by printer policy. No accounting will be done."), "warn")
+            self.Reason = _("Job allowed by printer policy. No accounting will be done.")
+            self.printInfo(self.Reason, "warn")
+            self.tellUser()
             return self.printJobDatas()
         elif self.Policy == "OK" :
             # OK means : Both printer, user and user print quota exist, job should
             #            be allowed if current user is allowed to print on this printer
             return self.doWork()
         else :    
-            self.printInfo(_("Invalid policy %s for printer %s") % (self.Policy, self.PrinterName), "error")
+            self.Reason = _("Invalid policy %s for printer %s") % (self.Policy, self.PrinterName)
+            self.printInfo(self.Reason, "error")
+            self.tellUser()
             return self.removeJob()
     
     def doWork(self) :    
