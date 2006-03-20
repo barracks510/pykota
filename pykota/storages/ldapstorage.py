@@ -1280,7 +1280,7 @@ class Storage(BaseStorage) :
                    "pykotaSoftLimit" : str(grouppquota.SoftLimit),
                    "pykotaHardLimit" : str(grouppquota.HardLimit),
                    "pykotaDateLimit" : str(grouppquota.DateLimit),
-                   "pykotaMaxJobSize" : str(userpquota.MaxJobSize or 0),
+                   "pykotaMaxJobSize" : str(grouppquota.MaxJobSize or 0),
                  }
         self.doModify(grouppquota.ident, fields)
             
