@@ -73,6 +73,28 @@ def deleteUsers(usernames) :
     argsfile.close()    
     os.system('pkusers --arguments arguments.list') 
     
+def createGroups(number) :
+    """Creates a number of groups."""
+    sys.stdout.write("Adding %i groups...\n" % number)
+    groupnames = [ "test-group-%05i" % i for i in range(number) ]
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--groups\n--add\n--limitby\nquota\n--description\n"a group"\n')
+    for gname in groupnames :
+        argsfile.write("%s\n" % gname)
+    argsfile.close()    
+    os.system('pkusers --arguments arguments.list') 
+    return groupnames
+
+def deleteGroups(groupnames) :
+    """Deletes all test groups."""
+    sys.stdout.write("Deleting groups...\n")
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--groups\n--delete\n')
+    for gname in groupnames :
+        argsfile.write("%s\n" % gname)
+    argsfile.close()    
+    os.system('pkusers --arguments arguments.list') 
+    
 def createUserPQuotas(usernames, printernames) :
     """Creates a number of user print quota entries."""
     number = len(usernames) * len(printernames)
@@ -97,9 +119,33 @@ def deleteUserPQuotas(usernames, printernames) :
     argsfile.close()    
     os.system('edpykota --arguments arguments.list') 
     
+def createGroupPQuotas(groupnames, printernames) :
+    """Creates a number of group print quota entries."""
+    number = len(groupnames) * len(printernames)
+    sys.stdout.write("Adding %i group print quota entries...\n" % number)
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--groups\n--add\n--softlimit\n100\n--hardlimit\n110\n--reset\n--hardreset\n--printer\n')
+    argsfile.write("%s\n" % ",".join(printernames))
+    for gname in groupnames :
+        argsfile.write("%s\n" % gname)
+    argsfile.close()    
+    os.system('edpykota --arguments arguments.list') 
+
+def deleteGroupPQuotas(groupnames, printernames) :
+    """Deletes all test group print quota entries."""
+    number = len(groupnames) * len(printernames)
+    sys.stdout.write("Deleting group print quota entries...\n")
+    argsfile = open("arguments.list", "w")
+    argsfile.write('--groups\n--delete\n--printer\n')
+    argsfile.write("%s\n" % ",".join(printernames))
+    for gname in groupnames :
+        argsfile.write("%s\n" % gname)
+    argsfile.close()    
+    os.system('edpykota --arguments arguments.list') 
+    
 if __name__ == "__main__" :    
     if len(sys.argv) == 1 :
-        sys.stderr.write("usage :  %s  [--nodelete]  NbBillingCodes  NbPrinters  NbUsers\n" % sys.argv[0])
+        sys.stderr.write("usage :  %s  [--nodelete]  NbBillingCodes  NbPrinters  NbUsers  NbGroups\n" % sys.argv[0])
     else :    
         delete = True
         args = sys.argv[1:]
@@ -109,24 +155,34 @@ if __name__ == "__main__" :
         nbbillingcodes = int(args[0])
         nbprinters = int(args[1])
         nbusers = int(args[2])
+        nbgroups = int(args[3])
         if nbbillingcodes :
             bcodes = createBillingCodes(nbbillingcodes)
         if nbprinters :
             printers = createPrinters(nbprinters)
         if nbusers :    
             users = createUsers(nbusers)
+        if nbgroups :    
+            groups = createGroups(nbgroups)
             
         if nbusers and nbprinters :    
             createUserPQuotas(users, printers)
             if delete :
                 deleteUserPQuotas(users, printers)
             
+        if nbgroups and nbprinters :    
+            createGroupPQuotas(groups, printers)
+            if delete :
+                deleteGroupPQuotas(groups, printers)
+            
         if delete :    
             if nbbillingcodes :    
                 deleteBillingCodes(bcodes)
+            if nbgroups :    
+                deleteGroups(groups)
             if nbusers :    
-                deleteUsers(users)           # NB : either this one or the one below
+                deleteUsers(users)
             if nbprinters :    
-                deletePrinters(printers)     # also delete user print quota entries.
+                deletePrinters(printers)
         os.remove("arguments.list")
         
