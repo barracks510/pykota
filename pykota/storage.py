@@ -107,20 +107,14 @@ class StorageUser(StorageObject) :
         
     def delete(self) :    
         """Deletes an user from the database."""
-        self.parent.beginTransaction()
-        try :
-            self.parent.deleteUser(self)
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
-            self.parent.flushEntry("USERS", self.Name)
-            if self.parent.usecache :
-                for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
-                    if v.User.Name == self.Name :
-                        self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
-            self.Exists = 0
+        self.parent.deleteUser(self)
+        self.parent.flushEntry("USERS", self.Name)
+        if self.parent.usecache :
+            for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
+                if v.User.Name == self.Name :
+                    self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
+        self.Exists = False
+        self.isDirty = False            
         
 class StorageGroup(StorageObject) :        
     """User class."""
@@ -151,20 +145,14 @@ class StorageGroup(StorageObject) :
         
     def delete(self) :    
         """Deletes a group from the database."""
-        self.parent.beginTransaction()
-        try :
-            self.parent.deleteGroup(self)
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
-            self.parent.flushEntry("GROUPS", self.Name)
-            if self.parent.usecache :
-                for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
-                    if v.Group.Name == self.Name :
-                        self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
-            self.Exists = 0
+        self.parent.deleteGroup(self)
+        self.parent.flushEntry("GROUPS", self.Name)
+        if self.parent.usecache :
+            for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
+                if v.Group.Name == self.Name :
+                    self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
+        self.Exists = False
+        self.isDirty = False            
         
 class StoragePrinter(StorageObject) :
     """Printer class."""
@@ -225,24 +213,17 @@ class StoragePrinter(StorageObject) :
         
     def delete(self) :    
         """Deletes a printer from the database."""
-        self.parent.beginTransaction()
-        try :
-            self.parent.deletePrinter(self)
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
-            self.parent.flushEntry("PRINTERS", self.Name)
-            if self.parent.usecache :
-                for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
-                    if v.Printer.Name == self.Name :
-                        self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
-                for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
-                    if v.Printer.Name == self.Name :
-                        self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
-            self.isDirty = False            
-            self.Exists = False
+        self.parent.deletePrinter(self)
+        self.parent.flushEntry("PRINTERS", self.Name)
+        if self.parent.usecache :
+            for (k, v) in self.parent.caches["USERPQUOTAS"].items() :
+                if v.Printer.Name == self.Name :
+                    self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (v.User.Name, v.Printer.Name))
+            for (k, v) in self.parent.caches["GROUPPQUOTAS"].items() :
+                if v.Printer.Name == self.Name :
+                    self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
+        self.Exists = False
+        self.isDirty = False            
         
 class StorageUserPQuota(StorageObject) :
     """User Print Quota class."""
@@ -343,17 +324,11 @@ class StorageUserPQuota(StorageObject) :
         
     def delete(self) :    
         """Deletes an user print quota entry from the database."""
-        self.parent.beginTransaction()
-        try :
-            self.parent.deleteUserPQuota(self)
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
-            if self.parent.usecache :
-                self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (self.User.Name, self.Printer.Name))
-            self.Exists = 0
+        self.parent.deleteUserPQuota(self)
+        if self.parent.usecache :
+            self.parent.flushEntry("USERPQUOTAS", "%s@%s" % (self.User.Name, self.Printer.Name))
+        self.Exists = False
+        self.isDirty = False
         
 class StorageGroupPQuota(StorageObject) :
     """Group Print Quota class."""
@@ -378,34 +353,20 @@ class StorageGroupPQuota(StorageObject) :
         
     def reset(self) :    
         """Resets page counter to 0."""
-        self.parent.beginTransaction()
-        try :
-            for user in self.parent.getGroupMembers(self.Group) :
-                uq = self.parent.getUserPQuota(user, self.Printer)
-                uq.reset()
-                uq.save()
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
+        for user in self.parent.getGroupMembers(self.Group) :
+            uq = self.parent.getUserPQuota(user, self.Printer)
+            uq.reset()
+            uq.save()
         self.PageCounter = 0
         self.DateLimit = None
         self.isDirty = True
         
     def hardreset(self) :    
         """Resets actual and life time page counters to 0."""
-        self.parent.beginTransaction()
-        try :
-            for user in self.parent.getGroupMembers(self.Group) :
-                uq = self.parent.getUserPQuota(user, self.Printer)
-                uq.hardreset()
-                uq.save()
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
+        for user in self.parent.getGroupMembers(self.Group) :
+            uq = self.parent.getUserPQuota(user, self.Printer)
+            uq.hardreset()
+            uq.save()
         self.PageCounter = self.LifePageCounter = 0
         self.DateLimit = None
         self.isDirty = True
@@ -430,17 +391,11 @@ class StorageGroupPQuota(StorageObject) :
         
     def delete(self) :    
         """Deletes a group print quota entry from the database."""
-        self.parent.beginTransaction()
-        try :
-            self.parent.deleteGroupPQuota(self)
-        except PyKotaStorageError, msg :    
-            self.parent.rollbackTransaction()
-            raise PyKotaStorageError, msg
-        else :    
-            self.parent.commitTransaction()
-            if self.parent.usecache :
-                self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (self.Group.Name, self.Printer.Name))
-            self.Exists = 0
+        self.parent.deleteGroupPQuota(self)
+        if self.parent.usecache :
+            self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (self.Group.Name, self.Printer.Name))
+        self.Exists = False
+        self.isDirty = False
         
 class StorageJob(StorageObject) :
     """Printer's Job class."""
