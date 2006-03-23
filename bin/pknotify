@@ -153,7 +153,7 @@ class PyKotaNotify(Tool) :
         """Replaces \\n and returns a messagee in xmlrpclib Binary format."""
         return xmlrpclib.Binary(msg.replace("\\n", "\n"))
         
-    def convPAM(self, auth, queries, userdata) :
+    def convPAM(self, auth, queries=[], userdata=None) :
         """Prepares PAM datas."""
         response = []
         for (query, qtype) in queries :
@@ -193,7 +193,7 @@ class PyKotaNotify(Tool) :
             
     def alarmHandler(self, signum, frame) :        
         """Alarm handler."""
-        raise TimeoutError, "The end user at %s:%i didn't answer after %i seconds !" % (self.destination, self.port, self.timeout)
+        raise TimeoutError, _("The end user at %s:%i didn't answer within %i seconds. The print job will be cancelled.") % (self.destination, self.port, self.timeout)
         
     def main(self, arguments, options) :
         """Notifies or asks questions to end users through PyKotIcon."""
@@ -265,6 +265,7 @@ class PyKotaNotify(Tool) :
             raise PyKotaCommandLineError, "%s : %s" % (_("Connection error"), str(msg))
         except TimeoutError, msg :    
             self.printInfo(msg, "warn")
+            print "CANCEL"      # Timeout occured : job is cancelled.
             
         if self.timeout :    
             signal.alarm(0)    
