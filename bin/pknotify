@@ -225,6 +225,12 @@ class PyKotaNotify(Tool) :
         try :    
             server = xmlrpclib.ServerProxy("http://%s:%s" % (self.destination, self.port))
             if options["ask"] :
+                try :
+                    denyafter = int(options["denyafter"])
+                    if denyafter < 1 :
+                        raise ValueError
+                except (ValueError, TypeError) :    
+                    denyafter = 1
                 labels = []
                 varnames = []
                 varvalues = {}
@@ -237,10 +243,14 @@ class PyKotaNotify(Tool) :
                     varname = varname.lower()
                     varnames.append(varname)
                     varvalues[varname] = self.sanitizeMessage(varvalue)
-                result = server.askDatas(labels, varnames, varvalues)    
-                if result["isValid"] :
-                    authok = None
-                    if options["checkauth"] :
+                    
+                passnumber = 1    
+                authok = None
+                while (authok != "AUTH=YES") and (passnumber <= denyafter) :
+                    result = server.askDatas(labels, varnames, varvalues)    
+                    if not options["checkauth"] :
+                        break
+                    if result["isValid"] :
                         if ("username" in varnames) and ("password" in varnames) :
                             if self.checkAuth(self.UTF8ToUserCharset(result["username"].data[:]), 
                                               self.UTF8ToUserCharset(result["password"].data[:])) :
@@ -249,6 +259,9 @@ class PyKotaNotify(Tool) :
                                 authok = "AUTH=NO"
                         else :        
                             authok = "AUTH=IMPOSSIBLE"        
+                    passnumber += 1        
+                                
+                if result["isValid"] :
                     for varname in varnames :
                         if (varname != "password") \
                            and ((varname != "username") or (authok in (None, "AUTH=YES"))) :
@@ -275,7 +288,6 @@ if __name__ == "__main__" :
     retcode = 0
     try :
         defaults = { \
-                     "denyafter" : 0,
                      "timeout" : 0,
                    }
         short_options = "vhd:acnqCD:t:"
@@ -299,7 +311,7 @@ if __name__ == "__main__" :
         options["notify"] = options["n"] or options["notify"]
         options["quit"] = options["q"] or options["quit"]
         options["checkauth"] = options["C"] or options["checkauth"]
-        options["denyafter"] = options["D"] or options["denyafter"] or defaults["denyafter"]
+        options["denyafter"] = options["D"] or options["denyafter"]
         options["timeout"] = options["t"] or options["timeout"] or defaults["timeout"]
         
         if options["help"] :
