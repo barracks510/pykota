@@ -241,12 +241,15 @@ class Tool :
         if text is not None :
             try :
                 return unicode(text, "UTF-8").encode(self.charset) 
-            except UnicodeError :    
+            except (UnicodeError, TypeError) :    
                 try :
                     # Incorrect locale settings ?
                     return unicode(text, "UTF-8").encode("ISO-8859-15") 
-                except UnicodeError :    
-                    pass
+                except (UnicodeError, TypeError) :    
+                    try :
+                        return text.encode(self.charset) 
+                    except (UnicodeError, TypeError, AttributeError) :
+                        pass
         return text
         
     def userCharsetToUTF8(self, text) :
@@ -254,12 +257,15 @@ class Tool :
         if text is not None :
             try :
                 return unicode(text, self.charset).encode("UTF-8") 
-            except UnicodeError :    
+            except (UnicodeError, TypeError) :    
                 try :
                     # Incorrect locale settings ?
                     return unicode(text, "ISO-8859-15").encode("UTF-8") 
-                except UnicodeError :    
-                    pass
+                except (UnicodeError, TypeError) :    
+                    try :
+                        return text.encode("UTF-8") 
+                    except (UnicodeError, TypeError, AttributeError) :
+                        pass
         return text
         
     def display(self, message) :
