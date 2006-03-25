@@ -261,6 +261,10 @@ class PyKotaNotify(Tool) :
                             authok = "AUTH=IMPOSSIBLE"        
                     passnumber += 1        
                                 
+                if options["checkauth"] and options["denyafter"] \
+                   and (passnumber > denyafter) \
+                   and (authok != "AUTH=YES") :
+                    print "DENY"
                 if result["isValid"] :
                     for varname in varnames :
                         if (varname != "password") \
