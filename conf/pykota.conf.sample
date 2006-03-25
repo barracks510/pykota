@@ -377,6 +377,7 @@ onbackenderror : nocharge
 #
 #    USERNAME=the_username_we_want_to_overwrite_with
 #    BILLINGCODE=the_billingcode_we_want_to_overwrite_with
+#    AUTH=NO (equivalent to DENY below)
 #    DENY 
 #    CANCEL
 #
@@ -387,8 +388,7 @@ onbackenderror : nocharge
 # if any, is used unchanged.
 # If only BILLINGCODE= lines are printed, the username is
 # used unchanged.
-# If DENY or CANCEL is output, but is followed by new USERNAME= or
-# BILLINGCODE= lines, the job is not denied nor cancelled.
+# If DENY or CANCEL is output, the username can't be overwritten.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.

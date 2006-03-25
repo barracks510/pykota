@@ -328,11 +328,9 @@ class CUPSBackend(PyKotaTool) :
                 elif line.startswith("USERNAME=") :    
                     username = line.split("=", 1)[1].strip()
                     self.logdebug("Seen new username [%s]" % username)
-                    action = None
                 elif line.startswith("BILLINGCODE=") :    
                     billingcode = line.split("=", 1)[1].strip()
                     self.logdebug("Seen new billing code [%s]" % billingcode)
-                    action = None
             inputfile.close()    
             self.dropPriv()
             
@@ -344,8 +342,8 @@ class CUPSBackend(PyKotaTool) :
                 self.Action = action
                 self.Reason = _("Print job cancelled.")
                 os.environ["PYKOTASTATUS"] = "CANCELLED"
-            if username :
-                self.UserName = username
+            elif username :
+                self.UserName = username # If cancelled or denied, we don't allow username to be overwritten
             # NB : we overwrite the billing code even if empty    
             self.JobBillingCode = billingcode 
         self.logdebug("Job ticket overwriting done.")
