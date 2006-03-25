@@ -236,6 +236,32 @@ class Tool :
         """Returns the charset in use."""
         return self.charset
         
+    def UTF8ToUserCharset(self, text) :
+        """Converts from UTF-8 to user's charset."""
+        if text is not None :
+            try :
+                return unicode(text, "UTF-8").encode(self.charset) 
+            except UnicodeError :    
+                try :
+                    # Incorrect locale settings ?
+                    return unicode(text, "UTF-8").encode("ISO-8859-15") 
+                except UnicodeError :    
+                    pass
+        return text
+        
+    def userCharsetToUTF8(self, text) :
+        """Converts from user's charset to UTF-8."""
+        if text is not None :
+            try :
+                return unicode(text, self.charset).encode("UTF-8") 
+            except UnicodeError :    
+                try :
+                    # Incorrect locale settings ?
+                    return unicode(text, "ISO-8859-15").encode("UTF-8") 
+                except UnicodeError :    
+                    pass
+        return text
+        
     def display(self, message) :
         """Display a message but only if stdout is a tty."""
         if sys.stdout.isatty() :

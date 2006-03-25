@@ -151,7 +151,7 @@ class PyKotaNotify(Tool) :
     """A class for pknotify."""
     def sanitizeMessage(self, msg) :
         """Replaces \\n and returns a messagee in xmlrpclib Binary format."""
-        return xmlrpclib.Binary(msg.replace("\\n", "\n"))
+        return xmlrpclib.Binary(self.userCharsetToUTF8(msg.replace("\\n", "\n")))
         
     def convPAM(self, auth, queries=[], userdata=None) :
         """Prepares PAM datas."""
@@ -242,7 +242,8 @@ class PyKotaNotify(Tool) :
                     authok = None
                     if options["checkauth"] :
                         if ("username" in varnames) and ("password" in varnames) :
-                            if self.checkAuth(result["username"].data, result["password"].data) :
+                            if self.checkAuth(self.UTF8ToUserCharset(result["username"].data[:]), 
+                                              self.UTF8ToUserCharset(result["password"].data[:])) :
                                 authok = "AUTH=YES"
                             else :    
                                 authok = "AUTH=NO"
@@ -251,7 +252,7 @@ class PyKotaNotify(Tool) :
                     for varname in varnames :
                         if (varname != "password") \
                            and ((varname != "username") or (authok in (None, "AUTH=YES"))) :
-                            print "%s=%s" % (varname.upper(), result[varname].data)
+                            print "%s=%s" % (varname.upper(), self.UTF8ToUserCharset(result[varname].data[:]))
                     if authok is not None :        
                         print authok        
             elif options["confirm"] :
@@ -274,7 +275,7 @@ if __name__ == "__main__" :
     retcode = 0
     try :
         defaults = { \
-                     "denyafter" : 1,
+                     "denyafter" : 0,
                      "timeout" : 0,
                    }
         short_options = "vhd:acnqCD:t:"

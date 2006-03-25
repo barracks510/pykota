@@ -645,29 +645,11 @@ class BaseStorage :
         
     def databaseToUserCharset(self, text) :
         """Converts from database format (UTF-8) to user's charset."""
-        if text is not None :
-            try :
-                return unicode(text, "UTF-8").encode(self.tool.getCharset()) 
-            except UnicodeError :    
-                try :
-                    # Incorrect locale settings ?
-                    return unicode(text, "UTF-8").encode("ISO-8859-15") 
-                except UnicodeError :    
-                    pass
-        return text
+        return self.tool.UTF8ToUserCharset(text)
         
     def userCharsetToDatabase(self, text) :
         """Converts from user's charset to database format (UTF-8)."""
-        if text is not None :
-            try :
-                return unicode(text, self.tool.getCharset()).encode("UTF-8") 
-            except UnicodeError :    
-                try :
-                    # Incorrect locale settings ?
-                    return unicode(text, "ISO-8859-15").encode("UTF-8") 
-                except UnicodeError :    
-                    pass
-        return text
+        return self.tool.userCharsetToUTF8(text)
         
     def cleanDates(self, startdate, enddate) :    
         """Clean the dates to create a correct filter."""
