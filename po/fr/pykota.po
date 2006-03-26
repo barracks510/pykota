@@ -219,7 +219,7 @@ msgstr "Compteur de pages : %s"
 
 #, python-format
 msgid "Lifetime page counter : %s"
-msgstr "Compteur de page éternel : %s"
+msgstr "Compteur de pages éternel : %s"
 
 #, python-format
 msgid "Soft limit : %s"
