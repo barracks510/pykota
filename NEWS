@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.24beta (2006-03-26) :
+    
+        - Finalized the pknotify command.
+        
+        - Updated the messages catalogs for translations.
+        
     - 1.24alpha18 (2006-03-15) :
     
         - Now uses MIME encapsulation for email messages to avoid
