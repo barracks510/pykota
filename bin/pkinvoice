@@ -59,10 +59,10 @@ command line usage :
 
 options :
 
-  -v | --version       Prints edpykota's version number then exits.
+  -v | --version       Prints pkinvoice's version number then exits.
   -h | --help          Prints this message then exits.
   
-  -l | --logo img      Use the image as the banner's logo. The logo will
+  -l | --logo img      Use the image as the invoice's logo. The logo will
                        be drawn at the center top of the page. The default
                        logo is /usr/share/pykota/logos/pykota.jpeg
                        
