@@ -25,6 +25,9 @@ Documentation for the pykota-mysql.sql script :
 This script is to be used to create an empty Quota Storage
 DataBase using MySQL as a backend.
 
+        - edit the pykota-mysql.sql file and modify the passwords at 
+          the end of the 'GRANT USAGE' lines.
+          
         - As MySQL's administrative user, usually root,
           do the following :
           
@@ -32,5 +35,26 @@ DataBase using MySQL as a backend.
             
         - If no error message appear, your MySQL PyKota storage
           is now ready for use.
+          
+        - In ~pykota/pykota.conf, ensure that the following lines
+          are present and unique inside the [global] section :
+        
+            storagebackend : mysqlstorage
+            storageserver : localhost
+            storagename : pykota
+            storageuser : pykotauser
+            storageuserpw : readonlypw
+            
+            NB : replace 'readonlypw' with the password you chose
+            for user 'pykotauser' when you modified pykota-mysql.sql
+            
+        - In ~pykota/pykotadmin.conf ensure that the following lines
+          are present and unique inside the [global] section :
+        
+            storageadmin : pykotaadmin
+            storageadminpw : readwritepw
+            
+            NB : replace 'readwritepw' with the password you chose
+            for user 'pykotaadmin' when you modified pykota-mysql.sql
         
 ============================================================
