@@ -25,9 +25,12 @@ Documentation for the pykota-mysql.sql script :
 This script is to be used to create an empty Quota Storage
 DataBase using MySQL as a backend.
 
-FOR NOW MYSQL SUPPORT IS ONLY A WORK IN PROGRESS. THIS DOESN'T WORK. 
-DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU ARE DOING OR WANT TO HELP. 
-
-IF YOU REALLY WANT MYSQL SUPPORT, BE PATIENT, OR USE POSTGRESQL
-INSTEAD WHICH IS MUCH MUCH BETTER ANYWAY.
-
+        - As MySQL's administrative user, usually root,
+          do the following :
+          
+            # mysql <pykota-mysql.sql
+            
+        - If no error message appear, your MySQL PyKota storage
+          is now ready for use.
+        
+============================================================
