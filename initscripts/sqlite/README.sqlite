@@ -51,6 +51,11 @@ pykota.sqlite :
                 # cd pysqlite-2.0.5
                 # python setup.py install
                 
+        Under Debian, if the package exists for your version of Debian,
+        simply do :
+        
+                # apt-get install python-pysqlite2
+                
       - Create an SQLite3 database for PyKota :
 
                 # sqlite3 ~pykota/pykota.db <pykota.sqlite
@@ -62,18 +67,24 @@ pykota.sqlite :
              system runs as (e.g. user 'lp') can read and write
              to the /etc/pykota/pykota.db file.
                 
-      - In pykotadmin.conf, just comment out all the lines
+      - In ~pykota/pykotadmin.conf, just comment out all the lines
 
-      - In pykota.conf, set :
+      - In ~pykota/pykota.conf, ensure that the following lines
+        are present and unique inside the [global] section :
 
                 storagebackend : sqlitestorage
                 storagename : /etc/pykota/pykota.db
                 
         And comment out all other directives which name begins with 'storage'.
         NB : feel free to use a different path to store pykota.db, and
-             adapt your configuration files accordingly.
+             adapt your configuration files and permissions accordingly.
                 
 Your PyKota setup is now ready to be used with an SQLite3 database.             
+
+IMPORTANT : with PyKota's SQLite backend there's no possibility to separate
+readonly accesses from readwrite accesses for now, so don't set your
+permissions too loosely if untrusted users have local shell access on
+your print server.
 
 Please report bugs to : alet@librelogiciel.com
 
