@@ -82,8 +82,9 @@ storagename: pykota
 # DATABASE, OTHERWISE ANY USER WHO COULD READ THIS CONFIGURATION
 # FILE COULD CHANGE HIS PRINT QUOTA.
 #
-storageuser: pykotauser
-# storageuserpw: Comment out if unused, or set to Quota Storage user password
+storageuser : pykotauser
+# In the line below change the password's value if needed.
+storageuserpw : readonlypw
 
 ####################################################################
 # LDAP : comment this section out if you use another backend       #

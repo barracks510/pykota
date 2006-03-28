@@ -61,9 +61,9 @@
 
 # PostgreSQL's or MySQL's Quota Storage administrator's name and password
 # Please comment these lines out and see further below if you use LDAP.
-storageadmin: pykotaadmin
-# storageadminpw: Comment out if unused, or set to Quota Storage admin password
-
+storageadmin : pykotaadmin
+# In the line below change the password's value if needed.
+storageadminpw : readwritepw
 
 # storagebackend: ldapstorage
 # storageserver: ldap://ldapmaster.example.com:389
