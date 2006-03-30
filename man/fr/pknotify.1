@@ -62,18 +62,21 @@ Indique à pknotify d'envoyer un message
 d'information à l'utilisateur final.
 .TP
 \fB\-q\fR | \fB\-\-quit\fR
-Tells pknotify to send a message asking the
-PyKotIcon application to exit. This option can
-be combined with the other ones to make PyKotIcon
-exit after having sent the answer from the dialog.
+Indique à pknotify d'envoyer un message demandant
+à l'application PyKotIcon de quitter. Cette option
+peut être combinée avec les autres pour faire en
+sort que PyKotIcon quitte après avoir renvoyé la
+réponse de la boite de dialogue.
 .TP
 \fB\-t\fR | \fB\-\-timeout\fR T
-Tells pknotify to ignore the end user's answer if
-it comes pas T seconds after the dialog box being
-opened. The default value is 0 seconds, which
-tells pknotify to wait indefinitely.
-Use this option to avoid having an user who
-leaved his computer stall a whole print queue.
+Indique à pknotify d'ignorer la réponse venant de
+l'utilisateur s'il a mis plus de T secondes à
+répondre après que la boite de dialogue ait été
+ouverte. La valeur par défaut est 0 seconde, qui
+indique à pknotify d'attendre indéfiniment.
+Utilisez cette option pour éviter qu'un
+utilisateur qui a quitté son ordinateur ne
+bloque inutilement la file d'impression.
 .IP
 You MUST specify either \fB\-\-ask\fR, \fB\-\-confirm\fR, \fB\-\-notify\fR or \fB\-\-quit\fR.
 .IP

@@ -89,7 +89,7 @@ options :
                              exit after having sent the answer from the dialog.
                              
   -t | --timeout T           Tells pknotify to ignore the end user's answer if
-                             it comes pas T seconds after the dialog box being
+                             it comes past T seconds after the dialog box being
                              opened. The default value is 0 seconds, which 
                              tells pknotify to wait indefinitely.
                              Use this option to avoid having an user who
