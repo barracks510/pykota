@@ -81,7 +81,7 @@ options :
                              is denied after the first unsuccessful try.
                              
   -n | --notify              Tells pknotify to send an informational message
-                             message to the end user.
+                             to the end user.
                              
   -q | --quit                Tells pknotify to send a message asking the
                              PyKotIcon application to exit. This option can
