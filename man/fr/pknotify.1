@@ -78,51 +78,53 @@ Utilisez cette option pour éviter qu'un
 utilisateur qui a quitté son ordinateur ne
 bloque inutilement la file d'impression.
 .IP
-You MUST specify either \fB\-\-ask\fR, \fB\-\-confirm\fR, \fB\-\-notify\fR or \fB\-\-quit\fR.
+Vous DEVEZ spécifier soit \fB\-\-ask\fR, \fB\-\-confirm\fR, \fB\-\-notify\fR ou \fB\-\-quit\fR.
 .IP
 arguments :
 .HP
-\fB\-a\fR | \fB\-\-ask\fR : Several arguments are accepted, or the form
+\fB\-a\fR | \fB\-\-ask\fR : Plusieurs arguments sont acceptés, de la forme
 .IP
-"label:varname:defaultvalue". The result will
-be printed to stdout in the following format :
-VAR1NAME=VAR1VALUE
-VAR2NAME=VAR2VALUE
+"label:varname:defaultvalue". Le résultat sera
+envoyé sur stdout dans le format suivant :
+NOMVARIABLE1=VALEURVARIABLE1
+NOMVARIABLE2=VALEURVARIABLE2
 \&...
-If the dialog was cancelled, nothing will be
-printed. If one of the varname is 'password'
-then this field is asked as a password (you won't
-see what you type in), and is NOT printed. Although
-it is not printed, it will be used to check if
-authentication is valid if you specify \fB\-\-checkauth\fR.
+Si le dialogue à été annulé, rien ne sera affiché.
+Si l'un des noms de variables est 'password'
+alors ce champ sera saisi comme un mot de passe (vous ne
+verrez pas ce que vous tapez), et il NE SERA PAS affiché.
+Bien qu'il ne soit pas affiché, il sera utilisé pour
+vérifier si l'authentification est valide si vous avez
+utilisé \fB\-\-checkauth\fR.
 .TP
-\fB\-c\fR | \fB\-\-confirm\fR : A single argument is expected, representing the
-message to display. If the dialog is confirmed
-then pknotify will print OK, else CANCEL.
+\fB\-c\fR | \fB\-\-confirm\fR : Un unique argument est attendu, qui représente le
+message à afficher. Si le dialogue est confirmé
+alors pknotify affichera OK, sinon CANCEL.
 .TP
-\fB\-n\fR | \fB\-\-notify\fR : A single argument is expected, representing the
-message to display. In this case pknotify will
-always print OK.
+\fB\-n\fR | \fB\-\-notify\fR : Un unique argument est attendu, qui représente le
+message à afficher. Dans ce cas pknotify affichera
+toujours OK.
 .PP
-examples :
+exemples :
 .IP
-pknotify \fB\-d\fR client:7654 \fB\-\-confirm\fR "This job costs :
+pknotify \fB\-d\fR client:7654 \fB\-\-confirm\fR "Ce job coûte :
 .PP
-10 credits !"
+10 crédits !"
 .IP
-Would display the cost of a print job and asks for confirmation.
+Affichera le coût du travail et demandera une confirmation.
 .IP
 pknotify \fB\-\-destination\fR $PYKOTAJOBORIGINATINGHOSTNAME:7654 \e
 .IP
-\fB\-\-checkauth\fR \fB\-\-ask\fR "Your name:username:" "Your password:password:"
+\fB\-\-checkauth\fR \fB\-\-ask\fR "Votre nom:username:" "Votre mot de passe:password:"
 .IP
-Asks an username and password, and checks if they are valid.
-NB : The PYKOTAJOBORIGINATINGHOSTNAME environment variable is
-only set if you launch pknotify from cupspykota through a directive
-in ~pykota/pykota.conf
+Demandera un nom d'utilisateur et un mot de passe, et vérifiera s'ils sont
+valides.
+NB : La variable d'environnement PYKOTAJOBORIGINATINGHOSTNAME est
+seulement positionnée lorsque vous lancez pknotify depuis cupspykota
+grâce à une directive de ~pykota/pykota.conf
 .IP
-The TCP port you'll use must be reachable on the client from the
-print server.
+Le port TCP que vous utiliserez doit être ouvert sur le client et joignable
+depuis le serveur d'impression.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

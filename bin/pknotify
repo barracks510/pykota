@@ -99,7 +99,7 @@ options :
 
   arguments :             
   
-    -a | --ask : Several arguments are accepted, or the form
+    -a | --ask : Several arguments are accepted, of the form
                  "label:varname:defaultvalue". The result will
                  be printed to stdout in the following format :
                  VAR1NAME=VAR1VALUE
