@@ -50,7 +50,7 @@ command line usage :
 
 options :
 
-  -v | --version             Prints pkbanner's version number then exits.
+  -v | --version             Prints pknotify's version number then exits.
   -h | --help                Prints this message then exits.
   
   -d | --destination h[:p]   Sets the destination hostname and optional
