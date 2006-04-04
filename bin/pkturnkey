@@ -355,6 +355,7 @@ class PKTurnKey(Tool) :
                     elif self.supportsPJL(hostname, port) :    
                         accounter = "hardware(pjl:%s)" % port
                     
+            print "preaccounter : software()" 
             print "accounter : %s" % accounter
             print
         print "--- CUT ---"
