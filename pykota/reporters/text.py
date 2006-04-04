@@ -22,7 +22,7 @@
 #
 #
 
-from pykota.reporter import BaseReporter, PyKotaReporterError
+from pykota.reporter import BaseReporter
     
 class Reporter(BaseReporter) :    
     """Text reporter."""

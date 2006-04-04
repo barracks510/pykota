@@ -30,19 +30,14 @@ import getopt
 import smtplib
 import gettext
 import locale
-import signal
 import socket
-import tempfile
-import md5
 import time
-import ConfigParser
-import popen2
 from email.MIMEText import MIMEText
 from email.Header import Header
 
 from mx import DateTime
 
-from pykota import config, storage, logger, accounter
+from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
 try :

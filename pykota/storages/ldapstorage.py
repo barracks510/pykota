@@ -29,7 +29,6 @@
 #
 
 import sys
-import os
 import types
 import time
 import md5
@@ -38,7 +37,7 @@ import random
 
 from mx import DateTime
 
-from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, \
+from pykota.storage import PyKotaStorageError, BaseStorage, \
                            StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
                            StorageGroupPQuota, StorageBillingCode
@@ -826,9 +825,9 @@ class Storage(BaseStorage) :
         pname = self.userCharsetToDatabase(printer.Name)
         names = [self.userCharsetToDatabase(n) for n in names]
         if self.info["userquotabase"].lower() == "user" :
-           base = self.info["userbase"]
+            base = self.info["userbase"]
         else :
-           base = self.info["userquotabase"]
+            base = self.info["userquotabase"]
         result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)(|%s))" % \
                                   (pname, "".join(["(pykotaUserName=%s)" % uname for uname in names])), \
                                   ["pykotaUserName", "pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaWarnCount"], \
@@ -871,9 +870,9 @@ class Storage(BaseStorage) :
         pname = self.userCharsetToDatabase(printer.Name)
         names = [self.userCharsetToDatabase(n) for n in names]
         if self.info["groupquotabase"].lower() == "group" :
-           base = self.info["groupbase"]
+            base = self.info["groupbase"]
         else :
-           base = self.info["groupquotabase"]
+            base = self.info["groupquotabase"]
         result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaPrinterName=%s)(|%s))" % \
                                   (pname, "".join(["(pykotaGroupName=%s)" % gname for gname in names])), \
                                   ["pykotaGroupName"], \

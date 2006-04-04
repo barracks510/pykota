@@ -22,8 +22,7 @@
 #
 #
 
-from pykota.storage import PyKotaStorageError, BaseStorage, StorageObject, \
-                           StorageUser, StorageGroup, StoragePrinter, \
+from pykota.storage import StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
                            StorageGroupPQuota, StorageBillingCode
 

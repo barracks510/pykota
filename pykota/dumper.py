@@ -248,7 +248,7 @@ class DumPyKota(PyKotaTool) :
             fields[fieldnames[i]] = i
         sortindex = fields["jobdate"]    
         entries = entries[1:]
-        entries.sort(lambda m,n,si=sortindex : cmp(m[si], n[si]))
+        entries.sort(lambda m, n, si=sortindex : cmp(m[si], n[si]))
         for entry in entries :    
             printername = entry[fields["printername"]]
             username = entry[fields["username"]]

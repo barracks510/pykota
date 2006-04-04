@@ -24,9 +24,8 @@
 
 import os
 import urllib
-from mx import DateTime
 
-from pykota.reporter import BaseReporter, PyKotaReporterError
+from pykota.reporter import BaseReporter
     
 class Reporter(BaseReporter) :    
     """HTML reporter."""

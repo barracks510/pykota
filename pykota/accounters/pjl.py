@@ -201,24 +201,31 @@ class Handler :
 def main(hostname) :
     """Tries PJL accounting for a printer host."""
     class fakeFilter :
+        """Fakes a filter for testing purposes."""
         def __init__(self) :
+            """Initializes the fake filter."""
             self.PrinterName = "FakePrintQueue"
             self.JobSizeBytes = 1
             
         def printInfo(self, msg, level="info") :
+            """Prints informational message."""
             sys.stderr.write("%s : %s\n" % (level.upper(), msg))
             sys.stderr.flush()
             
         def logdebug(self, msg) :    
+            """Prints debug message."""
             self.printInfo(msg, "debug")
             
     class fakeAccounter :        
+        """Fakes an accounter for testing purposes."""
         def __init__(self) :
+            """Initializes fake accounter."""
             self.arguments = "pjl:9100"
             self.filter = fakeFilter()
             self.protocolHandler = Handler(self, sys.argv[1])
             
         def getLastPageCounter(self) :    
+            """Fakes the return of a page counter."""
             return 0
         
     acc = fakeAccounter()            

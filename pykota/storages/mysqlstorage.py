@@ -25,7 +25,7 @@
 
 import time
 
-from pykota.storage import PyKotaStorageError,BaseStorage,StorageObject,StorageUser,StorageGroup,StoragePrinter,StorageJob,StorageLastJob,StorageUserPQuota,StorageGroupPQuota
+from pykota.storage import PyKotaStorageError, BaseStorage
 from pykota.storages.sql import SQLStorage
 
 try :
