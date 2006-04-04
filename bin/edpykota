@@ -25,11 +25,9 @@
 #
 
 import sys
-import os
 
-from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
-from pykota.config import PyKotaConfigError
-from pykota.storage import PyKotaStorageError, StorageUserPQuota, StorageGroupPQuota
+from pykota.tool import Percent, PyKotaTool, PyKotaCommandLineError, crashed, N_
+from pykota.storage import StorageUserPQuota, StorageGroupPQuota
 
 __doc__ = N_("""edpykota v%(__version__)s (c) %(__years__)s %(__author__)s
 

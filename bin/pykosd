@@ -78,6 +78,7 @@ examples :
 
 
 class PyKOSD(PyKotaTool) :
+    """A class for an On Screen Display print quota monitor."""
     def main(self, args, options) :
         """Main function starts here."""
         try :    

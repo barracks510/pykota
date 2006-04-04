@@ -30,7 +30,7 @@ import popen2
 import smtplib
 import email
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaCommandLineError, crashed, N_
     
 __doc__ = N_("""pkmail v%(__version__)s (c) %(__years__)s %(__author__)s
 

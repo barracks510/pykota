@@ -222,7 +222,6 @@ class PKTurnKey(Tool) :
         """Returns 1 if the printer accepts SNMP queries, else 0."""
         try :
             from pysnmp.asn1.encoding.ber.error import TypeMismatchError
-            from pysnmp.mapping.udp.error import SnmpOverUdpError
             from pysnmp.mapping.udp.role import Manager
             from pysnmp.proto.api import alpha
         except ImportError :    
@@ -246,12 +245,12 @@ class PKTurnKey(Tool) :
                 raise "No SNMP !"
             tsp.close()
         
-        def handleAnswer(wholeMsg, notusedhere, req):
+        def handleAnswer(wholemsg, notusedhere, req):
             """Decodes and handles the SNMP answer."""
             ver = alpha.protoVersions[alpha.protoVersionId1]
             rsp = ver.Message()
             try :
-                rsp.berDecode(wholeMsg)
+                rsp.berDecode(wholemsg)
             except TypeMismatchError, msg :    
                 raise "No SNMP !"
             else :
@@ -363,7 +362,7 @@ class PKTurnKey(Tool) :
     def main(self, names, options) :
         """Intializes PyKota's database."""
         if not self.config.isAdmin :
-            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0],\
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], \
                                    _("You're not allowed to use this command."))
             
         if not names :

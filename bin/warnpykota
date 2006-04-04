@@ -28,9 +28,7 @@ import sys
 import os
 import pwd
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
-from pykota.config import PyKotaConfigError
-from pykota.storage import PyKotaStorageError
+from pykota.tool import PyKotaTool, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""warnpykota v%(__version__)s (c) %(__years__)s %(__author__)s
 

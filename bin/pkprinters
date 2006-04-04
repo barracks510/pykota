@@ -28,7 +28,7 @@ import os
 import sys
 import pwd
 
-from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Percent, PyKotaTool, PyKotaCommandLineError, crashed, N_
 from pykota.storage import StoragePrinter
 
 __doc__ = N_("""pkprinters v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -226,7 +226,7 @@ class PKPrinters(PyKotaTool) :
                     for pname in names :
                         if self.isValidName(pname) :
                             printer = StoragePrinter(self.storage, pname)
-                            self.modifyPrinter(printer, charges, perpage, perjob,\
+                            self.modifyPrinter(printer, charges, perpage, perjob, \
                                            description, passthrough, \
                                            nopassthrough, maxjobsize)
                             oldprinter = self.storage.addPrinter(printer)               

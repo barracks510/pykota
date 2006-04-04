@@ -46,9 +46,9 @@ from mx import DateTime
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
 from pykota.ipp import IPPRequest, IPPError
-from pykota.storage import PyKotaStorageError
         
 class FakeObject :        
+    """Fake object."""
     def __init__(self, name) :
         """Fake init."""
         self.Name = name
@@ -134,8 +134,8 @@ class CUPSBackend(PyKotaTool) :
             try :
                 # see if the pid contained in the lock file is still running
                 os.kill(pid, 0)
-            except OSError, e :    
-                if e.errno != errno.EPERM :
+            except OSError, err :
+                if err.errno != errno.EPERM :
                     # process doesn't exist anymore
                     os.remove(lockfilename)
             
@@ -317,20 +317,23 @@ class CUPSBackend(PyKotaTool) :
                                      % jobticketcommand)
             self.regainPriv()                         
             inputfile = os.popen(jobticketcommand, "r")
-            for line in inputfile.xreadlines() :
-                line = line.strip()
-                if line in ("DENY", "AUTH=NO", "AUTH=IMPOSSIBLE") :
-                    self.logdebug("Seen %s command." % line)
-                    action = "DENY"
-                elif line == "CANCEL" :
-                    self.logdebug("Seen CANCEL command.")
-                    action = "CANCEL"
-                elif line.startswith("USERNAME=") :    
-                    username = line.split("=", 1)[1].strip()
-                    self.logdebug("Seen new username [%s]" % username)
-                elif line.startswith("BILLINGCODE=") :    
-                    billingcode = line.split("=", 1)[1].strip()
-                    self.logdebug("Seen new billing code [%s]" % billingcode)
+            try :
+                for line in inputfile.xreadlines() :
+                    line = line.strip()
+                    if line in ("DENY", "AUTH=NO", "AUTH=IMPOSSIBLE") :
+                        self.logdebug("Seen %s command." % line)
+                        action = "DENY"
+                    elif line == "CANCEL" :
+                        self.logdebug("Seen CANCEL command.")
+                        action = "CANCEL"
+                    elif line.startswith("USERNAME=") :    
+                        username = line.split("=", 1)[1].strip()
+                        self.logdebug("Seen new username [%s]" % username)
+                    elif line.startswith("BILLINGCODE=") :    
+                        billingcode = line.split("=", 1)[1].strip()
+                        self.logdebug("Seen new billing code [%s]" % billingcode)
+            except IOError, msg :            
+                self.logdebug("IOError while reading subprocess' output : %s" % msg)
             inputfile.close()    
             self.dropPriv()
             
@@ -451,6 +454,7 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Parsing IPP request file...")
         
         class DummyClass :
+            """Class used to avoid errors."""
             operation_attributes = {}
             job_attributes = {}
             
@@ -1253,8 +1257,8 @@ if __name__ == "__main__" :
         except KeyboardInterrupt :    
             wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.JobId, "warn")
             retcode = 0
-        except SystemExit, e :    
-            retcode = e.code
+        except SystemExit, err :    
+            retcode = err.code
         except :    
             try :
                 wrapper.crashed("cupspykota backend failed")
