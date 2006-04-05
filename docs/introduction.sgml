@@ -98,12 +98,12 @@
         </listitem>  
         <listitem>
           <para>
-            Either a <application>PostgreSQL</application> database, or an <acronym>LDAP</acronym>
+            Either a <application>PostgreSQL</application>, <application>MySQL</application> or <application>SQLite</application> database, or an <acronym>LDAP</acronym>
             <footnote><para>Lightweight Directory Access Protocol</para></footnote>
             <acronym>DIT</acronym>
             <footnote><para>Directory Information Tree</para></footnote> :
             <application>PyKota</application> can store its datas into any of these. Support
-            for other database backends  might be added in a future release.
+            for other database backends might be added in a future release.
           </para>
         </listitem>  
         <listitem>
@@ -140,7 +140,12 @@
               </listitem>  
               <listitem>
                 <para>
-                  <command>edpykota</command> : to manage users, users groups and quotas.
+                  <command>pkusers</command> : to manage users and users groups.
+                </para>
+              </listitem>  
+              <listitem>
+                <para>
+                  <command>edpykota</command> : to manage users' and users groups' print quota entries.
                 </para>
               </listitem>  
               <listitem>
@@ -158,7 +163,7 @@
                    <command>dumpykota</command> : to dump the database's contents in a portable
                    way. This command can be used to export <application>PyKota</application>'s
                    datas to third party software, like print log analyzers or spreadsheets, and
-                   numerous output formats are supported.
+                   numerous output formats are supported, like <acronym>csv</acronym> and <acronym>XML</acronym>
                 </para>
               </listitem>  
               <listitem>
@@ -205,6 +210,12 @@
                   In the future other functionnalities will be added.
                   This command is not meant to be used from the command line, but
                   instead as a pipe from your mail server's <filename>/etc/aliases</filename> file.
+                </para>
+              </listitem>  
+              <listitem>
+                <para>
+                  <command>pknotify</command> : a client for the <application>PyKotIcon</application> cross-platform generic network dialog box manager. This
+                  tools allow you to interact with end users at printing time.
                 </para>
               </listitem>  
             </itemizedlist>
