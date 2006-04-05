@@ -466,11 +466,11 @@ $ /etc/init.d/slapd start
         </listitem>  
         <listitem>
           <para>
-            <application>Python</application> version 2.1 or above.
+            <application>Python</application> version 2.2 or above.
             You can download it from <ulink url="http://www.python.org">http://www.python.org</ulink>.
             While <application>PyKota</application> itself will try to preserve compatibility
-            with <application>Python</application> version 2.1 for the near future, some <application>Python</application>
-            modules which are needed by <application>PyKota</application> may mandate the use of a more recent version
+            with <application>Python</application> version 2.2 for the near future, some <application>Python</application>
+            modules which are needed by <application>PyKota</application> may require a more recent version
             of this language.
           </para>
         </listitem>  
@@ -606,6 +606,14 @@ $ /etc/init.d/slapd start
             You can download it from <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
           </para>
         </listitem>  
+        <listitem>
+          <para>
+            The <application>PyPAM</application> Python interface to <acronym>PAM</acronym>.
+            You'll need this if you plan to ask users to authenticate when printing through <command>pknotify</command>
+            and <command>pykoticon</command>. You don't need this module otherwise.
+            If needed, you can download it from <ulink url="http://www.pangalactic.org/PyPAM/">http://www.pangalactic.org/PyPAM/</ulink>.
+          </para>
+        </listitem>  
       </itemizedlist>  
     </para>
     
@@ -685,7 +693,7 @@ $ python setup.py install
       one section per printer. Each section in the configuration files
       begins with a name between square brackets <literal>[]</literal>.
       The name to use to define a particular printer section is the name
-      of the print queue on which you want to set quotas.
+      of the print queue you want to manage with PyKota.
     </para>
     
     <para>
@@ -747,7 +755,7 @@ $ chmod 640 ~pykota/pykotadmin.conf
     
     <para>
       This all depends on the printing system you are using, and the user the
-      printing system is usually running as. You need to remember two things :
+      printing system is usually running as. You need to remember three things :
       
       <itemizedlist>
         <listitem>
@@ -763,6 +771,14 @@ $ chmod 640 ~pykota/pykotadmin.conf
             can do whatever he wants to the print quota database.
           </para>
         </listitem>
+        <listitem>        
+          <para>
+            If <filename>cupsd.conf</filename> contains <literal>RunAsUser</literal>, then
+            you won't be able to authenticate users with <command>pknotify</command> and <command>pykoticon</command>.
+            Also in this case you may have to make <application>PyKota</application>'s configuration files
+            owned by the user <application>CUPS</application> runs as.
+          </para>
+        </listitem>
       </itemizedlist>  
     </para>
     
@@ -773,7 +789,8 @@ $ chmod 640 ~pykota/pykotadmin.conf
     
     <para>
       Now depending on your printing system, the configuration to do is particular.
-      We will now see how to plug PyKota into your printing system.
+      We will now see how to plug PyKota into <application>CUPS</application> since <application>LPRng</application>
+      is not supported anymore.
     </para>
     
     <sect2>
@@ -835,12 +852,18 @@ $ /etc/init.d/cupsys restart
           In case of problem, the simplest way to solve it is currently
           to ask on PyKota's mailing list, describing the symptoms, as
           well as the hardware and software you use.
-          In a future release of this document, a section dedicated to 
-          Frequently Asked Questions will be included.
         </para>
         
         <para>
-          You can now also ask us questions on IRC :
+          A searchable FAQ is now available at 
+          <ulink url="http://otrs.librelogiciel.com/otrs/public.pl">http://otrs.librelogiciel.com/public.pl</ulink>.
+          A FAQ entry explaining in great details how to diagnose a problem correctly is
+          available at 
+          <ulink url="http://otrs.librelogiciel.com/otrs/public.pl?ID=2">http://otrs.librelogiciel.com/public.pl?ID=2</ulink>.
+        </para>
+        
+        <para>
+          You can now ask questions on IRC :
           <screen>
 /server irc.freenode.net          
 /join #pykota

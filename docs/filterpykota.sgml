@@ -41,7 +41,7 @@
   </para>
   
   <para>
-    Currently with a <application>CUPS</application> internal accounting mechanism, the <command>pstops</command>
+    Currently with <application>CUPS</application>' internal accounting mechanism, the <command>pstops</command>
     filter can be bypassed. That's why <application>PyKota</application> uses its own backend.
     The <command>cupspykota</command> backend wrapper ensures that jobs can't bypass it, so you can use
     any printer with any driver and any command line option, and you can be sure that your
