@@ -16,6 +16,7 @@
   <!entity PKBCODES system "pkbcodes.sgml">
   <!entity PKBANNER system "pkbanner.sgml">
   <!entity PKMAIL system "pkmail.sgml">
+  <!entity PKUSERS system "pkusers.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -120,6 +121,8 @@
   &PKTURNKEY;
   
   &PKPRINTERS;
+  
+  &PKUSERS;
 
   &EDPYKOTA;
   
