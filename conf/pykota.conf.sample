@@ -98,6 +98,7 @@ storageuserpw : readonlypw
 # LDAP : comment this section out if you use another backend       #
 ####################################################################
 # LDAP example, uncomment and adapt it to your own configuration :
+#
 #storagebackend: ldapstorage
 #storageserver: ldap://ldap.example.com:389
 #storagename: dc=example,dc=com
@@ -105,23 +106,32 @@ storageuserpw : readonlypw
 # NB : the user and password below are the ones contained in 
 # the sample LDIF file pykota/initscripts/ldap/pykota-sample.ldif
 # Please adapt these lines to your own needs.
+#
 #storageuser: cn=pykotauser,dc=example,dc=com
 #storageuserpw: ls88DT5j
-#
+
+
+
 # TLS support for LDAP
 #
 # ldaptls can be set to either Yes or No
 # the default value when not set is No, meaning that TLS won't be used.
+#
 #ldaptls: No
 #
 # cacert points to the CA Certificate file to use for TLS.
 # Ensure that every user who can launch PyKota commands can read this file.
 # There's NO default value for this directive.
+#
 #cacert: /etc/pykota/mycertfile
-#
-#
+
+
+
 # Here we define some helpers to know where 
 # to plug into an existing LDAP directory
+# NB : THE DIRECTIVES BELOW MUST BE PRESENT WITH AN LDAP BACKEND
+# BUT YOU ARE FREE TO CHANGE THE VALUES.
+#
 #userbase: ou=People,dc=example,dc=com
 #userrdn: uid
 #balancebase: ou=People,dc=example,dc=com
@@ -140,12 +150,16 @@ storageuserpw : readonlypw
 # entries will be created below the user or group entry itself,
 # which will then be used like a branch (you can mix and match
 # different values depending on what you want to do).
+#
+# NB : YOU MUST CHOOSE A VALUE FOR USERQUOTABASE AND A VALUE
+# FOR GROUPQUOTABASE, BUT ONLY ONE LINE OF EACH MUST BE PRESENT.
 #userquotabase: user
 #userquotabase: ou=UQuotas,ou=PyKota,dc=example,dc=com
 #groupquotabase: group
 #groupquotabase: ou=GQuotas,ou=PyKota,dc=example,dc=com
 
-#
+
+
 # How to create new accounts and groups
 # authorized values are "below" and "attach(objectclass name [, fail|warn])"
 #
@@ -162,18 +176,24 @@ storageuserpw : readonlypw
 # if action is not set, the default value is "fail".
 #
 # a possible value:  newuser: attach(posixAccount, warn)
+#
 #newuser : below
 #newgroup : below
-#
+
+
+
 # LDAP attribute which stores the user's email address
 #
 #usermail : mail
 
-# 
+
+
 # Choose what attribute contains the list of group members
 # common values are : memberUid, uniqueMember, member
 #
 #groupmembers: memberUid
+
+
 
 # Activate low-level LDAP cache yes/no
 # Nothing to do with "storagecaching" which is higher level
@@ -799,7 +819,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 # Of course you can launch any command of your choice with this, e.g. :
 #
 #   policy: external(/usr/local/bin/myadminscript.sh %(username)s)
-
+#
 # You can use :
 #
 #       '%(username)s'          will contain the user's name
@@ -875,6 +895,8 @@ policy: deny
 # PYKOTAREASON : if the job was denied or a warning needs to be issued, contains
 #                the message to send to the user.
 #
+
+
 
 # PreHook : gets executed after being sure the user, printer and user quota
 # entry on the printer both exist in the PyKota database, and after
