@@ -10,7 +10,9 @@
 #
 #     Contains configuration directives to specify the username and
 #     optional password for the PyKota's database administrator.
-#     This user is either a PostgreSQL user, or an LDAP dn.
+#     This user is either a PostgreSQL or MySQL user, or an LDAP complete dn.
+#     For SQLite, only the [global] section itself is required, but
+#     the rest of the file can be empty.
 #
 # Directives format :
 #
