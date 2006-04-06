@@ -218,6 +218,12 @@
                   tools allow you to interact with end users at printing time.
                 </para>
               </listitem>  
+              <listitem>
+                <para>
+                  <command>pkinvoice</command> : an invoice generator which can create personalized PDF invoices
+                  for your users from their printing history.
+                </para>
+              </listitem>  
             </itemizedlist>
           </para>
         </listitem>  
