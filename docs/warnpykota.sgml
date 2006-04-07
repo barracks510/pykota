@@ -37,7 +37,7 @@
     When an user who is not a <application>PyKota</application> administrator launches this command, only him can receive a warning
     message. He can specify a printer name's filter to check his quota only
     on specific printers. If a normal user uses the <literal>--groups</literal> command line
-    argument, then for each group he is a member of in the Quota Storage, each
+    argument, then for each group he is a member of in the print quota database, each
     group member may receive a warning message. You can take care of this if this
     becomes annoying by forbidding normal users to launch the <command>warnpykota</command>
     command.

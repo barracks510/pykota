@@ -6,7 +6,7 @@
   
   <para>
     To account for print usage is good, however there must be a way to easily
-    query the <emphasis>Quota Storage Server</emphasis> and generate
+    query the print quota database and generate
     reports describing current usage for every user on every printer.
   </para>
   

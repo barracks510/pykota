@@ -12,13 +12,19 @@
   
   <para>
     First you have to determine which machine will be the <application>PyKota</application>
-    <firstterm>Storage Server</firstterm>. The Storage Server is the host responsible
+    database server. The database server is the host responsible
     for keeping a centralized database of print usage for all your printers, users and groups.
   </para>
   
   <para>
     Then you have to list all the <firstterm>Print Servers</firstterm> for which
-    you plan to use <firstterm>print quota</firstterm> facilities.
+    you plan to use print quota facilities.
+  </para>
+  
+  <para>
+    With most database backends, several print servers can share a single database, however
+    as we'll see later this is not possible if you choose to use <application>SQLite</application>
+    as your print quota database backend.
   </para>
   
   <para>
@@ -101,7 +107,7 @@ jerome@nordine:~/pykota-1.24_official$
         To do so you either have to launch it with the <option>-i</option> option or
         modify the <filename>/etc/postgresql/postgresql.conf</filename> file, which is
         self documented and easy to modify too. Allowing <acronym>TCP/IP</acronym> connections
-        is not necessary though if your Quota Storage Server and your Print Server are
+        is not necessary though if your print quota database server and your Print Server are
         the very same host.
       </para>  
       
@@ -151,19 +157,19 @@ jerome@nordine:~/pykota-1.24_official$
       
       <para>
         Now that your <application>PostgreSQL</application> server is up and running, and
-        is waiting for your connections, you have to create the Quota Storage DataBase.
+        is waiting for your connections, you have to create the print quota database.
         To do so, you'll have to feed <application>PostgreSQL</application> with the
         <filename>pykota-1.24/initscripts/postgresql/pykota-postgresql.sql</filename> file.
-        This file will create a Quota DataBase administrator in the <application>PostgreSQL</application> system, then create an empty
-        Quota DataBase and set some permissions on it. The Quota DataBase administrator
-        is the <application>PostgreSQL</application>'s user used to manage the Quota database.
-        The Quota DataBase Administrator is not present in the Quota Database
+        This file will create a print quota database administrator in the <application>PostgreSQL</application> system, then create an empty
+        print quota database and set some permissions on it. The print quota database administrator
+        is the <application>PostgreSQL</application>'s user used to manage the quota database.
+        The print quota database Administrator is not present in the quota database
         itself, he is only defined in <application>PostgreSQL</application> and don't
-        have to exist on any system, nor in the Quota DataBase. His default name
+        have to exist on any system, nor in the print quota database. His default name
         is <literal>pykotaadmin</literal>. 
-        A Quota Storage read-only user is also created under the name of <literal>pykotauser</literal>.
+        A print quota database read-only user is also created under the name of <literal>pykotauser</literal>.
         This read-only user is used by <application>PyKota</application> to connect to the 
-        Quota Storage when an user who is not a <application>PyKota</application> administrator 
+        print quota database when an user who is not a <application>PyKota</application> administrator 
         <footnote><para>a <application>PyKota</application> administrator is an user who can read the <filename>~pykota/pykotadmin.conf</filename> file.</para></footnote>
         launches a pykota command. This prevents normal
         users from being able to modify their own, or other users', quota information.
@@ -217,7 +223,7 @@ pykota=#
         <application>PostgreSQL</application> for the 
         <literal>pykotaadmin</literal> and <literal>pykotauser</literal> users.
         Otherwise any user able to connect to 
-        <application>PostgreSQL</application> on your Quota Storage Server 
+        <application>PostgreSQL</application> on your print quota database server 
         could connect to the quota database, and either see it, or even modify it without problem. 
       </para>
       
@@ -256,10 +262,10 @@ jerome@nordine:~/pykota-1.24_official/initscripts/postgresql$
       </para>
       
       <para>
-        If no error occured, then your Quota DataBase is ready to be used.
-        Now you can let the Quota Storage Server alone, the remaining work
+        If no error occured, then your print quota database is ready to be used.
+        Now you can let the print quota database server alone, the remaining work
         will have to be done on each one of the print servers which will
-        use this particular Quota Storage Server.
+        use this particular print quota database server.
         <tip>
           <title>Tip</title>
           <para>
@@ -277,7 +283,7 @@ jerome@nordine:~/pykota-1.24_official/initscripts/postgresql$
       
       <para>
         Any <acronym>LDAP</acronym> server, and particularly <application>OpenLDAP</application>, can be used 
-        as a Quota Storage Backend.
+        as a print quota database backend.
         Some other LDAP servers can be used, but this is currently untested in production.
       </para>
       
@@ -288,7 +294,7 @@ jerome@nordine:~/pykota-1.24_official/initscripts/postgresql$
       </para>
       
       <para>
-        To use <application>OpenLDAP</application> as your Quota Storage Backend, you have to copy the
+        To use <application>OpenLDAP</application> as your print quota database backend, you have to copy the
         <filename>pykota/initscripts/ldap/pykota.schema</filename> into <application>OpenLDAP</application>'s 
         schemas directory.
         Under Debian GNU/Linux, this is something like :
@@ -398,10 +404,10 @@ $ /etc/init.d/slapd start
       </para>
       
       <para>
-        If no error occured, then your Quota DataBase is ready to be used.
-        Now you can let the Quota Storage Server alone, the remaining work
+        If no error occured, then your print quota database is ready to be used.
+        Now you can let the print quota database server alone, the remaining work
         will have to be done on each one of the print servers which will
-        use this particular Quota Storage Server.
+        use this particular print quota database server.
         <tip>
           <title>Tip</title>
           <para>
@@ -472,7 +478,16 @@ storagename : /etc/pykota/pykota.db
         with the full path to the newly created <application>SQLite</application> database.
       </para>
       <para>
-        That's all ! For more details, please refer to <filename>pykota/initscripts/sqlite/README.sqlite</filename>.
+        If no error occured, then your print quota database is ready to be used.
+        In case you need them, additional instructions are available in <filename>pykota/initscripts/sqlite/README.sqlite</filename>
+        <tip>
+          <title>Tip</title>
+          <para>
+            If an error occured, maybe your SQLite version is too old, or
+            an unexpected problem (like a bug) happened. Please contact us via email so that we
+            can try to fix the problem. Thanks in advance.
+          </para>
+        </tip>  
       </para>
     </sect2>  
     
@@ -480,7 +495,7 @@ storagename : /etc/pykota/pykota.db
       <title>Berkeley DB</title>
       
       <para>
-        A <application>Berkeley DB</application> Storage Backend is planned, but it actually
+        A <application>Berkeley DB</application> backend is planned, but it actually
         doesn't exist. It seems that remote storage won't be possible with such a backend,
         so in other terms this means that you will have a different quota database on
         each print server. This may still prove to be useful for small configurations.
@@ -523,7 +538,7 @@ storagename : /etc/pykota/pykota.db
         </listitem>  
         <listitem>
           <para>
-            Quota Storage client libraries, depending on your Quota Storage Backend :
+            print quota database client libraries, depending on your print quota database backend :
             <itemizedlist>
               <listitem>
                 <para>
@@ -532,14 +547,12 @@ storagename : /etc/pykota/pykota.db
                     <listitem>
                       <para>
                         <application>PostgreSQL</application> client libraries. They must match the <application>PostgreSQL</application>
-                        version used on your Quota Storage Server.
+                        version used on your print quota database server.
                       </para>
                     </listitem>  
                     <listitem>
                       <para>
                         The <application>PygreSQL</application> python module. 
-                        It must have been compiled against the same
-                        <application>PostgreSQL</application> client libraries.
                         <application>PygreSQL</application> is normally included in
                         <application>PostgreSQL</application>, but you may want to
                         download it from <ulink url="http://www.pygresql.org">http://www.pygresql.org</ulink>
@@ -555,14 +568,12 @@ storagename : /etc/pykota/pykota.db
                     <listitem>
                       <para>
                         <application>OpenLDAP</application> client libraries. They must match
-                        the <application>OpenLDAP</application> version used on your Quota Storage Server.
+                        the <application>OpenLDAP</application> version used on your print quota database server.
                       </para>
                     </listitem>  
                     <listitem>
                       <para>
                         The <application>Python-LDAP</application> python module.
-                        It must have been compiled against the same
-                        <application>OpenLDAP</application> client libraries.
                         You may download this module from <ulink url="http://python-ldap.sourceforge.net">http://python-ldap.sourceforge.net</ulink>
                       </para>
                     </listitem>  
@@ -571,7 +582,21 @@ storagename : /etc/pykota/pykota.db
               </listitem>
               <listitem>
                 <para>
-                  MySQL backend : Supported but not documented yet.
+                  MySQL backend :
+                  <itemizedlist>
+                    <listitem>
+                      <para>
+                        <application>MySQL</application> client libraries. They must match the <application>MySQL</application>
+                        version used on your database server.
+                      </para>
+                    </listitem>  
+                    <listitem>
+                      <para>
+                        The <application>Python-MySQL</application> python module, version 1.2.x or higher. 
+                        You can download it from <ulink url="http://sourceforge.net/projects/mysql-python">http://sourceforge.net/projects/mysql-python</ulink>
+                      </para>
+                    </listitem>  
+                  </itemizedlist>  
                 </para>
               </listitem>
               <listitem>
