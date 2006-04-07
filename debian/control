@@ -7,8 +7,8 @@ Standards-Version: 3.6.1
 
 Package: pykota
 Architecture: all
-Depends: ${python:Depends}, python-egenix-mxdatetime, cupsys,  python-pygresql | python-ldap | python-pysqlite2 | python-mysqldb, jaxml, python-osd, python-reportlab
-Recommends: snmp, netatalk, python-psyco, npadmin
+Depends: python, python-egenix-mxdatetime, cupsys,  python-pygresql | python-ldap | python-pysqlite2 | python-mysqldb, jaxml, python-osd, python-reportlab, python-imaging
+Recommends: snmp, netatalk, python-psyco, npadmin, python-pam
 Description: Print Quota/Accounting system for CUPS
  PyKota is a full featured, internationalized, centralized and extensible 
  Print Quota system for CUPS. It supports both PostgreSQL, MySQL, SQLite and 
