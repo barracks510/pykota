@@ -26,11 +26,11 @@ pykota.sqlite :
 
     This file can be used to create an empty SQLite3 database
     for use with PyKota, in the case you don't want to use
-    either LDAP or PostgreSQL.
+    either PostgreSQL, MySQL, or LDAP :
     
     NB : an SQLite3 database can't be shared between several
-    PyKota managed print servers, contrarily to LDAP or 
-    PostgreSQL.
+    PyKota managed print servers, contrarily to the other
+    database backends.
     
     HowTo :
     
