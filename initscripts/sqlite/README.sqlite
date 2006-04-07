@@ -34,7 +34,7 @@ pykota.sqlite :
     
     HowTo :
     
-      - Install SQLite v3.2.7 or higher, and its development files,
+      - Install SQLite v3.2.1 or higher, and its development files,
         for example on my Debian box :
         
                 # apt-get install sqlite3 libsqlite3-dev
