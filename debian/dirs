@@ -2,6 +2,7 @@ usr/bin
 usr/share/pykota
 usr/share/doc/pykota/logos
 usr/share/doc/pykota/initscripts/ldap
+usr/share/doc/pykota/initscripts/sqlite
 usr/share/doc/pykota/initscripts/mysql
 usr/share/doc/pykota/initscripts/postgresql
 usr/lib/cups/backend

@@ -52,6 +52,8 @@ install: build
 	install -m 644 initscripts/ldap/pykota-sample.ldif $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/ldap/pykota-sample.ldif
 	install -m 644 initscripts/ldap/pykota.schema $(CURDIR)/debian/tmp/etc/ldap/schema/pykota.schema
 	install -m 644 initscripts/ldap/README.ldap $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/ldap/README.ldap
+	install -m 644 initscripts/sqlite/README.sqlite $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/sqlite/README.sqlite
+	install -m 644 initscripts/sqlite/pykota-sqlite.sql $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/sqlite/pykota-sqlite.sql
 	install -m 644 initscripts/mysql/README.mysql $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/mysql/README.mysql
 	install -m 644 initscripts/mysql/pykota-mysql.sql $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/mysql/pykota-mysql.sql
 	install -m 644 initscripts/postgresql/README.postgresql $(CURDIR)/debian/tmp/usr/share/doc/pykota/initscripts/postgresql/README.postgresql
@@ -106,7 +108,7 @@ binary-arch: build install
 	dh_compress
 	dh_fixperms
 #	dh_perl
-	dh_python
+#	dh_python
 #	dh_makeshlibs
 	dh_installdeb
 #	dh_shlibdeps

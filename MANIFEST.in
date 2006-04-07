@@ -10,7 +10,7 @@ recursive-include docs README *.sgml *.png *.pdf *.html *.sx?
 recursive-include cgi-bin README *.cgi
 recursive-include conf README *.sample
 recursive-include initscripts README README.* *.sql *.py *.schema *.ldif
-recursive-include debian README pykota.templates Makefile.docs pykota.config pykota.cron.daily printquota.default Makefile.docs changelog control copyright dirs docs examples links rules conffiles makedeb.sh
+recursive-include debian README pykota.templates Makefile.docs pykota.config pykota.cron.daily printquota.default Makefile.docs preinst postinst postrm changelog control copyright dirs docs examples links rules conffiles makedeb.sh files 
 recursive-include untested README *.sh *.ps *.pjl
 recursive-include logos README *.png *.xcf *.jpeg
 recursive-include contributed README *.pl *.sh *.py *.php
