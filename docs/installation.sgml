@@ -425,7 +425,54 @@ $ /etc/init.d/slapd start
       <title>SQLite</title>
       
       <para>
-        <application>SQLite</application> is supported but not documented for now.
+        <application>SQLite</application> is an embeddable Relationnal DataBase
+        distributed under a Free Software
+        license from the 
+        <ulink url="http://www.sqlite.org">http://www.sqlite.org</ulink>
+        web site. 
+        If is very easy to configure and use, offers a very small memory footprint,
+        is very fast, but can only be used on the print server because it doesn't include
+        a server daemon : the database is directly embedded in the application.
+      </para>
+      
+      <para>
+        To configure your database, you must have SQLite already working.
+        The complete installation of <application>SQLite</application> is not covered by
+        the present manual, please refer to your system's documentation or to 
+        <ulink url="http://www.sqlite.org">http://www.sqlite.org</ulink> for
+        details.
+      </para>
+      
+      <para>
+        Once <application>SQLite</application> is installed, you have to decide where
+        you'll put your database. A good idea is to store it into the <literal>pykota</literal>
+        user's home directory. Then to create the database, just type :
+<screen>        
+# sqlite3 ~pykota/pykota.db &lt;pykota/initscripts/sqlite/pykota.sqlite
+# chown pykota.pykota ~pykota/pykota.db
+# chmod 660 ~pykota/pykota.db
+# chown pykota.pykota ~pykota
+</screen>
+      </para>
+      <para>
+        If user <literal>pykota</literal> doesn't exist yet, then please
+        follow the instructions a bit below which explain how to install PyKota on the print server.
+      </para>
+      
+      <para>
+        Once this is done, you'll want to set in <filename>~pykota/pykota.conf</filename> the
+        following lines in the <literal>[global]</literal> section :
+<screen>        
+storagebackend : sqlitestorage
+storagename : /etc/pykota/pykota.db
+</screen>
+      </para>
+      <para>
+        Of course you'll want to replace the path on the <literal>storagename</literal> line
+        with the full path to the newly created <application>SQLite</application> database.
+      </para>
+      <para>
+        That's all ! For more details, please refer to <filename>pykota/initscripts/sqlite/README.sqlite</filename>.
       </para>
     </sect2>  
     
@@ -529,7 +576,27 @@ $ /etc/init.d/slapd start
               </listitem>
               <listitem>
                 <para>
-                  SQLite backend : Supported but not documented yet.
+                  SQLite backend : SQLite is not a database server, but an embeddable database, so
+                  if you want to use it you MUST install SQLite on your print server. With 
+                  <application>PostgreSQL</application>, <application>MySQL</application> or
+                  <application>OpenLDAP</application> you can store your datas on a different
+                  machine than the print server, but this is not possible with <application>SQLite</application>.
+                  <itemizedlist>
+                    <listitem>
+                      <para>
+                        <application>SQLite</application> version 3.2.1 or higher and its library.
+                        You can download it from 
+                        <ulink url="http://www.sqlite.org">http://www.sqlite.org</ulink>
+                      </para>
+                    </listitem>  
+                    <listitem>
+                      <para>
+                        The <application>Python-SQLite</application> python module version 2.0.5 or higher.
+                        You can download it from 
+                        <ulink url="http://www.pysqlite.org">http://www.pysqlite.org</ulink>
+                      </para>
+                    </listitem>  
+                  </itemizedlist>
                 </para>
               </listitem>
               <listitem>
@@ -863,7 +930,7 @@ $ /etc/init.d/cupsys restart
         </para>
         
         <para>
-          You can now ask questions on IRC :
+          You can also ask questions on IRC :
           <screen>
 /server irc.freenode.net          
 /join #pykota
