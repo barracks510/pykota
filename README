@@ -199,7 +199,7 @@ PyKota features :
           restart the printing system.
         
         - Complete print job history is kept. This can be
-          [Bdisabled if needed.
+          disabled if needed.          
           
         - Automated low quota or balance remainder can be 
           scheduled regularly or launched manually.
