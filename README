@@ -199,7 +199,7 @@ PyKota features :
           restart the printing system.
         
         - Complete print job history is kept. This can be
-          disabled if needed.
+          [Bdisabled if needed.
           
         - Automated low quota or balance remainder can be 
           scheduled regularly or launched manually.
@@ -216,6 +216,9 @@ PyKota features :
         - Username and billing code can be overwritten at printing time,
           to allow people to login as guest users and print as authenticated
           users, for example.
+          
+        - The pknotify command can now interact with remote users who run  
+          the PyKotIcon application which is distributed separately.
           
         - Powerful data dumper to export datas to other
           software (spreadsheets for example). Actually
@@ -254,9 +257,6 @@ PyKota features :
           information by sending an email message to a dedicated address
           is included.
         
-        - A cross-platform print quota monitor will soon be available 
-          as an purchaseable add-on.
-          
         - Third party web based management tools are available.
 
 ====================================================================
