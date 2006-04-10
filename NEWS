@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.25alpha1 (2006-04-10) :
     
+        - Fixed a non-ascii character encoding problem in the MySQL
+          backend code.
+          
         - Ensures that the denied banners counter is properly initialized
           with relationnal databases.
           
