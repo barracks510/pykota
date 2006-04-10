@@ -145,7 +145,11 @@ class Storage(BaseStorage, SQLStorage) :
         elif type(field) == type(0L) :
             return field
         elif field is not None :
-            return (self.database.string_literal(field)).encode("UTF-8")
+            newfield = self.database.string_literal(field)
+            try :
+                return newfield.encode("UTF-8")
+            except UnicodeDecodeError :    
+                return newfield
         else :
             self.tool.logdebug("WARNING: field has no type, returning NULL")
             return "NULL"
