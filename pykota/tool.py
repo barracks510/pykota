@@ -40,11 +40,6 @@ from mx import DateTime
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
-try :
-    from pkpgpdls import analyzer, pdlparser
-except ImportError : # TODO : Remove the try/except after release 1.24.
-    sys.stderr.write("ERROR: pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download\n")
-    
 def N_(message) :
     """Fake translation marker for translatable strings extraction."""
     return message
