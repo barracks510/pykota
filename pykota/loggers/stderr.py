@@ -22,15 +22,22 @@
 #
 #
 
+"""This module defines a class for PyKota logging through stderr."""
+
 import sys
 import os
+
+__revision__ = "$Id$"
 
 class Logger :
     """A logger class which logs to stderr."""
     def log_message(self, message, level="info") :
         """Sends the message to the appropriate logging subsystem."""
         try :
-            sys.stderr.write("%s: PyKota (PID %s) : %s\n" % (level.upper(), os.getpid(), message.strip()))
+            sys.stderr.write("%s: PyKota (PID %s) : %s\n" \
+                                              % (level.upper(), \
+                                                 os.getpid(), \
+                                                 message.strip()))
         except IOError :    
             pass # What else could we do ?
         else :    

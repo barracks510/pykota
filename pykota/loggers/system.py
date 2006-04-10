@@ -22,12 +22,17 @@
 #
 #
 
+"""This module defines a class for PyKota logging through syslog."""
+
 import os
 import syslog
 
+__revision__ = "$Id$"
+
 class Logger :
     """A logger class which logs to syslog."""
-    levels = { "error" : "ERR", "warn": "WARNING", "info": "INFO", "debug": "DEBUG" }
+    levels = { "error" : "ERR", "warn": "WARNING", \
+               "info": "INFO", "debug": "DEBUG" }
     def __init__(self) :
         """Opens the logging subsystem."""
         syslog.openlog("PyKota", 0, syslog.LOG_LPR)
@@ -38,8 +43,9 @@ class Logger :
         
     def log_message(self, message, level="info") :
         """Sends the message to syslog."""
-        priority = getattr(syslog, "LOG_%s" % self.levels.get(level.lower(), "DEBUG").upper(), syslog.LOG_DEBUG)
-        try :
-            syslog.syslog(priority, "(PID %s) : %s" % (os.getpid(), message.strip()))
-        except :    
-            pass # What else could we do ?
+        priority = getattr(syslog, \
+                           "LOG_%s" % self.levels.get(level.lower(), \
+                                                      "DEBUG").upper(), \
+                           syslog.LOG_DEBUG)
+        syslog.syslog(priority, "(PID %s) : %s" \
+                                      % (os.getpid(), message.strip()))
