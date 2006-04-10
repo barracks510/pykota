@@ -148,7 +148,7 @@ class Storage(BaseStorage, SQLStorage) :
             newfield = self.database.string_literal(field)
             try :
                 return newfield.encode("UTF-8")
-            except UnicodeDecodeError :    
+            except :    
                 return newfield
         else :
             self.tool.logdebug("WARNING: field has no type, returning NULL")
