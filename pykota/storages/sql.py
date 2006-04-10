@@ -273,7 +273,7 @@ class SQLStorage :
                 userpquota.SoftLimit = fields.get("softlimit")
                 userpquota.HardLimit = fields.get("hardlimit")
                 userpquota.DateLimit = fields.get("datelimit")
-                userpquota.WarnCount = fields.get("warncount")
+                userpquota.WarnCount = fields.get("warncount") or 0
                 userpquota.Exists = 1
         return userpquota
         
@@ -512,7 +512,7 @@ class SQLStorage :
                     userpquota.SoftLimit = record.get("softlimit")
                     userpquota.HardLimit = record.get("hardlimit")
                     userpquota.DateLimit = record.get("datelimit")
-                    userpquota.WarnCount = record.get("warncount")
+                    userpquota.WarnCount = record.get("warncount") or 0
                     userpquota.Exists = 1
                     usersandquotas.append((user, userpquota))
                     self.cacheEntry("USERS", user.Name, user)
@@ -617,7 +617,7 @@ class SQLStorage :
                              self.doQuote(upq.Printer.ident), \
                              self.doQuote(upq.SoftLimit), \
                              self.doQuote(upq.HardLimit), \
-                             self.doQuote(upq.WarnCount), \
+                             self.doQuote(upq.WarnCount or 0), \
                              self.doQuote(upq.DateLimit), \
                              self.doQuote(upq.PageCounter or 0), \
                              self.doQuote(upq.LifePageCounter or 0), \
@@ -730,7 +730,7 @@ class SQLStorage :
         self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=%s, datelimit=%s, pagecounter=%s, lifepagecounter=%s, maxjobsize=%s WHERE id=%s" \
                               % (self.doQuote(userpquota.SoftLimit), \
                                  self.doQuote(userpquota.HardLimit), \
-                                 self.doQuote(userpquota.WarnCount), \
+                                 self.doQuote(userpquota.WarnCount or 0), \
                                  self.doQuote(userpquota.DateLimit), \
                                  self.doQuote(userpquota.PageCounter or 0), \
                                  self.doQuote(userpquota.LifePageCounter or 0), \
