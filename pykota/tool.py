@@ -230,32 +230,35 @@ class Tool :
         """Converts from UTF-8 to user's charset."""
         if text is not None :
             try :
-                return unicode(text, "UTF-8").encode(self.charset) 
-            except (UnicodeError, TypeError) :    
+                return text.decode("UTF-8").encode(self.charset, "replace") 
+            except (UnicodeError, AttributeError) :    
                 try :
-                    # Incorrect locale settings ?
-                    return unicode(text, "UTF-8").encode("ISO-8859-15") 
-                except (UnicodeError, TypeError) :    
-                    try :
-                        return text.encode(self.charset) 
-                    except (UnicodeError, TypeError, AttributeError) :
-                        pass
+                    # Maybe already in Unicode
+                    return text.encode(self.charset, "replace") 
+                except (UnicodeError, AttributeError) :
+                    pass # Don't know what to do
         return text
         
     def userCharsetToUTF8(self, text) :
         """Converts from user's charset to UTF-8."""
         if text is not None :
             try :
-                return unicode(text, self.charset).encode("UTF-8") 
-            except (UnicodeError, TypeError) :    
+                # We don't necessarily trust the default charset, because
+                # xprint sends us titles in UTF-8 but CUPS gives us an ISO-8859-1 charset !
+                # So we first try to see if the text is already in UTF-8 or not, and
+                # if it is, we delete characters which can't be converted to the user's charset,
+                # then convert back to UTF-8. PostgreSQL 7.3.x used to reject some unicode characters,
+                # this is fixed by the ugly line below :
+                return text.decode("UTF-8").encode(self.charset, "replace").decode(self.charset).encode("UTF-8", "replace")
+            except (UnicodeError, AttributeError) :
                 try :
-                    # Incorrect locale settings ?
-                    return unicode(text, "ISO-8859-15").encode("UTF-8") 
-                except (UnicodeError, TypeError) :    
+                    return text.decode(self.charset).encode("UTF-8", "replace") 
+                except (UnicodeError, AttributeError) :    
                     try :
-                        return text.encode("UTF-8") 
-                    except (UnicodeError, TypeError, AttributeError) :
-                        pass
+                        # Maybe already in Unicode
+                        return text.encode("UTF-8", "replace") 
+                    except (UnicodeError, AttributeError) :
+                        pass # Don't know what to do
         return text
         
     def display(self, message) :
