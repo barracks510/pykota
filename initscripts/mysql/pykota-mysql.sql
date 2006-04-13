@@ -88,11 +88,11 @@ CREATE TABLE userpquota (id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                         datelimit TIMESTAMP,
                         maxjobsize INT4,
                         warncount INT4 DEFAULT 0, 
+                        INDEX (userid),
                         FOREIGN KEY (userid) REFERENCES users(id),
+                        INDEX (printerid),
                         FOREIGN KEY (printerid) REFERENCES printers(id)) 
                         TYPE=INNODB;
-CREATE INDEX userpquota_u_id_ix ON userpquota (userid);
-CREATE INDEX userpquota_p_id_ix ON userpquota (printerid);
 CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
                         
 --
@@ -117,8 +117,9 @@ CREATE TABLE jobhistory(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                         billingcode TEXT,
                         precomputedjobsize INT4,
                         precomputedjobprice FLOAT,
-                        jobdate TIMESTAMP DEFAULT now(),
-                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota (userid, printerid)
+                        jobdate TIMESTAMP,
+                        INDEX (userid, printerid),
+			CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota (userid, printerid)
                         ) TYPE=INNODB;
 CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
@@ -135,28 +136,32 @@ CREATE TABLE grouppquota(id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                          hardlimit INT4,
                          maxjobsize INT4,
                          datelimit TIMESTAMP,
+			 INDEX (groupid),
                          FOREIGN KEY (groupid) REFERENCES groups(id),
+			 INDEX (printerid),
                          FOREIGN KEY (printerid) REFERENCES printers(id))
                          TYPE=INNODB;
-CREATE INDEX grouppquota_g_id_ix ON grouppquota (groupid);
-CREATE INDEX grouppquota_p_id_ix ON grouppquota (printerid);
 CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
                         
 --                         
 -- Create the groups/members relationship
 --
-CREATE TABLE groupsmembers(groupid INT4,
-                           userid INT4,
+CREATE TABLE groupsmembers(groupid INT4 NOT NULL,
+                           userid INT4 NOT NULL,
+                           INDEX (groupid),
                            FOREIGN KEY (groupid) REFERENCES groups(id),
+                           INDEX (userid),
                            FOREIGN KEY (userid) REFERENCES users(id),
                            PRIMARY KEY (groupid, userid)) TYPE=INNODB;
                            
 --                         
 -- Create the printer groups relationship
 --
-CREATE TABLE printergroupsmembers(groupid INT4,
-                           printerid INT4,
+CREATE TABLE printergroupsmembers(groupid INT4 NOT NULL,
+                           printerid INT4 NOT NULL,
+                           INDEX (groupid),
                            FOREIGN KEY (groupid) REFERENCES groups(id),
+                           INDEX (printerid),
                            FOREIGN KEY (printerid) REFERENCES printers(id),
                            PRIMARY KEY (groupid, printerid)) TYPE=INNODB;
 --
@@ -166,7 +171,8 @@ CREATE TABLE payments (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                        userid INT4,
                        amount FLOAT,
                        description TEXT,
-                       date TIMESTAMP DEFAULT now(),
+                       date TIMESTAMP,
+                       INDEX (userid),
                        FOREIGN KEY (userid) REFERENCES users(id)) TYPE=INNODB;
 CREATE INDEX payments_date_ix ON payments (date);
 
@@ -177,6 +183,7 @@ CREATE TABLE coefficients (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                            printerid INT4 NOT NULL,
                            label VARCHAR(255) NOT NULL,
                            coefficient FLOAT DEFAULT 1.0,
+                           INDEX (printerid),
                            FOREIGN KEY (printerid) REFERENCES printers(id),
                            CONSTRAINT coeffconstraint UNIQUE (printerid, label)
                            ) TYPE=INNODB;
