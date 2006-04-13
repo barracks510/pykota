@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
-    - 1.25alpha1 (2006-04-10) :
+    - 1.25alpha1 (2006-04-14) :
     
         - Make the MySQL schema work with old releases of MySQL.
         
