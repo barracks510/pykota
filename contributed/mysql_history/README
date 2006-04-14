@@ -1,6 +1,13 @@
 This is a simple mysql history script contributed by 
 Matt Hyclak <hyclak@math.ohiou.edu>
 
+NB : THIS SCRIPT WAS MEANT TO BE USED FOR PEOPLE WHO WANTED TO STORE
+THE PRINTING HISTORY IN A MYSQL DATABASE WHEN MYSQL WAS **NOT** SUPPORTED
+IN PYKOTA. UNLESS YOU'VE GOT REALLY SPECIAL NEEDS, YOU SHOULD CONSIDER
+THE CONTENT OF THIS DIRECTORY TO BE OUTDATED AND YOU SHOULD NOT USE IT : 
+MYSQL IS NOW SUPPORTED AS THE DATABASE BACKEND FOR PYKOTA, PLEASE SEE
+../../initscripts/mysql/README.mysql FOR DETAILS.
+
 To use, place the mysql_history.conf file in your pykota config directory. 
 This is located in the pykota user's home directory, or as a last resort in 
 /etc/pykota. Modify the variables to match your setup.
