@@ -433,7 +433,8 @@ $ /etc/init.d/slapd start
       </para>
       
       <para>
-        To configure your database, you must have MySQL already working.
+        To configure your database, you must have MySQL version 4.1 or higher already working.
+        We recommend that you use MySQL 5.0 or higher though.
         The complete installation of <application>MySQL</application> is not covered by
         the present manual, please refer to your system's documentation or to 
         <ulink url="http://www.mysql.org">http://www.mysql.org</ulink> for

@@ -451,7 +451,7 @@ Prerequisite :
       
   or     
   
-    - MySQL 4.0 or higher.
+    - MySQL 4.1 or higher.
     
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
