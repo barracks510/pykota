@@ -21,7 +21,7 @@
 # $Id$
 #
 
-__version__ = "1.25alpha1_unofficial"
+__version__ = "1.24HotFix1_unofficial"
 
 __doc__ = "PyKota : a complete Printing Quota Solution for CUPS."
 

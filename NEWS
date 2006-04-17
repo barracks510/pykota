@@ -21,14 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
-    - 1.25alpha1 (2006-04-14) :
+    - 1.24HotFix1 (2006-04-17) :
     
-        - Make the MySQL schema work with old releases of MySQL.
-        
-        - Fixed several character encoding problems.
-          
-        - Ensures that the denied banners counter is properly initialized
-          with relationnal databases.
+        - Several fixes for database related problems.
           
     - 1.24 (2006-04-08) :
     
