@@ -40,6 +40,13 @@ GRANT USAGE ON *.* TO 'pykotauser'@'localhost' IDENTIFIED BY 'readonlypw';
 GRANT USAGE ON *.* TO 'pykotaadmin'@'localhost' IDENTIFIED BY 'readwritepw';
 
 -- 
+-- If necessary activate the lines below (and keep the preceding ones
+-- activated at the same time)
+--
+-- GRANT USAGE ON *.* TO 'pykotauser'@'%' IDENTIFIED BY 'readonlypw';
+-- GRANT USAGE ON *.* TO 'pykotaadmin'@'%' IDENTIFIED BY 'readwritepw';
+
+-- 
 -- Now connect to the new database
 -- 
 USE pykota;
@@ -119,7 +126,7 @@ CREATE TABLE jobhistory(id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                         precomputedjobprice FLOAT,
                         jobdate TIMESTAMP,
                         INDEX (userid, printerid),
-			CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota (userid, printerid)
+                        CONSTRAINT checkUserPQuota FOREIGN KEY (userid, printerid) REFERENCES userpquota (userid, printerid)
                         ) TYPE=INNODB;
 CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
@@ -136,9 +143,9 @@ CREATE TABLE grouppquota(id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                          hardlimit INT4,
                          maxjobsize INT4,
                          datelimit TIMESTAMP,
-			 INDEX (groupid),
+                         INDEX (groupid),
                          FOREIGN KEY (groupid) REFERENCES groups(id),
-			 INDEX (printerid),
+                         INDEX (printerid),
                          FOREIGN KEY (printerid) REFERENCES printers(id))
                          TYPE=INNODB;
 CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
@@ -201,4 +208,11 @@ CREATE TABLE billingcodes (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
 --
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON `pykota`.* TO 'pykotaadmin'@'localhost';
 GRANT SELECT ON `pykota`.* TO 'pykotauser'@'localhost';
+
+-- 
+-- If necessary activate the lines below (and keep the preceding ones
+-- activated at the same time)
+--
+-- GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON `pykota`.* TO 'pykotaadmin'@'%';
+-- GRANT SELECT ON `pykota`.* TO 'pykotauser'@'%';
 
