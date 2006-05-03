@@ -48,7 +48,7 @@ class Storage(BaseStorage, SQLStorage) :
             (host, port) = host.split(":")
             port = int(port)
         except ValueError :    
-            port = -1         # Use PostgreSQL's default tcp/ip port (5432).
+            port = 5432         # Use PostgreSQL's default tcp/ip port (5432).
         
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)

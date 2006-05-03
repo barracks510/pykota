@@ -43,7 +43,7 @@ class Storage(BaseStorage, SQLStorage) :
             (host, port) = host.split(":")
             port = int(port)
         except ValueError :    
-            port = -1           # Use the default MySQL port
+            port = 3306           # Use the default MySQL port
         
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd)
