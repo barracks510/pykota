@@ -783,7 +783,7 @@ storagename : /etc/pykota/pykota.db
         </listitem>  
         <listitem>
           <para>
-            The <application>pysnmp</application> Python module version 3.4.2, 3.4.3 or 3.4.4 exclusively. 
+            The <application>pysnmp</application> Python module version 3.4.2, or higher. 
             You can download it from <ulink url="http://pysnmp.sourceforge.net">http://pysnmp.sourceforge.net</ulink>.
           </para>
         </listitem>  
