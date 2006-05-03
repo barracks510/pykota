@@ -374,8 +374,8 @@ Prerequisite :
       to check usernames and passwords.
     - The Python-SNMP module to query printers for their page counter.
       (http://pysnmp.sourceforge.net). 
-      IMPORTANT : version 3.4.4 (or 3.4.3 or 3.4.2) is REQUIRED.
-      Versions 2.x or 4.x won't work for now.
+      IMPORTANT : version 3.4.2 or higher is REQUIRED.
+      Versions 2.x won't work. Versions 4.x now work (tested with v4.1.5a).
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
     - SNMP tools (specifically the snmpget command) if you prefer to
