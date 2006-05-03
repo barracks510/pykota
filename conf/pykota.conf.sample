@@ -246,7 +246,7 @@ disablehistory: No
 
 
 
-# Where to log ?[A
+# Where to log ?
 # supported values : stderr, system (system means syslog, but don't use 
 # 'syslog' here). if the value is not set then the default SYSTEM applies.
 #
