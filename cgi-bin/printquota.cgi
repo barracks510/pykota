@@ -263,7 +263,7 @@ class PyKotaReportGUI(PyKotaTool) :
                                                             job.PrecomputedJobPrice, \
                                                             job.JobPages)])))
                     self.report.append('</table>')
-                    d = DateTime.ISO.ParseDateTime(job.JobDate)       
+                    d = DateTime.ISO.ParseDateTime(str(job.JobDate))
                     dico = { "history" : 1,
                              "datelimit" : "%04i%02i%02i %02i:%02i:%02i" % (d.year, d.month, d.day, d.hour, d.minute, d.second),
                            }

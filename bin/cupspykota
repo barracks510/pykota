@@ -802,7 +802,7 @@ class CUPSBackend(PyKotaTool) :
                     and (self.Printer.LastJob.JobMD5Sum == self.JobMD5Sum) :
                 now = DateTime.now()
                 try :
-                    previous = DateTime.ISO.ParseDateTime(self.Printer.LastJob.JobDate).localtime()
+                    previous = DateTime.ISO.ParseDateTime(str(self.Printer.LastJob.JobDate)).localtime()
                 except :
                     previous = now
                 difference = (now - previous).seconds

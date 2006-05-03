@@ -91,7 +91,7 @@ class BaseReporter :
                 datelimit = "DENY"
             elif quota.DateLimit is not None :
                 now = DateTime.now()
-                datelimit = DateTime.ISO.ParseDateTime(quota.DateLimit)
+                datelimit = DateTime.ISO.ParseDateTime(str(quota.DateLimit))
                 if now >= datelimit :
                     datelimit = "DENY"
             else :    

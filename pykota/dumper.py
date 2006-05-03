@@ -253,7 +253,7 @@ class DumPyKota(PyKotaTool) :
             printername = entry[fields["printername"]]
             username = entry[fields["username"]]
             jobid = entry[fields["jobid"]]
-            jobdate = DateTime.ISO.ParseDateTime(entry[fields["jobdate"]])
+            jobdate = DateTime.ISO.ParseDateTime(str(entry[fields["jobdate"]]))
             gmtoffset = jobdate.gmtoffset()
             jobdate = "%s %+03i00" % (jobdate.strftime("%d/%b/%Y:%H:%M:%S"), gmtoffset.hour)
             jobsize = entry[fields["jobsize"]] or 0
