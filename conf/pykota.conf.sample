@@ -70,7 +70,8 @@ storagebackend: pgstorage
 # storagebackend: mysqlstorage
 
 # Quota Storage Server hostname (and optional port)
-# e.g. db.example.com:5432
+# e.g. db.example.com:5432 (for PostgreSQL) or db.example.com:3306 (for MySQL)
+# NB : leave the directive empty to use unix sockets (same host only)
 storageserver: localhost
 
 #
