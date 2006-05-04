@@ -243,7 +243,7 @@ class PyKotaReportGUI(PyKotaTool) :
                         self.report.append('<tr class="%s">%s</tr>' % \
                                               (oddevenclass, \
                                                "".join(["<td>%s</td>" % (h or "&nbsp;") \
-                                                  for h in (job.JobDate[:19], \
+                                                  for h in (str(job.JobDate[:19]), \
                                                             _(job.JobAction), \
                                                             username_url, \
                                                             printername_url, \

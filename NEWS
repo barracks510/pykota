@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.25alpha2 (2006-05-03) :
     
+        - Fixed some problems with DateTime objects.
+        
         - Added support for PySNMP v4.x in addition to 3.4.x.
         
     - 1.25alpha1 (2006-04-14) :

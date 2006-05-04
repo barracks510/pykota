@@ -1143,14 +1143,14 @@ class Storage(BaseStorage) :
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
         """Sets the date limit permanently for a user print quota."""
         fields = {
-                   "pykotaDateLimit" : datelimit,
+                   "pykotaDateLimit" : str(datelimit),
                  }
         return self.doModify(userpquota.ident, fields)
             
     def writeGroupPQuotaDateLimit(self, grouppquota, datelimit) :    
         """Sets the date limit permanently for a group print quota."""
         fields = {
-                   "pykotaDateLimit" : datelimit,
+                   "pykotaDateLimit" : str(datelimit),
                  }
         return self.doModify(grouppquota.ident, fields)
         
