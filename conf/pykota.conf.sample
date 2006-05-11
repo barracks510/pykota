@@ -895,8 +895,11 @@ policy: deny
 # PYKOTAJOBBILLING : Job's billing code if present (CUPS only)
 # PYKOTAREASON : if the job was denied or a warning needs to be issued, contains
 #                the message to send to the user.
+# PYKOTAUSERDESCRIPTION : the user's textual description
+# PYKOTAPRINTERDESCRIPTION : the printer's textual description
+# PYKOTAPRINTERPASSTHROUGHMODE : the printer's passthrough mode
+# PYKOTAPRINTERMAXJOBSIZE : the printer's maximal job size
 #
-
 
 
 # PreHook : gets executed after being sure the user, printer and user quota

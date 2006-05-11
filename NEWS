@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha3 (2006-05-11) :
+    
+        - Now exports more environment variables for the subprocesses.
+          
     - 1.25alpha2 (2006-05-03) :
     
         - Fixed some problems with DateTime objects.

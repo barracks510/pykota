@@ -517,6 +517,7 @@ class CUPSBackend(PyKotaTool) :
         os.environ["PYKOTALIMITBY"] = str(self.User.LimitBy)
         os.environ["PYKOTABALANCE"] = str(self.User.AccountBalance or 0.0)
         os.environ["PYKOTALIFETIMEPAID"] = str(self.User.LifeTimePaid or 0.0)
+        os.environ["PYKOTAUSERDESCRIPTION"] = str(self.User.Description or "")
         
         os.environ["PYKOTAPAGECOUNTER"] = str(self.UserPQuota.PageCounter or 0)
         os.environ["PYKOTALIFEPAGECOUNTER"] = str(self.UserPQuota.LifePageCounter or 0)
@@ -536,6 +537,9 @@ class CUPSBackend(PyKotaTool) :
         # exports the list of printers groups the current
         # printer is a member of
         os.environ["PYKOTAPGROUPS"] = ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)])
+        os.environ["PYKOTAPRINTERDESCRIPTION"] = str(self.Printer.Description or "")
+        os.environ["PYKOTAPRINTERMAXJOBSIZE"] = str(self.Printer.MaxJobSize or _("Unlimited"))
+        os.environ["PYKOTAPRINTERPASSTHROUGHMODE"] = (self.Printer.PassThrough and _("ON")) or _("OFF")
         self.logdebug("Environment updated.")
         
     def exportPhaseInfo(self, phase) :
