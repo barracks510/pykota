@@ -899,6 +899,8 @@ policy: deny
 # PYKOTAPRINTERDESCRIPTION : the printer's textual description
 # PYKOTAPRINTERPASSTHROUGHMODE : the printer's passthrough mode
 # PYKOTAPRINTERMAXJOBSIZE : the printer's maximal job size
+# PYKOTAPRICEPERJOB : the printer's price per job
+# PYKOTAPRICEPERPAGE : the printer's price per page
 #
 
 
