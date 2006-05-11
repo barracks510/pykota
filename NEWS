@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.25alpha3 (2006-05-11) :
     
+        - Added a lock to ensure that a single cupspykota backend
+          is processing datas for a particular print queue at any
+          given time.
+          
         - Now exports more environment variables for the subprocesses.
           
     - 1.25alpha2 (2006-05-03) :
