@@ -122,7 +122,7 @@ class CUPSBackend(PyKotaTool) :
             fcntl.lockf(self.lockfile, fcntl.LOCK_EX) # Will wait until lock available
             self.lockfile.seek(0, 0)      
             try : 
-                oldpid = int(self.lockfile.read().strip())
+                oldpid = int(self.lockfile.readlines()[-1].strip())
             except :    
                 stillrunning = False
             else :    
@@ -131,8 +131,9 @@ class CUPSBackend(PyKotaTool) :
                 except OSError :    
                     stillrunning = False
             if not stillrunning :        
+                self.lockfile.truncate(0)
                 self.lockfile.seek(0, 0)
-                self.lockfile.write("%i" % self.pid)
+                self.lockfile.write("%s\n" % self.pid)
                 self.lockfile.flush()
                 break
             else :    
