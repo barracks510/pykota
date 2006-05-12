@@ -284,7 +284,12 @@ class CUPSBackend(PyKotaTool) :
             jbing = jbing[-1]
         (jbtype, self.JobBillingCode) = jbing
         
-        self.lockfilename = os.path.join(self.Directory, "%s-%s..LCK" % (self.myname, self.PrinterName))
+        baselockfilename = self.DeviceURI.replace("/", ".")
+        baselockfilename = baselockfilename.replace(":", ".")
+        baselockfilename = baselockfilename.replace("?", ".")
+        baselockfilename = baselockfilename.replace("&", ".")
+        baselockfilename = baselockfilename.replace("@", ".")
+        self.lockfilename = os.path.join(self.Directory, "%s-%s..LCK" % (self.myname, baselockfilename))
         
         self.logdebug("Backend : %s" % self.RealBackend)
         self.logdebug("DeviceURI : %s" % self.DeviceURI)
