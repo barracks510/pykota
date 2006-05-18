@@ -190,25 +190,26 @@ class Tool :
     def dropPriv(self) :    
         """Drops priviledges."""
         uid = os.geteuid()
-        if uid :
-            try :
-                username = pwd.getpwuid(uid)[0]
-            except (KeyError, IndexError), msg :    
-                self.printInfo(_("Strange problem with uid(%s) : %s") % (uid, msg), "warn")
-            else :
-                self.logdebug(_("Running as user '%s'.") % username)
+        try :
+            self.originalUserName = pwd.getpwuid(uid)[0]
+        except (KeyError, IndexError), msg :    
+            self.printInfo(_("Strange problem with uid(%s) : %s") % (uid, msg), "warn")
+            self.originalUserName = None
         else :
-            if self.pykotauser is None :
-                self.logdebug(_("No user named 'pykota'. Not dropping priviledges."))
-            else :    
-                try :
-                    os.setegid(self.pykotauser[3])
-                    os.seteuid(self.pykotauser[2])
-                except OSError, msg :    
-                    self.printInfo(_("Impossible to drop priviledges : %s") % msg, "warn")
+            if uid :
+                self.logdebug(_("Running as user '%s'.") % self.originalUserName)
+            else :
+                if self.pykotauser is None :
+                    self.logdebug(_("No user named 'pykota'. Not dropping priviledges."))
                 else :    
-                    self.logdebug(_("Priviledges dropped. Now running as user 'pykota'."))
-                    self.privdropped = 1
+                    try :
+                        os.setegid(self.pykotauser[3])
+                        os.seteuid(self.pykotauser[2])
+                    except OSError, msg :    
+                        self.printInfo(_("Impossible to drop priviledges : %s") % msg, "warn")
+                    else :    
+                        self.logdebug(_("Priviledges dropped. Now running as user 'pykota'."))
+                        self.privdropped = 1
             
     def regainPriv(self) :    
         """Drops priviledges."""

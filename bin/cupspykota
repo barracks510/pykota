@@ -254,7 +254,7 @@ class CUPSBackend(PyKotaTool) :
         self.Reason = None
         self.JobId = sys.argv[1].strip()
         # use CUPS' user when printing test pages from CUPS' web interface
-        self.UserName = sys.argv[2].strip() or pwd.getpwuid(os.geteuid())[0]
+        self.UserName = sys.argv[2].strip() or self.originalUserName or pwd.getpwuid(os.geteuid())[0]
         self.Title = sys.argv[3].strip()
         self.Copies = int(sys.argv[4].strip())
         self.Options = sys.argv[5].strip()
