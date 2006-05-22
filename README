@@ -368,6 +368,7 @@ Prerequisite :
     - The pkpgcounter command line tool, version 1.56 or higher. This
       tool is now mandatory for PyKota to work. 
       (http://www.librelogiciel.com/software/)
+    - The pkipplib Python library (http://www.pykota.com/software/pkipplib)  
     - The JAXML Python module to be able to dump datas in the XML format.
       (http://www.librelogiciel.com/software/)
     - The Python-PAM module if you need the pknotify command to be able  

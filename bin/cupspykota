@@ -46,8 +46,18 @@ from mx import DateTime
 
 from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
-from pykota.ipp import IPPRequest, IPPError
-        
+# TODO : remove the three lines below and the code which handles
+# TODO : them in a future release.
+from pykota.ipp import IPPRequest as oldIPPRequest
+from pykota.ipp import IPPError as oldIPPError
+
+try :
+    from pkipplib import pkipplib
+except ImportError :        
+    haspkipplib = False
+else :    
+    haspkipplib = True
+    
 class FakeObject :        
     """Fake object."""
     def __init__(self, name) :
@@ -271,15 +281,33 @@ class CUPSBackend(PyKotaTool) :
         self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
                    (self.myname, self.PrinterName, self.UserName, self.JobId))
         
-        (ippfilename, ippmessage) = self.parseIPPRequestFile()
-        self.ControlFile = ippfilename
-        john = ippmessage.operation_attributes.get("job-originating-host-name", \
-               ippmessage.job_attributes.get("job-originating-host-name", \
-               (None, None)))
+        if not haspkipplib :
+            (ippfilename, ippmessage) = self.parseIPPRequestFile()
+            self.ControlFile = ippfilename
+            john = ippmessage.operation_attributes.get("job-originating-host-name", \
+                   ippmessage.job_attributes.get("job-originating-host-name", \
+                   (None, None)))
+            jbing = ippmessage.job_attributes.get("job-billing", (None, None))
+        else :
+            cupsserver = pkipplib.CUPS(url="http://%s:%s" % \
+                                  (os.environ.get("CUPS_SERVER", "localhost"), \
+                                   os.environ.get("IPP_PORT", "631")))
+            answer = cupsserver.getJobAttributes(self.JobId)
+            self.ControlFile = "NotUsedAnymore"
+            try :
+                john = answer.job["job-originating-host-name"]
+            except KeyError :    
+                try :
+                    john = answer.operation["job-originating-host-name"]
+                except KeyError :    
+                    john = (None, None)
+            try :        
+                jbing = answer.job["job-billing"]
+            except KeyError :    
+                jbing = (None, None)
         if type(john) == type([]) : 
             john = john[-1]
         (chtype, self.ClientHost) = john 
-        jbing = ippmessage.job_attributes.get("job-billing", (None, None))
         if type(jbing) == type([]) : 
             jbing = jbing[-1]
         (jbtype, self.JobBillingCode) = jbing
@@ -519,9 +547,9 @@ class CUPSBackend(PyKotaTool) :
         else :    
             self.logdebug("Parsing of IPP request file %s begins." % ippmessagefile)
             try :
-                ippmessage = IPPRequest(ippdatafile.read())
+                ippmessage = oldIPPRequest(ippdatafile.read())
                 ippmessage.parse()
-            except IPPError, msg :    
+            except oldIPPError, msg :    
                 self.printInfo("Error while parsing %s : %s" \
                                       % (ippmessagefile, msg), "warn")
             else :    

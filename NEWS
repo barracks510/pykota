@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha4 (2006-05-22) :
+    
+        - Now uses pkipplib if present to directly retrieve the job
+          information from the CUPS server over IPP.
+          
     - 1.25alpha3 (2006-05-11) :
     
         - Added a lock to ensure that a single cupspykota backend
