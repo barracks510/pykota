@@ -458,8 +458,8 @@ onbackenderror : nocharge
 #    DENY 
 #    CANCEL
 #
-# NB : the output is entirely read, and the latest value
-# seen is used, so you command can output several usernames
+# NB : the output of your command is entirely read, and the latest 
+# value seen is used, so you command can output several usernames
 # or billing codes and only the latest ones will be used.
 # If only USERNAME= lines are printed, the billing code,
 # if any, is used unchanged.
@@ -474,6 +474,24 @@ onbackenderror : nocharge
 # 
 # overwrite_jobticket : /usr/bin/pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 --timeout 180 --denyafter 3 --checkauth --ask "Username:username:$PYKOTAUSERNAME" "Password:password:"
 # overwrite_jobticket : /path/to/some/script/or/command
+
+
+
+# Should we ask the end user for a confirmation about their print job ?
+#
+# Any script can be launched here. If your script prints CANCEL on
+# its standard output, the job is cancelled, else processing of the
+# job continues to next step.
+#
+# NB : the output of your command is read until CANCEL is found
+# or all lines have been read.
+#
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+#
+# examples :
+#
+# askconfirmation : /usr/bin/pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 --timeout 120 --confirm "Hello $PYKOTAUSERNAME.\nPrint job $PYKOTAJOBID send to printer $PYKOTAPRINTERNAME is $PYKOTAPRECOMPUTEDJOBSIZE pages long\nand will cost you $PYKOTAPRECOMPUTEDJOBPRICE credits.\n\nYou currently have $PYKOTABALANCE credits.\n\nDo you really want to print ?"
 
 
 

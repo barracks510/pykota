@@ -23,6 +23,11 @@ PyKota NEWS :
        
     - 1.25alpha4 (2006-05-22) :
     
+        - Introduced the 'askconfirmation' directive to interact with
+          the end user through any script (pknotify is recommended)
+          and see if he really wants to print when knowing the cost
+          of the job.
+          
         - Now uses pkipplib if present to directly retrieve the job
           information from the CUPS server over IPP.
           

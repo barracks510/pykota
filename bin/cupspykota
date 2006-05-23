@@ -370,11 +370,36 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Title : %s" % self.Title)
         self.logdebug("Job's attributes sanitizing done.")
                 
+    def didUserConfirm(self) :
+        """Asks for user confirmation through an external script.
+        
+           returns False if the end user wants to cancel the job, else True.
+        """
+        self.logdebug("Checking if we have to ask for user's confirmation...")
+        answer = None                         
+        confirmationcommand = self.config.getAskConfirmation(self.PrinterName)
+        if confirmationcommand :
+            self.logdebug("Launching subprocess [%s] to ask for user confirmation." \
+                                     % confirmationcommand)
+            inputfile = os.popen(confirmationcommand, "r")
+            try :
+                for answer in inputfile.xreadlines() :
+                    answer = answer.strip().upper()
+                    if answer == "CANCEL" :
+                        break
+            except IOError, msg :            
+                self.logdebug("IOError while reading subprocess' output : %s" % msg)
+            inputfile.close()    
+            self.logdebug("User's confirmation received : %s" % (((answer == "CANCEL") and "CANCEL") or "CONTINUE"))
+        else :    
+            self.logdebug("No need to ask for user's confirmation, job processing will continue.")
+        return (answer != "CANCEL")    
+        
     def overwriteJobTicket(self) :    
         """Should we overwrite the job's ticket (username and billingcode) ?"""
         self.logdebug("Checking if we need to overwrite the job ticket...")
         jobticketcommand = self.config.getOverwriteJobTicket(self.PrinterName)
-        if jobticketcommand is not None :
+        if jobticketcommand :
             username = billingcode = action = None
             self.logdebug("Launching subprocess [%s] to overwrite the job ticket." \
                                      % jobticketcommand)
@@ -1018,6 +1043,12 @@ class CUPSBackend(PyKotaTool) :
         self.exportPrinterInfo()
         self.exportPhaseInfo("BEFORE")
         
+        if self.Action not in ("DENY", "CANCEL") : 
+            if not self.didUserConfirm() :
+                self.Action = "CANCEL"
+                self.Reason = _("Print job cancelled.")
+                os.environ["PYKOTASTATUS"] = "CANCELLED"
+                
         if self.Action not in ("DENY", "CANCEL") : 
             if self.Printer.MaxJobSize and (self.softwareJobSize > self.Printer.MaxJobSize) :
                 # This printer was set to refuse jobs this large.

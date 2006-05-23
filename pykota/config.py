@@ -248,6 +248,13 @@ class PyKotaConfig :
         except PyKotaConfigError :    
             return      # No prefix to strip off
             
+    def getAskConfirmation(self, printername) :        
+        """Returns the askconfirmation directive's content, or None if unset."""
+        try :
+            return self.getPrinterOption(printername, "askconfirmation").strip()
+        except PyKotaConfigError :    
+            return      # No overwriting will be done
+            
     def getOverwriteJobTicket(self, printername) :        
         """Returns the overwrite_jobticket directive's content, or None if unset."""
         try :
