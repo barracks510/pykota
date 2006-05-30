@@ -21,13 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
-        - Add a "confirm" directive, to launch an external script
-          (probably pknotify) to ask for confirmation at the time
-          the estimated job's price is known. The overwrite_jobticket
-          directive doesn't allow this because the estimated cost
-          of the job is still unknown, only its size is known because
-          the user is still not known for sure.
-          
         - Add a pkrefund command line tool & optional CGI script.
         
         - PJL for non-networked backends (see ML's history)
