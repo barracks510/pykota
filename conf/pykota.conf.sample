@@ -274,7 +274,7 @@ debug : Yes
 # If not defined, the default URL is the same as the
 # one defined below :
 #
-logourl : http://www.librelogiciel.com/software/PyKota/pykota.png
+logourl : http://www.pykota.com/pykota.png
 
 
 
@@ -283,7 +283,7 @@ logourl : http://www.librelogiciel.com/software/PyKota/pykota.png
 # If not defined, the default URL is the same as the
 # one defined below :
 #
-logolink : http://www.librelogiciel.com/software/
+logolink : http://www.pykota.com/
 
 
 
