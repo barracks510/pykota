@@ -21,6 +21,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Work around some of MySQL "features" like this one :
+        
+          --- CUT ---  
+          mysql> SELECT datelimit FROM userpquota WHERE userid=1 AND printerid=1;
+          +---------------------+
+          | datelimit           |
+          +---------------------+
+          | 2006-05-31 16:20:03 |
+          +---------------------+
+          1 row in set (0.00 sec)
+          
+          mysql> UPDATE userpquota SET datelimit=NULL WHERE userid=1 AND printerid=1;
+          Query OK, 1 row affected (0.05 sec)
+          Rows matched: 1  Changed: 1  Warnings: 0
+          
+          mysql> SELECT datelimit FROM userpquota WHERE userid=1 AND printerid=1;
+          +---------------------+
+          | datelimit           |
+          +---------------------+
+          | 2006-05-31 16:27:45 |
+          +---------------------+
+          1 row in set (0.00 sec)
+          
+          mysql> 
+          --- CUT ---  
+          
         - Add a pkrefund command line tool & optional CGI script.
         
         - PJL for non-networked backends (see ML's history)
