@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha5 (2006-05-31) :
+    
+        - Fixed MySQL schema to workaround some "features"...
+        
     - 1.25alpha4 (2006-05-23) :
     
         - Introduced the 'askconfirmation' directive to interact with
