@@ -51,7 +51,7 @@ class Accounter(AccounterBase) :
             try :
                 from pkpgpdls import analyzer, pdlparser
             except ImportError :    
-                self.filter.printInfo("pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download", "error")
+                self.filter.printInfo("pkpgcounter is now distributed separately, please grab it from http://www.pykota.com/software/pkpgcounter", "error")
                 self.filter.printInfo("Precomputed job size will be forced to 0 pages.", "error")
             else :     
                 infile = open(self.filter.DataFile, "rb")

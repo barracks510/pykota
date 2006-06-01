@@ -32,7 +32,7 @@ PyKota features :
         
     Commercially Supported :    
     
-        - Support Contracts are available from http://www.librelogiciel.com/techsupport/
+        - Support Contracts are available from http://www.pykota.com/technical-support/
         
     Operating systems :
     
@@ -326,7 +326,7 @@ NB :
   
   PyKota's collaborative documentation is available from :
   
-    http://www.librelogiciel.com/software/PyKota/WiKota/
+    http://www.pykota.com/wiki/
     
   You may learn more about PyKota, if it fits your own organization,
   its internal working, and some potential performance drawbacks and
@@ -356,7 +356,7 @@ Prerequisite :
    
   See :
   
-    http://www.librelogiciel.com/software/PyKota/WiKota/Dependencies
+    http://www.pykota.com/wiki/Dependencies
     
   for an up-to-date list, or see below (maybe not up-to-date) :
   
@@ -367,7 +367,7 @@ Prerequisite :
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The pkpgcounter command line tool, version 1.56 or higher. This
       tool is now mandatory for PyKota to work. 
-      (http://www.librelogiciel.com/software/)
+      (http://www.pykota.com/software/pkpgcounter)
     - The pkipplib Python library (http://www.pykota.com/software/pkipplib)  
     - The JAXML Python module to be able to dump datas in the XML format.
       (http://www.librelogiciel.com/software/)

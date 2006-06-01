@@ -2,10 +2,10 @@ This package was debianized by Peter Hawkins <peterh@debian.org> on
 Tue, 18 Nov 2003 14:47:59 +1100.
 
 It was downloaded from:
-http://www.librelogiciel.com/software/PyKota/Presentation/action_Presentation
-(CVS snapshot)
+http://www.pykota.com/software/pykota/download
+(SVN snapshot)
 
-Upstream Authors: Jeroma Alet <alet@librelogiciel.com>
+Upstream Authors: Jerome Alet <alet@librelogiciel.com>
 
 Copyright:
 (c) 2003, 2004, 2005, 2006 Jerome Alet <alet@librelogiciel.com>
@@ -55,7 +55,6 @@ Licensing information :
 
   * For more informations, please read :
   
-        http://www.librelogiciel.com/software/PyKota/action_Download
-        http://www.librelogiciel.com/software/PyKota/Purchase
-        http://www.librelogiciel.com/software/PyKota/contracts
+        http://www.pykota.com/purchase
+        http://www.pykota.com/technical-support
         

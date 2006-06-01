@@ -75,7 +75,7 @@ options :
   
   -u | --url u         Uses u as an url to be written at the bottom of 
                        the banner page. The default url is :
-                       http://www.librelogiciel.com/software/
+                       http://www.pykota.com/
   
 examples :                              
 
@@ -296,7 +296,7 @@ if __name__ == "__main__" :
                      "savetoner" : "0", \
                      "pagesize" : "a4", \
                      "logo" : "/usr/share/pykota/logos/pykota.jpeg",
-                     "url" : "http://www.librelogiciel.com/software/",
+                     "url" : "http://www.pykota.com/",
                    }
         short_options = "vhs:l:p:u:"
         long_options = ["help", "version", "savetoner=", "pagesize=", "logo=", "url="]

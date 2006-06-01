@@ -30,7 +30,7 @@
   <para>
     Finally you have to download <application>PyKota</application>'s latest version
     or buy an official package, from 
-    <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
+    <ulink url="http://www.pykota.com/software/pykota">http://www.pykota.com/software/pykota</ulink>.
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
@@ -814,7 +814,7 @@ storagename : /etc/pykota/pykota.db
         <listitem>
           <para>
             The <application>pkpgcounter</application> Generic Page Description Language parser. 
-            You can download it from <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
+            You can download it from <ulink url="http://www.pykota.com.com/software/pkpgcounter">http://www.pykota.com.com/software/pkpgcounter</ulink>.
           </para>
         </listitem>  
         <listitem>
@@ -823,6 +823,12 @@ storagename : /etc/pykota/pykota.db
             You'll need this if you plan to ask users to authenticate when printing through <command>pknotify</command>
             and <command>pykoticon</command>. You don't need this module otherwise.
             If needed, you can download it from <ulink url="http://www.pangalactic.org/PyPAM/">http://www.pangalactic.org/PyPAM/</ulink>.
+          </para>
+        </listitem>  
+        <listitem>
+          <para>
+            The <application>PkIPPLib</application> Python <acronym>IPP</acronym> library.
+            You can download it from <ulink url="http://www.pykota.com/software/pkipplib">http://www.pykota.com/software/pkipplib</ulink>.
           </para>
         </listitem>  
       </itemizedlist>  

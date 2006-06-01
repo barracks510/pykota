@@ -33,11 +33,7 @@ import cStringIO
 from pykota import version
 from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
-
-try :
-    from pkpgpdls import analyzer, pdlparser
-except ImportError : # TODO : Remove the try/except after release 1.24.
-    sys.stderr.write("ERROR: pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download\n")
+from pkpgpdls import analyzer, pdlparser
     
 
 header = """Content-type: text/html
@@ -84,7 +80,7 @@ footer = """
     <hr width="25%%" />
     <p>
       <font size="-2">
-        <a href="http://www.librelogiciel.com/software/">%s</a>
+        <a href="http://www.pykota.com/">%s</a>
         &copy; %s %s 
         <br />
         <pre>

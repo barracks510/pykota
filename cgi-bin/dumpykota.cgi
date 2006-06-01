@@ -81,7 +81,7 @@ footer = """
     <hr width="25%%" />
     <p>
       <font size="-2">
-        <a href="http://www.librelogiciel.com/software/">%s</a>
+        <a href="http://www.pykota.com/">%s</a>
         &copy; %s %s 
         <br />
         <pre>

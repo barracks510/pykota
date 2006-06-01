@@ -16,7 +16,7 @@
     To get a print quote, you have to launch <command>pykotme</command>
     from the command line, passing your print job's content in any format
     recognized by PyKota 
-    <footnote><para>PyKota now uses <ulink url="http://www.librelogiciel.com/software/pkpgcounter/action_Presentation">pkpgcounter</ulink>
+    <footnote><para>PyKota now uses <ulink url="http://www.pykota.com/software/pkpgcounter">pkpgcounter</ulink>
     which recognizes PostScript (both binary and DSC compliant),
     PCLXL (aka PCL6), PDF, PCL3/4/5, ESC/P2, TIFF, DVI, OpenOffice Writer, and OpenOffice Impress.
     </para></footnote>, either in the form of one or more file names on the command line,

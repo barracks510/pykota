@@ -30,10 +30,7 @@ import pwd
 
 from pykota.tool import PyKotaTool, PyKotaCommandLineError, crashed, N_
 
-try :
-    from pkpgpdls import analyzer, pdlparser
-except ImportError : # TODO : Remove the try/except after release 1.24.
-    sys.stderr.write("ERROR: pkpgcounter is now distributed separately, please grab it from http://www.librelogiciel.com/software/pkpgcounter/action_Download\n")
+from pkpgpdls import analyzer, pdlparser
     
 
 __doc__ = N_("""pykotme v%(__version__)s (c) %(__years__)s %(__author__)s
