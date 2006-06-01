@@ -79,8 +79,19 @@ pykota.schema :
     In the sentence above, "unlimited" means no limit with regard to
     the number of records returned by a search operation. Of course
     you may want to restrict the access to only some attributes, but
-    this is up to you to decide. That's why we don't suggest any
-    ACL there, at least for now.
+    this is up to you to decide. An example giving full write access
+    to the pykotaadmin user is :
+    
+        access to dn.subtree="ou=PyKota,dc=example,dc=com" 
+               by dn="cn=pykotaadmin,dc=example,dc=com" write   
+               
+        access to dn.subtree="ou=People,dc=example,dc=com" 
+               by dn="cn=pykotaadmin,dc=example,dc=com" write   
+               
+        access to dn.subtree="ou=Groups,dc=example,dc=com" 
+               by dn="cn=pykotaadmin,dc=example,dc=com" write   
+               
+    Please adapt this to your own needs and configuration.
     
     Now, stop the OpenLDAP server :    
     
