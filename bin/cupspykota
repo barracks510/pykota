@@ -85,6 +85,7 @@ class CUPSBackend(PyKotaTool) :
         self.MyName = "PyKota"
         self.myname = "cupspykota"
         self.pid = os.getpid()
+        self.DataFile = None
         
     def deferredInit(self) :    
         """Deferred initialization."""
@@ -281,30 +282,41 @@ class CUPSBackend(PyKotaTool) :
         self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
                    (self.myname, self.PrinterName, self.UserName, self.JobId))
         
-        if not haspkipplib :
+        connerror = False
+        if haspkipplib :
+            self.ControlFile = "NotUsedAnymore"
+            cupsurl = "http://%s:%s" % \
+                               (os.environ.get("CUPS_SERVER", "localhost"), \
+                                os.environ.get("IPP_PORT", "631"))
+            self.logdebug("Querying CUPS server at %s" % cupsurl)                    
+            cupsserver = pkipplib.CUPS(url=cupsurl) # TODO : username and password
+            answer = cupsserver.getJobAttributes(self.JobId)
+            if answer is None :
+                self.printInfo(_("Network error while querying the CUPS server at %s (maybe incorrect authentication)") \
+                                          % cupsurl, "error")
+                connerror = True                        
+            else :    
+                self.logdebug("CUPS server at %s answered without error." % cupsurl)
+                try :
+                    john = answer.job["job-originating-host-name"]
+                except KeyError :    
+                    try :
+                        john = answer.operation["job-originating-host-name"]
+                    except KeyError :    
+                        john = (None, None)
+                try :        
+                    jbing = answer.job["job-billing"]
+                except KeyError :    
+                    jbing = (None, None)
+                    
+        if connerror or not haspkipplib :        
             (ippfilename, ippmessage) = self.parseIPPRequestFile()
             self.ControlFile = ippfilename
             john = ippmessage.operation_attributes.get("job-originating-host-name", \
                    ippmessage.job_attributes.get("job-originating-host-name", \
                    (None, None)))
             jbing = ippmessage.job_attributes.get("job-billing", (None, None))
-        else :
-            cupsserver = pkipplib.CUPS(url="http://%s:%s" % \
-                                  (os.environ.get("CUPS_SERVER", "localhost"), \
-                                   os.environ.get("IPP_PORT", "631")))
-            answer = cupsserver.getJobAttributes(self.JobId)
-            self.ControlFile = "NotUsedAnymore"
-            try :
-                john = answer.job["job-originating-host-name"]
-            except KeyError :    
-                try :
-                    john = answer.operation["job-originating-host-name"]
-                except KeyError :    
-                    john = (None, None)
-            try :        
-                jbing = answer.job["job-billing"]
-            except KeyError :    
-                jbing = (None, None)
+                
         if type(john) == type([]) : 
             john = john[-1]
         (chtype, self.ClientHost) = john 
@@ -479,14 +491,15 @@ class CUPSBackend(PyKotaTool) :
     def clean(self) :
         """Cleans up the place."""
         self.logdebug("Cleaning up...")
+        self.regainPriv()
         self.deinstallSigTermHandler()
         if not self.config.getPrinterKeepFiles(self.PrinterName) :
+            self.logdebug("Work file %s will be deleted." % self.DataFile)
             try :
-                self.logdebug("Work file %s will be deleted." % self.DataFile)
-            except AttributeError :    
-                pass
-            else :    
                 os.remove(self.DataFile)
+            except OSError, msg :
+                self.logdebug("Problem while deleting work file %s : %s" % (self.DataFile, msg))
+            else :
                 self.logdebug("Work file %s has been deleted." % self.DataFile)
         else :    
             self.logdebug("Work file %s will be kept." % self.DataFile)
