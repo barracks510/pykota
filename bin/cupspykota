@@ -285,18 +285,15 @@ class CUPSBackend(PyKotaTool) :
         connerror = False
         if haspkipplib :
             self.ControlFile = "NotUsedAnymore"
-            cupsurl = "http://%s:%s" % \
-                               (os.environ.get("CUPS_SERVER") or "localhost", \
-                                os.environ.get("IPP_PORT", "631"))
-            self.logdebug("Querying CUPS server at %s" % cupsurl)                    
-            cupsserver = pkipplib.CUPS(url=cupsurl) # TODO : username and password
+            self.logdebug("Querying CUPS server...")
+            cupsserver = pkipplib.CUPS() # TODO : username and password and/or encryption
             answer = cupsserver.getJobAttributes(self.JobId)
             if answer is None :
-                self.printInfo(_("Network error while querying the CUPS server at %s (maybe incorrect authentication)") \
-                                          % cupsurl, "error")
+                self.printInfo(_("Network error while querying the CUPS server : %s") \
+                                          % cupsserver.lastErrorMessage, "error")
                 connerror = True                        
             else :    
-                self.logdebug("CUPS server at %s answered without error." % cupsurl)
+                self.logdebug("CUPS server answered without error.")
                 try :
                     john = answer.job["job-originating-host-name"]
                 except KeyError :    
