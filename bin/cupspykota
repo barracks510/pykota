@@ -286,7 +286,7 @@ class CUPSBackend(PyKotaTool) :
         if haspkipplib :
             self.ControlFile = "NotUsedAnymore"
             cupsurl = "http://%s:%s" % \
-                               (os.environ.get("CUPS_SERVER", "localhost"), \
+                               (os.environ.get("CUPS_SERVER") or "localhost", \
                                 os.environ.get("IPP_PORT", "631"))
             self.logdebug("Querying CUPS server at %s" % cupsurl)                    
             cupsserver = pkipplib.CUPS(url=cupsurl) # TODO : username and password
