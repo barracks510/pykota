@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha6 (2006-06-09) :
+    
+        - Fixed the incorrect overwriting of the original billing
+          code if the overwrite_jobticket directive was used.
+          
     - 1.25alpha5 (2006-06-03) :
     
         - Fixed minor issues with pkipplib's usage.

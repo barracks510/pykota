@@ -442,10 +442,13 @@ class CUPSBackend(PyKotaTool) :
                 self.Action = action
                 self.Reason = _("Print job cancelled.")
                 os.environ["PYKOTASTATUS"] = "CANCELLED"
-            elif username :
-                self.UserName = username # If cancelled or denied, we don't allow username to be overwritten
-            # NB : we overwrite the billing code even if empty    
-            self.JobBillingCode = billingcode 
+            else :
+                # don't overwrite anything unless job authorized
+                # to continue to the physical printer.
+                if username and username.strip() :
+                    self.UserName = username
+                if billingcode is not None :
+                    self.JobBillingCode = billingcode 
         self.logdebug("Job ticket overwriting done.")
             
     def saveDatasAndCheckSum(self) :
