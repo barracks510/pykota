@@ -465,14 +465,15 @@ onbackenderror : nocharge
 # if any, is used unchanged.
 # If only BILLINGCODE= lines are printed, the username is
 # used unchanged.
-# If DENY or CANCEL is output, the username can't be overwritten.
+# If DENY or CANCEL is output, neither the username nor the
+# billing code can be overwritten.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
 #
 # examples :
 # 
-# overwrite_jobticket : /usr/bin/pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 --timeout 180 --denyafter 3 --checkauth --ask "Username:username:$PYKOTAUSERNAME" "Password:password:"
+# overwrite_jobticket : /usr/bin/pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 --timeout 180 --denyafter 3 --checkauth --ask "Username:username:$PYKOTAUSERNAME" "Password:password:" "Billing code:billingcode:$PYKOTAJOBBILLING"
 # overwrite_jobticket : /path/to/some/script/or/command
 
 
