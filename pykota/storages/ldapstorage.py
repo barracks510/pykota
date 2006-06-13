@@ -916,11 +916,10 @@ class Storage(BaseStorage) :
                        "pykotaUserName" : uname,
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
                        "pykotaOverCharge" : str(user.OverCharge),
-                       "description" : self.userCharsetToDatabase(user.Description or "")
+                       "description" : self.userCharsetToDatabase(user.Description or ""),
+                       self.info["usermail"] : user.Email or "",
                     }   
                        
-        if user.Email :
-            newfields.update({self.info["usermail"]: user.Email})
         mustadd = 1
         if self.info["newuser"].lower() != 'below' :
             try :
@@ -1122,9 +1121,8 @@ class Storage(BaseStorage) :
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
                        "pykotaOverCharge" : str(user.OverCharge),
                        "description" : self.userCharsetToDatabase(user.Description or ""), 
+                       self.info["usermail"] : user.Email or "",
                     }   
-        if user.Email :
-            newfields.update({self.info["usermail"]: user.Email})
         self.doModify(user.ident, newfields)
         
         newfields = { "pykotaBalance" : str(user.AccountBalance or 0.0),
