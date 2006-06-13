@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha6 (2006-06-13) :
+    
+        - pkusers now supports the --email command line switch.
+          The old method to set the email address is still supported,
+          but the new one allows the email address to be modified
+          as well.
+          
     - 1.25alpha6 (2006-06-09) :
     
         - Fixed the incorrect overwriting of the original billing

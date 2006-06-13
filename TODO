@@ -21,9 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
-        - Add a --email command line option to pkusers, to allow
-          modification of an existing email address.
-          
         - Add a pkrefund command line tool & optional CGI script.
         
         - PJL for non-networked backends (see ML's history)

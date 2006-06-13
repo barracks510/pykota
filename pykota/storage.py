@@ -105,6 +105,11 @@ class StorageUser(StorageObject) :
         self.OverCharge = factor
         self.isDirty = True
         
+    def setEmail(self, email) :    
+        """Sets the user's email address."""
+        self.Email = email
+        self.isDirty = True
+        
     def delete(self) :    
         """Deletes an user from the database."""
         self.parent.deleteUser(self)

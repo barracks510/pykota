@@ -53,7 +53,12 @@ options :
                        -s|--skipexisting is also used.
                        
   -d | --delete        Deletes users from the quota storage.
-  
+
+  -e | --email addr    Sets the email address for the users.
+                       If the addr parameter begins with @, then
+                       the username is prepended to addr to form
+                       a valid email address.
+
   -D | --description d Adds a textual description to users or groups.
                        
   -g | --groups        Edit users groups instead of users.
@@ -153,6 +158,10 @@ examples :
   User boss can print at will, it won't cost him anything because the
   cost of each print job will be multiplied by zero before charging
   his account.
+
+  $ pkusers --email @example.com
+
+  This will set the email address for each user to username@example.com
 """)
         
 class PKUsers(PyKotaTool) :        
@@ -164,8 +173,12 @@ class PKUsers(PyKotaTool) :
         if limitby :    
             entry.setLimitBy(limitby)
         if not groups :
-            if email :
-                entry.Email = email
+            if email is not None :      # we allow "" to empty the field
+                if email.startswith("@") :
+                    email = "%s%s" % (entry.Name, email)
+                if email and email.count('@') != 1 :
+                    raise PyKotaCommandLineError, _("Invalid email address %s") % email
+                entry.setEmail(email)
             if overcharge is not None : # NB : 0 is allowed !     
                 entry.setOverChargeFactor(overcharge)
             if balance :
@@ -278,11 +291,14 @@ class PKUsers(PyKotaTool) :
                     
             description = options["description"]
             if description :
-                description = options["description"].strip()
+                description = description.strip()
                 
             comment = options["comment"]
             if comment :
-                comment = options["comment"].strip()
+                comment = comment.strip()
+            email = options["email"]    
+            if email :
+                email = email.strip()
             skipexisting = options["skipexisting"]    
             groups = options["groups"]
             remove = options["remove"]
@@ -293,14 +309,12 @@ class PKUsers(PyKotaTool) :
                     percent.display("%s...\n" % _("Creation"))
                     percent.setSize(len(names))
                     for ename in names :
-                        email = None
+                        useremail = None
                         if not groups :
                             splitname = ename.split('/', 1)     # username/email
                             if len(splitname) == 1 :
                                 splitname.append("")
-                            (ename, email) = splitname
-                            if email and (email.count('@') != 1) :
-                                raise PyKotaCommandLineError, _("Invalid email address %s") % email
+                            (ename, useremail) = splitname
                         if self.isValidName(ename) :
                             reject = 0
                             if rejectunknown :
@@ -325,7 +339,7 @@ class PKUsers(PyKotaTool) :
                                     self.modifyEntry(entry, groups, limitby, \
                                                      description, overcharge,\
                                                      balance, balancevalue, \
-                                                     comment, email)
+                                                     comment, useremail or email)
                                 oldentry = getattr(self.storage, "add%s" % suffix)(entry)
                                 if oldentry is not None :
                                     if skipexisting :
@@ -339,7 +353,7 @@ class PKUsers(PyKotaTool) :
                                             self.modifyEntry(oldentry, groups, limitby, \
                                                      description, overcharge,\
                                                      balance, balancevalue, \
-                                                     comment, email)
+                                                     comment, useremail or email)
                                         oldentry.save()
                                         if not groups :
                                             self.manageUsersGroups(usersgroups, oldentry, remove)
@@ -358,7 +372,7 @@ class PKUsers(PyKotaTool) :
                         else :    
                             self.modifyEntry(entry, groups, limitby, description, \
                                              overcharge, balance, balancevalue, \
-                                             comment)
+                                             comment, email)
                             self.manageUsersGroups(usersgroups, entry, remove)                
                         entry.save()    
                         percent.oneMore()
@@ -377,10 +391,10 @@ if __name__ == "__main__" :
         defaults = { \
                      "comment" : "", \
                    }
-        short_options = "hvaD:dgl:rso:i:b:C:L"
+        short_options = "hvaD:dgl:rso:i:b:C:Le:"
         long_options = ["help", "version", "add", "description=", \
                         "delete", "groups", "list", "remove", \
-                        "skipexisting", "overcharge=", \
+                        "skipexisting", "overcharge=", "email=", \
                         "ingroups=", "limitby=", "balance=", "comment=", \
                        ]
                         
@@ -407,14 +421,15 @@ if __name__ == "__main__" :
         options["ingroups"] = options["i"] or options["ingroups"]
         options["overcharge"] = options["o"] or options["overcharge"]
         options["comment"] = options["C"] or options["comment"] or defaults["comment"]
+        options["email"] = options["e"] or options["email"]
         
         if options["help"] :
             manager.display_usage_and_quit()
         elif options["version"] :
             manager.display_version_and_quit()
-        elif (options["delete"] and (options["add"] or options["remove"] or options["description"])) \
+        elif (options["delete"] and (options["add"] or options["remove"] or options["description"] or options["email"])) \
            or (options["skipexisting"] and not options["add"]) \
-           or (options["list"] and (options["add"] or options["delete"] or options["remove"] or options["description"])) \
+           or (options["list"] and (options["add"] or options["delete"] or options["remove"] or options["description"] or options["email"])) \
            or (options["groups"] and (options["balance"] or options["ingroups"] or options["overcharge"])) :
             raise PyKotaCommandLineError, _("incompatible options, see help.")
         elif options["remove"] and not options["ingroups"] :    
