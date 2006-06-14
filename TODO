@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Store the value of the user's account balance in the
+          printing history (the value at the time of printing) 
+          as well as in the payments history (as a safety check
+          in case an user complains).
+          
         - Add a pkrefund command line tool & optional CGI script.
         
         - PJL for non-networked backends (see ML's history)
