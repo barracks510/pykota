@@ -1028,6 +1028,16 @@ $ ln -s /usr/share/pykota/cupspykota cupspykota
       </para>
       
       <para>
+        If you use CUPS v1.2 or higher, it is recommended that you
+        also type the following command to allow the <command>cupspykota</command>
+        backend to correctly support other backends which must be run
+        as the root user (e.g. the <command>lpd</command> backend) :
+        <screen>        
+$ chmod 700 /usr/share/pykota/cupspykota
+        </screen>
+      </para>
+      
+      <para>
         You have to restart <application>CUPS</application> for this modification to
         take effect : 
         <screen>

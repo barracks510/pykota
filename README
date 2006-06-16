@@ -546,6 +546,14 @@ The rest of the installation depends on your printing system :
           $ cd /usr/lib/cups/backend
           $ ln -s /usr/share/pykota/cupspykota cupspykota
           
+        If you use CUPS v1.2 or higher, please do this as well :  
+        
+          $ chmod 700 /usr/share/pykota/cupspykota
+          
+          This allows the cupspykota backend to support other
+          backends which must be run as user root, like the
+          lpd backend for example.
+          
         Restart CUPS so that the new backend can be detected.
         
           $ /etc/init.d/cupsys restart
