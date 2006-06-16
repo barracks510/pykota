@@ -22,6 +22,8 @@
 #
 #
 
+import os
+import imp
 from mx import DateTime
 
 class PyKotaStorageError(Exception):
@@ -749,7 +751,10 @@ def openConnection(pykotatool) :
     backendinfo = pykotatool.config.getStorageBackend()
     backend = backendinfo["storagebackend"]
     try :
-        exec "from pykota.storages import %s as storagebackend" % backend.lower()
+        storagebackend = imp.load_source("storagebackend", 
+                                         os.path.join(os.path.dirname(__file__),
+                                                      "storages",
+                                                      "%s.py" % backend.lower()))
     except ImportError :
         raise PyKotaStorageError, _("Unsupported quota storage backend %s") % backend
     else :    

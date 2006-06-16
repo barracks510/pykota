@@ -23,6 +23,8 @@
 #
 
 import sys
+import os
+import imp
 
 class PyKotaAccounterError(Exception):
     """An exception for Accounter related stuff."""
@@ -95,7 +97,10 @@ def openAccounter(kotafilter, ispreaccounter=0) :
     else :
         (backend, args) = kotafilter.config.getAccounterBackend(kotafilter.PrinterName)
     try :
-        exec "from pykota.accounters import %s as accounterbackend" % backend.lower()
+        accounterbackend = imp.load_source("accounterbackend", 
+                                            os.path.join(os.path.dirname(__file__),
+                                                         "storages",
+                                                         "%s.py" % backend.lower()))
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
     else :    

@@ -22,6 +22,8 @@
 #
 #
 
+import os
+import imp
 from mx import DateTime
 
 class PyKotaReporterError(Exception):
@@ -141,7 +143,10 @@ class BaseReporter :
 def openReporter(tool, reporttype, printers, ugnames, isgroup) :
     """Returns a reporter instance of the proper reporter."""
     try :
-        exec "from pykota.reporters import %s as reporterbackend" % reporttype.lower()
+        reporterbackend = imp.load_source("reporterbackend", 
+                                           os.path.join(os.path.dirname(__file__),
+                                                        "reporters",
+                                                        "%s.py" % reporttype.lower()))
     except ImportError :
         raise PyKotaReporterError, _("Unsupported reporter backend %s") % reporttype
     else :    

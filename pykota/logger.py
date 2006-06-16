@@ -22,6 +22,9 @@
 #
 #
 
+import os
+import imp
+
 class PyKotaLoggingError(Exception):
     """An exception for logging related stuff."""
     def __init__(self, message = ""):
@@ -34,7 +37,10 @@ class PyKotaLoggingError(Exception):
 def openLogger(backend) :
     """Returns the appropriate logger subsystem object."""
     try :
-        exec "from pykota.loggers import %s as loggingbackend" % backend.lower()    
+        loggingbackend = imp.load_source("loggingbackend", 
+                                         os.path.join(os.path.dirname(__file__),
+                                                      "loggers",
+                                                      "%s.py" % backend.lower()))
     except ImportError :
         raise PyKotaLoggingError, _("Unsupported logging subsystem %s") % backend
     else :    
