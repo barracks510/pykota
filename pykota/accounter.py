@@ -99,7 +99,7 @@ def openAccounter(kotafilter, ispreaccounter=0) :
     try :
         accounterbackend = imp.load_source("accounterbackend", 
                                             os.path.join(os.path.dirname(__file__),
-                                                         "storages",
+                                                         "accounters",
                                                          "%s.py" % backend.lower()))
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
