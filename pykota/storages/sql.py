@@ -27,6 +27,122 @@ from pykota.storage import StorageUser, StorageGroup, StoragePrinter, \
                            StorageGroupPQuota, StorageBillingCode
 
 class SQLStorage :
+    def storageUserFromRecord(self, username, record) :
+        """Returns a StorageUser instance from a database record."""
+        user = StorageUser(self, username)
+        user.ident = record.get("uid", record.get("userid", record.get("id")))
+        user.LimitBy = record.get("limitby") or "quota"
+        user.AccountBalance = record.get("balance")
+        user.LifeTimePaid = record.get("lifetimepaid")
+        user.Email = record.get("email")
+        user.Description = self.databaseToUserCharset(record.get("description"))
+        user.OverCharge = record.get("overcharge", 1.0)
+        user.Exists = True
+        return user
+        
+    def storageGroupFromRecord(self, groupname, record) :
+        """Returns a StorageGroup instance from a database record."""
+        group = StorageGroup(self, groupname)
+        group.ident = record.get("id")
+        group.LimitBy = record.get("limitby") or "quota"
+        group.AccountBalance = record.get("balance")
+        group.LifeTimePaid = record.get("lifetimepaid")
+        group.Description = self.databaseToUserCharset(record.get("description"))
+        group.Exists = True
+        return group
+        
+    def storagePrinterFromRecord(self, printername, record) :
+        """Returns a StoragePrinter instance from a database record."""
+        printer = StoragePrinter(self, printername)
+        printer.ident = record.get("id")
+        printer.PricePerJob = record.get("priceperjob") or 0.0
+        printer.PricePerPage = record.get("priceperpage") or 0.0
+        printer.MaxJobSize = record.get("maxjobsize") or 0
+        printer.PassThrough = record.get("passthrough") or 0
+        if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
+            printer.PassThrough = True
+        else :
+            printer.PassThrough = False
+        printer.Description = self.databaseToUserCharset(record.get("description") or "") # TODO : is 'or ""' still needed ?
+        printer.Exists = True
+        return printer
+        
+    def setJobAttributesFromRecord(self, job, record) :    
+        """Sets the attributes of a job from a database record."""
+        job.ident = record.get("id")
+        job.JobId = record.get("jobid")
+        job.PrinterPageCounter = record.get("pagecounter")
+        job.JobSize = record.get("jobsize")
+        job.JobPrice = record.get("jobprice")
+        job.JobAction = record.get("action")
+        job.JobFileName = self.databaseToUserCharset(record.get("filename") or "") 
+        job.JobTitle = self.databaseToUserCharset(record.get("title") or "") 
+        job.JobCopies = record.get("copies")
+        job.JobOptions = self.databaseToUserCharset(record.get("options") or "") 
+        job.JobDate = record.get("jobdate")
+        job.JobHostName = record.get("hostname")
+        job.JobSizeBytes = record.get("jobsizebytes")
+        job.JobMD5Sum = record.get("md5sum")
+        job.JobPages = record.get("pages")
+        job.JobBillingCode = self.databaseToUserCharset(record.get("billingcode") or "")
+        job.PrecomputedJobSize = record.get("precomputedjobsize")
+        job.PrecomputedJobPrice = record.get("precomputedjobprice")
+        job.UserName = self.databaseToUserCharset(record.get("username"))
+        job.PrinterName = self.databaseToUserCharset(record.get("printername"))
+        if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
+            (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
+        job.Exists = True
+        
+    def storageJobFromRecord(self, record) :
+        """Returns a StorageJob instance from a database record."""
+        job = StorageJob(self)
+        self.setJobAttributesFromRecord(job, record)
+        return job
+        
+    def storageLastJobFromRecord(self, printer, record) :
+        """Returns a StorageLastJob instance from a database record."""
+        lastjob = StorageLastJob(self, printer)
+        self.setJobAttributesFromRecord(lastjob, record)
+        return lastjob
+        
+    def storageUserPQuotaFromRecord(self, user, printer, record) :
+        """Returns a StorageUserPQuota instance from a database record."""
+        userpquota = StorageUserPQuota(self, user, printer)
+        userpquota.ident = record.get("id")
+        userpquota.PageCounter = record.get("pagecounter")
+        userpquota.LifePageCounter = record.get("lifepagecounter")
+        userpquota.SoftLimit = record.get("softlimit")
+        userpquota.HardLimit = record.get("hardlimit")
+        userpquota.DateLimit = record.get("datelimit")
+        userpquota.WarnCount = record.get("warncount") or 0
+        userpquota.Exists = True
+        return userpquota
+        
+    def storageGroupPQuotaFromRecord(self, group, printer, record) :
+        """Returns a StorageGroupPQuota instance from a database record."""
+        grouppquota = StorageGroupPQuota(self, group, printer)
+        grouppquota.ident = record.get("id")
+        grouppquota.SoftLimit = record.get("softlimit")
+        grouppquota.HardLimit = record.get("hardlimit")
+        grouppquota.DateLimit = record.get("datelimit")
+        result = self.doSearch("SELECT SUM(lifepagecounter) AS lifepagecounter, SUM(pagecounter) AS pagecounter FROM userpquota WHERE printerid=%s AND userid IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" \
+                      % (self.doQuote(printer.ident), self.doQuote(group.ident)))
+        if result :
+            grouppquota.PageCounter = result[0].get("pagecounter") or 0
+            grouppquota.LifePageCounter = result[0].get("lifepagecounter") or 0
+        grouppquota.Exists = True
+        return grouppquota
+        
+    def storageBillingCodeFromRecord(self, billingcode, record) :
+        """Returns a StorageBillingCode instance from a database record."""
+        code = StorageBillingCode(self, billingcode)
+        code.ident = record.get("id")
+        code.Description = self.databaseToUserCharset(record.get("description") or "") # TODO : is 'or ""' still needed ?
+        code.Balance = record.get("balance") or 0.0
+        code.PageCounter = record.get("pagecounter") or 0
+        code.Exists = True
+        return code
+        
     def createFilter(self, only) :    
         """Returns the appropriate SQL filter."""
         if only :
@@ -197,134 +313,65 @@ class SQLStorage :
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
-        user = StorageUser(self, username)
-        username = self.userCharsetToDatabase(username)
-        result = self.doSearch("SELECT * FROM users WHERE username=%s LIMIT 1" % self.doQuote(username))
+        result = self.doSearch("SELECT * FROM users WHERE username=%s LIMIT 1"\
+                      % self.doQuote(self.userCharsetToDatabase(username)))
         if result :
-            fields = result[0]
-            user.ident = fields.get("id")
-            user.LimitBy = fields.get("limitby") or "quota"
-            user.AccountBalance = fields.get("balance")
-            user.LifeTimePaid = fields.get("lifetimepaid")
-            user.Email = fields.get("email")
-            user.Description = self.databaseToUserCharset(fields.get("description"))
-            user.OverCharge = fields.get("overcharge", 1.0)
-            user.Exists = 1
-        return user
+            return self.storageUserFromRecord(username, result[0])
+        else :    
+            return StorageUser(self, username)
        
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
-        group = StorageGroup(self, groupname)
-        groupname = self.userCharsetToDatabase(groupname)
-        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description LIMIT 1" % self.doQuote(groupname))
+        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description LIMIT 1" \
+                      % self.doQuote(self.userCharsetToDatabase(groupname)))
         if result :
-            fields = result[0]
-            group.ident = fields.get("id")
-            group.LimitBy = fields.get("limitby") or "quota"
-            group.AccountBalance = fields.get("balance")
-            group.LifeTimePaid = fields.get("lifetimepaid")
-            group.Description = self.databaseToUserCharset(fields.get("description"))
-            group.Exists = 1
-        return group
+            return self.storageGroupFromRecord(groupname, result[0])
+        else :    
+            return StorageGroup(self, groupname)
        
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
-        printer = StoragePrinter(self, printername)
-        printername = self.userCharsetToDatabase(printername)
-        result = self.doSearch("SELECT * FROM printers WHERE printername=%s LIMIT 1" % self.doQuote(printername))
+        result = self.doSearch("SELECT * FROM printers WHERE printername=%s LIMIT 1" \
+                      % self.doQuote(self.userCharsetToDatabase(printername)))
         if result :
-            fields = result[0]
-            printer.ident = fields.get("id")
-            printer.PricePerJob = fields.get("priceperjob") or 0.0
-            printer.PricePerPage = fields.get("priceperpage") or 0.0
-            printer.MaxJobSize = fields.get("maxjobsize") or 0
-            printer.PassThrough = fields.get("passthrough") or 0
-            if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
-                printer.PassThrough = 1
-            else :
-                printer.PassThrough = 0
-            printer.Description = self.databaseToUserCharset(fields.get("description") or "")
-            printer.Exists = 1
-        return printer    
+            return self.storagePrinterFromRecord(printername, result[0])
+        else :    
+            return StoragePrinter(self, printername)
         
     def getBillingCodeFromBackend(self, label) :        
         """Extracts a billing code information given its name."""
-        code = StorageBillingCode(self, label)
-        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" % self.doQuote(self.userCharsetToDatabase(label)))
+        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" \
+                      % self.doQuote(self.userCharsetToDatabase(label)))
         if result :
-            fields = result[0]
-            code.ident = fields.get("id")
-            code.Description = self.databaseToUserCharset(fields.get("description") or "")
-            code.Balance = fields.get("balance") or 0.0
-            code.PageCounter = fields.get("pagecounter") or 0
-            code.Exists = 1
-        return code    
+            return self.storageBillingCodeFromRecord(label, result[0])
+        else :    
+            return StorageBillingCode(self, label)
         
     def getUserPQuotaFromBackend(self, user, printer) :        
         """Extracts a user print quota."""
-        userpquota = StorageUserPQuota(self, user, printer)
         if printer.Exists and user.Exists :
-            result = self.doSearch("SELECT * FROM userpquota WHERE userid=%s AND printerid=%s;" % (self.doQuote(user.ident), self.doQuote(printer.ident)))
+            result = self.doSearch("SELECT * FROM userpquota WHERE userid=%s AND printerid=%s;" \
+                          % (self.doQuote(user.ident), self.doQuote(printer.ident)))
             if result :
-                fields = result[0]
-                userpquota.ident = fields.get("id")
-                userpquota.PageCounter = fields.get("pagecounter")
-                userpquota.LifePageCounter = fields.get("lifepagecounter")
-                userpquota.SoftLimit = fields.get("softlimit")
-                userpquota.HardLimit = fields.get("hardlimit")
-                userpquota.DateLimit = fields.get("datelimit")
-                userpquota.WarnCount = fields.get("warncount") or 0
-                userpquota.Exists = 1
-        return userpquota
+                return self.storageUserPQuotaFromRecord(user, printer, result[0])
+        return StorageUserPQuota(self, user, printer)
         
     def getGroupPQuotaFromBackend(self, group, printer) :        
         """Extracts a group print quota."""
-        grouppquota = StorageGroupPQuota(self, group, printer)
-        if group.Exists :
-            result = self.doSearch("SELECT * FROM grouppquota WHERE groupid=%s AND printerid=%s" % (self.doQuote(group.ident), self.doQuote(printer.ident)))
+        if printer.Exists and group.Exists :
+            result = self.doSearch("SELECT * FROM grouppquota WHERE groupid=%s AND printerid=%s" \
+                          % (self.doQuote(group.ident), self.doQuote(printer.ident)))
             if result :
-                fields = result[0]
-                grouppquota.ident = fields.get("id")
-                grouppquota.SoftLimit = fields.get("softlimit")
-                grouppquota.HardLimit = fields.get("hardlimit")
-                grouppquota.DateLimit = fields.get("datelimit")
-                result = self.doSearch("SELECT SUM(lifepagecounter) AS lifepagecounter, SUM(pagecounter) AS pagecounter FROM userpquota WHERE printerid=%s AND userid IN (SELECT userid FROM groupsmembers WHERE groupid=%s)" % (self.doQuote(printer.ident), self.doQuote(group.ident)))
-                if result :
-                    fields = result[0]
-                    grouppquota.PageCounter = fields.get("pagecounter") or 0
-                    grouppquota.LifePageCounter = fields.get("lifepagecounter") or 0
-                grouppquota.Exists = 1
-        return grouppquota
+                return self.storageGroupPQuotaFromRecord(group, printer, result[0])
+        return StorageGroupPQuota(self, group, printer)
         
     def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
-        lastjob = StorageLastJob(self, printer)
         result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
         if result :
-            fields = result[0]
-            lastjob.ident = fields.get("id")
-            lastjob.JobId = fields.get("jobid")
-            lastjob.UserName = self.databaseToUserCharset(fields.get("username"))
-            lastjob.PrinterPageCounter = fields.get("pagecounter")
-            lastjob.JobSize = fields.get("jobsize")
-            lastjob.JobPrice = fields.get("jobprice")
-            lastjob.JobAction = fields.get("action")
-            lastjob.JobFileName = self.databaseToUserCharset(fields.get("filename") or "") 
-            lastjob.JobTitle = self.databaseToUserCharset(fields.get("title") or "") 
-            lastjob.JobCopies = fields.get("copies")
-            lastjob.JobOptions = self.databaseToUserCharset(fields.get("options") or "") 
-            lastjob.JobDate = fields.get("jobdate")
-            lastjob.JobHostName = fields.get("hostname")
-            lastjob.JobSizeBytes = fields.get("jobsizebytes")
-            lastjob.JobMD5Sum = fields.get("md5sum")
-            lastjob.JobPages = fields.get("pages")
-            lastjob.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode"))
-            lastjob.PrecomputedJobSize = fields.get("precomputedjobsize")
-            lastjob.PrecomputedJobPrice = fields.get("precomputedjobprice")
-            if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
-                (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
-            lastjob.Exists = 1
-        return lastjob
+            return self.storageLastJobFromRecord(printer, result[0])
+        else :    
+            return StorageLastJob(self, printer)
             
     def getGroupMembersFromBackend(self, group) :        
         """Returns the group's members list."""
@@ -332,14 +379,8 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM groupsmembers JOIN users ON groupsmembers.userid=users.id WHERE groupid=%s" % self.doQuote(group.ident))
         if result :
             for record in result :
-                user = StorageUser(self, self.databaseToUserCharset(record.get("username")))
-                user.ident = record.get("userid")
-                user.LimitBy = record.get("limitby") or "quota"
-                user.AccountBalance = record.get("balance")
-                user.LifeTimePaid = record.get("lifetimepaid")
-                user.Email = record.get("email")
-                user.OverCharge = record.get("overcharge")
-                user.Exists = 1
+                user = self.storageUserFromRecord(self.databaseToUserCharset(record.get("username")), \
+                                                  record)
                 groupmembers.append(user)
                 self.cacheEntry("USERS", user.Name, user)
         return groupmembers        
@@ -384,18 +425,7 @@ class SQLStorage :
             for record in result :
                 pname = self.databaseToUserCharset(record["printername"])
                 if patdict.has_key(pname) or self.tool.matchString(pname, patterns) :
-                    printer = StoragePrinter(self, pname)
-                    printer.ident = record.get("id")
-                    printer.PricePerJob = record.get("priceperjob") or 0.0
-                    printer.PricePerPage = record.get("priceperpage") or 0.0
-                    printer.Description = self.databaseToUserCharset(record.get("description") or "") 
-                    printer.MaxJobSize = record.get("maxjobsize") or 0
-                    printer.PassThrough = record.get("passthrough") or 0
-                    if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
-                        printer.PassThrough = 1
-                    else :
-                        printer.PassThrough = 0
-                    printer.Exists = 1
+                    printer = self.storagePrinterFromRecord(pname, record)
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
@@ -419,15 +449,7 @@ class SQLStorage :
             for record in result :
                 uname = self.databaseToUserCharset(record["username"])
                 if patdict.has_key(uname) or self.tool.matchString(uname, patterns) :
-                    user = StorageUser(self, uname)
-                    user.ident = record.get("id")
-                    user.LimitBy = record.get("limitby") or "quota"
-                    user.AccountBalance = record.get("balance")
-                    user.LifeTimePaid = record.get("lifetimepaid")
-                    user.Email = record.get("email")
-                    user.Description = self.databaseToUserCharset(record.get("description"))
-                    user.OverCharge = record.get("overcharge", 1.0)
-                    user.Exists = 1
+                    user = self.storageUserFromRecord(uname, record)
                     users.append(user)
                     self.cacheEntry("USERS", user.Name, user)
         return users        
@@ -451,13 +473,7 @@ class SQLStorage :
             for record in result :
                 gname = self.databaseToUserCharset(record["groupname"])
                 if patdict.has_key(gname) or self.tool.matchString(gname, patterns) :
-                    group = StorageGroup(self, gname)
-                    group.ident = record.get("id")
-                    group.LimitBy = record.get("limitby") or "quota"
-                    group.AccountBalance = record.get("balance")
-                    group.LifeTimePaid = record.get("lifetimepaid")
-                    group.Description = self.databaseToUserCharset(record.get("description"))
-                    group.Exists = 1
+                    group = self.storageGroupFromRecord(gname, record)
                     groups.append(group)
                     self.cacheEntry("GROUPS", group.Name, group)
         return groups        
@@ -478,12 +494,7 @@ class SQLStorage :
             for record in result :
                 codename = self.databaseToUserCharset(record["billingcode"])
                 if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
-                    code = StorageBillingCode(self, codename)
-                    code.ident = record.get("id")
-                    code.Balance = record.get("balance") or 0.0
-                    code.PageCounter = record.get("pagecounter") or 0
-                    code.Description = self.databaseToUserCharset(record.get("description") or "") 
-                    code.Exists = 1
+                    code = self.storageBillingCodeFromRecord(codename, record)
                     codes.append(code)
                     self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
@@ -496,24 +507,8 @@ class SQLStorage :
             for record in result :
                 uname = self.databaseToUserCharset(record.get("username"))
                 if self.tool.matchString(uname, names) :
-                    user = StorageUser(self, uname)
-                    user.ident = record.get("uid")
-                    user.LimitBy = record.get("limitby") or "quota"
-                    user.AccountBalance = record.get("balance")
-                    user.LifeTimePaid = record.get("lifetimepaid")
-                    user.Email = record.get("email") 
-                    user.OverCharge = record.get("overcharge")
-                    user.Description = self.databaseToUserCharset(record.get("description"))
-                    user.Exists = 1
-                    userpquota = StorageUserPQuota(self, user, printer)
-                    userpquota.ident = record.get("id")
-                    userpquota.PageCounter = record.get("pagecounter")
-                    userpquota.LifePageCounter = record.get("lifepagecounter")
-                    userpquota.SoftLimit = record.get("softlimit")
-                    userpquota.HardLimit = record.get("hardlimit")
-                    userpquota.DateLimit = record.get("datelimit")
-                    userpquota.WarnCount = record.get("warncount") or 0
-                    userpquota.Exists = 1
+                    user = self.storageUserFromRecord(uname, record)
+                    userpquota = self.storageUserPQuotaFromRecord(user, printer, record)
                     usersandquotas.append((user, userpquota))
                     self.cacheEntry("USERS", user.Name, user)
                     self.cacheEntry("USERPQUOTAS", "%s@%s" % (user.Name, printer.Name), userpquota)
@@ -792,30 +787,7 @@ class SQLStorage :
         result = self.doSearch(query)    
         if result :
             for fields in result :
-                job = StorageJob(self)
-                job.ident = fields.get("id")
-                job.JobId = fields.get("jobid")
-                job.PrinterPageCounter = fields.get("pagecounter")
-                job.JobSize = fields.get("jobsize")
-                job.JobPrice = fields.get("jobprice")
-                job.JobAction = fields.get("action")
-                job.JobFileName = self.databaseToUserCharset(fields.get("filename") or "") 
-                job.JobTitle = self.databaseToUserCharset(fields.get("title") or "") 
-                job.JobCopies = fields.get("copies")
-                job.JobOptions = self.databaseToUserCharset(fields.get("options") or "") 
-                job.JobDate = fields.get("jobdate")
-                job.JobHostName = fields.get("hostname")
-                job.JobSizeBytes = fields.get("jobsizebytes")
-                job.JobMD5Sum = fields.get("md5sum")
-                job.JobPages = fields.get("pages")
-                job.JobBillingCode = self.databaseToUserCharset(fields.get("billingcode") or "")
-                job.PrecomputedJobSize = fields.get("precomputedjobsize")
-                job.PrecomputedJobPrice = fields.get("precomputedjobprice")
-                job.UserName = self.databaseToUserCharset(fields.get("username"))
-                job.PrinterName = self.databaseToUserCharset(fields.get("printername"))
-                if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
-                    (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
-                job.Exists = 1
+                job = storageJobFromRecord(fields)
                 jobs.append(job)
         return jobs
         
