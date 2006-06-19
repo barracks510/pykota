@@ -787,7 +787,7 @@ class SQLStorage :
         result = self.doSearch(query)    
         if result :
             for fields in result :
-                job = storageJobFromRecord(fields)
+                job = self.storageJobFromRecord(fields)
                 jobs.append(job)
         return jobs
         
