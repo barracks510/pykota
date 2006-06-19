@@ -396,7 +396,7 @@ class Storage(BaseStorage) :
                     else :    
                         description = self.databaseToUserCharset(base64.decodestring(description))
                     user.Payments.append((date, float(amount), description))
-            user.Exists = 1
+            user.Exists = True
         return user
        
     def getGroupFromBackend(self, groupname) :    
@@ -416,7 +416,7 @@ class Storage(BaseStorage) :
                 if member.Exists :
                     group.AccountBalance += member.AccountBalance
                     group.LifeTimePaid += member.LifeTimePaid
-            group.Exists = 1
+            group.Exists = True
         return group
        
     def getPrinterFromBackend(self, printername) :        
@@ -443,7 +443,7 @@ class Storage(BaseStorage) :
                 printer.PassThrough = 0
             printer.uniqueMember = fields.get("uniqueMember", [])
             printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
-            printer.Exists = 1
+            printer.Exists = True
         return printer    
         
     def getUserPQuotaFromBackend(self, user, printer) :        
@@ -488,7 +488,7 @@ class Storage(BaseStorage) :
                         userpquota.MaxJobSize = None
                     else :    
                         userpquota.MaxJobSize = int(userpquota.MaxJobSize[0])
-                userpquota.Exists = 1
+                userpquota.Exists = True
         return userpquota
         
     def getGroupPQuotaFromBackend(self, group, printer) :        
@@ -546,7 +546,7 @@ class Storage(BaseStorage) :
                     for userpquota in result :    
                         grouppquota.PageCounter += int(userpquota[1].get("pykotaPageCounter", [0])[0] or 0)
                         grouppquota.LifePageCounter += int(userpquota[1].get("pykotaLifePageCounter", [0])[0] or 0)
-                grouppquota.Exists = 1
+                grouppquota.Exists = True
         return grouppquota
         
     def getPrinterLastJobFromBackend(self, printer) :        
@@ -621,7 +621,7 @@ class Storage(BaseStorage) :
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
                 lastjob.JobDate = mxtime.strftime("%Y%m%d %H:%M:%S")
-                lastjob.Exists = 1
+                lastjob.Exists = True
         return lastjob
         
     def getGroupMembersFromBackend(self, group) :        
@@ -663,7 +663,7 @@ class Storage(BaseStorage) :
                         if member.Exists :
                             group.AccountBalance += member.AccountBalance
                             group.LifeTimePaid += member.LifeTimePaid
-                    group.Exists = 1
+                    group.Exists = True
                     self.cacheEntry("GROUPS", group.Name, group)
                 groups.append(group)
         return groups        
@@ -714,7 +714,7 @@ class Storage(BaseStorage) :
                         printer.PassThrough = 0
                     printer.uniqueMember = fields.get("uniqueMember", [])
                     printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
-                    printer.Exists = 1
+                    printer.Exists = True
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
         return printers        
@@ -779,7 +779,7 @@ class Storage(BaseStorage) :
                             else :    
                                 description = self.databaseToUserCharset(base64.decodestring(description))
                             user.Payments.append((date, float(amount), description))
-                    user.Exists = 1
+                    user.Exists = True
                     users.append(user)
                     self.cacheEntry("USERS", user.Name, user)
         return users       
@@ -814,7 +814,7 @@ class Storage(BaseStorage) :
                         if member.Exists :
                             group.AccountBalance += member.AccountBalance
                             group.LifeTimePaid += member.LifeTimePaid
-                    group.Exists = 1
+                    group.Exists = True
                     groups.append(group)
                     self.cacheEntry("GROUPS", group.Name, group)
         return groups
@@ -858,7 +858,7 @@ class Storage(BaseStorage) :
                         userpquota.DateLimit = None
                     else :    
                         userpquota.DateLimit = userpquota.DateLimit[0]
-                userpquota.Exists = 1
+                userpquota.Exists = True
                 usersandquotas.append((user, userpquota))
                 self.cacheEntry("USERPQUOTAS", "%s@%s" % (user.Name, printer.Name), userpquota)
         usersandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
@@ -1382,7 +1382,7 @@ class Storage(BaseStorage) :
                    ((job.JobDate >= start) and (job.JobDate <= end)) :
                     job.UserName = self.databaseToUserCharset(fields.get("pykotaUserName")[0])
                     job.PrinterName = self.databaseToUserCharset(fields.get("pykotaPrinterName")[0])
-                    job.Exists = 1
+                    job.Exists = True
                     jobs.append(job)
             jobs.sort(lambda x, y : cmp(y.JobDate, x.JobDate))        
             if limit :    
@@ -1711,7 +1711,7 @@ class Storage(BaseStorage) :
             code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
             code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
             code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
-            code.Exists = 1
+            code.Exists = True
         return code    
         
     def addBillingCode(self, bcode) :
@@ -1764,7 +1764,7 @@ class Storage(BaseStorage) :
                     code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
                     code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
                     code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
-                    code.Exists = 1
+                    code.Exists = True
                     codes.append(code)
                     self.cacheEntry("BILLINGCODES", code.BillingCode, code)
         return codes        
@@ -1777,3 +1777,54 @@ class Storage(BaseStorage) :
                  }
         return self.doModify(bcode.ident, fields)         
 
+    def storageUserFromRecord(self, username, record) :
+        """Returns a StorageUser instance from a database record."""
+        user = StorageUser(self, username)
+        user.Exists = True
+        return user
+        
+    def storageGroupFromRecord(self, groupname, record) :
+        """Returns a StorageGroup instance from a database record."""
+        group = StorageGroup(self, groupname)
+        group.Exists = True
+        return group
+        
+    def storagePrinterFromRecord(self, printername, record) :
+        """Returns a StoragePrinter instance from a database record."""
+        printer = StoragePrinter(self, printername)
+        printer.Exists = True
+        return printer
+        
+    def setJobAttributesFromRecord(self, job, record) :    
+        """Sets the attributes of a job from a database record."""
+        job.Exists = True
+        
+    def storageJobFromRecord(self, record) :
+        """Returns a StorageJob instance from a database record."""
+        job = StorageJob(self)
+        self.setJobAttributesFromRecord(job, record)
+        return job
+        
+    def storageLastJobFromRecord(self, printer, record) :
+        """Returns a StorageLastJob instance from a database record."""
+        lastjob = StorageLastJob(self, printer)
+        self.setJobAttributesFromRecord(lastjob, record)
+        return lastjob
+        
+    def storageUserPQuotaFromRecord(self, user, printer, record) :
+        """Returns a StorageUserPQuota instance from a database record."""
+        userpquota = StorageUserPQuota(self, user, printer)
+        userpquota.Exists = True
+        return userpquota
+        
+    def storageGroupPQuotaFromRecord(self, group, printer, record) :
+        """Returns a StorageGroupPQuota instance from a database record."""
+        grouppquota = StorageGroupPQuota(self, group, printer)
+        grouppquota.Exists = True
+        return grouppquota
+        
+    def storageBillingCodeFromRecord(self, billingcode, record) :
+        """Returns a StorageBillingCode instance from a database record."""
+        code = StorageBillingCode(self, billingcode)
+        code.Exists = True
+        return code
