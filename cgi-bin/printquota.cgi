@@ -240,10 +240,11 @@ class PyKotaReportGUI(PyKotaTool) :
                             billingcode_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "billingcode" : job.JobBillingCode}), job.JobBillingCode)
                         else :    
                             billingcode_url = None
+                        curdate = DateTime.ISO.ParseDateTime(str(job.JobDate))
                         self.report.append('<tr class="%s">%s</tr>' % \
                                               (oddevenclass, \
                                                "".join(["<td>%s</td>" % (h or "&nbsp;") \
-                                                  for h in (str(job.JobDate[:19]), \
+                                                  for h in (str(curdate)[:19], \
                                                             _(job.JobAction), \
                                                             username_url, \
                                                             printername_url, \
@@ -263,9 +264,14 @@ class PyKotaReportGUI(PyKotaTool) :
                                                             job.PrecomputedJobPrice, \
                                                             job.JobPages)])))
                     self.report.append('</table>')
-                    d = DateTime.ISO.ParseDateTime(str(job.JobDate))
                     dico = { "history" : 1,
-                             "datelimit" : "%04i%02i%02i %02i:%02i:%02i" % (d.year, d.month, d.day, d.hour, d.minute, d.second),
+                             "datelimit" : "%04i-%02i-%02i %02i:%02i:%02i" \
+                                                         % (curdate.year, \
+                                                            curdate.month, \
+                                                            curdate.day, \
+                                                            curdate.hour, \
+                                                            curdate.minute, \
+                                                            curdate.second),
                            }
                     if user and user.Exists :
                         dico.update({ "username" : user.Name })

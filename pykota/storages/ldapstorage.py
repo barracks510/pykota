@@ -620,7 +620,7 @@ class Storage(BaseStorage) :
                     (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
-                lastjob.JobDate = mxtime.strftime("%Y%m%d %H:%M:%S")
+                lastjob.JobDate = mxtime.strftime("%Y-%m-%d %H:%M:%S")
                 lastjob.Exists = True
         return lastjob
         
@@ -1375,7 +1375,7 @@ class Storage(BaseStorage) :
                     (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
-                job.JobDate = mxtime.strftime("%Y%m%d %H:%M:%S")
+                job.JobDate = mxtime.strftime("%Y-%m-%d %H:%M:%S")
                 if ((start is None) and (end is None)) or \
                    ((start is None) and (job.JobDate <= end)) or \
                    ((end is None) and (job.JobDate >= start)) or \

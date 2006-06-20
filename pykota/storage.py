@@ -744,6 +744,18 @@ class BaseStorage :
         (start, end) = (datedict["start"], datedict["end"])
         if start and end and (start > end) :
             (start, end) = (end, start)
+        try :    
+            if len(start) == 17 :
+                start = "%s-%s-%s %s" % (start[0:4], start[4:6], start[6:8], start[9:])
+        except TypeError :        
+            pass
+            
+        try :    
+            if len(end) == 17 :
+                end = "%s-%s-%s %s" % (end[0:4], end[4:6], end[6:8], end[9:])
+        except TypeError :        
+            pass
+            
         return (start, end)    
         
 def openConnection(pykotatool) :

@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha7 (2006-06-20) :
+    
+        - Fixed some date formatting problems when retrieving the 
+          printing history with MySQL.
+          
+        - Began code cleaning.  
+          
     - 1.25alpha6 (2006-06-13) :
     
         - pkusers now supports the --email command line switch.
