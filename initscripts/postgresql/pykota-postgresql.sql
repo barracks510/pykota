@@ -30,7 +30,7 @@
 --
 -- Create the print quota database
 --
-CREATE DATABASE pykota;
+CREATE DATABASE pykota WITH ENCODING='UTF-8';
 
 --
 -- Create the print quota database users

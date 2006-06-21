@@ -30,7 +30,7 @@
 --
 -- Create the print quota database
 --
-CREATE DATABASE pykota;
+CREATE DATABASE pykota DEFAULT CHARACTER SET 'utf8';
 
 --
 -- Create the print quota database users
