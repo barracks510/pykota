@@ -42,6 +42,10 @@ and read the next one.
             
           you're now user 'postgres', then continue with :   
           
+            $ psql -f pykota-postgresql.sql template1
+            
+          or depending on your settings you may prefer :  
+          
             $ psql -h localhost -U postgres -f pykota-postgresql.sql template1
           
         - If no error message appears, your PostgreSQL PyKota storage 
