@@ -104,7 +104,7 @@ class IPPRequest :
         self.tags[0x04] = "printer-attributes-tag"
         self.tags[0x05] = "unsupported-attributes-tag"
         self.tags[0x06] = "subscription-attributes-tag"
-        self.tags[0x07] = "event-notification-attributes-tag"
+        self.tags[0x07] = "event_notification-attributes-tag"
         
         # out of band values
         self.tags[0x10] = "unsupported"
@@ -221,7 +221,7 @@ class IPPRequest :
         self.request_id = unpack(">I", self._data[4:8])[0]
         self.position = 8
         endofattributes = self.dictags["end-of-attributes-tag"]
-        maxdelimiter = self.dictags["event-notification-attributes-tag"]
+        maxdelimiter = self.dictags["event_notification-attributes-tag"]
         try :
             tag = ord(self._data[self.position])
             while tag != endofattributes :
