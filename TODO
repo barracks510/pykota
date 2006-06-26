@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Allow people to force the locale to use.
+        
         - Exports the original username and billing code in two
           additional environment variables (in case they are
           overwritten later).
