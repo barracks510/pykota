@@ -236,6 +236,24 @@ class CUPSBackend(PyKotaTool) :
         # If this is the case, we have to remove the prefix from 
         # the environment before launching the real backend 
         self.logdebug("Initializing backend...")
+        
+        self.PrinterName = os.environ.get("PRINTER", "")
+        self.Directory = self.config.getPrinterDirectory(self.PrinterName)
+        self.Action = "ALLOW"   # job allowed by default
+        self.Reason = None
+        self.JobId = sys.argv[1].strip()
+        # use CUPS' user when printing test pages from CUPS' web interface
+        self.UserName = sys.argv[2].strip() or self.originalUserName or pwd.getpwuid(os.geteuid())[0]
+        self.Title = sys.argv[3].strip()
+        self.Copies = int(sys.argv[4].strip())
+        self.Options = sys.argv[5].strip()
+        if len(sys.argv) == 7 :
+            self.InputFile = sys.argv[6] # read job's datas from file
+        else :    
+            self.InputFile = None        # read job's datas from stdin
+        self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
+                   (self.myname, self.PrinterName, self.UserName, self.JobId))
+        
         muststartwith = "%s:" % self.myname
         device_uri = os.environ.get("DEVICE_URI", "")
         if device_uri.startswith(muststartwith) :
@@ -260,27 +278,10 @@ class CUPSBackend(PyKotaTool) :
             if len(checkauth) == 2 :
                 destination = checkauth[1]
             printerhostname = destination.split("/")[0].split(":")[0]
-        
-        self.Action = "ALLOW"   # job allowed by default
-        self.Reason = None
-        self.JobId = sys.argv[1].strip()
-        # use CUPS' user when printing test pages from CUPS' web interface
-        self.UserName = sys.argv[2].strip() or self.originalUserName or pwd.getpwuid(os.geteuid())[0]
-        self.Title = sys.argv[3].strip()
-        self.Copies = int(sys.argv[4].strip())
-        self.Options = sys.argv[5].strip()
-        if len(sys.argv) == 7 :
-            self.InputFile = sys.argv[6] # read job's datas from file
-        else :    
-            self.InputFile = None        # read job's datas from stdin
             
         self.PrinterHostName = printerhostname    
         self.RealBackend = backend
         self.DeviceURI = device_uri
-        self.PrinterName = os.environ.get("PRINTER", "")
-        self.Directory = self.config.getPrinterDirectory(self.PrinterName)
-        self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
-                   (self.myname, self.PrinterName, self.UserName, self.JobId))
         
         connerror = False
         if haspkipplib :
@@ -496,7 +497,8 @@ class CUPSBackend(PyKotaTool) :
         if not self.config.getPrinterKeepFiles(self.PrinterName) :
             self.logdebug("Work file %s will be deleted." % self.DataFile)
             try :
-                os.remove(self.DataFile)
+                if os.path.exists(self.DataFile) :
+                    os.remove(self.DataFile)
             except OSError, msg :
                 self.logdebug("Problem while deleting work file %s : %s" % (self.DataFile, msg))
             else :
