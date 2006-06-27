@@ -53,7 +53,10 @@ class Storage(BaseStorage, SQLStorage) :
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
         self.closed = 0
-        self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
+        try :
+            self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
+        except PGError, msg :    
+            self.tool.printInfo("Impossible to set database client encoding to UTF-8 : %s" % msg, "error")
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
             
     def close(self) :    
