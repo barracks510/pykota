@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Allow the disabling of an user print quota entry without
+          deleting it.
+        
         - Allow people to force the locale to use.
         
         - Exports the original username and billing code in two
