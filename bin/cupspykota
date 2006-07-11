@@ -238,7 +238,17 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Initializing backend...")
         
         self.PrinterName = os.environ.get("PRINTER", "")
-        self.Directory = self.config.getPrinterDirectory(self.PrinterName)
+        directories = [ self.config.getPrinterDirectory(self.PrinterName),
+                        "/tmp",
+                        "/var/tmp" ]
+        self.Directory = None
+        for direc in directories :
+            if os.access(direc, os.O_RDWR) :
+                self.Directory = direc
+                break
+            else :
+                self.printInfo("Insufficient permissions to access to temporary directory %s" % direc, "warn")
+                
         self.Action = "ALLOW"   # job allowed by default
         self.Reason = None
         self.JobId = sys.argv[1].strip()
