@@ -167,7 +167,7 @@ CREATE TABLE groupsmembers(groupid INT4 NOT NULL,
 CREATE TABLE printergroupsmembers(groupid INT4 NOT NULL,
                            printerid INT4 NOT NULL,
                            INDEX (groupid),
-                           FOREIGN KEY (groupid) REFERENCES groups(id),
+                           FOREIGN KEY (groupid) REFERENCES printers(id),
                            INDEX (printerid),
                            FOREIGN KEY (printerid) REFERENCES printers(id),
                            PRIMARY KEY (groupid, printerid)) TYPE=INNODB;
