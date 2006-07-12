@@ -87,7 +87,7 @@ class PyKotMe(PyKotaTool) :
             try :
                 parser = analyzer.PDLAnalyzer(filename)
                 totalsize += parser.getJobSize()
-            except pdlparser.PDLParserError, msg :    
+            except (pdlparser.PDLParserError, IOError), msg :    
                 self.printInfo(msg)
             
         printers = self.storage.getMatchingPrinters(options["printer"])
