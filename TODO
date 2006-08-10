@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Add a date header to all email messages sent, because some
+          spam detection tools cause SMTP servers to reject the 
+          messages with no date.
+        
         - Allow the disabling of an user print quota entry without
           deleting it.
         
