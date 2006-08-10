@@ -1007,8 +1007,11 @@ class CUPSBackend(PyKotaTool) :
                             msg["To"] = adminmail
                         server.sendmail(adminmail, destination, msg.as_string())
                     except smtplib.SMTPException, answer :    
-                        for (k, v) in answer.recipients.items() :
-                            self.printInfo(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
+                        try :
+                            for (k, v) in answer.recipients.items() :
+                                self.printInfo(_("Impossible to send mail to %s, error %s : %s") % (k, v[0], v[1]), "error")
+                        except AttributeError :
+                            self.printInfo(_("Problem when sending mail : %s") % str(answer), "error")
                     server.quit()
             self.logdebug("Feedback sent to user %s." % self.UserName)
                 

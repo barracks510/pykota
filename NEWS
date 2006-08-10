@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha9 (2006-08-10) :
+    
+        - Fixed a problem when an SMTP error occured and the recovery
+          routine failed to handle it correctly.
+          
     - 1.25alpha8 (2006-07-11) :
     
         - Fixed a problem in the MySQL schema.
