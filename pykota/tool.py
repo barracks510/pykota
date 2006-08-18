@@ -569,7 +569,7 @@ class PyKotaTool(Tool) :
         else :
             val = grouppquota.PageCounter or 0
             if enforcement == "STRICT" :
-                val += self.softwareJobSize
+                val += int(self.softwareJobSize)
             if grouppquota.SoftLimit is not None :
                 softlimit = int(grouppquota.SoftLimit)
                 if val < softlimit :
