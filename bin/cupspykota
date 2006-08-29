@@ -128,28 +128,32 @@ class CUPSBackend(PyKotaTool) :
         """Waits until we can acquire the lock file."""
         self.logdebug("Waiting for lock...")
         stillrunning = True
-        while 1 :
-            self.lockfile = open(self.lockfilename, "a+")
-            fcntl.lockf(self.lockfile, fcntl.LOCK_EX) # Will wait until lock available
-            self.lockfile.seek(0, 0)      
-            try : 
-                oldpid = int(self.lockfile.readlines()[-1].strip())
-            except :    
-                stillrunning = False
-            else :    
-                try :
-                    os.kill(oldpid, 0)
-                except OSError :    
+        try :
+            while 1 :
+                self.lockfile = open(self.lockfilename, "a+")
+                fcntl.lockf(self.lockfile, fcntl.LOCK_EX) # Will wait until lock available
+                self.lockfile.seek(0, 0)      
+                try : 
+                    oldpid = int(self.lockfile.readlines()[-1].strip())
+                except :    
                     stillrunning = False
-            if not stillrunning :        
-                self.lockfile.truncate(0)
-                self.lockfile.seek(0, 0)
-                self.lockfile.write("%s\n" % self.pid)
-                self.lockfile.flush()
-                break
-            else :    
-                time.sleep(0.1)
-        self.logdebug("Lock acquired.")
+                else :    
+                    try :
+                        os.kill(oldpid, 0)
+                    except OSError :    
+                        stillrunning = False
+                if not stillrunning :        
+                    self.lockfile.truncate(0)
+                    self.lockfile.seek(0, 0)
+                    self.lockfile.write("%s\n" % self.pid)
+                    self.lockfile.flush()
+                    break
+                else :    
+                    time.sleep(0.1)
+        except IOError :            
+            self.logdebug("I/O Error while waiting for lock.")
+        else :
+            self.logdebug("Lock acquired.")
                     
     def discoverOtherBackends(self) :    
         """Discovers the other CUPS backends.
@@ -1384,6 +1388,8 @@ if __name__ == "__main__" :
             wrapper.deferredInit()
             wrapper.initBackendParameters()
             wrapper.waitForLock()
+            if os.environ.get("PYKOTASTATUS") == "CANCELLED" :
+                raise KeyboardInterrupt
             wrapper.saveDatasAndCheckSum()
             wrapper.preaccounter = openAccounter(wrapper, ispreaccounter=1)
             wrapper.accounter = openAccounter(wrapper)
