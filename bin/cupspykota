@@ -149,6 +149,7 @@ class CUPSBackend(PyKotaTool) :
                     self.lockfile.flush()
                     break
                 else :    
+                    self.lockfile.close()
                     time.sleep(0.1)
         except IOError :            
             self.logdebug("I/O Error while waiting for lock.")
