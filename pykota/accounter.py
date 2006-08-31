@@ -56,8 +56,6 @@ class AccounterBase :
         """Saves the computed job size."""
         # computes job's size
         self.JobSize = self.computeJobSize()
-        if self.filter.InputFile is not None :
-            self.JobSize *= self.filter.Copies
         
         # get last job information for this printer
         if not self.isPreAccounter :

@@ -123,4 +123,10 @@ class Accounter(AccounterBase) :
                 raise PyKotaAccounterError, message
         self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, repr(pagecounter)))
             
-        return pagecounter or 0
+        pagecounter = pagecounter or 0    
+        if self.filter.InputFile is not None :
+            # when a filename is passed as an argument, the backend 
+            # must generate the correct number of copies.
+            pagecounter *= self.filter.Copies
+                        
+        return pagecounter
