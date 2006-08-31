@@ -33,5 +33,6 @@ find docs -name "*.html" -exec rm -f {} \;
 find docs -name "*.pdf" -exec rm -f {} \;
 find docs -name "*.tex" -exec rm -f {} \;
 find docs -name "*.dvi" -exec rm -f {} \;
+rm -fr build dist
 rm -fr debian/tmp/
 rm -fr docs/pykota/ docs/pykota.junk/
