@@ -27,9 +27,11 @@
 import sys
 import glob
 import os
+import stat
 import shutil
 try :
     from distutils.core import setup
+    from distutils.command.install_data import install_data
 except ImportError, msg :    
     sys.stderr.write("%s\n" % msg)
     sys.stderr.write("You need the DistUtils Python module.\nunder Debian, you may have to install the python-dev package.\nOf course, YMMV.\n")
@@ -107,6 +109,15 @@ data_files.append((mysqldirectory, ["initscripts/mysql/README.mysql", "initscrip
 sqlitedirectory = os.sep.join([directory, "sqlite"])
 data_files.append((sqlitedirectory, ["initscripts/sqlite/README.sqlite", "initscripts/sqlite/pykota-sqlite.sql"]))
 
+class MyInstallData(install_data) :
+    """A special class to ensure permissions are OK on the cupspykota backend."""
+    def run(self) :
+        """Launches the normal installation and then tweaks permissions."""
+        install_data.run(self)
+        if not self.dry_run :
+            cupspykota = [ filename for filename in self.get_outputs() if filename.endswith("cupspykota") ][0]
+            os.chmod(cupspykota, stat.S_IRWXU)
+    
 os.umask(022)
 setup(name = "pykota", version = __version__,
       license = "GNU GPL",
@@ -120,4 +131,5 @@ setup(name = "pykota", version = __version__,
                   "bin/pkbanner", "bin/autopykota", "bin/dumpykota", \
                   "bin/pykosd", "bin/edpykota", "bin/repykota", \
                   "bin/warnpykota", "bin/pykotme", "bin/pkprinters" ],
-      data_files = data_files)
+      data_files = data_files,
+      cmdclass = { "install_data" : MyInstallData })
