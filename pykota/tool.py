@@ -37,6 +37,17 @@ from email.Header import Header
 
 from mx import DateTime
 
+try :
+    import chardet
+except ImportError :    
+    def detectCharset(text) :
+        """Fakes a charset detection if the chardet module is not installed."""
+        return "ISO-8859-15"
+else :    
+    def detectCharset(text) :
+        """Uses the chardet module to workaround CUPS lying to us."""
+        return chardet.detect(text)["encoding"]
+
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
@@ -132,22 +143,22 @@ class Tool :
         # The CHARSET environment variable is set by CUPS when printing.
         # Else we use the current locale's one.
         # If nothing is set, we use ISO-8859-15 widely used in western Europe.
-        localecharset = None
+        self.localecharset = None
         try :
             try :
-                localecharset = locale.nl_langinfo(locale.CODESET)
+                self.localecharset = locale.nl_langinfo(locale.CODESET)
             except AttributeError :    
                 try :
-                    localecharset = locale.getpreferredencoding()
+                    self.localecharset = locale.getpreferredencoding()
                 except AttributeError :    
                     try :
-                        localecharset = locale.getlocale()[1]
-                        localecharset = localecharset or locale.getdefaultlocale()[1]
+                        self.localecharset = locale.getlocale()[1]
+                        self.localecharset = self.localecharset or locale.getdefaultlocale()[1]
                     except ValueError :    
                         pass        # Unknown locale, strange...
         except locale.Error :            
             pass
-        self.charset = charset or os.environ.get("CHARSET") or localecharset or "ISO-8859-15"
+        self.charset = charset or os.environ.get("CHARSET") or self.localecharset or "ISO-8859-15"
     
         # pykota specific stuff
         self.documentation = doc
@@ -183,6 +194,7 @@ class Tool :
         if missingUser :     
             self.printInfo("The 'pykota' system account is missing. Configuration files were searched in /etc/pykota instead.", "warn")
         
+        self.logdebug("Charset detected from locale settings : %s" % self.localecharset)
         self.logdebug("Charset in use : %s" % self.charset)
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug("Command line arguments : %s" % arguments)
@@ -229,38 +241,41 @@ class Tool :
         
     def UTF8ToUserCharset(self, text) :
         """Converts from UTF-8 to user's charset."""
-        if text is not None :
+        if text is None :
+            return None
+        try :
+            return text.decode("UTF-8").encode(self.charset, "replace") 
+        except (UnicodeError, AttributeError) :    
             try :
-                return text.decode("UTF-8").encode(self.charset, "replace") 
-            except (UnicodeError, AttributeError) :    
-                try :
-                    # Maybe already in Unicode
-                    return text.encode(self.charset, "replace") 
-                except (UnicodeError, AttributeError) :
-                    pass # Don't know what to do
-        return text
+                # Maybe already in Unicode ?
+                return text.encode(self.charset, "replace") 
+            except (UnicodeError, AttributeError) :
+                # Try to autodetect the charset
+                return text.decode(detectCharset(text), "replace").encode(self.charset, "replace")
         
     def userCharsetToUTF8(self, text) :
         """Converts from user's charset to UTF-8."""
-        if text is not None :
+        if text is None :
+            return None
+        try :
+            # We don't necessarily trust the default charset, because
+            # xprint sends us titles in UTF-8 but CUPS gives us an ISO-8859-1 charset !
+            # So we first try to see if the text is already in UTF-8 or not, and
+            # if it is, we delete characters which can't be converted to the user's charset,
+            # then convert back to UTF-8. PostgreSQL 7.3.x used to reject some unicode characters,
+            # this is fixed by the ugly line below :
+            return text.decode("UTF-8").encode(self.charset, "replace").decode(self.charset).encode("UTF-8", "replace")
+        except (UnicodeError, AttributeError) :
             try :
-                # We don't necessarily trust the default charset, because
-                # xprint sends us titles in UTF-8 but CUPS gives us an ISO-8859-1 charset !
-                # So we first try to see if the text is already in UTF-8 or not, and
-                # if it is, we delete characters which can't be converted to the user's charset,
-                # then convert back to UTF-8. PostgreSQL 7.3.x used to reject some unicode characters,
-                # this is fixed by the ugly line below :
-                return text.decode("UTF-8").encode(self.charset, "replace").decode(self.charset).encode("UTF-8", "replace")
-            except (UnicodeError, AttributeError) :
+                return text.decode(self.charset).encode("UTF-8", "replace") 
+            except (UnicodeError, AttributeError) :    
                 try :
-                    return text.decode(self.charset).encode("UTF-8", "replace") 
-                except (UnicodeError, AttributeError) :    
-                    try :
-                        # Maybe already in Unicode
-                        return text.encode("UTF-8", "replace") 
-                    except (UnicodeError, AttributeError) :
-                        pass # Don't know what to do
-        return text
+                    # Maybe already in Unicode ?
+                    return text.encode("UTF-8", "replace") 
+                except (UnicodeError, AttributeError) :
+                    # Try to autodetect the charset
+                    return text.decode(detectCharset(text), "replace").encode("UTF-8", "replace")
+        return newtext
         
     def display(self, message) :
         """Display a message but only if stdout is a tty."""

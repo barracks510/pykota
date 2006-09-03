@@ -372,13 +372,15 @@ Prerequisite :
     - The JAXML Python module to be able to dump datas in the XML format.
       (http://www.librelogiciel.com/software/)
     - The Python-PAM module if you need the pknotify command to be able  
-      to check usernames and passwords.
+      to check usernames and passwords. (http://www.pangalactic.org/PyPAM)
     - The Python-SNMP module to query printers for their page counter.
-      (http://pysnmp.sourceforge.net). 
+      (http://pysnmp.sourceforge.net) 
       IMPORTANT : version 3.4.2 or higher is REQUIRED.
       Versions 2.x won't work. Versions 4.x now work (tested with v4.1.5a).
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
+    - The Python-chardet module to autodetect user's character set when  
+      printing. (http://chardet.feedparser.org)
     - SNMP tools (specifically the snmpget command) if you prefer to
       use your own script to request query printers.
       (http://www.net-snmp.org)
