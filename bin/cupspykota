@@ -86,6 +86,8 @@ class CUPSBackend(PyKotaTool) :
         self.myname = "cupspykota"
         self.pid = os.getpid()
         self.DataFile = None
+        self.lockfilename = None
+        self.lockfile = None
         
     def deferredInit(self) :    
         """Deferred initialization."""
@@ -127,30 +129,47 @@ class CUPSBackend(PyKotaTool) :
     def waitForLock(self) :    
         """Waits until we can acquire the lock file."""
         self.logdebug("Waiting for lock...")
-        stillrunning = True
+        haslock = False
         try :
-            while 1 :
-                self.lockfile = open(self.lockfilename, "a+")
-                fcntl.lockf(self.lockfile, fcntl.LOCK_EX) # Will wait until lock available
-                self.lockfile.seek(0, 0)      
-                try : 
-                    oldpid = int(self.lockfile.readlines()[-1].strip())
-                except :    
-                    stillrunning = False
+            while not haslock :
+                self.logdebug("Trying to acquire lock %s" % self.lockfilename)
+                try :
+                    self.lockfile = os.open(self.lockfilename, 
+                                            os.O_CREAT | os.O_EXCL | os.O_WRONLY, 
+                                            0600)
+                except OSError, error :                     
+                    if error.errno == errno.EEXIST :
+                        self.logdebug("Lock not available.")
+                    else :    
+                        self.logdebug("Lock not available : %s" % error)
+                    try :    
+                        try :    
+                            lockfobj = open(self.lockfilename, "r")    
+                            oldpid = int(lockfobj.readline().strip())
+                        except IOError :
+                            self.logdebug("Lock file has probably been deleted in the meantime.")
+                        except ValueError :    
+                            self.logdebug("Invalid content in existing lock file.")
+                        else :    
+                            try :
+                                # Is the old process still alive ?
+                                os.kill(oldpid, 0)
+                            except OSError :    
+                                # old process is dead, we delete the lock file
+                                self.logdebug("Old process (PID %i) is dead." % oldpid)
+                                os.unlink(self.lockfilename)
+                                self.logdebug("Lock file %s removed." % self.lockfilename)
+                            else :    
+                                self.logdebug("Old process (PID %i) still alive, waiting a bit..." % oldpid)
+                                time.sleep(0.25) # No hurry :)
+                    finally :    
+                        try :
+                            lockfobj.close()
+                        except NameError :    
+                            pass
                 else :    
-                    try :
-                        os.kill(oldpid, 0)
-                    except OSError :    
-                        stillrunning = False
-                if not stillrunning :        
-                    self.lockfile.truncate(0)
-                    self.lockfile.seek(0, 0)
-                    self.lockfile.write("%s\n" % self.pid)
-                    self.lockfile.flush()
-                    break
-                else :    
-                    self.lockfile.close()
-                    time.sleep(0.1)
+                    os.write(self.lockfile, str(self.pid))
+                    haslock = True    
         except IOError :            
             self.logdebug("I/O Error while waiting for lock.")
         else :
@@ -509,27 +528,27 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Cleaning up...")
         self.regainPriv()
         self.deinstallSigTermHandler()
-        if not self.config.getPrinterKeepFiles(self.PrinterName) :
-            self.logdebug("Work file %s will be deleted." % self.DataFile)
-            try :
-                if os.path.exists(self.DataFile) :
+        if (self.DataFile is not None) and os.path.exists(self.DataFile) :
+            if not self.config.getPrinterKeepFiles(self.PrinterName) :
+                self.logdebug("Work file %s will be deleted." % self.DataFile)
+                try :
                     os.remove(self.DataFile)
-            except OSError, msg :
-                self.logdebug("Problem while deleting work file %s : %s" % (self.DataFile, msg))
-            else :
-                self.logdebug("Work file %s has been deleted." % self.DataFile)
-        else :    
-            self.logdebug("Work file %s will be kept." % self.DataFile)
+                except OSError, msg :
+                    self.logdebug("Problem while deleting work file %s : %s" % (self.DataFile, msg))
+                else :
+                    self.logdebug("Work file %s has been deleted." % self.DataFile)
+            else :    
+                self.logdebug("Work file %s will be kept." % self.DataFile)
         PyKotaTool.clean(self)    
-        self.logdebug("Removing lock...")
-        try :
-            fcntl.flock(self.lockfile, fcntl.LOCK_UN)
-            self.lockfile.close()
-            # NB : we don't remove the lock file, since it might already be opened by another process.
-        except :    
-            pass
-        else :    
-            self.logdebug("Lock removed.")
+        if (self.lockfile is not None) and os.path.exists(self.lockfilename) :
+            self.logdebug("Removing lock...")
+            try :
+                os.close(self.lockfile)
+                os.unlink(self.lockfilename)
+            except :    
+                self.logdebug("Problem while removing lock file %s" % self.lockfilename)
+            else :    
+                self.logdebug("Lock file %s removed." % self.lockfilename)
         self.logdebug("Clean.")
             
     def precomputeJobSize(self) :    
@@ -1386,29 +1405,31 @@ if __name__ == "__main__" :
         sys.exit(1)
     else :    
         try :
-            wrapper.deferredInit()
-            wrapper.initBackendParameters()
-            wrapper.waitForLock()
-            if os.environ.get("PYKOTASTATUS") == "CANCELLED" :
-                raise KeyboardInterrupt
-            wrapper.saveDatasAndCheckSum()
-            wrapper.preaccounter = openAccounter(wrapper, ispreaccounter=1)
-            wrapper.accounter = openAccounter(wrapper)
-            wrapper.precomputeJobSize()
-            wrapper.exportJobInfo() # exports a first time to give hints to external scripts 
-            wrapper.overwriteJobAttributes()
-            wrapper.exportJobInfo() # re-exports in case it was overwritten
-            retcode = wrapper.mainWork()
-        except KeyboardInterrupt :    
-            wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.JobId, "warn")
-            retcode = 0
-        except SystemExit, err :    
-            retcode = err.code
-        except :    
             try :
-                wrapper.crashed("cupspykota backend failed")
+                wrapper.deferredInit()
+                wrapper.initBackendParameters()
+                wrapper.waitForLock()
+                if os.environ.get("PYKOTASTATUS") == "CANCELLED" :
+                    raise KeyboardInterrupt
+                wrapper.saveDatasAndCheckSum()
+                wrapper.preaccounter = openAccounter(wrapper, ispreaccounter=1)
+                wrapper.accounter = openAccounter(wrapper)
+                wrapper.precomputeJobSize()
+                wrapper.exportJobInfo() # exports a first time to give hints to external scripts 
+                wrapper.overwriteJobAttributes()
+                wrapper.exportJobInfo() # re-exports in case it was overwritten
+                retcode = wrapper.mainWork()
+            except KeyboardInterrupt :    
+                wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.JobId, "warn")
+                retcode = 0
+            except SystemExit, err :    
+                retcode = err.code
             except :    
-                crashed("cupspykota backend failed")
-            retcode = 1
-        wrapper.clean()
+                try :
+                    wrapper.crashed("cupspykota backend failed")
+                except :    
+                    crashed("cupspykota backend failed")
+                retcode = 1
+        finally :        
+            wrapper.clean()
         sys.exit(retcode)
