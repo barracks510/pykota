@@ -21,6 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha10 (2006-09-03) :
+    
+        - Permissions on cupspykota are now correctly set after
+          installation.
+          
+        - Added a workaround to incorrect charset through the add
+          of the python-chardet module as a dependency.
+          
     - 1.25alpha9 (2006-08-10) :
     
         - Fixed a problem when an SMTP error occured and the recovery
