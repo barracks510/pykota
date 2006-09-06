@@ -83,10 +83,10 @@ PyKota features :
           This is completely configurable.
           
         - Supports DSC compliant and binary PostScript, PDF, PCL5 (up to), 
-          PCLXL (aka PCL6), ESC/P2, DVI, TIFF, OpenDocument (OpenOffice.org) 
-          and Zenographics ZjStream natively (through the direct use of 
-          pkpgcounter's code) for software accounting methods. More formats 
-          to come.
+          PCLXL (aka PCL6), ESC/P2, DVI, TIFF, OpenDocument (ISO/IEC DIS 26300), 
+          Zenographics ZjStream, and Samsung QPDL (aka SPL2) natively through 
+          the direct use of pkpgcounter's code for software accounting methods.
+          More formats to come.
           
         - Supports any other Page Description Language for which you  
           have a parser which can be scripted.
