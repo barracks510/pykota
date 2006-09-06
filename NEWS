@@ -21,6 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha11 (2006-09-06) :
+    
+        - Now fails in an helpful manner if python-mysqldb is too old.
+        
+        - Now exports the original username and billing code (i.e.
+          their values before they are eventually overwritten) in
+          two additionnal environment variables.
+          
     - 1.25alpha10 (2006-09-03) :
     
         - Rewrote the locking mechanism to try to fix the problem

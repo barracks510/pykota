@@ -896,7 +896,8 @@ policy: deny
 # PYKOTAMD5SUM : Contains an hexadecimal digest of the md5 sum of the job's datas
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
 # PYKOTAACTION : ALLOW or DENY or WARN for current print job
-# PYKOTAUSERNAME : user's name
+# PYKOTAUSERNAME : user's name, possibly modified through the overwrite_jobticket directive.
+# PYKOTAORIGINALUSERNAME : user's name, unmodified.
 # PYKOTAPRINTERNAME : printer's name
 # PYKOTAPGROUPS : list of printers groups the current printer is a member of
 # PYKOTAJOBID : job's id
@@ -924,7 +925,8 @@ policy: deny
 # PYKOTAWARNCOUNT : the number of times the user was forbidden to print but a banner
 #                   page was still printed on the current printer.                   
 # PYKOTAOVERCHARGE : user's overcharging factor.
-# PYKOTAJOBBILLING : Job's billing code if present (CUPS only)
+# PYKOTAJOBBILLING : Job's billing code if present, possibly modified through the overwrite_jobticket directive.
+# PYKOTAORIGINALJOBBILLING : Job's billing code if present, unmodified.
 # PYKOTAREASON : if the job was denied or a warning needs to be issued, contains
 #                the message to send to the user.
 # PYKOTAUSERDESCRIPTION : the user's textual description

@@ -278,6 +278,7 @@ class CUPSBackend(PyKotaTool) :
         self.JobId = sys.argv[1].strip()
         # use CUPS' user when printing test pages from CUPS' web interface
         self.UserName = sys.argv[2].strip() or self.originalUserName or pwd.getpwuid(os.geteuid())[0]
+        self.OriginalUserName = self.UserName[:]
         self.Title = sys.argv[3].strip()
         self.Copies = int(sys.argv[4].strip())
         self.Options = sys.argv[5].strip()
@@ -355,7 +356,11 @@ class CUPSBackend(PyKotaTool) :
         if type(jbing) == type([]) : 
             jbing = jbing[-1]
         (jbtype, self.JobBillingCode) = jbing
-        
+        if self.JobBillingCode is None :
+            self.OriginalJobBillingCode = None
+        else :    
+            self.OriginalJobBillingCode = self.JobBillingCode[:]
+            
         baselockfilename = self.DeviceURI.replace("/", ".")
         baselockfilename = baselockfilename.replace(":", ".")
         baselockfilename = baselockfilename.replace("?", ".")
@@ -646,11 +651,13 @@ class CUPSBackend(PyKotaTool) :
         os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = self.ClientHost or ""
         os.environ["PYKOTAJOBID"] = self.JobId
         os.environ["PYKOTAUSERNAME"] = self.UserName
+        os.environ["PYKOTAORIGINALUSERNAME"] = self.OriginalUserName
         os.environ["PYKOTATITLE"] = self.Title
         os.environ["PYKOTACOPIES"] = str(self.Copies)
         os.environ["PYKOTAOPTIONS"] = self.Options
         os.environ["PYKOTAFILENAME"] = self.InputFile or ""
         os.environ["PYKOTAJOBBILLING"] = self.JobBillingCode or ""
+        os.environ["PYKOTAORIGINALJOBBILLING"] = self.OriginalJobBillingCode or ""
         os.environ["PYKOTACONTROLFILE"] = self.ControlFile
         os.environ["PYKOTAPRINTERHOSTNAME"] = self.PrinterHostName
         os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)

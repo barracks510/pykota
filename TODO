@@ -1,4 +1,4 @@
-# $Id$
+it's a pyt# $Id$
 
 PyKota - Print Quotas for CUPS and LPRng
 
@@ -28,10 +28,6 @@ TODO, in no particular order :
         - Allow the disabling of an user print quota entry without
           deleting it.
         
-        - Exports the original username and billing code in two
-          additional environment variables (in case they are
-          overwritten later).
-          
         - Improve the documentation of edpykota's --printer command
           line option.
           
