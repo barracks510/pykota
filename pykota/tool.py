@@ -34,6 +34,7 @@ import socket
 import time
 from email.MIMEText import MIMEText
 from email.Header import Header
+import email.Utils
 
 from mx import DateTime
 
@@ -359,6 +360,7 @@ class Tool :
                 msg["From"] = admin
                 msg["To"] = crashrecipient
                 msg["Cc"] = admin
+                msg["Date"] = email.Utils.formatdate(localtime=True)
                 server.sendmail(admin, [admin, crashrecipient], msg.as_string())
                 server.quit()
         except :
@@ -494,6 +496,7 @@ class PyKotaTool(Tool) :
         msg["Subject"] = str(Header(subject, charset=self.charset))
         msg["From"] = adminmail
         msg["To"] = usermail
+        msg["Date"] = email.Utils.formatdate(localtime=True)
         self.sendMessage(adminmail, usermail, msg.as_string())
         
     def sendMessageToAdmin(self, adminmail, subject, message) :

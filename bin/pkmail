@@ -29,6 +29,9 @@ import os
 import popen2
 import smtplib
 import email
+from email.MIMEText import MIMEText
+from email.Header import Header
+import email.Utils
 
 from pykota.tool import PyKotaTool, PyKotaCommandLineError, crashed, N_
     
@@ -95,7 +98,7 @@ class PKMail(PyKotaTool) :
                 cheatmeonce = 1
             
         if cheatmeonce :    
-            self.logdebug("Possible intruder at %s : %s" % (useremail, str(arguments)))
+            self.printInfo("Possible intruder at %s : %s" % (useremail, str(arguments)), "warn")
             result = "Either you mistyped your command, or you're a bad guy !"
         else :
             self.logdebug("Launching internal command '%s' with arguments %s" % (command, str(arguments)))
@@ -103,8 +106,13 @@ class PKMail(PyKotaTool) :
             result = cmdfunc(arguments)
         
         self.logdebug("Sending answer to : %s" % useremail)
+        emailmsg = MIMEText(result, _charset=self.charset)
+        emailmsg["Subject"] = str(Header(_("Result of your commands"), charset=self.charset))
+        emailmsg["From"] = whoami
+        emailmsg["To"] = useremail
+        emailmsg["Date"] = email.Utils.formatdate(localtime=True)
         server = smtplib.SMTP(self.smtpserver)
-        server.sendmail(whoami, [ useremail ], "From: %s\nTo: %s\nSubject: Result of your commands\n\n%s\n" % (whoami, useremail, result))
+        server.sendmail(whoami, [ useremail ], emailmsg.as_string())
         server.quit()
         self.logdebug("Answer sent to : %s" % useremail)
         

@@ -41,6 +41,7 @@ import socket
 import smtplib
 from email.MIMEText import MIMEText
 from email.Header import Header
+import email.Utils
 
 from mx import DateTime
 
@@ -1036,6 +1037,7 @@ class CUPSBackend(PyKotaTool) :
                                 msg["Cc"] = adminmail
                         else :    
                             msg["To"] = adminmail
+                        msg["Date"] = email.Utils.formatdate(localtime=True)
                         server.sendmail(adminmail, destination, msg.as_string())
                     except smtplib.SMTPException, answer :    
                         try :
