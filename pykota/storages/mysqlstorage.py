@@ -50,7 +50,7 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             self.database.autocommit(1)
         except AttributeError :    
-            self.tool.printInfo(_("Your version of python-mysqldb is too old. Please install a newer release."), "error")
+            raise PyKotaStorageError, _("Your version of python-mysqldb is too old. Please install a newer release.")
         self.cursor = self.database.cursor()
         self.cursor.execute("SET NAMES 'utf8';")
         self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED;") # Same as PostgreSQL and Oracle's default
