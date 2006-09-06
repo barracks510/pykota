@@ -24,9 +24,6 @@ TODO, in no particular order :
         - Allow the disabling of an user print quota entry without
           deleting it.
         
-        - Improve the documentation of edpykota's --printer command
-          line option.
-          
         - Store the value of the user's account balance in the
           printing history (the value at the time of printing) 
           as well as in the payments history (as a safety check
