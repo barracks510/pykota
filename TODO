@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - LDAP : See if setting cn=ThePrinter for user print quota entries
+          could be done, only in the case where userquotabase=user
+          (idem for groups). Would make direct modifications (e.g.
+          with gq) more easy.
+          
         - Allow the disabling of an user print quota entry without
           deleting it.
         
