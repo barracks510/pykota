@@ -360,6 +360,7 @@ class CUPSBackend(PyKotaTool) :
         if self.JobBillingCode is None :
             self.OriginalJobBillingCode = None
         else :    
+            self.JobBillingCode = self.UTF8ToUserCharset(self.JobBillingCode)
             self.OriginalJobBillingCode = self.JobBillingCode[:]
             
         baselockfilename = self.DeviceURI.replace("/", ".")
@@ -465,10 +466,10 @@ class CUPSBackend(PyKotaTool) :
                         self.logdebug("Seen CANCEL command.")
                         action = "CANCEL"
                     elif line.startswith("USERNAME=") :    
-                        username = line.split("=", 1)[1].strip()
+                        username = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
                         self.logdebug("Seen new username [%s]" % username)
                     elif line.startswith("BILLINGCODE=") :    
-                        billingcode = line.split("=", 1)[1].strip()
+                        billingcode = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
                         self.logdebug("Seen new billing code [%s]" % billingcode)
             except IOError, msg :            
                 self.logdebug("IOError while reading subprocess' output : %s" % msg)
