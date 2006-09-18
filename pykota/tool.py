@@ -159,7 +159,7 @@ class Tool :
                         pass        # Unknown locale, strange...
         except locale.Error :            
             pass
-        self.charset = charset or os.environ.get("CHARSET") or self.localecharset or "ISO-8859-15"
+        self.charset = charset or self.localecharset or "ISO-8859-15"
     
         # pykota specific stuff
         self.documentation = doc
