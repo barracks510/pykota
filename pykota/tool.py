@@ -140,15 +140,10 @@ class Tool :
         except :
             gettext.NullTranslations().install()
             
-        # We can force the charset.    
-        # The CHARSET environment variable is set by CUPS when printing.
-        # Else we use the current locale's one.
-        # If nothing is set, we use ISO-8859-15 widely used in western Europe.
-        self.localecharset = None
-        try :
+        # Finds the correct charset
+        self.localecharset = sys.getfilesystemencoding()
+        if self.localecharset is None :
             try :
-                self.localecharset = locale.nl_langinfo(locale.CODESET)
-            except AttributeError :    
                 try :
                     self.localecharset = locale.getpreferredencoding()
                 except AttributeError :    
@@ -157,9 +152,9 @@ class Tool :
                         self.localecharset = self.localecharset or locale.getdefaultlocale()[1]
                     except ValueError :    
                         pass        # Unknown locale, strange...
-        except locale.Error :            
-            pass
-        self.charset = charset or self.localecharset or "ISO-8859-15"
+            except locale.Error :            
+                pass
+        self.charset = charset or self.localecharset or "UTF-8"
     
         # pykota specific stuff
         self.documentation = doc
