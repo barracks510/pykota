@@ -536,7 +536,11 @@ class CUPSBackend(PyKotaTool) :
         self.regainPriv()
         self.deinstallSigTermHandler()
         if (self.DataFile is not None) and os.path.exists(self.DataFile) :
-            if not self.config.getPrinterKeepFiles(self.PrinterName) :
+            try :
+                keep = self.config.getPrinterKeepFiles(self.PrinterName)
+            except AttributeError :    
+                keep = False
+            if not keep :
                 self.logdebug("Work file %s will be deleted." % self.DataFile)
                 try :
                     os.remove(self.DataFile)
