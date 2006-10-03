@@ -21,11 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
-        - Add a configurable timeout for SNMP queries : hardware
-          accounting can be bypassed by opening the paper tray
-          **before** the job is printed and waiting for the timeout
-          to occur.
-          
         - Add a command line option to pknotify to decide what should
           happen if there's no PyKotIcon at the other end.
           
