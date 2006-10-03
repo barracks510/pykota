@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha13 (2006-10-04) :
+     
+        - Introduced the 'noprintingmaxdelay' directive to workaround
+          some buggy printers when hardware accounting is used.
+          
+        - Improved the reliability of hardware accounting.  
+          
     - 1.25alpha12 (2006-09-15) :
     
         - Fixes encoding of username and billingcode when they

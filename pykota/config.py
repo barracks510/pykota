@@ -556,6 +556,22 @@ class PyKotaConfig :
             except (TypeError, ValueError) :
                 raise PyKotaConfigError, _("Incorrect value %s for the duplicatesdelay directive in section %s") % (str(duplicatesdelay), printername)
         
+    def getNoPrintingMaxDelay(self, printername) :          
+        """Returns the max number of seconds to wait for the printer to be in 'printing' mode."""
+        try : 
+            maxdelay = self.getPrinterOption(printername, "noprintingmaxdelay")
+        except PyKotaConfigError :    
+            return None         # tells to use hardcoded value
+        else :    
+            try :
+                maxdelay = int(maxdelay)
+                if maxdelay < 0 :
+                    raise ValueError
+            except (TypeError, ValueError) :
+                raise PyKotaConfigError, _("Incorrect value %s for the noprintingmaxdelay directive in section %s") % (str(maxdelay), printername)
+            else :    
+                return maxdelay
+        
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""
         return self.getGlobalOption("winbind_separator", ignore=1)

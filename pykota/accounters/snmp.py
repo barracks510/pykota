@@ -22,6 +22,12 @@
 #
 #
 
+"""This module is used to extract printer's internal page counter
+and status informations using SNMP queries.
+
+The values extracted are defined at least in RFC3805 and RFC2970.
+"""
+
 ITERATIONDELAY = 1.5   # 1.5 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
 NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds.
@@ -64,7 +70,39 @@ deviceStatusValues = { 1 : 'unknown',
                        5 : 'down',
                      }  
 hrPrinterDetectedErrorStateOID = "1.3.6.1.2.1.25.3.5.1.2.1" # SNMPv2-SMI::mib-2.25.3.5.1.2.1
+printerDetectedErrorStateValues = [ { 128 : 'Low Paper',
+                                       64 : 'No Paper',
+                                       32 : 'Low Toner',
+                                       16 : 'No Toner',
+                                        8 : 'Door Open',
+                                        4 : 'Jammed',
+                                        2 : 'Offline',
+                                        1 : 'Service Requested',
+                                    },
+                                    { 128 : 'Input Tray Missing',
+                                       64 : 'Output Tray Missing',
+                                       32 : 'Marker Supply Missing',
+                                       16 : 'Output Near Full',
+                                        8 : 'Output Full',
+                                        4 : 'Input Tray Empty',
+                                        2 : 'Overdue Preventive Maintainance',
+                                        1 : 'Not Assigned in RFC3805',
+                                    },
+                                  ]  
+errorConditions = [ 'No Paper',
+                    # 'No Toner',
+                    'Door Open',
+                    'Jammed',
+                    'Offline',
+                    'Service Requested',
+                    'Input Tray Missing',
+                    'Output Tray Missing',
+                    # 'Marker Supply Missing',
+                    'Output Full',
+                    'Input Tray Empty',
+                  ]
 prtConsoleDisplayBufferTextOID = "1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
+
 class BaseHandler :
     """A class for SNMP print accounting."""
     def __init__(self, parent, printerhostname) :
@@ -75,18 +113,51 @@ class BaseHandler :
         except IndexError :    
             self.community = "public"
         self.port = 161
+        self.initValues()
+        
+    def initValues(self) :    
+        """Initializes SNMP values."""
         self.printerInternalPageCounter = None
         self.printerStatus = None
         self.deviceStatus = None
+        self.printerDetectedErrorState = None
+        self.consoleDisplayBufferText = None
+        self.timebefore = time.time()   # resets timer also in case of error
         
     def retrieveSNMPValues(self) :    
         """Retrieves a printer's internal page counter and status via SNMP."""
         raise RuntimeError, "You have to overload this method."
         
+    def extractErrorStates(self, value) :    
+        """Returns a list of textual error states from a binary value."""
+        states = []
+        for i in range(min(len(value), len(printerDetectedErrorStateValues))) :
+            byte = ord(value[i])
+            bytedescription = printerDetectedErrorStateValues[i]
+            for (k, v) in bytedescription.items() :
+                if byte & k :
+                    states.append(v)
+        return states            
+        
+    def checkIfError(self, errorstates) :    
+        """Checks if any error state is fatal or not."""
+        for err in errorstates :
+            if err in errorConditions :
+                return True
+        return False    
+        
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
+        try :
+            noprintingmaxdelay = int(self.parent.filter.config.getNoPrintingMaxDelay(self.parent.filter.PrinterName))
+        except (TypeError, AttributeError) : # NB : AttributeError in testing mode because I'm lazy !
+            noprintingmaxdelay = NOPRINTINGMAXDELAY
+            self.parent.filter.logdebug("No max delay defined for printer %s, using %i seconds." % (self.parent.filter.PrinterName, noprintingmaxdelay))
+        if not noprintingmaxdelay :
+            self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
+        else :    
+            self.parent.filter.logdebug("Will wait until printer %s is in 'printing' state or %i seconds have elapsed." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         previousValue = self.parent.getLastPageCounter()
-        timebefore = time.time()
         firstvalue = None
         while 1:
             self.retrieveSNMPValues()
@@ -106,7 +177,9 @@ class BaseHandler :
                         # So we can probably quit being sure it is printing.
                         self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.PrinterName, "warn")
                         break
-                    elif (time.time() - timebefore) > NOPRINTINGMAXDELAY :
+                    elif noprintingmaxdelay \
+                         and ((time.time() - self.timebefore) > noprintingmaxdelay) \
+                         and not self.checkIfError(self.printerDetectedErrorState) :
                         # More than X seconds without the printer being in 'printing' mode
                         # We can safely assume this won't change if printer is now 'idle'
                         pstatusAsString = printerStatusValues.get(self.printerStatus)
@@ -134,9 +207,10 @@ class BaseHandler :
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
             idle_flag = 0
-            if (pstatusAsString == 'idle') or \
-               ((pstatusAsString == 'other') and \
-                (dstatusAsString == 'running')) :
+            if (not self.checkIfError(self.printerDetectedErrorState)) \
+               and ((pstatusAsString == 'idle') or \
+                         ((pstatusAsString == 'other') and \
+                          (dstatusAsString == 'running'))) :
                 idle_flag = 1       # Standby / Powersave is considered idle
             if idle_flag :    
                 idle_num += 1
@@ -172,9 +246,12 @@ if hasV4 :
                                                   cmdgen.UdpTransportTarget((self.printerHostname, self.port)), \
                                                   tuple([int(i) for i in pageCounterOID.split('.')]), \
                                                   tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
-                                                  tuple([int(i) for i in hrDeviceStatusOID.split('.')]))
+                                                  tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
+                                                  tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]), \
+                                                  tuple([int(i) for i in prtConsoleDisplayBufferTextOID.split('.')]))
             if errorIndication :                                                  
                 self.parent.filter.printInfo("SNMP Error : %s" % errorIndication, "error")
+                self.initValues()
             elif errorStatus :    
                 self.parent.filter.printInfo("SNMP Error : %s at %s" % (errorStatus.prettyPrint(), \
                                                                         varBinds[int(errorIndex)-1]), \
@@ -183,10 +260,14 @@ if hasV4 :
                 self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint()))
                 self.printerStatus = int(varBinds[1][1].prettyPrint())
                 self.deviceStatus = int(varBinds[2][1].prettyPrint())
-                self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'" \
+                self.printerDetectedErrorState = self.extractErrorStates(str(varBinds[3][1]))
+                self.consoleDisplayBufferText = varBinds[4][1].prettyPrint()
+                self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'  ConsoleDisplayBuffer : '%s'" \
                      % (self.printerInternalPageCounter, \
                         printerStatusValues.get(self.printerStatus), \
-                        deviceStatusValues.get(self.deviceStatus)))
+                        deviceStatusValues.get(self.deviceStatus), \
+                        self.printerDetectedErrorState, \
+                        self.consoleDisplayBufferText))
 else :
     class Handler(BaseHandler) :
         """A class for pysnmp v3.4.x"""
@@ -198,7 +279,9 @@ else :
             req.apiAlphaSetPdu(ver.GetRequestPdu())
             req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), \
                                                         (hrPrinterStatusOID, ver.Null()), \
-                                                        (hrDeviceStatusOID, ver.Null()))
+                                                        (hrDeviceStatusOID, ver.Null()), \
+                                                        (hrPrinterDetectedErrorStateOID, ver.Null()), \
+                                                        (prtConsoleDisplayBufferTextOID, ver.Null()))
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), \
@@ -210,7 +293,6 @@ else :
         
         def handleAnswer(self, wholeMsg, notusedhere, req):
             """Decodes and handles the SNMP answer."""
-            self.parent.filter.logdebug("SNMP answer : '%s'" % repr(wholeMsg))
             ver = alpha.protoVersions[alpha.protoVersionId1]
             rsp = ver.Message()
             try :
@@ -231,10 +313,14 @@ else :
                             self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
                             self.printerStatus = self.values[1]
                             self.deviceStatus = self.values[2]
-                            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'" \
+                            self.printerDetectedErrorState = self.extractErrorStates(self.values[3])
+                            self.consoleDisplayBufferText = self.values[4]
+                            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'  ConsoleDisplayBuffer : '%s'" \
                                  % (self.printerInternalPageCounter, \
                                     printerStatusValues.get(self.printerStatus), \
-                                    deviceStatusValues.get(self.deviceStatus)))
+                                    deviceStatusValues.get(self.deviceStatus), \
+                                    self.printerDetectedErrorState, \
+                                    self.consoleDisplayBufferText))
                         except IndexError :    
                             self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass

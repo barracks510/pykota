@@ -130,6 +130,15 @@ class Handler :
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
+        try :
+            noprintingmaxdelay = int(self.parent.filter.config.getNoPrintingMaxDelay(self.parent.filter.PrinterName))
+        except (TypeError, AttributeError) : # NB : AttributeError in testing mode because I'm lazy !
+            noprintingmaxdelay = NOPRINTINGMAXDELAY
+            self.parent.filter.logdebug("No max delay defined for printer %s, using %i seconds." % (self.parent.filter.PrinterName, noprintingmaxdelay))
+        if not noprintingmaxdelay :
+            self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
+        else :    
+            self.parent.filter.logdebug("Will wait until printer %s is in 'printing' state or %i seconds have elapsed." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         previousValue = self.parent.getLastPageCounter()
         timebefore = time.time()
         firstvalue = None
@@ -150,7 +159,7 @@ class Handler :
                         # So we can probably quit being sure it is printing.
                         self.parent.filter.printInfo("Printer %s is lying to us !!!" % self.parent.filter.PrinterName, "warn")
                         break
-                    elif (time.time() - timebefore) > NOPRINTINGMAXDELAY :
+                    elif noprintingmaxdelay and ((time.time() - timebefore) > noprintingmaxdelay) :
                         # More than X seconds without the printer being in 'printing' mode
                         # We can safely assume this won't change if printer is now 'idle'
                         if self.printerStatus in ('10000', '10001', '35078', '40000') :

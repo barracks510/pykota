@@ -1142,3 +1142,26 @@ duplicatesdelay : 0
 
 
 
+# Sets the maximum number of seconds to wait for the printer
+# being in 'printing' mode once the job has been sent to it.
+# Once this delay is expired, PyKota will consider this job
+# will never be printed, aborts the hardware accounting
+# process, and uses the latest internal page counter value seen.
+# 
+# Increasing this value, or setting it to 0, may help with some 
+# printers which don't conform to RFC3805. Problem reported on a 
+# Samsung ML2551n gave a way for clever students to bypass
+# hardware accounting entirely by removing the paper from
+# the paper tray before the job had begun to print, then
+# waiting 60 seconds, and putting the paper back in the tray...
+#
+# IMPORTANT : always ensure that your printers' firmware is up
+# to date.
+#
+# This directive can be set either globally or on a per printer
+# basis. 
+#
+# When not set, an hardcoded value of 60 seconds is used.
+# When set to 0, PyKota will wait indefinitely until the
+# printer switches to the 'printing' status.
+noprintingmaxdelay : 60
