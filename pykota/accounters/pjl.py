@@ -32,7 +32,7 @@ import signal
 # is in fact wasted in the sock.recv() blocking call, with the timeout
 ITERATIONDELAY = 1   # 1 Second
 STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
-NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds.
+NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds byb default.
 
 # Here's the real thing :
 TIMEOUT = 5

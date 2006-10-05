@@ -28,9 +28,9 @@ and status informations using SNMP queries.
 The values extracted are defined at least in RFC3805 and RFC2970.
 """
 
-ITERATIONDELAY = 1.5   # 1.5 Second
-STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
-NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds.
+ITERATIONDELAY = 4      # time to sleep between two loops
+STABILIZATIONDELAY = 5  # number of consecutive times the idle status must be seen before we consider it to be stable
+NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds by default.
 
 import sys
 import os
@@ -256,6 +256,7 @@ if hasV4 :
                 self.parent.filter.printInfo("SNMP Error : %s at %s" % (errorStatus.prettyPrint(), \
                                                                         varBinds[int(errorIndex)-1]), \
                                              "error")
+                self.initValues()
             else :                                 
                 self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint()))
                 self.printerStatus = int(varBinds[1][1].prettyPrint())
@@ -289,6 +290,7 @@ else :
                                    (self.handleAnswer, req))
             except (SnmpOverUdpError, select.error), msg :    
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
+                self.initValues()
             tsp.close()
         
         def handleAnswer(self, wholeMsg, notusedhere, req):
@@ -299,6 +301,7 @@ else :
                 rsp.berDecode(wholeMsg)
             except TypeMismatchError, msg :    
                 self.parent.filter.printInfo(_("SNMP message decoding error for printer %s : %s") % (self.printerHostname, msg), "warn")
+                self.initValues()
             else :
                 if req.apiAlphaMatch(rsp):
                     errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
