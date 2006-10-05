@@ -141,10 +141,13 @@ class BaseHandler :
         
     def checkIfError(self, errorstates) :    
         """Checks if any error state is fatal or not."""
-        for err in errorstates :
-            if err in errorConditions :
-                return True
-        return False    
+        if errorstates is None :
+            return True
+        else :
+            for err in errorstates :
+                if err in errorConditions :
+                    return True
+            return False    
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
