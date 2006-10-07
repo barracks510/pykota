@@ -191,40 +191,44 @@ class PyKotaConfig :
     
     def getPreAccounterBackend(self, printername) :    
         """Returns the preaccounter backend to use for a given printer."""
-        validaccounters = [ "software" ]     
+        validaccounters = [ "software", "bw", "cmyk", "cmy", "rgb" ]     
         try :
             fullaccounter = self.getPrinterOption(printername, "preaccounter").strip()
         except PyKotaConfigError :    
             return ("software", "")
         else :    
             flower = fullaccounter.lower()
-            if flower.startswith("software") :    
-                try :
-                    (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
-                except ValueError :    
-                    raise PyKotaConfigError, _("Invalid preaccounter %s for printer %s") % (fullaccounter, printername)
-                if args.endswith(')') :
-                    args = args[:-1].strip()
-                return ("software", args)
-            else :
-                raise PyKotaConfigError, _("Option preaccounter in section %s only supports values in %s") % (printername, str(validaccounters))
+            for vac in validaccounters :
+                if flower.startswith(vac) :    
+                    try :
+                        (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
+                    except ValueError :    
+                        raise PyKotaConfigError, _("Invalid preaccounter %s for printer %s") % (fullaccounter, printername)
+                    if args.endswith(')') :
+                        args = args[:-1].strip()
+                    return (vac, args)
+            raise PyKotaConfigError, _("Option preaccounter in section %s only supports values in %s") % (printername, str(validaccounters))
         
     def getAccounterBackend(self, printername) :    
         """Returns the accounter backend to use for a given printer."""
-        validaccounters = [ "hardware", "software" ]     
-        fullaccounter = self.getPrinterOption(printername, "accounter").strip()
-        flower = fullaccounter.lower()
-        if flower.startswith("software") or flower.startswith("hardware") :    
-            try :
-                (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
-            except ValueError :    
-                raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
-            if args.endswith(')') :
-                args = args[:-1].strip()
-            if (accounter == "hardware") and not args :
-                raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
-            return (accounter.lower(), args)
-        else :
+        validaccounters = [ "hardware", "software", "bw", "cmyk", "cmy", "rgb" ]     
+        try :
+            fullaccounter = self.getPrinterOption(printername, "accounter").strip()
+        except PyKotaConfigError :    
+            return ("software", "")
+        else :    
+            flower = fullaccounter.lower()
+            for vac in validaccounters :
+                if flower.startswith(vac) :    
+                    try :
+                        (accounter, args) = [x.strip() for x in fullaccounter.split('(', 1)]
+                    except ValueError :    
+                        raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
+                    if args.endswith(')') :
+                        args = args[:-1].strip()
+                    if (accounter == "hardware") and not args :
+                        raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
+                    return (vac, args)
             raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printername, str(validaccounters))
         
     def getPreHook(self, printername) :    
