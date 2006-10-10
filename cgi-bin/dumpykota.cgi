@@ -41,10 +41,36 @@ header = """Content-type: text/html
   <head>
     <title>%s</title>
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
+    <script type="text/javascript">
+    <!--
+      function checkvalues() 
+      {
+          if ((document.mainform.format.value == "cups") && (document.mainform.datatype.value != "history"))
+          {
+              alert("Output format and data type are incompatible.");
+              return false;
+          }
+          
+          if (document.mainform.sum.checked && (document.mainform.datatype.value != "payments") && (document.mainform.datatype.value != "history"))
+          {
+              alert("Summarize is only possible for History and Payments.");
+              return false;
+          }
+          
+          if (document.mainform.sum.checked && (document.mainform.format.value == "cups"))
+          {
+              alert("Summarize is not possible with CUPS' page_log format.");
+              return false;
+          }
+          
+          return true;
+      }
+    //-->
+    </script>
   </head>
   <body>
     <p>
-      <form action="dumpykota.cgi" method="GET">
+      <form action="dumpykota.cgi" method="GET" name="mainform" onsubmit="return checkvalues()">
         <table>
           <tr>
             <td>

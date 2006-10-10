@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.25alpha13 (2006-10-04) :
      
+        - The dumpykota.cgi script now does basic form checking
+          to immediately avoid incompatible dump options and
+          alerts the end user if Javascript is enabled.
+          
         - The filter keys in dumpykota can now be specified in
           lower or upper case.
           
