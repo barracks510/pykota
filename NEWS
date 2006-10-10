@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.25alpha13 (2006-10-04) :
      
+        - The filter keys in dumpykota can now be specified in
+          lower or upper case.
+          
         - Introduced the 'noprintingmaxdelay' directive to workaround
           some buggy printers when hardware accounting is used.
           

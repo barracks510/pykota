@@ -136,7 +136,7 @@ class PyKotaDumperGUI(DumPyKota) :
         
     def htmlFilterInput(self, value="") :    
         """Input the optional dump filter."""
-        return _("Filter") + (' : <input type="text" name="filter" size="40" value="%s" /> <em>e.g. <strong>username=jerome printername=HP2100</strong></em>' % (value or ""))
+        return _("Filter") + (' : <input type="text" name="filter" size="40" value="%s" /> <em>e.g. <strong>username=jerome printername=HP2100 start=today-30</strong></em>' % (value or ""))
         
     def htmlSumCheckbox(self, checked="") :    
         """Input the optional Sum option."""

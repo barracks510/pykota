@@ -89,6 +89,7 @@ class DumPyKota(PyKotaTool) :
                 if filterexp.strip() :
                     try :
                         (filterkey, filtervalue) = [part.strip() for part in filterexp.split("=")]
+                        filterkey = filterkey.lower()
                         if filterkey not in self.validfilterkeys :
                             raise ValueError                
                     except ValueError :    
