@@ -631,3 +631,35 @@ class PyKotaConfig :
             except (IndexError, ValueError, TypeError) :
                 raise PyKotaConfigError, _("Option trustjobsize for printer %s is incorrect") % printername
             return (limit, replacement)    
+            
+    def getPrinterCoefficients(self, printername) :
+        """Returns a mapping of coefficients for a particular printer."""
+        branchbasename = "coefficient_"
+        try :
+            globalbranches = [ (k, self.config.get("global", k)) for k in self.config.options("global") if k.startswith(branchbasename) ]
+        except ConfigParser.NoSectionError, msg :
+            raise PyKotaConfigError, "Invalid configuration file : %s" % msg
+        try :
+            sectionbranches = [ (k, self.config.get(printername, k)) for k in self.config.options(printername) if k.startswith(branchbasename) ]
+        except ConfigParser.NoSectionError, msg :
+            sectionbranches = []
+        branches = {}
+        for (k, v) in globalbranches :
+            value = v.strip()
+            if value :
+                try :
+                    branches[k] = float(value)
+                except ValueError :    
+                    raise PyKotaConfigError, "Invalid coefficient %s (%s) for printer %s" % (k, value, printername)
+                
+        for (k, v) in sectionbranches :
+            value = v.strip()
+            if value :
+                try :
+                    branches[k] = float(value) # overwrite any global option or set a new value
+                except ValueError :    
+                    raise PyKotaConfigError, "Invalid coefficient %s (%s) for printer %s" % (k, value, printername)
+            else :
+                del branches[k] # empty value disables a global option
+                
+        return branches
