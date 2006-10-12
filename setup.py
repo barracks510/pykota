@@ -126,7 +126,7 @@ setup(name = "pykota", version = __version__,
       author_email = "alet@librelogiciel.com",
       url = "http://www.pykota.com",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
-      scripts = [ "bin/pknotify", "bin/pkusers", "bin/pkinvoice", "bin/pykoef", \
+      scripts = [ "bin/pknotify", "bin/pkusers", "bin/pkinvoice", "bin/pksetup", \
                   "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", \
                   "bin/pkbanner", "bin/autopykota", "bin/dumpykota", \
                   "bin/pykosd", "bin/edpykota", "bin/repykota", \

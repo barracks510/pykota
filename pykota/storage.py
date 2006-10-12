@@ -170,13 +170,17 @@ class StoragePrinter(StorageObject) :
         self.PricePerJob = None
         self.MaxJobSize = None
         self.PassThrough = None
-        self.Coefficients = None
         
     def __getattr__(self, name) :    
         """Delays data retrieval until it's really needed."""
         if name == "LastJob" : 
             self.LastJob = self.parent.getPrinterLastJob(self)
+            self.parent.tool.logdebug("Lazy retrieval of last job for printer %s" % self.Name)
             return self.LastJob
+        elif name == "Coefficients" :    
+            self.Coefficients = self.parent.tool.config.getPrinterCoefficients(self.Name)
+            self.parent.tool.logdebug("Lazy retrieval of coefficients for printer %s : %s" % (self.Name, self.Coefficients))
+            return self.Coefficients
         else :
             raise AttributeError, name
             
