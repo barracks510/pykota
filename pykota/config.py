@@ -191,7 +191,7 @@ class PyKotaConfig :
     
     def getPreAccounterBackend(self, printername) :    
         """Returns the preaccounter backend to use for a given printer."""
-        validaccounters = [ "software", "bw", "cmyk", "cmy", "rgb" ]     
+        validaccounters = [ "software", "ink" ]     
         try :
             fullaccounter = self.getPrinterOption(printername, "preaccounter").strip()
         except PyKotaConfigError :    
@@ -206,12 +206,14 @@ class PyKotaConfig :
                         raise PyKotaConfigError, _("Invalid preaccounter %s for printer %s") % (fullaccounter, printername)
                     if args.endswith(')') :
                         args = args[:-1].strip()
+                    if (vac == "ink") and not args :    
+                        raise PyKotaConfigError, _("Invalid preaccounter %s for printer %s") % (fullaccounter, printername)
                     return (vac, args)
             raise PyKotaConfigError, _("Option preaccounter in section %s only supports values in %s") % (printername, str(validaccounters))
         
     def getAccounterBackend(self, printername) :    
         """Returns the accounter backend to use for a given printer."""
-        validaccounters = [ "hardware", "software", "bw", "cmyk", "cmy", "rgb" ]     
+        validaccounters = [ "hardware", "software", "ink" ]     
         try :
             fullaccounter = self.getPrinterOption(printername, "accounter").strip()
         except PyKotaConfigError :    
@@ -226,7 +228,7 @@ class PyKotaConfig :
                         raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
                     if args.endswith(')') :
                         args = args[:-1].strip()
-                    if (accounter == "hardware") and not args :
+                    if (vac in ("hardware", "ink")) and not args :
                         raise PyKotaConfigError, _("Invalid accounter %s for printer %s") % (fullaccounter, printername)
                     return (vac, args)
             raise PyKotaConfigError, _("Option accounter in section %s only supports values in %s") % (printername, str(validaccounters))
