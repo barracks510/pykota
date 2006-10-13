@@ -647,6 +647,7 @@ class PyKotaConfig :
             sectionbranches = []
         branches = {}
         for (k, v) in globalbranches :
+            k = k.split('_', 1)[1]
             value = v.strip()
             if value :
                 try :
@@ -655,6 +656,7 @@ class PyKotaConfig :
                     raise PyKotaConfigError, "Invalid coefficient %s (%s) for printer %s" % (k, value, printername)
                 
         for (k, v) in sectionbranches :
+            k = k.split('_', 1)[1]
             value = v.strip()
             if value :
                 try :
