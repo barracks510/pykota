@@ -307,24 +307,41 @@ class StorageUserPQuota(StorageObject) :
         self.DateLimit = None
         self.isDirty = True
         
-    def computeJobPrice(self, jobsize) :    
+    def computeJobPrice(self, jobsize, inkusage=[]) :    
         """Computes the job price as the sum of all parent printers' prices + current printer's ones."""
         totalprice = 0.0    
         if jobsize :
             if self.User.OverCharge != 0.0 :    # optimization, but TODO : beware of rounding errors
                 for upq in [ self ] + self.ParentPrintersUserPQuota :
-                    price = (float(upq.Printer.PricePerPage or 0.0) * jobsize) + float(upq.Printer.PricePerJob or 0.0)
-                    totalprice += price
+                    totalprice += float(upq.Printer.PricePerJob or 0.0)
+                    pageprice = float(upq.Printer.PricePerPage or 0.0)
+                    if not inkusage :
+                        totalprice += (jobsize * pageprice)
+                    else :    
+                        for pageindex in range(jobsize) :
+                            try :
+                                usage = inkusage[pageindex]
+                            except IndexError :    
+                                self.parent.tool.logdebug("No ink usage information. Using base cost of %f credits for page %i." % (pageprice, pageindex+1))
+                                totalprice += pageprice
+                            else :    
+                                coefficients = self.Printer.Coefficients
+                                for (ink, value) in usage.items() :
+                                    coefvalue = coefficients.get(ink, 1.0)
+                                    coefprice = (coefvalue * pageprice) / 100.0
+                                    inkprice = coefprice * value
+                                    self.parent.tool.logdebug("Applying coefficient %f for color %s (used at %f%% on page %i) to base cost %f gives %f" % (coefvalue, ink, value, pageindex+1, pageprice, inkprice))
+                                    totalprice += coefprice
         if self.User.OverCharge != 1.0 : # TODO : beware of rounding errors
             overcharged = totalprice * self.User.OverCharge        
-            self.parent.tool.logdebug("Overcharging %s by a factor of %s ===> User %s will be charged for %s units." % (totalprice, self.User.OverCharge, self.User.Name, overcharged))
+            self.parent.tool.logdebug("Overcharging %s by a factor of %s ===> User %s will be charged for %s credits." % (totalprice, self.User.OverCharge, self.User.Name, overcharged))
             return overcharged
         else :    
             return totalprice
             
-    def increasePagesUsage(self, jobsize) :
+    def increasePagesUsage(self, jobsize, inkusage=[]) :
         """Increase the value of used pages and money."""
-        jobprice = self.computeJobPrice(jobsize)
+        jobprice = self.computeJobPrice(jobsize, inkusage)
         if jobsize :
             if jobprice :
                 self.User.consumeAccountBalance(jobprice)

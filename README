@@ -119,6 +119,9 @@ PyKota features :
         - Price per page and per job can be set differently  
           on any printer.
         
+        - Price depending on ink/toner usage is supported
+          with many printer drivers.
+        
         - Low level of page quota or account balance are
           configurable.
           

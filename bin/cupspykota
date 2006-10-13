@@ -573,7 +573,7 @@ class CUPSBackend(PyKotaTool) :
     def precomputeJobPrice(self) :    
         """Precomputes the job price with a software method."""
         self.logdebug("Precomputing job's price...")
-        self.softwareJobPrice = self.UserPQuota.computeJobPrice(self.softwareJobSize)
+        self.softwareJobPrice = self.UserPQuota.computeJobPrice(self.softwareJobSize, self.preaccounter.inkUsage)
         self.logdebug("Precomputed job's price is %.3f credits." \
                                    % self.softwareJobPrice)
         
@@ -1269,7 +1269,7 @@ class CUPSBackend(PyKotaTool) :
             else :
                 # update the quota for the current user on this printer 
                 self.printInfo(_("Updating user %s's quota on printer %s") % (self.UserName, self.PrinterName))
-                self.JobPrice = self.UserPQuota.increasePagesUsage(self.JobSize)
+                self.JobPrice = self.UserPQuota.increasePagesUsage(self.JobSize, self.accounter.inkUsage)
             
             # adds the current job to history    
             self.Printer.addJobToHistory(self.JobId, self.User, self.accounter.getLastPageCounter(), \

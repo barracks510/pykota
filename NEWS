@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha14 (2006-10-13) :
+      
+        - First useable release with the computation of ink
+          usage, through the introduction of the 'ink(cspace, resolution)'
+          value for the 'preaccounter' and 'accounter' directives in
+          pykota.conf
+          
     - 1.25alpha13 (2006-10-04) :
      
         - The dumpykota.cgi script now does basic form checking

@@ -58,8 +58,6 @@ TODO, in no particular order :
           while still allowing to overwrite them with the configuration
           files at run time.
         
-        - Ink accounting ala PrintBill.
-        
         - Price and statistics per page format.
         
         - Allow the admin to choose an action to take when the database

@@ -44,6 +44,7 @@ class AccounterBase :
         self.onerror = self.filter.config.getPrinterOnAccounterError(self.filter.PrinterName)
         self.isSoftware = 1 # by default software accounting
         self.isPreAccounter = ispreaccounter 
+        self.inkUsage = []
         
     def getLastPageCounter(self) :    
         """Returns last internal page counter value (possibly faked)."""

@@ -596,6 +596,23 @@ keepfiles : no
 # output, representing the number of pages in the print job.
 # Software accounting unfortunately may overcharge users in case of paper
 # jams.
+#
+# Ink computes the price of a print job by parsing the job's datas
+# through pkpgcounter, and using the percents of ink coverage returned
+# for each color in the specified colorspace.
+
+# Supported colorspaces for ink accounting currently are :
+#
+#       bw      ===> Black & White
+#       cmyk    ===> Cyan, Magenta, Yellow, Black
+#       cmy     ===> Cyan, Magenta, Yellow
+#       rgb     ===> Red, Green, Blue
+#
+# Supported resolutions for ink accounting are any number of dots
+# per inch comprised between 72 and 1200. 
+# IMPORTANT : increasing the resolution increases precision, but
+# increase CPU load a lot at the same time. The default resolution
+# if unset is 72, for 72 dpi.
 # 
 # You can get hints on which configuration is best for your printers by
 # typing : pkturnkey --doconf
@@ -618,6 +635,10 @@ keepfiles : no
 # accounter : hardware(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2)
 # accounter : software(/usr/bin/pkpgcounter) 
 # accounter : software()
+# accounter : ink(cmyk, 150)
+# accounter : ink(bw, 300)
+# accounter : ink(bw)
+# accounter : ink(cmy, 72)
 #         
 # This directive can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
@@ -647,6 +668,7 @@ accounter: software()
 #
 #  preaccounter: software()       
 #  preaccounter: software(/path/to/your/script)
+#  preaccounter: ink(colorspace, resolution)
 #
 # NB : the preaccounter directive doesn't support hardware() for obvious 
 # reasons. If unset, "software()" is assumed. If you use your own script, 
@@ -656,6 +678,19 @@ accounter: software()
 # You may want to define for example 'preaccounter : software(/bin/echo 1)'
 # in the case your printer supports an hardware accounter but pkpgcounter
 # can't parse your printer driver's datas.
+#
+# Supported colorspaces for ink accounting currently are :
+#
+#       bw      ===> Black & White
+#       cmyk    ===> Cyan, Magenta, Yellow, Black
+#       cmy     ===> Cyan, Magenta, Yellow
+#       rgb     ===> Red, Green, Blue
+#
+# Supported resolutions for ink accounting are any number of dots
+# per inch comprised between 72 and 1200. 
+# IMPORTANT : increasing the resolution increases precision, but
+# increase CPU load a lot at the same time. The default resolution
+# if unset is 72, for 72 dpi.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.

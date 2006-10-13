@@ -41,9 +41,13 @@ class Accounter(AccounterBase) :
             # configured the same, no need to launch a second pass since we already
             # know the result.
             self.filter.logdebug("Precomputing pass told us that job is %s pages long." % self.filter.softwareJobSize)
-            return self.filter.softwareJobSize   # Optimize : already computed !
+            self.inkUsage = self.filter.preaccounter.inkUsage   # Optimize : already computed !
+            return self.filter.softwareJobSize                  # Optimize : already computed !
             
-        (colorspace, resolution) = [p.strip() for p in self.arguments.split(',')]
+        parameters = [p.strip() for p in self.arguments.split(',')]
+        if len(parameters) == 1 :
+            parameters.append("72")
+        (colorspace, resolution) = parameters
         colorspace = colorspace.lower()
         if colorspace not in ("cmyk", "bw", "cmy", "rgb") :
             raise PyKotaAccounterError, "Invalid parameters for ink accounter : [%s]" % self.arguments
@@ -56,7 +60,6 @@ class Accounter(AccounterBase) :
         self.filter.logdebug("Using internal parser to compute job's size and ink usage.")
         
         jobsize = 0
-        self.inkUsage = []
         if self.filter.JobSizeBytes :
             try :
                 from pkpgpdls import analyzer, pdlparser
