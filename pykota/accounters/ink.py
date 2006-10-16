@@ -68,30 +68,26 @@ class Accounter(AccounterBase) :
                 self.filter.printInfo("Precomputed job size will be forced to 0 pages.", "error")
             else :     
                 options = analyzer.AnalyzerOptions(colorspace=colorspace, resolution=resolution)
-                infile = open(self.filter.DataFile, "rb")
                 try :
-                    try :
-                        parser = analyzer.PDLAnalyzer(infile, options)
-                        (cspace, pages) = parser.getInkCoverage()
-                        cspacelabels = self.cspaceExpanded[cspace]
-                        for page in pages :
-                            colordict = {}
-                            for color in page.keys() :
-                                colordict[cspacelabels[color]] = page[color]
-                            self.inkUsage.append(colordict)    
-                        jobsize = len(pages)
-                        self.filter.logdebug("Ink usage : %s ===> %s" % (cspace, repr(self.inkUsage)))
-                    except pdlparser.PDLParserError, msg :    
-                        # Here we just log the failure, but
-                        # we finally ignore it and return 0 since this
-                        # computation is just an indication of what the
-                        # job's size MAY be.
-                        self.filter.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
-                    else :    
-                        if self.filter.InputFile is not None :
-                            # when a filename is passed as an argument, the backend 
-                            # must generate the correct number of copies.
-                            jobsize *= self.filter.Copies
-                finally :            
-                    infile.close()        
+                    parser = analyzer.PDLAnalyzer(self.filter.DataFile, options)
+                    (cspace, pages) = parser.getInkCoverage()
+                    cspacelabels = self.cspaceExpanded[cspace]
+                    for page in pages :
+                        colordict = {}
+                        for color in page.keys() :
+                            colordict[cspacelabels[color]] = page[color]
+                        self.inkUsage.append(colordict)    
+                    jobsize = len(pages)
+                    self.filter.logdebug("Ink usage : %s ===> %s" % (cspace, repr(self.inkUsage)))
+                except pdlparser.PDLParserError, msg :    
+                    # Here we just log the failure, but
+                    # we finally ignore it and return 0 since this
+                    # computation is just an indication of what the
+                    # job's size MAY be.
+                    self.filter.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
+                else :    
+                    if self.filter.InputFile is not None :
+                        # when a filename is passed as an argument, the backend 
+                        # must generate the correct number of copies.
+                        jobsize *= self.filter.Copies
         return jobsize        
