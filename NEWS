@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.25alpha14 (2006-10-13) :
       
+        - Removed some locking code which would have prevented multi-server
+          configuration to work correctly with a shared lock directory.
+          
         - First useable release with the computation of ink
           usage, through the introduction of the 'ink(cspace, resolution)'
           value for the 'preaccounter' and 'accounter' directives in
