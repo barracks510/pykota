@@ -1400,6 +1400,7 @@ if __name__ == "__main__" :
                               % sys.argv[0])
         sys.exit(1)
     else :    
+        os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
         try :
             try :
                 wrapper.deferredInit()
