@@ -101,6 +101,7 @@ errorConditions = [ 'No Paper',
                     'Output Full',
                     'Input Tray Empty',
                   ]
+# WARNING : some printers don't support this one :                  
 prtConsoleDisplayBufferTextOID = "1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
 
 class BaseHandler :
@@ -121,7 +122,6 @@ class BaseHandler :
         self.printerStatus = None
         self.deviceStatus = None
         self.printerDetectedErrorState = None
-        self.consoleDisplayBufferText = None
         self.timebefore = time.time()   # resets timer also in case of error
         
     def retrieveSNMPValues(self) :    
@@ -250,8 +250,7 @@ if hasV4 :
                                                   tuple([int(i) for i in pageCounterOID.split('.')]), \
                                                   tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
-                                                  tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]), \
-                                                  tuple([int(i) for i in prtConsoleDisplayBufferTextOID.split('.')]))
+                                                  tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]))
             if errorIndication :                                                  
                 self.parent.filter.printInfo("SNMP Error : %s" % errorIndication, "error")
                 self.initValues()
@@ -265,13 +264,11 @@ if hasV4 :
                 self.printerStatus = int(varBinds[1][1].prettyPrint())
                 self.deviceStatus = int(varBinds[2][1].prettyPrint())
                 self.printerDetectedErrorState = self.extractErrorStates(str(varBinds[3][1]))
-                self.consoleDisplayBufferText = varBinds[4][1].prettyPrint()
-                self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'  ConsoleDisplayBuffer : '%s'" \
+                self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'" \
                      % (self.printerInternalPageCounter, \
                         printerStatusValues.get(self.printerStatus), \
                         deviceStatusValues.get(self.deviceStatus), \
-                        self.printerDetectedErrorState, \
-                        self.consoleDisplayBufferText))
+                        self.printerDetectedErrorState))
 else :
     class Handler(BaseHandler) :
         """A class for pysnmp v3.4.x"""
@@ -284,8 +281,7 @@ else :
             req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), \
                                                         (hrPrinterStatusOID, ver.Null()), \
                                                         (hrDeviceStatusOID, ver.Null()), \
-                                                        (hrPrinterDetectedErrorStateOID, ver.Null()), \
-                                                        (prtConsoleDisplayBufferTextOID, ver.Null()))
+                                                        (hrPrinterDetectedErrorStateOID, ver.Null()))
             tsp = Manager()
             try :
                 tsp.sendAndReceive(req.berEncode(), \
@@ -320,13 +316,11 @@ else :
                             self.printerStatus = self.values[1]
                             self.deviceStatus = self.values[2]
                             self.printerDetectedErrorState = self.extractErrorStates(self.values[3])
-                            self.consoleDisplayBufferText = self.values[4]
-                            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'  ConsoleDisplayBuffer : '%s'" \
+                            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'" \
                                  % (self.printerInternalPageCounter, \
                                     printerStatusValues.get(self.printerStatus), \
                                     deviceStatusValues.get(self.deviceStatus), \
-                                    self.printerDetectedErrorState, \
-                                    self.consoleDisplayBufferText))
+                                    self.printerDetectedErrorState))
                         except IndexError :    
                             self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass
