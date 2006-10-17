@@ -161,16 +161,19 @@ class Tool :
         
     def deferredInit(self) :        
         """Deferred initialization."""
-        # try to find the configuration files in user's 'pykota' home directory.
-        try :
-            self.pykotauser = pwd.getpwnam("pykota")
-        except KeyError :    
-            self.pykotauser = None
-            confdir = "/etc/pykota"
-            missingUser = 1
-        else :    
-            confdir = self.pykotauser[5]
-            missingUser = 0
+        confdir = os.environ.get("PYKOTA_HOME")
+        environHome = True
+        missingUser = False
+        if confdir is None :
+            environHome = False
+            # check for config files in the 'pykota' user's home directory.
+            try :
+                self.pykotauser = pwd.getpwnam("pykota")
+                confdir = self.pykotauser[5]
+            except KeyError :    
+                self.pykotauser = None
+                confdir = "/etc/pykota"
+                missingUser = True
             
         self.config = config.PyKotaConfig(confdir)
         self.debug = self.config.getDebug()
@@ -187,8 +190,11 @@ class Tool :
         
         if self.defaultToCLocale :
             self.printInfo("Incorrect locale settings. PyKota falls back to the default locale.", "warn")
-        if missingUser :     
-            self.printInfo("The 'pykota' system account is missing. Configuration files were searched in /etc/pykota instead.", "warn")
+        if environHome :
+            self.printInfo("PYKOTA_HOME environment variable is set. Configuration files were searched in %s" % confdir, "info")
+        else :
+            if missingUser :     
+                self.printInfo("The 'pykota' system account is missing. Configuration files were searched in %s instead." % confdir, "warn")
         
         self.logdebug("Charset detected from locale settings : %s" % self.localecharset)
         self.logdebug("Charset in use : %s" % self.charset)

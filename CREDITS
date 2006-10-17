@@ -72,14 +72,17 @@ Contributors :
   - Wilson Roberto Afonso - Sent a patch for PJL.
   - Baris Cicek - Turkish translation.
   - Kanakorn Horsiritham - Wrote phpPykotaAdmin.
-  - Tsang Yu Pong, Teddy - PHC Wing Kwong College - Chinese (Trad.) translation 
-  - Marcus Flávio de Lima - Universidade Federal de Minas Gerais : Brazilian PyKota+LDAP Documentation
+  - Tsang Yu Pong, Teddy - PHC Wing Kwong College - Chinese (Trad.) translation
+  - Marcus Flávio de Lima - Universidade Federal de Minas Gerais : 
+    Brazilian PyKota+LDAP Documentation
   - Rong-En Fan - Helped improve the PJL stuff.
   - Michal Dobroczynski - Polish translation.
   - Jamuel P. Starkey - GCI Systems - Secondary MX server.
   - Kris Kopicki - Walford Anglican School for Girls Inc. - Wrote pykotadmin.
   - Brandon Holbrook - Mississipi State University : improved waitprinter.sh
   - Brian Glogower - Worked on gnuplot scripts
+  - Andrew Ross - Parakeet Print Quota : Provided a patch to allow the
+    configuration files directory to be set at run time.
 
 ==============================================================
 
