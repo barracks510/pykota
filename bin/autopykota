@@ -56,7 +56,6 @@ class AutoPyKota(PyKotaTool) :
     """A class for the automat."""
     def main(self, arguments, options) :
         """Main entry point."""
-        os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
         username = os.environ.get("PYKOTAUSERNAME")
         printername = os.environ.get("PYKOTAPRINTERNAME")
         if (username is None) or (printername is None) :
