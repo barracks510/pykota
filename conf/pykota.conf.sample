@@ -613,6 +613,9 @@ keepfiles : no
 # IMPORTANT : increasing the resolution increases precision, but
 # increase CPU load a lot at the same time. The default resolution
 # if unset is 72, for 72 dpi.
+# If you want to use ink accounting, you have to define a set of
+# coefficients for each color in the colorspace, as explained
+# further below in this file.
 # 
 # You can get hints on which configuration is best for your printers by
 # typing : pkturnkey --doconf
@@ -1204,6 +1207,11 @@ noprintingmaxdelay : 60
 
 
 # Defines a set of coefficients for ink accounting.
+#
+# Each ink coefficient is the factor of the price per page
+# you set with pkprinters which would represent the cost
+# of a page covered at 100% with ink in this particular color.
+#
 # With these coefficients, the exact cost of each page
 # can be computed : for each ink color in the colorspace specified
 # in the preaccounter and/or accounter directives, we multiply the 
@@ -1212,6 +1220,28 @@ noprintingmaxdelay : 60
 # sum the values, and repeat the operation for each page. We then
 # add the base cost per job set with pkprinters, and repeat
 # the operation recursively in case of nested printers groups.
+#
+# The names of the coefficients you should set depend on the colorspace
+# you want to use for ink accounting :
+#
+#       cmyk :
+#               coefficient_cyan
+#               coefficient_magenta
+#               coefficient_yellow
+#               coefficient_black
+#
+#       cmy :
+#               coefficient_cyan
+#               coefficient_magenta
+#               coefficient_yellow
+#
+#       rgb :
+#               coefficient_red
+#               coefficient_green
+#               coefficient_blue
+#
+#       bw :
+#               coefficient_black
 #
 # Any coefficient which is not set is considered to be equal to 1.0
 #
