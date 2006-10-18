@@ -71,6 +71,13 @@ class Accounter(AccounterBase) :
                 try :
                     parser = analyzer.PDLAnalyzer(self.filter.DataFile, options)
                     (cspace, pages) = parser.getInkCoverage()
+                except pdlparser.PDLParserError, msg :    
+                    # Here we just log the failure, but
+                    # we finally ignore it and return 0 since this
+                    # computation is just an indication of what the
+                    # job's size MAY be.
+                    self.filter.printInfo(_("Unable to precompute the job's size and ink coverage with the generic PDL analyzer : %s") % msg, "warn")
+                else :    
                     cspacelabels = self.cspaceExpanded[cspace]
                     for page in pages :
                         colordict = {}
@@ -78,16 +85,10 @@ class Accounter(AccounterBase) :
                             colordict[cspacelabels[color]] = page[color]
                         self.inkUsage.append(colordict)    
                     jobsize = len(pages)
-                    self.filter.logdebug("Ink usage : %s ===> %s" % (cspace, repr(self.inkUsage)))
-                except pdlparser.PDLParserError, msg :    
-                    # Here we just log the failure, but
-                    # we finally ignore it and return 0 since this
-                    # computation is just an indication of what the
-                    # job's size MAY be.
-                    self.filter.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
-                else :    
                     if self.filter.InputFile is not None :
                         # when a filename is passed as an argument, the backend 
                         # must generate the correct number of copies.
                         jobsize *= self.filter.Copies
+                        self.inkUsage *= self.filter.Copies
+                    self.filter.logdebug("Ink usage : %s ===> %s" % (cspace, repr(self.inkUsage)))
         return jobsize        
