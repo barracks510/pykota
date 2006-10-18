@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Document the PYKOTA_HOME environment variable.
+        
         - Add a command line option to pknotify to decide what should
           happen if there's no PyKotIcon at the other end.
           
