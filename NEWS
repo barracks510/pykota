@@ -21,6 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha15 (2006-11-06) :   
+    
+        - Finally simplified the locking code again, and checked that no
+          stalled lock can persist. The lock files remain on disk though,
+          but it is a small price to pay.
+          
     - 1.25alpha14 (2006-10-13) :
       
         - Removed some locking code which would have prevented multi-server

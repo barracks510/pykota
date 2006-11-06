@@ -129,34 +129,31 @@ class CUPSBackend(PyKotaTool) :
         
     def waitForLock(self) :    
         """Waits until we can acquire the lock file."""
-        self.logdebug("Waiting for lock...")
+        self.logdebug("Waiting for lock %s to become available..." % self.lockfilename)
         haslock = False
-        try :
-            while not haslock :
-                self.logdebug("Trying to acquire lock %s" % self.lockfilename)
-                try :
-                    self.lockfile = os.open(self.lockfilename, 
-                                            os.O_CREAT | os.O_EXCL | os.O_WRONLY, 
-                                            0600)
-                except OSError, error :                     
-                    # IMPORTANT : we don't check anymore if the other process
-                    # is still alive, otherwise we could inadvertantly delete
-                    # a lock file created by a different print server in the
-                    # same directory (load balancing).
-                    # I think the lock is removed in all cases anyway, excepted
-                    # when the admin kills -9 cupspykota.
-                    if error.errno == errno.EEXIST :
-                        self.logdebug("Lock not available. Waiting a bit...")
-                    else :    
-                        self.logdebug("Lock not available : %s. Waiting a bit..." % error)
-                    time.sleep(0.25) # No hurry :)
-                else :    
-                    os.write(self.lockfile, str(self.pid))
-                    haslock = True    
-        except IOError :            
-            self.logdebug("I/O Error while waiting for lock.")
-        else :
-            self.logdebug("Lock acquired.")
+        while not haslock :
+            try :
+                # open the lock file, optionally creating it if needed.
+                self.lockfile = open(self.lockfilename, "a+")
+                
+                # we wait indefinitely for the lock to become available.
+                # works over NFS too.
+                fcntl.lockf(self.lockfile, fcntl.LOCK_EX)
+                haslock = True
+                
+                self.logdebug("Lock %s acquired." % self.lockfilename)
+                
+                # Here we save the PID in the lock file, but we don't use
+                # it, because the lock file may be in a directory shared
+                # over NFS between two (or more) print servers, so the PID
+                # has no meaning in this case.
+                self.lockfile.truncate(0)
+                self.lockfile.seek(0, 0)
+                self.lockfile.write(str(self.pid))
+                self.lockfile.flush()
+            except IOError :            
+                self.logdebug("I/O Error while waiting for lock %s" % self.lockfilename)
+                time.sleep(0.25)
                     
     def discoverOtherBackends(self) :    
         """Discovers the other CUPS backends.
@@ -534,14 +531,14 @@ class CUPSBackend(PyKotaTool) :
                 self.logdebug("Work file %s will be kept." % self.DataFile)
         PyKotaTool.clean(self)    
         if (self.lockfile is not None) and os.path.exists(self.lockfilename) :
-            self.logdebug("Removing lock...")
+            self.logdebug("Unlocking %s..." %  self.lockfilename)
             try :
-                os.close(self.lockfile)
-                os.unlink(self.lockfilename)
+                fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
+                self.lockfile.close()
             except :    
-                self.printInfo("Problem while removing lock file %s" % self.lockfilename, "error")
+                self.printInfo("Problem while unlocking %s" % self.lockfilename, "error")
             else :    
-                self.logdebug("Lock file %s removed." % self.lockfilename)
+                self.logdebug("%s unlocked." % self.lockfilename)
         self.logdebug("Clean.")
             
     def precomputeJobSize(self) :    
