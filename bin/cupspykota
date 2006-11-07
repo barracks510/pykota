@@ -530,7 +530,7 @@ class CUPSBackend(PyKotaTool) :
             else :    
                 self.logdebug("Work file %s will be kept." % self.DataFile)
         PyKotaTool.clean(self)    
-        if (self.lockfile is not None) and os.path.exists(self.lockfilename) :
+        if self.lockfile is not None :
             self.logdebug("Unlocking %s..." %  self.lockfilename)
             try :
                 fcntl.lockf(self.lockfile, fcntl.LOCK_UN)
