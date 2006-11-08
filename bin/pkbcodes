@@ -106,6 +106,8 @@ class PKBcodes(PyKotaTool) :
                 names = ["*"]
             billingcodes = self.storage.getMatchingBillingCodes(",".join(names))
             if not billingcodes :
+                if not options["list"] :
+                    percent.display("\n")
                 raise PyKotaCommandLineError, _("There's no billingcode matching %s") % " ".join(names)
             if not options["list"] :    
                 percent.setSize(len(billingcodes))

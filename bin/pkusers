@@ -214,6 +214,8 @@ class PKUsers(PyKotaTool) :
                 names = ["*"]
             entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
             if not entries :
+                if not options["list"] :
+                    percent.display("\n")
                 raise PyKotaCommandLineError, _("There's no %s matching %s") % (_(suffix.lower()), " ".join(names))
             if not options["list"] :    
                 percent.setSize(len(entries))

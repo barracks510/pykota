@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.25alpha15 (2006-11-06) :   
     
+        - pkprinters --add and --delete now automatically reroutes CUPS
+          print queues through PyKota or through CUPS only.
+          
         - Fixed date and time parsing problems.
         
         - Finally simplified the locking code again, and checked that no

@@ -148,6 +148,8 @@ class PKPrinters(PyKotaTool) :
                 
     def getPrinterDeviceURI(self, printername) :            
         """Returns the Device URI attribute for a particular printer."""
+        if not printername :
+            return ""
         cups = pkipplib.CUPS()
         req = cups.newRequest(pkipplib.IPP_GET_PRINTER_ATTRIBUTES)
         req.operation["printer-uri"] = ("uri", cups.identifierToURI("printers", printername))
@@ -156,9 +158,9 @@ class PKPrinters(PyKotaTool) :
         except :    
             return ""
         
-    def isPrinterCaptured(self, printername) :            
+    def isPrinterCaptured(self, printername=None, deviceuri=None) :
         """Returns True if the printer is already redirected through PyKota's backend, else False."""
-        if self.getPrinterDeviceURI(printername).find("cupspykota:") != -1 :
+        if (deviceuri or self.getPrinterDeviceURI(printername)).find("cupspykota:") != -1 :
             return True
         else :    
             return False
@@ -178,6 +180,8 @@ class PKPrinters(PyKotaTool) :
                 names = ["*"]
             printers = self.storage.getMatchingPrinters(",".join(names))
             if not printers :
+                if not options["list"] :
+                    percent.display("\n")
                 raise PyKotaCommandLineError, _("There's no printer matching %s") % " ".join(names)
             if not options["list"] :    
                 percent.setSize(len(printers))
@@ -197,6 +201,18 @@ class PKPrinters(PyKotaTool) :
         elif options["delete"] :    
             percent.display("\n%s..." % _("Deletion"))
             self.storage.deleteManyPrinters(printers)
+            percent.display("\n%s...\n" % _("Rerouting printers to CUPS"))
+            for printer in printers :
+                uri = self.getPrinterDeviceURI(printer.Name)
+                if self.isPrinterCaptured(deviceuri=uri) :
+                     newuri = uri.replace("cupspykota:", "")
+                     if newuri.startswith("//") :
+                         newuri = newuri[2:]
+                     self.regainPriv() # to avoid having to enter password.
+                     os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
+                     self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
+                     self.dropPriv()    
+                percent.oneMore()
             percent.display("\n")
         else :
             if options["groups"] :        
@@ -250,6 +266,15 @@ class PKPrinters(PyKotaTool) :
                                            description, passthrough, \
                                            nopassthrough, maxjobsize)
                             oldprinter = self.storage.addPrinter(printer)               
+                            
+                            uri = self.getPrinterDeviceURI(printer.Name)
+                            if not self.isPrinterCaptured(deviceuri=uri) :
+                                 newuri = "cupspykota://%s" % uri
+                                 self.regainPriv() # to avoid having to enter password.
+                                 os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
+                                 self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
+                                 self.dropPriv()
+                                     
                             if oldprinter is not None :
                                 if skipexisting :
                                     self.logdebug(_("Printer %s already exists, skipping.") % pname)
