@@ -31,6 +31,8 @@ import pwd
 from pykota.tool import Percent, PyKotaTool, PyKotaCommandLineError, crashed, N_
 from pykota.storage import StoragePrinter
 
+from pkipplib import pkipplib
+
 __doc__ = N_("""pkprinters v%(__version__)s (c) %(__years__)s %(__author__)s
 
 A Printers Manager for PyKota.
@@ -144,6 +146,23 @@ class PKPrinters(PyKotaTool) :
             else :
                 pgroup.addPrinterToGroup(printer)    
                 
+    def getPrinterDeviceURI(self, printername) :            
+        """Returns the Device URI attribute for a particular printer."""
+        cups = pkipplib.CUPS()
+        req = cups.newRequest(pkipplib.IPP_GET_PRINTER_ATTRIBUTES)
+        req.operation["printer-uri"] = ("uri", cups.identifierToURI("printers", printername))
+        try :
+            return cups.doRequest(req).printer["device-uri"][0][1]
+        except :    
+            return ""
+        
+    def isPrinterCaptured(self, printername) :            
+        """Returns True if the printer is already redirected through PyKota's backend, else False."""
+        if self.getPrinterDeviceURI(printername).find("cupspykota:") != -1 :
+            return True
+        else :    
+            return False
+        
     def main(self, names, options) :
         """Manage printers."""
         if (not self.config.isAdmin) and (not options["list"]) :
@@ -171,6 +190,7 @@ class PKPrinters(PyKotaTool) :
                        printer.PricePerPage)
                 print "    %s" % (_("Passthrough mode : %s") % ((printer.PassThrough and _("ON")) or _("OFF")))
                 print "    %s" % (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited")))
+                print "    %s" % (_("Routed through PyKota : %s") % ((self.isPrinterCaptured(printer.Name) and _("YES")) or _("NO")))
                 if parents : 
                     print "    %s %s" % (_("in"), parents)
                 print    
