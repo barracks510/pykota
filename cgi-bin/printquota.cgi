@@ -240,7 +240,7 @@ class PyKotaReportGUI(PyKotaTool) :
                             billingcode_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "billingcode" : job.JobBillingCode}), job.JobBillingCode)
                         else :    
                             billingcode_url = None
-                        curdate = DateTime.ISO.ParseDateTime(str(job.JobDate))
+                        curdate = DateTime.ISO.ParseDateTime(str(job.JobDate)[:19])
                         self.report.append('<tr class="%s">%s</tr>' % \
                                               (oddevenclass, \
                                                "".join(["<td>%s</td>" % (h or "&nbsp;") \

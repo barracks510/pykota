@@ -543,7 +543,7 @@ class PyKotaTool(Tool) :
                         if softlimit <= pagecounter < hardlimit :    
                             now = DateTime.now()
                             if userpquota.DateLimit is not None :
-                                datelimit = DateTime.ISO.ParseDateTime(str(userpquota.DateLimit))
+                                datelimit = DateTime.ISO.ParseDateTime(str(userpquota.DateLimit)[:19])
                             else :
                                 datelimit = now + self.config.getGraceDelay(printer.Name)
                                 userpquota.setDateLimit(datelimit)
@@ -602,7 +602,7 @@ class PyKotaTool(Tool) :
                         if softlimit <= val < hardlimit :    
                             now = DateTime.now()
                             if grouppquota.DateLimit is not None :
-                                datelimit = DateTime.ISO.ParseDateTime(str(grouppquota.DateLimit))
+                                datelimit = DateTime.ISO.ParseDateTime(str(grouppquota.DateLimit)[:19])
                             else :
                                 datelimit = now + self.config.getGraceDelay(printer.Name)
                                 grouppquota.setDateLimit(datelimit)

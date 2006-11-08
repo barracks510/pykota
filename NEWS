@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.25alpha15 (2006-11-06) :   
     
+        - Fixed date and time parsing problems.
+        
         - Finally simplified the locking code again, and checked that no
           stalled lock can persist. The lock files remain on disk though,
           but it is a small price to pay.

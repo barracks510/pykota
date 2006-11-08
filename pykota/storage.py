@@ -260,7 +260,7 @@ class StorageUserPQuota(StorageObject) :
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
-        datelimit = DateTime.ISO.ParseDateTime(str(datelimit))
+        datelimit = DateTime.ISO.ParseDateTime(str(datelimit)[:19])
         date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, datelimit.month, datelimit.day, datelimit.hour, datelimit.minute, datelimit.second)
         self.parent.writeUserPQuotaDateLimit(self, date)
         self.DateLimit = date
@@ -402,7 +402,7 @@ class StorageGroupPQuota(StorageObject) :
         
     def setDateLimit(self, datelimit) :    
         """Sets the date limit for this quota."""
-        datelimit = DateTime.ISO.ParseDateTime(str(datelimit))
+        datelimit = DateTime.ISO.ParseDateTime(str(datelimit)[:19])
         date = "%04i-%02i-%02i %02i:%02i:%02i" % (datelimit.year, \
                                                   datelimit.month, \
                                                   datelimit.day, \
@@ -758,7 +758,7 @@ class BaseStorage :
                     else :    
                         dateval = None
                     try :    
-                        DateTime.ISO.ParseDateTime(dateval)
+                        DateTime.ISO.ParseDateTime(dateval[:19])
                     except :    
                         dateval = None
                 datedict[limit] = dateval    
