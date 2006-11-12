@@ -253,12 +253,8 @@ class EdPyKota(PyKotaTool) :
             try :
                 if options["add"] :
                     percent.display("\n%s...\n" % _("Creation"))
-                    dicnames = {}
-                    for m in entries :
-                        dicnames[m.Name] = None
-                    for name in names :
-                        if not dicnames.has_key(name) :
-                            self.printInfo(_("Impossible to create print quota entries if the user or group object '%s' doesn't already exist. Please use pkusers to create it first.") % name, "warn")
+                    if not entries :    
+                        self.printInfo(_("No entry matches %s. Please use pkusers to create them first.") % (" ".join(names)), "warn")
                             
                     factory = globals()["Storage%sPQuota" % suffix]
                     for printer in printers :
