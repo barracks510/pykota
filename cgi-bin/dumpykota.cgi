@@ -34,9 +34,8 @@ from pykota.tool import PyKotaToolError
 from pykota.dumper import DumPyKota
 from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 
-header = """Content-type: text/html
+header = """Content-type: text/html;charset=%s
 
-<?xml version="1.0" encoding="%s"?>
 <html>
   <head>
     <title>%s</title>
@@ -69,6 +68,7 @@ header = """Content-type: text/html
     </script>
   </head>
   <body>
+    <!-- %s %s -->
     <p>
       <form action="dumpykota.cgi" method="GET" name="mainform" onsubmit="return checkvalues()">
         <table>
@@ -123,7 +123,8 @@ class PyKotaDumperGUI(DumPyKota) :
     def guiDisplay(self) :
         """Displays the dumper interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Data Dumper"), \
+        print header % (self.charset, _("PyKota Data Dumper"), \
+                        self.language, self.charset, \
                         self.config.getLogoLink(), \
                         self.config.getLogoURL(), version.__version__, \
                         self.config.getLogoLink(), \
@@ -227,8 +228,7 @@ class PyKotaDumperGUI(DumPyKota) :
                 self.guiDisplay()
             
 if __name__ == "__main__" :
-    os.environ["LC_ALL"] = getLanguagePreference()
-    admin = PyKotaDumperGUI(lang=os.environ["LC_ALL"], charset=getCharsetPreference())
+    admin = PyKotaDumperGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.options = { "output" : "-",

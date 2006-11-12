@@ -282,7 +282,7 @@ class DumPyKota(PyKotaTool) :
                     if header in ("filename", "title", "options", "billingcode") \
                               and (typval == "str") :
                         try :
-                            strvalue = unicode(strvalue, self.getCharset()).encode("UTF-8")
+                            strvalue = unicode(strvalue, self.charset).encode("UTF-8")
                         except UnicodeError :    
                             pass
                         strvalue = saxutils.escape(strvalue, { "'" : "&apos;", \

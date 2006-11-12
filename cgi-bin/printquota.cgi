@@ -36,15 +36,15 @@ from pykota.tool import PyKotaTool, PyKotaToolError
 from pykota.reporter import PyKotaReporterError, openReporter
 from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 
-header = """Content-type: text/html
+header = """Content-type: text/html;charset=%s
 
-<?xml version="1.0" encoding="%s"?>
 <html>
   <head>
     <title>%s</title>
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
+    <!-- %s %s -->
     <p>
       <form action="printquota.cgi" method="POST">
         <table>
@@ -96,7 +96,8 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Reports"), \
+        print header % (self.charset, _("PyKota Reports"), \
+                        self.language, self.charset, \
                         self.config.getLogoLink(), \
                         self.config.getLogoURL(), version.__version__, \
                         self.config.getLogoLink(), \
@@ -286,8 +287,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
-    os.environ["LC_ALL"] = getLanguagePreference()
-    admin = PyKotaReportGUI(lang=os.environ["LC_ALL"], charset=getCharsetPreference())
+    admin = PyKotaReportGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.guiAction()

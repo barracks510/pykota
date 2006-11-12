@@ -129,32 +129,23 @@ class Tool :
         self.privdropped = 0
         
         # locale stuff
-        self.defaultToCLocale = 0
         try :
-            locale.setlocale(locale.LC_ALL, lang)
+            locale.setlocale(locale.LC_ALL, (lang, charset))
         except (locale.Error, IOError) :
-            # locale.setlocale(locale.LC_ALL, "C")
-            self.defaultToCLocale = 1
+            locale.setlocale(locale.LC_ALL, None)
+        (self.language, self.charset) = locale.getlocale()
+        self.language = self.language or "C"
+        self.charset = self.charset or locale.getpreferredencoding()
+        
+        # translation stuff
         try :
-            gettext.install("pykota")
+            try :
+                trans = gettext.translation("pykota", languages=["%s.%s" % (self.language, self.charset)], codeset=self.charset)
+            except TypeError : # Python <2.4
+                trans = gettext.translation("pykota", languages=["%s.%s" % (self.language, self.charset)])
+            trans.install()
         except :
             gettext.NullTranslations().install()
-            
-        # Finds the correct charset
-        self.localecharset = sys.getfilesystemencoding()
-        if self.localecharset is None :
-            try :
-                try :
-                    self.localecharset = locale.getpreferredencoding()
-                except AttributeError :    
-                    try :
-                        self.localecharset = locale.getlocale()[1]
-                        self.localecharset = self.localecharset or locale.getdefaultlocale()[1]
-                    except ValueError :    
-                        pass        # Unknown locale, strange...
-            except locale.Error :            
-                pass
-        self.charset = charset or self.localecharset or "UTF-8"
     
         # pykota specific stuff
         self.documentation = doc
@@ -188,16 +179,15 @@ class Tool :
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
         
-        if self.defaultToCLocale :
-            self.printInfo("Incorrect locale settings. PyKota falls back to the default locale.", "warn")
         if environHome :
             self.printInfo("PYKOTA_HOME environment variable is set. Configuration files were searched in %s" % confdir, "info")
         else :
             if missingUser :     
                 self.printInfo("The 'pykota' system account is missing. Configuration files were searched in %s instead." % confdir, "warn")
         
-        self.logdebug("Charset detected from locale settings : %s" % self.localecharset)
+        self.logdebug("Language in use : %s" % self.language)
         self.logdebug("Charset in use : %s" % self.charset)
+        
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug("Command line arguments : %s" % arguments)
         
@@ -236,10 +226,6 @@ class Tool :
             else :    
                 self.logdebug(_("Regained priviledges. Now running as root."))
                 self.privdropped = 0
-        
-    def getCharset(self) :    
-        """Returns the charset in use."""
-        return self.charset
         
     def UTF8ToUserCharset(self, text) :
         """Converts from UTF-8 to user's charset."""

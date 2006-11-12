@@ -36,15 +36,15 @@ from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 from pkpgpdls import analyzer, pdlparser
     
 
-header = """Content-type: text/html
+header = """Content-type: text/html;charset=%s
 
-<?xml version="1.0" encoding="%s"?>
 <html>
   <head>
     <title>%s</title>
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
+    <!-- %s %s -->
     <p>
       <form action="pykotme.cgi" method="POST" enctype="multipart/form-data">
         <table>
@@ -96,7 +96,8 @@ class PyKotMeGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (self.getCharset(), _("PyKota Quotes"), \
+        print header % (self.charset, _("PyKota Quotes"), \
+                        self.language, self.charset, \
                         self.config.getLogoLink(), \
                         self.config.getLogoURL(), version.__version__, \
                         self.config.getLogoLink(), \
@@ -186,8 +187,7 @@ class PyKotMeGUI(PyKotaTool) :
                     self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
-    os.environ["LC_ALL"] = getLanguagePreference()
-    admin = PyKotMeGUI(lang=os.environ["LC_ALL"], charset=getCharsetPreference())
+    admin = PyKotMeGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.guiAction()
