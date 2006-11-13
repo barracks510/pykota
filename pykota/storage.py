@@ -483,7 +483,7 @@ class StorageJob(StorageObject) :
             
     def refund(self) :        
         """Refund a particular print job."""
-        if (not self.JobSize) or (self.JobAction in ("DENY", "REFUND")) :
+        if (not self.JobSize) or (self.JobAction in ("DENY", "CANCEL", "REFUND")) :
             return
         self.parent.beginTransaction()
         try :
