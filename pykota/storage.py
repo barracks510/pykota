@@ -22,6 +22,8 @@
 #
 #
 
+"""This module is the database abstraction layer for PyKota."""
+
 import os
 import imp
 from mx import DateTime
@@ -34,6 +36,7 @@ class PyKotaStorageError(Exception):
     def __repr__(self):
         return self.message
     __str__ = __repr__
+        
         
 class StorageObject :
     """Object present in the database."""
@@ -56,6 +59,7 @@ class StorageObject :
         if self.isDirty :
             getattr(self.parent, "save%s" % self.__class__.__name__[7:])(self)
             self.isDirty = False
+            
         
 class StorageUser(StorageObject) :        
     """User class."""
@@ -123,6 +127,11 @@ class StorageUser(StorageObject) :
         self.Exists = False
         self.isDirty = False            
         
+    def refund(self, amount) :
+        """Refunds a number of credits to an user."""
+        self.consumeAccountBalance(-amount)
+        
+        
 class StorageGroup(StorageObject) :        
     """User class."""
     def __init__(self, parent, name) :
@@ -160,6 +169,7 @@ class StorageGroup(StorageObject) :
                     self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
         self.Exists = False
         self.isDirty = False            
+        
         
 class StoragePrinter(StorageObject) :
     """Printer class."""
@@ -235,6 +245,7 @@ class StoragePrinter(StorageObject) :
                     self.parent.flushEntry("GROUPPQUOTAS", "%s@%s" % (v.Group.Name, v.Printer.Name))
         self.Exists = False
         self.isDirty = False            
+        
         
 class StorageUserPQuota(StorageObject) :
     """User Print Quota class."""
@@ -359,6 +370,13 @@ class StorageUserPQuota(StorageObject) :
         self.Exists = False
         self.isDirty = False
         
+    def refund(self, nbpages) :    
+        """Refunds a number of pages to an user on a particular printer."""
+        self.parent.increaseUserPQuotaPagesCounters(self, -nbpages)
+        self.PageCounter = int(self.PageCounter or 0) - nbpages
+        self.LifePageCounter = int(self.LifePageCounter or 0) - nbpages
+        
+        
 class StorageGroupPQuota(StorageObject) :
     """Group Print Quota class."""
     def __init__(self, parent, group, printer) :
@@ -427,6 +445,7 @@ class StorageGroupPQuota(StorageObject) :
         self.Exists = False
         self.isDirty = False
         
+        
 class StorageJob(StorageObject) :
     """Printer's Job class."""
     def __init__(self, parent) :
@@ -461,6 +480,30 @@ class StorageJob(StorageObject) :
             return self.Printer
         else :
             raise AttributeError, name
+            
+    def refund(self) :        
+        """Refund a particular print job."""
+        if (not self.JobSize) or (self.JobAction in ("DENY", "REFUND")) :
+            return
+        self.parent.beginTransaction()
+        try :
+            if self.JobBillingCode :
+                bcode = self.parent.getBillingCode(self.JobBillingCode)
+                bcode.refund(self.JobSize, self.JobPrice)
+                
+            if self.User.Exists :
+                self.User.refund(self.JobPrice)
+                if self.Printer.Exists :    
+                    upq = self.parent.getUserPQuota(self.User, self.Printer)    
+                    if upq.Exists :
+                        upq.refund(self.JobSize)
+            self.parent.refundJob(self.ident)
+        except :        
+            self.parent.rollbackTransaction()
+            raise
+        else :    
+            self.parent.commitTransaction()
+        
         
 class StorageLastJob(StorageJob) :
     """Printer's Last Job class."""
@@ -468,6 +511,7 @@ class StorageLastJob(StorageJob) :
         StorageJob.__init__(self, parent)
         self.PrinterName = printer.Name # not needed
         self.Printer = printer
+        
         
 class StorageBillingCode(StorageObject) :
     """Billing code class."""
@@ -493,9 +537,14 @@ class StorageBillingCode(StorageObject) :
     def consume(self, pages, price) :
         """Consumes some pages and credits for this billing code."""
         if pages :
-           self.parent.consumeBillingCode(self, pages, price)
-           self.PageCounter += pages
-           self.Balance -= price
+            self.parent.consumeBillingCode(self, pages, price)
+            self.PageCounter += pages
+            self.Balance -= price
+           
+    def refund(self, pages, price) :
+        """Refunds a particular billing code."""
+        self.consume(-pages, -price)
+        
         
 class BaseStorage :
     def __init__(self, pykotatool) :

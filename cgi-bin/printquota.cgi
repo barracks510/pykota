@@ -209,7 +209,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 else :    
                     billingcode = None
                 self.report = ["<h2>%s</h2>" % _("History")]    
-                history = self.storage.retrieveHistory(user, printer, hostname, billingcode, end=datelimit)
+                history = self.storage.retrieveHistory(user=user, printer=printer, hostname=hostname, billingcode=billingcode, end=datelimit)
                 if not history :
                     self.report.append("<h3>%s</h3>" % _("Empty"))
                 else :

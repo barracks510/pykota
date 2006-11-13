@@ -1302,7 +1302,7 @@ class Storage(BaseStorage) :
                      }  
             self.doModify(pgroup.ident, fields)         
             
-    def retrieveHistory(self, user=None, printer=None, hostname=None, billingcode=None, limit=100, start=None, end=None) :
+    def retrieveHistory(self, user=None, printer=None, hostname=None, billingcode=None, jobid=None, limit=100, start=None, end=None) :
         """Retrieves all print jobs for user on printer (or all) between start and end date, limited to first 100 results."""
         precond = "(objectClass=pykotaJob)"
         where = []
@@ -1314,6 +1314,8 @@ class Storage(BaseStorage) :
             where.append("(pykotaHostName=%s)" % hostname)
         if billingcode is not None :
             where.append("(pykotaBillingCode=%s)" % self.userCharsetToDatabase(billingcode))
+        if jobid is not None :
+            where.append("(pykotaJobId=%s)" % jobid) # TODO : jobid is text, so self.userCharsetToDatabase(jobid) but do all of them as well.
         if where :    
             where = "(&%s)" % "".join([precond] + where)
         else :    
@@ -1777,6 +1779,14 @@ class Storage(BaseStorage) :
                  }
         return self.doModify(bcode.ident, fields)         
 
+    def refundJob(self, jobident) :   
+        """Marks a job as refunded in the history."""
+        dn = "cn=%s,%s" % (ident, self.info["jobbase"])
+        fields = {
+                     "pykotaAction" : "REFUND",
+                 }    
+        self.doModify(dn, fields)         
+        
     def storageUserFromRecord(self, username, record) :
         """Returns a StorageUser instance from a database record."""
         user = StorageUser(self, username)

@@ -687,6 +687,10 @@ class SQLStorage :
         """Consumes from a billing code."""
         self.doModify("UPDATE billingcodes SET balance=balance + %s, pagecounter=pagecounter + %s WHERE id=%s" % (self.doQuote(balance), self.doQuote(pagecounter), self.doQuote(bcode.ident)))
        
+    def refundJob(self, jobident) :   
+        """Marks a job as refunded in the history."""
+        self.doModify("UPDATE jobhistory SET action='REFUND' WHERE id=%s;" % self.doQuote(jobident))
+        
     def decreaseUserAccountBalance(self, user, amount) :    
         """Decreases user's account balance from an amount."""
         self.doModify("UPDATE users SET balance=balance - %s WHERE id=%s" % (self.doQuote(amount), self.doQuote(user.ident)))
@@ -762,7 +766,7 @@ class SQLStorage :
         """Removes a printer from a printer group."""
         self.doModify("DELETE FROM printergroupsmembers WHERE groupid=%s AND printerid=%s" % (self.doQuote(pgroup.ident), self.doQuote(printer.ident)))
         
-    def retrieveHistory(self, user=None, printer=None, hostname=None, billingcode=None, limit=100, start=None, end=None) :
+    def retrieveHistory(self, user=None, printer=None, hostname=None, billingcode=None, jobid=None, limit=100, start=None, end=None) :
         """Retrieves all print jobs for user on printer (or all) between start and end date, limited to first 100 results."""
         query = "SELECT jobhistory.*,username,printername FROM jobhistory,users,printers WHERE users.id=userid AND printers.id=printerid"
         where = []
@@ -774,6 +778,8 @@ class SQLStorage :
             where.append("hostname=%s" % self.doQuote(hostname))
         if billingcode is not None :    
             where.append("billingcode=%s" % self.doQuote(self.userCharsetToDatabase(billingcode)))
+        if jobid is not None :    
+            where.append("jobid=%s" % self.doQuote(jobid)) # TODO : jobid is text, so self.userCharsetToDatabase(jobid) but do all of them as well.
         if start is not None :    
             where.append("jobdate>=%s" % self.doQuote(start))
         if end is not None :    
