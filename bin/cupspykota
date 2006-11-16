@@ -480,9 +480,11 @@ class CUPSBackend(PyKotaTool) :
         if self.InputFile is not None :
             self.regainPriv()
             infile = open(self.InputFile, "rb")
+            self.logdebug("Reading input datas from %s" % self.InputFile)
             mustclose = 1
         else :    
             infile = sys.stdin
+            self.logdebug("Reading input datas from stdin")
         CHUNK = 64*1024         # read 64 Kb at a time
         dummy = 0
         sizeread = 0
