@@ -127,9 +127,10 @@ class StorageUser(StorageObject) :
         self.Exists = False
         self.isDirty = False            
         
-    def refund(self, amount) :
+    def refund(self, amount, reason) :
         """Refunds a number of credits to an user."""
         self.consumeAccountBalance(-amount)
+        self.parent.writeNewPayment(self, -amount, reason)
         
         
 class StorageGroup(StorageObject) :        
@@ -481,7 +482,7 @@ class StorageJob(StorageObject) :
         else :
             raise AttributeError, name
             
-    def refund(self) :        
+    def refund(self, reason) :        
         """Refund a particular print job."""
         if (not self.JobSize) or (self.JobAction in ("DENY", "CANCEL", "REFUND")) :
             return
@@ -492,7 +493,7 @@ class StorageJob(StorageObject) :
                 bcode.refund(self.JobSize, self.JobPrice)
                 
             if self.User.Exists :
-                self.User.refund(self.JobPrice)
+                self.User.refund(self.JobPrice, reason)
                 if self.Printer.Exists :    
                     upq = self.parent.getUserPQuota(self.User, self.Printer)    
                     if upq.Exists :
