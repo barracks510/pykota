@@ -135,7 +135,10 @@ class Tool :
             locale.setlocale(locale.LC_ALL, None)
         (self.language, self.charset) = locale.getlocale()
         self.language = self.language or "C"
-        self.charset = self.charset or locale.getpreferredencoding()
+        try :
+            self.charset = self.charset or locale.getpreferredencoding()
+        except locale.Error :    
+            self.charset = sys.getfilesystemencoding()
         
         # translation stuff
         try :
