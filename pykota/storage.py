@@ -486,6 +486,18 @@ class StorageJob(StorageObject) :
         """Refund a particular print job."""
         if (not self.JobSize) or (self.JobAction in ("DENY", "CANCEL", "REFUND")) :
             return
+            
+        basereason = _("Refunded %i pages and %.3f credits by %s (%s) on %s") \
+                        % (self.JobSize,
+                           self.JobPrice,
+                           os.getlogin(),
+                           self.parent.tool.originalUserName,
+                           str(DateTime.now())[:19])
+        if reason :                                               
+            reason = "%s : %s" % (basereason, reason)
+        else :    
+            reason = basereason
+        self.parent.tool.logdebug("Refunding job %s..." % self.ident)    
         self.parent.beginTransaction()
         try :
             if self.JobBillingCode :
@@ -501,9 +513,11 @@ class StorageJob(StorageObject) :
             self.parent.refundJob(self.ident)
         except :        
             self.parent.rollbackTransaction()
+            self.parent.tool.logdebug("Error while refunding job %s." % self.ident)
             raise
         else :    
             self.parent.commitTransaction()
+            self.parent.tool.logdebug("Job %s refunded." % self.ident)
         
         
 class StorageLastJob(StorageJob) :
