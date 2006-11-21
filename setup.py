@@ -127,7 +127,7 @@ setup(name = "pykota", version = __version__,
       url = "http://www.pykota.com",
       packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
       scripts = [ "bin/pknotify", "bin/pkusers", "bin/pkinvoice", "bin/pksetup", \
-                  "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", \
+                  "bin/pkrefund", "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", \
                   "bin/pkbanner", "bin/autopykota", "bin/dumpykota", \
                   "bin/pykosd", "bin/edpykota", "bin/repykota", \
                   "bin/warnpykota", "bin/pykotme", "bin/pkprinters" ],

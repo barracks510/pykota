@@ -2,7 +2,7 @@ include README FAQ COPYING LICENSE TODO NEWS CREDITS SECURITY MANIFEST.in
 include clean.sh checkdeps.py bin/pkturnkey bin/pkmail bin/pkbanner
 include bin/autopykota bin/dumpykota bin/cupspykota bin/edpykota bin/warnpykota
 include bin/repykota bin/pykotme bin/pykosd bin/pkprinters bin/pkbcodes bin/pkinvoice
-include bin/pknotify bin/pkusers bin/pksetup
+include bin/pknotify bin/pkusers bin/pksetup bin/pkrefund
 include bin/waitprinter.sh bin/papwaitprinter.sh bin/mailandpopup.sh bin/README
 recursive-include po README *.sh *.po *.mo *.pot
 recursive-include man README *.sh *.1
