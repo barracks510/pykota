@@ -309,9 +309,9 @@ if __name__ == "__main__" :
                      "logo" : "/usr/share/pykota/logos/pykota.jpeg",
                      "number" : "1",
                    }
-        short_options = "vho:r:u:V:p:l:n:s:e:"
+        short_options = "vho:u:V:p:l:n:s:e:"
         long_options = ["help", "version", "start=", "end=", \
-                        "reference=", "unit=", "output=", \
+                        "unit=", "output=", \
                         "pagesize=", "logo=", "vat=", "number="]
         
         # Initializes the command line tool
