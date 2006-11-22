@@ -93,7 +93,7 @@ options :
   user1 through userN can use wildcards if needed. If no user argument is
   used, a wildcard of '*' is assumed, meaning include all users.
   
-  Dates formating with --start and --end :
+  Dates formatting with --start and --end :
   
     YYYY : year boundaries
     YYYYMM : month boundaries
