@@ -138,6 +138,7 @@ class PkRefund(PyKotaTool) :
                                             start=start,
                                             end=end,
                                             limit=0)
+        peruser = {}                                    
         nbjobs = 0                                    
         nbpages = 0                                            
         nbcredits = 0.0
@@ -147,13 +148,17 @@ class PkRefund(PyKotaTool) :
                 if options["force"] :
                     nbpages += job.JobSize
                     nbcredits += job.JobPrice
+                    counters = peruser.setdefault(job.UserName, { "nbjobs" : 0, "nbpages" : 0, "nbcredits" : 0.0 })
+                    counters["nbpages"] += job.JobSize
+                    counters["nbcredits"] += job.JobPrice
                     job.refund(reason)
+                    counters["nbjobs"] += 1
                     nbjobs += 1
                 else :    
                     print _("Date : %s") % str(job.JobDate)[:19]
                     print _("JobId : %s") % job.JobId
-                    print _("Username : %s") % job.User.Name
-                    print _("Printername : %s") % job.Printer.Name
+                    print _("Username : %s") % job.UserName
+                    print _("Printername : %s") % job.PrinterName
                     print _("Billing code : %s") % job.JobBillingCode
                     print _("Pages : %i") % job.JobSize
                     print _("Credits : %.3f") % job.JobPrice
@@ -164,14 +169,17 @@ class PkRefund(PyKotaTool) :
                         if answer == _("Y") :
                             nbpages += job.JobSize
                             nbcredits += job.JobPrice
+                            counters = peruser.setdefault(job.UserName, { "nbjobs" : 0, "nbpages" : 0, "nbcredits" : 0.0 })
+                            counters["nbpages"] += job.JobSize
+                            counters["nbcredits"] += job.JobPrice
                             job.refund(reason)
+                            counters["nbjobs"] += 1
                             nbjobs += 1
                             break    
                         elif answer == _("N") :    
                             break
                     print        
         print _("Refunded %i jobs, %i pages and %.3f credits") % (nbjobs, nbpages, nbcredits)                                 
-                    
             
 if __name__ == "__main__" : 
     retcode = 0
