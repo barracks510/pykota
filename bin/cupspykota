@@ -287,11 +287,14 @@ class CUPSBackend(PyKotaTool) :
             else :    
                 raise PyKotaToolError, "Invalid DEVICE_URI : %s\n" % device_uri
         else :        
-            while destination.startswith("/") :
-                destination = destination[1:]
-            checkauth = destination.split("@", 1)    
-            if len(checkauth) == 2 :
-                destination = checkauth[1]
+            if backend == "hp" :
+                printerhostname = destination.split("=")[1] # hp:/net/HP_LaserJet_8000_Series?ip=192.168.100.100
+            else :    
+                while destination.startswith("/") :
+                    destination = destination[1:]
+                checkauth = destination.split("@", 1)    
+                if len(checkauth) == 2 :
+                    destination = checkauth[1]
             printerhostname = destination.split("/")[0].split(":")[0]
             
         self.PrinterHostName = printerhostname    
