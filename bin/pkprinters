@@ -53,7 +53,9 @@ options :
   -d | --delete        Deletes printers from the quota storage.
   
   -D | --description d Adds a textual description to printers.
-                       
+
+  -C | --cups          Also modifies the DeviceURI in CUPS' printers.conf
+
   -c | --charge p[,j]  Sets the price per page and per job to charge.
                        Job price is optional.
                        If both are to be set, separate them with a comma.
@@ -170,6 +172,8 @@ class PKPrinters(PyKotaTool) :
         if (not self.config.isAdmin) and (not options["list"]) :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
+        docups = options["cups"]
+        
         if not options["list"] :    
             percent = Percent(self)
             
@@ -201,18 +205,19 @@ class PKPrinters(PyKotaTool) :
         elif options["delete"] :    
             percent.display("\n%s..." % _("Deletion"))
             self.storage.deleteManyPrinters(printers)
-            percent.display("\n%s...\n" % _("Rerouting printers to CUPS"))
-            for printer in printers :
-                uri = self.getPrinterDeviceURI(printer.Name)
-                if self.isPrinterCaptured(deviceuri=uri) :
-                     newuri = uri.replace("cupspykota:", "")
-                     if newuri.startswith("//") :
-                         newuri = newuri[2:]
-                     self.regainPriv() # to avoid having to enter password.
-                     os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
-                     self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
-                     self.dropPriv()    
-                percent.oneMore()
+            if docups :
+                percent.display("\n%s...\n" % _("Rerouting printers to CUPS"))
+                for printer in printers :
+                    uri = self.getPrinterDeviceURI(printer.Name)
+                    if self.isPrinterCaptured(deviceuri=uri) :
+                         newuri = uri.replace("cupspykota:", "")
+                         if newuri.startswith("//") :
+                             newuri = newuri[2:]
+                         self.regainPriv() # to avoid having to enter password.
+                         os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
+                         self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
+                         self.dropPriv()    
+                    percent.oneMore()
             percent.display("\n")
         else :
             if options["groups"] :        
@@ -267,13 +272,14 @@ class PKPrinters(PyKotaTool) :
                                            nopassthrough, maxjobsize)
                             oldprinter = self.storage.addPrinter(printer)               
                             
-                            uri = self.getPrinterDeviceURI(printer.Name)
-                            if not self.isPrinterCaptured(deviceuri=uri) :
-                                 newuri = "cupspykota://%s" % uri
-                                 self.regainPriv() # to avoid having to enter password.
-                                 os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
-                                 self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
-                                 self.dropPriv()
+                            if docups :
+                                 uri = self.getPrinterDeviceURI(printer.Name)
+                                 if not self.isPrinterCaptured(deviceuri=uri) :
+                                      newuri = "cupspykota://%s" % uri
+                                      self.regainPriv() # to avoid having to enter password.
+                                      os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
+                                      self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
+                                      self.dropPriv()
                                      
                             if oldprinter is not None :
                                 if skipexisting :
@@ -314,8 +320,8 @@ class PKPrinters(PyKotaTool) :
 if __name__ == "__main__" : 
     retcode = 0
     try :
-        short_options = "hvac:D:dg:lrsnpm:"
-        long_options = ["help", "version", "add", "charge=", "description=", \
+        short_options = "hvaCc:D:dg:lrsnpm:"
+        long_options = ["help", "version", "add", "cups", "charge=", "description=", \
                         "delete", "groups=", "list", "remove", \
                         "skipexisting", "passthrough", "nopassthrough", \
                         "maxjobsize="]
@@ -331,6 +337,7 @@ if __name__ == "__main__" :
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
         options["add"] = options["a"] or options["add"]
+        options["cups"] = options["C"] or options["cups"]
         options["charge"] = options["c"] or options["charge"]
         options["description"] = options["D"] or options["description"]
         options["delete"] = options["d"] or options["delete"] 

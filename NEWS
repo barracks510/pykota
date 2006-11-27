@@ -21,6 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha17 (2006-11-27) :
+    
+        - pkprinters now only modifies CUPS' printers.conf when the
+          -C | --cups command line switch is used.
+          
+    - 1.25alpha16 (2006-11-12) :
+      
+        - Several fixes to CGI scripts wrt i18n.
+        
+        - Introduced the pkrefund command line tool to refund jobs.
+        
+        - Several i18n fixes.
+        
+        - Several minor fixes to documentation and translations.
+        
     - 1.25alpha15 (2006-11-06) :   
     
         - pkprinters --add and --delete now automatically reroutes CUPS
