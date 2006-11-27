@@ -848,14 +848,14 @@ msgid "Impossible to connect to SMTP server : %s"
 msgstr "Não foi possível conectar-se ao servidor SMTP %s"
 
 msgid "Print Quota"
-msgstr "Quota de impreção"
+msgstr "Quota de impressão"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "Imposivel enviar email para  %s, erro %s : %s"
+msgstr "Impossível enviar email para  %s, erro %s : %s"
 
 msgid "Job contains no data. Printing is denied."
-msgstr "Tarefa não contém nenhum dado. Impressão negada"
+msgstr "Tarefa não contém nenhum dado. Impressão negada."
 
 msgid "Error in external policy script. Printing is denied."
 msgstr ""
