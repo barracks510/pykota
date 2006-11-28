@@ -39,8 +39,6 @@ TODO, in no particular order :
           as well as in the payments history (as a safety check
           in case an user complains).
           
-        - Add a pkrefund command line tool & optional CGI script.
-        
         - PJL for non-networked backends (see ML's history)
         
         - Add the listing of the member printers in pkprinters if the printer
