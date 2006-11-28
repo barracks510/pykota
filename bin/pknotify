@@ -26,6 +26,7 @@
 
 import sys
 import socket
+import errno
 import signal
 import xmlrpclib
 
@@ -78,6 +79,13 @@ options :
                              The default value of N is 1, meaning the job
                              is denied after the first unsuccessful try.
                              
+  -N | --noremote action     If it's impossible to connect to the remote
+                             PyKotIcon machine, do this action instead.
+                             Allowed actions are 'CONTINUE' and 'CANCEL', 
+                             which will respectively allow the processing
+                             of the print job to continue, or the job to
+                             be cancelled. The default value is CANCEL.
+                             
   -n | --notify              Tells pknotify to send an informational message
                              to the end user.
                              
@@ -120,9 +128,12 @@ options :
                     
 examples :                    
 
-  pknotify -d client:7654 --confirm "This job costs :\n10 credits !"
+  pknotify -d client:7654 --noremote CONTINUE --confirm "This job costs 10 credits"
   
-  Would display the cost of a print job and asks for confirmation.
+  Would display the cost of the print job and asks for confirmation.
+  If the end user doesn't have PyKotIcon running and accepting connections
+  from the print server, PyKota will consider that the end user accepted
+  to print this job.
   
   pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 \\
            --checkauth --ask "Your name:username:" "Your password:password:"
@@ -278,6 +289,14 @@ class PyKotaNotify(Tool) :
             if options["quit"] :    
                 server.quitApplication()
         except (socket.error, socket.gaierror), msg :
+            print options["noremote"]
+            try :
+                errnum = msg.args[0]
+            except (AttributeError, IndexError) :
+                pass
+            else :    
+                if errnum == errno.ECONNREFUSED :
+                    self.printInfo(_("Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?") % (self.destination, self.port), "error")
             raise PyKotaCommandLineError, "%s : %s" % (_("Connection error"), str(msg))
         except TimeoutError, msg :    
             self.printInfo(msg, "warn")
@@ -291,11 +310,12 @@ if __name__ == "__main__" :
     try :
         defaults = { \
                      "timeout" : 0,
+                     "noremote" : "CANCEL",
                    }
-        short_options = "vhd:acnqCD:t:"
+        short_options = "vhd:acnqCD:t:N:"
         long_options = ["help", "version", "destination=", "denyafter=", \
                         "timeout=", "ask", "checkauth", "confirm", "notify", \
-                        "quit" ]
+                        "quit", "noremote=" ]
         
         # Initializes the command line tool
         notifier = PyKotaNotify(doc=__doc__)
@@ -315,6 +335,7 @@ if __name__ == "__main__" :
         options["checkauth"] = options["C"] or options["checkauth"]
         options["denyafter"] = options["D"] or options["denyafter"]
         options["timeout"] = options["t"] or options["timeout"] or defaults["timeout"]
+        options["noremote"] = (options["N"] or options["noremote"] or defaults["noremote"]).upper()
         
         if options["help"] :
             notifier.display_usage_and_quit()
@@ -328,6 +349,8 @@ if __name__ == "__main__" :
         elif (not options["destination"]) \
              or not (options["quit"] or options["ask"] or options["confirm"] or options["notify"]) :
             raise PyKotaCommandLineError, _("some options are mandatory, see help.")
+        elif options["noremote"] not in ("CANCEL", "CONTINUE") :
+            raise PyKotaCommandLineError, _("incorrect value for the --noremote command line switch, see help.")
         elif (not args) and (not options["quit"]) :
             raise PyKotaCommandLineError, _("some options require arguments, see help.")
         else :
