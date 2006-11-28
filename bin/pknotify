@@ -37,7 +37,7 @@ except ImportError :
 else :    
     hasPAM = 1
 
-from pykota.tool import Tool, PyKotaCommandLineError, crashed, N_
+from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pknotify v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -178,7 +178,7 @@ class PyKotaNotify(Tool) :
     def checkAuth(self, username, password) :    
         """Checks if we could authenticate an username with a password."""
         if not hasPAM :    
-            raise PyKotaCommandLineError, _("You MUST install PyPAM for this functionnality to work !")
+            raise PyKotaToolError, _("You MUST install PyPAM for this functionnality to work !")
         else :    
             retcode = False
             self.password = password
@@ -297,7 +297,7 @@ class PyKotaNotify(Tool) :
             else :    
                 if errnum == errno.ECONNREFUSED :
                     self.printInfo(_("Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?") % (self.destination, self.port), "error")
-            raise PyKotaCommandLineError, "%s : %s" % (_("Connection error"), str(msg))
+            raise PyKotaToolError, "%s : %s" % (_("Connection error"), str(msg))
         except TimeoutError, msg :    
             self.printInfo(msg, "warn")
             print "CANCEL"      # Timeout occured : job is cancelled.
@@ -360,6 +360,7 @@ if __name__ == "__main__" :
         retcode = -3
     except PyKotaCommandLineError, msg :    
         sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        print "CANCEL"  # Forces the cancellation of the print job if a command line switch is incorrect
         retcode = -2
     except SystemExit :        
         pass
