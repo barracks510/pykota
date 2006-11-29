@@ -239,10 +239,9 @@ Hint :
 ------
 
   - The Debian GNU/Linux distribution is to our knowledge the 
-    easiest distribution to install PyKota on, because all
+    easiest distribution to install PyKota on, because almost all
     of PyKota dependencies are already included, excepted
-    for the PySNMP (http://pysnmp.sourceforge.net) module
-    and the pkpgcounter utility which for now have to be downloaded
+    the pkpgcounter utility which for now have to be downloaded
     and installed separately.
 
 Then :   
@@ -265,6 +264,16 @@ To install the software, just type :
     $ python setup.py install
 
 You may need to be logged in with sufficient privileges (e.g. root)
+
+If you use Debian or Ubuntu, and want to use PostgreSQL as the
+database backend, just type :
+
+    $ pksetup
+    
+and follow the instructions to install PyKota in interactive mode, then
+skip the remaining of the section below.
+
+Otherwise, you have to setup manually :
 
 Create a system user for PyKota :
 
