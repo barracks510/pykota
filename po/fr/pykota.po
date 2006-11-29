@@ -2818,7 +2818,7 @@ msgid "Incorrect value '%s' for the --number command line option"
 msgstr "Valeur '%s' incorrecte pour l'option de ligne de commande --number"
 
 msgid "Generating invoices"
-msgstr "Generation des factures"
+msgstr "Génération des factures"
 
 msgid "Credits"
 msgstr "Crédits"
