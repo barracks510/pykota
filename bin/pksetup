@@ -440,7 +440,7 @@ class Ubuntu(Debian) :
     
 if __name__ == "__main__" :        
     retcode = 0
-    if len(sys.argv) != 2 :
+    if (len(sys.argv) != 2) or (sys.argv[1] == "-h") or (sys.argv[1] == "--help") :
         sys.stderr.write("usage : pksetup distribution\ne.g. : pksetup debian\n")
     else :    
         classname = sys.argv[1].strip().title()
