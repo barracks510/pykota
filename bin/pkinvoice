@@ -186,10 +186,10 @@ class PKInvoice(DumPyKota) :
                 # self.printVar(_("Number of bytes"), str(numberofbytes), 14)
                 self.printVar(_("Number of pages printed"), str(numberofpages), 14)
                 self.ypos -= 20
-                self.printVar(_("Amount due"), "%.2f %s" % (amount, unitname), 22)
+                self.printVar(_("Amount due"), "%.3f %s" % (amount, unitname), 22)
                 if vat :
                     self.ypos += 8
-                    self.printVar("%s (%.2f%%)" % (_("Included VAT"), vat), "%.2f %s" % (vatamount, unitname), 14)
+                    self.printVar("%s (%.2f%%)" % (_("Included VAT"), vat), "%.3f %s" % (vatamount, unitname), 14)
                 self.canvas.showPage()
                 return 1
         return 0    
