@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.25alpha17 (2006-11-27) :
     
+        - pkrefund can now create receipts in the PDF format.
+        
         - The code was changed to accomodate ReportLab 2.x in pkbanner
           and pkinvoice. ReportLab v1.x is now only supported with 
           an english or C locale.
