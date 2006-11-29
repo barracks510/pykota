@@ -120,11 +120,11 @@ class PyKotaBanner(Tool) :
         (r, g, b) =  [ color + (savetoner * (1.0 - color)) for color in (0, 0, 0) ] # Black * savetoner
         canvas.setFillColorRGB(r, g, b)
         message = "%s :" % _(label)
-        canvas.drawRightString(x, y, message)
+        canvas.drawRightString(x, y, self.userCharsetToUTF8(message))
         canvas.setFont("Courier-Bold", size)
         (r, g, b) =  [ color + (savetoner * (1.0 - color)) for color in (1, 0, 0) ] # Red * savetoner
         canvas.setFillColorRGB(r, g, b)
-        canvas.drawString(x + 0.5*cm, y, value)
+        canvas.drawString(x + 0.5*cm, y, self.userCharsetToUTF8(value))
         canvas.restoreState()
         return (size + 4)
     

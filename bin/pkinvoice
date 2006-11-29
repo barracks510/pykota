@@ -141,10 +141,10 @@ class PKInvoice(DumPyKota) :
         self.canvas.saveState()
         self.canvas.setFont("Helvetica-Bold", size)
         self.canvas.setFillColorRGB(0, 0, 0)
-        self.canvas.drawRightString(xcenter, self.ypos, "%s :" % label)
+        self.canvas.drawRightString(xcenter, self.ypos, "%s :" % self.userCharsetToUTF8(label))
         self.canvas.setFont("Courier-Bold", size)
         self.canvas.setFillColorRGB(0, 0, 1)
-        self.canvas.drawString(xcenter + 0.5*cm, self.ypos, value)
+        self.canvas.drawString(xcenter + 0.5*cm, self.ypos, self.userCharsetToUTF8(value))
         self.canvas.restoreState()
         self.ypos -= (size + 4)
         
@@ -230,7 +230,8 @@ class PKInvoice(DumPyKota) :
         self.ypos -= (cm + 20)
         self.canvas.setFont("Helvetica-Bold", 14)
         self.canvas.setFillColorRGB(0, 0, 0)
-        self.canvas.drawCentredString(xcenter, self.ypos, "%s :" % _("Here's the invoice for your printouts"))
+        msg = _("Here's the invoice for your printouts")
+        self.canvas.drawCentredString(xcenter, self.ypos, "%s :" % self.userCharsetToUTF8(msg))
         
         self.yorigine = self.ypos
         self.canvas.restoreState()

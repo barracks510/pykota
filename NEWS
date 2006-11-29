@@ -23,6 +23,10 @@ PyKota NEWS :
        
     - 1.25alpha17 (2006-11-27) :
     
+        - The code was changed to accomodate ReportLab 2.x in pkbanner
+          and pkinvoice. ReportLab v1.x is now only supported with 
+          an english or C locale.
+          
         - pknotify now accepts the --noremote command line option to
           decide what has to be done when there's no PyKotIcon running
           or accepting connections from the print server on the client host.
