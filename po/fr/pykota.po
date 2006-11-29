@@ -2795,7 +2795,7 @@ msgid "Until"
 msgstr "Jusqu'au"
 
 msgid "Edited on"
-msgstr "Editée le"
+msgstr "Date d'édition"
 
 msgid "Number of pages printed"
 msgstr "Nombre de pages imprimées"
