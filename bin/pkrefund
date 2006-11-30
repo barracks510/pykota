@@ -186,7 +186,7 @@ class PkRefund(PyKotaTool) :
         self.canvas.restoreState()
         self.ypos -= (size + 4)
         
-    def pagePDF(self, receiptnumber, name, values, unitname, reason) :
+    def pagePDF(self, receiptnumber, name, values, unit, reason) :
         """Generates a new page in the PDF document."""
         if values["nbpages"] :
             self.canvas.doForm("background")
@@ -199,7 +199,7 @@ class PkRefund(PyKotaTool) :
             self.ypos -= 20
             self.printVar(_("Jobs refunded"), str(values["nbjobs"]), 22)
             self.printVar(_("Pages refunded"), str(values["nbpages"]), 22)
-            self.printVar(_("Amount refunded"), "%.3f %s" % (values["nbcredits"], unitname), 22)
+            self.printVar(_("Amount refunded"), "%.3f %s" % (values["nbcredits"], unit), 22)
             self.ypos -= 20
             self.printVar(_("Reason"), reason, 14)
             self.canvas.showPage()
@@ -216,7 +216,6 @@ class PkRefund(PyKotaTool) :
         c.setAuthor(self.originalUserName)
         c.setTitle("PyKota print job refunding receipts")
         c.setSubject("Print job refunding receipts generated with PyKota")
-        
         
         self.canvas.beginForm("background")
         self.canvas.saveState()
@@ -260,18 +259,17 @@ class PkRefund(PyKotaTool) :
             sys.stdout.write(self.pdfDocument.getvalue())
             sys.stdout.flush()
         
-    def genReceipts(self, peruser, logo, outfname, firstnumber, reason) :
+    def genReceipts(self, peruser, logo, outfname, firstnumber, reason, unit) :
         """Generates the receipts file."""
         if outfname and len(peruser) :
-            percent = Percent(self)
-            percent.setSize(len(peruser))
+            percent = Percent(self, size=len(peruser))
             if outfname != "-" :
                 percent.display("%s...\n" % _("Generating receipts"))
                 
             self.initPDF(logo)
             number = firstnumber
             for (name, values) in peruser.items() :
-                number += self.pagePDF(number, name, values, options["unit"], reason)
+                number += self.pagePDF(number, name, values, unit, reason)
                 if outfname != "-" :
                     percent.oneMore()
                     
@@ -390,7 +388,7 @@ class PkRefund(PyKotaTool) :
                         elif answer == _("N") :    
                             break
                     print        
-        self.genReceipts(peruser, options["logo"].strip(), options["output"], firstnumber, reason)
+        self.genReceipts(peruser, options["logo"].strip(), options["output"], firstnumber, reason, options["unit"])
         if options["output"] != "-" :    
             print _("Refunded %i users for %i jobs, %i pages and %.3f credits") % (len(peruser), nbjobs, nbpages, nbcredits)
             
