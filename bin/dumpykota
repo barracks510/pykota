@@ -97,6 +97,24 @@ options :
          start          Job's date of printing
          end            Job's date of printing
          
+  Dates formatting with 'start' and 'end' filter keys :
+  
+    YYYY : year boundaries
+    YYYYMM : month boundaries
+    YYYYMMDD : day boundaries
+    YYYYMMDDhh : hour boundaries
+    YYYYMMDDhhmm : minute boundaries
+    YYYYMMDDhhmmss : second boundaries
+    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)
+    today[+-NbDays] : today more or less N days (e.g. : today-15)
+    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)
+    now[+-NbDays] : now more or less N days (e.g. now-15)
+
+  'now' and 'today' are not exactly the same since today represents the first
+  or last second of the day depending on if it's used in a start= or end=
+  date expression. The utility to be able to specify dates in the future is
+  a question which remains to be answered :-)
+  
   Contrary to other PyKota management tools, wildcard characters are not 
   expanded, so you can't use them.
   
