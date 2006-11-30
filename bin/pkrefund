@@ -392,7 +392,7 @@ class PkRefund(PyKotaTool) :
                     print        
         self.genReceipts(peruser, options["logo"].strip(), options["output"], firstnumber, reason)
         if options["output"] != "-" :    
-            print _("Refunded %i jobs, %i pages and %.3f credits") % (nbjobs, nbpages, nbcredits)
+            print _("Refunded %i users for %i jobs, %i pages and %.3f credits") % (len(peruser), nbjobs, nbpages, nbcredits)
             
 if __name__ == "__main__" : 
     retcode = 0
