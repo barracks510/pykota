@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.25alpha18 (2006-11-30) :
     
+        - Make the data dumper accept jobid= as an additional filter, just
+          like pkrefund and pkinvoice.
+        
         - Make pkinvoice internally work like pkrefund.
         
         - Fixed a severe bug in the LDAP backend wrt the overcharging factor.
