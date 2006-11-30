@@ -292,9 +292,10 @@ class PkRefund(PyKotaTool) :
         if (not options["reason"]) or not options["reason"].strip() :
             raise PyKotaCommandLineError, _("Refunding for no reason is forbidden. Please use the --reason command line option.")
             
-        if options["output"] :
-            options["output"] = options["output"].strip()
-            if options["output"] == "-" :
+        outfname = options["output"]
+        if outfname :
+            outfname = outfname.strip()
+            if outfname == "-" :
                 options["force"] = True
                 self.printInfo(_("The PDF file containing the receipts will be sent to stdout. --force is assumed."), "warn")
             
@@ -322,6 +323,10 @@ class PkRefund(PyKotaTool) :
                     raise PyKotaCommandLineError, _("Invalid filter value [%s], see help.") % filterexp
                 else :    
                     extractonly.update({ filterkey : filtervalue })
+            
+        percent = Percent(self)
+        if outfname != "-" :
+            percent.display("%s..." % _("Extracting datas"))
             
         username = extractonly.get("username")    
         if username :
@@ -352,6 +357,9 @@ class PkRefund(PyKotaTool) :
         nbpages = 0                                            
         nbcredits = 0.0
         reason = (options.get("reason") or "").strip()
+        percent.setSize(len(jobs))
+        if outfname != "-" :
+            percent.display("\n")
         for job in jobs :                                    
             if job.JobSize and (job.JobAction not in ("DENY", "CANCEL", "REFUND")) :
                 if options["force"] :
@@ -363,6 +371,8 @@ class PkRefund(PyKotaTool) :
                     job.refund(reason)
                     counters["nbjobs"] += 1
                     nbjobs += 1
+                    if outfname != "-" :
+                        percent.oneMore()
                 else :    
                     print _("Date : %s") % str(job.JobDate)[:19]
                     print _("JobId : %s") % job.JobId
@@ -388,8 +398,10 @@ class PkRefund(PyKotaTool) :
                         elif answer == _("N") :    
                             break
                     print        
-        self.genReceipts(peruser, options["logo"].strip(), options["output"], firstnumber, reason, options["unit"])
-        if options["output"] != "-" :    
+        if outfname != "-" :
+            percent.done()
+        self.genReceipts(peruser, options["logo"].strip(), outfname, firstnumber, reason, options["unit"])
+        if outfname != "-" :    
             print _("Refunded %i users for %i jobs, %i pages and %.3f credits") % (len(peruser), nbjobs, nbpages, nbcredits)
             
 if __name__ == "__main__" : 
