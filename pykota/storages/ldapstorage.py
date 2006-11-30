@@ -1693,7 +1693,7 @@ class Storage(BaseStorage) :
         startdate = extractonly.get("start")
         enddate = extractonly.get("end")
         (startdate, enddate) = self.cleanDates(startdate, enddate)
-        entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), limit=None, start=startdate, end=enddate)
+        entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), jobid=extractonly.get("jobid"), limit=None, start=startdate, end=enddate)
         if entries :
             result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode", "precomputedjobsize", "precomputedjobprice") ] 
             for entry in entries :
