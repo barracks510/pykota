@@ -197,9 +197,9 @@ class PkRefund(PyKotaTool) :
             self.printVar(_("Edited on"), time.strftime("%c", time.localtime()), 14)
                 
             self.ypos -= 20
-            self.printVar(_("Jobs refunded"), str(values["nbjobs"]), 22)
-            self.printVar(_("Pages refunded"), str(values["nbpages"]), 22)
-            self.printVar(_("Amount refunded"), "%.3f %s" % (values["nbcredits"], unit), 22)
+            self.printVar(_("Jobs refunded"), str(values["nbjobs"]), 18)
+            self.printVar(_("Pages refunded"), str(values["nbpages"]), 18)
+            self.printVar(_("Amount refunded"), "%.3f %s" % (values["nbcredits"], unit), 18)
             self.ypos -= 20
             self.printVar(_("Reason"), reason, 14)
             self.canvas.showPage()
