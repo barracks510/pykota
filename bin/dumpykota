@@ -92,6 +92,7 @@ options :
          printername    Printer's name
          pgroupname     Printers group's name
          hostname       Client's hostname
+         jobid          Job's Id
          billingcode    Job's billing code
          start          Job's date of printing
          end            Job's date of printing

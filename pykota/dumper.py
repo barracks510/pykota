@@ -66,6 +66,7 @@ class DumPyKota(PyKotaTool) :
                         "pgroupname",
                         "hostname",
                         "billingcode",
+                        "jobid", 
                         "start",
                         "end",
                       ]
