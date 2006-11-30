@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25alpha18 (2006-11-30) :
+    
+        - Fixed a severe bug in the LDAP backend wrt the overcharging factor.
+        
     - 1.25alpha17 (2006-11-27) :
     
         - pkrefund can now create receipts in the PDF format.

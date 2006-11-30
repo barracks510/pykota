@@ -357,15 +357,14 @@ class Storage(BaseStorage) :
         """Extracts user information given its name."""
         user = StorageUser(self, username)
         username = self.userCharsetToDatabase(username)
-        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge", "description"], base=self.info["userbase"])
+        result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "description"], base=self.info["userbase"])
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
             user.Description = self.databaseToUserCharset(fields.get("description", [None])[0])
             user.Email = fields.get(self.info["usermail"], [None])[0]
             user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
-            user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
-            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], base=self.info["balancebase"])
+            result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments", "pykotaOverCharge"], base=self.info["balancebase"])
             if not result :
                 raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
             else :
@@ -379,6 +378,7 @@ class Storage(BaseStorage) :
                         user.AccountBalance = float(user.AccountBalance[0])
                 user.AccountBalance = user.AccountBalance or 0.0        
                 user.LifeTimePaid = fields.get("pykotaLifeTimePaid")
+                user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
                 if user.LifeTimePaid is not None :
                     if user.LifeTimePaid[0].upper() == "NONE" :
                         user.LifeTimePaid = None
@@ -724,7 +724,7 @@ class Storage(BaseStorage) :
         users = []
         # see comment at the same place in pgstorage.py
         result = self.doSearch("objectClass=pykotaAccount", \
-                                  ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "pykotaOverCharge", "description"], \
+                                  ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "description"], \
                                   base=self.info["userbase"])
         if result :
             patterns = userpattern.split(",")
@@ -742,18 +742,18 @@ class Storage(BaseStorage) :
                     user.ident = userid
                     user.Email = fields.get(self.info["usermail"], [None])[0]
                     user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
-                    user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
                     user.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                     uname = self.userCharsetToDatabase(username)
                     result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % \
                                               (uname, self.info["balancerdn"], uname), \
-                                              ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments"], \
+                                              ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments", "pykotaOverCharge"], \
                                               base=self.info["balancebase"])
                     if not result :
                         raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
                     else :
                         fields = result[0][1]
                         user.idbalance = result[0][0]
+                        user.OverCharge = float(fields.get("pykotaOverCharge", [1.0])[0])
                         user.AccountBalance = fields.get("pykotaBalance")
                         if user.AccountBalance is not None :
                             if user.AccountBalance[0].upper() == "NONE" :
@@ -915,7 +915,6 @@ class Storage(BaseStorage) :
         newfields = {
                        "pykotaUserName" : uname,
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
-                       "pykotaOverCharge" : str(user.OverCharge),
                        "description" : self.userCharsetToDatabase(user.Description or ""),
                        self.info["usermail"] : user.Email or "",
                     }   
@@ -936,6 +935,7 @@ class Storage(BaseStorage) :
                 oc.extend(["pykotaAccount", "pykotaAccountBalance"])
                 fields.update(newfields)
                 fields.update({ "pykotaBalance" : str(user.AccountBalance or 0.0),
+                                "pykotaOverCharge" : str(user.OverCharge),
                                 "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), })   
                 self.doModify(dn, fields)
                 mustadd = 0
@@ -952,6 +952,7 @@ class Storage(BaseStorage) :
                            "objectClass" : ["pykotaObject", "pykotaAccount", "pykotaAccountBalance"],
                            "cn" : uname,
                            "pykotaBalance" : str(user.AccountBalance or 0.0),
+                           "pykotaOverCharge" : str(user.OverCharge),
                            "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), 
                          } 
             else :             
@@ -967,6 +968,7 @@ class Storage(BaseStorage) :
                            "objectClass" : ["pykotaObject", "pykotaAccountBalance"],
                            "cn" : uname,
                            "pykotaBalance" : str(user.AccountBalance or 0.0),
+                           "pykotaOverCharge" : str(user.OverCharge),
                            "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0),  
                          } 
                 dn = "%s=%s,%s" % (self.info["balancerdn"], uname, self.info["balancebase"])
@@ -1119,7 +1121,6 @@ class Storage(BaseStorage) :
         """Saves the user to the database in a single operation."""
         newfields = {
                        "pykotaLimitBy" : (user.LimitBy or "quota"),
-                       "pykotaOverCharge" : str(user.OverCharge),
                        "description" : self.userCharsetToDatabase(user.Description or ""), 
                        self.info["usermail"] : user.Email or "",
                     }   
@@ -1127,6 +1128,7 @@ class Storage(BaseStorage) :
         
         newfields = { "pykotaBalance" : str(user.AccountBalance or 0.0),
                       "pykotaLifeTimePaid" : str(user.LifeTimePaid or 0.0), 
+                      "pykotaOverCharge" : str(user.OverCharge),
                     }
         self.doModify(user.idbalance, newfields)
         
@@ -1590,9 +1592,9 @@ class Storage(BaseStorage) :
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email", "description") ]
+            result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email", "description", "overcharge") ]
             for entry in entries :
-                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email, entry.Description))
+                result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email, entry.Description, entry.OverCharge))
             return result 
         
     def extractBillingcodes(self, extractonly={}) :
