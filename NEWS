@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.25alpha18 (2006-11-30) :
     
+        - Make pkinvoice internally work like pkrefund.
+        
         - Fixed a severe bug in the LDAP backend wrt the overcharging factor.
         
     - 1.25alpha17 (2006-11-27) :
