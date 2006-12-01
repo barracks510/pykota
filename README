@@ -32,32 +32,39 @@ PyKota features :
         
 Planned features are described in the TODO file.
 
-Actually two (or an infinity of) page accounting methods are
+Actually three (or an infinity of) page accounting methods are
 implemented :
 
   - The 'hardware' method consists in querying the printer (via SNMP
-    or Netatalk or any other method of your choice) for its total pages 
-    counter.
+    or Netatalk or any other method of your choice) for its internal 
+    pages counter.
     This is done both at the beginning and at the end of a
-    print job. The counters difference is then immediately used to 
+    print job. The counters difference is then used to 
     decrease the user's account balance or increase his quota usage.
     
   - The 'software' method consists in delegating the computation of the
     job's size in number of pages to any external command of your choice.
     The command can read the job's data from its standard input and MUST
     output the job's size on its standard output. Changes to the user
-    account are reported immediately.
-    
-    PyKota featured an internal software accounting method which handles 
+    account are reported immediately. PyKota by default internally
+    uses the code from pkpgcounter which can handle
     several Page Description Languages : DSC compliant and binary PostScript,
-    PDF, PCLXL (aka PCL6), PCL3/4/5, ESC/P2, DVI, TIFF, OpenOffice.org Writer
-    and OpenOffice.org Impress. This software is now distributed separately
-    as 'pkpgcounter', and not included anymore in PyKota, so you must now
-    download and install it before running PyKota.
+    PDF, PCLXL (aka PCL6), PCL3/4/5, ESC/P2, DVI, TIFF, OpenDocument,
+    Zenographics ZjStream, Samsung QPDL,Samsung SPL1, and plain text.
+    Of course this means you have to install pkpgcounter if you want to
+    use the default PDL parser.
     
-PyKota is known to work fine with most laser printers, either with
-software accounting, or with hardware accounting if the printer
-supports this.
+  - The 'ink' method consists in using pkpgcounter's code to compute  
+    how much of each page is covered by ink in each color of a particular
+    colorspace chosen between CMYK, CMY, RGB, and BW (grayscale).
+    These values are then summed up together and multiplied by a set
+    of coefficients defined in PyKota's configuration files.
+    
+PyKota is known to work with most printers, excepted GDI ones (Windows
+only). At least one of the accounting methods above should work
+for you. If it's not the case, please report the problem : tell us
+the exact brand and model of the printer, if possible the driver used,
+and send some test files.
 
 ============================================================
 
@@ -91,7 +98,9 @@ NB :
   PyKota's documentation is available as DocBook SGML sources
   files in the pykota/docs directory. If you obtained an
   Official package, in the same directory you'll also find
-  the documentation in HTML and PDF formats.
+  the documentation in HTML and PDF formats. Otherwise you
+  have to compile it into HTML or PDF yourself by using
+  the appropriate tools as installed on your system.
   
   PyKota's collaborative documentation is available from :
   
@@ -112,12 +121,6 @@ NB :
   + CUPS installation. Even for people who can't read spanish 
   this document is really interesting, and contains lots of
   screenshots.
-  
-  Finally, SuSe users may find the following document to best describe
-  how to install PyKota on their favorite distribution. It's a Spanish
-  document written by Dennis Romero, and is mostly outdated now :
-  
-    http://www.cvr.espol.edu.ec/people/dennis/Pykota1.19-SuSE9.1.pdf
   
   
 Prerequisite : 
@@ -223,7 +226,7 @@ Prerequisite :
       
   or     
   
-    - MySQL 4.1 or higher.
+    - MySQL 4.1 or higher. 5.x is recommended.
     
   This list of prerequisite software may change in the future, when
   PyKota will support more functionnalities you will be given 
@@ -242,7 +245,12 @@ Hint :
     easiest distribution to install PyKota on, because almost all
     of PyKota dependencies are already included, excepted
     the pkpgcounter utility which for now have to be downloaded
-    and installed separately.
+    and installed separately, and maybe one or two other dependencies,
+    depending on the version of Debian you are using.
+    We recommend you to use Debian's Etch distribution or
+    more recent. PyKota works fine on Sarge, but some additional
+    dependencies are missing in Sarge and have to be installed
+    manually.
 
 Then :   
 ------
@@ -286,33 +294,32 @@ Put the user your printing system is run as in the pykota system group :
     NB : on our system, the CUPS printing system runs as system user 'lp'.
     Please adapt this to your own system.
 
-Go to the initscripts subdirectory of PyKota's sources, and choose
+Go to the initscripts/ subdirectory of PyKota's sources, and choose
 the appropriate storage backend for your configuration. Read carefully
-the associated README file and execute the initialization script
+the associated README file, modify the initialization script to
+change the passwords, or, in the case of the LDAP backend, adapt it
+to your own LDAP DIT, and execute the initialization script
 to create an empty PyKota database. Upgrade scripts may be 
 provided as well. NB : if you use PostgreSQL, a good way to
 make PyKota work first time is to modify PostgreSQL's pg_hba.conf
 to allow the 'trust' database connection mode. However once PyKota
 works it is HIGHLY RECOMMENDED TO CHANGE THIS TO A MORE SECURE
-VALUE.
+VALUE. Look at the SECURITY document, PyKota's Official documentation
+and PostgreSQL's documentation for details on this subject.
 
 Copy the conf/pykota.conf.sample and  conf/pykotadmin.conf.sample 
-sample configuration files to /etc/pykota/pykota.conf and 
-/etc/pykota/pykotadmin.conf  
+sample configuration files to ~pykota/pykota.conf and 
+~pykota/pykotadmin.conf  
 The installation script usually copies these files into /usr/share/pykota
 
 NB : You can move PyKota's configuration files elsewhere, they will
-be searched first in user pykota's home directory.
+be searched first in user pykota's home directory, then in /etc/pykota.
 
 You need to adapt these files to your own needs. Especially you may 
 have to create sections named after your own printers, and change 
 the administrator's email address which by default is 
 root@localhost. Read and try to understand these two very well 
 commented files, so that you'll encounter less problems later. 
-
-Also be sure to double check that commands that query printers
-for their internal page counter work from the command line
-before using them in PyKota's configuration.
 
 The rest of the installation depends on your printing system :
 
@@ -338,11 +345,8 @@ The rest of the installation depends on your printing system :
         
           $ /etc/init.d/cupsys restart
           
-        or :    
-      
-          $ /etc/rc.d/init.d/cupsys restart
-          
-        or any similar command depending on your operating system.  
+          for example under Debian, or any similar command depending 
+          on your operating system of choice.
           
     For new printers :
     
@@ -366,12 +370,11 @@ The rest of the installation depends on your printing system :
         all options globally.
         
         The new pkturnkey command can help you with correct settings 
-        for your printers, but don't rely on it because it is still
-        experimental work. To have pkturnkey give you some hints
-        about what to put into pykota.conf, just use its --doconf
-        command line switch :
+        for your printers. To have pkturnkey give you some hints
+        about what to put into pykota.conf for a particular
+        print queue, just use its --doconf command line switch :
         
-          $ pkturnkey --doconf
+          $ pkturnkey --doconf TheNameOfThePrintQueue
         
         pkturnkey will try to tell you what is the best accounting
         method for each printer and will print some lines you'll
@@ -386,24 +389,41 @@ The rest of the installation depends on your printing system :
         
         That's all.
     
-    For existing printers :
+    For existing print queues :
     
-        The easiest is to directly modify the DeviceURI lines 
-        in /etc/cups/printers.conf, you just have to put 
-        'cupspykota:' in front of what is already on these lines. 
-        For example, replace :
+        You want to route the print queue through PyKota,
+        and you can do this in several manners.
+        
+          $ pkprinters --add --cups TheNameOfThePrintQueue
+          
+        or   
+        
+          if your printer's DeviceURI is something like :
+          
+              socket://myprinter.example.com:9100
+              
+          then you can do this :    
+          
+          $ pkprinters --add TheNameOfThePrintQueue
+          $ lpadmin -p TheNameOfThePrintQueue \
+                    -v cupspykota://socket://myprinter.example.com:9100
+          
+        Finally, you could do it manually by modifying the 
+        the DeviceURI lines in /etc/cups/printers.conf :
+        You would have to preprend 'cupspykota://' in front 
+        of what is already on these lines. For example, replace :
     
             DeviceURI socket://myprinter.example.com:9100
         
         with :    
     
-            DeviceURI cupspykota:socket://myprinter.example.com:9100
+            DeviceURI cupspykota://socket://myprinter.example.com:9100
             
         or :    
         
             DeviceURI cupspykota://socket://myprinter.example.com:9100
         
-        Save the file and restart CUPS.
+        Save the file and restart CUPS for the changes to take effect.
         
         Here too, you may find it interesting to use the pkturnkey command as
         described above to help with manual configuration of the file
@@ -438,25 +458,21 @@ Create printers :
 
 Create users :
 
-    $ pkusers --add --limitby balance --balane 10.0 jerome
+    $ pkusers --add --limitby balance --balance 10.0 jerome
     
     would create user jerome and give him ten credits to spend
     on any printer.
     
 Finally create print quota entries :
 
-    $ edpykota --add -P hp2100 jerome
+    $ edpykota --add --printer hp2100 john paul george ringo
         
-    This will create a print quota entry for user jerome on    
+    This will create print quota entries for The Beatles on    
     printer hp2100. The print quota entry holds the number of
     pages printed on a particular printer for a particular
     user, as well as optional page limits to be used instead
     of balance limits. See pkusers and edpykota's manual
     pages for details.
-    
-Restart CUPS, for example under Debian GNU/Linux systems :          
-
-    $ /etc/init.d/cupsys restart
     
 Your users now should be able to print but not exceed their 
 printing quota.
@@ -473,6 +489,14 @@ or :
     along with totals, if you are a PyKota Administator. If you are
     a regular user, only your own quota report will be produced.
     
+You can also use these commands :    
+
+    $ pkusers --list 
+    $ edpykota --list
+    
+    $ pkusers --list john paul george ringo
+    $ edpykota --list --printer hp2100 john paul george ringo
+    
 Quota reports are also available remotely by using the CGI script
 printquota.cgi provided in the cgi-bin/ subdirectory. You can 
 also use the CSS stylesheet present in the stylesheets/ subdirectory
@@ -483,7 +507,9 @@ For additionnal security concerns, please give a look at the SECURITY
 file which is part of this software.
 
 To diagnose a problem when something doesn't work as expected,
-please read the very first entry in the FAQ document.
+please read this FAQ entry :
+
+  http://otrs.librelogiciel.com/otrs/public.pl?ID=2
            
 ============================================================
 
@@ -507,6 +533,11 @@ them available under the GNU General Public License :
     basis for an administrative GUI since it only depends on 
     PyKota commands to be present to successfully manage
     PyKota's database. 
+    
+    However this tool is very old now and doesn't work
+    with more recent versions of PyKota. It could be
+    a good starting point if you planned to develop such
+    a web user interface though.
   
 Additionnal software will be listed here when they will be  
 ready.
