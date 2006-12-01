@@ -164,14 +164,11 @@ class PKTurnKey(Tool) :
     def createPrinters(self, printers, dryrun=0) :    
         """Creates all printers in PyKota's database."""
         if printers :
-            needswarning = [p[0] for p in printers if p[1].find("cupspykota") == -1]
             args = open("/tmp/pkprinters.args", "w")
-            args.write('--add\n--skipexisting\n--description\n"printer created from pkturnkey"\n')
+            args.write('--add\n--cups\n--skipexisting\n--description\n"printer created from pkturnkey"\n')
             args.write("%s\n" % "\n".join(['"%s"' % p[0] for p in printers]))
             args.close()
             self.runCommand("pkprinters --arguments /tmp/pkprinters.args", dryrun)
-            for p in needswarning :
-                self.printInfo(_("Printer %s is not managed by PyKota yet. Please modify printers.conf and restart CUPS.") % p, "warn")
         
     def createUsers(self, users, printers, dryrun=0) :
         """Creates all users in PyKota's database."""
