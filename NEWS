@@ -23,6 +23,8 @@ PyKota NEWS :
        
     - 1.25beta (2006-11-30) :
     
+        - Fixed a bug wrt ink accounting, thanks to Netzwerkler.
+    
         - Updated all message catalogs and manual pages.
         
     - 1.25alpha18 (2006-11-30) :

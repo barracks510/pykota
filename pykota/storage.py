@@ -343,7 +343,7 @@ class StorageUserPQuota(StorageObject) :
                                     coefprice = (coefvalue * pageprice) / 100.0
                                     inkprice = coefprice * value
                                     self.parent.tool.logdebug("Applying coefficient %f for color %s (used at %f%% on page %i) to base cost %f gives %f" % (coefvalue, ink, value, pageindex+1, pageprice, inkprice))
-                                    totalprice += coefprice
+                                    totalprice += inkprice
         if self.User.OverCharge != 1.0 : # TODO : beware of rounding errors
             overcharged = totalprice * self.User.OverCharge        
             self.parent.tool.logdebug("Overcharging %s by a factor of %s ===> User %s will be charged for %s credits." % (totalprice, self.User.OverCharge, self.User.Name, overcharged))
