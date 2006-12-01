@@ -196,7 +196,7 @@ class PyKotaSetup :
                  "python-pam" ]
         
     otherpackages = [ { "name" : "pkpgcounter",
-                        "version" : "2.10",
+                        "version" : "2.12",
                         "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
                         "commands" : [ "tar -zxf %(name)s-%(version)s.tar.gz",
                                        "cd %(name)s-%(version)s",
@@ -348,10 +348,6 @@ class PyKotaSetup :
                 suffix = "\n".join(lines[begin+1:end])
                 self.confirmCommand("to improve PyKota's configuration wrt your existing printers", 'echo "%(suffix)s" >>%(home)s/pykota.conf' % locals())
         
-    def importPrinters(self) :
-        """Imports the existing print queues in the database."""
-        self.confirmCommand("to import your existing print queues into PyKota's database", "pkturnkey --force 2>/dev/null")
-            
     def addPyKotaUser(self) :
         """Adds a system user named pykota, returns its home directory or None"""
         try :
@@ -377,10 +373,8 @@ class PyKotaSetup :
     def managePrinters(self, printers) :    
         """For each printer, asks if it should be managed with PyKota or not."""
         for (queuename, deviceuri) in printers :
-            if not deviceuri.startswith("cupspykota:") :
-                newdeviceuri = "cupspykota://%s" % deviceuri
-                command = "lpadmin -p %(queuename)s -v %(newdeviceuri)s" % locals()
-                self.confirmCommand("to manage the %(queuename)s print queue with PyKota" % locals(), command)
+            command = 'pkprinters --add --cups --description "Printer created with pksetup" "%(queuename)s"' % locals()
+            self.confirmCommand("to import the %(queuename)s print queue into PyKota's database and reroute it through PyKota" % locals(), command)
     
     def setup(self) :
         """Installation procedure."""
@@ -401,7 +395,6 @@ class PyKotaSetup :
             self.setupDatabase()
             self.setupBackend()
             self.managePrinters(self.listPrinters())
-            self.importPrinters()
             print nowready
             print "The script %s can be used to reinstall in unattended mode.\n" % self.genInstaller()
             
