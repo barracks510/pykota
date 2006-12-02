@@ -2254,19 +2254,19 @@ msgstr "Mode 'passthrough' : %s"
 
 #, python-format
 msgid "Routed through PyKota : %s"
-msgstr ""
+msgstr "Gérée par PyKota : %s"
 
 msgid "YES"
-msgstr ""
+msgstr "OUI"
 
 msgid "NO"
-msgstr ""
+msgstr "NON"
 
 msgid "in"
 msgstr "dans"
 
 msgid "Rerouting printers to CUPS"
-msgstr ""
+msgstr "Reroutage des imprimantes vers CUPS"
 
 #, python-format
 msgid "Invalid charge amount value %s"
@@ -2400,80 +2400,84 @@ msgid ""
 msgstr ""
 
 msgid "Refunding receipt"
-msgstr ""
+msgstr "Reçu de remboursement"
 
 msgid "Jobs refunded"
-msgstr ""
+msgstr "Travaux remboursés"
 
 msgid "Pages refunded"
-msgstr ""
+msgstr "Pages remboursées"
 
 msgid "Amount refunded"
-msgstr ""
+msgstr "Crédits remboursés"
 
 msgid "Reason"
-msgstr ""
+msgstr "Raison"
 
 msgid "Here's the receipt for the refunding of your print jobs"
-msgstr ""
+msgstr "Voici le reçu pour le remboursement de vos travaux d'impression"
 
 msgid "Generating receipts"
-msgstr ""
+msgstr "Generation des reçus"
 
 msgid ""
 "Refunding for no reason is forbidden. Please use the --reason command line "
 "option."
 msgstr ""
+"Rembourser sans raison est interdit. Merci d'utiliser l'option de lignede "
+"commande --reason."
 
 msgid ""
 "The PDF file containing the receipts will be sent to stdout. --force is "
 "assumed."
 msgstr ""
+"Le fichier PDF contenant les reçus sera envoyé vers stdout. --force sera "
+"utilisé."
 
 #, python-format
 msgid "Date : %s"
-msgstr ""
+msgstr "Date : %s"
 
 #, python-format
 msgid "JobId : %s"
-msgstr ""
+msgstr "JobId : %s"
 
 #, python-format
-msgid "Username : %s"
-msgstr ""
+msgid "User : %s"
+msgstr "Utilisateur : %s"
 
 #, python-format
-msgid "Printername : %s"
-msgstr ""
+msgid "Printer : %s"
+msgstr "Imprimante : %s"
 
 #, python-format
 msgid "Billing code : %s"
-msgstr ""
+msgstr "Code de facturation : %s"
 
 #, python-format
 msgid "Pages : %i"
-msgstr ""
+msgstr "Pages : %i"
 
 #, python-format
 msgid "Credits : %.3f"
-msgstr ""
+msgstr "Crédits : %.3f"
 
 #, python-format
 msgid "Title : %s"
-msgstr ""
+msgstr "Titre : %s"
 
 msgid "Refund (Y/N)"
-msgstr ""
+msgstr "Rembourser (O/N)"
 
 msgid "Y"
-msgstr ""
+msgstr "O"
 
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #, python-format
 msgid "Refunded %i users for %i jobs, %i pages and %.3f credits"
-msgstr ""
+msgstr "Remboursé %i utilisateurs pour %i travaux, %i pages et %.3f crédits"
 
 #, python-format
 msgid ""
@@ -3399,6 +3403,7 @@ msgstr ""
 #, python-format
 msgid "Incorrect value %s for the noprintingmaxdelay directive in section %s"
 msgstr ""
+"Valeur incorrecte %s pour la directive noprintingmaxdelay dans la section %s"
 
 #, python-format
 msgid "Option accountbanner in section %s only supports values in %s"
