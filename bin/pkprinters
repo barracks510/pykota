@@ -167,6 +167,28 @@ class PKPrinters(PyKotaTool) :
         else :    
             return False
         
+    def reroutePrinterThroughPyKota(self, printer) :    
+        """Reroutes a CUPS printer through PyKota."""
+        uri = self.getPrinterDeviceURI(printer.Name)
+        if not self.isPrinterCaptured(deviceuri=uri) :
+             newuri = "cupspykota://%s" % uri
+             self.regainPriv() # to avoid having to enter password.
+             os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
+             self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
+             self.dropPriv()
+             
+    def deroutePrinterFromPyKota(self, printer) :    
+        """Deroutes a PyKota printer through CUPS only."""
+        uri = self.getPrinterDeviceURI(printer.Name)
+        if self.isPrinterCaptured(deviceuri=uri) :
+             newuri = uri.replace("cupspykota:", "")
+             if newuri.startswith("//") :
+                 newuri = newuri[2:]
+             self.regainPriv() # to avoid having to enter password.
+             os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
+             self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
+             self.dropPriv()    
+                                     
     def main(self, names, options) :
         """Manage printers."""
         if (not self.config.isAdmin) and (not options["list"]) :
@@ -205,20 +227,12 @@ class PKPrinters(PyKotaTool) :
         elif options["delete"] :    
             percent.display("\n%s..." % _("Deletion"))
             self.storage.deleteManyPrinters(printers)
-            if docups :
-                percent.display("\n%s...\n" % _("Rerouting printers to CUPS"))
-                for printer in printers :
-                    uri = self.getPrinterDeviceURI(printer.Name)
-                    if self.isPrinterCaptured(deviceuri=uri) :
-                         newuri = uri.replace("cupspykota:", "")
-                         if newuri.startswith("//") :
-                             newuri = newuri[2:]
-                         self.regainPriv() # to avoid having to enter password.
-                         os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
-                         self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
-                         self.dropPriv()    
-                    percent.oneMore()
             percent.display("\n")
+            if docups :
+                percent.display("%s...\n" % _("Rerouting printers to CUPS"))
+                for printer in printers :
+                    self.deroutePrinterFromPyKota(printer)
+                    percent.oneMore()
         else :
             if options["groups"] :        
                 printersgroups = self.storage.getMatchingPrinters(options["groups"])
@@ -273,13 +287,7 @@ class PKPrinters(PyKotaTool) :
                             oldprinter = self.storage.addPrinter(printer)               
                             
                             if docups :
-                                 uri = self.getPrinterDeviceURI(printer.Name)
-                                 if not self.isPrinterCaptured(deviceuri=uri) :
-                                      newuri = "cupspykota://%s" % uri
-                                      self.regainPriv() # to avoid having to enter password.
-                                      os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
-                                      self.logdebug("Printer %s rerouted to %s" % (printer.Name, newuri))
-                                      self.dropPriv()
+                                 self.reroutePrinterThroughPyKota(printer)
                                      
                             if oldprinter is not None :
                                 if skipexisting :
@@ -307,6 +315,8 @@ class PKPrinters(PyKotaTool) :
                                            nopassthrough, maxjobsize)
                         printer.save()    
                         self.managePrintersGroups(printersgroups, printer, remove)
+                        if docups :
+                            self.reroutePrinterThroughPyKota(printer)
                         percent.oneMore()
             except :                    
                 self.storage.rollbackTransaction()
