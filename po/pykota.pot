@@ -1590,11 +1590,11 @@ msgid "JobId : %s"
 msgstr ""
 
 #, python-format
-msgid "Username : %s"
+msgid "User : %s"
 msgstr ""
 
 #, python-format
-msgid "Printername : %s"
+msgid "Printer : %s"
 msgstr ""
 
 #, python-format
