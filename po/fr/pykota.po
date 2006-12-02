@@ -23,10 +23,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PyKota v1.24\n"
+"Project-Id-Version: PyKota v1.25\n"
 "Report-Msgid-Bugs-To: alet@librelogiciel.com\n"
 "POT-Creation-Date: 2006-03-30 22:00+0200\n"
-"PO-Revision-Date: 2006-03-26 11:23:00+0100\n"
+"PO-Revision-Date: 2006-12-02 20:51:00+0100\n"
 "Last-Translator: Jerome Alet <alet@librelogiciel.com>\n"
 "Language-Team: French <alet@librelogiciel.com>\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +88,7 @@ msgstr "SIGTERM reçu, travail d'impression %s annulé."
 
 #, python-format
 msgid "Network error while querying the CUPS server : %s"
-msgstr ""
+msgstr "Erreur réseau pendant l'interrogation du serveur CUPS : %s"
 
 msgid "You are not allowed to print at this time."
 msgstr "Vous n'avez pas le droit d'imprimer pour l'instant."
@@ -269,7 +269,7 @@ msgstr "Impossible d'envoyer un message à %s, erreur %s : %s"
 
 #, python-format
 msgid "Problem when sending mail : %s"
-msgstr ""
+msgstr "Problème pendant l'envoi d'un message électronique : %s"
 
 msgid "Job contains no data. Printing is denied."
 msgstr ""
@@ -982,6 +982,8 @@ msgstr "Création"
 #, python-format
 msgid "No entry matches %s. Please use pkusers to create them first."
 msgstr ""
+"Aucune entrée ne correspond à %s. Merci d'utiliser pkusers pour les créer au "
+"préalable."
 
 msgid "Modification"
 msgstr "Modification"
@@ -1616,7 +1618,7 @@ msgid "Edited on"
 msgstr "Date d'édition"
 
 msgid "Number of jobs printed"
-msgstr ""
+msgstr "Nombre de travaux imprimés"
 
 msgid "Number of pages printed"
 msgstr "Nombre de pages imprimées"
@@ -2033,6 +2035,8 @@ msgid ""
 "Are you sure that PyKotIcon is running and accepting incoming connections on "
 "%s:%s ?"
 msgstr ""
+"Etes vous sûr que PyKotIcon fonctionne et accepte les connexions entrantes "
+"sur %s:%s ?"
 
 msgid "Connection error"
 msgstr "Erreur de connexion"
@@ -2042,6 +2046,7 @@ msgstr "certaines options sont obligatoires, voir l'aide."
 
 msgid "incorrect value for the --noremote command line switch, see help."
 msgstr ""
+"valeur incorrecte pour l'option de ligne de commande --noremote, voir l'aide."
 
 msgid "some options require arguments, see help."
 msgstr "certaines options nécessitent un argument, voir l'aide."
