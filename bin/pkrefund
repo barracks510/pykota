@@ -375,13 +375,14 @@ class PkRefund(PyKotaTool) :
                         percent.oneMore()
                 else :    
                     print _("Date : %s") % str(job.JobDate)[:19]
-                    print _("JobId : %s") % job.JobId
-                    print _("User : %s") % job.UserName
                     print _("Printer : %s") % job.PrinterName
-                    print _("Billing code : %s") % job.JobBillingCode
+                    print _("User : %s") % job.UserName
+                    print _("JobId : %s") % job.JobId
+                    print _("Title : %s") % job.JobTitle
+                    if job.JobBillingCode :
+                        print _("Billing code : %s") % job.JobBillingCode
                     print _("Pages : %i") % job.JobSize
                     print _("Credits : %.3f") % job.JobPrice
-                    print _("Title : %s") % job.JobTitle
                     
                     while True :                             
                         answer = raw_input("\t%s ? " % _("Refund (Y/N)")).strip().upper()
