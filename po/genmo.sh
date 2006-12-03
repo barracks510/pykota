@@ -21,7 +21,7 @@ for dir in * ; do
             chmod 644 *.?o ;
             msgmerge --no-location --no-fuzzy-matching --output-file=pykota.po.new pykota.po ../pykota.pot ;
             mv pykota.po.new pykota.po ;
-            rm pykota.mo ;
+            /bin/rm -f pykota.mo ;
             msgfmt -o pykota.mo pykota.po ;
             cd .. ;
         fi ;    
