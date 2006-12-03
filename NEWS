@@ -21,6 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.25 (2006-12-03) :
+       
+        - Fixed a minor problem in pkprinters with the --cups command line option.
+        
+        - Improved readablity when pkrefund asks for confirmation.
+        
+        - Finished the french translation.
+        
     - 1.25beta (2006-11-30) :
     
         - Fixed a bug wrt ink accounting, thanks to Netzwerkler.
