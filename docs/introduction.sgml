@@ -48,12 +48,6 @@
     </para>
     
     <para>
-      Beginning on October 10th 2005, this document won't be <application>PyKota</application>'s reference documentation anymore.
-      <application>PyKota</application>'s reference documentation is now at :
-      <ulink url="http://www.pykota.com/wiki">http://www.pykota.com/wiki</ulink>
-    </para>
-    
-    <para>
       <application>PyKota</application> is made of the following components :
       <itemizedlist>
         <listitem>
@@ -126,6 +120,12 @@
             in several native languages and contain usage examples. Some commands have many
             options and switches, so please read their help carefully.
             <itemizedlist>
+              <listitem>
+                <para>
+                  <command>pksetup</command> : to install PyKota in a completely
+                  interactive way, but currently only under Debian and Ubuntu.
+                </para>
+              </listitem>  
               <listitem>
                 <para>
                   <command>pkturnkey</command> : to help you do the initial
@@ -222,6 +222,13 @@
                 <para>
                   <command>pkinvoice</command> : an invoice generator which can create personalized PDF invoices
                   for your users from their printing history.
+                </para>
+              </listitem>  
+              <listitem>
+                <para>
+                  <command>pkrefund</command> : a tool with which you can refund print jobs 
+                  when there was an accounting problem. It can generate printable receipts
+                  in the PDF format.
                 </para>
               </listitem>  
             </itemizedlist>
