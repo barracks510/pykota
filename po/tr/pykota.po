@@ -39,6 +39,24 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms:  nplurals=1; plural=0;\n"
 
+#
+# NB : THE FIVE ENTRIES BELOW WERE ADDED MANUALLY
+#
+msgid "ALLOW"
+msgstr ""
+
+msgid "DENY"
+msgstr ""
+
+msgid "CANCEL"
+msgstr ""
+
+msgid "PROBLEM"
+msgstr ""
+
+msgid "REFUND"
+msgstr ""
+
 #, python-format
 msgid ""
 "autopykota v%(__version__)s (c) %(__years__)s %(__author__)s\n"
@@ -1616,11 +1634,11 @@ msgid "JobId : %s"
 msgstr ""
 
 #, python-format
-msgid "Username : %s"
+msgid "User : %s"
 msgstr ""
 
 #, python-format
-msgid "Printername : %s"
+msgid "Printer : %s"
 msgstr ""
 
 #, python-format

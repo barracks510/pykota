@@ -33,6 +33,24 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#
+# NB : THE FIVE ENTRIES BELOW WERE ADDED MANUALLY
+#
+msgid "ALLOW"
+msgstr "AUTORISE"
+
+msgid "DENY"
+msgstr "INTERDIT"
+
+msgid "CANCEL"
+msgstr "ANNULE"
+
+msgid "PROBLEM"
+msgstr "PROBLEME"
+
+msgid "REFUND"
+msgstr "REMBOURSE"
+
 #, python-format
 msgid ""
 "autopykota v%(__version__)s (c) %(__years__)s %(__author__)s\n"

@@ -31,6 +31,21 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+msgid "ALLOW"
+msgstr "ZEZWÓL"
+
+msgid "DENY"
+msgstr "ZABROÑ"
+
+msgid "CANCEL"
+msgstr ""
+
+msgid "PROBLEM"
+msgstr ""
+
+msgid "REFUND"
+msgstr ""
+
 #, python-format
 msgid ""
 "autopykota v%(__version__)s (c) %(__years__)s %(__author__)s\n"
@@ -2061,11 +2076,11 @@ msgid "JobId : %s"
 msgstr ""
 
 #, python-format
-msgid "Username : %s"
+msgid "User : %s"
 msgstr ""
 
 #, python-format
-msgid "Printername : %s"
+msgid "Printer : %s"
 msgstr ""
 
 #, python-format
@@ -4149,11 +4164,5 @@ msgstr ""
 #~ msgid "Impossible to add billingcode %s"
 #~ msgstr "Dodanie kodu rozliczeniowego %s jest niemo¿liwe"
 
-#~ msgid "ALLOW"
-#~ msgstr "ZEZWÓL"
-
 #~ msgid "WARN"
 #~ msgstr "OSTRZE¯"
-
-#~ msgid "DENY"
-#~ msgstr "ZABROÑ"
