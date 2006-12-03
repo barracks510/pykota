@@ -5,124 +5,131 @@ pkrefund \- page de manuel de pkrefund 1.25beta_unofficial
 .SH DESCRIPTION
 pkrefund v1.25beta_unofficial (c) 2003, 2004, 2005, 2006 Jerome Alet \- alet@librelogiciel.com
 .PP
-Refunds jobs.
+Rembourse les travaux d'impression.
 .PP
-command line usage :
+ligne de commande :
 .IP
-pkrefund [options] [filterexpr]
+pkrefund [options] [filtres]
 .PP
 options :
 .TP
 \fB\-v\fR | \fB\-\-version\fR
-Prints pkrefund's version number then exits.
+Affiche la version de pkrefund et quitte.
 .TP
 \fB\-h\fR | \fB\-\-help\fR
-Prints this message then exits.
+Affiche ce message et quitte.
 .TP
 \fB\-f\fR | \fB\-\-force\fR
-Doesn't ask for confirmation before refunding jobs.
+Ne demande pas confirmation avant de rembourser
+les travaux d'impression.
 .TP
 \fB\-r\fR | \fB\-\-reason\fR txt
-Sets textual information to explain the refunding.
+Indique la raison du remboursement.
 .TP
 \fB\-l\fR | \fB\-\-logo\fR img
-Use the image as the receipt's logo. The logo will
-be drawn at the center top of the page. The default
-logo is /usr/share/pykota/logos/pykota.jpeg
+Utilise cette image comme logo sur les reçus. Le
+logo sera dessiné au centre et en haut de la page.
+Le logo par défaut est
+.IP
+/usr/share/pykota/logos/pykota.jpeg
 .TP
 \fB\-p\fR | \fB\-\-pagesize\fR sz
-Sets sz as the page size. Most well known
-page sizes are recognized, like 'A4' or 'Letter'
-to name a few. The default size is A4.
+Positionne la taille de page à sz. La plupart des
+tailles standard sont reconnues, comme 'A4' ou 'Letter'
+par exemple. La taille par défaut est A4.
 .TP
 \fB\-n\fR | \fB\-\-number\fR N
-Sets the number of the first receipt. This number
-will automatically be incremented for each receipt.
+Indique le numéro du premier reçu. Ce numéro
+sera automatiquement incrémenté à chaque nouveau reçu.
 .TP
 \fB\-o\fR | \fB\-\-output\fR f.pdf
-Defines the name of the PDF file which will contain
-the receipts. If not set, then no PDF file will
-be created. If set to '\-', then \fB\-\-force\fR is assumed,
-and the PDF document is sent to standard output.
+Définit le nom du fichier PDF qui contiendra les
+reçus. S'il n'est pas précisé alors aucun fichier ne
+sera généré. Si '\-' est utilisé, le fichier PDF sera
+envoyé sur la sortie standard, et l'option \fB\-\-force\fR
+sera activée automatiquement.
 .TP
 \fB\-u\fR | \fB\-\-unit\fR u
-Defines the name of the unit to use on the receipts.
-The default unit is 'Credits', optionally translated
-to your native language if it is supported by PyKota.
+Définit le nom de l'unité à utiliser sur les reçus.
+Le nom par défaut est 'Credits', ou sa traduction
+éventuelle dans votre langage préféré si PyKota
+le supporte.
 .IP
-Use the filter expressions to extract only parts of the
-datas. Allowed filters are of the form :
+Utilisez les expressions de filtrage pour extraire seulement certaines
+parties des données. Les filtres autorisés sont de la forme :
 .IP
-key=value
+clé=valeur
 .IP
-Allowed keys for now are :
+Les clés autorisées pour l'instant sont :
 .TP
 username
-User's name
+Nom de l'utilisateur
 .TP
 printername
-Printer's name
+Nom de l'imprimante
 .TP
 hostname
-Client's hostname
+Nom d'hôte de la machine cliente
 .TP
 jobid
-Job's Id
+Id du travail d'impression
 .TP
 billingcode
-Job's billing code
+Code de facturation du travail d'impression
 .TP
 start
-Job's date of printing
+Date du travail d'impression
 .TP
 end
-Job's date of printing
+Date du travail d'impression
 .IP
-Dates formatting with 'start' and 'end' filter keys :
+Formatage des dates avec les clés 'start' et 'end' :
 .IP
-YYYY : year boundaries
-YYYYMM : month boundaries
-YYYYMMDD : day boundaries
-YYYYMMDDhh : hour boundaries
-YYYYMMDDhhmm : minute boundaries
-YYYYMMDDhhmmss : second boundaries
-yesterday[+\-NbDays] : yesterday more or less N days (e.g. : yesterday\-15)
-today[+\-NbDays] : today more or less N days (e.g. : today\-15)
-tomorrow[+\-NbDays] : tomorrow more or less N days (e.g. : tomorrow\-15)
-now[+\-NbDays] : now more or less N days (e.g. now\-15)
+AAAA : limites d'année
+AAAAMM : limites de mois
+AAAAMMJJ : limites de jour
+AAAAMMJJhh : limites d'heures
+AAAAMMJJhhmm : limites de minutes
+AAAAMMJJhhmmss : limites de secondes
+yesterday[+\-NbJours] : hier plus ou moins N jours (ex : yesterday\-15)
+today[+\-NbJours] : aujoud'hui plus ou moins N jours (ex : today\-15)
+tomorrow[+\-NbJours] : demain plus ou moins N jours (ex : tomorrow\-15)
+now[+\-NbJours] : maintenant plus ou moins N jours (ex : now\-15)
 .IP
-\&'now' and 'today' are not exactly the same since today represents the first
-or last second of the day depending on if it's used in a start= or end=
-date expression. The utility to be able to specify dates in the future is
-a question which remains to be answered :\-)
+\&'now' et 'today' ne sont pas exactement identiques car today représente
+la première ou la dernière seconde du jour selon qu'il soit utilisé avec
+une expression de type start= ou end=.
+L'utilité de pouvoir spécifier une date dans le future est une question
+qui reste ouverte :\-)
 .IP
-Contrary to other PyKota management tools, wildcard characters are not
-expanded, so you can't use them.
+Contrairement aux autres outils d'administration de PyKota, les caractères
+jokers ne sont pas expansés, aussi vous ne pouvez pas les utiliser.
 .PP
-Examples :
+Exemples :
 .IP
-\f(CW$ pkrefund --output /tmp/receipts.pdf jobid=503\fR
+\f(CW$ pkrefund --output /tmp/recus.pdf jobid=503\fR
 .IP
-This will refund all jobs which Id is 503. BEWARE : installing CUPS
-afresh will reset the first job id at 1, so you probably want to use
-a more precise filter as explained below. A confirmation will
-be asked for each job to refund, and a PDF file named /tmp/receipts.pdf
-will be created which will contain printable receipts.
+Cela va rembourser tous les travaux dont l'identifiant est 503.
+ATTENTION : installer CUPS à nouveau va remettre l'identifiant à 1
+aussi vous voudrez certainement utiliser un filtre plus précis
+comme expliqué ci\-dessous. Une confirmation sera demandée pour chaque
+remboursement, et un fichier PDF nommé /tmp/recus.pdf sera créé et
+contiendra les reçus imprimables.
 .IP
-\f(CW$ pkrefund --reason "Hardware problem" jobid=503 start=today-7\fR
+\f(CW$ pkrefund --reason "Problème matériel" jobid=503 start=today-7\fR
 .IP
-Refunds all jobs which id is 503 but which were printed during the
-past week. The reason will be marked as being an hardware problem.
+Rembourse tous les travaux dont l'identifiant est 503 et qui ont été
+imprimés la semaine dernière. La raison indiquée sera un problème matériel.
 .IP
 \f(CW$ pkrefund --force username=jerome printername=HP2100\fR
 .IP
-Refunds all jobs printed by user jerome on printer HP2100. No
-confirmation will be asked.
+Rembourse tous les travaux imprimés par l'utilisateur jerome sur
+l'imprimante HP2100. Aucune confirmation ne sera demandée.
 .IP
 \f(CW$ pkrefund --force printername=HP2100 start=200602 end=yesterday\fR
 .IP
-Refunds all jobs printed on printer HP2100 between February 1st 2006
-and yesterday. No confirmation will be asked.
+Rembourse tous les travaux imprimés sur l'imprimante HP2100 entre le
+premier Février 2006 et hier. Aucune confirmation ne sera demandée.
 .PP
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
