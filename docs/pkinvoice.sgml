@@ -11,8 +11,7 @@
   
   <para>
     You'll be allowed to optionally filter the data extraction based on starting and ending dates, which
-    defaults to the complete history,
-    and a set of usernames, which defaults to all users.
+    defaults to the complete history, user, printer, client hostname, etc...
   </para>
   
   <para>

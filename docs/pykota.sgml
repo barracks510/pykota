@@ -19,6 +19,7 @@
   <!entity PKUSERS system "pkusers.sgml">
   <!entity PKNOTIFY system "pknotify.sgml">
   <!entity PKINVOICE system "pkinvoice.sgml">
+  <!entity PKREFUND system "pkrefund.sgml">
   <!entity GNUGPL system "gnugpl.sgml">
 
 ]>
@@ -143,6 +144,8 @@
   &AUTOPYKOTA;
   
   &PKINVOICE;
+  
+  &PKREFUND;
   
   &PKBANNER;
   
