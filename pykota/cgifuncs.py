@@ -26,12 +26,12 @@ def getLanguagePreference() :
     """Returns the preferred language."""
     languages = os.environ.get("HTTP_ACCEPT_LANGUAGE", "")
     langs = [l.strip().split(';')[0] for l in languages.split(",")]
-    sys.stderr.write("Languages preferences : %s\n" % langs)
+    #sys.stderr.write("Languages preferences : %s\n" % langs)
     return langs[0].replace("-", "_")
     
 def getCharsetPreference() :
     """Returns the preferred charset."""
     charsets = os.environ.get("HTTP_ACCEPT_CHARSET", "UTF-8")
     charsets = [l.strip().split(';')[0] for l in charsets.split(",")]
-    sys.stderr.write("Charsets preferences : %s\n" % charsets)
+    #sys.stderr.write("Charsets preferences : %s\n" % charsets)
     return charsets[0]
