@@ -243,6 +243,7 @@ class DumPyKota(PyKotaTool) :
         
     def dumpCups(self, allentries, dummy) :    
         """Dumps history datas as CUPS' page_log format."""
+        months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
         entries = allentries[0]
         fieldnames = entries[0]
         fields = {}
@@ -257,7 +258,15 @@ class DumPyKota(PyKotaTool) :
             jobid = entry[fields["jobid"]]
             jobdate = DateTime.ISO.ParseDateTime(str(entry[fields["jobdate"]])[:19])
             gmtoffset = jobdate.gmtoffset()
-            jobdate = "%s %+03i00" % (jobdate.strftime("%d/%b/%Y:%H:%M:%S"), gmtoffset.hour)
+            #jobdate = "%s %+03i00" % (jobdate.strftime("%d/%b/%Y:%H:%M:%S"), gmtoffset.hour)
+            jobdate = "%02i/%s/%04i:%02i:%02i:%02i %+03i%02i" % (jobdate.day,
+                                                                 months[jobdate.month - 1],
+                                                                 jobdate.year,
+                                                                 jobdate.hour,
+                                                                 jobdate.minute,
+                                                                 jobdate.second,
+                                                                 gmtoffset.hour,
+                                                                 gmtoffset.minute)
             jobsize = entry[fields["jobsize"]] or 0
             copies = entry[fields["copies"]] or 1
             hostname = entry[fields["hostname"]] or ""
