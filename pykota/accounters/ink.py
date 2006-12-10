@@ -32,6 +32,7 @@ class Accounter(AccounterBase) :
                         "CMY" : { "C" : "cyan", "M" : "magenta", "Y" : "yellow" } ,
                         "RGB" : { "R" : "red", "G" : "green", "B" : "blue" } ,
                         "BW" : { "B" : "black", "W" : "white" } ,
+                        "GC" : { "G" : "grayscale", "C" : "colored" } ,
                      }
     def computeJobSize(self) :    
         """Do ink accounting for a print job."""
@@ -49,7 +50,7 @@ class Accounter(AccounterBase) :
             parameters.append("72")
         (colorspace, resolution) = parameters
         colorspace = colorspace.lower()
-        if colorspace not in ("cmyk", "bw", "cmy", "rgb") :
+        if colorspace not in ("cmyk", "bw", "cmy", "rgb", "gc") :
             raise PyKotaAccounterError, "Invalid parameters for ink accounter : [%s]" % self.arguments
             
         try :    

@@ -607,6 +607,9 @@ keepfiles : no
 #       cmyk    ===> Cyan, Magenta, Yellow, Black
 #       cmy     ===> Cyan, Magenta, Yellow
 #       rgb     ===> Red, Green, Blue
+#       gc      ===> Grayscale, Colored : this is a pseudo colorspace useful
+#                    if all you need is differentiating grayscale from
+#                    colored pages.
 #
 # Supported resolutions for ink accounting are any number of dots
 # per inch comprised between 72 and 1200. 
@@ -642,6 +645,7 @@ keepfiles : no
 # accounter : ink(bw, 300)
 # accounter : ink(bw)
 # accounter : ink(cmy, 72)
+# accounter : ink(gc, 72)
 #         
 # This directive can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
@@ -688,6 +692,9 @@ accounter: software()
 #       cmyk    ===> Cyan, Magenta, Yellow, Black
 #       cmy     ===> Cyan, Magenta, Yellow
 #       rgb     ===> Red, Green, Blue
+#       gc      ===> Grayscale, Colored : this is a pseudo colorspace useful
+#                    if all you need is differentiating grayscale from
+#                    colored pages.
 #
 # Supported resolutions for ink accounting are any number of dots
 # per inch comprised between 72 and 1200. 
@@ -1242,6 +1249,10 @@ noprintingmaxdelay : 60
 #
 #       bw :
 #               coefficient_black
+#
+#       gc :
+#               coefficient_grayscale
+#               coefficient_colored
 #
 # Any coefficient which is not set is considered to be equal to 1.0
 #

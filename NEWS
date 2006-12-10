@@ -21,6 +21,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.26alpha1 (2006-12-10) :
+    
+        - Added support for pkpgcounter v2.13's GC pseudo colorspace if you
+          only want to differentiate grayscale pages from colored pages.
+          
+        - Fixed a compatibility problem dumpykota's "--format cups" command line
+          option.
+          
     - 1.25 (2006-12-03) :
        
         - Fixed a minor problem in pkprinters with the --cups command line option.
