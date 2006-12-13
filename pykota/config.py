@@ -53,18 +53,18 @@ class PyKotaConfig :
         self.config.read([self.filename])
             
     def isTrue(self, option) :        
-        """Returns 1 if option is set to true, else 0."""
+        """Returns True if option is set to true, else False."""
         if (option is not None) and (option.strip().upper() in ['Y', 'YES', '1', 'ON', 'T', 'TRUE']) :
-            return 1
+            return True
         else :    
-            return 0
+            return False
                         
     def isFalse(self, option) :        
-        """Returns 1 if option is set to false, else 0."""
+        """Returns True if option is set to false, else False."""
         if (option is not None) and (option.strip().upper() in ['N', 'NO', '0', 'OFF', 'F', 'FALSE']) :
-            return 1
+            return True
         else :    
-            return 0
+            return False
                         
     def getPrinterNames(self) :    
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
@@ -440,11 +440,11 @@ class PyKotaConfig :
             return value
 
     def getPrintCancelledBanners(self, printername) :
-        """Returns 1 if a banner should be printed when a job is cancelled, else 0."""
+        """Returns True if a banner should be printed when a job is cancelled, else False."""
         try :
             return self.isTrue(self.getPrinterOption(printername, "printcancelledbanners"))
         except PyKotaConfigError :
-            return 1
+            return True
              
     def getGraceDelay(self, printername) :    
         """Returns the grace delay in days."""
@@ -501,39 +501,39 @@ class PyKotaConfig :
             return _("You will soon be forbidden to print anymore because\nyour Print Quota is almost reached on printer %s.") % printername
             
     def getPrivacy(self) :        
-        """Returns 1 if privacy is activated, else 0."""
+        """Returns True if privacy is activated, else False."""
         return self.isTrue(self.getGlobalOption("privacy", ignore=1))
         
     def getDebug(self) :          
-        """Returns 1 if debugging is activated, else 0."""
+        """Returns True if debugging is activated, else False."""
         return self.isTrue(self.getGlobalOption("debug", ignore=1))
             
     def getCaching(self) :          
-        """Returns 1 if database caching is enabled, else 0."""
+        """Returns True if database caching is enabled, else False."""
         return self.isTrue(self.getGlobalOption("storagecaching", ignore=1))
             
     def getLDAPCache(self) :          
-        """Returns 1 if low-level LDAP caching is enabled, else 0."""
+        """Returns True if low-level LDAP caching is enabled, else False."""
         return self.isTrue(self.getGlobalOption("ldapcache", ignore=1))
             
     def getDisableHistory(self) :          
-        """Returns 1 if we want to disable history, else 0."""
+        """Returns True if we want to disable history, else False."""
         return self.isTrue(self.getGlobalOption("disablehistory", ignore=1))
             
     def getUserNameToLower(self) :          
-        """Returns 1 if we want to convert usernames to lowercase when printing, else 0."""
+        """Returns True if we want to convert usernames to lowercase when printing, else False."""
         return self.isTrue(self.getGlobalOption("utolower", ignore=1))
         
     def getRejectUnknown(self) :          
-        """Returns 1 if we want to reject the creation of unknown users or groups, else 0."""
+        """Returns True if we want to reject the creation of unknown users or groups, else False."""
         return self.isTrue(self.getGlobalOption("reject_unknown", ignore=1))
         
     def getPrinterKeepFiles(self, printername) :          
-        """Returns 1 if files must be kept on disk, else 0."""
+        """Returns True if files must be kept on disk, else False."""
         try : 
             return self.isTrue(self.getPrinterOption(printername, "keepfiles"))
         except PyKotaConfigError :    
-            return 0
+            return False
             
     def getPrinterDirectory(self, printername) :          
         """Returns the path to our working directory, else a directory suitable for temporary files."""
@@ -543,16 +543,16 @@ class PyKotaConfig :
             return tempfile.gettempdir()
             
     def getDenyDuplicates(self, printername) :          
-        """Returns 1 or a command if we want to deny duplicate jobs, else 0."""
+        """Returns True or a command if we want to deny duplicate jobs, else False."""
         try : 
             denyduplicates = self.getPrinterOption(printername, "denyduplicates")
         except PyKotaConfigError :    
-            return 0
+            return False
         else :    
             if self.isTrue(denyduplicates) :
-                return 1
+                return True
             elif self.isFalse(denyduplicates) :
-                return 0
+                return False
             else :    
                 # it's a command to run.
                 return denyduplicates
