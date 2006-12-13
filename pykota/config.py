@@ -444,7 +444,7 @@ class PyKotaConfig :
         try :
             return self.isTrue(self.getPrinterOption(printername, "printcancelledbanners"))
         except PyKotaConfigError :
-            return 0
+            return 1
              
     def getGraceDelay(self, printername) :    
         """Returns the grace delay in days."""
