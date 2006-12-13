@@ -82,8 +82,6 @@ data_files.append((directory, ["checkdeps.py", "bin/cupspykota", \
                                "bin/waitprinter.sh", \
                                "bin/papwaitprinter.sh", \
                                "bin/mailandpopup.sh", \
-                               "contributed/pagecount.pl", \
-                               "contributed/dump_bfd.php", \
                                "untested/pjl/pagecount.pjl", \
                                "untested/pjl/status.pjl", \
                                "untested/netatalk/netatalk.sh", \
