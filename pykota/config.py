@@ -438,7 +438,14 @@ class PyKotaConfig :
             raise PyKotaConfigError, _("Invalid maximal deny banners counter %s") % maxdb
         else :    
             return value
-            
+
+    def getPrintCancelledBanners(self, printername) :
+        """Returns 1 if a banner should be printed when a job is cancelled, else 0."""
+        try :
+            return self.isTrue(self.getPrinterOption(printername, "printcancelledbanners"))
+        except PyKotaConfigError :
+            return 0
+             
     def getGraceDelay(self, printername) :    
         """Returns the grace delay in days."""
         try :

@@ -1045,6 +1045,16 @@ maxdenybanners: 0
 
 
 
+# If a job is cancelled, should any start or end banners still be printed
+#
+# This option can be set either globally or on a per printer basis.
+# If set to yes, any defined banners will be printed
+# If set to no, no banners will be printed
+#
+# This value defaults to yes
+# printcancelledbanners: yes
+
+
 # StartingBanner : if defined will print a banner before the rest of the job 
 # is printed. The argument can be a printable file, or an executable file.
 # If not executable, the file will be printed as is. If executable, the 
