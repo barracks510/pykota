@@ -826,7 +826,7 @@ class CUPSBackend(PyKotaTool) :
                                   % (self.UserName, self.PrinterName))
                 self.UserPQuota.incDenyBannerCounter() # increments the warning counter
                 self.exportUserInfo()
-            if (self.Action == 'CANCEL' and not self.config.getPrintCancelledBanners()) :
+            if ((self.Action == 'CANCEL') and not self.config.getPrintCancelledBanners()) :
                 self.logdebug("Print job cancelled, not printing a banner.", "warn")
             else :
                 getattr(self, "%sBanner" % bannertype)(withaccounting)
