@@ -46,7 +46,7 @@ class Storage(BaseStorage, SQLStorage) :
             port = 3306           # Use the default MySQL port
         
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
-        self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd)
+        self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd, charset="utf8")
         try :
             self.database.autocommit(1)
         except AttributeError :    

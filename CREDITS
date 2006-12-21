@@ -83,6 +83,7 @@ Contributors :
   - Brian Glogower - Worked on gnuplot scripts
   - Andrew Ross - Parakeet Print Quota : Provided a patch to allow the
     configuration files directory to be set at run time.
+  - Georger Araujo - Fixed a charset problem with MySQL.
 
 ==============================================================
 
