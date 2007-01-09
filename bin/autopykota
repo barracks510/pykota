@@ -50,6 +50,9 @@ options :
   -i | --initbalance b Sets the user's account initial balance value to b.
                        If the user already exists, actual balance is left
                        unmodified. If unset, the default value is 0.
+
+  -e | --email addr    Sets the user's e-mail address
+  
 """)
 
 class AutoPyKota(PyKotaTool) :
@@ -77,7 +80,11 @@ class AutoPyKota(PyKotaTool) :
             user = self.storage.getUser(username)
             if not user.Exists :
                 self.logdebug("Creating user %s which doesn't exist yet." % username)
-                os.system('pkusers --add --limitby balance --balance "%s" --description "user created from autopykota" "%s"' % (options["initbalance"], username))
+                if (options["email"] is None) :
+                    os.system('pkusers --add --limitby balance --balance "%s" --description "user created from autopykota" "%s"' % (options["initbalance"], username))
+                else :
+                    os.system('pkusers --add --limitby balance --balance "%s" --email "%s" --description "user created from autopykota" "%s"' % (options["initbalance"], options["email"], username))
+		    
                 user = self.storage.getUserFromBackend(username)
                 if user.Exists :
                     self.logdebug("User %s created successfully." % username)
@@ -108,8 +115,8 @@ if __name__ == "__main__" :
         defaults = { \
                      "initbalance" : 0.0
                    }
-        short_options = "vhi:"
-        long_options = ["help", "version", "initbalance="]
+        short_options = "vhi:e:"
+        long_options = ["help", "version", "initbalance=", "email="]
         
         # Initializes the command line tool
         automat = AutoPyKota(doc=__doc__)
@@ -122,6 +129,7 @@ if __name__ == "__main__" :
         options["help"] = options["h"] or options["help"]
         options["version"] = options["v"] or options["version"]
         options["initbalance"] = options["i"] or options["initbalance"] or defaults["initbalance"]
+        options["email"] = options["e"] or options["email"]
         
         if options["help"] :
             automat.display_usage_and_quit()
