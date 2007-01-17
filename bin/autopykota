@@ -6,6 +6,7 @@
 # PyKota - Print Quotas for CUPS and LPRng
 #
 # (c) 2003, 2004, 2005, 2006 Jerome Alet <alet@librelogiciel.com>
+# (c) 2007 Stefan Wold <stefan.wold@it.su.se>
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -84,7 +85,7 @@ class AutoPyKota(PyKotaTool) :
                     os.system('pkusers --add --limitby balance --balance "%s" --description "user created from autopykota" "%s"' % (options["initbalance"], username))
                 else :
                     os.system('pkusers --add --limitby balance --balance "%s" --email "%s" --description "user created from autopykota" "%s"' % (options["initbalance"], options["email"], username))
-		    
+                    
                 user = self.storage.getUserFromBackend(username)
                 if user.Exists :
                     self.logdebug("User %s created successfully." % username)
