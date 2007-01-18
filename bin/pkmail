@@ -107,7 +107,7 @@ class PKMail(PyKotaTool) :
         
         self.logdebug("Sending answer to : %s" % useremail)
         emailmsg = MIMEText(result, _charset=self.charset)
-        emailmsg["Subject"] = str(Header(_("Result of your commands"), charset=self.charset))
+        emailmsg["Subject"] = Header(_("Result of your commands"), charset=self.charset)
         emailmsg["From"] = whoami
         emailmsg["To"] = useremail
         emailmsg["Date"] = email.Utils.formatdate(localtime=True)
