@@ -345,8 +345,8 @@ class Tool :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
                 server = smtplib.SMTP(self.smtpserver)
                 msg = MIMEText(fullmessage, _charset=self.charset)
-                msg["Subject"] = str(Header("PyKota v%s crash traceback !" \
-                                        % __version__, charset=self.charset))
+                msg["Subject"] = Header("PyKota v%s crash traceback !" \
+                                        % __version__, charset=self.charset)
                 msg["From"] = admin
                 msg["To"] = crashrecipient
                 msg["Cc"] = admin
@@ -483,7 +483,7 @@ class PyKotaTool(Tool) :
         if "@" not in usermail :
             usermail = "%s@%s" % (usermail, self.maildomain or self.smtpserver or "localhost")
         msg = MIMEText(message, _charset=self.charset)
-        msg["Subject"] = str(Header(subject, charset=self.charset))
+        msg["Subject"] = Header(subject, charset=self.charset)
         msg["From"] = adminmail
         msg["To"] = usermail
         msg["Date"] = email.Utils.formatdate(localtime=True)
@@ -494,7 +494,7 @@ class PyKotaTool(Tool) :
         if "@" not in adminmail :
             adminmail = "%s@%s" % (adminmail, self.maildomain or self.smtpserver or "localhost")
         msg = MIMEText(message, _charset=self.charset)
-        msg["Subject"] = str(Header(subject, charset=self.charset))
+        msg["Subject"] = Header(subject, charset=self.charset)
         msg["From"] = adminmail
         msg["To"] = adminmail
         self.sendMessage(adminmail, adminmail, msg.as_string())
