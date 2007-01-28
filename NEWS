@@ -23,6 +23,11 @@ PyKota NEWS :
        
     - 1.26alpha2 (2007-01-18) :
     
+        - Fixed a problem with pksetup when several instances of PostgreSQL
+          were installed.
+          
+        - Fixed a failure in edpykota to cleanly delete non existing entries.
+        
         - Fixed email headers.
         
         - Changed copyright years.

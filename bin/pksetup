@@ -299,24 +299,28 @@ class PyKotaSetup :
         
     def configurePostgreSQL(self) :
         """Configures PostgreSQL for PyKota to work."""
-        pgconffile = self.confirmPipe("to find PostgreSQL's configuration files", "find /etc -name postgresql.conf 2>/dev/null")
-        if pgconffile is not False :
-            pgconffile = pgconffile.strip()
-            pgconfdir = os.path.split(pgconffile)[0]
-            answer = self.confirmPipe("to see if PostgreSQL accepts TCP/IP connections", "grep ^tcpip_socket %(pgconffile)s" % locals())
-            conflines = pghbaconf.split("\n")
-            if answer is not False :
-                tcpip = answer.strip().lower().endswith("true")
-            else :    
-                tcpip = False
-            if tcpip :    
-                conflines.insert(2, "host\tpykota\tpykotaadmin,pykotauser\t127.0.0.1\t255.255.255.255\tmd5")
-            else :
-                conflines.insert(1, "local\tpykota\tpykotaadmin,pykotauser\t\tmd5")
-            conf = "\n".join(conflines)
-            self.confirmCommand("to configure PostgreSQL correctly for PyKota", 'echo "%(conf)s" >%(pgconfdir)s/pg_hba.conf' % locals())
-            self.confirmCommand("to make PostgreSQL take the changes into account", self.pgrestart)
-            return tcpip
+        pgconffiles = self.confirmPipe("to find PostgreSQL's configuration files", "find /etc -name postgresql.conf 2>/dev/null")
+        if pgconffiles is not False :
+            pgconffiles = [part.strip() for part in pgconffiles.split()]
+            pgconfdirs = [os.path.split(pgconffile)[0] for pgconffile in pgconffiles]
+            for i in range(len(pgconfdirs)) :
+                pgconfdir = pgconfdirs[i]
+                pgconffile = pgconffiles[i]
+                if (len(pgconfdirs) == 1) or self.yesno("Do PostgreSQL configuration files reside in %(pgconfdir)s" % locals()) :
+                    answer = self.confirmPipe("to see if PostgreSQL accepts TCP/IP connections", "grep ^tcpip_socket %(pgconffile)s" % locals())
+                    conflines = pghbaconf.split("\n")
+                    if answer is not False :
+                        tcpip = answer.strip().lower().endswith("true")
+                    else :    
+                        tcpip = False
+                    if tcpip :    
+                        conflines.insert(2, "host\tpykota\tpykotaadmin,pykotauser\t127.0.0.1\t255.255.255.255\tmd5")
+                    else :
+                        conflines.insert(1, "local\tpykota\tpykotaadmin,pykotauser\t\tmd5")
+                    conf = "\n".join(conflines)
+                    self.confirmCommand("to configure PostgreSQL correctly for PyKota", 'echo "%(conf)s" >%(pgconfdir)s/pg_hba.conf' % locals())
+                    self.confirmCommand("to make PostgreSQL take the changes into account", self.pgrestart)
+                    return tcpip
         return None    
         
     def genConfig(self, adminname, adminemail, dnsdomain, smtpserver, home, tcpip) :        
