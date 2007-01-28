@@ -826,13 +826,15 @@ class SQLStorage :
     def deleteManyBillingCodes(self, billingcodes) :        
         """Deletes many billing codes."""
         codeids = ", ".join(["%s" % self.doQuote(b.ident) for b in billingcodes])
-        self.multipleQueriesInTransaction([ 
+        if codeids :
+            self.multipleQueriesInTransaction([ 
                     "DELETE FROM billingcodes WHERE id IN (%s)" % codeids,])
             
     def deleteManyUsers(self, users) :        
         """Deletes many users."""
         userids = ", ".join(["%s" % self.doQuote(u.ident) for u in users])
-        self.multipleQueriesInTransaction([ 
+        if userids :
+            self.multipleQueriesInTransaction([ 
                     "DELETE FROM payments WHERE userid IN (%s)" % userids,
                     "DELETE FROM groupsmembers WHERE userid IN (%s)" % userids,
                     "DELETE FROM jobhistory WHERE userid IN (%s)" % userids,
@@ -842,7 +844,8 @@ class SQLStorage :
     def deleteManyGroups(self, groups) :        
         """Deletes many groups."""
         groupids = ", ".join(["%s" % self.doQuote(g.ident) for g in groups])
-        self.multipleQueriesInTransaction([ 
+        if groupids :
+            self.multipleQueriesInTransaction([ 
                     "DELETE FROM groupsmembers WHERE groupid IN (%s)" % groupids,
                     "DELETE FROM grouppquota WHERE groupid IN (%s)" % groupids,
                     "DELETE FROM groups WHERE id IN (%s)" % groupids,])
@@ -850,7 +853,8 @@ class SQLStorage :
     def deleteManyPrinters(self, printers) :
         """Deletes many printers."""
         printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
-        self.multipleQueriesInTransaction([ 
+        if printerids :
+            self.multipleQueriesInTransaction([ 
                     "DELETE FROM printergroupsmembers WHERE groupid IN (%s) OR printerid IN (%s)" % (printerids, printerids),
                     "DELETE FROM jobhistory WHERE printerid IN (%s)" % printerids,
                     "DELETE FROM grouppquota WHERE printerid IN (%s)" % printerids,
@@ -861,7 +865,8 @@ class SQLStorage :
         """Deletes many user print quota entries."""
         printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
         userids = ", ".join(["%s" % self.doQuote(u.ident) for u in users])
-        self.multipleQueriesInTransaction([ 
+        if userids and printerids :
+            self.multipleQueriesInTransaction([ 
                     "DELETE FROM jobhistory WHERE userid IN (%s) AND printerid IN (%s)" \
                                  % (userids, printerids),
                     "DELETE FROM userpquota WHERE userid IN (%s) AND printerid IN (%s)" \
@@ -871,7 +876,8 @@ class SQLStorage :
         """Deletes many group print quota entries."""
         printerids = ", ".join(["%s" % self.doQuote(p.ident) for p in printers])
         groupids = ", ".join(["%s" % self.doQuote(g.ident) for g in groups])
-        self.multipleQueriesInTransaction([ 
+        if groupids and printerids :
+            self.multipleQueriesInTransaction([ 
                     "DELETE FROM grouppquota WHERE groupid IN (%s) AND printerid IN (%s)" \
                                  % (groupids, printerids),])
         
