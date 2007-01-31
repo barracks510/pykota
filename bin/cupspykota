@@ -1172,7 +1172,7 @@ class CUPSBackend(PyKotaTool) :
         # handle starting banner pages without accounting
         self.BannerSize = 0
         accountbanner = self.config.getAccountBanner(self.PrinterName)
-        if accountbanner in ["ENDING", "NONE"] :
+        if (self.Action != "CANCEL") and accountbanner in ["ENDING", "NONE"] :
             self.handleBanner("starting", 0)
         
         if self.Action == "DENY" :
@@ -1186,7 +1186,7 @@ class CUPSBackend(PyKotaTool) :
             self.installSigTermHandler()
         
         # handle starting banner pages with accounting
-        if accountbanner in ["STARTING", "BOTH"] :
+        if (self.Action != "CANCEL") and accountbanner in ["STARTING", "BOTH"] :
             if not self.gotSigTerm :
                 self.handleBanner("starting", 1)
         
@@ -1200,7 +1200,7 @@ class CUPSBackend(PyKotaTool) :
         self.exportPhaseInfo("AFTER")
         
         # handle ending banner pages with accounting
-        if accountbanner in ["ENDING", "BOTH"] :
+        if (self.Action != "CANCEL") and accountbanner in ["ENDING", "BOTH"] :
             if not self.gotSigTerm :
                 self.handleBanner("ending", 1)
         
@@ -1288,7 +1288,7 @@ class CUPSBackend(PyKotaTool) :
         self.exportUserInfo()
         
         # handle ending banner pages without accounting
-        if accountbanner in ["STARTING", "NONE"] :
+        if (self.Action != "CANCEL") and accountbanner in ["STARTING", "NONE"] :
             self.handleBanner("ending", 0)
                     
         self.launchPostHook()
