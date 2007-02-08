@@ -1619,13 +1619,20 @@ class Storage(BaseStorage) :
         
     def extractPayments(self, extractonly={}) :
         """Extracts all payment records."""
+        startdate = extractonly.get("start")
+        enddate = extractonly.get("end")
+        (startdate, enddate) = self.cleanDates(startdate, enddate)
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
             result = [ ("username", "amount", "date", "description") ]
             for entry in entries :
                 for (date, amount, description) in entry.Payments :
-                    result.append((entry.Name, amount, date, description))
+                    if ((startdate is None) and (enddate is None)) or \
+                       ((startdate is None) and (date <= enddate)) or \
+                       ((enddate is None) and (date >= startdate)) or \
+                       ((date >= startdate) and (date <= enddate)) :
+                        result.append((entry.Name, amount, date, description))
             return result        
         
     def extractUpquotas(self, extractonly={}) :

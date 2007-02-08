@@ -23,6 +23,9 @@ PyKota NEWS :
        
     - 1.26alpha3 (2007-01-31) :
     
+        - Ensures start= and end= filters are only allowed for history and 
+          payments. Made start= or end= filters also work with payments.
+          
         - Doesn't print banners anymore when the user cancelled the print job.
         
     - 1.26alpha2 (2007-01-18) :

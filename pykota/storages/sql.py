@@ -186,9 +186,21 @@ class SQLStorage :
         
     def extractPayments(self, extractonly={}) :
         """Extracts all payment records."""
+        startdate = extractonly.get("start")
+        enddate = extractonly.get("end")
+        for limit in ("start", "end") :
+            try :
+                del extractonly[limit]
+            except KeyError :    
+                pass
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
+        (startdate, enddate) = self.cleanDates(startdate, enddate)
+        if startdate : 
+            thefilter = "%s AND date>=%s" % (thefilter, self.doQuote(startdate))
+        if enddate : 
+            thefilter = "%s AND date<=%s" % (thefilter, self.doQuote(enddate))
         result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid %s ORDER BY payments.id ASC" % thefilter)
         return self.prepareRawResult(result)
         
