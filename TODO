@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Don't ask for confirmation if the job will be rejected anyway
+          because of insufficient credits.
+          
         - Document the PYKOTA_HOME environment variable.
         
         - LDAP : See if setting cn=ThePrinter for user print quota entries
