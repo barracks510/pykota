@@ -297,7 +297,7 @@ class PyKotaNotify(Tool) :
             else :    
                 if errnum == errno.ECONNREFUSED :
                     raise PyKotaToolError, "%s : %s" % (str(msg), (_("Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?") % (self.destination, self.port)))
-            raise PyKotaToolError, "%s : %s" % (_("Connection error"), str(msg))
+            self.printInfo("%s : %s" % (_("Connection error"), str(msg)), "warn")
         except TimeoutError, msg :    
             self.printInfo(msg, "warn")
             print "CANCEL"      # Timeout occured : job is cancelled.
