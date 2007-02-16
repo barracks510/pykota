@@ -89,6 +89,8 @@ printerDetectedErrorStateValues = [ { 128 : 'Low Paper',
                                         1 : 'Not Assigned in RFC3805',
                                     },
                                   ]  
+                                  
+# TODO : make the following list configurable at runtime, possibly per printer.                                  
 errorConditions = [ 'No Paper',
                     # 'No Toner',
                     'Door Open',
@@ -103,7 +105,6 @@ errorConditions = [ 'No Paper',
                   ]
 # WARNING : some printers don't support this one :                  
 prtConsoleDisplayBufferTextOID = "1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
-
 class BaseHandler :
     """A class for SNMP print accounting."""
     def __init__(self, parent, printerhostname) :
