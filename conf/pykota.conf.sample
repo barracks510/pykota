@@ -454,6 +454,7 @@ onbackenderror : nocharge
 #
 #    USERNAME=the_username_we_want_to_overwrite_with
 #    BILLINGCODE=the_billingcode_we_want_to_overwrite_with
+#    REASON=reason_we_chose_deny_or_cancel
 #    AUTH=NO (equivalent to DENY below)
 #    DENY 
 #    CANCEL
@@ -466,7 +467,9 @@ onbackenderror : nocharge
 # If only BILLINGCODE= lines are printed, the username is
 # used unchanged.
 # If DENY or CANCEL is output, neither the username nor the
-# billing code can be overwritten.
+# billing code can be overwritten. 
+# If REASON is output, that will be used in the notification in the case of 
+# DENY or CANCEL. Otherwise, the built-in reasons will be used.
 #
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
