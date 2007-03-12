@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 PyKota NEWS :
        
+    - 1.26alpha4 (2007-03-12) :
+       
+        - Don't ask for confirmation anymore if there isn't enough credits
+          to print or if the job was already denied for some reason.
+          
     - 1.26alpha3 (2007-01-31) :
     
         - Ensures start= and end= filters are only allowed for history and 

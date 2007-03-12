@@ -1104,12 +1104,6 @@ class CUPSBackend(PyKotaTool) :
         self.exportPhaseInfo("BEFORE")
         
         if self.Action not in ("DENY", "CANCEL") : 
-            if not self.didUserConfirm() :
-                self.Action = "CANCEL"
-                self.Reason = _("Print job cancelled.")
-                os.environ["PYKOTASTATUS"] = "CANCELLED"
-                
-        if self.Action not in ("DENY", "CANCEL") : 
             if self.Printer.MaxJobSize and (self.softwareJobSize > self.Printer.MaxJobSize) :
                 # This printer was set to refuse jobs this large.
                 self.printInfo(_("Precomputed job size (%s pages) too large for printer %s.") % (self.softwareJobSize, self.PrinterName), "warn")
@@ -1163,6 +1157,13 @@ class CUPSBackend(PyKotaTool) :
                     else :     
                         self.Reason = self.config.getSoftWarn(self.PrinterName)
             
+        # If job still allowed to print, should we ask for confirmation ?    
+        if self.Action not in ("DENY", "CANCEL") : 
+            if not self.didUserConfirm() :
+                self.Action = "CANCEL"
+                self.Reason = _("Print job cancelled.")
+                os.environ["PYKOTASTATUS"] = "CANCELLED"
+                
         # exports some new environment variables
         self.exportReason()
         

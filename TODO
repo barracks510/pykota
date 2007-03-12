@@ -23,9 +23,6 @@ TODO, in no particular order :
         
         - --orderby and --order ASC|DESC for dumpykota (or --asc | --desc)
         
-        - Don't ask for confirmation if the job will be rejected anyway
-          because of insufficient credits.
-          
         - Document the PYKOTA_HOME environment variable.
         
         - LDAP : See if setting cn=ThePrinter for user print quota entries
