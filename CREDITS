@@ -87,6 +87,8 @@ Contributors :
   - Andrew Ross - Parakeet Print Quota : Provided a patch to allow the
     configuration files directory to be set at run time.
   - Georger Araujo - Fixed a charset problem with MySQL.
+  - Nuno Rodrigues - Faculdade de Ciências e Tecnologia / Universidade Nova 
+    de Lisboa : Portuguese translation.
 
 ==============================================================
 
