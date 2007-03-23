@@ -20,19 +20,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
+#
 
-# Use this to clean the tree from temporary files
+# Use this to generate a tarball
 
-rm -f MANIFEST ChangeLog
-find . -name "*.bak" -exec rm -f {} \;
-find . -name "*~" -exec rm -f {} \;
-find . -name "*.pyc" -exec rm -f {} \;
-find . -name "*.pyo" -exec rm -f {} \;
-find . -name "*.jem" -exec rm -f {} \;
-find docs -name "*.html" -exec rm -f {} \;
-find docs -name "*.pdf" -exec rm -f {} \;
-find docs -name "*.tex" -exec rm -f {} \;
-find docs -name "*.dvi" -exec rm -f {} \;
-rm -fr build dist
-rm -fr debian/tmp/
-rm -fr docs/pykota/ docs/pykota.junk/
+./clean.sh
+svn2cl --group-by-day --reparagraph --include-rev --authors=AUTHORS
+python ./setup.py sdist

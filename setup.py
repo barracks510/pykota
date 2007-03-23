@@ -48,7 +48,9 @@ for mofile in mofiles :
     data_files.append((directory, [ mofile ]))
     
 docdir = "share/doc/pykota"    
-docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO", "NEWS"]
+docfiles = ["README", "FAQ", "SECURITY", "COPYING", "LICENSE", "CREDITS", "TODO"]
+if os.path.exists("ChangeLog") :
+    docfiles.append("ChangeLog")
 data_files.append((docdir, docfiles))
 
 docfiles = glob.glob(os.sep.join(["docs", "*.pdf"]))

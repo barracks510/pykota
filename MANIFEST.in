@@ -1,5 +1,5 @@
-include README FAQ COPYING LICENSE TODO NEWS CREDITS SECURITY MANIFEST.in 
-include clean.sh checkdeps.py bin/pkturnkey bin/pkmail bin/pkbanner
+include README FAQ COPYING LICENSE TODO ChangeLog AUTHORS CREDITS SECURITY MANIFEST.in 
+include clean.sh gentarball.sh checkdeps.py bin/pkturnkey bin/pkmail bin/pkbanner
 include bin/autopykota bin/dumpykota bin/cupspykota bin/edpykota bin/warnpykota
 include bin/repykota bin/pykotme bin/pykosd bin/pkprinters bin/pkbcodes bin/pkinvoice
 include bin/pknotify bin/pkusers bin/pksetup bin/pkrefund
