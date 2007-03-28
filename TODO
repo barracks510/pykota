@@ -21,6 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Add a third settable price for printers : a minimal cost
+          for a page, with a default value of 0.0. The value would
+          be used instead of the computed price in the case of ink
+          accounting if the computed price would be lower than this
+          minimal price. The value wouldn't be used (yet?) for 
+          normal page accounting.
+          
         - Allow for configurable setting wrt the fact that PyKota waits
           for the printer being idle before asking for printer's internal 
           page counter before sending any data to the printer : if
