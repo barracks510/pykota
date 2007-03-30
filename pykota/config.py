@@ -602,6 +602,24 @@ class PyKotaConfig :
                 raise PyKotaConfigError, _("Option accountbanner in section %s only supports values in %s") % (printername, str(validvalues))
             return value  
 
+    def getAvoidDuplicateBanners(self, printername) :
+        """Returns normalized value for avoiding extra banners. """
+        try :
+            avoidduplicatebanners = self.getPrinterOption(printername, "avoidduplicatebanners").upper()
+        except PyKotaConfigError :
+            return "NO"
+        else :
+            try :
+                value = int(avoidduplicatebanners)
+                if value < 0 :
+                    raise ValueError
+            except ValueError :
+                if avoidduplicatebanners not in ["YES", "NO"] :
+                    raise PyKotaConfigError, _("Option avoidduplicatebanners only accepts 'yes', 'no', or a positive integer.")
+                else :
+                    value = avoidduplicatebanners
+            return value
+
     def getStartingBanner(self, printername) :
         """Returns the startingbanner value if set, else None."""
         try :

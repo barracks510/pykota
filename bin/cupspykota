@@ -832,7 +832,35 @@ class CUPSBackend(PyKotaTool) :
             if ((self.Action == 'CANCEL') and not self.config.getPrintCancelledBanners()) :
                 self.logdebug("Print job cancelled, not printing a banner.", "warn")
             else :
-                getattr(self, "%sBanner" % bannertype)(withaccounting)
+                self.logdebug("Checking if job owner printed the last job and if another banner is needed...")
+                # Print the banner by default
+                printbanner = True
+                avoidduplicatebanners = self.config.getAvoidDuplicateBanners(self.PrinterName)
+                if ((avoidduplicatebanners == "NO") or (avoidduplicatebanners == 0)):
+                    self.logdebug("We want all banners to be printed.")
+                else :
+                    # Check if we should deny the banner or not
+                    if self.Printer.LastJob.Exists \
+                            and (self.Printer.LastJob.UserName == self.UserName) :
+                        if (avoidduplicatebanners == "YES") :
+                            printbanner = False
+                        else :    
+                            # avoidduplicatebanners is an integer, since NO, 
+                            # YES and 0 are already handled
+                            now = DateTime.now()
+                            try :
+                                previous = DateTime.ISO.ParseDateTime(str(self.Printer.LastJob.JobDate)[:19]).localtime()
+                            except :
+                                previous = now
+                            difference = (now - previous).seconds
+                            self.logdebug("Difference with previous job : %.2f seconds. Try to avoid banners for : %.2f seconds." % (difference, avoidduplicatebanners))
+                            if difference < avoidduplicatebanners :
+                                self.logdebug("Duplicate banner avoided because previous banner is less than %.2f seconds old." % avoidduplicatebanners) 
+                                printbanner = False
+                            else :
+                                printbanner = True
+                if printbanner :
+                    getattr(self, "%sBanner" % bannertype)(withaccounting)
         self.logdebug("%s banner done." % bannertype.title())
         
     def sanitizeJobSize(self) :    

@@ -1058,6 +1058,21 @@ maxdenybanners: 0
 # printcancelledbanners: yes
 
 
+# If a job is printed by the same person as the last job on the same printer, 
+# should banners be avoided to save some paper
+#
+# This option can be set either globally or on a per printer basis.
+# If set to yes, any duplicate banners will be avoided forever
+# If set to no or 0, no banners will be avoided (they will all be printed)
+# If set to any positive integer, banners will be avoided if printed within
+#     'integer' seconds of the last job 
+#
+# This value defaults to no
+# avoidduplicatebanners: yes
+# avoidduplicatebanners: no
+# avoidduplicatebanners: 600   
+
+
 # StartingBanner : if defined will print a banner before the rest of the job 
 # is printed. The argument can be a printable file, or an executable file.
 # If not executable, the file will be printed as is. If executable, the 
