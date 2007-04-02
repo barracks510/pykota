@@ -849,7 +849,7 @@ class CUPSBackend(PyKotaTool) :
                             # YES and 0 are already handled
                             now = DateTime.now()
                             try :
-                                previous = DateTime.ISO.ParseDateTime(str(self.Printer.LastJob.JobDate)[:19]).localtime()
+                                previous = DateTime.ISO.ParseDateTime(str(self.Printer.LastJob.JobDate)[:19])
                             except :
                                 previous = now
                             difference = (now - previous).seconds
@@ -989,7 +989,7 @@ class CUPSBackend(PyKotaTool) :
                     and (self.Printer.LastJob.JobMD5Sum == self.JobMD5Sum) :
                 now = DateTime.now()
                 try :
-                    previous = DateTime.ISO.ParseDateTime(str(self.Printer.LastJob.JobDate)[:19]).localtime()
+                    previous = DateTime.ISO.ParseDateTime(str(self.Printer.LastJob.JobDate)[:19])
                 except :
                     previous = now
                 difference = (now - previous).seconds
