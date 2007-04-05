@@ -245,13 +245,16 @@ if hasV4 :
         """A class for pysnmp v4.x"""
         def retrieveSNMPValues(self) :
             """Retrieves a printer's internal page counter and status via SNMP."""
-            errorIndication, errorStatus, errorIndex, varBinds = \
+            try :
+                errorIndication, errorStatus, errorIndex, varBinds = \
                  cmdgen.CommandGenerator().getCmd(cmdgen.CommunityData("pykota", self.community, 0), \
                                                   cmdgen.UdpTransportTarget((self.printerHostname, self.port)), \
                                                   tuple([int(i) for i in pageCounterOID.split('.')]), \
                                                   tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]))
+            except :                                      
+                errorIndication = "Unknown SNMP/Network error. Check your wires."
             if errorIndication :                                                  
                 self.parent.filter.printInfo("SNMP Error : %s" % errorIndication, "error")
                 self.initValues()
