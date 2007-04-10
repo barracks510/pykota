@@ -36,6 +36,7 @@ import sys
 import os
 import time
 import select
+import socket
 
 try :
     from pysnmp.entity.rfc3413.oneliner import cmdgen
@@ -253,6 +254,8 @@ if hasV4 :
                                                   tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]))
+            except socket.gaierror, msg :                                      
+                errorIndication = repr(msg)
             except :                                      
                 errorIndication = "Unknown SNMP/Network error. Check your wires."
             if errorIndication :                                                  
