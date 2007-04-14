@@ -670,7 +670,37 @@ keepfiles : no
 #
 accounter: software()
 
-
+# Should we ensure that the printer really is idle before 
+# sending the job's datas to it ?
+#
+# This directive is only used when you use an internal 
+# hardware accounting mechanism, like hardware(snmp) or
+# hardware(pjl), and is not used for external hardware
+# accounting mechanisms or for software or ink accounting.
+#
+# If PyKota and CUPS are properly configured, i.e. a single
+# computer (the print server) can access to a particular physical 
+# printer, or all CUPS+PyKota print servers which access to the
+# same physical printer share a common network directory used
+# by PyKota to lock this printer resource, then it is not necessary
+# to really ensure the printer is idle before the job, because
+# this is already the case : we already wait at the end of the
+# preceding job for the printer to be idle before reading its
+# internal page counter. So setting this value to Yes usually
+# saves a lot of time between jobs, generally around 30 seconds.
+#
+# If you're not sure, leave this value to the default which is No,
+# meaning that before sending the job's datas to the printer, PyKota
+# will ensure this printer is in idle state.
+#
+# If not defined, a value of No is assumed.
+# 
+# This value can be set either globally or on a per printer basis
+# If both are defined, the printer option has priority.
+#
+# Sane default :
+#
+skipinitialwait : no
 
 # What is the "pre"-accounter used for precomputing the job's size.
 #

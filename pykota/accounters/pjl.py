@@ -57,9 +57,10 @@ pjlStatusValues = {
                   
 class Handler :
     """A class for PJL print accounting."""
-    def __init__(self, parent, printerhostname) :
+    def __init__(self, parent, printerhostname, skipinitialwait=False) :
         self.parent = parent
         self.printerHostname = printerhostname
+        self.skipinitialwait = skipinitialwait
         try :
             self.port = int(self.parent.arguments.split(":")[1].strip())
         except (IndexError, ValueError) :
@@ -180,6 +181,11 @@ class Handler :
         idle_num = idle_flag = 0
         while 1 :
             self.retrievePJLValues()
+            if (self.printerInternalPageCounter is not None) \
+               and self.skipinitialwait \
+               and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
+                self.parent.filter.logdebug("No need to wait for the printer to be idle, this should be the case already.")
+                return 
             idle_flag = 0
             if self.printerStatus in ('10000', '10001', '35078', '40000') :
                 idle_flag = 1

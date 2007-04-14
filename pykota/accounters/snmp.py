@@ -108,9 +108,10 @@ errorConditions = [ 'No Paper',
 prtConsoleDisplayBufferTextOID = "1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
 class BaseHandler :
     """A class for SNMP print accounting."""
-    def __init__(self, parent, printerhostname) :
+    def __init__(self, parent, printerhostname, skipinitialwait=False) :
         self.parent = parent
         self.printerHostname = printerhostname
+        self.skipinitialwait = skipinitialwait
         try :
             self.community = self.parent.arguments.split(":")[1].strip()
         except IndexError :    
@@ -209,6 +210,11 @@ class BaseHandler :
         idle_num = idle_flag = 0
         while 1 :
             self.retrieveSNMPValues()
+            if (self.printerInternalPageCounter is not None) \
+               and self.skipinitialwait \
+               and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
+                self.parent.filter.logdebug("No need to wait for the printer to be idle, this should be the case already.")
+                return 
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
             idle_flag = 0

@@ -108,12 +108,13 @@ class Accounter(AccounterBase) :
         
            The external command must report the life time page number of the printer on stdout.
         """
+        skipinitialwait = self.filter.config.getPrinterSkipInitialWait(printer)
         commandline = self.arguments.strip() % locals()
         cmdlower = commandline.lower()
         if (cmdlower == "snmp") or cmdlower.startswith("snmp:") :
-            return snmp.Handler(self, printer).retrieveInternalPageCounter()
+            return snmp.Handler(self, printer, skipinitialwait).retrieveInternalPageCounter()
         elif (cmdlower == "pjl") or cmdlower.startswith("pjl:") :
-            return pjl.Handler(self, printer).retrieveInternalPageCounter()
+            return pjl.Handler(self, printer, skipinitialwait).retrieveInternalPageCounter()
             
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.PrinterName)

@@ -28,16 +28,6 @@ TODO, in no particular order :
           minimal price. The value wouldn't be used (yet?) for 
           normal page accounting.
           
-        - Allow for configurable setting wrt the fact that PyKota waits
-          for the printer being idle before asking for printer's internal 
-          page counter before sending any data to the printer : if
-          the print server is correctly configured (i.e. only PyKota can
-          access to this particular printer), then we know for sure the
-          printer will be idle at this time, because we wait for it
-          to become idle again after having printed the job => we could
-          save up to 50% of waiting time, and handle more jobs
-          in the same time.
-          
         - --orderby and --order ASC|DESC for dumpykota (or --asc | --desc)
         
         - Document the PYKOTA_HOME environment variable.

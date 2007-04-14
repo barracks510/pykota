@@ -690,5 +690,11 @@ class PyKotaConfig :
                     raise PyKotaConfigError, "Invalid coefficient %s (%s) for printer %s" % (k, value, printername)
             else :
                 del branches[k] # empty value disables a global option
-                
         return branches
+        
+    def getPrinterSkipInitialWait(self, printername) :
+        """Returns True if we want to skip the initial waiting loop, else False."""
+        try :
+            return self.isTrue(self.getPrinterOption(printername, "skipinitialwait"))
+        except PyKotaConfigError :
+            return False
