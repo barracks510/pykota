@@ -210,11 +210,6 @@ class BaseHandler :
         idle_num = idle_flag = 0
         while 1 :
             self.retrieveSNMPValues()
-            if (self.printerInternalPageCounter is not None) \
-               and self.skipinitialwait \
-               and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
-                self.parent.filter.logdebug("No need to wait for the printer to be idle, this should be the case already.")
-                return 
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
             idle_flag = 0
@@ -224,6 +219,11 @@ class BaseHandler :
                           (dstatusAsString == 'running'))) :
                 idle_flag = 1       # Standby / Powersave is considered idle
             if idle_flag :    
+                if (self.printerInternalPageCounter is not None) \
+                   and self.skipinitialwait \
+                   and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
+                    self.parent.filter.logdebug("No need to wait for the printer to be idle, it is the case already.")
+                    return 
                 idle_num += 1
                 if idle_num >= STABILIZATIONDELAY :
                     # printer status is stable, we can exit

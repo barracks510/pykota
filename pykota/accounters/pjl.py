@@ -178,18 +178,15 @@ class Handler :
         
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
-        idle_num = idle_flag = 0
+        idle_num = 0
         while 1 :
             self.retrievePJLValues()
-            if (self.printerInternalPageCounter is not None) \
-               and self.skipinitialwait \
-               and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
-                self.parent.filter.logdebug("No need to wait for the printer to be idle, this should be the case already.")
-                return 
-            idle_flag = 0
             if self.printerStatus in ('10000', '10001', '35078', '40000') :
-                idle_flag = 1
-            if idle_flag :    
+                if (self.printerInternalPageCounter is not None) \
+                   and self.skipinitialwait \
+                   and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
+                    self.parent.filter.logdebug("No need to wait for the printer to be idle, it is the case already.")
+                    return 
                 idle_num += 1
                 if idle_num >= STABILIZATIONDELAY :
                     # printer status is stable, we can exit
