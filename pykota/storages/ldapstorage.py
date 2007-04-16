@@ -1573,49 +1573,85 @@ class Storage(BaseStorage) :
         """Deletes a billing code from the Quota Storage (no entries are deleted from the history)"""
         self.doDelete(code.ident)
         
+    def sortRecords(self, fields, records, default, ordering) :     
+        """Sort records based on list of fields prefixed with '+' (ASC) or '-' (DESC)."""
+        fieldindexes = {}
+        for i in range(len(fields)) :
+            fieldindexes[fields[i]] = i
+        if not ordering :    
+            ordering = default
+        orderby = []    
+        for orderkey in ordering :
+            if orderkey.startswith("-") :
+                orderby.append((-1, fieldindexes[orderkey[1:]]))
+            elif orderkey.startswith("+") :
+                orderby.append((+1, fieldindexes[orderkey[1:]]))
+            else :    
+                orderby.append((+1, fieldindexes[orderkey]))
+                
+        def compare(x, y, orderby=orderby) :    
+            """Compares two records."""
+            i = 0
+            nbkeys = len(orderby)
+            while i < nbkeys :
+                (sign, index) = orderby[i]
+                result = cmp(x[i], y[i])
+                if not result :
+                    i += 1
+                else :    
+                    return sign * result
+            return 0 # identical keys        
+            
+        records.sort(compare)
+        return records
+        
     def extractPrinters(self, extractonly={}, ordering=[]) :
         """Extracts all printer records."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("dn", "printername", "priceperpage", "priceperjob", "description", "maxjobsize", "passthrough") ]
+            fields = ("dn", "printername", "priceperpage", "priceperjob", "description", "maxjobsize", "passthrough")
+            result = []
             for entry in entries :
                 if entry.PassThrough in (1, "1", "t", "true", "T", "TRUE", "True") :
                     passthrough = "t"
                 else :    
                     passthrough = "f"
                 result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description, entry.MaxJobSize, passthrough))
-            return result 
+            return [fields] + self.sortRecords(fields, result, ["+dn"], ordering) 
         
     def extractUsers(self, extractonly={}, ordering=[]) :
         """Extracts all user records."""
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("dn", "username", "balance", "lifetimepaid", "limitby", "email", "description", "overcharge") ]
+            fields = ("dn", "username", "balance", "lifetimepaid", "limitby", "email", "description", "overcharge")
+            result = []
             for entry in entries :
                 result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email, entry.Description, entry.OverCharge))
-            return result 
+            return [fields] + self.sortRecords(fields, result, ["+dn"], ordering)
         
     def extractBillingcodes(self, extractonly={}, ordering=[]) :
         """Extracts all billing codes records."""
         billingcode = extractonly.get("billingcode")
         entries = [b for b in [self.getBillingCode(label) for label in self.getAllBillingCodes(billingcode)] if b.Exists]
         if entries :
-            result = [ ("dn", "billingcode", "balance", "pagecounter", "description") ]
+            fields = ("dn", "billingcode", "balance", "pagecounter", "description")
+            result = []
             for entry in entries :
                 result.append((entry.ident, entry.BillingCode, entry.Balance, entry.PageCounter, entry.Description))
-            return result 
+            return [fields] + self.sortRecords(fields, result, ["+dn"], ordering)
         
     def extractGroups(self, extractonly={}, ordering=[]) :
         """Extracts all group records."""
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
         if entries :
-            result = [ ("dn", "groupname", "limitby", "balance", "lifetimepaid", "description") ]
+            fields = ("dn", "groupname", "limitby", "balance", "lifetimepaid", "description")
+            result = []
             for entry in entries :
                 result.append((entry.ident, entry.Name, entry.LimitBy, entry.AccountBalance, entry.LifeTimePaid, entry.Description))
-            return result 
+            return [fields] + self.sortRecords(fields, result, ["+dn"], ordering)
         
     def extractPayments(self, extractonly={}, ordering=[]) :
         """Extracts all payment records."""
@@ -1625,7 +1661,8 @@ class Storage(BaseStorage) :
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
         if entries :
-            result = [ ("username", "amount", "date", "description") ]
+            fields = ("username", "amount", "date", "description")
+            result = []
             for entry in entries :
                 for (date, amount, description) in entry.Payments :
                     if ((startdate is None) and (enddate is None)) or \
@@ -1633,57 +1670,61 @@ class Storage(BaseStorage) :
                        ((enddate is None) and (date >= startdate)) or \
                        ((date >= startdate) and (date <= enddate)) :
                         result.append((entry.Name, amount, date, description))
-            return result        
+            return [fields] + self.sortRecords(fields, result, ["+date"], ordering)
         
     def extractUpquotas(self, extractonly={}, ordering=[]) :
         """Extracts all userpquota records."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("username", "printername", "dn", "userdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit") ]
+            fields = ("username", "printername", "dn", "userdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit")
+            result = []
             uname = extractonly.get("username")
             for entry in entries :
                 for (user, userpquota) in self.getPrinterUsersAndQuotas(entry, names=[uname or "*"]) :
                     result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
-            return result
+            return [fields] + self.sortRecords(fields, result, ["+userdn"], ordering)
         
     def extractGpquotas(self, extractonly={}, ordering=[]) :
         """Extracts all grouppquota records."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("groupname", "printername", "dn", "groupdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit") ]
+            fields = ("groupname", "printername", "dn", "groupdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit")
+            result = []
             gname = extractonly.get("groupname")
             for entry in entries :
                 for (group, grouppquota) in self.getPrinterGroupsAndQuotas(entry, names=[gname or "*"]) :
                     result.append((group.Name, entry.Name, grouppquota.ident, group.ident, entry.ident, grouppquota.LifePageCounter, grouppquota.PageCounter, grouppquota.SoftLimit, grouppquota.HardLimit, grouppquota.DateLimit))
-            return result
+            return [fields] + self.sortRecords(fields, result, ["+groupdn"], ordering)
         
     def extractUmembers(self, extractonly={}, ordering=[]) :
         """Extracts all user groups members."""
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
         if entries :
-            result = [ ("groupname", "username", "groupdn", "userdn") ]
+            fields = ("groupname", "username", "groupdn", "userdn")
+            result = []
             uname = extractonly.get("username")
             for entry in entries :
                 for member in entry.Members :
                     if (uname is None) or (member.Name == uname) :
                         result.append((entry.Name, member.Name, entry.ident, member.ident))
-            return result        
+            return [fields] + self.sortRecords(fields, result, ["+groupdn", "+userdn"], ordering)
                 
     def extractPmembers(self, extractonly={}, ordering=[]) :
         """Extracts all printer groups members."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            result = [ ("pgroupname", "printername", "pgroupdn", "printerdn") ]
+            fields = ("pgroupname", "printername", "pgroupdn", "printerdn")
+            result = []
             pgname = extractonly.get("pgroupname")
             for entry in entries :
                 for parent in self.getParentPrinters(entry) :
                     if (pgname is None) or (parent.Name == pgname) :
                         result.append((parent.Name, entry.Name, parent.ident, entry.ident))
-            return result        
+            return [fields] + self.sortRecords(fields, result, ["+pgroupdn", "+printerdn"], ordering)
         
     def extractHistory(self, extractonly={}, ordering=[]) :
         """Extracts all jobhistory records."""
@@ -1702,10 +1743,11 @@ class Storage(BaseStorage) :
         (startdate, enddate) = self.cleanDates(startdate, enddate)
         entries = self.retrieveHistory(user, printer, hostname=extractonly.get("hostname"), billingcode=extractonly.get("billingcode"), jobid=extractonly.get("jobid"), limit=None, start=startdate, end=enddate)
         if entries :
-            result = [ ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode", "precomputedjobsize", "precomputedjobprice") ] 
+            fields = ("username", "printername", "dn", "jobid", "pagecounter", "jobsize", "action", "jobdate", "filename", "title", "copies", "options", "jobprice", "hostname", "jobsizebytes", "md5sum", "pages", "billingcode", "precomputedjobsize", "precomputedjobprice")
+            result = []
             for entry in entries :
                 result.append((entry.UserName, entry.PrinterName, entry.ident, entry.JobId, entry.PrinterPageCounter, entry.JobSize, entry.JobAction, entry.JobDate, entry.JobFileName, entry.JobTitle, entry.JobCopies, entry.JobOptions, entry.JobPrice, entry.JobHostName, entry.JobSizeBytes, entry.JobMD5Sum, entry.JobPages, entry.JobBillingCode, entry.PrecomputedJobSize, entry.PrecomputedJobPrice)) 
-            return result
+            return [fields] + self.sortRecords(fields, result, ["+dn"], ordering)
             
     def getBillingCodeFromBackend(self, label) :
         """Extracts billing code information given its label : returns first matching billing code."""
