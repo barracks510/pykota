@@ -79,6 +79,19 @@ class DumPyKota(PyKotaTool) :
         if datatype not in self.validdatatypes.keys() :
             raise PyKotaCommandLineError, _("Invalid modifier [%s] for --data command line option, see help.") % datatype
                     
+        orderby = options["orderby"]             
+        if orderby :
+            fields = [f.strip() for f in orderby.split(",")]
+            orderby = []
+            for field in fields :
+                if field.isalpha() \
+                   or ((field[0] in ("+", "-")) and field[1:].isalpha()) :
+                    orderby.append(field)
+                else :    
+                    self.printInfo("Skipping invalid ordering statement '%(field)s'" % locals(), "error") 
+        else :
+            orderby = []
+            
         extractonly = {}
         if datatype == "all" :            
             if (options["format"] != "xml") or options["sum"] or arguments :
@@ -146,7 +159,7 @@ class DumPyKota(PyKotaTool) :
                     neededdatatypes.remove(datatype)
             retcode = self.dumpXml(allentries, neededdatatypes)
         else :    
-            entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
+            entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly, orderby)
             if entries :
                 nbentries = len(entries)
                 retcode = getattr(self, "dump%s" % format.title())([self.summarizeDatas(entries, datatype, extractonly, options["sum"])], [datatype])

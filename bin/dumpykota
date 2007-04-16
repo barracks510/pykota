@@ -77,6 +77,13 @@ options :
                        is the default value and means stdout.
                        WARNING : existing files are truncated !
 
+  -O | --orderby exp   Change the ordering or result. 'exp' is a comma
+                       separated list of ordering statements, for example
+                       '--orderby +username,-printername'. Not all expression
+                       values are meaningful, so using this command line 
+                       switch is not recommanded if you don't know the 
+                       exact layout of PyKota's database schema.
+                       
   -s | --sum           Summarize the selected datas.
                            ONLY AVAILABLE WITH --data history or payments
 
@@ -149,8 +156,8 @@ if __name__ == "__main__" :
                      "format" : "csv", \
                      "output" : "-", \
                    }
-        short_options = "vhd:f:o:s"
-        long_options = ["help", "version", "data=", "format=", "output=", "sum"]
+        short_options = "vhd:f:o:sO:"
+        long_options = ["help", "version", "data=", "format=", "output=", "sum", "orderby="]
         
         # Initializes the command line tool
         dumper = DumPyKota(doc=__doc__)
@@ -166,6 +173,7 @@ if __name__ == "__main__" :
         options["format"] = options["f"] or options["format"] or defaults["format"]
         options["output"] = options["o"] or options["output"] or defaults["output"]
         options["sum"] = options["s"] or options["sum"]
+        options["orderby"] = options["O"] or options["orderby"]
         
         if options["help"] :
             dumper.display_usage_and_quit()

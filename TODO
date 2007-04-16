@@ -29,6 +29,7 @@ TODO, in no particular order :
           normal page accounting.
           
         - --orderby and --order ASC|DESC for dumpykota (or --asc | --desc)
+          Now works for SQL backends, not with LDAP yet.
         
         - Document the PYKOTA_HOME environment variable.
         

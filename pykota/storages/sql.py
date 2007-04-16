@@ -152,39 +152,57 @@ class SQLStorage :
             return " AND ".join(expressions)     
         return ""        
         
-    def extractPrinters(self, extractonly={}) :
+    def createOrderBy(self, default, ordering) :    
+        """Creates a suitable ORDER BY statement based on a list of fieldnames prefixed with '+' (ASC) or '-' (DESC)."""
+        statements = []
+        if not ordering :
+            ordering = default
+        for field in ordering :    
+            if field.startswith("-") :    
+                statements.append("%s DESC" % field[1:])
+            elif field.startswith("+") :
+                statements.append("%s ASC" % field[1:])
+            else :    
+                statements.append("%s ASC" % field)
+        return ", ".join(statements)    
+        
+    def extractPrinters(self, extractonly={}, ordering=[]) :
         """Extracts all printer records."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "WHERE %s" % thefilter
-        result = self.doRawSearch("SELECT * FROM printers %s ORDER BY id ASC" % thefilter)
+        orderby = self.createOrderBy(["+id"], ordering)
+        result = self.doRawSearch("SELECT * FROM printers %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractUsers(self, extractonly={}) :
+    def extractUsers(self, extractonly={}, ordering=[]) :
         """Extracts all user records."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "WHERE %s" % thefilter
-        result = self.doRawSearch("SELECT * FROM users %s ORDER BY id ASC" % thefilter)
+        orderby = self.createOrderBy(["+id"], ordering)
+        result = self.doRawSearch("SELECT * FROM users %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractBillingcodes(self, extractonly={}) :
+    def extractBillingcodes(self, extractonly={}, ordering=[]) :
         """Extracts all billing codes records."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "WHERE %s" % thefilter
-        result = self.doRawSearch("SELECT * FROM billingcodes %s ORDER BY id ASC" % thefilter)
+        orderby = self.createOrderBy(["+id"], ordering)
+        result = self.doRawSearch("SELECT * FROM billingcodes %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractGroups(self, extractonly={}) :
+    def extractGroups(self, extractonly={}, ordering=[]) :
         """Extracts all group records."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "WHERE %s" % thefilter
-        result = self.doRawSearch("SELECT groups.*,COALESCE(SUM(balance), 0) AS balance, COALESCE(SUM(lifetimepaid), 0) as lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) %s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description ORDER BY groups.id ASC" % thefilter)
+        orderby = self.createOrderBy(["+groups.id"], ordering)
+        result = self.doRawSearch("SELECT groups.*,COALESCE(SUM(balance), 0) AS balance, COALESCE(SUM(lifetimepaid), 0) as lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) %(thefilter)s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractPayments(self, extractonly={}) :
+    def extractPayments(self, extractonly={}, ordering=[]) :
         """Extracts all payment records."""
         startdate = extractonly.get("start")
         enddate = extractonly.get("end")
@@ -201,34 +219,38 @@ class SQLStorage :
             thefilter = "%s AND date>=%s" % (thefilter, self.doQuote(startdate))
         if enddate : 
             thefilter = "%s AND date<=%s" % (thefilter, self.doQuote(enddate))
-        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid %s ORDER BY payments.id ASC" % thefilter)
+        orderby = self.createOrderBy(["+payments.id"], ordering)
+        result = self.doRawSearch("SELECT username,payments.* FROM users,payments WHERE users.id=payments.userid %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractUpquotas(self, extractonly={}) :
+    def extractUpquotas(self, extractonly={}, ordering=[]) :
         """Extracts all userpquota records."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid %s ORDER BY userpquota.id ASC" % thefilter)
+        orderby = self.createOrderBy(["+userpquota.id"], ordering)
+        result = self.doRawSearch("SELECT users.username,printers.printername,userpquota.* FROM users,printers,userpquota WHERE users.id=userpquota.userid AND printers.id=userpquota.printerid %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractGpquotas(self, extractonly={}) :
+    def extractGpquotas(self, extractonly={}, ordering=[]) :
         """Extracts all grouppquota records."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,grouppquota.maxjobsize,groups.groupname,printers.printername ORDER BY grouppquota.id ASC" % thefilter)
+        orderby = self.createOrderBy(["+grouppquota.id"], ordering)
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %(thefilter)s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,grouppquota.maxjobsize,groups.groupname,printers.printername ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractUmembers(self, extractonly={}) :
+    def extractUmembers(self, extractonly={}, ordering=[]) :
         """Extracts all user groups members."""
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid %s ORDER BY groupsmembers.groupid ASC, groupsmembers.userid ASC" % thefilter)
+        orderby = self.createOrderBy(["+groupsmembers.groupid", "+groupsmembers.userid"], ordering)
+        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractPmembers(self, extractonly={}) :
+    def extractPmembers(self, extractonly={}, ordering=[]) :
         """Extracts all printer groups members."""
         for (k, v) in extractonly.items() :
             if k == "pgroupname" :
@@ -240,10 +262,11 @@ class SQLStorage :
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid %s ORDER BY printergroupsmembers.groupid ASC, printergroupsmembers.printerid ASC" % thefilter)
+        orderby = self.createOrderBy(["+printergroupsmembers.groupid", "+printergroupsmembers.printerid"], ordering)
+        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
         
-    def extractHistory(self, extractonly={}) :
+    def extractHistory(self, extractonly={}, ordering=[]) :
         """Extracts all jobhistory records."""
         startdate = extractonly.get("start")
         enddate = extractonly.get("end")
@@ -260,7 +283,8 @@ class SQLStorage :
             thefilter = "%s AND jobdate>=%s" % (thefilter, self.doQuote(startdate))
         if enddate : 
             thefilter = "%s AND jobdate<=%s" % (thefilter, self.doQuote(enddate))
-        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid %s ORDER BY jobhistory.id ASC" % thefilter)
+        orderby = self.createOrderBy(["+jobhistory.id"], ordering)
+        result = self.doRawSearch("SELECT users.username,printers.printername,jobhistory.* FROM users,printers,jobhistory WHERE users.id=jobhistory.userid AND printers.id=jobhistory.printerid %(thefilter)s ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
             
     def filterNames(self, records, attribute, patterns=None) :

@@ -1573,7 +1573,7 @@ class Storage(BaseStorage) :
         """Deletes a billing code from the Quota Storage (no entries are deleted from the history)"""
         self.doDelete(code.ident)
         
-    def extractPrinters(self, extractonly={}) :
+    def extractPrinters(self, extractonly={}, ordering=[]) :
         """Extracts all printer records."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
@@ -1587,7 +1587,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.Name, entry.PricePerPage, entry.PricePerJob, entry.Description, entry.MaxJobSize, passthrough))
             return result 
         
-    def extractUsers(self, extractonly={}) :
+    def extractUsers(self, extractonly={}, ordering=[]) :
         """Extracts all user records."""
         uname = extractonly.get("username")
         entries = [u for u in [self.getUser(name) for name in self.getAllUsersNames(uname)] if u.Exists]
@@ -1597,7 +1597,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.Name, entry.AccountBalance, entry.LifeTimePaid, entry.LimitBy, entry.Email, entry.Description, entry.OverCharge))
             return result 
         
-    def extractBillingcodes(self, extractonly={}) :
+    def extractBillingcodes(self, extractonly={}, ordering=[]) :
         """Extracts all billing codes records."""
         billingcode = extractonly.get("billingcode")
         entries = [b for b in [self.getBillingCode(label) for label in self.getAllBillingCodes(billingcode)] if b.Exists]
@@ -1607,7 +1607,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.BillingCode, entry.Balance, entry.PageCounter, entry.Description))
             return result 
         
-    def extractGroups(self, extractonly={}) :
+    def extractGroups(self, extractonly={}, ordering=[]) :
         """Extracts all group records."""
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
@@ -1617,7 +1617,7 @@ class Storage(BaseStorage) :
                 result.append((entry.ident, entry.Name, entry.LimitBy, entry.AccountBalance, entry.LifeTimePaid, entry.Description))
             return result 
         
-    def extractPayments(self, extractonly={}) :
+    def extractPayments(self, extractonly={}, ordering=[]) :
         """Extracts all payment records."""
         startdate = extractonly.get("start")
         enddate = extractonly.get("end")
@@ -1635,7 +1635,7 @@ class Storage(BaseStorage) :
                         result.append((entry.Name, amount, date, description))
             return result        
         
-    def extractUpquotas(self, extractonly={}) :
+    def extractUpquotas(self, extractonly={}, ordering=[]) :
         """Extracts all userpquota records."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
@@ -1647,7 +1647,7 @@ class Storage(BaseStorage) :
                     result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
             return result
         
-    def extractGpquotas(self, extractonly={}) :
+    def extractGpquotas(self, extractonly={}, ordering=[]) :
         """Extracts all grouppquota records."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
@@ -1659,7 +1659,7 @@ class Storage(BaseStorage) :
                     result.append((group.Name, entry.Name, grouppquota.ident, group.ident, entry.ident, grouppquota.LifePageCounter, grouppquota.PageCounter, grouppquota.SoftLimit, grouppquota.HardLimit, grouppquota.DateLimit))
             return result
         
-    def extractUmembers(self, extractonly={}) :
+    def extractUmembers(self, extractonly={}, ordering=[]) :
         """Extracts all user groups members."""
         gname = extractonly.get("groupname")
         entries = [g for g in [self.getGroup(name) for name in self.getAllGroupsNames(gname)] if g.Exists]
@@ -1672,7 +1672,7 @@ class Storage(BaseStorage) :
                         result.append((entry.Name, member.Name, entry.ident, member.ident))
             return result        
                 
-    def extractPmembers(self, extractonly={}) :
+    def extractPmembers(self, extractonly={}, ordering=[]) :
         """Extracts all printer groups members."""
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
@@ -1685,7 +1685,7 @@ class Storage(BaseStorage) :
                         result.append((parent.Name, entry.Name, parent.ident, entry.ident))
             return result        
         
-    def extractHistory(self, extractonly={}) :
+    def extractHistory(self, extractonly={}, ordering=[]) :
         """Extracts all jobhistory records."""
         uname = extractonly.get("username")
         if uname :
