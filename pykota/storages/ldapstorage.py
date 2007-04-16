@@ -1582,12 +1582,19 @@ class Storage(BaseStorage) :
             ordering = default
         orderby = []    
         for orderkey in ordering :
+            # Create ordering hints, ignoring unknown fields
             if orderkey.startswith("-") :
-                orderby.append((-1, fieldindexes[orderkey[1:]]))
+                index = fieldindexes.get(orderkey[1:])
+                if index is not None :
+                    orderby.append((-1, index))
             elif orderkey.startswith("+") :
-                orderby.append((+1, fieldindexes[orderkey[1:]]))
+                index = fieldindexes.get(orderkey[1:])
+                if index is not None :
+                    orderby.append((+1, index))
             else :    
-                orderby.append((+1, fieldindexes[orderkey]))
+                index = fieldindexes.get(orderkey)
+                if index is not None :
+                    orderby.append((+1, index))
                 
         def compare(x, y, orderby=orderby) :    
             """Compares two records."""
