@@ -217,7 +217,7 @@ class SQLStorage :
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,grouppquota.maxjobsize,groups.groupname,printers.printername ORDER BY grouppquota.id" % thefilter)
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,grouppquota.maxjobsize,groups.groupname,printers.printername ORDER BY grouppquota.id ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractUmembers(self, extractonly={}) :
@@ -225,7 +225,7 @@ class SQLStorage :
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid %s ORDER BY groupsmembers.groupid, groupsmembers.userid ASC" % thefilter)
+        result = self.doRawSearch("SELECT groups.groupname, users.username, groupsmembers.* FROM groups,users,groupsmembers WHERE users.id=groupsmembers.userid AND groups.id=groupsmembers.groupid %s ORDER BY groupsmembers.groupid ASC, groupsmembers.userid ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractPmembers(self, extractonly={}) :
@@ -240,7 +240,7 @@ class SQLStorage :
         thefilter = self.createFilter(extractonly)
         if thefilter :
             thefilter = "AND %s" % thefilter
-        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid %s ORDER BY printergroupsmembers.groupid, printergroupsmembers.printerid ASC" % thefilter)
+        result = self.doRawSearch("SELECT p1.printername as pgroupname, p2.printername as printername, printergroupsmembers.* FROM printers p1, printers p2, printergroupsmembers WHERE p1.id=printergroupsmembers.groupid AND p2.id=printergroupsmembers.printerid %s ORDER BY printergroupsmembers.groupid ASC, printergroupsmembers.printerid ASC" % thefilter)
         return self.prepareRawResult(result)
         
     def extractHistory(self, extractonly={}) :
