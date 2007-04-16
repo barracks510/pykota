@@ -151,7 +151,7 @@ class DumPyKota(PyKotaTool) :
                           "gpquotas", "payments", "history" ]
             neededdatatypes = datatypes[:]              
             for datatype in datatypes :
-                entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly)
+                entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly) # We don't care about ordering here
                 if entries :
                     nbentries += len(entries)
                     allentries.append(entries)
