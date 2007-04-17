@@ -328,24 +328,26 @@ maildomain: example.com
 
 
 
-# Should we force usernames to be all lowercase when printing ?
-# Default is No. 
+# Should we modify usernames when printing ?
+# Default is native, meaning usernames won't be modified.
 # This is a [global] option only.
-# Some people reported that WinXP sends mixed case usernames
-# setting 'utolower: Yes' solves the problem.
-# Of course you have to use lowercase only when adding
-# users with edpykota, because ALL database accesses are
+# Some people reported that WinXP sends mixed case usernames,
+# setting usernamecase to 'upper' or 'lower' solves the problem.
+# Of course you have to use uppercase or lowercase only when managing
+# users with pkusers, because ALL database accesses are
 # still case sensitive.
 #
-# If utolower is Yes, the usernames received from the printing
-# system is converted to lowercase at the start of printing,
-# BUT ONLY when printing.
+# If usernamecase is 'upper' or 'lower', the usernames received 
+# from the printing system are converted to uppercase or lowercase, 
+# respectively, at the start of printing, BUT ONLY when printing.
 #
-# If utolower is No, which is the default, strict case checking
+# If usernamecase is 'native', which is the default, strict case checking
 # is done, this means that users 'Jerome' and 'jerome' are
 # different. Printer and groups names are ALWAYS case sensitive.
 #
-utolower: No
+# usernamecase : upper
+# usernamecase : lower
+usernamecase: native
 
 
 

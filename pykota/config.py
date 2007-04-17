@@ -76,7 +76,7 @@ class PyKotaConfig :
             return self.config.get("global", option, raw=1)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
             if ignore :
-                return
+                return None
             else :
                 raise PyKotaConfigError, _("Option %s not found in section global of %s") % (option, self.filename)
                 
@@ -521,8 +521,18 @@ class PyKotaConfig :
         return self.isTrue(self.getGlobalOption("disablehistory", ignore=1))
             
     def getUserNameToLower(self) :          
-        """Returns True if we want to convert usernames to lowercase when printing, else False."""
-        return self.isTrue(self.getGlobalOption("utolower", ignore=1))
+        """Deprecated."""
+        return self.getGlobalOption("utolower", ignore=1)
+        
+    def getUserNameCase(self) :
+        """Returns value for user name case: upper, lower or native"""
+        validvalues = [ "upper", "lower", "native" ]
+        value = self.getGlobalOption("usernamecase", ignore=1).strip().lower()
+        if value is None :
+            value = "native"
+        if value not in validvalues :
+            raise PyKotaConfigError, _("Option usernamecase only supports values in %s") % str(validvalues)
+        return value
         
     def getRejectUnknown(self) :          
         """Returns True if we want to reject the creation of unknown users or groups, else False."""

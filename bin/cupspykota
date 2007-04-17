@@ -390,9 +390,15 @@ class CUPSBackend(PyKotaTool) :
         if separator is not None :
             self.UserName = self.UserName.split(separator)[-1]
             
-        # do we want to lowercase usernames ?    
-        if self.config.getUserNameToLower() :
-            self.UserName = self.UserName.lower()
+        # this option is deprecated, and we want to tell people    
+        # this is the case.
+        dummy = self.config.getUserNameToLower()
+        if dummy is not None :
+            self.printInfo("Option 'utolower' is deprecated. Please use the 'usernamecase' option instead. Syntax is 'usernamecase: lower|upper|native' and defaults to 'native'.", "error")
+        # Now use the newer and more complete 'usernamecase' directive.    
+        casechange = self.config.getUserNameCase()    
+        if casechange != "native" :
+            self.UserName = getattr(self.UserName, casechange)()
             
         # do we want to strip some prefix off of titles ?    
         stripprefix = self.config.getStripTitle(self.PrinterName)
