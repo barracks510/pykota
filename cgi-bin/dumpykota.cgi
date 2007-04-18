@@ -235,6 +235,7 @@ if __name__ == "__main__" :
                 "data" : "history",
                 "format" : "cups",
                 "sum" : None,
+                "orderby" : None,
               }
     admin.arguments = []
     admin.guiAction()
