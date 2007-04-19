@@ -392,9 +392,14 @@ class CUPSBackend(PyKotaTool) :
             
         # this option is deprecated, and we want to tell people    
         # this is the case.
-        dummy = self.config.getUserNameToLower()
-        if dummy is not None :
+        tolower = self.config.getUserNameToLower()
+        if tolower is not None :
             self.printInfo("Option 'utolower' is deprecated. Please use the 'usernamecase' option instead. Syntax is 'usernamecase: lower|upper|native' and defaults to 'native'.", "error")
+            # We apply it anyway if needed, to not break existing
+            # configurations. TODO : make this a fatal failure in v1.27
+            if self.config.isTrue(tolower) :
+                self.UserName = self.UserName.lower()
+                
         # Now use the newer and more complete 'usernamecase' directive.    
         casechange = self.config.getUserNameCase()    
         if casechange != "native" :
