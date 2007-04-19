@@ -527,8 +527,9 @@ class PyKotaConfig :
     def getUserNameCase(self) :
         """Returns value for user name case: upper, lower or native"""
         validvalues = [ "upper", "lower", "native" ]
-        value = self.getGlobalOption("usernamecase", ignore=1).strip().lower()
-        if value is None :
+        try :
+            value = self.getGlobalOption("usernamecase", ignore=1).strip().lower()
+        except AttributeError :    
             value = "native"
         if value not in validvalues :
             raise PyKotaConfigError, _("Option usernamecase only supports values in %s") % str(validvalues)
