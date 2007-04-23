@@ -196,7 +196,7 @@ class PyKotaSetup :
                  "python-pam" ]
         
     otherpackages = [ { "name" : "pkpgcounter",
-                        "version" : "2.12",
+                        "version" : "2.16",
                         "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
                         "commands" : [ "tar -zxf %(name)s-%(version)s.tar.gz",
                                        "cd %(name)s-%(version)s",
