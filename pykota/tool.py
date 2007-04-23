@@ -140,6 +140,14 @@ class Tool :
         except locale.Error :    
             self.charset = sys.getfilesystemencoding()
         
+        # Dirty hack : if the charset is ASCII, we can safely use UTF-8 instead
+        # This has the advantage of allowing transparent support for recent
+        # versions of CUPS which (en-)force charset to UTF-8 when printing.
+        # This should be needed only when printing, but is probably (?) safe
+        # to do when using interactive commands.
+        if self.charset.upper() in ('ASCII', 'ANSI_X3.4-1968') :
+            self.charset = "UTF-8"
+        
         # translation stuff
         try :
             try :
