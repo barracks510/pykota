@@ -25,17 +25,14 @@
 import sys
 import os
 import socket
+import errno
 import time
-import signal
+import threading
+import Queue
 
-# NB : in fact these variables don't do much, since the time 
-# is in fact wasted in the sock.recv() blocking call, with the timeout
-ITERATIONDELAY = 1   # 1 Second
-STABILIZATIONDELAY = 3 # We must read three times the same value to consider it to be stable
-NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds byb default.
+from pykota import constants
 
-# Here's the real thing :
-TIMEOUT = 5
+FORMFEEDCHAR = 0x0c     # Form Feed character, ends PJL answers.
 
 # Old method : pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 # Here's a new method, which seems to work fine on my HP2300N, while the 
@@ -66,75 +63,115 @@ class Handler :
         except (IndexError, ValueError) :
             self.port = 9100
         self.printerInternalPageCounter = self.printerStatus = None
-        self.timedout = 0
+        self.closed = False
+        self.sock = None
+        self.queue = None
+        self.readthread = None
+        self.quitEvent = threading.Event()
         
-    def alarmHandler(self, signum, frame) :    
-        """Query has timedout, handle this."""
-        self.timedout = 1
-        raise IOError, "Waiting for PJL answer timed out. Please try again later."
+    def __del__(self) :    
+        """Ensures the network connection is closed at object deletion time."""
+        self.close()
         
-    def retrievePJLValues(self) :    
-        """Retrieves a printer's internal page counter and status via PJL."""
+    def open(self) :    
+        """Opens the network connection."""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try :
             sock.connect((self.printerHostname, self.port))
         except socket.error, msg :
             self.parent.filter.printInfo(_("Problem during connection to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
+            return False
         else :
-            self.parent.filter.logdebug("Connected to printer %s" % self.printerHostname)
+            sock.setblocking(False)
+            self.sock = sock
+            self.closed = False
+            self.quitEvent.clear()
+            self.queue = Queue.Queue(0)
+            self.readthread = threading.Thread(target=self.readloop)
+            self.readthread.start()
+            self.parent.filter.logdebug("Connected to printer %s:%s" % (self.printerHostname, self.port))
+            return True
+        
+    def close(self) :    
+        """Closes the network connection."""
+        if not self.closed :
+            self.quitEvent.set()
+            if self.readthread is not None :
+                self.readthread.join()
+                self.readthread = None
+            if self.sock is not None :
+                self.sock.close()
+                self.sock = None
+            self.parent.filter.logdebug("Connection to %s:%s is now closed." % (self.printerHostname, self.port))
+            self.queue = None
+            self.closed = True
+            
+    def readloop(self) :        
+        """Reading loop thread."""
+        self.parent.filter.logdebug("Reading thread started.")
+        buffer = []
+        while not self.quitEvent.isSet() :
             try :
-                sock.send(pjlMessage)
-            except socket.error, msg :
-                self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
+                answer = self.sock.recv(4096)
+            except socket.error, (err, msg) :
+                time.sleep(0.1) # We will try again later in all cases
+                if err != errno.EAGAIN :
+                    self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
-                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
-                actualpagecount = self.printerStatus = None
-                self.timedout = 0
-                while (self.timedout == 0) or (actualpagecount is None) or (self.printerStatus is None) :
-                    signal.signal(signal.SIGALRM, self.alarmHandler)
-                    signal.alarm(TIMEOUT)
-                    try :
-                        answer = sock.recv(1024)
-                    except IOError, msg :    
-                        self.parent.filter.logdebug("I/O Error [%s] : alarm handler probably called" % msg)
-                        break   # our alarm handler was launched, probably
-                    except socket.error, msg :
-                        self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
-                    else :    
-                        readnext = 0
-                        self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
-                        for line in [l.strip() for l in answer.split()] : 
-                            if line.startswith("CODE=") :
-                                self.printerStatus = line.split("=")[1]
-                                self.parent.filter.logdebug("Found status : %s" % self.printerStatus)
-                            elif line.startswith("PAGECOUNT=") :    
-                                try :
-                                    actualpagecount = int(line.split('=')[1].strip())
-                                except ValueError :    
-                                    self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
-                                else :
-                                    self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
-                            elif line.startswith("PAGECOUNT") :    
-                                readnext = 1 # page counter is on next line
-                            elif readnext :    
-                                try :
-                                    actualpagecount = int(line.strip())
-                                except ValueError :    
-                                    self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
-                                else :
-                                    self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
-                                    readnext = 0
-                    signal.alarm(0)
-                self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
-        sock.close()
-        self.parent.filter.logdebug("Connection to %s is now closed." % self.printerHostname)
+                buffer.append(answer)
+                if answer.endswith(constants.FORMFEEDCHAR) :
+                    self.queue.put("".join(buffer))
+                    buffer = []
+        if buffer :             
+            self.queue.put("".join(buffer))            
+        self.parent.filter.logdebug("Reading thread ended.")
+            
+    def retrievePJLValues(self) :    
+        """Retrieves a printer's internal page counter and status via PJL."""
+        try :
+            self.sock.send(pjlMessage)
+        except socket.error, msg :
+            self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
+        else :    
+            self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
+            actualpagecount = self.printerStatus = None
+            while (actualpagecount is None) or (self.printerStatus is None) :
+                try :
+                    answer = self.queue.get(True, 5)
+                except Queue.Empty :    
+                    self.parent.filter.logdebug("Timeout when reading printer's answer from %s:%s" % (self.printerHostname, self.port))
+                else :    
+                    readnext = False
+                    self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
+                    for line in [l.strip() for l in answer.split()] : 
+                        if line.startswith("CODE=") :
+                            self.printerStatus = line.split("=")[1]
+                            self.parent.filter.logdebug("Found status : %s" % self.printerStatus)
+                        elif line.startswith("PAGECOUNT=") :    
+                            try :
+                                actualpagecount = int(line.split('=')[1].strip())
+                            except ValueError :    
+                                self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
+                            else :
+                                self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
+                        elif line.startswith("PAGECOUNT") :    
+                            readnext = True # page counter is on next line
+                        elif readnext :    
+                            try :
+                                actualpagecount = int(line.strip())
+                            except ValueError :    
+                                self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
+                            else :
+                                self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
+                                readnext = False
+            self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
         try :
             noprintingmaxdelay = int(self.parent.filter.config.getNoPrintingMaxDelay(self.parent.filter.PrinterName))
         except (TypeError, AttributeError) : # NB : AttributeError in testing mode because I'm lazy !
-            noprintingmaxdelay = NOPRINTINGMAXDELAY
+            noprintingmaxdelay = constants.NOPRINTINGMAXDELAY
             self.parent.filter.logdebug("No max delay defined for printer %s, using %i seconds." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         if not noprintingmaxdelay :
             self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
@@ -143,7 +180,7 @@ class Handler :
         previousValue = self.parent.getLastPageCounter()
         timebefore = time.time()
         firstvalue = None
-        while 1:
+        while True :
             self.retrievePJLValues()
             if self.printerStatus in ('10023', '10003') :
                 break
@@ -174,12 +211,12 @@ class Handler :
                                 self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                             break
             self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)
-            time.sleep(ITERATIONDELAY)
+            time.sleep(constants.ITERATIONDELAY)
         
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
         idle_num = 0
-        while 1 :
+        while True :
             self.retrievePJLValues()
             if self.printerStatus in ('10000', '10001', '35078', '40000') :
                 if (self.printerInternalPageCounter is not None) \
@@ -188,27 +225,34 @@ class Handler :
                     self.parent.filter.logdebug("No need to wait for the printer to be idle, it is the case already.")
                     return 
                 idle_num += 1
-                if idle_num >= STABILIZATIONDELAY :
+                if idle_num >= constants.STABILIZATIONDELAY :
                     # printer status is stable, we can exit
                     break
             else :    
                 idle_num = 0
             self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)
-            time.sleep(ITERATIONDELAY)
+            time.sleep(constants.ITERATIONDELAY)
     
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal PJL handling."""
+        while not self.open() :
+            self.parent.filter.logdebug("Will retry in 1 second.")
+            time.sleep(1)
         try :
-            if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
-               (os.environ.get("PYKOTAACTION") == "ALLOW") and \
-               (os.environ.get("PYKOTAPHASE") == "AFTER") and \
-               self.parent.filter.JobSizeBytes :
-                self.waitPrinting()
-            self.waitIdle()    
-        except :    
-            self.parent.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
-            raise
-        return self.printerInternalPageCounter
+            try :
+                if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
+                   (os.environ.get("PYKOTAACTION") == "ALLOW") and \
+                   (os.environ.get("PYKOTAPHASE") == "AFTER") and \
+                   self.parent.filter.JobSizeBytes :
+                    self.waitPrinting()
+                self.waitIdle()    
+            except :    
+                self.parent.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
+                raise
+            else :    
+                return self.printerInternalPageCounter
+        finally :        
+            self.close()
             
 def main(hostname) :
     """Tries PJL accounting for a printer host."""

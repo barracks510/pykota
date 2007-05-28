@@ -28,9 +28,6 @@ and status informations using SNMP queries.
 The values extracted are defined at least in RFC3805 and RFC2970.
 """
 
-ITERATIONDELAY = 4      # time to sleep between two loops
-STABILIZATIONDELAY = 5  # number of consecutive times the idle status must be seen before we consider it to be stable
-NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds by default.
 
 import sys
 import os
@@ -51,6 +48,8 @@ except ImportError :
         raise RuntimeError, "The pysnmp module is not available. Download it from http://pysnmp.sf.net/"
 else :
     hasV4 = True
+
+from pykota import constants
 
 #                      
 # Documentation taken from RFC 3805 (Printer MIB v2) and RFC 2790 (Host Resource MIB)
@@ -157,7 +156,7 @@ class BaseHandler :
         try :
             noprintingmaxdelay = int(self.parent.filter.config.getNoPrintingMaxDelay(self.parent.filter.PrinterName))
         except (TypeError, AttributeError) : # NB : AttributeError in testing mode because I'm lazy !
-            noprintingmaxdelay = NOPRINTINGMAXDELAY
+            noprintingmaxdelay = constants.NOPRINTINGMAXDELAY
             self.parent.filter.logdebug("No max delay defined for printer %s, using %i seconds." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         if not noprintingmaxdelay :
             self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
@@ -203,7 +202,7 @@ class BaseHandler :
                                 self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                             break
             self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)    
-            time.sleep(ITERATIONDELAY)
+            time.sleep(constants.ITERATIONDELAY)
         
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
@@ -225,13 +224,13 @@ class BaseHandler :
                     self.parent.filter.logdebug("No need to wait for the printer to be idle, it is the case already.")
                     return 
                 idle_num += 1
-                if idle_num >= STABILIZATIONDELAY :
+                if idle_num >= constants.STABILIZATIONDELAY :
                     # printer status is stable, we can exit
                     break
             else :    
                 idle_num = 0
             self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)    
-            time.sleep(ITERATIONDELAY)
+            time.sleep(constants.ITERATIONDELAY)
             
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal SNMP handling."""
