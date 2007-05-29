@@ -32,7 +32,7 @@ import Queue
 
 from pykota import constants
 
-FORMFEEDCHAR = 0x0c     # Form Feed character, ends PJL answers.
+FORMFEEDCHAR = chr(0x0c)     # Form Feed character, ends PJL answers.
 
 # Old method : pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 # Here's a new method, which seems to work fine on my HP2300N, while the 
