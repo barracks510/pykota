@@ -70,6 +70,7 @@ class StorageUser(StorageObject) :
         self.AccountBalance = None
         self.LifeTimePaid = None
         self.Email = None
+        self.Password = None
         self.OverCharge = 1.0
         self.Payments = [] # TODO : maybe handle this smartly for SQL, for now just don't retrieve them
         self.PaymentsBacklog = []

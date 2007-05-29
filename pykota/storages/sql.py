@@ -35,6 +35,7 @@ class SQLStorage :
         user.AccountBalance = record.get("balance")
         user.LifeTimePaid = record.get("lifetimepaid")
         user.Email = record.get("email")
+        user.Password = record.get("password")
         user.Description = self.databaseToUserCharset(record.get("description"))
         user.OverCharge = record.get("overcharge", 1.0)
         user.Exists = True

@@ -37,7 +37,7 @@ except ImportError :
 else :    
     hasPAM = 1
 
-from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pknotify v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -156,7 +156,7 @@ class TimeoutError(Exception) :
         return self.message
     __str__ = __repr__
     
-class PyKotaNotify(Tool) :        
+class PyKotaNotify(PyKotaTool) :        
     """A class for pknotify."""
     def sanitizeMessage(self, msg) :
         """Replaces \\n and returns a messagee in xmlrpclib Binary format."""
@@ -175,8 +175,8 @@ class PyKotaNotify(Tool) :
                 return None
         return response
 
-    def checkAuth(self, username, password) :    
-        """Checks if we could authenticate an username with a password."""
+    def checkAuthPAM(self, username, password) :    
+        """Checks if we could authenticate an username with a password through PAM."""
         if not hasPAM :    
             raise PyKotaToolError, _("You MUST install PyPAM for this functionnality to work !")
         else :    
@@ -199,6 +199,18 @@ class PyKotaNotify(Tool) :
                 retcode = True
             self.dropPriv()    
             return retcode
+            
+    def checkAuthDB(self, username, password) :    
+        """Checks if we could authenticate an username with a password through PyKota's DB with clear text passwords."""
+        user = self.storage.getUser(username)
+        if user.Exists :
+            if password == user.Password :
+                return True
+        return False        
+        
+    def checkAuth(self, username, password) :    
+        """Checks if we could authenticate an username with a password through PyKota's DB."""
+        return self.checkAuthDB(username, password)
             
     def alarmHandler(self, signum, frame) :        
         """Alarm handler."""
@@ -370,5 +382,10 @@ if __name__ == "__main__" :
         except :    
             crashed("%s failed" % sys.argv[0])
         retcode = -1
+        
+    try :
+        notifier.storage.close()
+    except (TypeError, NameError, AttributeError) :    
+        pass
         
     sys.exit(retcode)    
