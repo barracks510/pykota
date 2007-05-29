@@ -119,7 +119,7 @@ class Handler :
                     self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
                 buffer.append(answer)
-                if answer.endswith(constants.FORMFEEDCHAR) :
+                if answer.endswith(FORMFEEDCHAR) :
                     self.queue.put("".join(buffer))
                     buffer = []
         if buffer :             
