@@ -1273,6 +1273,35 @@ noprintingmaxdelay : 60
 
 
 
+# Defines the number of times the 'idle' printer status
+# has to be reported before it being considered stable.
+# Each check is done every 'statusstabilizationdelay' seconds
+# as defined below.
+#
+# This directive can be set either globally or on a per printer
+# basis. 
+#
+# When not set, an hardcoded value of 5 times is used.
+# The value must be a strictly positive integer.
+statusstabilizationloops = 5
+
+
+
+# Defines the number of seconds to wait between two consecutive
+# checks of the printer's status when using hardware accounting.
+#
+# Each check is done up to 'statusstabilizationloops' times.
+#
+# This directive can be set either globally or on a per printer
+# basis. 
+#
+# When not set, an hardcoded value of 4.0 seconds is used.
+# The value must be a positive floating point value greater
+# than or equal to 0.25 seconds.
+statusstabilizationdelay = 4.0
+
+
+
 # Defines a set of coefficients for ink accounting.
 #
 # Each ink coefficient is the factor of the price per page

@@ -168,11 +168,8 @@ class Handler :
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
-        try :
-            noprintingmaxdelay = int(self.parent.filter.config.getNoPrintingMaxDelay(self.parent.filter.PrinterName))
-        except (TypeError, AttributeError) : # NB : AttributeError in testing mode because I'm lazy !
-            noprintingmaxdelay = constants.NOPRINTINGMAXDELAY
-            self.parent.filter.logdebug("No max delay defined for printer %s, using %i seconds." % (self.parent.filter.PrinterName, noprintingmaxdelay))
+        statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
+        noprintingmaxdelay = constants.get(self.parent.filter, "NoPrintingMaxDelay")
         if not noprintingmaxdelay :
             self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
         else :    
@@ -211,10 +208,12 @@ class Handler :
                                 self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                             break
             self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)
-            time.sleep(constants.ITERATIONDELAY)
+            time.sleep(statusstabilizationdelay)
         
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
+        statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
+        statusstabilizationloops = constants.get(self.parent.filter, "StatusStabilizationLoops")
         idle_num = 0
         while True :
             self.retrievePJLValues()
@@ -225,13 +224,13 @@ class Handler :
                     self.parent.filter.logdebug("No need to wait for the printer to be idle, it is the case already.")
                     return 
                 idle_num += 1
-                if idle_num >= constants.STABILIZATIONDELAY :
+                if idle_num >= statusstabilizationloops :
                     # printer status is stable, we can exit
                     break
             else :    
                 idle_num = 0
             self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)
-            time.sleep(constants.ITERATIONDELAY)
+            time.sleep(statusstabilizationdelay)
     
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal PJL handling."""

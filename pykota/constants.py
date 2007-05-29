@@ -23,6 +23,18 @@
 
 """This module contains the definitions of constants used by PyKota."""
 
-ITERATIONDELAY = 4      # time to sleep between two loops
-STABILIZATIONDELAY = 5  # number of consecutive times the idle status must be seen before we consider it to be stable
+STATUSSTABILIZATIONDELAY = 4.0 # time to sleep between two loops
+STATUSSTABILIZATIONLOOPS = 5  # number of consecutive times the 'idle' status must be seen before we consider it to be stable
 NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds by default.
+
+def get(application, varname) :
+    """Retrieves the value of a particular printer variable from configuration file, else a constant defined here."""
+    pname = application.PrinterName
+    try :
+        value = getattr(application.config, "get%(varname)s" % locals())(pname)
+        if value is None :
+            raise TypeError     # Use hardcoded value
+    except (TypeError, AttributeError) : # NB : AttributeError in testing mode because I'm lazy !
+        value = globals().get(varname.upper())
+        application.logdebug("No value defined for %(varname)s for printer %(pname)s, using %(value)s." % locals())
+    return value    

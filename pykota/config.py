@@ -596,6 +596,38 @@ class PyKotaConfig :
             else :    
                 return maxdelay
         
+    def getStatusStabilizationLoops(self, printername) :    
+        """Returns the number of times the printer must return the 'idle' status to consider it stable."""
+        try : 
+            stab = self.getPrinterOption(printername, "statusstabilizationloops")
+        except PyKotaConfigError :    
+            return None         # tells to use hardcoded value
+        else :    
+            try :
+                stab = int(stab)
+                if stab < 1 :
+                    raise ValueError
+            except (TypeError, ValueError) :
+                raise PyKotaConfigError, _("Incorrect value %s for the statusstabilizationloops directive in section %s") % (str(stab), printername)
+            else :    
+                return stab
+        
+    def getStatusStabilizationDelay(self, printername) :    
+        """Returns the number of seconds to wait between two checks of the printer's status."""
+        try : 
+            stab = self.getPrinterOption(printername, "statusstabilizationdelay")
+        except PyKotaConfigError :    
+            return None         # tells to use hardcoded value
+        else :    
+            try :
+                stab = float(stab)
+                if stab < 0.25 :
+                    raise ValueError
+            except (TypeError, ValueError) :
+                raise PyKotaConfigError, _("Incorrect value %s for the statusstabilizationdelay directive in section %s") % (str(stab), printername)
+            else :    
+                return stab
+        
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""
         return self.getGlobalOption("winbind_separator", ignore=1)
