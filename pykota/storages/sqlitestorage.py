@@ -64,14 +64,14 @@ class Storage(BaseStorage, SQLStorage) :
         self.cursor.execute("COMMIT;")
         after = time.time()
         self.tool.logdebug("Transaction committed.")
-        self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.cursor.execute("ROLLBACK;")
         after = time.time()
         self.tool.logdebug("Transaction aborted.")
-        self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def doRawSearch(self, query) :
         """Does a raw search query."""
@@ -87,7 +87,7 @@ class Storage(BaseStorage, SQLStorage) :
         else :    
             result = self.cursor.fetchall()
             after = time.time()
-            self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
             
     def doSearch(self, query) :        
@@ -124,7 +124,7 @@ class Storage(BaseStorage, SQLStorage) :
             raise PyKotaStorageError, str(msg)
         else :    
             after = time.time()
-            self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
