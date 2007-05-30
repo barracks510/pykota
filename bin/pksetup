@@ -162,7 +162,7 @@ duplicatesdelay : 0
 # The policy below will automatically create a printing account
 # for unknown users, allowing them to print with no limit on the
 # current printer.
-policy : external(pkusers --add --skipexisting --limitby noquota --description "Added automatically" \$PYKOTAUSERNAME && edpykota --add --skipexisting --printer \$PYKOTAPRINTERNAME \$PYKOTAUSERNAME)
+policy : external(pkusers --add --skipexisting --limitby noquota --description \"Added automatically\" \$PYKOTAUSERNAME && edpykota --add --skipexisting --printer \$PYKOTAPRINTERNAME \$PYKOTAUSERNAME)
 
 """
 
