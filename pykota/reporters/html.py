@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines a class for HTML reporting."""
+
 import os
 import urllib
 

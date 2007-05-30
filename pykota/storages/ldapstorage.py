@@ -22,11 +22,12 @@
 #
 #
 
-#
-# My IANA assigned number, for 
-# "Conseil Internet & Logiciels Libres, Jérôme Alet" 
-# is 16868. Use this as a base to create the LDAP schema.
-#
+"""This module defines a class to access to an LDAP database backend.
+
+My IANA assigned number, for 
+"Conseil Internet & Logiciels Libres, Jérôme Alet" 
+is 16868. Use this as a base to extend the LDAP schema.
+"""
 
 import sys
 import types

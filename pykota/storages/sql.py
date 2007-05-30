@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines methods common to all relational backends."""
+
 from pykota.storage import StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
                            StorageGroupPQuota, StorageBillingCode

@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines the base classes for PyKota command line tools."""
+
 import sys
 import os
 import pwd

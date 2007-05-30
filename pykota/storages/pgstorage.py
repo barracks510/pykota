@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines a class to access to a PostgreSQL database backend."""
+
 import time
 from types import StringType
 

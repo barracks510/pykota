@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines a class to access to a SQLite database backend."""
+
 import time
 
 from pykota.storage import PyKotaStorageError, BaseStorage

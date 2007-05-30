@@ -21,6 +21,8 @@
 #
 #
 
+"""This module handles all the data dumping facilities for PyKota."""
+
 import sys
 import os
 import pwd

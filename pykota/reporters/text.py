@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines a class for plain text reporting."""
+
 from pykota.reporter import BaseReporter
     
 class Reporter(BaseReporter) :    

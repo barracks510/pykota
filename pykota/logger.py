@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines base classes used by all logging backends."""
+
 import os
 import imp
 

@@ -19,6 +19,8 @@
 #
 #
 
+"""This module defines some helper functions to use in CGI scripts."""
+
 import sys
 import os
 

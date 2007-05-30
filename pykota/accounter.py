@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines base classes used by all accounting methods."""
+
 import sys
 import os
 import imp

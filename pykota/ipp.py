@@ -24,6 +24,8 @@
 #
 #
 
+"""This module provides basic IPP request parsing facilities."""
+
 import sys
 from struct import pack, unpack
 

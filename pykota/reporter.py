@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines bases classes used by all reporters."""
+
 import os
 import imp
 from mx import DateTime
@@ -45,21 +47,26 @@ class BaseReporter :
         self.isgroup = isgroup
         
     def getPrinterTitle(self, printer) :     
+        """Returns the formatted title for a given printer."""
         return (_("Report for %s quota on printer %s") % ((self.isgroup and "group") or "user", printer.Name)) + (" (%s)" % printer.Description)
         
     def getPrinterGraceDelay(self, printer) :    
+        """Returns the formatted grace delay for a given printer."""
         return _("Pages grace time: %i days") % self.tool.config.getGraceDelay(printer.Name)
         
     def getPrinterPrices(self, printer) :    
+        """Returns the formatted prices for a given printer."""
         return (_("Price per job: %.3f") % (printer.PricePerJob or 0.0), _("Price per page: %.3f") % (printer.PricePerPage or 0.0))
             
     def getReportHeader(self) :        
+        """Returns the correct header depending on users vs users groups."""
         if self.isgroup :
             return _("Group          overcharge   used    soft    hard    balance grace         total       paid warn")
         else :    
             return _("User           overcharge   used    soft    hard    balance grace         total       paid warn")
             
     def getPrinterRealPageCounter(self, printer) :        
+        """Returns the formatted real page counter for a given printer."""
         msg = _("unknown")
         if printer.LastJob.Exists :
             try :
@@ -69,6 +76,7 @@ class BaseReporter :
         return _("Real : %s") % msg
                 
     def getTotals(self, total, totalmoney) :            
+        """Returns the formatted totals."""
         return (_("Total : %9i") % (total or 0.0), ("%11s" % ("%7.2f" % (totalmoney or 0.0))[:11]))
             
     def getQuota(self, entry, quota) :

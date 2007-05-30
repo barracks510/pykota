@@ -22,6 +22,8 @@
 #
 #
 
+"""This module defines classes used to parse PyKota configuration files."""
+
 import os
 import tempfile
 import ConfigParser
