@@ -51,7 +51,11 @@ class Storage(BaseStorage, SQLStorage) :
             port = 5432         # Use PostgreSQL's default tcp/ip port (5432).
         
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
-        self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
+        try :
+            self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
+        except PGError, msg :    
+            msg = "%(msg)s --- the most probable cause of your problem is that PostgreSQL is down, or doesn't accept incoming connections because you didn't configure it as explained in PyKota's documentation." % locals()
+            raise PGError, msg
         self.closed = 0
         try :
             self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
@@ -77,14 +81,14 @@ class Storage(BaseStorage, SQLStorage) :
         self.database.query("COMMIT;")
         after = time.time()
         self.tool.logdebug("Transaction committed.")
-        self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.database.query("ROLLBACK;")
         after = time.time()
         self.tool.logdebug("Transaction aborted.")
-        self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def doRawSearch(self, query) :
         """Does a raw search query."""
@@ -99,7 +103,7 @@ class Storage(BaseStorage, SQLStorage) :
             raise PyKotaStorageError, str(msg)
         else :    
             after = time.time()
-            self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
             
     def doSearch(self, query) :        
@@ -122,7 +126,7 @@ class Storage(BaseStorage, SQLStorage) :
             raise PyKotaStorageError, str(msg)
         else :    
             after = time.time()
-            self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
             
     def doQuote(self, field) :
