@@ -127,6 +127,8 @@ class Tool :
     """Base class for tools with no database access."""
     def __init__(self, lang="", charset=None, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
         """Initializes the command line tool."""
+        self.debug = True # in case of early failure
+        
         # did we drop priviledges ?
         self.privdropped = 0
         
