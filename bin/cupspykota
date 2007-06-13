@@ -93,6 +93,10 @@ class CUPSBackend(PyKotaTool) :
     def deferredInit(self) :    
         """Deferred initialization."""
         PyKotaTool.deferredInit(self)
+        if not self.config.isAdmin :
+            from pykota import config
+            username = self.originalUserName
+            raise config.PyKotaConfigError, _("User %(username)s is not allowed to read ~pykota/pykotadmin.conf, you must check the permissions.") % locals()
         self.gotSigTerm = 0
         self.disableSigInt()
         self.installSigTermHandler()
