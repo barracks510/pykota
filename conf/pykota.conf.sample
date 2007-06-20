@@ -1302,7 +1302,7 @@ statusstabilizationdelay : 4.0
 
 
 
-# Defines a bit mask to specify the set of error conditions
+# Defines a (16 bits) bit mask to specify the set of error conditions
 # reported through SNMP for which PyKota has to wait indefinitely
 # until such an error is fixed before continuing with printing
 # and/or accounting.
@@ -1310,7 +1310,7 @@ statusstabilizationdelay : 4.0
 # This directive can be set either globally or on a per printer
 # basis. 
 #
-# The bit values are specified as in RFC3805 (Printer MIB v2),
+# The 16 bit values are specified as in RFC3805 (Printer MIB v2),
 # as an ORed value of one or more of the following conditions :
 #
 #       1000 0000 0000 0000 : Low Paper
