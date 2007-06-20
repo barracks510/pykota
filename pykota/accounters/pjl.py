@@ -130,7 +130,7 @@ class Handler :
     def retrievePJLValues(self) :    
         """Retrieves a printer's internal page counter and status via PJL."""
         try :
-            self.sock.send(pjlMessage)
+            self.sock.sendall(pjlMessage)
         except socket.error, msg :
             self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
         else :    
