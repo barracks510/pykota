@@ -1283,7 +1283,7 @@ noprintingmaxdelay : 60
 #
 # When not set, an hardcoded value of 5 times is used.
 # The value must be a strictly positive integer.
-statusstabilizationloops = 5
+statusstabilizationloops : 5
 
 
 
@@ -1298,7 +1298,49 @@ statusstabilizationloops = 5
 # When not set, an hardcoded value of 4.0 seconds is used.
 # The value must be a positive floating point value greater
 # than or equal to 0.25 seconds.
-statusstabilizationdelay = 4.0
+statusstabilizationdelay : 4.0
+
+
+
+# Defines a bit mask to specify the set of error conditions
+# reported through SNMP for which PyKota has to wait indefinitely
+# until such an error is fixed before continuing with printing
+# and/or accounting.
+#
+# This directive can be set either globally or on a per printer
+# basis. 
+#
+# The bit values are specified as in RFC3805 (Printer MIB v2),
+# as an ORed value of one or more of the following conditions :
+#
+#       1000 0000 0000 0000 : Low Paper
+#       0100 0000 0000 0000 : No Paper
+#       0010 0000 0000 0000 : Low Toner
+#       0001 0000 0000 0000 : No Toner
+#       0000 1000 0000 0000 : Door Open
+#       0000 0100 0000 0000 : Jammed
+#       0000 0010 0000 0000 : Offline
+#       0000 0001 0000 0000 : Service Requested
+#       0000 0000 1000 0000 : Input Tray Missing
+#       0000 0000 0100 0000 : Output Tray Missing
+#       0000 0000 0010 0000 : Marker Supply Missing
+#       0000 0000 0001 0000 : Output Near Full
+#       0000 0000 0000 1000 : Output Full
+#       0000 0000 0000 0100 : Input Tray Empty
+#       0000 0000 0000 0010 : Overdue Preventive Maintainance
+#       0000 0000 0000 0001 : Not assigned
+#
+# When not set, an hardcoded value of hexadecimal 0x4FCC is used,
+# which means that PyKota will wait indefinitely when using SNMP
+# hardware accounting if one of the following conditions is met :
+#
+#   No Paper, Door Open, Jammed, Offline, Service Requested,
+#   Input Tray Missing, Output Tray Missing, Output Full, Input Tray Empty
+# 
+# This value can be specified either in hexadecimal (prefixed with 0x),
+# in octal (prefixed with 0) or in decimal (no prefix).
+#
+snmperrormask : 0x4FCC
 
 
 

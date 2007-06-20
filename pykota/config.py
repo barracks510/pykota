@@ -630,6 +630,27 @@ class PyKotaConfig :
             else :    
                 return stab
         
+    def getPrinterSNMPErrorMask(self, printername) :    
+        """Returns the SNMP error mask for a particular printer, or None if not defined."""
+        try : 
+            errmask = self.getPrinterOption(printername, "snmperrormask").lower()
+        except PyKotaConfigError :    
+            return None         # tells to use hardcoded value
+        else :    
+            try :
+                if errmask.startswith("0x") :
+                    value = int(errmask, 16)
+                elif errmask.startswith("0") :    
+                    value = int(errmask, 8)
+                else :    
+                    value = int(errmask)
+                if 0 <= value < 65536 :
+                    return value
+                else :    
+                    raise ValueError
+            except ValueError :    
+                raise PyKotaConfigError, _("Incorrect value %s for the snmperrormask directive in section %s") % (errmask, printername)
+        
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""
         return self.getGlobalOption("winbind_separator", ignore=1)

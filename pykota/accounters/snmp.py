@@ -90,19 +90,18 @@ printerDetectedErrorStateValues = [ { 128 : 'Low Paper',
                                     },
                                   ]  
                                   
-# TODO : make the following list configurable at runtime, possibly per printer.                                  
-errorConditions = [ 'No Paper',
-                    # 'No Toner',
-                    'Door Open',
-                    'Jammed',
-                    'Offline',
-                    'Service Requested',
-                    'Input Tray Missing',
-                    'Output Tray Missing',
-                    # 'Marker Supply Missing',
-                    'Output Full',
-                    'Input Tray Empty',
-                  ]
+# The default error mask to use when checking error conditions.
+defaultErrorMask = 0x4fcc # [ 'No Paper',
+                          #   'Door Open',
+                          #   'Jammed',
+                          #   'Offline',
+                          #   'Service Requested',
+                          #   'Input Tray Missing',
+                          #   'Output Tray Missing',
+                          #   'Output Full',
+                          #   'Input Tray Empty',
+                          # ]
+                          
 # WARNING : some printers don't support this one :                  
 prtConsoleDisplayBufferTextOID = "1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
 class BaseHandler :
@@ -146,9 +145,23 @@ class BaseHandler :
         if errorstates is None :
             return True
         else :
+            try :
+                errormask = self.parent.filter.config.getPrinterSNMPErrorMask(self.parent.filter.PrinterName)
+            except AttributeError : # debug mode    
+                errormask = defaultErrorMask
+            if errormask is None :
+                errormask = defaultErrorMask
+            errormaskbytes = [ chr((errormask & 0xff00) >> 8),
+                               chr((errormask & 0x00ff)),
+                             ]
+            errorConditions = self.extractErrorStates(errormaskbytes)
+            self.parent.filter.logdebug("Error conditions for mask 0x%04x : %s" \
+                                               % (errormask, errorConditions))
             for err in errorstates :
                 if err in errorConditions :
+                    self.parent.filter.logdebug("Error condition '%s' encountered. PyKota will wait until this problem is fixed." % err)
                     return True
+            self.parent.filter.logdebug("No error condition matching mask 0x%04x" % errormask)
             return False    
         
     def waitPrinting(self) :
