@@ -118,10 +118,11 @@ class Handler :
                 if err != errno.EAGAIN :
                     self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
-                buffer.append(answer)
-                if answer.endswith(FORMFEEDCHAR) :
-                    self.queue.put("".join(buffer))
-                    buffer = []
+                if answer :
+                    buffer.append(answer)
+                    if answer.endswith(FORMFEEDCHAR) :
+                        self.queue.put("".join(buffer))
+                        buffer = []
         if buffer :             
             self.queue.put("".join(buffer))            
         self.parent.filter.logdebug("Reading thread ended.")
