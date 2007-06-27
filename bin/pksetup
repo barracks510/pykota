@@ -196,7 +196,7 @@ class PyKotaSetup :
                  "python-pam" ]
         
     otherpackages = [ { "name" : "pkpgcounter",
-                        "version" : "2.16",
+                        "version" : "2.17",
                         "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
                         "commands" : [ "tar -zxf %(name)s-%(version)s.tar.gz",
                                        "cd %(name)s-%(version)s",
@@ -212,7 +212,7 @@ class PyKotaSetup :
                                      ],
                       },
                       { "name" : "ghostpcl",
-                        "version" : "1.41",
+                        "version" : "1.41p1",
                         "url" : "ftp://mirror.cs.wisc.edu/pub/mirrors/ghost/AFPL/GhostPCL/%(name)s_%(version)s.tar.bz2", 
                         "commands" : [ "bunzip2 <%(name)s_%(version)s.tar.bz2 | tar -xf -",
                                        "cd %(name)s_%(version)s",
