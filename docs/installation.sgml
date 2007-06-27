@@ -81,7 +81,7 @@ jerome@nordine:~/pykota-1.25_official$
       To launch the installation procedure, just type <literal>pksetup</literal>
       followed with the name of your distribution, like :
     <screen>    
-    jerome@nordine:~$ pksetup debian  
+jerome@nordine:~/pykota-1.25_official$ ./bin/pksetup debian
     </screen>  
       and then follow the instructions and answer to the several questions you'll
       be asked.

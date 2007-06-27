@@ -380,8 +380,16 @@ class PyKotaSetup :
             command = 'pkprinters --add --cups --description "Printer created with pksetup" "%(queuename)s"' % locals()
             self.confirmCommand("to import the %(queuename)s print queue into PyKota's database and reroute it through PyKota" % locals(), command)
     
+    def installPyKotaFiles(self) :
+        """Installs PyKota files through Python's Distutils mechanism."""
+        pksetupdir = os.path.split(os.path.abspath(sys.argv[0]))[0]
+        pykotadir = os.path.abspath(os.path.join(pksetupdir, ".."))
+        setuppy = os.path.join(pykotadir, "setup.py")
+        self.confirmCommand("to install PyKota files on your system", "python %(setuppy)s install" % locals())
+        
     def setup(self) :
         """Installation procedure."""
+        self.installPyKotaFiles()
         self.waitPrintersOnline()
         adminname = raw_input("What is the name of the print administrator ? ").strip()
         adminemail = raw_input("What is the email address of the print administrator ? ").strip()
