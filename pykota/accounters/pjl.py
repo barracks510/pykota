@@ -130,45 +130,51 @@ class Handler :
             
     def retrievePJLValues(self) :    
         """Retrieves a printer's internal page counter and status via PJL."""
+        while not self.open() :
+            self.parent.filter.logdebug("Will retry in 1 second.")
+            time.sleep(1)
         try :
-            nbsent = self.sock.send(pjlMessage)
-            if nbsent != len(pjlMessage) :
-                raise socket.error, "Short write"
-        except socket.error, msg :
-            self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
-        else :    
-            self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
-            actualpagecount = self.printerStatus = None
-            while (actualpagecount is None) or (self.printerStatus is None) :
-                try :
-                    answer = self.queue.get(True, 2)
-                except Queue.Empty :    
-                    self.parent.filter.logdebug("Timeout when reading printer's answer from %s:%s" % (self.printerHostname, self.port))
-                else :    
-                    readnext = False
-                    self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
-                    for line in [l.strip() for l in answer.split()] : 
-                        if line.startswith("CODE=") :
-                            self.printerStatus = line.split("=")[1]
-                            self.parent.filter.logdebug("Found status : %s" % self.printerStatus)
-                        elif line.startswith("PAGECOUNT=") :    
-                            try :
-                                actualpagecount = int(line.split('=')[1].strip())
-                            except ValueError :    
-                                self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
-                            else :
-                                self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
-                        elif line.startswith("PAGECOUNT") :    
-                            readnext = True # page counter is on next line
-                        elif readnext :    
-                            try :
-                                actualpagecount = int(line.strip())
-                            except ValueError :    
-                                self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
-                            else :
-                                self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
-                                readnext = False
-            self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
+            try :
+                nbsent = self.sock.send(pjlMessage)
+                if nbsent != len(pjlMessage) :
+                    raise socket.error, "Short write"
+            except socket.error, msg :
+                self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
+            else :    
+                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
+                actualpagecount = self.printerStatus = None
+                while (actualpagecount is None) or (self.printerStatus is None) :
+                    try :
+                        answer = self.queue.get(True, 5)
+                    except Queue.Empty :    
+                        self.parent.filter.logdebug("Timeout when reading printer's answer from %s:%s" % (self.printerHostname, self.port))
+                    else :    
+                        readnext = False
+                        self.parent.filter.logdebug("PJL answer : %s" % repr(answer))
+                        for line in [l.strip() for l in answer.split()] : 
+                            if line.startswith("CODE=") :
+                                self.printerStatus = line.split("=")[1]
+                                self.parent.filter.logdebug("Found status : %s" % self.printerStatus)
+                            elif line.startswith("PAGECOUNT=") :    
+                                try :
+                                    actualpagecount = int(line.split('=')[1].strip())
+                                except ValueError :    
+                                    self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
+                                else :
+                                    self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
+                            elif line.startswith("PAGECOUNT") :    
+                                readnext = True # page counter is on next line
+                            elif readnext :    
+                                try :
+                                    actualpagecount = int(line.strip())
+                                except ValueError :    
+                                    self.parent.filter.logdebug("Received incorrect datas : [%s]" % line.strip())
+                                else :
+                                    self.parent.filter.logdebug("Found pages counter : %s" % actualpagecount)
+                                    readnext = False
+                self.printerInternalPageCounter = max(actualpagecount, self.printerInternalPageCounter)
+        finally :        
+            self.close()
         
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
@@ -238,24 +244,18 @@ class Handler :
     
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal PJL handling."""
-        while not self.open() :
-            self.parent.filter.logdebug("Will retry in 1 second.")
-            time.sleep(1)
         try :
-            try :
-                if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
-                   (os.environ.get("PYKOTAACTION") == "ALLOW") and \
-                   (os.environ.get("PYKOTAPHASE") == "AFTER") and \
-                   self.parent.filter.JobSizeBytes :
-                    self.waitPrinting()
-                self.waitIdle()    
-            except :    
-                self.parent.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
-                raise
-            else :    
-                return self.printerInternalPageCounter
-        finally :        
-            self.close()
+            if (os.environ.get("PYKOTASTATUS") != "CANCELLED") and \
+               (os.environ.get("PYKOTAACTION") == "ALLOW") and \
+               (os.environ.get("PYKOTAPHASE") == "AFTER") and \
+               self.parent.filter.JobSizeBytes :
+                self.waitPrinting()
+            self.waitIdle()    
+        except :    
+            self.parent.filter.printInfo(_("PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
+            raise
+        else :    
+            return self.printerInternalPageCounter
             
 def main(hostname) :
     """Tries PJL accounting for a printer host."""
