@@ -77,18 +77,19 @@ class Handler :
         """Opens the network connection."""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try :
+            sock.settimeout(1.0)
             sock.connect((self.printerHostname, self.port))
         except socket.error, msg :
             self.parent.filter.printInfo(_("Problem during connection to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             return False
         else :
-            sock.setblocking(False)
             self.sock = sock
             self.closed = False
             self.quitEvent.clear()
             self.queue = Queue.Queue(0)
             self.readthread = threading.Thread(target=self.readloop)
             self.readthread.start()
+            time.sleep(1)
             self.parent.filter.logdebug("Connected to printer %s:%s" % (self.printerHostname, self.port))
             return True
         
@@ -112,11 +113,11 @@ class Handler :
         buffer = []
         while not self.quitEvent.isSet() :
             try :
-                answer = self.sock.recv(4096)
+                answer = self.sock.recv(1)
+            except socket.timeout :    
+                pass
             except socket.error, (err, msg) :
-                time.sleep(0.1) # We will try again later in all cases
-                if err != errno.EAGAIN :
-                    self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
+                self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
                 if answer :
                     buffer.append(answer)
@@ -130,7 +131,9 @@ class Handler :
     def retrievePJLValues(self) :    
         """Retrieves a printer's internal page counter and status via PJL."""
         try :
-            self.sock.sendall(pjlMessage)
+            nbsent = self.sock.send(pjlMessage)
+            if nbsent != len(pjlMessage) :
+                raise socket.error, "Short write"
         except socket.error, msg :
             self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
         else :    
@@ -138,7 +141,7 @@ class Handler :
             actualpagecount = self.printerStatus = None
             while (actualpagecount is None) or (self.printerStatus is None) :
                 try :
-                    answer = self.queue.get(True, 5)
+                    answer = self.queue.get(True, 2)
                 except Queue.Empty :    
                     self.parent.filter.logdebug("Timeout when reading printer's answer from %s:%s" % (self.printerHostname, self.port))
                 else :    
