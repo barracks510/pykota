@@ -1,0 +1,12 @@
+# $Id$
+
+====================================================================
+
+This directory contains an application to manage ITCSystem's
+smart card readers with PyKota.
+
+This application is (c) 2007 George Farris - <farrisg@shaw.ca>
+and is distributed under the terms of the GNU General Public License
+version 3 or higher.
+
+====================================================================
