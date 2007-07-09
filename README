@@ -135,7 +135,7 @@ Prerequisite :
   You need to have the following tools installed on the CUPS Server :
   
     - CUPS (http://www.cups.org)
-    - Python v2.2 or higher (http://www.python.org)
+    - Python v2.3 or higher (http://www.python.org)
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The pkpgcounter command line tool, version 1.56 or higher. This
       tool is now mandatory for PyKota to work. 
@@ -276,7 +276,11 @@ You may need to be logged in with sufficient privileges (e.g. root)
 If you use Debian or Ubuntu, and want to use PostgreSQL as the
 database backend, just type :
 
-    $ pksetup
+    $ pksetup debian
+    
+or :    
+
+    $ pksetup ubuntu
     
 and follow the instructions to install PyKota in interactive mode, then
 skip the remaining of the section below.

@@ -52,7 +52,7 @@ options :
                        If the user already exists, actual balance is left
                        unmodified. If unset, the default value is 0.
 
-  -e | --email addr    Sets the user's e-mail address
+  -e | --email addr    Sets the user's e-mail address.
   
 """)
 
