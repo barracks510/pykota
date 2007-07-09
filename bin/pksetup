@@ -385,7 +385,8 @@ class PyKotaSetup :
         pksetupdir = os.path.split(os.path.abspath(sys.argv[0]))[0]
         pykotadir = os.path.abspath(os.path.join(pksetupdir, ".."))
         setuppy = os.path.join(pykotadir, "setup.py")
-        self.confirmCommand("to install PyKota files on your system", "python %(setuppy)s install" % locals())
+        if os.path.exists(setuppy) :
+            self.confirmCommand("to install PyKota files on your system", "python %(setuppy)s install" % locals())
         
     def setup(self) :
         """Installation procedure."""
