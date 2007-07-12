@@ -130,10 +130,10 @@
 these directions:
  &lt;/b&gt;
 1) Insert you smart card and click &quot;&lt;i&gt;Get Balance&quot;.&lt;/i&gt;
-2) Enter your computer username.
+2) Enter your computer username then press &lt;i&gt;TAB&lt;/i&gt; key
 3) Increase the &quot;&lt;i&gt;Add Amount&quot;&lt;/i&gt; area to a desired amount.
 4) Click the &quot;&lt;i&gt;Transfer to Printing Account&quot;&lt;/i&gt; button.
-5) Click the &quot;&lt;i&gt;Eject Card Now&quot;&lt;/i&gt; button to retrieve your card.
+5) Card will automatically eject after successful transaction.
 &lt;/big&gt;
 &lt;b&gt;Note:&lt;/b&gt; Add amount will not exceed card amount.</property>
 	  <property name="use_underline">False</property>
@@ -245,6 +245,7 @@ these directions:
 	  <child>
 	    <widget class="GtkEntry" id="UsernameEntry">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes" context="yes">Enter your username then press the TAB key</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
 	      <property name="visibility">True</property>
@@ -255,6 +256,7 @@ these directions:
 	      <property name="activates_default">False</property>
 	      <signal name="changed" handler="on_UsernameEntry_changed" last_modification_time="Wed, 04 Jul 2007 18:44:48 GMT"/>
 	      <signal name="focus_out_event" handler="on_UsernameEntry_focus_out_event" last_modification_time="Fri, 06 Jul 2007 18:40:45 GMT"/>
+	      <signal name="activate" handler="on_UsernameEntry_activate" last_modification_time="Mon, 09 Jul 2007 18:49:55 GMT"/>
 	    </widget>
 	    <packing>
 	      <property name="left_attach">2</property>
@@ -414,6 +416,7 @@ these directions:
 	      <property name="snap_to_ticks">False</property>
 	      <property name="wrap">False</property>
 	      <property name="adjustment">0 0 100 0.10000000149 10 10</property>
+	      <signal name="value_changed" handler="on_Spinbutton_value_changed" last_modification_time="Mon, 09 Jul 2007 17:58:30 GMT"/>
 	    </widget>
 	    <packing>
 	      <property name="left_attach">2</property>

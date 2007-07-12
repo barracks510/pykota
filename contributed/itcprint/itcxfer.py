@@ -1,6 +1,6 @@
 #! /usr/bin/python
 #
-# itcprint.py
+# itcxfer.py
 # (c) 2007 George Farris <farrisg@shaw.ca>	
 #
 # This program is free software; you can redistribute it and/or modify
@@ -63,15 +63,15 @@
 #   Transmit from Host 
 #     Char line      : <STX><NUL><SOH>$<NUL><NUL><NUL><NUL><NUL><NUL><DLE><EOT><SOH><ETX><NUL>?<FF> 
 #     Hex translation: 0x02 0x00 0x01 0x24 0x00 0x00 0x00 0x00 0x00 0x00 0x10 0x04 0x01 0x03 0x00 0x3F 0x0C
-#                                          [  Dollar value in this case 0x10 0x04 ]
-#                                          [     0x1004 = 4100 = $4.10            ]
-#                                          [______________________________________]
+#                                          [  Dollar value in this case 0x10 0x04 ]  ________[    chkm]__________
+#                                          [     0x1004 = 4100 = $4.10            ] [ checksum add bytes 1 to 15 ]
+#                                          [______________________________________] [____________________________]
 #
 #   Receive from successful transaction from Reader
 #     Char line      : <STX><NUL><SOH><SYN><ETX><NUL><FS><BS>
 #     Hex translation: 0x02 0x00 0x01 0x16 0x03 0x00 0x1C 0x08
 # =====================================================================================================
-
+#0200011703001d08
 
 # -----------------------------------------------------------------------------------------------------
 # Eject card from Reader
@@ -89,14 +89,30 @@
 import sys, os, serial, string, binascii, time
 import gtk, gtk.glade, gobject, pg
 
+# -------------- User modifiable settings -----------------------------
 # Database server settings
-HOST = 'localhost'
+HOST = '10.31.50.3'
 PORT = 5432
 DBNAME = 'pykota'
 USER = 'pykotaadmin'
 PASS = 'secret'
 
+# Search database as you type function
+# These settings control if a database search of the username is performed 
+# automatically when they reach a desired length.  This helps in a University
+# setting where all student username are the same length.
+SEARCH = True
+SEARCHLENGTH = 6
 
+# Serial port settings
+SERIAL_PORT = '/dev/ttyUSB0'
+BAUD_RATE = 9600
+
+# Set this to True or False
+# If set to True it will not update any cards
+TESTMODE = True
+
+# ------------- End of user modifiable settings -----------------------
 
 class gui:
 	def __init__(self):
@@ -110,30 +126,23 @@ class gui:
 		self.cardlabel = self.xml.get_widget("CardBalanceLabel")
 		self.printlabel = self.xml.get_widget("PrintBalanceLabel")
 		self.spinbutton = self.xml.get_widget("Spinbutton")
+		self.xferbutton = self.xml.get_widget("TransferButton")
 		
+		self.spinbutton.set_range(0,0)
+		self.spinbutton.set_sensitive(False)
+		self.xferbutton.set_sensitive(False)
 		self.cardlabel.set_label('<big><b>unknown</b></big>')
 		self.printlabel.set_label('<big><b>unknown</b></big>')
 		
-		self.cardbalance = ''
-		self.username = ''
-		self.addbalance = ''
-		self.pykotauid = ''
-		self.pykotabalance = 0.0
-		
-		# TODO put try  except around here
-		#connect([dbname], [host], [port], [opt], [tty], [user], [passwd])
-		try:
-			self.sql = pg.connect(dbname=DBNAME, host=HOST, port=PORT, user=USER, passwd=PASS)
-		except:
-			pass
-				
-#		query = self.sql.query("""SELECT printername FROM printers WHERE printername='cc200-LaserJet' """)
-		#query = db.get(printers, "cc200-laserjet")
-#		if len(query.getresult()) > 0:
-#			d2 = query.dictresult()
-#			print d2 #['username']
+		self.cardbalance = 0.0
+		self.validuser = False
+		self.addbalance = 0.0
 
-		self.sc = smartcard(self.sql)
+		if not TESTMODE :
+			print "We are in test mode...."
+
+		self.db = pgsql()						
+		self.sc = smartcard(self.db)
 		
 		#If you wanted to pass an argument, you would use a tuple like this:
     	# dic = { "on button1_clicked" : (self.button1_clicked, arg1,arg2) }
@@ -142,56 +151,131 @@ class gui:
 				"on_EjectButton_clicked" : self.ejectbutton_clicked,
 				"on_quit_activate" : (gtk.main_quit),
 				"on_UsernameEntry_changed" : self.username_changed,
+				"on_Spinbutton_value_changed" : self.spinvalue_changed,
 				"on_UsernameEntry_focus_out_event" : self.username_entered,
+				"on_UsernameEntry_activate" : (self.username_entered, None),
 				"on_ItcPrint_destroy" : (gtk.main_quit) }
 				
 		self.xml.signal_autoconnect (dic)
 		
+		self.completion = gtk.EntryCompletion()
+  		self.utext.set_completion(self.completion)
+  		self.liststore = gtk.ListStore(gobject.TYPE_STRING)
+  		self.completion.set_model(self.liststore)
+  		self.completion.set_text_column(0)
+  		self.completion.connect("match-selected", self.username_found)
+  		
+  		#self.liststore.append(['string text'])
+  		
 		return
 
+	# Don't allow the transfer button to be senitive unless there is a valid value
+	def spinvalue_changed(self, widget):
+		if self.spinbutton.get_value() > 0.0:
+			self.xferbutton.set_sensitive(True)
+		else:
+			self.xferbutton.set_sensitive(False)
+		
   	# I might want to do username search as you type later
 	def username_changed (self, widget):
-		print "Text is now ->", self.utext.get_text()
-
+		if SEARCH :
+			if len(self.utext.get_text()) == SEARCHLENGTH:
+				if not self.db.alreadyopen:
+					if not self.db.pgopen():
+						result = gtk.RESPONSE_CANCEL
+						dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
+							gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, 
+							"Cannot connect or open the database.\nPlease contact technical suppport...", )
+						result = dlg.run()
+						dlg.destroy()
+						return
+				if self.db.get_userslist(self.utext.get_text(), self.liststore):
+					pass
+				else:
+					return
+				
+				#self.username_entered(None, None)
+	
+	def username_found(self, completion, model, iter):
+		self.username = model[iter][0], 'was selected'
+		self.utext.set_text(model[iter][0])
+		self.username_entered(self, None)
+					
 	def username_entered (self, widget, event):
-		self.username = self.utext.get_text()
-		print "Username is ->", self.username
+		uname = self.utext.get_text()
+		print "Username is ->", uname
 		# This is where we need to look up username in wbinfo
 		
-		try:
-			query = self.sql.query("SELECT id FROM users WHERE username='%s'" % (self.username))
-			self.pykotauid = (query.dictresult()[0])['id']
-			print "User ID is  ->", self.pykotauid
-		except:
-			print "Username is invalid"
+
+		if not self.db.alreadyopen:
+			if not self.db.pgopen():
+				result = gtk.RESPONSE_CANCEL
+				dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
+					gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, 
+					"Cannot connect or open the database.\nPlease contact technical suppport...", )
+				result = dlg.run()
+				dlg.destroy()
+				return
+			
+		if self.db.get_pykotaid(uname):
+			self.validuser = True
+		else:
 			result = gtk.RESPONSE_CANCEL
 			dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
-				gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, 
+				gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE, 
 				"Your username is invalid or does not exist.\nPlease try re-entering it", )
 			result = dlg.run()
 			dlg.destroy()
-		try:
-			query = self.sql.query("SELECT balance FROM users WHERE id='%s'" % (self.pykotauid))
-			self.pykotabalance = float((query.dictresult()[0])['balance'])
-			self.printlabel.set_label("%s%.2f%s" % ("<big><b>$",self.pykotabalance,"</b></big>"))
-		except:
-			print "balance sql error..."
-		try:
-			query = self.sql.query("SELECT lifetimepaid FROM users WHERE id='%s'" % (self.pykotauid))
-			self.pykotalifebalance = float((query.dictresult()[0])['lifetimepaid'])
-			print "%s%.2f" % ("$", self.pykotalifebalance)
-		except:
-			print "lifetimepaid sql error..."
+			return
+		
+		#self.liststore.append(['string text'])
+			
+		balance = self.db.get_pykotabalance()
+		if balance :
+			self.printlabel.set_label("%s%.2f%s" % ("<big><b>$",balance,"</b></big>"))
+		else:
+			result = gtk.RESPONSE_CANCEL
+			dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
+				gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, 
+				"Cannot retrieve your printing balance.\nPlease contact technical suppport...", )
+			result = dlg.run()
+			dlg.destroy()
+			self.validuser = False
+			return
+					
+		if not self.db.get_pykotalifebalance():
+			result = gtk.RESPONSE_CANCEL
+			dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
+				gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, 
+				"Cannot retrieve your life time printing balance.\nPlease contact technical suppport...", )
+			result = dlg.run()
+			dlg.destroy()
+			self.validuser = False
+			return
+			
+		# Only set transfer button if both card balance and username valid
+		if  self.cardbalance > 0.1 and self.validuser:
+			self.spinbutton.set_sensitive(True)
 
-
-
+			
 	def xferbutton_clicked (self, widget):
 		print "xfer button clicked...."
-		self.addbalance = self.spinbutton.get_value()
-		newbalance = self.addbalance + self.pykotabalance
-		lifetimebalance = self.pykotalifebalance + self.addbalance
-		self.sc.set_balance(newbalance, lifetimebalance, self.pykotauid)
+		addbalance = self.spinbutton.get_value()
+		
+		if not self.db.set_pykotabalances(addbalance):
+			result = gtk.RESPONSE_CANCEL
+			dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
+				gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, 
+				"An error was encountered while updating your record.\nPlease contact technical support.")
+			result = dlg.run()
+			dlg.destroy()
+			return
+			
+		self.sc.set_balance(addbalance, self.cardbalance)
+		time.sleep(3)
 		self.ejectbutton_clicked(None)
+		self.spinbutton.set_range(0,float(0))
+		
 				
 	def getcardbalance_clicked(self, widget):
 		if self.sc.checkforcardready():
@@ -200,22 +284,27 @@ class gui:
 			self.cardlabel.set_label("%s%.2f%s" % ("<big><b>$",self.cardbalance,"</b></big>"))
 			self.cardstate = 1
 			self.source_id = gobject.timeout_add(2000, self.sc.inhibit_eject)
+			# Only allow the spin button to go up to the value of the card
 			self.spinbutton.set_range(0,float(self.cardbalance))
+		
+		if self.cardbalance > 0.1 and self.validuser:
+			self.spinbutton.set_sensitive(True)
 			
 	def ejectbutton_clicked(self, widget):
-		# TODO put a pop dialog here
 		self.sc.eject_card()
 		self.cardlabel.set_label('<big><b>unknown</b></big>')
 		self.printlabel.set_label('<big><b>unknown</b></big>')
 		self.cardstate = 0
 		self.cardbalance = 0.0
-		self.username = ''
+		self.validuser = False
 		self.utext.set_text('')
 		self.addbalance = 0.0
-		self.pykotabalance = 0.0
-		self.pykotalifebalance = 0.0
 		self.spinbutton.set_range(0,0)
+		self.spinbutton.set_sensitive(False)
+		self.xferbutton.set_sensitive(False)
 		
+		self.db.pgclose()
+				
 		# Is it possible this might not be set
 		try:
 			gobject.source_remove(self.source_id)
@@ -223,16 +312,25 @@ class gui:
 			pass
 		
 		
-		
 class smartcard:
 	def __init__(self, sql):
-		self.ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
-		self.scsql = sql
-		
+		try:
+			self.ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+		except:
+			result = gtk.RESPONSE_CANCEL
+			dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, 
+				gtk.BUTTONS_CLOSE, "Fatal error - Could not open serial port...", )
+			result = dlg.run()
+			dlg.destroy()
+			exit(1)
+			
 	# Need comms to contiune to keep card in machine.
 	# This loop keeps the card in until it stops so basically the print 
 	# job can release the card after it is finished
 	def checkforcardready(self):
+		# A bit of a sleep here prevents the card dialog popping up if 
+		# the card is already inserted.
+		time.sleep(1)
 		self.ser.write(binascii.a2b_hex("0200010103000704"))
 		s = self.ser.read(8)
 
@@ -272,42 +370,35 @@ class smartcard:
 
 	# Get current value from card
 	def get_balance(self):
+		# TODO Test checksum
 		self.ser.write(binascii.a2b_hex("0200012103002704"))
 		s1 = self.ser.read(16)
+		print binascii.b2a_hex(s1)
 		print "  %s%.2f" % ("Card valued at -> $",float(string.atoi(binascii.b2a_hex(s1[3:11]), 16))/1000)
 		return float(string.atoi(binascii.b2a_hex(s1[3:11]), 16))/1000
 
-	def set_balance(self, new, life, uid):
-		#self.ser.write(binascii.a2b_hex("0200012400000000000010040103003F0C"))
-		#s2 = self.ser.read(8)
-		#print binascii.b2a_hex(s2)
+	def set_balance(self, subvalue, cardbalance):
+		newbalance = cardbalance - subvalue
+		a = (str(newbalance)).split('.')
+		b = a[0] + string.ljust(a[1],3,'0')
+		c = "%X" % (string.atoi(b))
+		d = string.zfill(c,16)
+		chksum = self.checksum(d) 
+		decrementvalue = "02000124" + d + "0103" + chksum + "0C"
 
-		try:
-			query = self.scsql.query("UPDATE users SET balance=%s, lifetimepaid=%s WHERE id='%s'" % 
-				(new, life, uid))
-		except:
-			print "sql error..."
-			result = gtk.RESPONSE_CANCEL
-			dlg = gtk.MessageDialog(None,gtk.DIALOG_MODAL |
-				gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, 
-				"An error was encountered while updating your record.\nPlease contact technical support.")
-			result = dlg.run()
-			dlg.destroy()
-	
-	"""
-	def writeUserAccountBalance(self, user, newbalance, newlifetimepaid=None) :    
-        #Sets the new account balance and eventually new lifetime paid.
-        if newlifetimepaid is not None :
-            self.doModify("UPDATE users SET balance=%s, lifetimepaid=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(newlifetimepaid), self.doQuote(user.ident)))
-        else :    
-            self.doModify("UPDATE users SET balance=%s WHERE id=%s" % (self.doQuote(newbalance), self.doQuote(user.ident)))
-            
-    def writeNewPayment(self, user, amount, comment="") :
-        #Adds a new payment to the payments history.
-        self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(comment)))
-	
-	"""
-	
+		if TESTMODE:
+			print "Current card balance -> ", cardbalance
+			print "Amount to subtract from card -> ", subvalue
+			print "New card balance -> ", newbalance
+			print "Checksum -> ", chksum
+			print "Sent to card -> ",decrementvalue 
+			return
+		
+		print "Sent to card -> ",decrementvalue 
+		self.ser.write(binascii.a2b_hex(decrementvalue))
+		s2 = self.ser.read(8)
+		print "Result -> ", binascii.b2a_hex(s2)
+
 	def eject_card(self):
 		print "  Ejecting card ..."
 		self.ser.write(binascii.a2b_hex("0200012003002604"))
@@ -319,12 +410,105 @@ class smartcard:
 		s = self.ser.read(8)
 		return True
 
+	def checksum(self, s):
+		i = 0
+		j = int('0', 16)
+
+		while i < len(s): 
+			j = int(s[i:i+2], 16) + j
+			i = i+2
+		j = j + int('2B', 16)  # 2B is the header command and footer bytes previously added
+		return string.zfill(("%X" % j), 4)
+	
 	def close_port(self):	
 		self.ser.close()
+
+
+class pgsql:
+	def __init__(self):
+		self.sql = None
+		self.username = ''
+		self.pykotauid = ''
+		self.balance = 0
+		self.lifebalance = 0
+		self.alreadyopen = False
+		
+	def pgopen(self):
+		try:
+			self.sql = pg.connect(dbname=DBNAME, host=HOST, port=PORT, user=USER, passwd=PASS)
+			self.alreadyopen = True
+			return True
+		except:
+			print "Problem opening database on server " + HOST + "...."
+			return False
+	
+	def pgclose(self):
+		self.username = ''
+		self.pykotauid = ''
+		self.balance = 0
+		self.lifebalance = 0
+		self.alreadyopen = False
+		self.sql.close()
+	
+	def get_userslist(self, uname,ls):
+		try:
+			query = self.sql.query("SELECT username FROM users WHERE username LIKE '%s'" % (uname+'%'))
+			users = query.getresult()
+			print "Users are ->", users
+			ls.clear()
+			for i in users:
+				ls.append([i[0]])
+			#self.username = uname
+			return True
+		except:
+			#print "Username is invalid"
+			return False
+
+				
+	def get_pykotaid(self, uname):
+		try:
+			query = self.sql.query("SELECT id FROM users WHERE username='%s'" % (uname))
+			self.pykotauid = (query.dictresult()[0])['id']
+			print "User ID is  ->", self.pykotauid
+			self.username = uname
+			return True
+		except:
+			print "Username is invalid"
+			return False
+	
+	def get_pykotabalance(self):
+		try:
+			query = self.sql.query("SELECT balance FROM users WHERE id='%s'" % (self.pykotauid))
+			self.balance = float((query.dictresult()[0])['balance'])
+			return self.balance
+		except:
+			print "balance sql error..."
+			return None
+
+	def get_pykotalifebalance(self):
+		try:
+			query = self.sql.query("SELECT lifetimepaid FROM users WHERE id='%s'" % (self.pykotauid))
+			self.lifebalance = float((query.dictresult()[0])['lifetimepaid'])
+			print "%s%.2f" % ("pykotalifebalance -> $", self.lifebalance)
+			return True
+		except:
+			print "lifetimepaid sql error..."
+			return False
+		
+	def set_pykotabalances(self, addbalance):	
+		newbalance = addbalance + self.balance
+		newlifebalance = self.lifebalance + addbalance
+		try:
+			query = self.sql.query("UPDATE users SET balance=%s, lifetimepaid=%s WHERE id='%s'" % 
+				(newbalance, newlifebalance, self.pykotauid))
+			return True
+		except:
+			print "sql update error..."
+			return False
 
 
 if __name__ == "__main__":
 	hwg = gui()
 	gtk.main()
-	hwg.sql.close()	
 	print "Goodbye..."
+
