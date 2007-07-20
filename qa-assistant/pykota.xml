@@ -324,5 +324,54 @@
         make ~pykota/pykotadmin.conf be chmod 0600 if you want to be really secure.
       </description>
     </entry>
+    <entry name="Modify PyKota's configuration files" display="true">
+      <states>
+        <state name="Pass">PyKota configuration files are correct</state>
+        <state name="Fail">PyKota configuration files are incorrect</state>
+      </states>
+      <description>
+        PyKota's configuration files must be adapted to your own configuration,
+        and you can do this with any text editor of your choice.
+        In particular, the usernames and passwords used for the readonly
+        and the read+write database accounts have to be put there.
+        You'll also define the print administrator's name and email address,
+        and define the hostname of your SMTP server.
+        Finally many configuration directives must be checked or modified
+        to control PyKota's behavior. To help you in doing this, the
+        sample configuration files which you have installed are
+        extensively documented with comments.
+      </description>
+    </entry>
+    <entry name="Setup the cupspykota backend" display="true">
+      <states>
+        <state name="Pass">cupspykota is installed</state>
+        <state name="Fail">cupspykota is not installed</state>
+      </states>
+      <description>
+        To be able to route printing traffic through PyKota, CUPS must
+        be told that PyKota is installed. To do this, we must
+        add the 'cupspykota' backend wrapper to CUPS' backend directory,
+        usually '/usr/lib/cups/backend'.
+        To do this the easiest is to create a symbolic link :
+        'ln -s /usr/share/pykota/cupspykota /usr/lib/cups/backend/'
+        and then '/etc/init.d/cupsys restart'
+      </description>
+    </entry>
+    <entry name="Verify that PyKota is known to CUPS" display="true">
+      <states>
+        <state name="Pass">PyKota is known to CUPS</state>
+        <state name="Fail">PyKota is not known to CUPS</state>
+      </states>
+      <description>
+        Once you've installed the 'cupspykota' backend wrapper and
+        restarted CUPS. You may want to check that CUPS recognizes it.
+        Just look at http://cupsserver.example.com:631/admin/ to see
+        if any 'PyKota managed' device is available. If none is available
+        the permissions on the cupspykota backend are probably incorrect
+        for your setup : the user CUPS runs as MUST be able to exectute
+        the 'cupspykota' backend wrapper, as well as to read both
+        PyKota's configuration files.
+      </description>
+    </entry>
   </category>  
 </checklist>
