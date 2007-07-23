@@ -2729,3 +2729,7 @@ msgid ""
 "The exact cost of a print job can only be determined for a particular user. "
 "Please retry while logged-in."
 msgstr ""
+
+msgid "Ordering"
+msgstr ""
+

@@ -136,6 +136,8 @@ class PyKotaDumperGUI(DumPyKota) :
         print "<br />"
         print self.htmlFilterInput(" ".join(self.arguments))
         print "<br />"
+        print self.htmlOrderbyInput(self.options.get("orderby", ""))
+        print "<br />"
         print self.htmlSumCheckbox(self.options.get("sum", ""))
         print footer % (_("Dump"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
         
@@ -165,6 +167,10 @@ class PyKotaDumperGUI(DumPyKota) :
         """Input the optional dump filter."""
         return _("Filter") + (' : <input type="text" name="filter" size="40" value="%s" /> <em>e.g. <strong>username=jerome printername=HP2100 start=today-30</strong></em>' % (value or ""))
         
+    def htmlOrderbyInput(self, value="") :    
+        """Input the optional ordering."""
+        return _("Ordering") + (' : <input type="text" name="orderby" size="40" value="%s" /> <em>e.g. <strong>+username,-printername</strong></em>' % (value or ""))
+        
     def htmlSumCheckbox(self, checked="") :    
         """Input the optional Sum option."""
         return _("Summarize") + (' : <input type="checkbox" name="sum" %s /> <em>%s</em>' % ((checked and 'checked="checked"'), _("only for payments or history")))
@@ -186,6 +192,8 @@ class PyKotaDumperGUI(DumPyKota) :
                         self.arguments = self.form["filter"].value.split()
                     if self.form.has_key("sum") :    
                         self.options["sum"] = self.form["sum"].value
+                    if self.form.has_key("orderby") :    
+                        self.options["orderby"] = self.form["orderby"].value
                     # when no authentication is done, or when the remote username    
                     # is 'root' (even if not run as root of course), then unrestricted
                     # dump is allowed.

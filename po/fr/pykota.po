@@ -4177,3 +4177,6 @@ msgid ""
 "Please retry while logged-in."
 msgstr ""
 "Le coût exact d'un travail d'impression ne peut être déterminé que pour un "
+
+msgid "Ordering"
+msgstr "Ordre de tri"

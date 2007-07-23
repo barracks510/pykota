@@ -3403,6 +3403,9 @@ msgstr ""
 "Dok³adny koszt wydrukowania zadania mo¿e byæ okre¶lony tylko dla podanego "
 "u¿ytkownika. Proszê spróbowaæ ponownie po zalogowaniu."
 
+msgid "Ordering"
+msgstr ""
+
 #~ msgid ""
 #~ "autopykota v%(__version__)s (c) %(__years__)s %(__author__)s\n"
 #~ "\n"

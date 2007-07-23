@@ -2749,6 +2749,9 @@ msgid ""
 "Please retry while logged-in."
 msgstr ""
 
+msgid "Ordering"
+msgstr ""
+
 #~ msgid "Impossible to add printer %s"
 #~ msgstr "不能加入列印機 %s"
 

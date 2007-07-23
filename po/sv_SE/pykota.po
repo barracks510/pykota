@@ -2794,6 +2794,9 @@ msgstr ""
 "Exakt kostnad av ett utskriftsjobb kan endast utföras för en specifik "
 "användare. Var god och försök igen när du är inloggad."
 
+msgid "Ordering"
+msgstr ""
+
 #~ msgid "Impossible to add printer %s"
 #~ msgstr "Omöjligt att lägga till skrivare %s"
 
