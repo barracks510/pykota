@@ -15,13 +15,9 @@ Description: Print Quota/Accounting system for CUPS
  OpenLDAP (or other LDAP servers) as the quota database backend. 
  .
  This software features most of what you might expect from a modern Print 
- Quota and Accounting Solution. 
- .
- It's unprecedented flexibility and configurability greatly eases its 
- integration into your own computing environment. At the same time, its 
- reliability can make it a strong basis on which you'll plug your own 
- management or reporting tools in the improbable case you'd judge PyKota's 
- ones to be inadapted.
+ Quota and Accounting Solution. However it can be extended at will 
+ because it allows one to plug his own administrative scripts at
+ several stages of the printing process.
  .
  Full access to source code is granted to all for no fee via Subversion, but 
  installable tarball, DEB and RPM download is for a fee. Redistribution and 
