@@ -16,6 +16,8 @@ Description: Print Quota/Accounting system for CUPS
  Print Quota system for CUPS. It supports both PostgreSQL, MySQL, SQLite and 
  OpenLDAP (or other LDAP servers) as the quota database backend. 
  .
+ One installed, type 'pksetup debian' to configure PyKota.
+ .
  This software features most of what you might expect from a modern Print 
  Quota and Accounting Solution. However it can be extended at will 
  because it allows one to plug his own administrative scripts at
