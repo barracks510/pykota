@@ -40,4 +40,8 @@ IMPORTANT : currently a single "PyKota Installation" template is provided,
 and it is still incomplete : it doesn't contain any database related
 instructions.
 
+If qa-assistant complains about not being able to load the PyKota template,
+you should probably upgrade qa-assistant. This template is known to work
+with qa-assistant v0.4.90.5
+
 =============================================================================
