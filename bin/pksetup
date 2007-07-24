@@ -447,7 +447,9 @@ class Ubuntu(Debian) :
 if __name__ == "__main__" :        
     retcode = 0
     if (len(sys.argv) != 2) or (sys.argv[1] == "-h") or (sys.argv[1] == "--help") :
-        sys.stderr.write("usage : pksetup distribution\n\ne.g. : pksetup debian\n\nIMPORTANT : only Debian and Ubuntu are currently supported.\n")
+        sys.stderr.write("pksetup v0.1 (c) 2003-2007 Jerome Alet - alet@librelogiciel.com\n\nusage : pksetup distribution\n\ne.g. : pksetup debian\n\nIMPORTANT : only Debian and Ubuntu are currently supported.\n")
+    elif (sys.argv[1] == "-v") or (sys.argv[1] == "--version") :    
+        print "0.1" # pksetup's own version number
     else :    
         classname = sys.argv[1].strip().title()
         try :
