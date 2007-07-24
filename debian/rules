@@ -78,7 +78,6 @@ install: build
 	(chown www-data.www-data $(CURDIR)/debian/tmp/usr/lib/cgi-bin/printquota.cgi)
 	(chown www-data.www-data $(CURDIR)/debian/tmp/usr/lib/cgi-bin/dumpykota.cgi)
 	(chown www-data.www-data $(CURDIR)/debian/tmp/usr/lib/cgi-bin/pykotme.cgi)
-	(chmod 755 $(CURDIR)/debian/tmp/usr/share/pykota/*)
 	(cd docs; make -f ../debian/Makefile.docs install DESTDIR=$(CURDIR)/debian/tmp/)
 
 
