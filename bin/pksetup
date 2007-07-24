@@ -371,10 +371,11 @@ class PyKotaSetup :
     
     def setupBackend(self) :
         """Installs the cupspykota backend."""
-        backendsdirectory = self.backendsdirectory
-        pykotadirectory = self.pykotadirectory
-        self.confirmCommand("to make PyKota known to CUPS", "ln -s %(pykotadirectory)s/cupspykota %(backendsdirectory)s/cupspykota" % locals())
-        self.confirmCommand("to restart CUPS for the changes to take effect", self.cupsrestart)
+        backend = os.path.join(self.backendsdirectory, "cupspykota")
+        if not os.path.exists(backend) :
+            realbackend = os.path.join(self.pykotadirectory, "cupspykota")
+            self.confirmCommand("to make PyKota known to CUPS", "ln -s %(realbackend)s %(backend)s" % locals())
+            self.confirmCommand("to restart CUPS for the changes to take effect", self.cupsrestart)
         
     def managePrinters(self, printers) :    
         """For each printer, asks if it should be managed with PyKota or not."""
