@@ -47,11 +47,13 @@
       </description>
     </entry>
   </category>
-  <category name="Run pykota/checkdeps.py to look for missing dependencies">
+  <category name="Look for missing dependencies">
     <description>PyKota depends on a lot of third party software.
       Some of them are required, other ones simply recommended : they don't
       prevent most of PyKota from working, but some functionnalities will
-      be unavailable to you if they are not installed.
+      be unavailable to you if they are not installed. You can see the
+      status for each of PyKota's dependencies with 
+      'python pykota/checkdeps.py'
     </description>  
     <entry name="python-egenix-mxdatetime" display="true">
       <states>
