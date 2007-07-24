@@ -3,10 +3,11 @@
 
 . /usr/share/debconf/confmodule
 
-if [ "$1" = "upgrade" ]; then
+if [ "$1" = "install" ]; then
         chown -R pykota.pykota ~pykota
-        chmod 640 ~pykota/pykota.conf
-        chmod 600 ~pykota/pykotadmin.conf
+        chmod 0640 ~pykota/pykota.conf
+        chmod 0600 ~pykota/pykotadmin.conf
+	chmod 0700 /usr/share/pykota/cupspykota
 fi
 
 exit 0
