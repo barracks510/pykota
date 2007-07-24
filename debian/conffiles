@@ -2,3 +2,4 @@
 /etc/pykota/pykotadmin.conf
 /etc/default/printquota
 /etc/cron.daily/pykota
+/etc/ldap/schema/pykota.schema
