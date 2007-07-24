@@ -57,10 +57,6 @@ docfiles = glob.glob(os.sep.join(["docs", "*.pdf"]))
 docfiles += glob.glob(os.sep.join(["docs", "*.sx?"]))
 data_files.append((docdir, docfiles))
 
-docfiles = glob.glob(os.sep.join(["docs", "spanish", "*.pdf"]))
-docfiles += glob.glob(os.sep.join(["docs", "spanish", "*.sxw"]))
-data_files.append((os.path.join(docdir, "spanish"), docfiles))
-
 docfiles = glob.glob(os.sep.join(["docs", "pykota", "*.html"]))
 data_files.append((os.path.join(docdir, "html"), docfiles))
 
@@ -68,6 +64,10 @@ docfiles = glob.glob(os.sep.join(["openoffice", "*.sx?"]))
 docfiles += glob.glob(os.sep.join(["openoffice", "*.png"]))
 docfiles += glob.glob(os.sep.join(["openoffice", "README"]))
 data_files.append((os.path.join(docdir, "openoffice"), docfiles))
+
+docfiles = glob.glob(os.sep.join(["qa-assistant", "*.xml"]))
+docfiles += glob.glob(os.sep.join(["qa-assistant", "README"]))
+data_files.append((os.path.join(docdir, "qa-assistant"), docfiles))
 
 directory = os.sep.join(["share", "man", "man1"])
 manpages = glob.glob(os.sep.join(["man", "*.1"]))    

@@ -17,3 +17,4 @@ recursive-include contributed README *.pl *.sh *.py *.php
 recursive-include stylesheets README *.css
 recursive-include openoffice README *.png *.sx? *.pdf
 recursive-include tests README *.py *.sh
+recursive-include qa-assistant README *.xml

@@ -74,6 +74,7 @@ install: build
 	install -m 644 logos/pykotasmall.png $(CURDIR)/debian/tmp/usr/share/doc/pykota/logos/pykotasmall.png
 	install -m 644 logos/pykota.xcf $(CURDIR)/debian/tmp/usr/share/doc/pykota/logos/pykota.xcf
 	install -m 644 logos/README $(CURDIR)/debian/tmp/usr/share/doc/pykota/logos/README
+	install -m 644 qa-assistant/pykota.xml $(CURDIR)/debian/tmp/usr/share/qa-assistant/data/pykota.xml
 	(chown www-data.www-data $(CURDIR)/debian/tmp/usr/lib/cgi-bin/printquota.cgi)
 	(chown www-data.www-data $(CURDIR)/debian/tmp/usr/lib/cgi-bin/dumpykota.cgi)
 	(chown www-data.www-data $(CURDIR)/debian/tmp/usr/lib/cgi-bin/pykotme.cgi)
