@@ -229,8 +229,10 @@ class PyKotaSetup :
         
     def yesno(self, message) :        
         """Asks the end user some question and returns the answer."""
-        answer = raw_input("\n%s ? " % message).strip().upper()[0]
-        return answer == 'Y'
+        try :
+            return raw_input("\n%s ? " % message).strip().upper()[0] == 'Y'
+        except IndexError :    
+            return False
         
     def confirmCommand(self, message, command, record=True) :    
         """Asks for confirmation before a command is launched, and launches it if needed."""
