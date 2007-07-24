@@ -3,11 +3,9 @@
 
 . /usr/share/debconf/confmodule
 
-if [ "$1" = "install" ]; then
-        chown -R pykota.pykota ~pykota
-        chmod 0640 ~pykota/pykota.conf
-        chmod 0600 ~pykota/pykotadmin.conf
-	chmod 0700 /usr/share/pykota/cupspykota
-fi
+/bin/chown -R pykota.pykota ~pykota
+/bin/chmod 0640 ~pykota/pykota.conf
+/bin/chmod 0600 ~pykota/pykotadmin.conf
+/bin/chmod 0700 /usr/share/pykota/cupspykota
 
 exit 0
