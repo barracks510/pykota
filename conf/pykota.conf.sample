@@ -904,7 +904,20 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #       - User doesn't exist in PyKota's database
 #       - User has no quota entry for this Printer in PyKota's database
 #
-# Value can be either allow or deny or external(some command here)
+# Value can be either 'allow' or 'deny' or 'external(some command here)'
+#
+# 'Allow' means that the job will be printed even if the printer, the
+# user or this user's print quota entry on this printer doesn't exist
+# in PyKota's database. But the job won't appear in the printing history.
+#
+# 'Deny' means the job will be rejected if any of these three conditions
+# is met.
+#
+# 'External' means any command of your choice will be launched if any
+# of these three conditions is met. Once your command has ended, PyKota
+# will try again to retrieve the printer, user or user's print quota
+# entry from its database. If it fails to find any of them again, the
+# job will be rejected.
 #
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
