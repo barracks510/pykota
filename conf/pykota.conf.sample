@@ -365,7 +365,7 @@ usernamecase: native
 #
 # If winbind_separator is not set, which is the default, strict 
 # username equality checking will be done (modulo the setting
-# of the 'utolower' directive), this means that users 'DOMAIN1/jerome',
+# of the 'usernamecase' directive), this means that users 'DOMAIN1/jerome',
 # 'Domain2/jerome' and 'jerome' are different. 
 #
 # winbind_separator: /
@@ -758,7 +758,7 @@ preaccounter: software()
 #
 # 'stop' means fail and stop the print queue. If an accounter
 # error occurs, most of the time this is a misconfiguration, so
-# stopping the print queue is usually the better thing to do 
+# stopping the print queue is usually the best thing to do 
 # until the admin has fixed the configuration.
 #
 # This value can be set either globally or on a per printer basis
