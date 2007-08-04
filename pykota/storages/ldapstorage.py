@@ -396,6 +396,8 @@ class Storage(BaseStorage) :
                         description = ""
                     else :    
                         description = self.databaseToUserCharset(base64.decodestring(description))
+                    if amount.endswith(" #") :    
+                        amount = amount[:-2] # TODO : should be catched earlier, the bug is above I think
                     user.Payments.append((date, float(amount), description))
             user.Exists = True
         return user
