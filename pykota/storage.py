@@ -337,12 +337,12 @@ class StorageUserPQuota(StorageObject) :
                                 self.parent.tool.logdebug("No ink usage information. Using base cost of %f credits for page %i." % (pageprice, pageindex+1))
                                 totalprice += pageprice
                             else :    
-                                coefficients = self.Printer.Coefficients
+                                coefficients = upq.Printer.Coefficients
                                 for (ink, value) in usage.items() :
                                     coefvalue = coefficients.get(ink, 1.0)
                                     coefprice = (coefvalue * pageprice) / 100.0
                                     inkprice = coefprice * value
-                                    self.parent.tool.logdebug("Applying coefficient %f for color %s (used at %f%% on page %i) to base cost %f gives %f" % (coefvalue, ink, value, pageindex+1, pageprice, inkprice))
+                                    self.parent.tool.logdebug("Applying coefficient %f for color %s (used at %f%% on page %i) to base cost %f on printer %s gives %f" % (coefvalue, ink, value, pageindex+1, pageprice, upq.Printer.Name, inkprice))
                                     totalprice += inkprice
         if self.User.OverCharge != 1.0 : # TODO : beware of rounding errors
             overcharged = totalprice * self.User.OverCharge        

@@ -65,10 +65,13 @@ class Accounter(AccounterBase) :
                     # job's size MAY be.
                     self.filter.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
                 else :    
-                    if self.filter.InputFile is not None :
-                        # when a filename is passed as an argument, the backend 
-                        # must generate the correct number of copies.
-                        jobsize *= self.filter.Copies
+                    try :
+                        if self.filter.InputFile is not None :
+                            # when a filename is passed as an argument, the backend 
+                            # must generate the correct number of copies.
+                            jobsize *= self.filter.Copies
+                    except AttributeError : # When not run from the cupspykota backend        
+                        pass
                 infile.close()        
         return jobsize        
                 

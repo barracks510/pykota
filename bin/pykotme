@@ -29,8 +29,7 @@ import os
 import pwd
 
 from pykota.tool import PyKotaTool, PyKotaCommandLineError, crashed, N_
-
-from pkpgpdls import analyzer, pdlparser
+from pykota.accounter import openAccounter
     
 
 __doc__ = N_("""pykotme v%(__version__)s (c) %(__years__)s %(__author__)s
@@ -82,13 +81,6 @@ class PyKotMe(PyKotaTool) :
         """Gives print quotes."""
         if (not sys.stdin.isatty()) and ("-" not in files) :
             files.append("-")
-        totalsize = 0    
-        for filename in files :    
-            try :
-                parser = analyzer.PDLAnalyzer(filename)
-                totalsize += parser.getJobSize()
-            except (pdlparser.PDLParserError, IOError), msg :    
-                self.printInfo(msg)
             
         printers = self.storage.getMatchingPrinters(options["printer"])
         if not printers :
@@ -99,24 +91,43 @@ class PyKotMe(PyKotaTool) :
         if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
             print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
             
-        print _("Job size : %i pages") % totalsize    
         if user.Exists :
+            sizeprinted = False
+            done = {}
+            for printer in printers :
+                # Now fake some values. TODO : improve API to not need this anymore    
+                self.PrinterName = printer.Name
+                self.JobSizeBytes = 1
+                self.preaccounter = openAccounter(self, ispreaccounter=1)
+                key = self.preaccounter.name + self.preaccounter.arguments
+                if not done.has_key(key) :
+                    totalsize = 0    
+                    inkusage = []
+                    for filename in files :    
+                        self.DataFile = filename
+                        self.preaccounter.beginJob(None)
+                        self.preaccounter.endJob(None)
+                        totalsize += self.preaccounter.getJobSize(None)
+                        inkusage.extend(self.preaccounter.inkUsage)
+                    done[key] = (totalsize, inkusage)    
+                (totalsize, inkusage) = done[key]    
+                if not sizeprinted :    
+                    print _("Job size : %i pages") % totalsize    
+                    sizeprinted = True
+                userpquota = self.storage.getUserPQuota(user, printer)
+                if userpquota.Exists :
+                    if printer.MaxJobSize and (totalsize > printer.MaxJobSize) :
+                        print _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
+                    else :    
+                        cost = userpquota.computeJobPrice(totalsize, inkusage)
+                        msg = _("Cost on printer %s : %.2f") % (printer.Name, cost)
+                        if printer.PassThrough :
+                            msg = "%s (%s)" % (msg, _("won't be charged, printer is in passthrough mode"))
+                        elif user.LimitBy == "nochange" :    
+                            msg = "%s (%s)" % (msg, _("won't be charged, your account is immutable"))
+                        print msg    
             if user.LimitBy == "noprint" :
                 print _("Your account settings forbid you to print at this time.")
-            else :    
-                for printer in printers :
-                    userpquota = self.storage.getUserPQuota(user, printer)
-                    if userpquota.Exists :
-                        if printer.MaxJobSize and (totalsize > printer.MaxJobSize) :
-                            print _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
-                        else :    
-                            cost = userpquota.computeJobPrice(totalsize)
-                            msg = _("Cost on printer %s : %.2f") % (printer.Name, cost)
-                            if printer.PassThrough :
-                                msg = "%s (%s)" % (msg, _("won't be charged, printer is in passthrough mode"))
-                            elif user.LimitBy == "nochange" :    
-                                msg = "%s (%s)" % (msg, _("won't be charged, your account is immutable"))
-                            print msg    
             
 if __name__ == "__main__" : 
     retcode = 0

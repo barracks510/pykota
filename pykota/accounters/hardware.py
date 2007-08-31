@@ -30,9 +30,9 @@ from pykota.accounter import AccounterBase, PyKotaAccounterError
 from pykota.accounters import snmp, pjl
 
 class Accounter(AccounterBase) :
-    def __init__(self, kotabackend, arguments, ispreaccounter=0) :
+    def __init__(self, kotabackend, arguments, ispreaccounter=0, name="hardware") :
         """Initializes querying accounter."""
-        AccounterBase.__init__(self, kotabackend, arguments)
+        AccounterBase.__init__(self, kotabackend, arguments, ispreaccounter, name)
         self.isSoftware = 0
         
     def getPrinterInternalPageCounter(self) :    

@@ -39,8 +39,9 @@ class PyKotaAccounterError(Exception):
     
 class AccounterBase :    
     """A class to account print usage by querying printers."""
-    def __init__(self, kotafilter, arguments, ispreaccounter=0) :
+    def __init__(self, kotafilter, arguments, ispreaccounter=0, name="Unknown") :
         """Sets instance vars depending on the current printer."""
+        self.name = name
         self.filter = kotafilter
         self.arguments = arguments
         self.onerror = self.filter.config.getPrinterOnAccounterError(self.filter.PrinterName)
@@ -105,4 +106,4 @@ def openAccounter(kotafilter, ispreaccounter=0) :
     except ImportError :
         raise PyKotaAccounterError, _("Unsupported accounter backend %s") % backend
     else :    
-        return accounterbackend.Accounter(kotafilter, args, ispreaccounter)
+        return accounterbackend.Accounter(kotafilter, args, ispreaccounter, backend.lower())

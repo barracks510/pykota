@@ -86,10 +86,13 @@ class Accounter(AccounterBase) :
                             colordict[cspacelabels[color]] = page[color]
                         self.inkUsage.append(colordict)    
                     jobsize = len(pages)
-                    if self.filter.InputFile is not None :
-                        # when a filename is passed as an argument, the backend 
-                        # must generate the correct number of copies.
-                        jobsize *= self.filter.Copies
-                        self.inkUsage *= self.filter.Copies
+                    try :
+                        if self.filter.InputFile is not None :
+                            # when a filename is passed as an argument, the backend 
+                            # must generate the correct number of copies.
+                            jobsize *= self.filter.Copies
+                            self.inkUsage *= self.filter.Copies
+                    except AttributeError : # When not run from the cupspykota backend 
+                        pass
                     self.filter.logdebug("Ink usage : %s ===> %s" % (cspace, repr(self.inkUsage)))
         return jobsize        
