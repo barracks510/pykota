@@ -49,7 +49,7 @@ except ImportError :
 else :    
     def detectCharset(text) :
         """Uses the chardet module to workaround CUPS lying to us."""
-        return chardet.detect(text)["encoding"]
+        return chardet.detect(text)["encoding"] or "UTF-8"
 
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
