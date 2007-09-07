@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 TODO, in no particular order :
         
+        - Ensure no banner is printed if the user cancelled his job
+          through pknotify+PyKotIcon.
+        
         - Add a third settable price for printers : a minimal cost
           for a page, with a default value of 0.0. The value would
           be used instead of the computed price in the case of ink
