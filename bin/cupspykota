@@ -303,7 +303,7 @@ class CUPSBackend(PyKotaTool) :
                 checkauth = destination.split("@", 1)    
                 if len(checkauth) == 2 :
                     destination = checkauth[1]
-            printerhostname = destination.split("/")[0].split(":")[0]
+                printerhostname = destination.split("/")[0].split(":")[0]
             
         self.PrinterHostName = printerhostname    
         self.RealBackend = backend
