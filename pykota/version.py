@@ -23,7 +23,7 @@
 
 """This module defines some application level constants."""
 
-__version__ = "1.27alpha1_unofficial"
+__version__ = "1.27alpha2_broken_unofficial"
 
 __doc__ = "PyKota : a complete Printing Quota Solution for CUPS."
 
