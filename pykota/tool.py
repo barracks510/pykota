@@ -117,7 +117,10 @@ class Percent :
         """Displays the 'done' message."""
         after = time.time()
         if self.size :
-            speed = self.size / (after - self.before)
+            try :
+                speed = self.size / (after - self.before)
+            except ZeroDivisionError :    
+                speed = 1 # Fake value in case of division by zero
             self.display("\r100.00%%\r        \r%s. %s : %.2f %s.\n" \
                      % (_("Done"), _("Average speed"), speed, _("entries per second")))
         else :             
