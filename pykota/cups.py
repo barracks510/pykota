@@ -29,15 +29,19 @@ try :
 except ImportError :        
     raise RuntimeError, "The python-pkipplib module is now mandatory. You can download pkipplib from http://www.pykota.com/"
 
-class Job :    
+class JobTicket :    
     """A class to hold CUPS print job informations."""
-    def __init__(self, jobid=None, copies=1, filename=None) :
+    def __init__(self, jobid=None, printername=None, copies=1, filename=None, \
+                       options=None) :
         """Initializes a print job's information."""
         self.JobId = jobid
+        self.PrinterName = printername
         self.Copies = copies
         self.FileName = filename
+        self.Options = options
         self.Charset = None
-        self.UserName = None
+        self.OriginatingUserName = None
+        self.OriginalUserName = None
         self.Title = None
         self.BillingCode = None
         self.OriginatingHostName = None
@@ -60,13 +64,17 @@ class Job :
             
     def retrieveAttributesFromCUPS(self) :
         """Retrieve attribute's values from CUPS."""
+        import os
+        f = open("/tmp/debug", "w")
+        f.write("%s\n" % os.environ.get("CUPS_SERVER", ""))
+        f.close()
         server = pkipplib.CUPS() # TODO : username and password and/or encryption
         answer = server.getJobAttributes(self.JobId)
         if answer is None :
             raise PyKotaToolError, "Network error while querying the CUPS server : %s" \
                                       % server.lastErrorMessage
-        (dummy, self.Charset) = self.getAttributeTypeAndValue(answer, "attributes-charset", "operation")                              
-        (dummy, self.UserName) = self.getAttributeTypeAndValue(answer, "job-originating-user-name")
+        (dummy, self.Charset) = self.getAttributeTypeAndValue(answer, "attributes-charset", "operation")
+        (dummy, self.OriginatingUserName) = self.getAttributeTypeAndValue(answer, "job-originating-user-name")
         (dummy, self.Title) = self.getAttributeTypeAndValue(answer, "job-name")
         (dummy, self.BillingCode) = self.getAttributeTypeAndValue(answer, "job-billing")
         (dummy, self.OriginatingHostName) = self.getAttributeTypeAndValue(answer, "job-originating-host-name")
@@ -74,14 +82,15 @@ class Job :
         (dummy, self.TimeAtCreation) = self.getAttributeTypeAndValue(answer, "time-at-creation")
         (dummy, self.TimeAtProcessing) = self.getAttributeTypeAndValue(answer, "time-at-processing")
         (dummy, self.MimeType) = self.getAttributeTypeAndValue(answer, "document-format")
+        self.OriginalUserName = self.OriginatingUserName[:]
     
 if __name__ == "__main__" :    
     import sys
     if len(sys.argv) != 2 :
         sys.stderr.write("usage : python cups.py jobid\n")
     else :    
-        job = Job(int(sys.argv[1]))
-        for attribute in ("Charset", "JobId", "Copies", "FileName", "UserName", 
+        job = JobTicket(int(sys.argv[1]))
+        for attribute in ("Charset", "JobId", "Copies", "FileName", "OriginatingUserName", 
                           "Title", "BillingCode", "OriginatingHostName", 
                           "TimeAtCreation", "TimeAtProcessing", "UUID",
                           "MimeType") :

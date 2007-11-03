@@ -985,7 +985,6 @@ policy: deny
 #                  job's datas
 # PYKOTAFILENAME : The name of the file which contains the job's datas or 
 #                  empty if datas come from stdin
-# PYKOTACONTROLFILE : The name of the IPP message file
 # PYKOTAMD5SUM : Contains an hexadecimal digest of the md5 sum of the job's datas
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
 # PYKOTAACTION : ALLOW or DENY or WARN for current print job

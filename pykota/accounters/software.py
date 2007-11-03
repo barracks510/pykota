@@ -66,10 +66,10 @@ class Accounter(AccounterBase) :
                     self.filter.printInfo(_("Unable to precompute the job's size with the generic PDL analyzer : %s") % msg, "warn")
                 else :    
                     try :
-                        if self.filter.InputFile is not None :
+                        if self.filter.Ticket.FileName is not None :
                             # when a filename is passed as an argument, the backend 
                             # must generate the correct number of copies.
-                            jobsize *= self.filter.Copies
+                            jobsize *= self.filter.Ticket.Copies
                     except AttributeError : # When not run from the cupspykota backend        
                         pass
                 infile.close()        
@@ -127,9 +127,9 @@ class Accounter(AccounterBase) :
         self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, repr(pagecounter)))
             
         pagecounter = pagecounter or 0    
-        if self.filter.InputFile is not None :
+        if self.filter.Ticket.FileName is not None :
             # when a filename is passed as an argument, the backend 
             # must generate the correct number of copies.
-            pagecounter *= self.filter.Copies
+            pagecounter *= self.filter.Ticket.Copies
                         
         return pagecounter
