@@ -54,9 +54,8 @@ class Accounter(AccounterBase) :
                 self.filter.printInfo("pkpgcounter is now distributed separately, please grab it from http://www.pykota.com/software/pkpgcounter", "error")
                 self.filter.printInfo("Precomputed job size will be forced to 0 pages.", "error")
             else :     
-                infile = open(self.filter.DataFile, "rb")
                 try :
-                    parser = analyzer.PDLAnalyzer(infile)
+                    parser = analyzer.PDLAnalyzer(self.filter.DataFile)
                     jobsize = parser.getJobSize()
                 except pdlparser.PDLParserError, msg :    
                     # Here we just log the failure, but
@@ -70,9 +69,8 @@ class Accounter(AccounterBase) :
                             # when a filename is passed as an argument, the backend 
                             # must generate the correct number of copies.
                             jobsize *= self.filter.Ticket.Copies
-                    except AttributeError : # When not run from the cupspykota backend        
+                    except AttributeError : # When not run from the cupspykota backend
                         pass
-                infile.close()        
         return jobsize        
                 
     def withExternalScript(self) :    
