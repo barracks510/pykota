@@ -64,10 +64,6 @@ class JobTicket :
             
     def retrieveAttributesFromCUPS(self) :
         """Retrieve attribute's values from CUPS."""
-        import os
-        f = open("/tmp/debug", "w")
-        f.write("%s\n" % os.environ.get("CUPS_SERVER", ""))
-        f.close()
         server = pkipplib.CUPS() # TODO : username and password and/or encryption
         answer = server.getJobAttributes(self.JobId)
         if answer is None :
@@ -82,6 +78,22 @@ class JobTicket :
         (dummy, self.TimeAtCreation) = self.getAttributeTypeAndValue(answer, "time-at-creation")
         (dummy, self.TimeAtProcessing) = self.getAttributeTypeAndValue(answer, "time-at-processing")
         (dummy, self.MimeType) = self.getAttributeTypeAndValue(answer, "document-format")
+        
+        for attrib in ("OriginatingUserName", 
+                       "OriginatingHostName",
+                       "Title", 
+                       "BillingCode",
+                       "PrinterName",
+                       "Options",
+                       "Charset",
+                       "UUID",
+                       "MimeType") :
+            try :           
+                setattr(self, attrib, 
+                              getattr(self, attrib).decode("UTF-8", "replace"))
+            except AttributeError :                  
+                pass
+                
         self.OriginalUserName = self.OriginatingUserName[:]
     
 if __name__ == "__main__" :    
@@ -89,9 +101,10 @@ if __name__ == "__main__" :
     if len(sys.argv) != 2 :
         sys.stderr.write("usage : python cups.py jobid\n")
     else :    
-        job = JobTicket(int(sys.argv[1]))
-        for attribute in ("Charset", "JobId", "Copies", "FileName", "OriginatingUserName", 
+        job = JobTicket(int(sys.argv[1]), "FakePrinter")
+        for attribute in ("PrinterName", "Charset", "JobId", "Copies", 
+                          "FileName", "OriginatingUserName", 
                           "Title", "BillingCode", "OriginatingHostName", 
-                          "TimeAtCreation", "TimeAtProcessing", "UUID",
+                          "TimeAtCreation", "TimeAtProcessing", "UUID", 
                           "MimeType") :
             sys.stdout.write("%s : %s\n" % (attribute, repr(getattr(job, attribute))))
