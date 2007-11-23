@@ -196,7 +196,7 @@ class PyKotaSetup :
                  "python-pam" ]
         
     otherpackages = [ { "name" : "pkpgcounter",
-                        "version" : "2.17",
+                        "version" : "3.30",
                         "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
                         "commands" : [ "tar -zxf %(name)s-%(version)s.tar.gz",
                                        "cd %(name)s-%(version)s",
@@ -211,14 +211,13 @@ class PyKotaSetup :
                                        "python setup.py install",
                                      ],
                       },
-                      { "name" : "ghostpcl",
-                        "version" : "1.41p1",
-                        "url" : "ftp://mirror.cs.wisc.edu/pub/mirrors/ghost/AFPL/GhostPCL/%(name)s_%(version)s.tar.bz2", 
+                      { "name" : "ghostpdl",
+                        "version" : "1.51",
+                        "url" : "http://mirror.cs.wisc.edu/pub/mirrors/ghost/GPL/%(name)s/%(name)s-%(version)s.tar.bz2",
                         "commands" : [ "bunzip2 <%(name)s_%(version)s.tar.bz2 | tar -xf -",
                                        "cd %(name)s_%(version)s",
-                                       "make fonts",
-                                       "make product",
-                                       "make install",
+                                       "make pcl",
+                                       "make pcl_install",
                                      ],
                       },
                    ]  
@@ -281,7 +280,7 @@ class PyKotaSetup :
             if url.startswith("svn://") :
                 download = 'svn export "%(url)s" %(name)s' % locals()
             else :    
-                download = 'wget "%(url)s"' % locals()
+                download = 'wget --user-agent=pksetup "%(url)s"' % locals()
             if self.confirmCommand("to download %(name)s" % locals(), download) :
                 self.confirmCommand("to install %(name)s" % locals(), commands)
         self.confirmCommand("to remove the temporary directory %(directory)s" % locals(),     
@@ -320,15 +319,23 @@ class PyKotaSetup :
                     else :
                         conflines.insert(1, "local\tpykota\tpykotaadmin,pykotauser\t\tmd5")
                     conf = "\n".join(conflines)
+                    port = 5432
+                    if tcpip :
+                        answer = self.confirmPipe("to see on which TCP port PostgreSQL accepts connections", "grep ^port %(pgconffile)s" % locals())
+                        if answer is not False :
+                            try :
+                                port = int([p.strip() for p in answer.strip().split("=")][1])
+                            except (ValueError, IndexError, TypeError) :
+                                pass
                     self.confirmCommand("to configure PostgreSQL correctly for PyKota", 'echo "%(conf)s" >%(pgconfdir)s/pg_hba.conf' % locals())
                     self.confirmCommand("to make PostgreSQL take the changes into account", self.pgrestart)
-                    return tcpip
-        return None    
+                    return (tcpip, port)
+        return (None, None)
         
-    def genConfig(self, adminname, adminemail, dnsdomain, smtpserver, home, tcpip) :        
+    def genConfig(self, adminname, adminemail, dnsdomain, smtpserver, home, tcpip, port) :
         """Generates minimal configuration files for PyKota."""
         if tcpip :
-            storageserver = "localhost"
+            storageserver = "localhost:%i" % port
         else :    
             storageserver = ""
         conf = pykotaconf % locals()
@@ -406,8 +413,8 @@ class PyKotaSetup :
             self.upgradeSystem()
             self.setupPackages()
             self.downloadOtherPackages()
-            tcpip = self.configurePostgreSQL()
-            self.genConfig(adminname, adminemail, dnsdomain, smtpserver, homedirectory, tcpip)
+            (tcpip, port) = self.configurePostgreSQL()
+            self.genConfig(adminname, adminemail, dnsdomain, smtpserver, homedirectory, tcpip, port)
             self.setupDatabase()
             self.setupBackend()
             self.managePrinters(self.listPrinters())
