@@ -351,7 +351,7 @@ class SQLStorage :
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
-        result = self.doSearch("SELECT * FROM users WHERE username=%s LIMIT 1"\
+        result = self.doSearch("SELECT * FROM users WHERE username=%s"\
                       % self.doQuote(self.userCharsetToDatabase(username)))
         if result :
             return self.storageUserFromRecord(username, result[0])
@@ -360,7 +360,7 @@ class SQLStorage :
        
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
-        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description LIMIT 1" \
+        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description" \
                       % self.doQuote(self.userCharsetToDatabase(groupname)))
         if result :
             return self.storageGroupFromRecord(groupname, result[0])
@@ -369,7 +369,7 @@ class SQLStorage :
        
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
-        result = self.doSearch("SELECT * FROM printers WHERE printername=%s LIMIT 1" \
+        result = self.doSearch("SELECT * FROM printers WHERE printername=%s" \
                       % self.doQuote(self.userCharsetToDatabase(printername)))
         if result :
             return self.storagePrinterFromRecord(printername, result[0])
@@ -378,7 +378,7 @@ class SQLStorage :
         
     def getBillingCodeFromBackend(self, label) :        
         """Extracts a billing code information given its name."""
-        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" \
+        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s" \
                       % self.doQuote(self.userCharsetToDatabase(label)))
         if result :
             return self.storageBillingCodeFromRecord(label, result[0])
