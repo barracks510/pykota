@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: ISO-8859-15 -*-
+# -*- coding: UTF-8 -*-
 #
 # PyKota : Print Quotas for CUPS
 #
