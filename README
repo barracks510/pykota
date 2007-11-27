@@ -1,11 +1,11 @@
 # $Id$
 
-PyKota - Print Quotas for CUPS and LPRng
+PyKota - Print Quotas for CUPS
 
 (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -14,8 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ====================================================================
 
@@ -50,7 +49,8 @@ implemented :
     uses the code from pkpgcounter which can handle
     several Page Description Languages : DSC compliant and binary PostScript,
     PDF, PCLXL (aka PCL6), PCL3/4/5, ESC/P2, DVI, TIFF, OpenDocument,
-    Zenographics ZjStream, Samsung QPDL,Samsung SPL1, and plain text.
+    Zenographics ZjStream, Samsung QPDL,Samsung SPL1, Brother HBP,
+    ESC/PageS03, Hewlett-Packard LIDIL, and plain text.
     Of course this means you have to install pkpgcounter if you want to
     use the default PDL parser.
     
@@ -435,10 +435,10 @@ The rest of the installation depends on your printing system :
 
   - LPRng Printing System :
   
-    IMPORTANT : This release of PyKota DOES NOT support LPRng.
+    IMPORTANT : This release of PyKota DOES NOT support LPRng anymore.
     
     If you want to use PyKota with LPRng, you have to download
-    an earlier release of PyKota, for example v1.22HotFix1.
+    an earlier release of PyKota, up to and including 1.22HotFix1.
         
 Now you can begin to populate the PyKota's database with printers,
 users and groups :

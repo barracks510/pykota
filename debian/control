@@ -25,4 +25,5 @@ Description: Print Quota/Accounting system for CUPS
  .
  Full access to source code is granted to all for no fee via Subversion, but 
  installable tarball, DEB and RPM download is for a fee. Redistribution and 
- modification is allowed to all under the terms of the GNU GPL.
+ modification is allowed to all under the terms of the GNU GPL version 3 or
+ later.
