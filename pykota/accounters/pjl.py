@@ -20,10 +20,12 @@
 #
 #
 
+"""This module defines the necessary classes and methods to retrieve 
+a printer's internal page counter over a TCP connection.""" 
+
 import sys
 import os
 import socket
-import errno
 import time
 import threading
 import Queue
@@ -32,13 +34,13 @@ from pykota import constants
 
 FORMFEEDCHAR = chr(0x0c)     # Form Feed character, ends PJL answers.
 
-# Old method : pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
+# Old method : PJLMESSAGE = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 # Here's a new method, which seems to work fine on my HP2300N, while the 
 # previous one didn't.
 # TODO : We could also experiment with USTATUS JOB=ON and we would know for sure 
 # when the job is finished, without having to poll the printer repeatedly.
-pjlMessage = "\033%-12345X@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n@PJL USTATUS DEVICE=OFF\033%-12345X"
-pjlStatusValues = {
+PJLMESSAGE = "\033%-12345X@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n@PJL USTATUS DEVICE=OFF\033%-12345X"
+PJLSTATUSVALUES = {
                     "10000" : "Powersave Mode",
                     "10001" : "Ready Online",
                     "10002" : "Ready Offline",
@@ -108,22 +110,22 @@ class Handler :
     def readloop(self) :        
         """Reading loop thread."""
         self.parent.filter.logdebug("Reading thread started.")
-        buffer = []
+        readbuffer = []
         while not self.quitEvent.isSet() :
             try :
                 answer = self.sock.recv(1)
             except socket.timeout :    
                 pass
-            except socket.error, (err, msg) :
+            except socket.error, (dummy, msg) :
                 self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
                 if answer :
-                    buffer.append(answer)
+                    readbuffer.append(answer)
                     if answer.endswith(FORMFEEDCHAR) :
-                        self.queue.put("".join(buffer))
-                        buffer = []
-        if buffer :             
-            self.queue.put("".join(buffer))            
+                        self.queue.put("".join(readbuffer))
+                        readbuffer = []
+        if readbuffer :             
+            self.queue.put("".join(readbuffer))            
         self.parent.filter.logdebug("Reading thread ended.")
             
     def retrievePJLValues(self) :    
@@ -133,13 +135,13 @@ class Handler :
             time.sleep(1)
         try :
             try :
-                nbsent = self.sock.send(pjlMessage)
-                if nbsent != len(pjlMessage) :
+                nbsent = self.sock.send(PJLMESSAGE)
+                if nbsent != len(PJLMESSAGE) :
                     raise socket.error, "Short write"
             except socket.error, msg :
                 self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
-                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
+                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(PJLMESSAGE)))
                 actualpagecount = self.printerStatus = None
                 while (actualpagecount is None) or (self.printerStatus is None) :
                     try :
@@ -257,7 +259,7 @@ class Handler :
             
 def main(hostname) :
     """Tries PJL accounting for a printer host."""
-    class fakeFilter :
+    class FakeFilter :
         """Fakes a filter for testing purposes."""
         def __init__(self) :
             """Initializes the fake filter."""
@@ -273,19 +275,19 @@ def main(hostname) :
             """Prints debug message."""
             self.printInfo(msg, "debug")
             
-    class fakeAccounter :        
+    class FakeAccounter :        
         """Fakes an accounter for testing purposes."""
-        def __init__(self) :
+        def __init__(self, hostname) :
             """Initializes fake accounter."""
             self.arguments = "pjl:9100"
-            self.filter = fakeFilter()
-            self.protocolHandler = Handler(self, sys.argv[1])
+            self.filter = FakeFilter()
+            self.protocolHandler = Handler(self, hostname)
             
         def getLastPageCounter(self) :    
             """Fakes the return of a page counter."""
             return 0
         
-    acc = fakeAccounter()            
+    acc = FakeAccounter(hostname)
     return acc.protocolHandler.retrieveInternalPageCounter()
     
 if __name__ == "__main__" :            
@@ -293,6 +295,7 @@ if __name__ == "__main__" :
         sys.stderr.write("Usage :  python  %s  printer_ip_address\n" % sys.argv[0])
     else :    
         def _(msg) :
+            """Fake gettext method."""
             return msg
             
         pagecounter = main(sys.argv[1])
