@@ -83,7 +83,7 @@ is not set.
 .PP
 examples :
 .IP
-\f(CW$ pkprinters --add -D "HP Printer" --charge 0.05,0.1 hp2100 hp2200 hp8000\fR
+\f(CW$ pkprinters \-\-add -D "HP Printer" \-\-charge 0.05,0.1 hp2100 hp2200 hp8000\fR
 .IP
 Will create three printers named hp2100, hp2200 and hp8000.
 Their price per page will be set at 0.05 unit, and their price
@@ -93,17 +93,17 @@ All of their descriptions will be set to the string "HP Printer".
 If any of these printers already exists, it will also be modified
 unless the \fB\-s\fR|\-\-skipexisting command line option is also used.
 .IP
-\f(CW$ pkprinters --delete "*"\fR
+\f(CW$ pkprinters \-\-delete "*"\fR
 .IP
 This will completely delete all printers and associated quota information,
 as well as their job history. USE WITH CARE !
 .IP
-\f(CW$ pkprinters --groups Laser,HP "hp*"\fR
+\f(CW$ pkprinters \-\-groups Laser,HP "hp*"\fR
 .IP
 This will put all printers which name matches "hp*" into printers groups
 Laser and HP, which MUST already exist.
 .IP
-\f(CW$ pkprinters --groups LexMark --remove hp2200\fR
+\f(CW$ pkprinters \-\-groups LexMark \-\-remove hp2200\fR
 .IP
 This will remove the hp2200 printer from the LexMark printer group.
 .PP

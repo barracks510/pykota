@@ -19,15 +19,30 @@
 # $Id$
 #
 for prog in pksetup pkrefund pknotify pkusers pkinvoice pkturnkey pkbcodes pkmail pkbanner autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pykosd ; do 
-    echo $prog ;
-    help2man --no-info --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
+    echo "$prog" ;
+    help2man --no-info \
+             --section=1 \
+             --manual="User Commands" \
+             --source="C@LL - Conseil Internet & Logiciels Libres" \
+             --output="temp$prog.1" \
+             "$prog" ; 
+    /bin/sed -e "s/--/\\\-\\\-/g" <"temp$prog.1" >"$prog.1" ;
+    /bin/rm -f "temp$prog.1"
     cd ../po ;
     for dir in * ; do 
         if [ -d $dir ] ; then
             if [ -e $dir/pykota.po ] ; then
                 echo "  $dir" ;
                 cd ../man/$dir ;
-                help2man --no-info --locale=$dir --section=1 --manual "User Commands" --source="C@LL - Conseil Internet & Logiciels Libres" --output=$prog.1 $prog ; 
+                help2man --no-info \
+                         --locale=$dir \
+                         --section=1 \
+                         --manual="User Commands" \
+                         --source="C@LL - Conseil Internet & Logiciels Libres" \
+                         --output="temp$prog.1" \
+                         "$prog" ; 
+                /bin/sed -e "s/--/\\\-\\\-/g" <"temp$prog.1" >"$prog.1" ;
+                /bin/rm -f "temp$prog.1"
                 cd ../../po ;
             fi ;    
         fi ;     

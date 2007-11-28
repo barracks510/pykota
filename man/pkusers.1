@@ -104,49 +104,49 @@ if the \fB\-\-add\fR option is not set.
 .PP
 examples :
 .IP
-\f(CW$ pkusers --add john paul george ringo/ringo@example.com\fR
+\f(CW$ pkusers \-\-add john paul george ringo/ringo@example.com\fR
 .IP
 This will add users john, paul, george and ringo to the quota
 database. User ringo's email address will also be set to
 \&'ringo@example.com'
 .IP
-\f(CW$ pkusers --ingroups coders,it jerome\fR
+\f(CW$ pkusers \-\-ingroups coders,it jerome\fR
 .IP
 User jerome is put into the groups "coders" and "it" which must
 already exist in the quota database.
 .IP
-\f(CW$ pkusers --limitby balance jerome\fR
+\f(CW$ pkusers \-\-limitby balance jerome\fR
 .IP
 This will tell PyKota to limit jerome by his account's balance
 when printing.
 .IP
-\f(CW$ pkusers --balance +10.0 --comment "He paid with his blood !" jerome\fR
+\f(CW$ pkusers \-\-balance +10.0 \-\-comment "He paid with his blood !" jerome\fR
 .IP
 This will increase jerome's account balance by 10.0 (in your
 own currency). You can decrease the account balance with a
 dash prefix, and set it to a fixed amount with no prefix.
 A comment will be stored for this balance change.
 .IP
-\f(CW$ pkusers --delete jerome rachel\fR
+\f(CW$ pkusers \-\-delete jerome rachel\fR
 .IP
 This will completely delete jerome and rachel from the quota
 database. All their quotas and jobs will be deleted too.
 .IP
-\f(CW$ pkusers --overcharge 2.5 poorstudent\fR
+\f(CW$ pkusers \-\-overcharge 2.5 poorstudent\fR
 .IP
 This will overcharge the poorstudent user by a factor of 2.5.
 .IP
-\f(CW$ pkusers --overcharge -1 jerome\fR
+\f(CW$ pkusers \-\-overcharge -1 jerome\fR
 .IP
 User jerome will actually earn money whenever he prints.
 .IP
-\f(CW$ pkusers --overcharge 0 boss\fR
+\f(CW$ pkusers \-\-overcharge 0 boss\fR
 .IP
 User boss can print at will, it won't cost him anything because the
 cost of each print job will be multiplied by zero before charging
 his account.
 .IP
-\f(CW$ pkusers --email @example.com\fR
+\f(CW$ pkusers \-\-email @example.com\fR
 .IP
 This will set the email address for each user to username@example.com
 .PP

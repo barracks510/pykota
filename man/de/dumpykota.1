@@ -131,20 +131,20 @@ empty if you use a key not available for a particular data type.
 .PP
 Examples :
 .IP
-\f(CW$ dumpykota --data history --format csv >myfile.csv\fR
+\f(CW$ dumpykota \-\-data history \-\-format csv >myfile.csv\fR
 .IP
 This dumps the history in a comma separated values file, for possible
 use in a spreadsheet.
 .IP
-\f(CW$ dumpykota --data users --format xml -o users.xml\fR
+\f(CW$ dumpykota \-\-data users \-\-format xml -o users.xml\fR
 .IP
 Dumps all users datas to the users.xml file.
 .IP
-\f(CW$ dumpykota --data history printername=HP2100 username=jerome\fR
+\f(CW$ dumpykota \-\-data history printername=HP2100 username=jerome\fR
 .IP
 Dumps the job history for user jerome on printer HP2100 only.
 .IP
-\f(CW$ dumpykota --data history start=200503 end=20050730234615\fR
+\f(CW$ dumpykota \-\-data history start=200503 end=20050730234615\fR
 .IP
 Dumps all jobs printed between March 1st 2005 at midnight and
 July 30th 2005 at 23 hours 46 minutes and 15 secondes included.

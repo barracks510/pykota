@@ -107,7 +107,7 @@ jokers ne sont pas expansés, aussi vous ne pouvez pas les utiliser.
 .PP
 Exemples :
 .IP
-\f(CW$ pkrefund --output /tmp/recus.pdf jobid=503\fR
+\f(CW$ pkrefund \-\-output /tmp/recus.pdf jobid=503\fR
 .IP
 Cela va rembourser tous les travaux dont l'identifiant est 503.
 ATTENTION : installer CUPS à nouveau va remettre l'identifiant à 1
@@ -116,17 +116,17 @@ comme expliqué ci\-dessous. Une confirmation sera demandée pour chaque
 remboursement, et un fichier PDF nommé /tmp/recus.pdf sera créé et
 contiendra les reçus imprimables.
 .IP
-\f(CW$ pkrefund --reason "Problème matériel" jobid=503 start=today-7\fR
+\f(CW$ pkrefund \-\-reason "Problème matériel" jobid=503 start=today-7\fR
 .IP
 Rembourse tous les travaux dont l'identifiant est 503 et qui ont été
 imprimés la semaine dernière. La raison indiquée sera un problème matériel.
 .IP
-\f(CW$ pkrefund --force username=jerome printername=HP2100\fR
+\f(CW$ pkrefund \-\-force username=jerome printername=HP2100\fR
 .IP
 Rembourse tous les travaux imprimés par l'utilisateur jerome sur
 l'imprimante HP2100. Aucune confirmation ne sera demandée.
 .IP
-\f(CW$ pkrefund --force printername=HP2100 start=200602 end=yesterday\fR
+\f(CW$ pkrefund \-\-force printername=HP2100 start=200602 end=yesterday\fR
 .IP
 Rembourse tous les travaux imprimés sur l'imprimante HP2100 entre le
 premier Février 2006 et hier. Aucune confirmation ne sera demandée.

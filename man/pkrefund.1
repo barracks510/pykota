@@ -101,7 +101,7 @@ expanded, so you can't use them.
 .PP
 Examples :
 .IP
-\f(CW$ pkrefund --output /tmp/receipts.pdf jobid=503\fR
+\f(CW$ pkrefund \-\-output /tmp/receipts.pdf jobid=503\fR
 .IP
 This will refund all jobs which Id is 503. BEWARE : installing CUPS
 afresh will reset the first job id at 1, so you probably want to use
@@ -109,17 +109,17 @@ a more precise filter as explained below. A confirmation will
 be asked for each job to refund, and a PDF file named /tmp/receipts.pdf
 will be created which will contain printable receipts.
 .IP
-\f(CW$ pkrefund --reason "Hardware problem" jobid=503 start=today-7\fR
+\f(CW$ pkrefund \-\-reason "Hardware problem" jobid=503 start=today-7\fR
 .IP
 Refunds all jobs which id is 503 but which were printed during the
 past week. The reason will be marked as being an hardware problem.
 .IP
-\f(CW$ pkrefund --force username=jerome printername=HP2100\fR
+\f(CW$ pkrefund \-\-force username=jerome printername=HP2100\fR
 .IP
 Refunds all jobs printed by user jerome on printer HP2100. No
 confirmation will be asked.
 .IP
-\f(CW$ pkrefund --force printername=HP2100 start=200602 end=yesterday\fR
+\f(CW$ pkrefund \-\-force printername=HP2100 start=200602 end=yesterday\fR
 .IP
 Refunds all jobs printed on printer HP2100 between February 1st 2006
 and yesterday. No confirmation will be asked.

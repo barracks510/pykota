@@ -103,13 +103,13 @@ jokers si l'option \fB\-\-add\fR n'est pas utilisée.
 .PP
 exemples :
 .IP
-\f(CW$ edpykota --add john paul george ringo\fR
+\f(CW$ edpykota \-\-add john paul george ringo\fR
 .IP
 Ceci va créer des entrées de quota d'impression pour les utilisateurs
 john, paul, george et ringo sur toutes les imprimantes. Aucune limite
 ne sera positionnée pour ces entrées.
 .IP
-\f(CW$ edpykota --printer lp -S 50 -H 60 jerome\fR
+\f(CW$ edpykota \-\-printer lp -S 50 -H 60 jerome\fR
 .IP
 Ceci va positionner le quota d'impression de jerome à une limite souple
 de 50 pages, et une limite dure de 60 pages sur l'imprimante lp. A la fois
@@ -121,7 +121,7 @@ avec les commandes pkusers et pkprinters, respectivement.
 Ceci va positionner la limite souple à 500 pages et la limite dure à 550
 pages pour les groupes finance et technique sur toutes les imprimantes.
 .IP
-\f(CW$ edpykota --reset jerome "jo*"\fR
+\f(CW$ edpykota \-\-reset jerome "jo*"\fR
 .IP
 Ceci va remettre à zéro le compteur de pages actuel sur toutes les
 imprimantes pour l'utilisateur jerome et pour tous les utilisateurs dont
@@ -130,7 +130,7 @@ Leur compteur de pages 'éternel' sur chaque imprimante sera préservé.
 Vous pouvez aussi remettre à zéro le compteur de pages 'éternel' en
 utilisant l'option de ligne de commande \fB\-\-hardreset\fR | \fB\-R\fR.
 .IP
-\f(CW$ edpykota --printer hpcolor --noquota jerome\fR
+\f(CW$ edpykota \-\-printer hpcolor \-\-noquota jerome\fR
 .IP
 Ceci va indiquer à PyKota de ne pas limiter jerome lorsqu'il imprime
 sur l'imprimante hpcolor. Tous ses travaux seront autorisés sur cette
@@ -138,7 +138,7 @@ imprimante, mais un décompte sera quand même effectué.
 Les quotas d'impressions de jerome sur les autres imprimantes ne sont
 pas modifiés.
 .IP
-\f(CW$ edpykota --delete --printer "HP*,XER*" jerome rachel\fR
+\f(CW$ edpykota \-\-delete \-\-printer "HP*,XER*" jerome rachel\fR
 .IP
 Ceci va effacer toutes les entrées de quotas d'impression des utilisateurs
 jerome et rachel sur toutes les imprimantes dont le nom commence par 'HP'

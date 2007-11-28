@@ -145,21 +145,21 @@ pour un type de données particulier.
 .PP
 Exemples :
 .IP
-\f(CW$ dumpykota --data history --format csv >monfichier.csv\fR
+\f(CW$ dumpykota \-\-data history \-\-format csv >monfichier.csv\fR
 .IP
 Ceci va exporter l'historique dans un fichier à champs séparés par des
 virgules, par exemple pour réimportation dans un tableur.
 .IP
-\f(CW$ dumpykota --data users --format xml -o util.xml\fR
+\f(CW$ dumpykota \-\-data users \-\-format xml -o util.xml\fR
 .IP
 Exporte toutes les données des utilisateurs dans le fichier util.xml
 .IP
-\f(CW$ dumpykota --data history printername=HP2100 username=jerome\fR
+\f(CW$ dumpykota \-\-data history printername=HP2100 username=jerome\fR
 .IP
 Exporte l'historique des travaux de l'utilisateur jerome sur l'imprimante
 HP2100 seulement.
 .IP
-\f(CW$ dumpykota --data history start=200503 end=20050730234615\fR
+\f(CW$ dumpykota \-\-data history start=200503 end=20050730234615\fR
 .IP
 Exporte tous les travaux imprimés entre le 1er Mars 2005 à minuit et
 le 30 Juillet 2005 à 23 heures 46 minutes et 15 secondes inclus.

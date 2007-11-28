@@ -86,7 +86,7 @@ Les noms d'imprimantes peuvent contenir des caractères jokers si l'option
 .PP
 exemples :
 .IP
-\f(CW$ pkprinters --add -D "Imprimante HP" --charge 0.05,0.1 hp2100 hp2200 hp8000\fR
+\f(CW$ pkprinters \-\-add -D "Imprimante HP" \-\-charge 0.05,0.1 hp2100 hp2200 hp8000\fR
 .IP
 Ceci va créer les trois imprimantes hp2100, hp2200 and hp8000.
 Leur coût par page sera fixé à 0.05 unité, et leur coût par travail sera
@@ -96,17 +96,17 @@ Leurs descriptions seront positionnées à "Imprimante HP".
 Si l'une de ces imprimantes existe déjà, elle sera modifiée à moins que
 l'option \fB\-s\fR|\-\-skipexisting ne soit aussi utilisée.
 .IP
-\f(CW$ pkprinters --delete "*"\fR
+\f(CW$ pkprinters \-\-delete "*"\fR
 .IP
 Ceci va complètement effacer toutes les imprimantes, leurs informations
 de quota ainsi que leurs historiques des travaux. SOYEZ PRUDENTS !
 .IP
-\f(CW$ pkprinters --groups Laser,HP "hp*"\fR
+\f(CW$ pkprinters \-\-groups Laser,HP "hp*"\fR
 .IP
 Ceci ba mettre toutes les imprimantes dont le nom correspond à "hp*"
 dans les groupes Laser et HP, qui DOIVENT déjà exister.
 .IP
-\f(CW$ pkprinters --groups LexMark --remove hp2200\fR
+\f(CW$ pkprinters \-\-groups LexMark \-\-remove hp2200\fR
 .IP
 Ceci va enlever l'imprimante hp2200 du groupe LexMark.
 .PP

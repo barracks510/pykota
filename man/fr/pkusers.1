@@ -107,48 +107,48 @@ si l'option \fB\-\-add\fR n'est pas utilisée.
 .PP
 exemples :
 .IP
-\f(CW$ pkusers --add john paul george ringo/ringo@example.com\fR
+\f(CW$ pkusers \-\-add john paul george ringo/ringo@example.com\fR
 .IP
 Ceci va ajouter les utilisateurs john, paul, george et ringo à la base
 de données. L'adresse email de ringo sera positionnée à 'ringo@example.com'
 .IP
-\f(CW$ pkusers --ingroups coders,it jerome\fR
+\f(CW$ pkusers \-\-ingroups coders,it jerome\fR
 .IP
 L'utilisateur jerome sera placé dan les groupes "coders" et "it" quit
 doivent exister dans la base de données.
 .IP
-\f(CW$ pkusers --limitby balance jerome\fR
+\f(CW$ pkusers \-\-limitby balance jerome\fR
 .IP
 Ceci va indiquer à PyKota que jerome doit être limité par le solde de son
 compte lorsqu'il imprime.
 .IP
-\f(CW$ pkusers --balance +10.0 --comment "Il a payé avec son sang !" jerome\fR
+\f(CW$ pkusers \-\-balance +10.0 \-\-comment "Il a payé avec son sang !" jerome\fR
 .IP
 Ceci va incrémenter le solde de jerome de 10.0 (dans votre propre monnaie)
 Vous pouvez décrémenter le solde en précédant la valeur du signe \-,
 et le positionner à une valeur fixée sans aucun préfixe.
 Un commentaire sera stocké pour le changement de la valeur du solde.
 .IP
-\f(CW$ pkusers --delete jerome rachel\fR
+\f(CW$ pkusers \-\-delete jerome rachel\fR
 .IP
 Ceci va complètement effacer les utilisateurs jerome et rachel de la base
 de données. Tous leurs quotas et travaux d'impression seront aussi effacés.
 .IP
-\f(CW$ pkusers --overcharge 2.5 pauvreetudiant\fR
+\f(CW$ pkusers \-\-overcharge 2.5 pauvreetudiant\fR
 .IP
 Ceci va surtaxer l'utilisateur pauvreetudiant par un facteur de 2.5.
 .IP
-\f(CW$ pkusers --overcharge -1 jerome\fR
+\f(CW$ pkusers \-\-overcharge -1 jerome\fR
 .IP
 L'utilisateur jerome va gagner de l'argent chaque fois qu'il imprimera.
 .IP
-\f(CW$ pkusers --overcharge 0 patron\fR
+\f(CW$ pkusers \-\-overcharge 0 patron\fR
 .IP
 L'utilisateur patron peut imprimer à volonté, cela ne lui coûtera rien
 car le coût de chaque job sera multiplié par 0 avant de modifier le solde
 de son compte.
 .IP
-\f(CW$ pkusers --email @example.com\fR
+\f(CW$ pkusers \-\-email @example.com\fR
 .IP
 Ceci va fixer l'adresse email de chaque utilisateur à nom@example.com
 .PP
