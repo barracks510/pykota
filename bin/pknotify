@@ -229,78 +229,79 @@ class PyKotaNotify(Tool) :
             signal.alarm(self.timeout)
             
         try :    
-            server = xmlrpclib.ServerProxy("http://%s:%s" % (self.destination, self.port))
-            if options["ask"] :
-                try :
-                    denyafter = int(options["denyafter"])
-                    if denyafter < 1 :
-                        raise ValueError
-                except (ValueError, TypeError) :    
-                    denyafter = 1
-                labels = []
-                varnames = []
-                varvalues = {}
-                for arg in arguments :
+            try :    
+                server = xmlrpclib.ServerProxy("http://%s:%s" % (self.destination, self.port))
+                if options["ask"] :
                     try :
-                        (label, varname, varvalue) = arg.split(":", 2)
-                    except ValueError :    
-                        raise PyKotaCommandLineError, "argument '%s' is invalid !" % arg
-                    labels.append(self.sanitizeMessage(label))
-                    varname = varname.lower()
-                    varnames.append(varname)
-                    varvalues[varname] = self.sanitizeMessage(varvalue)
-                    
-                passnumber = 1    
-                authok = None
-                while (authok != "AUTH=YES") and (passnumber <= denyafter) :
-                    result = server.askDatas(labels, varnames, varvalues)    
-                    if not options["checkauth"] :
-                        break
+                        denyafter = int(options["denyafter"])
+                        if denyafter < 1 :
+                            raise ValueError
+                    except (ValueError, TypeError) :    
+                        denyafter = 1
+                    labels = []
+                    varnames = []
+                    varvalues = {}
+                    for arg in arguments :
+                        try :
+                            (label, varname, varvalue) = arg.split(":", 2)
+                        except ValueError :    
+                            raise PyKotaCommandLineError, "argument '%s' is invalid !" % arg
+                        labels.append(self.sanitizeMessage(label))
+                        varname = varname.lower()
+                        varnames.append(varname)
+                        varvalues[varname] = self.sanitizeMessage(varvalue)
+                        
+                    passnumber = 1    
+                    authok = None
+                    while (authok != "AUTH=YES") and (passnumber <= denyafter) :
+                        result = server.askDatas(labels, varnames, varvalues)    
+                        if not options["checkauth"] :
+                            break
+                        if result["isValid"] :
+                            if ("username" in varnames) and ("password" in varnames) :
+                                if self.checkAuth(self.UTF8ToUserCharset(result["username"].data[:]), 
+                                                  self.UTF8ToUserCharset(result["password"].data[:])) :
+                                    authok = "AUTH=YES"
+                                else :    
+                                    authok = "AUTH=NO"
+                            else :        
+                                authok = "AUTH=IMPOSSIBLE"        
+                        passnumber += 1        
+                                    
+                    if options["checkauth"] and options["denyafter"] \
+                       and (passnumber > denyafter) \
+                       and (authok != "AUTH=YES") :
+                        print "DENY"
                     if result["isValid"] :
-                        if ("username" in varnames) and ("password" in varnames) :
-                            if self.checkAuth(self.UTF8ToUserCharset(result["username"].data[:]), 
-                                              self.UTF8ToUserCharset(result["password"].data[:])) :
-                                authok = "AUTH=YES"
-                            else :    
-                                authok = "AUTH=NO"
-                        else :        
-                            authok = "AUTH=IMPOSSIBLE"        
-                    passnumber += 1        
-                                
-                if options["checkauth"] and options["denyafter"] \
-                   and (passnumber > denyafter) \
-                   and (authok != "AUTH=YES") :
-                    print "DENY"
-                if result["isValid"] :
-                    for varname in varnames :
-                        if (varname != "password") \
-                           and ((varname != "username") or (authok in (None, "AUTH=YES"))) :
-                            print "%s=%s" % (varname.upper(), self.UTF8ToUserCharset(result[varname].data[:]))
-                    if authok is not None :        
-                        print authok        
-            elif options["confirm"] :
-                print server.showDialog(self.sanitizeMessage(arguments[0]), True)
-            elif options["notify"] :
-                print server.showDialog(self.sanitizeMessage(arguments[0]), False)
-                
-            if options["quit"] :    
-                server.quitApplication()
-        except (socket.error, socket.gaierror), msg :
-            print options["noremote"]
-            try :
-                errnum = msg.args[0]
-            except (AttributeError, IndexError) :
-                pass
-            else :    
-                if errnum == errno.ECONNREFUSED :
-                    raise PyKotaToolError, "%s : %s" % (str(msg), (_("Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?") % (self.destination, self.port)))
-            self.printInfo("%s : %s" % (_("Connection error"), str(msg)), "warn")
-        except TimeoutError, msg :    
-            self.printInfo(msg, "warn")
-            print "CANCEL"      # Timeout occured : job is cancelled.
-            
-        if self.timeout :    
-            signal.alarm(0)    
+                        for varname in varnames :
+                            if (varname != "password") \
+                               and ((varname != "username") or (authok in (None, "AUTH=YES"))) :
+                                print "%s=%s" % (varname.upper(), self.UTF8ToUserCharset(result[varname].data[:]))
+                        if authok is not None :        
+                            print authok        
+                elif options["confirm"] :
+                    print server.showDialog(self.sanitizeMessage(arguments[0]), True)
+                elif options["notify"] :
+                    print server.showDialog(self.sanitizeMessage(arguments[0]), False)
+                    
+                if options["quit"] :    
+                    server.quitApplication()
+            except (socket.error, socket.gaierror), msg :
+                print options["noremote"]
+                #try :
+                #    errnum = msg.args[0]
+                #except (AttributeError, IndexError) :
+                #    pass
+                #else :    
+                #    if errnum == errno.ECONNREFUSED :
+                #        raise PyKotaToolError, "%s : %s" % (str(msg), (_("Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?") % (self.destination, self.port)))
+                self.printInfo("%s : %s" % (_("Connection error"), str(msg)), "warn")
+            except TimeoutError, msg :    
+                self.printInfo(msg, "warn")
+                print "CANCEL"      # Timeout occured : job is cancelled.
+        finally :    
+            if self.timeout :    
+                signal.alarm(0)    
         
 if __name__ == "__main__" :
     retcode = 0
