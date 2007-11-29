@@ -37,6 +37,10 @@ except ImportError, msg :
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
 
+if (__version__.upper().find("BROKEN") != -1) and ("--force" not in sys.argv[1:]) :
+    sys.stderr.write("THIS VERSION OF PYKOTA IS BROKEN. YOU MUST NOT USE IT. YOU SHOULD DOWNLOAD AN EARLIER RELEASE INSTEAD, EITHER THROUGH AN ENTRY PASS, OR BY DOWNLOADING THE LATEST STABLE TAG FROM SUBVERSION.\n")
+    sys.exit(-1)
+
 data_files = []
 mofiles = glob.glob(os.sep.join(["po", "*", "*.mo"]))
 for mofile in mofiles :
