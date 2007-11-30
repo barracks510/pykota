@@ -286,7 +286,7 @@ class PyKotaNotify(Tool) :
                     
                 if options["quit"] :    
                     server.quitApplication()
-            except (socket.error, socket.gaierror), msg :
+            except (xmlrpclib.ProtocolError, socket.error, socket.gaierror), msg :
                 print options["noremote"]
                 #try :
                 #    errnum = msg.args[0]
