@@ -331,6 +331,10 @@ The rest of the installation depends on your printing system :
   
     Once and for all :
     
+        Modify CUPS' cupsd.conf to make CUPS listen to 127.0.0.1:631
+        INSTEAD OF to an unix domain socket, in addition to any
+        external network interface CUPS might already be listening to.
+        
         Create a symbolic link to the cupspykota backend 
         in CUPS's backend directory :
         
