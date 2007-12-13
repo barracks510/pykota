@@ -27,7 +27,7 @@ msgstr ""
 "Last-Translator: Stefan Wold <stefan.wold@it.su.se>\n"
 "Language-Team: Swedish <alet@librelogiciel.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #
@@ -78,23 +78,23 @@ msgstr ""
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
-msgstr "Mottog SIGTERM, utskrift %s avbrˆts."
+msgstr "Mottog SIGTERM, utskrift %s avbr√∂ts."
 
 #, python-format
 msgid "Network error while querying the CUPS server : %s"
 msgstr ""
 
 msgid "You are not allowed to print at this time."
-msgstr "Du har inte tillÂtelse att skriva ut just nu."
+msgstr "Du har inte till√•telse att skriva ut just nu."
 
 msgid "Print job cancelled."
 msgstr ""
 
 msgid "Unlimited"
-msgstr "Obegr‰nsad"
+msgstr "Obegr√§nsad"
 
 msgid "ON"
-msgstr "P≈"
+msgstr "P√Ö"
 
 msgid "OFF"
 msgstr "AV"
@@ -108,125 +108,78 @@ msgstr ""
 
 #, python-format
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
-msgstr ""
-"Uppm‰rksamma : ber‰knad jobbstorlek (%s) != fˆrber‰knad jobbstorlek (%s)"
+msgstr "Uppm√§rksamma : ber√§knad jobbstorlek (%s) != f√∂rber√§knad jobbstorlek (%s)"
 
-msgid ""
-"The job size will be trusted anyway according to the 'trustjobsize' directive"
-msgstr ""
-"Jobbets storlek kommer litas pÂ i alla fall enligt direktivet 'trustjobsize'"
+msgid "The job size will be trusted anyway according to the 'trustjobsize' directive"
+msgstr "Jobbets storlek kommer litas p√• i alla fall enligt direktivet 'trustjobsize'"
 
 #, python-format
-msgid ""
-"The job size will be trusted because it is inferior to the 'trustjobsize' "
-"directive's limit %s"
-msgstr ""
-"Jobbets storlek kommer att litas pÂ eftersom det ‰r l‰gre ‰n direktivet "
-"'trustjobsize' gr‰ns %s"
+msgid "The job size will be trusted because it is inferior to the 'trustjobsize' directive's limit %s"
+msgstr "Jobbets storlek kommer att litas p√• eftersom det √§r l√§gre √§n direktivet 'trustjobsize' gr√§ns %s"
 
 #, python-format
-msgid ""
-"The job size will be modified according to the 'trustjobsize' directive : %s"
-msgstr ""
-"Jobbets storlek kommer att modifieras enligt direktivet 'trustjobsize' : %s"
+msgid "The job size will be modified according to the 'trustjobsize' directive : %s"
+msgstr "Jobbets storlek kommer att modifieras enligt direktivet 'trustjobsize' : %s"
 
 #, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying external policy (%"
-"s) for printer %s"
-msgstr ""
-"Skrivare %s inte registrerad i PyKotasystemet, till‰mpar extern policy (%s) "
-"fˆr skrivare %s"
+msgid "Printer %s not registered in the PyKota system, applying external policy (%s) for printer %s"
+msgstr "Skrivare %s inte registrerad i PyKotasystemet, till√§mpar extern policy (%s) f√∂r skrivare %s"
 
 #, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying external policy (%s) "
-"for printer %s"
-msgstr ""
-"Anv‰ndare %s inte registrerad i Pykotasystemet, till‰mpar extern policy (%s) "
-"fˆr skrivare %s"
+msgid "User %s not registered in the PyKota system, applying external policy (%s) for printer %s"
+msgstr "Anv√§ndare %s inte registrerad i Pykotasystemet, till√§mpar extern policy (%s) f√∂r skrivare %s"
 
 #, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"external policy (%s) for printer %s"
-msgstr ""
-"Anv‰ndare %s har inget utskriftssaldo pÂ skrivare %s i PyKotasystemet, "
-"till‰mparextern policy (%s) fˆr skrivare %s"
+msgid "User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s"
+msgstr "Anv√§ndare %s har inget utskriftssaldo p√• skrivare %s i PyKotasystemet, till√§mparextern policy (%s) f√∂r skrivare %s"
 
 #, python-format
-msgid ""
-"External policy %s for printer %s produced an error. Job rejected. Please "
-"check PyKota's configuration files."
-msgstr ""
-"Extern policy %s fˆr skrivare %s l‰mnade ett felmeddelande. Utskrift "
-"avbruten. V‰nligen kontrollera PyKotas konfigurationsfiler."
+msgid "External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files."
+msgstr "Extern policy %s f√∂r skrivare %s l√§mnade ett felmeddelande. Utskrift avbruten. V√§nligen kontrollera PyKotas konfigurationsfiler."
 
 #, python-format
-msgid ""
-"Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr ""
-"Skrivare %s ‰r inte registrerad i PyKotasystemet, till‰mpar standardpolicy (%"
-"s)"
+msgid "Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr "Skrivare %s √§r inte registrerad i PyKotasystemet, till√§mpar standardpolicy (%s)"
 
 #, python-format
-msgid ""
-"User %s not registered in the PyKota system, applying default policy (%s) "
-"for printer %s"
-msgstr ""
-"Anv‰ndare %s ‰r inte registrerad i PyKotasystemet, till‰mpar standardpolicy "
-"(%s) fˆr skrivare %s"
+msgid "User %s not registered in the PyKota system, applying default policy (%s) for printer %s"
+msgstr "Anv√§ndare %s √§r inte registrerad i PyKotasystemet, till√§mpar standardpolicy (%s) f√∂r skrivare %s"
 
 #, python-format
-msgid ""
-"User %s doesn't have quota on printer %s in the PyKota system, applying "
-"default policy (%s)"
-msgstr ""
-"Anv‰ndare %s har inget utskriftssaldo pÂ skrivare %s i PyKotasystemet, "
-"till‰mpar standardpolicy (%s)"
+msgid "User %s doesn't have quota on printer %s in the PyKota system, applying default policy (%s)"
+msgstr "Anv√§ndare %s har inget utskriftssaldo p√• skrivare %s i PyKotasystemet, till√§mpar standardpolicy (%s)"
 
 #, python-format
-msgid ""
-"Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr ""
-"Skrivare %s fortfarande inte registrerad i PyKotasystemet, utskriften avbryts"
+msgid "Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr "Skrivare %s fortfarande inte registrerad i PyKotasystemet, utskriften avbryts"
 
 #, python-format
-msgid ""
-"User %s still not registered in the PyKota system, job will be rejected on "
-"printer %s"
-msgstr ""
-"Anv‰ndare %s fortfarande inte registrerad i PyKotasystemet, utskriften pÂ "
-"skrivare %s avbryts"
+msgid "User %s still not registered in the PyKota system, job will be rejected on printer %s"
+msgstr "Anv√§ndare %s fortfarande inte registrerad i PyKotasystemet, utskriften p√• skrivare %s avbryts"
 
 #, python-format
-msgid ""
-"User %s still doesn't have quota on printer %s in the PyKota system, job "
-"will be rejected"
-msgstr ""
-"Anv‰ndare %s har fortfarande inget utskriftssaldo pÂ skrivare %s i "
-"PyKotasystemet,utskriften avbryts"
+msgid "User %s still doesn't have quota on printer %s in the PyKota system, job will be rejected"
+msgstr "Anv√§ndare %s har fortfarande inget utskriftssaldo p√• skrivare %s i PyKotasystemet,utskriften avbryts"
 
 msgid "Job is a dupe"
-msgstr "Jobbet ‰r ett duplikat"
+msgstr "Jobbet √§r ett duplikat"
 
 msgid "Printing is denied by configuration"
 msgstr "Utskrifter nekade av konfigurationen"
 
 #, python-format
 msgid "Duplicate print jobs are not allowed on printer %s."
-msgstr "Kopior av utskriftsjobb ‰r inte tillÂtna fˆr skrivaren %s."
+msgstr "Kopior av utskriftsjobb √§r inte till√•tna f√∂r skrivaren %s."
 
 msgid "Subprocess denied printing of a dupe"
 msgstr "Underprocess nekar utskrift av kopia"
 
 #, python-format
 msgid "Duplicate print jobs are not allowed on printer %s at this time."
-msgstr ""
-"Kopior av utskriftsjobb ‰r fˆr tillf‰llet ej tillÂtet mot skrivaren %s."
+msgstr "Kopior av utskriftsjobb √§r f√∂r tillf√§llet ej till√•tet mot skrivaren %s."
 
 msgid "Subprocess allowed printing of a dupe"
-msgstr "Underprocess godk‰nde utskrift av kopia"
+msgstr "Underprocess godk√§nde utskrift av kopia"
 
 #, python-format
 msgid ""
@@ -238,71 +191,67 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"Din systemadministratˆr :\n"
+"Din systemadministrat√∂r :\n"
 "\n"
 "\t%s - <%s>\n"
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"
-msgstr "Kunde ej fÂ kontakt med SMTP server : %s"
+msgstr "Kunde ej f√• kontakt med SMTP server : %s"
 
 msgid "Print Quota"
 msgstr "Utskriftssaldo"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "Kunde inte s‰nda epost till %s, felmeddelande %s : %s"
+msgstr "Kunde inte s√§nda epost till %s, felmeddelande %s : %s"
 
 #, python-format
 msgid "Problem when sending mail : %s"
 msgstr ""
 
 msgid "Job contains no data. Printing is denied."
-msgstr "Jobb innehÂller ingen data. Utskrift nekad"
+msgstr "Jobb inneh√•ller ingen data. Utskrift nekad"
 
 msgid "Error in external policy script. Printing is denied."
 msgstr ""
 
 #, python-format
-msgid ""
-"Still no print quota entry for user %s on printer %s after external policy. "
-"Printing is denied."
+msgid "Still no print quota entry for user %s on printer %s after external policy. Printing is denied."
 msgstr ""
 
 msgid "Printing is denied by printer policy."
 msgstr ""
 
 msgid "Job allowed by printer policy. No accounting will be done."
-msgstr "Jobb godk‰nt av printerpolicy. Ingen debitering kommer att ske."
+msgstr "Jobb godk√§nt av printerpolicy. Ingen debitering kommer att ske."
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
-msgstr "Ogiltig policy %s fˆr skrivare %s"
+msgstr "Ogiltig policy %s f√∂r skrivare %s"
 
 #, python-format
 msgid "Precomputed job size (%s pages) too large for printer %s."
-msgstr "Fˆrber‰knad jobbstorlek (%s sidor) ‰r fˆr hˆgt mot skrivaren %s."
+msgstr "F√∂rber√§knad jobbstorlek (%s sidor) √§r f√∂r h√∂gt mot skrivaren %s."
 
 #, python-format
 msgid "You are not allowed to print so many pages on printer %s at this time."
-msgstr ""
-"Du ‰r ej tillÂten att skriva ut sÂ mÂnga sidor mot skrivaren %s fˆr "
-"tillf‰llet."
+msgstr "Du √§r ej till√•ten att skriva ut s√• m√•nga sidor mot skrivaren %s f√∂r tillf√§llet."
 
 #, python-format
 msgid "User %s is not allowed to print at this time."
-msgstr "Anv‰ndare %s har ej tillÂtelse att skriva ut fˆr tillf‰llet."
+msgstr "Anv√§ndare %s har ej till√•telse att skriva ut f√∂r tillf√§llet."
 
 msgid "Your account settings forbid you to print at this time."
-msgstr "Dina anv‰ndarinst‰llningar fˆrbjuder utskrift fˆr tillf‰llet."
+msgstr "Dina anv√§ndarinst√§llningar f√∂rbjuder utskrift f√∂r tillf√§llet."
 
 #, python-format
 msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "Utskriftssaldot ‰r ˆvertrasserad fˆr anv‰ndare %s pÂ skrivare %s"
+msgstr "Utskriftssaldot √§r √∂vertrasserad f√∂r anv√§ndare %s p√• skrivare %s"
 
 #, python-format
 msgid "Print Quota low for user %s on printer %s"
-msgstr "Utskriftssaldot ‰r lÂgt anv‰ndare %s pÂ skrivare %s"
+msgstr "Utskriftssaldot √§r l√•gt anv√§ndare %s p√• skrivare %s"
 
 msgid "Job denied, no accounting will be done."
 msgstr "Jobb nekat, ingen debitering kommer att ske."
@@ -311,7 +260,7 @@ msgid "Job cancelled, no accounting will be done."
 msgstr ""
 
 msgid "Job accounting begins."
-msgstr "Jobbsaldo pÂbˆrjas."
+msgstr "Jobbsaldo p√•b√∂rjas."
 
 msgid "Job denied, no accounting has been done."
 msgstr "Jobb nekat, ingen debitering gjord."
@@ -322,16 +271,14 @@ msgstr ""
 msgid "Job accounting ends."
 msgstr "Jobbsaldo avslutas."
 
-msgid ""
-"Job size forced to 0 because the real CUPS backend failed. No accounting "
-"will be done."
+msgid "Job size forced to 0 because the real CUPS backend failed. No accounting will be done."
 msgstr ""
 
 msgid "The real CUPS backend failed, but the job will be accounted for anyway."
 msgstr ""
 
 msgid "Job size forced to 0 because printing is denied."
-msgstr "Jobbstorlek satt till 0 fˆr att utskriften nekades."
+msgstr "Jobbstorlek satt till 0 f√∂r att utskriften nekades."
 
 msgid "Job size forced to 0 because printing was cancelled."
 msgstr ""
@@ -342,11 +289,11 @@ msgstr "Jobbstorlek : %i"
 
 #, python-format
 msgid "User %s's quota on printer %s won't be modified"
-msgstr "Anv‰ndare %s saldo fˆr skrivaren %s kommer ej modifieras"
+msgstr "Anv√§ndare %s saldo f√∂r skrivaren %s kommer ej modifieras"
 
 #, python-format
 msgid "Updating user %s's quota on printer %s"
-msgstr "Uppdaterar anv‰ndare %s kvot pÂ skrivare %s"
+msgstr "Uppdaterar anv√§ndare %s kvot p√• skrivare %s"
 
 msgid "Job added to history."
 msgstr "Jobb adderat till arkivet."
@@ -419,8 +366,7 @@ msgid ""
 "\n"
 "  -O | --orderby exp   Change the ordering or result. 'exp' is a comma\n"
 "                       separated list of ordering statements, for example\n"
-"                       '--orderby +username,-printername'. Not all "
-"expression\n"
+"                       '--orderby +username,-printername'. Not all expression\n"
 "                       values are meaningful, so using this command line \n"
 "                       switch is not recommanded if you don't know the \n"
 "                       exact layout of PyKota's database schema.\n"
@@ -453,14 +399,12 @@ msgid ""
 "    YYYYMMDDhh : hour boundaries\n"
 "    YYYYMMDDhhmm : minute boundaries\n"
 "    YYYYMMDDhhmmss : second boundaries\n"
-"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-"
-"15)\n"
+"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)\n"
 "    today[+-NbDays] : today more or less N days (e.g. : today-15)\n"
 "    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)\n"
 "    now[+-NbDays] : now more or less N days (e.g. now-15)\n"
 "\n"
-"  'now' and 'today' are not exactly the same since today represents the "
-"first\n"
+"  'now' and 'today' are not exactly the same since today represents the first\n"
 "  or last second of the day depending on if it's used in a start= or end=\n"
 "  date expression. The utility to be able to specify dates in the future is\n"
 "  a question which remains to be answered :-)\n"
@@ -547,8 +491,7 @@ msgid ""
 "  -s | --skipexisting  In combination with the --add option above, tells\n"
 "                       edpykota to not modify existing print quota entries.\n"
 "                       \n"
-"  -S | --softlimit sl  Sets the quota soft limit to sl "
-"pages.                       \n"
+"  -S | --softlimit sl  Sets the quota soft limit to sl pages.                       \n"
 "  \n"
 "  -H | --hardlimit hl  Sets the quota hard limit to hl pages.\n"
 "  \n"
@@ -557,18 +500,14 @@ msgid ""
 "                       used, + is assumed.\n"
 "\n"
 "  -U | --used u        Sets the page counters for the user u pages on\n"
-"                       the selected printers. Doesn't work for groups, "
-"since\n"
-"                       their page counters are the sum of all their "
-"members'\n"
+"                       the selected printers. Doesn't work for groups, since\n"
+"                       their page counters are the sum of all their members'\n"
 "                       page counters.\n"
 "                       Useful for migrating users from a different system\n"
 "                       where they have already used some pages. Actual\n"
-"                       and Life Time page counters may be increased or "
-"decreased\n"
+"                       and Life Time page counters may be increased or decreased\n"
 "                       if u is prefixed with + or -.\n"
-"                       WARNING : BOTH page counters are modified in all "
-"cases,\n"
+"                       WARNING : BOTH page counters are modified in all cases,\n"
 "                       so be careful.\n"
 "                       NB : if u equals '0', then the action taken is\n"
 "                       the same as if --hardreset was used.\n"
@@ -663,24 +602,23 @@ msgstr ""
 
 #, python-format
 msgid "Invalid used value %s."
-msgstr "Ogiltigt v‰rde %s."
+msgstr "Ogiltigt v√§rde %s."
 
 #, python-format
 msgid "Invalid increase value %s."
-msgstr "Ogiltigt v‰rde fˆr hˆjning %s."
+msgstr "Ogiltigt v√§rde f√∂r h√∂jning %s."
 
 #, python-format
 msgid "Invalid softlimit value %s."
-msgstr "Ogiltigt mjukgr‰nsv‰rde %s."
+msgstr "Ogiltigt mjukgr√§nsv√§rde %s."
 
 #, python-format
 msgid "Invalid hardlimit value %s."
-msgstr "Ogiltigt hÂrdgr‰nsv‰rde %s."
+msgstr "Ogiltigt h√•rdgr√§nsv√§rde %s."
 
 #, python-format
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
-msgstr ""
-"HÂrdgr‰nsv‰rdet %i ‰r mindre ‰n mjukgr‰nsv‰rdet %i, v‰rdena kommer bytas."
+msgstr "H√•rdgr√§nsv√§rdet %i √§r mindre √§n mjukgr√§nsv√§rdet %i, v√§rdena kommer bytas."
 
 #, python-format
 msgid "Undefined hard limit set to soft limit (%s)."
@@ -701,10 +639,10 @@ msgid "Modification"
 msgstr ""
 
 msgid "incompatible options, see help."
-msgstr "Ofˆrenliga val, se manualerna"
+msgstr "Of√∂renliga val, se manualerna"
 
 msgid "You have to pass user or group names on the command line"
-msgstr "Du mÂste skicka med anv‰ndare- eller gruppnamn pÂ kommandoraden"
+msgstr "Du m√•ste skicka med anv√§ndare- eller gruppnamn p√• kommandoraden"
 
 #, python-format
 msgid ""
@@ -863,10 +801,10 @@ msgid ""
 msgstr ""
 
 msgid "Unknown"
-msgstr "Ok‰nd"
+msgstr "Ok√§nd"
 
 msgid "Username"
-msgstr "Anv‰ndarnamn"
+msgstr "Anv√§ndarnamn"
 
 msgid "More Info"
 msgstr "Mer information"
@@ -878,13 +816,13 @@ msgid "Date"
 msgstr "Datum"
 
 msgid "Allowed"
-msgstr "TillÂten"
+msgstr "Till√•ten"
 
 msgid "Denied"
 msgstr "Nekad"
 
 msgid "Allowed with Warning"
-msgstr "TillÂten med varning"
+msgstr "Till√•ten med varning"
 
 msgid "Problem"
 msgstr ""
@@ -909,13 +847,13 @@ msgid "Account balance"
 msgstr ""
 
 msgid "Soft Limit"
-msgstr "Mjukgr‰ns"
+msgstr "Mjukgr√§ns"
 
 msgid "Hard Limit"
-msgstr "HÂrdgr‰ns"
+msgstr "H√•rdgr√§ns"
 
 msgid "Date Limit"
-msgstr "Datumgr‰ns"
+msgstr "Datumgr√§ns"
 
 msgid "No Limit"
 msgstr ""
@@ -930,15 +868,15 @@ msgid "Printing Mode"
 msgstr ""
 
 msgid "Allowed range is (0..99)"
-msgstr "TillÂten skala ‰r (0..99)"
+msgstr "Till√•ten skala √§r (0..99)"
 
 #, python-format
 msgid "Invalid 'savetoner' option %s : %s"
-msgstr "Ogiltig 'savetoner' valmˆjlighet %s : %s"
+msgstr "Ogiltig 'savetoner' valm√∂jlighet %s : %s"
 
 #, python-format
 msgid "Invalid 'pagesize' option %s, defaulting to A4."
-msgstr "Ogiltig 'pagesize' valmˆjlighet %s, s‰tter standard till A4."
+msgstr "Ogiltig 'pagesize' valm√∂jlighet %s, s√§tter standard till A4."
 
 #, python-format
 msgid ""
@@ -994,7 +932,7 @@ msgid ""
 msgstr ""
 
 msgid "You're not allowed to use this command."
-msgstr "Du har inte behˆrigjet att anv‰nda detta kommando."
+msgstr "Du har inte beh√∂rigjet att anv√§nda detta kommando."
 
 #, python-format
 msgid "There's no billingcode matching %s"
@@ -1051,11 +989,9 @@ msgid ""
 "                       set to '-', the PDF document is sent to standard\n"
 "                       output. \n"
 "                       \n"
-"  -u | --unit u        Defines the name of the unit to use on the "
-"invoice.                       \n"
+"  -u | --unit u        Defines the name of the unit to use on the invoice.                       \n"
 "                       The default unit is 'Credits', optionally translated\n"
-"                       to your native language if it is supported by "
-"PyKota.\n"
+"                       to your native language if it is supported by PyKota.\n"
 "  \n"
 "  -V | --vat p         Sets the percent value of the applicable VAT to be\n"
 "                       exposed. The default is 0.0, meaning no VAT\n"
@@ -1085,14 +1021,12 @@ msgid ""
 "    YYYYMMDDhh : hour boundaries\n"
 "    YYYYMMDDhhmm : minute boundaries\n"
 "    YYYYMMDDhhmmss : second boundaries\n"
-"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-"
-"15)\n"
+"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)\n"
 "    today[+-NbDays] : today more or less N days (e.g. : today-15)\n"
 "    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)\n"
 "    now[+-NbDays] : now more or less N days (e.g. now-15)\n"
 "\n"
-"  'now' and 'today' are not exactly the same since today represents the "
-"first\n"
+"  'now' and 'today' are not exactly the same since today represents the first\n"
 "  or last second of the day depending on if it's used in a start= or end=\n"
 "  date expression. The utility to be able to specify dates in the future is\n"
 "  a question which remains to be answered :-)\n"
@@ -1143,7 +1077,7 @@ msgstr ""
 
 #, python-format
 msgid "Invalid filter value [%s], see help."
-msgstr "Ogiltigt filterv‰rde [%s], se hj‰lp."
+msgstr "Ogiltigt filterv√§rde [%s], se hj√§lp."
 
 #, python-format
 msgid "Invoiced %i users for %i jobs, %i pages and %.3f credits"
@@ -1202,8 +1136,7 @@ msgstr ""
 msgid ""
 "pknotify v%(__version__)s (c) %(__years__)s %(__author__)s\n"
 "\n"
-"Notifies or ask questions to end users who launched the PyKotIcon "
-"application.\n"
+"Notifies or ask questions to end users who launched the PyKotIcon application.\n"
 "\n"
 "command line usage :\n"
 "\n"
@@ -1222,23 +1155,19 @@ msgid ""
 "  -a | --ask                 Tells pknotify to ask something to the end\n"
 "                             user. Then pknotify will output the result.\n"
 "                       \n"
-"  -C | --checkauth           When --ask is used and both an 'username' and "
-"a\n"
+"  -C | --checkauth           When --ask is used and both an 'username' and a\n"
 "                             'password' are asked to the end user, then\n"
 "                             pknotify will try to authenticate the user\n"
 "                             through PAM. If authentified, this program\n"
 "                             will print \"AUTH=YES\", else \"AUTH=NO\".\n"
-"                             If a field is missing, \"AUTH=IMPOSSIBLE\" "
-"will\n"
+"                             If a field is missing, \"AUTH=IMPOSSIBLE\" will\n"
 "                             be printed. If the user is authenticated, then\n"
 "                             \"USERNAME=xxxx\" will be printed as well.\n"
 "                             \n"
-"  -c | --confirm             Tells pknotify to ask for either a "
-"confirmation                       \n"
+"  -c | --confirm             Tells pknotify to ask for either a confirmation                       \n"
 "                             or abortion.\n"
 "                             \n"
-"  -D | --denyafter N         With --checkauth above, makes pknotify "
-"loop                           \n"
+"  -D | --denyafter N         With --checkauth above, makes pknotify loop                           \n"
 "                             up to N times if the password is incorrect.\n"
 "                             After having reached the limit, \"DENY\" will\n"
 "                             be printed, which effectively rejects the job.\n"
@@ -1252,21 +1181,16 @@ msgid ""
 "                             of the print job to continue, or the job to\n"
 "                             be cancelled. The default value is CANCEL.\n"
 "                             \n"
-"  -n | --notify              Tells pknotify to send an informational "
-"message\n"
+"  -n | --notify              Tells pknotify to send an informational message\n"
 "                             to the end user.\n"
 "                             \n"
 "  -q | --quit                Tells pknotify to send a message asking the\n"
 "                             PyKotIcon application to exit. This option can\n"
-"                             be combined with the other ones to make "
-"PyKotIcon\n"
-"                             exit after having sent the answer from the "
-"dialog.\n"
+"                             be combined with the other ones to make PyKotIcon\n"
+"                             exit after having sent the answer from the dialog.\n"
 "                             \n"
-"  -t | --timeout T           Tells pknotify to ignore the end user's answer "
-"if\n"
-"                             it comes past T seconds after the dialog box "
-"being\n"
+"  -t | --timeout T           Tells pknotify to ignore the end user's answer if\n"
+"                             it comes past T seconds after the dialog box being\n"
 "                             opened. The default value is 0 seconds, which \n"
 "                             tells pknotify to wait indefinitely.\n"
 "                             Use this option to avoid having an user who\n"
@@ -1293,15 +1217,13 @@ msgid ""
 "                     message to display. If the dialog is confirmed\n"
 "                     then pknotify will print OK, else CANCEL.\n"
 "                     \n"
-"    -n | --notify : A single argument is expected, representing "
-"the                 \n"
+"    -n | --notify : A single argument is expected, representing the                 \n"
 "                    message to display. In this case pknotify will\n"
 "                    always print OK.\n"
 "                    \n"
 "examples :                    \n"
 "\n"
-"  pknotify -d client:7654 --noremote CONTINUE --confirm \"This job costs 10 "
-"credits\"\n"
+"  pknotify -d client:7654 --noremote CONTINUE --confirm \"This job costs 10 credits\"\n"
 "  \n"
 "  Would display the cost of the print job and asks for confirmation.\n"
 "  If the end user doesn't have PyKotIcon running and accepting connections\n"
@@ -1309,8 +1231,7 @@ msgid ""
 "  to print this job.\n"
 "  \n"
 "  pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 \\\n"
-"           --checkauth --ask \"Your name:username:\" \"Your password:"
-"password:\"\n"
+"           --checkauth --ask \"Your name:username:\" \"Your password:password:\"\n"
 "           \n"
 "  Asks an username and password, and checks if they are valid.         \n"
 "  NB : The PYKOTAJOBORIGINATINGHOSTNAME environment variable is\n"
@@ -1337,15 +1258,11 @@ msgid "Password correct for user %s"
 msgstr ""
 
 #, python-format
-msgid ""
-"The end user at %s:%i didn't answer within %i seconds. The print job will be "
-"cancelled."
+msgid "The end user at %s:%i didn't answer within %i seconds. The print job will be cancelled."
 msgstr ""
 
 #, python-format
-msgid ""
-"Are you sure that PyKotIcon is running and accepting incoming connections on "
-"%s:%s ?"
+msgid "Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?"
 msgstr ""
 
 msgid "Connection error"
@@ -1408,8 +1325,7 @@ msgid ""
 "  -l | --list          List informations about the printer(s) and the\n"
 "                       printers groups it is a member of.\n"
 "                       \n"
-"  -r | --remove        In combination with the --groups option "
-"above,                       \n"
+"  -r | --remove        In combination with the --groups option above,                       \n"
 "                       remove printers from the specified printers groups.\n"
 "                       \n"
 "  -s | --skipexisting  In combination with the --add option above, tells\n"
@@ -1431,8 +1347,7 @@ msgid ""
 "  \n"
 "examples :                              \n"
 "\n"
-"  $ pkprinters --add -D \"HP Printer\" --charge 0.05,0.1 hp2100 hp2200 "
-"hp8000\n"
+"  $ pkprinters --add -D \"HP Printer\" --charge 0.05,0.1 hp2100 hp2200 hp8000\n"
 "  \n"
 "  Will create three printers named hp2100, hp2200 and hp8000.\n"
 "  Their price per page will be set at 0.05 unit, and their price\n"
@@ -1444,14 +1359,12 @@ msgid ""
 "            \n"
 "  $ pkprinters --delete \"*\"\n"
 "  \n"
-"  This will completely delete all printers and associated quota "
-"information,\n"
+"  This will completely delete all printers and associated quota information,\n"
 "  as well as their job history. USE WITH CARE !\n"
 "  \n"
 "  $ pkprinters --groups Laser,HP \"hp*\"\n"
 "  \n"
-"  This will put all printers which name matches \"hp*\" into printers "
-"groups \n"
+"  This will put all printers which name matches \"hp*\" into printers groups \n"
 "  Laser and HP, which MUST already exist.\n"
 "  \n"
 "  $ pkprinters --groups LexMark --remove hp2200\n"
@@ -1461,7 +1374,7 @@ msgstr ""
 
 #, python-format
 msgid "Passthrough mode : %s"
-msgstr "Passera igenom l‰ge : %s"
+msgstr "Passera igenom l√§ge : %s"
 
 #, python-format
 msgid "Routed through PyKota : %s"
@@ -1481,15 +1394,15 @@ msgstr ""
 
 #, python-format
 msgid "Invalid charge amount value %s"
-msgstr "Ogiltigt v‰rde %s pÂ pris."
+msgstr "Ogiltigt v√§rde %s p√• pris."
 
 #, python-format
 msgid "Invalid maximum job size value %s"
-msgstr "Ogiltig maxstorlek fˆr v‰rdet jobbstorlek %s"
+msgstr "Ogiltig maxstorlek f√∂r v√§rdet jobbstorlek %s"
 
 #, python-format
 msgid "Printer %s already exists, skipping."
-msgstr "Skrivare %s existerar redan, hoppar ˆver."
+msgstr "Skrivare %s existerar redan, hoppar √∂ver."
 
 #, python-format
 msgid "Printer %s already exists, will be modified."
@@ -1500,10 +1413,10 @@ msgid "Invalid printer name %s"
 msgstr "Ogiltigt skrivarnamn %s"
 
 msgid "You have to pass printer groups names on the command line"
-msgstr "Du mÂste skicka med skrivargruppnamn pÂ kommandoraden"
+msgstr "Du m√•ste skicka med skrivargruppnamn p√• kommandoraden"
 
 msgid "You have to pass printer names on the command line"
-msgstr "Du mÂste skicka med skrivarnamn pÂ kommandoraden"
+msgstr "Du m√•ste skicka med skrivarnamn p√• kommandoraden"
 
 #, python-format
 msgid ""
@@ -1541,8 +1454,7 @@ msgid ""
 "\n"
 "  -u | --unit u        Defines the name of the unit to use on the receipts.\n"
 "                       The default unit is 'Credits', optionally translated\n"
-"                       to your native language if it is supported by "
-"PyKota.\n"
+"                       to your native language if it is supported by PyKota.\n"
 "  \n"
 "\n"
 "  Use the filter expressions to extract only parts of the \n"
@@ -1568,14 +1480,12 @@ msgid ""
 "    YYYYMMDDhh : hour boundaries\n"
 "    YYYYMMDDhhmm : minute boundaries\n"
 "    YYYYMMDDhhmmss : second boundaries\n"
-"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-"
-"15)\n"
+"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)\n"
 "    today[+-NbDays] : today more or less N days (e.g. : today-15)\n"
 "    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)\n"
 "    now[+-NbDays] : now more or less N days (e.g. now-15)\n"
 "\n"
-"  'now' and 'today' are not exactly the same since today represents the "
-"first\n"
+"  'now' and 'today' are not exactly the same since today represents the first\n"
 "  or last second of the day depending on if it's used in a start= or end=\n"
 "  date expression. The utility to be able to specify dates in the future is\n"
 "  a question which remains to be answered :-)\n"
@@ -1630,14 +1540,10 @@ msgstr ""
 msgid "Generating receipts"
 msgstr ""
 
-msgid ""
-"Refunding for no reason is forbidden. Please use the --reason command line "
-"option."
+msgid "Refunding for no reason is forbidden. Please use the --reason command line option."
 msgstr ""
 
-msgid ""
-"The PDF file containing the receipts will be sent to stdout. --force is "
-"assumed."
+msgid "The PDF file containing the receipts will be sent to stdout. --force is assumed."
 msgstr ""
 
 #, python-format
@@ -1716,8 +1622,7 @@ msgid ""
 "  -f | --force         Modifies the database instead of printing what\n"
 "                       it would do.\n"
 "                       \n"
-"  -u | --uidmin uid    Only adds users whose uid is greater than or equal "
-"to\n"
+"  -u | --uidmin uid    Only adds users whose uid is greater than or equal to\n"
 "                       uid. You can pass an username there as well, and its\n"
 "                       uid will be used automatically.\n"
 "                       If not set, 0 will be used automatically.\n"
@@ -1726,23 +1631,19 @@ msgid ""
 "  -U | --uidmax uid    Only adds users whose uid is lesser than or equal to\n"
 "                       uid. You can pass an username there as well, and its\n"
 "                       uid will be used automatically.\n"
-"                       If not set, a large value will be used "
-"automatically.\n"
+"                       If not set, a large value will be used automatically.\n"
 "                       Implies -d | --dousers.\n"
 "\n"
-"  -g | --gidmin gid    Only adds groups whose gid is greater than or equal "
-"to\n"
+"  -g | --gidmin gid    Only adds groups whose gid is greater than or equal to\n"
 "                       gid. You can pass a groupname there as well, and its\n"
 "                       gid will be used automatically.\n"
 "                       If not set, 0 will be used automatically.\n"
 "                       Implies -D | --dogroups.\n"
 "                       \n"
-"  -G | --gidmax gid    Only adds groups whose gid is lesser than or equal "
-"to\n"
+"  -G | --gidmax gid    Only adds groups whose gid is lesser than or equal to\n"
 "                       gid. You can pass a groupname there as well, and its\n"
 "                       gid will be used automatically.\n"
-"                       If not set, a large value will be used "
-"automatically.\n"
+"                       If not set, a large value will be used automatically.\n"
 "                       Implies -D | --dogroups.\n"
 "\n"
 "examples :                              \n"
@@ -1761,13 +1662,11 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid ""
-"Printer %s is not managed by PyKota yet. Please modify printers.conf and "
-"restart CUPS."
+msgid "Printer %s is not managed by PyKota yet. Please modify printers.conf and restart CUPS."
 msgstr ""
 
 msgid "Please be patient..."
-msgstr "Var god v‰nta..."
+msgstr "Var god v√§nta..."
 
 msgid "Don't worry, the database WILL NOT BE MODIFIED."
 msgstr "OBS! Databasen kommer EJ MODIFIERAS!"
@@ -1776,18 +1675,18 @@ msgid "Please WORRY NOW, the database WILL BE MODIFIED."
 msgstr "Varning! Databasen kommer nu att modifiereas!"
 
 msgid "System users will have a print account as well !"
-msgstr "Systemanv‰ndare kommer ocksÂ ha utskriftskonton!"
+msgstr "Systemanv√§ndare kommer ocks√• ha utskriftskonton!"
 
 #, python-format
 msgid "Unknown username %s : %s"
-msgstr "Ok‰nt anv‰ndarnamn %s : %s"
+msgstr "Ok√§nt anv√§ndarnamn %s : %s"
 
 msgid "System groups will have a print account as well !"
-msgstr "Systemgrupper kommer ocksÂ ha utskriftskonton !"
+msgstr "Systemgrupper kommer ocks√• ha utskriftskonton !"
 
 #, python-format
 msgid "Unknown groupname %s : %s"
-msgstr "Ok‰nt gruppnamn %s : %s"
+msgstr "Ok√§nt gruppnamn %s : %s"
 
 msgid "Simulation terminated."
 msgstr "Simulering avslutad."
@@ -1798,8 +1697,7 @@ msgstr "Databas initierad !"
 msgid "The --uidmin or --uidmax command line option implies --dousers as well."
 msgstr ""
 
-msgid ""
-"The --gidmin or --gidmax command line option implies --dogroups as well."
+msgid "The --gidmin or --gidmax command line option implies --dogroups as well."
 msgstr ""
 
 msgid "The --dogroups command line option implies --dousers as well."
@@ -1855,8 +1753,7 @@ msgid ""
 "                       \n"
 "  -L | --list          Lists users or groups.\n"
 "  \n"
-"  -l | --limitby l     Choose if the user/group is limited in "
-"printing                     \n"
+"  -l | --limitby l     Choose if the user/group is limited in printing                     \n"
 "                       by its account balance or by its page quota.\n"
 "                       The default value is 'quota'. Allowed values\n"
 "                       are 'quota' 'balance' 'noquota' 'noprint' \n"
@@ -1867,11 +1764,9 @@ msgid ""
 "                         - noquota : no limit, accounting still done.\n"
 "                         - nochange : no limit, accounting not done. \n"
 "                         - noprint : printing is denied. \n"
-"                       NB : nochange and noprint are not supported for "
-"groups.\n"
+"                       NB : nochange and noprint are not supported for groups.\n"
 "                       \n"
-"  -b | --balance b     Sets the user's account balance to "
-"b.                     \n"
+"  -b | --balance b     Sets the user's account balance to b.                     \n"
 "                       Account balance may be increase or decreased\n"
 "                       if b is prefixed with + or -.\n"
 "                       WARNING : when decreasing account balance,\n"
@@ -1885,8 +1780,7 @@ msgid ""
 "                       Only meaningful if -b | --balance is also used.\n"
 "                       \n"
 "                       \n"
-"  -r | --remove        In combination with the --ingroups option "
-"above,                       \n"
+"  -r | --remove        In combination with the --ingroups option above,                       \n"
 "                       remove users from the specified users groups.\n"
 "                       \n"
 "  -s | --skipexisting  In combination with the --add option above, tells\n"
@@ -1974,15 +1868,15 @@ msgstr ""
 
 #, python-format
 msgid "Invalid limitby value %s"
-msgstr "Ogiltigt v‰rde %s pÂ variabeln limitby"
+msgstr "Ogiltigt v√§rde %s p√• variabeln limitby"
 
 #, python-format
 msgid "Invalid overcharge value %s"
-msgstr "Ogiltigt ˆverdebiteringsv‰rde %s"
+msgstr "Ogiltigt √∂verdebiteringsv√§rde %s"
 
 #, python-format
 msgid "Invalid balance value %s"
-msgstr "Ogiltigt saldov‰rde %s. "
+msgstr "Ogiltigt saldov√§rde %s. "
 
 #, python-format
 msgid "There's no users group matching %s"
@@ -1990,11 +1884,11 @@ msgstr ""
 
 #, python-format
 msgid "Unknown group %s"
-msgstr "Ok‰nd grupp %s"
+msgstr "Ok√§nd grupp %s"
 
 #, python-format
 msgid "Unknown user %s"
-msgstr "Ok‰nd anv‰ndare %s"
+msgstr "Ok√§nd anv√§ndare %s"
 
 #, python-format
 msgid "%s %s already exists, skipping."
@@ -2033,8 +1927,7 @@ msgid ""
 "  -d | --duration d    Sets the duration of the display in seconds. \n"
 "                       Defaults to 3 seconds.\n"
 "                       \n"
-"  -f | --font f        Sets the font to use for "
-"display.                      \n"
+"  -f | --font f        Sets the font to use for display.                      \n"
 "                       Defaults to the Python OSD library's default.\n"
 "  \n"
 "  -l | --loop n        Sets the number of times the info will be displayed.\n"
@@ -2055,27 +1948,27 @@ msgstr ""
 
 #, python-format
 msgid "Invalid duration option %s"
-msgstr "Felaktig val fˆr 'duration' %s"
+msgstr "Felaktig val f√∂r 'duration' %s"
 
 #, python-format
 msgid "Invalid loop option %s"
-msgstr "Felaktig val fˆr 'loop' %s"
+msgstr "Felaktig val f√∂r 'loop' %s"
 
 #, python-format
 msgid "Invalid sleep option %s"
-msgstr "Felaktig val fˆr 'sleep %s"
+msgstr "Felaktig val f√∂r 'sleep %s"
 
 #, python-format
 msgid "Invalid color option %s"
-msgstr "Felaktig val fˆr 'color' %s"
+msgstr "Felaktig val f√∂r 'color' %s"
 
 #, python-format
 msgid "User %s doesn't exist in PyKota's database"
-msgstr "Anv‰ndare %s existerar inte i PyKotas databas"
+msgstr "Anv√§ndare %s existerar inte i PyKotas databas"
 
 #, python-format
 msgid "Pages used on %s : %s"
-msgstr "Sidor anv‰nda pÂ %s : %s"
+msgstr "Sidor anv√§nda p√• %s : %s"
 
 #, python-format
 msgid "PyKota Units left : %.2f"
@@ -2144,7 +2037,7 @@ msgstr "Utskriftsstorlek : %i sidor"
 
 #, python-format
 msgid "Cost on printer %s : %.2f"
-msgstr "Kostnad pÂ skrivare %s : %.2f"
+msgstr "Kostnad p√• skrivare %s : %.2f"
 
 msgid "won't be charged, printer is in passthrough mode"
 msgstr ""
@@ -2154,15 +2047,11 @@ msgstr ""
 
 #, python-format
 msgid "Unsupported accounter backend %s"
-msgstr "Ej understˆdd redovisningsmetod %s"
+msgstr "Ej underst√∂dd redovisningsmetod %s"
 
 #, python-format
-msgid ""
-"Configuration file %s can't be read. Please check that the file exists and "
-"that your permissions are sufficient."
-msgstr ""
-"Konfigurationsfil %s gÂr ej att l‰sa. Se efter att filen existerar och att "
-"r‰ttigheterna ‰r r‰tt."
+msgid "Configuration file %s can't be read. Please check that the file exists and that your permissions are sufficient."
+msgstr "Konfigurationsfil %s g√•r ej att l√§sa. Se efter att filen existerar och att r√§ttigheterna √§r r√§tt."
 
 #, python-format
 msgid "Configuration file %s not found."
@@ -2178,11 +2067,11 @@ msgstr "Variabeln %s hittades inte i sektion '%s' i %s"
 
 #, python-format
 msgid "Option ldaptls is set, but certificate %s is not readable."
-msgstr "Optionen ldaptls ‰r satt men certifikatet %s gÂr ej att l‰sa."
+msgstr "Optionen ldaptls √§r satt men certifikatet %s g√•r ej att l√§sa."
 
 #, python-format
 msgid "Option logger only supports values in %s"
-msgstr "Variabeln 'logger' stˆdjer bara v‰rden i %s"
+msgstr "Variabeln 'logger' st√∂djer bara v√§rden i %s"
 
 #, python-format
 msgid "Invalid preaccounter %s for printer %s"
@@ -2194,11 +2083,11 @@ msgstr ""
 
 #, python-format
 msgid "Invalid accounter %s for printer %s"
-msgstr "Ogiltig redovisningsmetod %s fˆr printern %s"
+msgstr "Ogiltig redovisningsmetod %s f√∂r printern %s"
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
-msgstr "Variabeln 'accounter' i sektion '%s' stˆdjer bara v‰rden i %s"
+msgstr "Variabeln 'accounter' i sektion '%s' st√∂djer bara v√§rden i %s"
 
 #, python-format
 msgid "Invalid unknown_billingcode directive %s for printer %s"
@@ -2210,29 +2099,27 @@ msgstr ""
 
 #, python-format
 msgid "Option enforcement in section %s only supports values in %s"
-msgstr "Till‰mpad option i sektion %s stˆdjer bara v‰rden i %s"
+msgstr "Till√§mpad option i sektion %s st√∂djer bara v√§rden i %s"
 
 #, python-format
-msgid ""
-"Option onbackenderror in section %s only supports values 'charge', "
-"'nocharge', and 'retry:num:delay'"
+msgid "Option onbackenderror in section %s only supports values 'charge', 'nocharge', and 'retry:num:delay'"
 msgstr ""
 
 #, python-format
 msgid "Option onaccountererror in section %s only supports values in %s"
-msgstr "Optionen onaccountererror i sektionen %s stˆdjer endast v‰rden i %s"
+msgstr "Optionen onaccountererror i sektionen %s st√∂djer endast v√§rden i %s"
 
 #, python-format
 msgid "Option policy in section %s only supports values in %s"
-msgstr "Variabeln 'policy' i sektion '%s' stˆdjer endast v‰rden i %s"
+msgstr "Variabeln 'policy' i sektion '%s' st√∂djer endast v√§rden i %s"
 
 #, python-format
 msgid "Invalid option mailto %s for printer %s"
-msgstr "Ogiltig variabel 'mailto' %s fˆr skrivare %s"
+msgstr "Ogiltig variabel 'mailto' %s f√∂r skrivare %s"
 
 #, python-format
 msgid "Option mailto in section %s only supports values in %s"
-msgstr "Variabeln 'mailto' i sektion '%s' stˆdjer endast v‰rden i %s"
+msgstr "Variabeln 'mailto' i sektion '%s' st√∂djer endast v√§rden i %s"
 
 #, python-format
 msgid "Invalid maximal deny banners counter %s"
@@ -2240,11 +2127,11 @@ msgstr ""
 
 #, python-format
 msgid "Invalid grace delay %s"
-msgstr "Ogiltigt uppskovsv‰rde (grace delay) %s"
+msgstr "Ogiltigt uppskovsv√§rde (grace delay) %s"
 
 #, python-format
 msgid "Invalid poor man's threshold %s"
-msgstr "Ogiltigt fattigmansv‰rde (poor man's threshold) %s"
+msgstr "Ogiltigt fattigmansv√§rde (poor man's threshold) %s"
 
 #, python-format
 msgid "Invalid balancezero value %s"
@@ -2255,25 +2142,25 @@ msgid ""
 "Soon you'll not be allowed to print anymore.\n"
 "Please contact the Print Quota Administrator to solve the problem."
 msgstr ""
-"Saldot pÂ ditt utskriftskonto ‰r lÂgt.\n"
-"Snart kommer du inte kunna skriva ut l‰ngre.\n"
-"V‰nligen kontakta din systemadministratˆr fˆr att lˆsa problemet."
+"Saldot p√• ditt utskriftskonto √§r l√•gt.\n"
+"Snart kommer du inte kunna skriva ut l√§ngre.\n"
+"V√§nligen kontakta din systemadministrat√∂r f√∂r att l√∂sa problemet."
 
 #, python-format
 msgid ""
 "You are not allowed to print anymore because\n"
 "your Print Quota is exceeded on printer %s."
 msgstr ""
-"Du fÂr inte l‰ngre skriva ut eftersom\n"
-"din utskriftkvot pÂ skrivare %s ‰r nÂdd."
+"Du f√•r inte l√§ngre skriva ut eftersom\n"
+"din utskriftkvot p√• skrivare %s √§r n√•dd."
 
 #, python-format
 msgid ""
 "You will soon be forbidden to print anymore because\n"
 "your Print Quota is almost reached on printer %s."
 msgstr ""
-"Du kommer snart inte fÂ skriva ut eftersom\n"
-"din utskriftskvot n‰stan ‰r nÂdd pÂ skrivare %s."
+"Du kommer snart inte f√• skriva ut eftersom\n"
+"din utskriftskvot n√§stan √§r n√•dd p√• skrivare %s."
 
 #, python-format
 msgid "Incorrect value %s for the duplicatesdelay directive in section %s"
@@ -2289,13 +2176,13 @@ msgstr ""
 
 #, python-format
 msgid "Option trustjobsize for printer %s is incorrect"
-msgstr "Optionen trustjobsize fˆr skrivaren %s ‰r ej korrekt"
+msgstr "Optionen trustjobsize f√∂r skrivaren %s √§r ej korrekt"
 
 msgid "History"
 msgstr "Historia"
 
 msgid "Users"
-msgstr "Anv‰ndare"
+msgstr "Anv√§ndare"
 
 msgid "Groups"
 msgstr "Grupper"
@@ -2304,10 +2191,10 @@ msgid "Printers"
 msgstr "Skrivare"
 
 msgid "Users Print Quotas"
-msgstr "Anv‰ndares printkvoter"
+msgstr "Anv√§ndares printkvoter"
 
 msgid "Users Groups Print Quotas"
-msgstr "Anv‰ndargruppers printkvoter"
+msgstr "Anv√§ndargruppers printkvoter"
 
 msgid "History of Payments"
 msgstr "Betalningshistorik"
@@ -2316,7 +2203,7 @@ msgid "Printers Groups Membership"
 msgstr "Skrivares gruppmedlemskap"
 
 msgid "Users Groups Membership"
-msgstr "Anv‰ndargruppsmedlemskap"
+msgstr "Anv√§ndargruppsmedlemskap"
 
 msgid "Billing Codes"
 msgstr ""
@@ -2325,13 +2212,13 @@ msgid "All"
 msgstr ""
 
 msgid "Comma Separated Values"
-msgstr "Kommaseparerade v‰rden"
+msgstr "Kommaseparerade v√§rden"
 
 msgid "Semicolon Separated Values"
-msgstr "Semikolonseparerade v‰rden"
+msgstr "Semikolonseparerade v√§rden"
 
 msgid "Tabulation Separated Values"
-msgstr "Tabseparerade v‰rden"
+msgstr "Tabseparerade v√§rden"
 
 msgid "eXtensible Markup Language"
 msgstr ""
@@ -2341,38 +2228,36 @@ msgstr ""
 
 #, python-format
 msgid "Invalid modifier [%s] for --data command line option, see help."
-msgstr "Ogiltig modifierare [%s] fˆr kommandoradoptionen --data, se hj‰lp."
+msgstr "Ogiltig modifierare [%s] f√∂r kommandoradoptionen --data, se hj√§lp."
 
-msgid ""
-"Dumping all PyKota's datas forces format to XML, and disables --sum and "
-"filters."
+msgid "Dumping all PyKota's datas forces format to XML, and disables --sum and filters."
 msgstr ""
 
 #, python-format
 msgid "Invalid modifier [%s] for --format command line option, see help."
-msgstr "Ogiltig modifierare [%s] fˆr kommandoradoptionen --format,  se hj‰lp."
+msgstr "Ogiltig modifierare [%s] f√∂r kommandoradoptionen --format,  se hj√§lp."
 
 msgid "XML output is disabled because the jaxml module is not available."
-msgstr "XML utdata ‰r avst‰ngd eftersom jaxml modulen saknas."
+msgstr "XML utdata √§r avst√§ngd eftersom jaxml modulen saknas."
 
 #, python-format
 msgid "Invalid data type [%s] for --sum command line option, see help."
-msgstr "Ogiltig datatyp [%s] fˆr kommandoradoptionen --sum, se hj‰lp."
+msgstr "Ogiltig datatyp [%s] f√∂r kommandoradoptionen --sum, se hj√§lp."
 
 msgid "PyKota data dumper failed : I/O error"
 msgstr "PyKota datadump misslyckades : I/O fel"
 
 #, python-format
 msgid "Unsupported logging subsystem %s"
-msgstr "Ej understˆtt loggningssystem %s"
+msgstr "Ej underst√∂tt loggningssystem %s"
 
 #, python-format
 msgid "Report for %s quota on printer %s"
-msgstr "Rapport fˆr %s utskriftssaldo pÂ skrivare %s"
+msgstr "Rapport f√∂r %s utskriftssaldo p√• skrivare %s"
 
 #, python-format
 msgid "Pages grace time: %i days"
-msgstr "Uppskov fˆr utskrifter: %i days"
+msgstr "Uppskov f√∂r utskrifter: %i days"
 
 #, python-format
 msgid "Price per job: %.3f"
@@ -2382,18 +2267,14 @@ msgstr "Pris per utskrift: %.3f"
 msgid "Price per page: %.3f"
 msgstr "Pris per sida: %.3f"
 
-msgid ""
-"Group          overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
+msgid "Group          overcharge   used    soft    hard    balance grace         total       paid warn"
 msgstr ""
 
-msgid ""
-"User           overcharge   used    soft    hard    balance grace         "
-"total       paid warn"
+msgid "User           overcharge   used    soft    hard    balance grace         total       paid warn"
 msgstr ""
 
 msgid "unknown"
-msgstr "ok‰nd/ok‰nt"
+msgstr "ok√§nd/ok√§nt"
 
 #, python-format
 msgid "Real : %s"
@@ -2404,11 +2285,11 @@ msgid "Total : %9i"
 msgstr "Summa : %9i"
 
 msgid "N/A"
-msgstr "Ej tillg‰ngligt"
+msgstr "Ej tillg√§ngligt"
 
 #, python-format
 msgid "Unsupported reporter backend %s"
-msgstr "Ej understˆdd rapportmetod %s"
+msgstr "Ej underst√∂dd rapportmetod %s"
 
 #, python-format
 msgid "Refunded %i pages and %.3f credits by %s (%s) on %s"
@@ -2416,7 +2297,7 @@ msgstr ""
 
 #, python-format
 msgid "Unsupported quota storage backend %s"
-msgstr "Ej understˆdd metod %s fˆr att lagra data"
+msgstr "Ej underst√∂dd metod %s f√∂r att lagra data"
 
 msgid "Done"
 msgstr ""
@@ -2429,31 +2310,31 @@ msgstr ""
 
 #, python-format
 msgid "Strange problem with uid(%s) : %s"
-msgstr "M‰rkligt problmed med uid(%s) : %s"
+msgstr "M√§rkligt problmed med uid(%s) : %s"
 
 #, python-format
 msgid "Running as user '%s'."
-msgstr "Kˆr som anv‰ndare '%s'."
+msgstr "K√∂r som anv√§ndare '%s'."
 
 msgid "No user named 'pykota'. Not dropping priviledges."
-msgstr "Ingen anv‰ndare med namn 'pykota'. Sl‰pper ej privilegierna."
+msgstr "Ingen anv√§ndare med namn 'pykota'. Sl√§pper ej privilegierna."
 
 #, python-format
 msgid "Impossible to drop priviledges : %s"
-msgstr "Omˆjligt att sl‰ppa privilegier : %s"
+msgstr "Om√∂jligt att sl√§ppa privilegier : %s"
 
 msgid "Priviledges dropped. Now running as user 'pykota'."
-msgstr "Privilegier sl‰ppta. Kˆr nu som anv‰ndare 'pykota'."
+msgstr "Privilegier sl√§ppta. K√∂r nu som anv√§ndare 'pykota'."
 
 #, python-format
 msgid "Impossible to regain priviledges : %s"
-msgstr "Omˆjligt att Âterta privilegier : %s"
+msgstr "Om√∂jligt att √•terta privilegier : %s"
 
 msgid "Regained priviledges. Now running as root."
-msgstr "≈tertog privilegier. Kˆr nu som root."
+msgstr "√Ötertog privilegier. K√∂r nu som root."
 
 msgid "Please report bugs to :"
-msgstr "V‰nligen rapportera buggar till :"
+msgstr "V√§nligen rapportera buggar till :"
 
 #, python-format
 msgid ""
@@ -2465,22 +2346,17 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"V‰nligen kontakta din systemadministratˆr :\n"
+"V√§nligen kontakta din systemadministrat√∂r :\n"
 "\n"
 "\t%s - <%s>\n"
 
 #, python-format
 msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr ""
-"Kunde inte matcha anv‰ndare %s pÂ skrivare %s, till‰mpar standardpolicyn (%s)"
+msgstr "Kunde inte matcha anv√§ndare %s p√• skrivare %s, till√§mpar standardpolicyn (%s)"
 
 #, python-format
-msgid ""
-"Unable to find user %s's account balance, applying default policy (%s) for "
-"printer %s"
-msgstr ""
-"Kunde inte hitta utskriftssaldo fˆr anv‰ndare %s, till‰mpar standardpolicyn "
-"(%s) fˆr skrivare %s"
+msgid "Unable to find user %s's account balance, applying default policy (%s) for printer %s"
+msgstr "Kunde inte hitta utskriftssaldo f√∂r anv√§ndare %s, till√§mpar standardpolicyn (%s) f√∂r skrivare %s"
 
 #, python-format
 msgid "User %s will not be charged for printing."
@@ -2488,33 +2364,29 @@ msgstr ""
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "Utskriftssaldot ‰r ˆvertrasserad fˆr grupp %s pÂ printer %s"
+msgstr "Utskriftssaldot √§r √∂vertrasserad f√∂r grupp %s p√• printer %s"
 
 msgid "Print Quota Exceeded"
-msgstr "Utskriftssaldo ˆvertrasserad"
+msgstr "Utskriftssaldo √∂vertrasserad"
 
 #, python-format
 msgid "Print Quota low for group %s on printer %s"
-msgstr "Utskriftssaldot ‰r lÂgt fˆr grupp %s pÂ printer %s"
+msgstr "Utskriftssaldot √§r l√•gt f√∂r grupp %s p√• printer %s"
 
 msgid "Print Quota Low"
-msgstr "Utskriftssaldo lÂgt"
+msgstr "Utskriftssaldo l√•gt"
 
 #, python-format
-msgid ""
-"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
-"double check /etc/pykota/pykota.conf : %s"
-msgstr ""
-"Sˆkbasen %s existerar inte. Mˆjlig felkonfiguration. Var god kontrollera /"
-"etc/pykota/pykota.conf : %s"
+msgid "Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s"
+msgstr "S√∂kbasen %s existerar inte. M√∂jlig felkonfiguration. Var god kontrollera /etc/pykota/pykota.conf : %s"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "Sˆkning efter %s(%s) frÂn %s(scope=%s) gav inget svar."
+msgstr "S√∂kning efter %s(%s) fr√•n %s(scope=%s) gav inget svar."
 
 #, python-format
 msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "Problem med att l‰gga till LDAP post (%s, %s)"
+msgstr "Problem med att l√§gga till LDAP post (%s, %s)"
 
 #, python-format
 msgid "Problem deleting LDAP entry (%s)"
@@ -2525,21 +2397,15 @@ msgid "Problem modifying LDAP entry (%s, %s)"
 msgstr "Problem med att modifiera LDAP post (%s, %s)"
 
 #, python-format
-msgid ""
-"No pykotaAccountBalance object found for user %s. Did you create LDAP "
-"entries manually ?"
+msgid "No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?"
 msgstr ""
 
 msgid "Hidden because of privacy concerns"
 msgstr ""
 
 #, python-format
-msgid ""
-"Unable to find an existing objectClass %s entry with %s=%s to attach "
-"pykotaAccount objectClass"
-msgstr ""
-"Kunde ej hitta en existerande 'objectClass' %s med posten %s=%s fˆr att "
-"binda pykotaAccount objectClass"
+msgid "Unable to find an existing objectClass %s entry with %s=%s to attach pykotaAccount objectClass"
+msgstr "Kunde ej hitta en existerande 'objectClass' %s med posten %s=%s f√∂r att binda pykotaAccount objectClass"
 
 #, python-format
 msgid "%s. A new entry will be created instead."
@@ -2547,52 +2413,46 @@ msgstr ""
 
 #, python-format
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr ""
-"Kunde ej hitta existerande post fˆr att binda pykotaGroup objectclass %s"
+msgstr "Kunde ej hitta existerande post f√∂r att binda pykotaGroup objectclass %s"
 
-msgid ""
-"Your version of python-mysqldb is too old. Please install a newer release."
+msgid "Your version of python-mysqldb is too old. Please install a newer release."
 msgstr ""
 
 #, python-format
 msgid "A problem occured while reading printer %s's internal page counter."
-msgstr "Ett problem uppstod vid l‰sning av skrivarens %s interna sidr‰knare"
+msgstr "Ett problem uppstod vid l√§sning av skrivarens %s interna sidr√§knare"
 
 #, python-format
 msgid "Retrieving printer %s's page counter from database instead."
-msgstr "H‰mtar skrivaren %s sidr‰knare frÂn databasen ist‰llet."
+msgstr "H√§mtar skrivaren %s sidr√§knare fr√•n databasen ist√§llet."
 
 #, python-format
-msgid ""
-"Couldn't retrieve printer %s's internal page counter either before or after "
-"printing."
-msgstr ""
-"Kunde ej h‰mta skrivarens %s interna sidr‰knare varken fˆre eller efter "
-"utskriften."
+msgid "Couldn't retrieve printer %s's internal page counter either before or after printing."
+msgstr "Kunde ej h√§mta skrivarens %s interna sidr√§knare varken f√∂re eller efter utskriften."
 
 #, python-format
 msgid "Job's size forced to 1 page for printer %s."
-msgstr "Jobbstorlek tvingad till 1 sida fˆr skrivaren %s."
+msgstr "Jobbstorlek tvingad till 1 sida f√∂r skrivaren %s."
 
 #, python-format
 msgid "No previous job in database for printer %s."
-msgstr "Inget fˆregÂende jobb i databasen fˆr skrivaren %s."
+msgstr "Inget f√∂reg√•ende jobb i databasen f√∂r skrivaren %s."
 
 #, python-format
 msgid "Inconsistent values for printer %s's internal page counter."
-msgstr "Inkonsekventa v‰rden fˆr skrivaren %s interna sidr‰knare."
+msgstr "Inkonsekventa v√§rden f√∂r skrivaren %s interna sidr√§knare."
 
 #, python-format
 msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "Ok‰nd skrivaradress i HARDWARE(%s) fˆr skrivare %s"
+msgstr "Ok√§nd skrivaradress i HARDWARE(%s) f√∂r skrivare %s"
 
 #, python-format
 msgid "Launching HARDWARE(%s)..."
-msgstr "Startar H≈RDVARA(%s)..."
+msgstr "Startar H√ÖRDVARA(%s)..."
 
 #, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "SIGTERM skickad till hÂrdvarumetod %s (pid: %s)"
+msgstr "SIGTERM skickad till h√•rdvarumetod %s (pid: %s)"
 
 #, python-format
 msgid "Line [%s] skipped in accounter's output. Trying again..."
@@ -2604,12 +2464,10 @@ msgstr ""
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "Kunde inte h‰mta information frÂn skrivare %s via HARDWARE(%s)"
+msgstr "Kunde inte h√§mta information fr√•n skrivare %s via HARDWARE(%s)"
 
 #, python-format
-msgid ""
-"Unable to precompute the job's size and ink coverage with the generic PDL "
-"analyzer : %s"
+msgid "Unable to precompute the job's size and ink coverage with the generic PDL analyzer : %s"
 msgstr ""
 
 #, python-format
@@ -2618,32 +2476,26 @@ msgstr "Problem under anslutning till %s:%s : %s"
 
 #, python-format
 msgid "Problem while sending PJL query to %s:%s : %s"
-msgstr "Problem vid s‰ndning av PJL-frÂgor till %s:%s : %s"
+msgstr "Problem vid s√§ndning av PJL-fr√•gor till %s:%s : %s"
 
 #, python-format
 msgid "Problem while receiving PJL answer from %s:%s : %s"
-msgstr "Problem vid mottagning av PJL-svar frÂn %s:%s : %s"
+msgstr "Problem vid mottagning av PJL-svar fr√•n %s:%s : %s"
 
 #, python-format
 msgid "Waiting for printer %s to be printing..."
-msgstr "V‰ntar pÂ att skrivaren %s ska bˆrja utskrift..."
+msgstr "V√§ntar p√• att skrivaren %s ska b√∂rja utskrift..."
 
 #, python-format
 msgid "Waiting for printer %s's idle status to stabilize..."
-msgstr "V‰ntar pÂ att skrivaren %s inaktivitetsstatus ska stabiliseras..."
+msgstr "V√§ntar p√• att skrivaren %s inaktivitetsstatus ska stabiliseras..."
 
 #, python-format
-msgid ""
-"PJL querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
-msgstr ""
-"PJL-frÂga avbruten. Anv‰nder senaste v‰rdet fˆr den interna sidr‰knaren (%s) "
-"on printer %s."
+msgid "PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s."
+msgstr "PJL-fr√•ga avbruten. Anv√§nder senaste v√§rdet f√∂r den interna sidr√§knaren (%s) on printer %s."
 
 #, python-format
-msgid ""
-"SNMP querying stage interrupted. Using latest value seen for internal page "
-"counter (%s) on printer %s."
+msgid "SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s."
 msgstr ""
 
 #, python-format
@@ -2660,7 +2512,7 @@ msgstr ""
 
 #, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "Kunde ej fˆrber‰kna jobbets storlek med standard PDL analys : %s"
+msgstr "Kunde ej f√∂rber√§kna jobbets storlek med standard PDL analys : %s"
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
@@ -2668,19 +2520,18 @@ msgstr "Startar MJUKVARA(%s)..."
 
 #, python-format
 msgid "Unable to compute job size with accounter %s"
-msgstr "Kunde inte ber‰kna utskriftsstorlek med metod %s"
+msgstr "Kunde inte ber√§kna utskriftsstorlek med metod %s"
 
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "Problem vid inv‰ntan fˆr mjukvarumetod pid %s att avslutas : %s"
+msgstr "Problem vid inv√§ntan f√∂r mjukvarumetod pid %s att avslutas : %s"
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
-msgstr "Mjukvarumetod %s avslutningskod ‰r %s"
+msgstr "Mjukvarumetod %s avslutningskod √§r %s"
 
 msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr ""
-"Summor kan vara felaktiga om vissa anv‰ndare ‰r medlemmar i flera grupper."
+msgstr "Summor kan vara felaktiga om vissa anv√§ndare √§r medlemmar i flera grupper."
 
 msgid "PyKota Data Dumper"
 msgstr ""
@@ -2689,7 +2540,7 @@ msgid "Dump"
 msgstr "Dump"
 
 msgid "Please click on the above button"
-msgstr "Var god klicka pÂ knappen ovan"
+msgstr "Var god klicka p√• knappen ovan"
 
 msgid "Data Type"
 msgstr "Datatyp"
@@ -2704,7 +2555,7 @@ msgid "Summarize"
 msgstr "Summera"
 
 msgid "only for payments or history"
-msgstr "endast fˆr betalningar och historik"
+msgstr "endast f√∂r betalningar och historik"
 
 msgid "PyKota Reports"
 msgstr "PyKota rapporter"
@@ -2716,7 +2567,7 @@ msgid "Printer"
 msgstr "Skrivare"
 
 msgid "User / Group names mask"
-msgstr "Anv‰ndar- / Gruppnamn maskering"
+msgstr "Anv√§ndar- / Gruppnamn maskering"
 
 msgid "Groups report"
 msgstr "Grupprapport"
@@ -2728,7 +2579,7 @@ msgid "Action"
 msgstr "Aktion"
 
 msgid "User"
-msgstr "Anv‰ndare"
+msgstr "Anv√§ndare"
 
 msgid "Hostname"
 msgstr "Datornamn"
@@ -2749,7 +2600,7 @@ msgid "Number of bytes"
 msgstr "Antal bytes"
 
 msgid "Printer's internal counter"
-msgstr "Printerns interna r‰knare"
+msgstr "Printerns interna r√§knare"
 
 msgid "Options"
 msgstr "Optioner"
@@ -2761,19 +2612,19 @@ msgid "Billing code"
 msgstr ""
 
 msgid "Precomputed number of pages"
-msgstr "Fˆrber‰knade antal sidor"
+msgstr "F√∂rber√§knade antal sidor"
 
 msgid "Precomputed cost"
-msgstr "Fˆrber‰knad kostnad"
+msgstr "F√∂rber√§knad kostnad"
 
 msgid "Pages details"
 msgstr "Siddetaljer"
 
 msgid "(not supported yet)"
-msgstr "(inget stˆd ‰nnu)"
+msgstr "(inget st√∂d √§nnu)"
 
 msgid "Previous page"
-msgstr "FˆregÂende sida"
+msgstr "F√∂reg√•ende sida"
 
 msgid "PyKota Quotes"
 msgstr ""
@@ -2781,72 +2632,65 @@ msgstr ""
 msgid "Quote"
 msgstr ""
 
-msgid ""
-"The exact cost of a print job can only be determined for a particular user. "
-"Please retry while logged-in."
-msgstr ""
-"Exakt kostnad av ett utskriftsjobb kan endast utfˆras fˆr en specifik "
-"anv‰ndare. Var god och fˆrsˆk igen n‰r du ‰r inloggad."
+msgid "The exact cost of a print job can only be determined for a particular user. Please retry while logged-in."
+msgstr "Exakt kostnad av ett utskriftsjobb kan endast utf√∂ras f√∂r en specifik anv√§ndare. Var god och f√∂rs√∂k igen n√§r du √§r inloggad."
 
 msgid "Ordering"
 msgstr ""
 
 #~ msgid "Impossible to add printer %s"
-#~ msgstr "Omˆjligt att l‰gga till skrivare %s"
+#~ msgstr "Om√∂jligt att l√§gga till skrivare %s"
 
 #~ msgid "Prototype object %s not found in Quota Storage."
-#~ msgstr "Prototypen fˆr objektet %s hittas inte i PyKotasystemet"
+#~ msgstr "Prototypen f√∂r objektet %s hittas inte i PyKotasystemet"
 
 #~ msgid "Prototype %s not found in Quota Storage for printer %s."
-#~ msgstr "Prototypen %s hittas inte i PyKotasystemet fˆr skrivaren %s."
+#~ msgstr "Prototypen %s hittas inte i PyKotasystemet f√∂r skrivaren %s."
 
 #~ msgid "Undefined hard limit set to soft limit (%s) on printer %s."
-#~ msgstr ""
-#~ "Odefinerat hÂrdgr‰nsv‰rde satt till mjukgr‰nsv‰rde (%s) pÂ printer %s."
+#~ msgstr "Odefinerat h√•rdgr√§nsv√§rde satt till mjukgr√§nsv√§rde (%s) p√• printer %s."
 
 #~ msgid "Undefined soft limit set to hard limit (%s) on printer %s."
-#~ msgstr ""
-#~ "Odefinerat mjukgr‰nsv‰rde satt till hÂrdgr‰nsv‰rde (%s) pÂ printer %s."
+#~ msgstr "Odefinerat mjukgr√§nsv√§rde satt till h√•rdgr√§nsv√§rde (%s) p√• printer %s."
 
 #~ msgid "Invalid group name %s"
 #~ msgstr "Ogiltigt gruppnamn %s"
 
 #~ msgid "Invalid user name %s"
-#~ msgstr "Ogiltigt anv‰ndarnamn %s"
+#~ msgstr "Ogiltigt anv√§ndarnamn %s"
 
 #~ msgid "Quota not found for object %s on printer %s."
-#~ msgstr "Utskriftssaldo hittades inte fˆr objekt %s pÂ printer %s."
+#~ msgstr "Utskriftssaldo hittades inte f√∂r objekt %s p√• printer %s."
 
 #~ msgid "You can't increase limits by %s when no limit is set."
-#~ msgstr "Du kan ej hˆja gr‰nsen fˆr %s n‰r ingen gr‰ns ‰r satt."
+#~ msgstr "Du kan ej h√∂ja gr√§nsen f√∂r %s n√§r ingen gr√§ns √§r satt."
 
 #~ msgid "You can't set negative limits."
-#~ msgstr "Du kan ej s‰tta negativa gr‰nser."
+#~ msgstr "Du kan ej s√§tta negativa gr√§nser."
 
 #~ msgid "Group %s not found in the PyKota Storage."
 #~ msgstr "Gruppen %s hittades inte i PyKotasystemet."
 
 #~ msgid "Nonexistent user %s or missing print quota entry."
-#~ msgstr "Icke existerande anv‰ndare %s eller saknad av printersaldopost."
+#~ msgstr "Icke existerande anv√§ndare %s eller saknad av printersaldopost."
 
 #~ msgid "Nonexistent group %s or missing print quota entry."
 #~ msgstr "Icke existerande grupp %s eller saknad av printersaldopost."
 
 #~ msgid "File number %s unregistered twice from polling object, ignored."
-#~ msgstr ""
-#~ "Filnummer %s oregistrerat tvÂ gÂnger frÂn utfrÂgning av objekt, ignoreras."
+#~ msgstr "Filnummer %s oregistrerat tv√• g√•nger fr√•n utfr√•gning av objekt, ignoreras."
 
 #~ msgid "SIGTERM was sent to real backend %s (pid: %s)"
-#~ msgstr "SIGTERM s‰ndes till bakgrundsprocess %s (pid: %s)"
+#~ msgstr "SIGTERM s√§ndes till bakgrundsprocess %s (pid: %s)"
 
 #~ msgid "CUPS backend %s died abnormally."
-#~ msgstr "CUPS bakgrundsprocess %s avbrˆts ov‰ntat."
+#~ msgstr "CUPS bakgrundsprocess %s avbr√∂ts ov√§ntat."
 
 #~ msgid "Software accounting already done in first pass. Ignoring."
-#~ msgstr "Mjukvarusaldo redan utfˆrt under fˆrsta passet. Ignoreras."
+#~ msgstr "Mjukvarusaldo redan utf√∂rt under f√∂rsta passet. Ignoreras."
 
 #~ msgid "Hardware accounting already done in first pass. Ignoring."
-#~ msgstr "HÂrdvarusaldo redan utfˆrt under fˆrsta passet. Ignoreras."
+#~ msgstr "H√•rdvarusaldo redan utf√∂rt under f√∂rsta passet. Ignoreras."
 
 #~ msgid "Invalid DeviceURI : %s"
 #~ msgstr "Felaktig EnhetsURI : %s"
@@ -2856,28 +2700,26 @@ msgstr ""
 #~ "Please wait while pkhint analyzes your printing system's configuration..."
 #~ msgstr ""
 #~ "\n"
-#~ "Var god v‰nta medan pkhint analyserar utskriftssystemets konfiguration..."
+#~ "Var god v√§nta medan pkhint analyserar utskriftssystemets konfiguration..."
 
 #~ msgid "Unknown device %s for printer %s"
-#~ msgstr "Ok‰nd enhet %s fˆr skrivare %s"
+#~ msgstr "Ok√§nd enhet %s f√∂r skrivare %s"
 
 #~ msgid ""
 #~ "\n"
 #~ "Put the following lines into your /etc/pykota/pykota.conf file :\n"
 #~ msgstr ""
 #~ "\n"
-#~ "L‰gg till fˆljande rader i filen /etc/pykota/pykota.conf :\n"
+#~ "L√§gg till f√∂ljande rader i filen /etc/pykota/pykota.conf :\n"
 
 #~ msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
-#~ msgstr "# UPPMƒRKSAMMA : om mjukvarumetoden fˆreslÂs, betyder det inte"
+#~ msgstr "# UPPM√ÑRKSAMMA : om mjukvarumetoden f√∂resl√•s, betyder det inte"
 
-#~ msgid ""
-#~ "# that hardware accounting wouldn't work, this only means that PyKota"
-#~ msgstr ""
-#~ "# att hÂrdvarumetoden inte skulle fungera, det betyder endast att PyKota"
+#~ msgid "# that hardware accounting wouldn't work, this only means that PyKota"
+#~ msgstr "# att h√•rdvarumetoden inte skulle fungera, det betyder endast att PyKota"
 
 #~ msgid "# wasn't able to autodetect which hardware accounting method to use."
-#~ msgstr "# inte automatiskt kunde uppt‰cka vilken metod den skall anv‰nda."
+#~ msgstr "# inte automatiskt kunde uppt√§cka vilken metod den skall anv√§nda."
 
 #~ msgid "JobSize"
 #~ msgstr "JobbStorlek"
@@ -2889,27 +2731,19 @@ msgstr ""
 #~ msgstr "JobBytes"
 
 #~ msgid "PageCounter"
-#~ msgstr "SidR‰knare"
+#~ msgstr "SidR√§knare"
 
 #~ msgid "Printing system %s, args=%s"
 #~ msgstr "Utskriftssystem %s, args=%s"
 
 #~ msgid "Printer hostname undefined, set to 'localhost'"
-#~ msgstr "Skrivarens v‰rdnamn ej definerat, s‰tts till 'localhost'"
+#~ msgstr "Skrivarens v√§rdnamn ej definerat, s√§tts till 'localhost'"
 
 #~ msgid "Printing system unknown, args=%s"
-#~ msgstr "Utskriftsystem ok‰nt, args=%s"
+#~ msgstr "Utskriftsystem ok√§nt, args=%s"
 
-#~ msgid ""
-#~ "Group           used    soft    hard    balance grace         total       "
-#~ "paid"
-#~ msgstr ""
-#~ "Grupp           anv‰nt  mjuk    hÂrd    saldo   uppskov       summa       "
-#~ "betalt"
+#~ msgid "Group           used    soft    hard    balance grace         total       paid"
+#~ msgstr "Grupp           anv√§nt  mjuk    h√•rd    saldo   uppskov       summa       betalt"
 
-#~ msgid ""
-#~ "User            used    soft    hard    balance grace         total       "
-#~ "paid"
-#~ msgstr ""
-#~ "Anv‰ndare       anv‰nt  mjuk    hÂrd    saldo   uppskov       summa       "
-#~ "betalt"
+#~ msgid "User            used    soft    hard    balance grace         total       paid"
+#~ msgstr "Anv√§ndare       anv√§nt  mjuk    h√•rd    saldo   uppskov       summa       betalt"
