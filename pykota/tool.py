@@ -116,9 +116,9 @@ class Percent :
         after = time.time()
         if self.size :
             try :
-                speed = self.size / (after - self.before)
+                speed = self.size / ((after - self.before) + 0.00000000001) # adds an epsilon to avoir an user's problem I can't reproduce...
             except ZeroDivisionError :    
-                speed = 1 # Fake value in case of division by zero
+                speed = 1 # Fake value in case of division by zero, shouldn't happen anyway with the epsilon above...
             self.display("\r100.00%%\r        \r%s. %s : %.2f %s.\n" \
                      % (_("Done"), _("Average speed"), speed, _("entries per second")))
         else :             
