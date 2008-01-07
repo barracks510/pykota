@@ -70,7 +70,7 @@ Contributors :
   - Paolo Nobili - Università degli Studi di Padova - SNMP waiting script
   - Beda Szukics - Kantonsschule Obwalden - German translation
   - Klaus Ade Johnstad - SkoleLinux - Norwegian Bokmål translation
-  - Matt Hyclak - Worked on banner handling and made MySQL support a reality
+  - Matt Hyclak - Numerous code contributions and help.
   - Wilson Roberto Afonso - Sent a patch for PJL.
   - Baris Cicek - Turkish translation.
   - Kanakorn Horsiritham - Wrote phpPykotaAdmin.
@@ -90,6 +90,8 @@ Contributors :
     de Lisboa : Portuguese translation.
   - Christopher Hoskin - Jesus College Oxford - Patch for parsing Device URI.
   - Jabka Atu - Fixed a problem with Debian changelog file.
+  - Jan Christoph Nordholz - T.U. Berlin - Explained the cause of a strange
+    problem with MySQL connections to 'localhost:3306'.
 
 ==============================================================
 
