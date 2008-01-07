@@ -71,7 +71,10 @@ storagebackend: pgstorage
 # Quota Storage Server hostname (and optional port)
 # e.g. db.example.com:5432 (for PostgreSQL) or db.example.com:3306 (for MySQL)
 # NB : leave the directive empty to use unix sockets (same host only)
-storageserver: localhost
+# NB : Using the word 'localhost' for MySQL defaults to a UNIX socket 
+#      connection, which may be unexpected. Using 127.0.0.1 avoids this issue.
+#      See http://bugs.mysql.com/bug.php?id=31577 for more information.
+storageserver: 127.0.0.1
 
 #
 # name of the Quota Storage Database
