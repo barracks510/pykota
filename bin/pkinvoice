@@ -197,7 +197,7 @@ class PKInvoice(PyKotaTool) :
                                         pagesize=self.pagesize, \
                                         pageCompression=1)
         
-        c.setAuthor(self.originalUserName)
+        c.setAuthor(self.effectiveUserName)
         c.setTitle("PyKota invoices")
         c.setSubject("Invoices generated with PyKota")
         

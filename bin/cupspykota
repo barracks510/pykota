@@ -71,6 +71,7 @@ class CUPSBackend(PyKotaTool) :
         PyKotaTool.__init__(self)
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+        self.oldSigIntHandler = signal.signal(signal.SIGINT, signal.SIG_IGN)
         self.MyName = "PyKota"
         self.myname = "cupspykota"
         self.pid = os.getpid()
@@ -83,41 +84,12 @@ class CUPSBackend(PyKotaTool) :
         PyKotaTool.deferredInit(self)
         if not self.config.isAdmin :
             from pykota import config
-            username = self.originalUserName
+            username = self.effectiveUserName
             raise config.PyKotaConfigError, _("User %(username)s is not allowed to read ~pykota/pykotadmin.conf, you must check the permissions.") % locals()
-        self.gotSigTerm = 0
-        self.disableSigInt()
-        self.installSigTermHandler()
-        
-    def sigtermHandler(self, signum, frame) :
-        """Sets an attribute whenever SIGTERM is received."""
-        self.gotSigTerm = 1
-        self.printInfo(_("SIGTERM received, job %s cancelled.") % self.Ticket.JobId)
-        os.environ["PYKOTASTATUS"] = "CANCELLED"
-        
-    def deinstallSigTermHandler(self) :           
-        """Deinstalls the SIGTERM handler."""
-        self.logdebug("Deinstalling SIGTERM handler...")
-        signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        self.logdebug("SIGTERM handler deinstalled.")
-        
-    def installSigTermHandler(self) :           
-        """Installs the SIGTERM handler."""
-        self.logdebug("Installing SIGTERM handler...")
-        signal.signal(signal.SIGTERM, self.sigtermHandler)
-        self.logdebug("SIGTERM handler installed.")
-        
-    def disableSigInt(self) :    
-        """Disables the SIGINT signal (which raises KeyboardInterrupt)."""
-        self.logdebug("Disabling SIGINT...")
-        self.oldSigIntHandler = signal.signal(signal.SIGINT, signal.SIG_IGN)
-        self.logdebug("SIGINT disabled.")
         
     def enableSigInt(self) :    
         """Enables the SIGINT signal (which raises KeyboardInterrupt)."""
-        self.logdebug("Enabling SIGINT...")
         signal.signal(signal.SIGINT, self.oldSigIntHandler)
-        self.logdebug("SIGINT enabled.")
         
     def waitForLock(self) :    
         """Waits until we can acquire the lock file."""
@@ -152,10 +124,11 @@ class CUPSBackend(PyKotaTool) :
         
            Executes each existing backend in turn in device enumeration mode.
            Returns the list of available backends.
+           
+           Unfortunately this method can't output any debug information
+           to stdout or stderr, else CUPS considers that the device is
+           not available.
         """
-        # Unfortunately this method can't output any debug information
-        # to stdout or stderr, else CUPS considers that the device is
-        # not available.
         available = []
         (directory, myname) = os.path.split(sys.argv[0])
         if not directory :
@@ -225,6 +198,21 @@ class CUPSBackend(PyKotaTool) :
                              % (self.myname, self.MyName, self.MyName))
         return available
                         
+    def checkCUPSVersion(self) :                    
+        """Checks if CUPS is not v1.3.4 or higher."""
+        fullversion = os.environ.get("SOFTWARE", "")
+        if fullversion.startswith("CUPS/") :
+            vnum = fullversion.split("/")[1]
+            try :
+               (major, minor, release) = [int(p) for p in vnum.split(".")]
+            except ValueError :   
+                pass
+            else :    
+                return (major > 1) \
+                        or ((major == 1) and (minor > 3)) \
+                        or ((major == 1) and (minor == 3) and (release >= 4))
+        return False
+        
     def initBackendParameters(self) :    
         """Initializes the backend's attributes."""
         # check that the DEVICE_URI environment variable's value is 
@@ -232,6 +220,9 @@ class CUPSBackend(PyKotaTool) :
         # If this is the case, we have to remove the prefix from 
         # the environment before launching the real backend 
         self.logdebug("Initializing backend...")
+        
+        if not self.checkCUPSVersion() :
+            self.printInfo("BEWARE : CUPS is too old. You must use CUPS v1.3.4 or higher.", "error")
         
         self.PrinterName = os.environ.get("PRINTER", "")
         directories = [ self.config.getPrinterDirectory(self.PrinterName),
@@ -409,7 +400,6 @@ class CUPSBackend(PyKotaTool) :
             username = billingcode = action = reason = None
             self.logdebug("Launching subprocess [%s] to overwrite the job ticket." \
                                      % jobticketcommand)
-            self.regainPriv()                         
             inputfile = os.popen(jobticketcommand, "r")
             try :
                 for line in inputfile.xreadlines() :
@@ -432,7 +422,6 @@ class CUPSBackend(PyKotaTool) :
             except IOError, msg :            
                 self.logdebug("IOError while reading subprocess' output : %s" % msg)
             inputfile.close()    
-            self.dropPriv()
             
             # now overwrite the job's ticket if new data was supplied
             if action == "DENY" :
@@ -457,7 +446,6 @@ class CUPSBackend(PyKotaTool) :
         mustclose = 0
         outfile = open(self.DataFile, "wb")    
         if self.Ticket.FileName is not None :
-            self.regainPriv()
             infile = open(self.Ticket.FileName, "rb")
             self.logdebug("Reading input datas from %s" % self.Ticket.FileName)
             mustclose = 1
@@ -480,7 +468,6 @@ class CUPSBackend(PyKotaTool) :
             dummy += 1    
         if mustclose :    
             infile.close()
-            self.dropPriv()
             
         outfile.close()
         self.JobSizeBytes = sizeread    
@@ -493,8 +480,6 @@ class CUPSBackend(PyKotaTool) :
     def clean(self) :
         """Cleans up the place."""
         self.logdebug("Cleaning up...")
-        self.regainPriv()
-        self.deinstallSigTermHandler()
         if (self.DataFile is not None) and os.path.exists(self.DataFile) :
             try :
                 keep = self.config.getPrinterKeepFiles(self.PrinterName)
@@ -932,9 +917,7 @@ class CUPSBackend(PyKotaTool) :
             (mailto, arguments) = self.config.getMailTo(self.PrinterName)
             if mailto == "EXTERNAL" :
                 # TODO : clean this again
-                self.regainPriv()
                 self.externalMailTo(arguments, self.Action, self.User, self.Printer, self.Reason)
-                self.dropPriv()
             else :    
                 # TODO : clean this again
                 admin = self.config.getAdmin(self.PrinterName)
@@ -1113,17 +1096,14 @@ class CUPSBackend(PyKotaTool) :
             self.printInfo(_("Job cancelled, no accounting will be done."))
         else :
             self.printInfo(_("Job accounting begins."))
-            self.deinstallSigTermHandler()
             self.accounter.beginJob(self.Printer)
-            self.installSigTermHandler()
         
         # handle starting banner pages with accounting
         if (self.Action != "CANCEL") and accountbanner in ["STARTING", "BOTH"] :
-            if not self.gotSigTerm :
-                self.handleBanner("starting", 1)
+            self.handleBanner("starting", 1)
         
-        # pass the job's data to the real backend    
-        if (not self.gotSigTerm) and (self.Action in ["ALLOW", "WARN"]) :
+        # pass the job's data to the real backend if needed   
+        if self.Action in ("ALLOW", "WARN") :
             retcode = self.printJobDatas()
         else :        
             retcode = self.removeJob()
@@ -1133,8 +1113,7 @@ class CUPSBackend(PyKotaTool) :
         
         # handle ending banner pages with accounting
         if (self.Action != "CANCEL") and accountbanner in ["ENDING", "BOTH"] :
-            if not self.gotSigTerm :
-                self.handleBanner("ending", 1)
+            self.handleBanner("ending", 1)
         
         # stops accounting
         if self.Action == "DENY" :
@@ -1142,9 +1121,7 @@ class CUPSBackend(PyKotaTool) :
         elif self.Action == "CANCEL" :    
             self.printInfo(_("Job cancelled, no accounting has been done."))
         else :
-            self.deinstallSigTermHandler()
             self.accounter.endJob(self.Printer)
-            self.installSigTermHandler()
             self.printInfo(_("Job accounting ends."))
         
         # Do all these database changes within a single transaction    
@@ -1283,7 +1260,6 @@ class CUPSBackend(PyKotaTool) :
         # TODO : uses the job's title to name an output file (cups-pdf:// for example), we're stuck !
         
         self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a for a in arguments])))
-        self.regainPriv()    
         pid = os.fork()
         self.logdebug("Forked !")
         if pid == 0 :
@@ -1297,18 +1273,16 @@ class CUPSBackend(PyKotaTool) :
                 self.logdebug("execve() failed: %s" % msg)
             self.logdebug("We shouldn't be there !!!")    
             os._exit(-1)
-        self.dropPriv()    
         
         self.logdebug("Waiting for original backend to exit...")    
-        killed = 0
+        killed = False
         status = -1
         while status == -1 :
             try :
                 status = os.waitpid(pid, 0)[1]
             except OSError, (err, msg) :
-                if (err == 4) and self.gotSigTerm :
-                    os.kill(pid, signal.SIGTERM)
-                    killed = 1
+                if err == 4 :
+                    killed = True
                     
         if os.WIFEXITED(status) :
             status = os.WEXITSTATUS(status)
@@ -1324,7 +1298,7 @@ class CUPSBackend(PyKotaTool) :
         elif not killed :
             self.Reason = "CUPS backend %s died abnormally." % originalbackend
             self.printInfo(self.Reason, "error")
-            return -1
+            return 1
         else :
             self.Reason = "CUPS backend %s was killed." % originalbackend
             self.printInfo(self.Reason, "warn")

@@ -179,7 +179,6 @@ class PyKotaNotify(Tool) :
         else :    
             retcode = False
             self.password = password
-            self.regainPriv()
             auth = PAM.pam()
             auth.start("passwd")
             auth.set_item(PAM.PAM_USER, username)
@@ -194,7 +193,6 @@ class PyKotaNotify(Tool) :
             else :
                 self.logdebug(_("Password correct for user %s") % username)
                 retcode = True
-            self.dropPriv()    
             return retcode
             
     def alarmHandler(self, signum, frame) :        

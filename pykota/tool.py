@@ -131,9 +131,6 @@ class Tool :
         self.debug = True # in case of early failure
         self.logger = logger.openLogger("stderr")
         
-        # did we drop priviledges ?
-        self.privdropped = 0
-        
         # locale stuff
         try :
             locale.setlocale(locale.LC_ALL, (lang, charset))
@@ -167,6 +164,14 @@ class Tool :
         # pykota specific stuff
         self.documentation = doc
         
+        # Extract the effective username
+        uid = os.geteuid()
+        try :
+            self.effectiveUserName = pwd.getpwuid(uid)[0]
+        except (KeyError, IndexError), msg :    
+            self.printInfo(_("Strange problem with uid(%s) : %s") % (uid, msg), "warn")
+            self.effectiveUserName = os.getlogin()
+        
     def deferredInit(self) :        
         """Deferred initialization."""
         confdir = os.environ.get("PYKOTA_HOME")
@@ -189,9 +194,6 @@ class Tool :
         self.maildomain = self.config.getMailDomain()
         self.logger = logger.openLogger(self.config.getLoggingBackend())
             
-        # now drop priviledge if possible
-        self.dropPriv()    
-        
         # We NEED this here, even when not in an accounting filter/backend    
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
@@ -207,42 +209,6 @@ class Tool :
         
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug("Command line arguments : %s" % arguments)
-        
-    def dropPriv(self) :    
-        """Drops priviledges."""
-        uid = os.geteuid()
-        try :
-            self.originalUserName = pwd.getpwuid(uid)[0]
-        except (KeyError, IndexError), msg :    
-            self.printInfo(_("Strange problem with uid(%s) : %s") % (uid, msg), "warn")
-            self.originalUserName = None
-        else :
-            if uid :
-                self.logdebug(_("Running as user '%s'.") % self.originalUserName)
-            else :
-                if self.pykotauser is None :
-                    self.logdebug(_("No user named 'pykota'. Not dropping priviledges."))
-                else :    
-                    try :
-                        os.setegid(self.pykotauser[3])
-                        os.seteuid(self.pykotauser[2])
-                    except OSError, msg :    
-                        self.printInfo(_("Impossible to drop priviledges : %s") % msg, "warn")
-                    else :    
-                        self.logdebug(_("Priviledges dropped. Now running as user 'pykota'."))
-                        self.privdropped = 1
-            
-    def regainPriv(self) :    
-        """Drops priviledges."""
-        if self.privdropped :
-            try :
-                os.seteuid(0)
-                os.setegid(0)
-            except OSError, msg :    
-                self.printInfo(_("Impossible to regain priviledges : %s") % msg, "warn")
-            else :    
-                self.logdebug(_("Regained priviledges. Now running as root."))
-                self.privdropped = 0
         
     def UTF8ToUserCharset(self, text) :
         """Converts from UTF-8 to user's charset."""

@@ -488,7 +488,7 @@ class StorageJob(StorageObject) :
         basereason = _("Refunded %i pages and %.3f credits by %s (%s) on %s") \
                         % (self.JobSize,
                            self.JobPrice,
-                           self.parent.tool.originalUserName,
+                           self.parent.tool.effectiveUserName,
                            os.getlogin(),
                            str(DateTime.now())[:19])
         if reason :                                               

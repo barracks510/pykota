@@ -208,7 +208,7 @@ class PkRefund(PyKotaTool) :
                                         pagesize=self.pagesize, \
                                         pageCompression=1)
         
-        c.setAuthor(self.originalUserName)
+        c.setAuthor(self.effectiveUserName)
         c.setTitle("PyKota print job refunding receipts")
         c.setSubject("Print job refunding receipts generated with PyKota")
         
