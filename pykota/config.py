@@ -520,10 +520,13 @@ class PyKotaConfig :
         """Returns True if we want to disable history, else False."""
         return self.isTrue(self.getGlobalOption("disablehistory", ignore=1))
             
+<<<<<<< .mine
+=======
     def getUserNameToLower(self) :          
         """Deprecated."""
         return self.getGlobalOption("utolower", ignore=1)
         
+>>>>>>> .r2547
     def getUserNameCase(self) :
         """Returns value for user name case: upper, lower or native"""
         validvalues = [ "upper", "lower", "native" ]
@@ -652,6 +655,14 @@ class PyKotaConfig :
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""
         return self.getGlobalOption("winbind_separator", ignore=1)
+
+    def getUserNameCase(self) :
+        """Returns value for user name case: upper, lower or native"""
+        validvalues = [ "upper", "lower", "native" ]
+        value = self.getGlobalOption("usercasename", ignore=1).strip().lower()
+        if value not in validvalues :
+            raise PyKotaConfigError, _("Option usercasename only supports values in %s") % str(validvalues)
+        return value
 
     def getAccountBanner(self, printername) :
         """Returns which banner(s) to account for: NONE, BOTH, STARTING, ENDING."""

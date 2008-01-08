@@ -32,6 +32,11 @@ pykota.schema :
     
         $ cp pykota.schema /etc/ldap/schema
         (no need to do this if you install from PyKota's Debian package)
+
+    NB: With OpenLDAP under Red Hat-based distros, where /etc/ldap is 
+        referenced, substitute /etc/openldap. e.g. 
+
+        $ cp pykota.schema /etc/openldap/schema
         
     Then edit /etc/ldap/slapd.conf and add a line to    
     include the PyKota schema. You should have something
@@ -95,7 +100,7 @@ pykota.schema :
     Now, stop the OpenLDAP server :    
     
         $ /etc/init.d/slapd stop
-        
+    
     Generate the index files :    
     
         $ slapindex
@@ -104,6 +109,9 @@ pykota.schema :
     
         $ /etc/init.d/slapd start
 
+    NB: On Red Hat-based distros, use '/sbin/service ldap stop' and 
+        '/sbin/service ldap start' instead.
+    
 pykota-sample.ldif :
 
     You can use this file to initialize an LDAP tree for PyKota, if

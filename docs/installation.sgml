@@ -339,6 +339,14 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           <screen>        
     $ cp pykota.schema /etc/ldap/schema
           </screen>
+	  <note>
+            <title>Note</title>
+            <para>
+              If you are using a Red Hat-based system, substitute 
+              <filename>/etc/openldap</filename> for 
+              <filename>/etc/ldap</filename>.
+            </para>
+          </note>
           <note>
             <title>Note</title>
             <para>
@@ -404,7 +412,13 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
     $ /etc/init.d/slapd start
           </screen>
         </para>
-        
+        <note>
+          <title>Note</title>
+          <para>
+          On Red Hat-based distros, use '/sbin/service ldap stop' and 
+        '/sbin/service ldap start' instead.
+          </para>
+        </note>
         <para>
           With an <acronym>LDAP</acronym> backend, PyKota will need some branches
           in your <acronym>LDAP</acronym> directory to put its own datas.
