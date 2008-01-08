@@ -79,7 +79,7 @@ How to improve PyKota's security :
       
   - Secure your database connections :
   
-    Depending on the database backend used, either PostgreSQL or LDAP, 
+    Depending on the database backend used,
     you may have to take additionnal measures to render your database 
     more secure. Please refer to your database system's documentation 
     to learn how to do so. This is out of the scope of the present 
