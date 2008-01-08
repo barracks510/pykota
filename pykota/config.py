@@ -520,13 +520,10 @@ class PyKotaConfig :
         """Returns True if we want to disable history, else False."""
         return self.isTrue(self.getGlobalOption("disablehistory", ignore=1))
             
-<<<<<<< .mine
-=======
     def getUserNameToLower(self) :          
         """Deprecated."""
         return self.getGlobalOption("utolower", ignore=1)
         
->>>>>>> .r2547
     def getUserNameCase(self) :
         """Returns value for user name case: upper, lower or native"""
         validvalues = [ "upper", "lower", "native" ]
