@@ -599,7 +599,8 @@ keepfiles : no
 # available under the name 'pkpgcounter', recognizes several page description
 # languages, but may occasionally fail for some printer drivers.
 # You can however use any other command, provided it can read the datas to
-# parse from its standard input, and prints a single integer on its standard
+# parse from the file pointed to by the PYKOTADATAFILE environment
+# variable, and prints a single integer on its standard
 # output, representing the number of pages in the print job.
 # Software accounting unfortunately may overcharge users in case of paper
 # jams.
@@ -646,7 +647,7 @@ keepfiles : no
 # accounter : hardware(/bin/cat /usr/share/pykota/pagecount.pjl >/dev/lp0 && /usr/bin/head -2 </dev/lp0 | /usr/bin/tail -1)
 # accounter : hardware(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public %(printer)s | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4)
 # accounter : hardware(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2)
-# accounter : software(/usr/bin/pkpgcounter) 
+# accounter : software(/usr/bin/pkpgcounter "$PYKOTADATAFILE") 
 # accounter : software()
 # accounter : ink(cmyk, 150)
 # accounter : ink(bw, 300)
@@ -717,7 +718,8 @@ skipinitialwait : no
 # NB : the preaccounter directive doesn't support hardware() for obvious 
 # reasons. If unset, "software()" is assumed. If you use your own script, 
 # ensure that it only prints the job's number of pages (or an estimation 
-# of it) on its standard output.
+# of it) on its standard output, and that it reads the print job's datas
+# from the file pointed to by the PYKOTADATAFILE environment variable.
 #
 # You may want to define for example 'preaccounter : software(/bin/echo 1)'
 # in the case your printer supports an hardware accounter but pkpgcounter
