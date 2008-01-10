@@ -171,20 +171,6 @@
         You can install it with 'apt-get install python-reportlab'
       </description>
     </entry>
-    <entry name="python-chardet" display="true">
-      <states>
-        <state name="Pass">python-chardet is installed</state>
-        <state name="Fail">python-chardet is not installed</state>
-        <state name="Non-Blocker">Our system is correctly configured and up-to-date so PyKota won't need this module</state>
-      </states>
-      <description>
-        python-chardet allows PyKota to automatically detect the character set used in a print job's textual information (like its title)
-        in the case your system and/or installed release of CUPS doesn't produce UTF-8.
-        It can also be useful when dumping incorrectly encoded database contents (because of the problem mentioned
-        above).
-        You can install it with 'apt-get install python-chardet'
-      </description>
-    </entry>
     <entry name="python-pam" display="true">
       <states>
         <state name="Pass">python-pam is installed</state>

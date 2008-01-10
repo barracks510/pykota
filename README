@@ -153,10 +153,9 @@ Prerequisite :
       Versions 2.x won't work. Versions 4.x now work (tested with v4.1.5a).
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
-    - The Python-chardet module to autodetect user's character set when  
-      printing. (http://chardet.feedparser.org)
     - SNMP tools (specifically the snmpget command) if you prefer to
-      use your own script to request query printers.
+      use your own script to request query printers instead of PyKota's
+      internal SNMP handling facilities, which is not recommanded...
       (http://www.net-snmp.org)
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.

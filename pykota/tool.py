@@ -38,17 +38,6 @@ import email.Utils
 
 from mx import DateTime
 
-try :
-    import chardet
-except ImportError :    
-    def detectCharset(text) :
-        """Fakes a charset detection if the chardet module is not installed."""
-        return "ISO-8859-15"
-else :    
-    def detectCharset(text) :
-        """Uses the chardet module to workaround CUPS lying to us."""
-        return chardet.detect(text)["encoding"] or "UTF-8"
-
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
@@ -62,7 +51,7 @@ class PyKotaToolError(Exception):
         self.message = message
         Exception.__init__(self, message)
     def __repr__(self):
-        return self.message
+        return self.message.encode(sys.stdout.encoding or "UTF-8", "replace")
     __str__ = __repr__
     
 class PyKotaCommandLineError(PyKotaToolError) :    
@@ -141,7 +130,7 @@ class Tool :
         try :
             self.charset = self.charset or locale.getpreferredencoding()
         except locale.Error :    
-            self.charset = sys.getfilesystemencoding()
+            self.charset = sys.stdout.encoding or sys.getfilesystemencoding()
         
         # Dirty hack : if the charset is ASCII, we can safely use UTF-8 instead
         # This has the advantage of allowing transparent support for recent
@@ -157,9 +146,9 @@ class Tool :
                 trans = gettext.translation("pykota", languages=["%s.%s" % (self.language, self.charset)], codeset=self.charset)
             except TypeError : # Python <2.4
                 trans = gettext.translation("pykota", languages=["%s.%s" % (self.language, self.charset)])
-            trans.install()
+            trans.install(unicode=True)
         except :
-            gettext.NullTranslations().install()
+            gettext.NullTranslations().install(unicode=True)
     
         # pykota specific stuff
         self.documentation = doc
@@ -214,54 +203,37 @@ class Tool :
         """Converts from UTF-8 to user's charset."""
         if text is None :
             return None
-        try :
-            return text.decode("UTF-8").encode(self.charset, "replace") 
-        except (UnicodeError, AttributeError) :    
-            try :
-                # Maybe already in Unicode ?
-                return text.encode(self.charset, "replace") 
-            except (UnicodeError, AttributeError) :
-                # Try to autodetect the charset
-                return text.decode(detectCharset(text), "replace").encode(self.charset, "replace")
+        else :    
+            return text.decode("UTF-8", "replace").encode(self.charset, "replace") 
         
     def userCharsetToUTF8(self, text) :
         """Converts from user's charset to UTF-8."""
         if text is None :
             return None
-        try :
-            # We don't necessarily trust the default charset, because
-            # xprint sends us titles in UTF-8 but CUPS gives us an ISO-8859-1 charset !
-            # So we first try to see if the text is already in UTF-8 or not, and
-            # if it is, we delete characters which can't be converted to the user's charset,
-            # then convert back to UTF-8. PostgreSQL 7.3.x used to reject some unicode characters,
-            # this is fixed by the ugly line below :
-            return text.decode("UTF-8").encode(self.charset, "replace").decode(self.charset).encode("UTF-8", "replace")
-        except (UnicodeError, AttributeError) :
-            try :
-                return text.decode(self.charset).encode("UTF-8", "replace") 
-            except (UnicodeError, AttributeError) :    
-                try :
-                    # Maybe already in Unicode ?
-                    return text.encode("UTF-8", "replace") 
-                except (UnicodeError, AttributeError) :
-                    # Try to autodetect the charset
-                    return text.decode(detectCharset(text), "replace").encode("UTF-8", "replace")
-        return newtext
+        else :    
+            return text.decode(self.charset, "replace").encode("UTF-8", "replace")    
         
     def display(self, message) :
         """Display a message but only if stdout is a tty."""
         if sys.stdout.isatty() :
-            sys.stdout.write(message)
+            sys.stdout.write(message.encode(sys.stdout.encoding or "UTF-8", \
+                                            "replace"))
             sys.stdout.flush()
             
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
         if self.debug :
-            self.logger.log_message(message, "debug")
+            self.logger.log_message(message.encode(sys.stdout.encoding \
+                                                       or "UTF-8", \
+                                                   "replace"), \
+                                    "debug")
             
     def printInfo(self, message, level="info") :        
         """Sends a message to standard error."""
-        sys.stderr.write("%s: %s\n" % (level.upper(), message))
+        sys.stderr.write("%s: %s\n" % (level.upper(), \
+                                       message.encode(sys.stdout.encoding \
+                                                          or "UTF-8", \
+                                                      "replace")))
         sys.stderr.flush()
         
     def matchString(self, s, patterns) :

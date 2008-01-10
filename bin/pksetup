@@ -189,7 +189,6 @@ class PyKotaSetup :
                  "python-egenix-mxdatetime",
                  "python-imaging",
                  "python-pysnmp4",
-                 "python-chardet",
                  "python-pam" ]
         
     otherpackages = [ { "name" : "pkpgcounter",
