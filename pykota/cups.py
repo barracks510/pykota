@@ -21,7 +21,7 @@
 
 """This module implements some CUPS specific classes."""
 
-from pykota.tool import PyKotaToolError
+from pykota.errors import PyKotaToolError
 try :
     from pkipplib import pkipplib
 except ImportError :        

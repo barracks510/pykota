@@ -38,6 +38,7 @@ import email.Utils
 
 from mx import DateTime
 
+from pykota.errors import PyKotaCommandLineError
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
@@ -45,19 +46,6 @@ def N_(message) :
     """Fake translation marker for translatable strings extraction."""
     return message
 
-class PyKotaToolError(Exception):
-    """An exception for PyKota related stuff."""
-    def __init__(self, message = ""):
-        self.message = message
-        Exception.__init__(self, message)
-    def __repr__(self):
-        return self.message.encode(sys.stdout.encoding or "UTF-8", "replace")
-    __str__ = __repr__
-    
-class PyKotaCommandLineError(PyKotaToolError) :    
-    """An exception for Pykota command line tools."""
-    pass
-    
 def crashed(message="Bug in PyKota") :    
     """Minimal crash method."""
     import traceback

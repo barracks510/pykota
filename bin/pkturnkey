@@ -28,7 +28,8 @@ import grp
 import socket
 import signal
 
-from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.tool import Tool, crashed, N_
 
 __doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
 

@@ -36,7 +36,8 @@ import random
 
 from mx import DateTime
 
-from pykota.storage import PyKotaStorageError, BaseStorage, \
+from pykota.errors import PyKotaStorageError
+from pykota.storage import BaseStorage, \
                            StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
                            StorageGroupPQuota, StorageBillingCode

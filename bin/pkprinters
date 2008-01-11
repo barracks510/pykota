@@ -25,7 +25,8 @@ import os
 import sys
 import pwd
 
-from pykota.tool import Percent, PyKotaTool, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaCommandLineError
+from pykota.tool import Percent, PyKotaTool, crashed, N_
 from pykota.storage import StoragePrinter
 
 from pkipplib import pkipplib

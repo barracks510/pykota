@@ -32,18 +32,19 @@ try :
     from reportlab.lib import pagesizes
     from reportlab.lib.units import cm
 except ImportError :    
-    hasRL = 0
+    hasRL = False
 else :    
-    hasRL = 1
+    hasRL = True
     
 try :
     import PIL.Image 
 except ImportError :    
-    hasPIL = 0
+    hasPIL = False
 else :    
-    hasPIL = 1
+    hasPIL = True
 
-from pykota.tool import Percent, PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.tool import Percent, PyKotaTool, crashed, N_
 
 __doc__ = N_("""pkrefund v%(__version__)s (c) %(__years__)s %(__author__)s
 

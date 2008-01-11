@@ -30,7 +30,8 @@ from email.MIMEText import MIMEText
 from email.Header import Header
 import email.Utils
 
-from pykota.tool import PyKotaTool, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaCommandLineError
+from pykota.tool import PyKotaTool, crashed, N_
     
 __doc__ = N_("""pkmail v%(__version__)s (c) %(__years__)s %(__author__)s
 

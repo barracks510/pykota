@@ -43,7 +43,8 @@ import email.Utils
 
 from mx import DateTime
 
-from pykota.tool import PyKotaTool, PyKotaToolError, crashed
+from pykota.errors import PyKotaToolError
+from pykota.tool import PyKotaTool, crashed
 from pykota.accounter import openAccounter
 from pykota import cups
     

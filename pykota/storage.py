@@ -26,16 +26,8 @@ import os
 import imp
 from mx import DateTime
 
-class PyKotaStorageError(Exception):
-    """An exception for database related stuff."""
-    def __init__(self, message = ""):
-        self.message = message
-        Exception.__init__(self, message)
-    def __repr__(self):
-        return self.message
-    __str__ = __repr__
-        
-        
+from pykota.errors import PyKotaStorageError
+
 class StorageObject :
     """Object present in the database."""
     def __init__(self, parent) :

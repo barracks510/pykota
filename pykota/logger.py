@@ -25,14 +25,7 @@
 import os
 import imp
 
-class PyKotaLoggingError(Exception):
-    """An exception for logging related stuff."""
-    def __init__(self, message = ""):
-        self.message = message
-        Exception.__init__(self, message)
-    def __repr__(self):
-        return self.message
-    __str__ = __repr__
+from pykota.errors import PyKotaLoggingError
 
 def openLogger(backend) :
     """Returns the appropriate logger subsystem object."""

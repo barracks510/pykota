@@ -27,7 +27,8 @@ import pwd
 
 from mx import DateTime
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.tool import PyKotaTool, crashed, N_
 from pykota import reporter
 
 __doc__ = N_("""repykota v%(__version__)s (c) %(__years__)s %(__author__)s

@@ -26,14 +26,7 @@ import os
 import imp
 from mx import DateTime
 
-class PyKotaReporterError(Exception):
-    """An exception for Reporter related stuff."""
-    def __init__(self, message = ""):
-        self.message = message
-        Exception.__init__(self, message)
-    def __repr__(self):
-        return self.message
-    __str__ = __repr__
+from pykota.errors import PyKotaReporterError
     
 class BaseReporter :    
     """Base class for all reports."""

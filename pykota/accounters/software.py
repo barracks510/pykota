@@ -20,9 +20,13 @@
 #
 #
 
+"""This module handles software page counting for PyKota."""
+
 import os
 import popen2
-from pykota.accounter import AccounterBase, PyKotaAccounterError
+
+from pykota.errors import PyKotaAccounterError
+from pykota.accounter import AccounterBase
 
 class Accounter(AccounterBase) :
     def computeJobSize(self) :    

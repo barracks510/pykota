@@ -30,11 +30,12 @@ import xmlrpclib
 try :
     import PAM
 except ImportError :    
-    hasPAM = 0
+    hasPAM = False
 else :    
-    hasPAM = 1
+    hasPAM = True
 
-from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.tool import Tool, crashed, N_
 
 __doc__ = N_("""pknotify v%(__version__)s (c) %(__years__)s %(__author__)s
 

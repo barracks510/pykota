@@ -26,15 +26,8 @@ import sys
 import os
 import imp
 
-class PyKotaAccounterError(Exception):
-    """An exception for Accounter related stuff."""
-    def __init__(self, message = ""):
-        self.message = message
-        Exception.__init__(self, message)
-    def __repr__(self):
-        return self.message
-    __str__ = __repr__
-    
+from pykota.errors import PyKotaAccounterError
+
 class AccounterBase :    
     """A class to account print usage by querying printers."""
     def __init__(self, kotafilter, arguments, ispreaccounter=0, name="Unknown") :

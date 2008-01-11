@@ -34,12 +34,13 @@ try :
 except ImportError :    
     sys.stderr.write("The jaxml Python module is not installed. XML output is disabled.\n")
     sys.stderr.write("Download jaxml from http://www.librelogiciel.com/software/ or from your Debian archive of choice\n")
-    hasJAXML = 0
+    hasJAXML = False
 else :    
-    hasJAXML = 1
+    hasJAXML = True
 
 from pykota import version
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, N_
+from pykota.tool import PyKotaTool, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 
 class DumPyKota(PyKotaTool) :        
     """A class for dumpykota."""

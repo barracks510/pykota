@@ -32,7 +32,8 @@ except ImportError :
     sys.stderr.write("Sorry ! You need both xosd and the Python OSD library (pyosd) for this software to work.\n")
     sys.exit(-1)
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.tool import PyKotaTool, crashed, N_
 
 __doc__ = N_("""pykosd v%(__version__)s (c) %(__years__)s %(__author__)s
 

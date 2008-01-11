@@ -25,7 +25,8 @@
 import sys
 import os
 
-from pykota.tool import PyKotaTool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.tool import PyKotaTool, crashed, N_
 
 __doc__ = N_("""autopykota v%(__version__)s (c) %(__years__)s %(__author__)s
 

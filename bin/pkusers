@@ -25,7 +25,8 @@ import sys
 import pwd
 import grp
 
-from pykota.tool import Percent, PyKotaTool, PyKotaCommandLineError, crashed, N_
+from pykota.errors import PyKotaCommandLineError
+from pykota.tool import Percent, PyKotaTool, crashed, N_
 from pykota.storage import StorageUser, StorageGroup
 
 __doc__ = N_("""pkusers v%(__version__)s (c) %(__years__)s %(__author__)s

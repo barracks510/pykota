@@ -20,9 +20,12 @@
 #
 #
 
-import os
-from pykota.accounter import AccounterBase, PyKotaAccounterError
+"""This module handles ink accounting in PyKota."""
 
+import os
+
+from pykota.errors import PyKotaAccounterError
+from pykota.accounter import AccounterBase
 
 class Accounter(AccounterBase) :
     cspaceExpanded = {
@@ -49,7 +52,7 @@ class Accounter(AccounterBase) :
         (colorspace, resolution) = parameters
         colorspace = colorspace.lower()
         if colorspace not in ("cmyk", "bw", "cmy", "rgb", "gc") :
-            raise PyKotaAccounterError, "Invalid parameters for ink accounter : [%s]" % self.arguments
+            raise PyKotaAccounterError, _("Invalid parameters for ink accounter : [%s]") % self.arguments
             
         try :    
             resolution = int(resolution)

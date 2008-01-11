@@ -24,7 +24,8 @@ import os
 import signal
 import popen2
 
-from pykota.accounter import AccounterBase, PyKotaAccounterError
+from pykota.errors import PyKotaAccounterError
+from pykota.accounter import AccounterBase
 from pykota.accounters import snmp, pjl
 
 class Accounter(AccounterBase) :

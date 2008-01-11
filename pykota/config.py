@@ -26,15 +26,8 @@ import os
 import tempfile
 import ConfigParser
 
-class PyKotaConfigError(Exception):
-    """An exception for PyKota config related stuff."""
-    def __init__(self, message = ""):
-        self.message = message
-        Exception.__init__(self, message)
-    def __repr__(self):
-        return self.message
-    __str__ = __repr__
-    
+from pykota.errors import PyKotaConfigError    
+
 class PyKotaConfig :
     """A class to deal with PyKota's configuration."""
     def __init__(self, directory) :
