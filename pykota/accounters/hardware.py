@@ -20,6 +20,8 @@
 #
 #
 
+"""This module handles hardware page counting for PyKota."""
+
 import os
 import signal
 import popen2
