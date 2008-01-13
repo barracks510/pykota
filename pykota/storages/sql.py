@@ -824,7 +824,7 @@ class SQLStorage :
             query += " AND %s" % " AND ".join(where)
         query += " ORDER BY jobhistory.id DESC"
         if limit :
-            query += " LIMIT %s" % self.doQuote(int(limit))
+            query += " LIMIT %s" % self.doQuote(int(limit)) # TODO : LIMIT is not supported under DB2.
         jobs = []    
         result = self.doSearch(query)    
         if result :
