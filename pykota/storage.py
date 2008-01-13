@@ -727,14 +727,20 @@ class BaseStorage :
                 gpquotas.append(gpq)
         return gpquotas        
         
-    def databaseToUserCharset(self, text) :
-        """Converts from database format (UTF-8) to user's charset."""
-        return self.tool.UTF8ToUserCharset(text)
+    def databaseToUnicode(self, text) :
+        """Converts from database format (UTF-8) to unicode."""
+        if text is not None :
+            return text.decode("UTF-8", "replace")
+        else : 
+            return None
         
-    def userCharsetToDatabase(self, text) :
-        """Converts from user's charset to database format (UTF-8)."""
-        return self.tool.userCharsetToUTF8(text)
-        
+    def unicodeToDatabase(self, text) :
+        """Converts from unicode to database format (UTF-8)."""
+        if text is not None : 
+            return text.encode("UTF-8", "replace")
+        else :    
+            return None
+            
     def cleanDates(self, startdate, enddate) :    
         """Clean the dates to create a correct filter."""
         if startdate :    

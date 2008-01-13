@@ -243,10 +243,15 @@ class DumPyKota(PyKotaTool) :
             for entry in entries :
                 line = []
                 for value in entry :
-                    if type(value).__name__ in ("str", "NoneType") :
-                        line.append('"%s"' % str(value).replace(separator, "\\%s" % separator).replace('"', '\\"'))
-                    else :    
-                        line.append(str(value))
+                    try :
+                        strvalue = '"%s"' % value.encode(self.charset, \
+                                                         "replace").replace(separator, "\\%s" % separator).replace('"', '\\"')
+                    except AttributeError :
+                        if value is None :
+                            strvalue = '"None"' # Double quotes around None to prevent spreadsheet from failing
+                        else :    
+                            strvalue = str(value)
+                    line.append(strvalue)
                 try :
                     self.outfile.write("%s\n" % separator.join(line))
                 except IOError, msg :    
@@ -312,17 +317,20 @@ class DumPyKota(PyKotaTool) :
                 x._push()
                 x.entry()
                 for (header, value) in zip(headers, entry) :
-                    strvalue = str(value)
-                    typval = type(value).__name__
-                    if header in ("filename", "title", "options", "billingcode") \
-                              and (typval == "str") :
-                        try :
-                            strvalue = unicode(strvalue, self.charset).encode("UTF-8")
-                        except UnicodeError :    
-                            pass
-                        strvalue = saxutils.escape(strvalue, { "'" : "&apos;", \
-                                                               '"' : "&quot;" })
-                    x.attribute(strvalue, type=typval, name=header)
+                    try :
+                        strvalue = saxutils.escape(value.encode("UTF-8", \
+                                                                "replace"), \
+                                                   { "'" : "&apos;", \
+                                                     '"' : "&quot;" })
+                    except AttributeError :    
+                        strvalue = str(value)
+                    # We use 'str' instead of 'unicode' below to be compatible
+                    # with older releases of PyKota.
+                    # The XML dump will contain UTF-8 encoded strings, 
+                    # not unicode strings anyway.
+                    x.attribute(strvalue, \
+                                type=type(value).__name__.replace("unicode", "str"), \
+                                name=header)
                 x._pop()    
             x._pop()    
         x._output(self.outfile)

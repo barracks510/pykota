@@ -153,7 +153,7 @@ class Storage(BaseStorage, SQLStorage) :
                 for j in range(nbfields) :
                     field = fields[j]
                     if type(field) == StringType :
-                        fields[j] = self.databaseToUserCharset(field) 
+                        fields[j] = self.databaseToUnicode(field) 
                 entries[i] = tuple(fields)    
             return entries
         
