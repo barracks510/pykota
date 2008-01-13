@@ -403,7 +403,7 @@ class SQLStorage :
         
     def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
-        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice FROM jobhistory, users WHERE userid=users.id AND jobhistory.id IN (SELECT max(id) FROM jobhistory WHERE printerid=%s)" % self.doQuote(printer.ident))
         if result :
             return self.storageLastJobFromRecord(printer, result[0])
         else :    
