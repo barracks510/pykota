@@ -43,6 +43,9 @@ except ImportError :
 else :    
     hasPIL = True
     
+import pykota.appinit
+from pykota.utils import *
+
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Tool, crashed, N_
 
@@ -324,10 +327,10 @@ if __name__ == "__main__" :
         else :
             retcode = banner.main(args, options)
     except KeyboardInterrupt :        
-        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+        logerr("\nInterrupted with Ctrl+C !\n")
         retcode = -3
     except PyKotaCommandLineError, msg :    
-        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        logerr("%s : %s\n" % (sys.argv[0], msg))
         retcode = -2
     except SystemExit :        
         pass

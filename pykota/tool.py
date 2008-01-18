@@ -28,7 +28,6 @@ import pwd
 import fnmatch
 import getopt
 import smtplib
-import gettext
 import locale
 import socket
 import time
@@ -108,36 +107,9 @@ class Tool :
         self.debug = True # in case of early failure
         self.logger = logger.openLogger("stderr")
         
-        # locale stuff
-        try :
-            locale.setlocale(locale.LC_ALL, (lang, charset))
-        except (locale.Error, IOError) :
-            locale.setlocale(locale.LC_ALL, None)
+        # Saves a copy of the locale settings
         (self.language, self.charset) = locale.getlocale()
-        self.language = self.language or "C"
-        try :
-            self.charset = self.charset or locale.getpreferredencoding()
-        except locale.Error :    
-            self.charset = sys.stdout.encoding or sys.getfilesystemencoding()
         
-        # Dirty hack : if the charset is ASCII, we can safely use UTF-8 instead
-        # This has the advantage of allowing transparent support for recent
-        # versions of CUPS which (en-)force charset to UTF-8 when printing.
-        # This should be needed only when printing, but is probably (?) safe
-        # to do when using interactive commands.
-        if self.charset.upper() in ('ASCII', 'ANSI_X3.4-1968') :
-            self.charset = "UTF-8"
-        
-        # translation stuff
-        try :
-            try :
-                trans = gettext.translation("pykota", languages=["%s.%s" % (self.language, self.charset)], codeset=self.charset)
-            except TypeError : # Python <2.4
-                trans = gettext.translation("pykota", languages=["%s.%s" % (self.language, self.charset)])
-            trans.install(unicode=True)
-        except :
-            gettext.NullTranslations().install(unicode=True)
-    
         # pykota specific stuff
         self.documentation = doc
         
@@ -361,7 +333,7 @@ class Tool :
                     # arguments are in a file, we ignore all other arguments
                     # and reset the list of arguments to the lines read from
                     # the file.
-                    argsfile = open(parsed["arguments"] or parsed["A"], "r")
+                    argsfile = open(parsed["arguments"] or parsed["A"], "r") # TODO : charset decoding
                     argv = [ l.strip() for l in argsfile.readlines() ]
                     argsfile.close()
                     for i in range(len(argv)) :

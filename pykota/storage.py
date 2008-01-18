@@ -580,6 +580,10 @@ class BaseStorage :
         """Ensures that the database connection is closed."""
         self.close()
         
+    def querydebug(self, qmsg) :    
+        """Logs a database query, where all queries are already UTF-8 encoded."""
+        self.tool.logdebug(qmsg.decode("UTF-8", "replace"))
+        
     def getFromCache(self, cachetype, key) :
         """Tries to extract something from the cache."""
         if self.usecache :
@@ -727,20 +731,6 @@ class BaseStorage :
                 gpquotas.append(gpq)
         return gpquotas        
         
-    def databaseToUnicode(self, text) :
-        """Converts from database format (UTF-8) to unicode."""
-        if text is not None :
-            return text.decode("UTF-8", "replace")
-        else : 
-            return None
-        
-    def unicodeToDatabase(self, text) :
-        """Converts from unicode to database format (UTF-8)."""
-        if text is not None : 
-            return text.encode("UTF-8", "replace")
-        else :    
-            return None
-            
     def cleanDates(self, startdate, enddate) :    
         """Clean the dates to create a correct filter."""
         if startdate :    

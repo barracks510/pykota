@@ -34,7 +34,7 @@ except ImportError :
     import sys
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PySQLite module installed correctly." % sys.version.split()[0]
-
+    
 class Storage(BaseStorage, SQLStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the SQLite database connection."""
@@ -81,7 +81,7 @@ class Storage(BaseStorage, SQLStorage) :
             query += ';'
         try :
             before = time.time()
-            self.tool.logdebug("QUERY : %s" % query)
+            self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             raise PyKotaStorageError, str(msg)
@@ -118,7 +118,7 @@ class Storage(BaseStorage, SQLStorage) :
             query += ';'
         try :
             before = time.time()
-            self.tool.logdebug("QUERY : %s" % query)
+            self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))

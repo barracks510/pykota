@@ -43,6 +43,9 @@ import email.Utils
 
 from mx import DateTime
 
+import pykota.appinit
+from pykota.utils import *
+
 from pykota.errors import PyKotaToolError
 from pykota.tool import PyKotaTool, crashed
 from pykota.accounter import openAccounter
@@ -1312,7 +1315,7 @@ if __name__ == "__main__" :
         print "\n".join(wrapper.discoverOtherBackends())
         sys.exit(0)                
     elif len(sys.argv) not in (6, 7) :    
-        sys.stderr.write("ERROR: %s job-id user title copies options [file]\n"\
+        logerr("ERROR: %s job-id user title copies options [file]\n"\
                               % sys.argv[0])
         sys.exit(1)
     else :    

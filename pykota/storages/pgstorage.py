@@ -29,6 +29,8 @@ from pykota.errors import PyKotaStorageError
 from pykota.storage import BaseStorage
 from pykota.storages.sql import SQLStorage
 
+from pykota.utils import *                           
+
 try :
     import pg
 except ImportError :    
@@ -98,7 +100,7 @@ class Storage(BaseStorage, SQLStorage) :
             query += ';'
         try :
             before = time.time()
-            self.tool.logdebug("QUERY : %s" % query)
+            self.querydebug("QUERY : %s" % query)
             result = self.database.query(query)
         except PGError, msg :    
             raise PyKotaStorageError, str(msg)
@@ -120,7 +122,7 @@ class Storage(BaseStorage, SQLStorage) :
             query += ';'
         try :
             before = time.time()
-            self.tool.logdebug("QUERY : %s" % query)
+            self.querydebug("QUERY : %s" % query)
             result = self.database.query(query)
         except PGError, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))
@@ -153,7 +155,7 @@ class Storage(BaseStorage, SQLStorage) :
                 for j in range(nbfields) :
                     field = fields[j]
                     if type(field) == StringType :
-                        fields[j] = self.databaseToUnicode(field) 
+                        fields[j] = databaseToUnicode(field) 
                 entries[i] = tuple(fields)    
             return entries
         

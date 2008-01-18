@@ -23,6 +23,9 @@
 
 import sys
 
+import pykota.appinit
+from pykota.utils import *
+
 from pykota.errors import PyKotaCommandLineError
 from pykota.tool import Percent, PyKotaTool, crashed, N_
 from pykota.storage import StorageUserPQuota, StorageGroupPQuota
@@ -351,10 +354,10 @@ if __name__ == "__main__" :
         else :
             retcode = manager.main(args, options)
     except KeyboardInterrupt :        
-        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
+        logerr("\nInterrupted with Ctrl+C !\n")
         retcode = -3
     except PyKotaCommandLineError, msg :     
-        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
+        logerr("%s : %s\n" % (sys.argv[0], msg))
         retcode = -2
     except SystemExit :        
         pass
