@@ -49,7 +49,13 @@
 # All directives must be placed below the following line
 [global]
 
-
+# This directive configures the charset to use when reading PyKota's 
+# configuration files. All directives values will be decoded and
+# interpreted using the character set defined here.
+# This value can only be present in the [global] section.
+#
+# When not set, the default value 'UTF-8' is used.
+config_charset : UTF-8
 
 ####################################################################
 # SQLite3 : comment this section out if you use another backend    #
