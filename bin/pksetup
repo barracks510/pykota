@@ -64,6 +64,9 @@ pykotaconf = """#
 #
 [global]
 
+# The charset to use when parsing the configuration files
+config_charset : UTF-8
+
 # Database settings
 storagebackend : pgstorage
 storageserver : %(storageserver)s
