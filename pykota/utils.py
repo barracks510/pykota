@@ -22,6 +22,7 @@
 """This module defines some utility functions which make no sense as methods."""
 
 import sys
+import os
 import locale
 import gettext
 
@@ -62,6 +63,26 @@ def initgettext(lang, cset) :
         trans.install(unicode=True)
     except :
         gettext.NullTranslations().install(unicode=True)
+        
+def getpreferredlanguage() :
+    """Returns the preferred language."""
+    languages = os.environ.get("HTTP_ACCEPT_LANGUAGE", "")
+    langs = [l.strip().split(';')[0] for l in languages.split(",")]
+    return langs[0].replace("-", "_")
+    
+def getpreferredcharset() :
+    """Returns the preferred charset."""
+    charsets = os.environ.get("HTTP_ACCEPT_CHARSET", "UTF-8")
+    charsets = [l.strip().split(';')[0] for l in charsets.split(",")]
+    return charsets[0]
+
+def reinitcgilocale() :        
+    """Reinitializes the locale and gettext translations for CGI scripts, according to browser's preferences."""
+    initgettext(*initlocale(getpreferredlanguage(), getpreferredcharset()))
+    
+def N_(message) :
+    """Fake translation marker for translatable strings extraction."""
+    return message
 
 def databaseToUnicode(text) :
     """Converts from database format (UTF-8) to unicode."""
@@ -79,5 +100,17 @@ def unicodeToDatabase(text) :
             
 def logerr(text) :
     """Logs an unicode text to stderr."""
-    sys.stderr.write(text.encode(sys.stdout.encoding, "replace"))
+    sys.stderr.write(text.encode(sys.stdout.encoding or locale.getlocale()[1], \
+                                 "replace"))
+    sys.stderr.flush()
             
+def crashed(message="Bug in PyKota") :    
+    """Minimal crash method."""
+    import traceback
+    from pykota.version import __version__
+    lines = []
+    for line in traceback.format_exception(*sys.exc_info()) :
+        lines.extend([l for l in line.split("\n") if l])
+    msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % __version__, message] + lines)])
+    logerr(msg)
+    return msg

@@ -38,8 +38,10 @@ except ImportError :
 else :    
     hasJAXML = True
 
+from pykota.utils import *
+
 from pykota import version
-from pykota.tool import PyKotaTool, N_
+from pykota.tool import PyKotaTool
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 
 class DumPyKota(PyKotaTool) :        

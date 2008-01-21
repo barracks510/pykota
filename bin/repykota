@@ -31,7 +31,7 @@ import pykota.appinit
 from pykota.utils import *
 
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
-from pykota.tool import PyKotaTool, crashed, N_
+from pykota.tool import PyKotaTool
 from pykota import reporter
 
 __doc__ = N_("""repykota v%(__version__)s (c) %(__years__)s %(__author__)s

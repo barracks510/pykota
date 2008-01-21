@@ -30,10 +30,12 @@ import urllib
 
 from mx import DateTime
 
-from pykota import version
-from pykota.tool import PyKotaTool, PyKotaToolError
-from pykota.reporter import PyKotaReporterError, openReporter
-from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
+import pykota.appinit
+
+from pykota import version, utils
+from pykota.tool import PyKotaTool
+from pykota.errors import PyKotaToolError, PyKotaReporterError
+from pykota.reporter import openReporter
 
 header = """Content-type: text/html;charset=%s
 
@@ -43,7 +45,6 @@ header = """Content-type: text/html;charset=%s
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
-    <!-- %s %s -->
     <p>
       <form action="printquota.cgi" method="POST">
         <table>
@@ -95,15 +96,17 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (self.charset, _("PyKota Reports"), \
-                        self.language, self.charset, \
-                        self.config.getLogoLink(), \
-                        self.config.getLogoURL(), version.__version__, \
-                        self.config.getLogoLink(), \
-                        version.__version__, _("PyKota Reports"), \
-                        _("Report"))
-        print self.body
-        print footer % (_("Report"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
+        content = [ header % (self.charset, _("PyKota Reports"), \
+                              self.config.getLogoLink(), \
+                              self.config.getLogoURL(), version.__version__, \
+                              self.config.getLogoLink(), \
+                              version.__version__, _("PyKota Reports"), \
+                              _("Report")) ]
+        content.append(self.body)                      
+        content.append(footer % (_("Report"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__))
+        for c in content :
+            sys.stdout.write(c.encode(self.charset, "replace"))
+        sys.stdout.flush()
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""
@@ -286,7 +289,8 @@ class PyKotaReportGUI(PyKotaTool) :
                 self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
-    admin = PyKotaReportGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
+    utils.reinitcgilocale()
+    admin = PyKotaReportGUI()
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.guiAction()

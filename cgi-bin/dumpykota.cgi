@@ -28,10 +28,9 @@ import os
 import cgi
 import urllib
 
-from pykota import version
-from pykota.tool import PyKotaToolError
+import pykota.appinit
+from pykota import version, utils
 from pykota.dumper import DumPyKota
-from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 
 header = """Content-type: text/html;charset=%s
 
@@ -67,7 +66,6 @@ header = """Content-type: text/html;charset=%s
     </script>
   </head>
   <body>
-    <!-- %s %s -->
     <p>
       <form action="dumpykota.cgi" method="GET" name="mainform" onsubmit="return checkvalues()">
         <table>
@@ -122,23 +120,25 @@ class PyKotaDumperGUI(DumPyKota) :
     def guiDisplay(self) :
         """Displays the dumper interface."""
         global header, footer
-        print header % (self.charset, _("PyKota Data Dumper"), \
-                        self.language, self.charset, \
+        content = [ header % (self.charset, _("PyKota Data Dumper"), \
                         self.config.getLogoLink(), \
                         self.config.getLogoURL(), version.__version__, \
                         self.config.getLogoLink(), \
                         version.__version__, _("PyKota Data Dumper"), \
-                        _("Dump"), _("Please click on the above button"))
-        print self.htmlListDataTypes(self.options.get("data", "")) 
-        print "<br />"
-        print self.htmlListFormats(self.options.get("format", ""))
-        print "<br />"
-        print self.htmlFilterInput(" ".join(self.arguments))
-        print "<br />"
-        print self.htmlOrderbyInput(self.options.get("orderby", ""))
-        print "<br />"
-        print self.htmlSumCheckbox(self.options.get("sum", ""))
-        print footer % (_("Dump"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
+                        _("Dump"), _("Please click on the above button")) ]
+        content.append(self.htmlListDataTypes(self.options.get("data", "")))
+        content.append(u"<br />")
+        content.append(self.htmlListFormats(self.options.get("format", "")))
+        content.append(u"<br />")
+        content.append(self.htmlFilterInput(" ".join(self.arguments)))
+        content.append(u"<br />")
+        content.append(self.htmlOrderbyInput(self.options.get("orderby", "")))
+        content.append(u"<br />")
+        content.append(self.htmlSumCheckbox(self.options.get("sum", "")))
+        content.append(footer % (_("Dump"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__))
+        for c in content :
+            sys.stdout.write(c.encode(self.charset, "replace"))
+        sys.stdout.flush()
         
     def htmlListDataTypes(self, selected="") :    
         """Displays the datatype selection list."""
@@ -235,7 +235,8 @@ class PyKotaDumperGUI(DumPyKota) :
                 self.guiDisplay()
             
 if __name__ == "__main__" :
-    admin = PyKotaDumperGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
+    utils.reinitcgilocale()
+    admin = PyKotaDumperGUI()
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.options = { "output" : "-",

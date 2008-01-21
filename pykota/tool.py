@@ -37,24 +37,10 @@ import email.Utils
 
 from mx import DateTime
 
+from pykota import utils
 from pykota.errors import PyKotaCommandLineError
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
-
-def N_(message) :
-    """Fake translation marker for translatable strings extraction."""
-    return message
-
-def crashed(message="Bug in PyKota") :    
-    """Minimal crash method."""
-    import traceback
-    lines = []
-    for line in traceback.format_exception(*sys.exc_info()) :
-        lines.extend([l for l in line.split("\n") if l])
-    msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % __version__, message] + lines)])
-    sys.stderr.write(msg)
-    sys.stderr.flush()
-    return msg
 
 class Percent :
     """A class to display progress."""
@@ -102,13 +88,15 @@ class Percent :
         
 class Tool :
     """Base class for tools with no database access."""
-    def __init__(self, lang="", charset=None, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
+    def __init__(self, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
         """Initializes the command line tool."""
         self.debug = True # in case of early failure
         self.logger = logger.openLogger("stderr")
         
         # Saves a copy of the locale settings
         (self.language, self.charset) = locale.getlocale()
+        if not self.charset :
+            self.charset = "UTF-8"
         
         # pykota specific stuff
         self.documentation = doc
@@ -246,7 +234,7 @@ class Tool :
         
     def crashed(self, message="Bug in PyKota") :    
         """Outputs a crash message, and optionally sends it to software author."""
-        msg = crashed(message)
+        msg = utils.crashed(message)
         fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
                         (msg, \
                          "\n".join(["    %s" % repr(a) for a in sys.argv]), \
@@ -346,10 +334,6 @@ class Tool :
     
 class PyKotaTool(Tool) :    
     """Base class for all PyKota command line tools."""
-    def __init__(self, lang="", charset=None, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
-        """Initializes the command line tool and opens the database."""
-        Tool.__init__(self, lang, charset, doc)
-        
     def deferredInit(self) :    
         """Deferred initialization."""
         Tool.deferredInit(self)

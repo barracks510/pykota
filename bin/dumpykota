@@ -27,7 +27,6 @@ import pykota.appinit
 from pykota.utils import *
 
 from pykota.errors import PyKotaCommandLineError
-from pykota.tool import crashed, N_
 from pykota.dumper import DumPyKota
 
 __doc__ = N_("""dumpykota v%(__version__)s (c) %(__years__)s %(__author__)s

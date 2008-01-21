@@ -29,9 +29,12 @@ import cgi
 import urllib
 import cStringIO
 
-from pykota import version
-from pykota.tool import PyKotaTool, PyKotaToolError
-from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
+import pykota.appinit
+
+from pykota import version, utils
+from pykota.tool import PyKotaTool
+from pykota.errors import PyKotaToolError
+
 from pkpgpdls import analyzer, pdlparser
     
 
@@ -43,7 +46,6 @@ header = """Content-type: text/html;charset=%s
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
-    <!-- %s %s -->
     <p>
       <form action="pykotme.cgi" method="POST" enctype="multipart/form-data">
         <table>
@@ -95,15 +97,17 @@ class PyKotMeGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        print header % (self.charset, _("PyKota Quotes"), \
-                        self.language, self.charset, \
+        content = [ header % (self.charset, _("PyKota Quotes"), \
                         self.config.getLogoLink(), \
                         self.config.getLogoURL(), version.__version__, \
                         self.config.getLogoLink(), \
                         version.__version__, _("PyKota Quotes"), \
-                        _("Quote"))
-        print self.body
-        print footer % (_("Quote"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
+                        _("Quote")) ]
+        content.append(self.body)
+        content.append(footer % (_("Quote"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__))
+        for c in content :
+            sys.stdout.write(c.encode(self.charset, "replace"))
+        sys.stdout.flush()
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""
@@ -186,7 +190,8 @@ class PyKotMeGUI(PyKotaTool) :
                     self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
-    admin = PyKotMeGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
+    utils.reinitcgilocale()
+    admin = PyKotMeGUI()
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.guiAction()
