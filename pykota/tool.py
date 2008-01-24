@@ -95,6 +95,8 @@ class Tool :
         
         # Saves a copy of the locale settings
         (self.language, self.charset) = locale.getlocale()
+        if not self.language :
+            self.language = "C"
         if not self.charset :
             self.charset = "UTF-8"
         
@@ -164,23 +166,21 @@ class Tool :
     def display(self, message) :
         """Display a message but only if stdout is a tty."""
         if sys.stdout.isatty() :
-            sys.stdout.write(message.encode(sys.stdout.encoding or "UTF-8", \
+            sys.stdout.write(message.encode(self.charset, \
                                             "replace"))
             sys.stdout.flush()
             
     def logdebug(self, message) :    
         """Logs something to debug output if debug is enabled."""
         if self.debug :
-            self.logger.log_message(message.encode(sys.stdout.encoding \
-                                                       or "UTF-8", \
+            self.logger.log_message(message.encode(self.charset, \
                                                    "replace"), \
                                     "debug")
             
     def printInfo(self, message, level="info") :        
         """Sends a message to standard error."""
         sys.stderr.write("%s: %s\n" % (level.upper(), \
-                                       message.encode(sys.stdout.encoding \
-                                                          or "UTF-8", \
+                                       message.encode(self.charset, \
                                                       "replace")))
         sys.stderr.flush()
         

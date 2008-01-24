@@ -434,7 +434,7 @@ class CUPSBackend(PyKotaTool) :
             elif action == "CANCEL" :
                 self.Action = action
                 self.Reason = (reason or _("Print job cancelled."))
-                os.environ["PYKOTASTATUS"] = "CANCELLED"
+                setenv("PYKOTASTATUS", "CANCELLED", self.charset)
             else :
                 # don't overwrite anything unless job authorized
                 # to continue to the physical printer.
@@ -529,44 +529,46 @@ class CUPSBackend(PyKotaTool) :
     def exportJobInfo(self) :    
         """Exports the actual job's attributes to the environment."""
         self.logdebug("Exporting job information to the environment...")
-        os.environ["DEVICE_URI"] = self.DeviceURI       # WARNING !
-        os.environ["PYKOTAPRINTERNAME"] = self.PrinterName
-        os.environ["PYKOTADIRECTORY"] = self.Directory
-        os.environ["PYKOTADATAFILE"] = self.DataFile
-        os.environ["PYKOTAJOBSIZEBYTES"] = str(self.JobSizeBytes)
-        os.environ["PYKOTAMD5SUM"] = self.JobMD5Sum
-        os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = self.Ticket.OriginatingHostName or ""
-        os.environ["PYKOTAJOBID"] = self.Ticket.JobId
-        os.environ["PYKOTAUSERNAME"] = self.UserName
-        os.environ["PYKOTAORIGINALUSERNAME"] = self.Ticket.OriginalUserName
-        os.environ["PYKOTATITLE"] = self.Ticket.Title
-        os.environ["PYKOTACOPIES"] = str(self.Ticket.Copies)
-        os.environ["PYKOTAOPTIONS"] = self.Ticket.Options
-        os.environ["PYKOTAFILENAME"] = self.Ticket.FileName or ""
-        os.environ["PYKOTAJOBBILLING"] = self.Ticket.BillingCode or ""
-        os.environ["PYKOTAORIGINALJOBBILLING"] = self.OriginalJobBillingCode or ""
-        os.environ["PYKOTAPRINTERHOSTNAME"] = self.PrinterHostName
-        os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
+        setenv("DEVICE_URI", self.DeviceURI, self.charset) # WARNING !
+        setenv("PYKOTACHARSET", self.charset, self.charset)
+        setenv("PYKOTALANG", self.language, self.charset)
+        setenv("PYKOTAPRINTERNAME", self.PrinterName, self.charset)
+        setenv("PYKOTADIRECTORY", self.Directory, self.charset)
+        setenv("PYKOTADATAFILE", self.DataFile, self.charset)
+        setenv("PYKOTAJOBSIZEBYTES", str(self.JobSizeBytes), self.charset)
+        setenv("PYKOTAMD5SUM", self.JobMD5Sum, self.charset)
+        setenv("PYKOTAJOBORIGINATINGHOSTNAME", self.Ticket.OriginatingHostName or "", self.charset)
+        setenv("PYKOTAJOBID", self.Ticket.JobId, self.charset)
+        setenv("PYKOTAUSERNAME", self.UserName, self.charset)
+        setenv("PYKOTAORIGINALUSERNAME", self.Ticket.OriginalUserName, self.charset)
+        setenv("PYKOTATITLE", self.Ticket.Title, self.charset)
+        setenv("PYKOTACOPIES", str(self.Ticket.Copies), self.charset)
+        setenv("PYKOTAOPTIONS", self.Ticket.Options, self.charset)
+        setenv("PYKOTAFILENAME", self.Ticket.FileName or "", self.charset)
+        setenv("PYKOTAJOBBILLING", self.Ticket.BillingCode or "", self.charset)
+        setenv("PYKOTAORIGINALJOBBILLING", self.OriginalJobBillingCode or "", self.charset)
+        setenv("PYKOTAPRINTERHOSTNAME", self.PrinterHostName, self.charset)
+        setenv("PYKOTAPRECOMPUTEDJOBSIZE", str(self.softwareJobSize), self.charset)
         self.logdebug("Environment updated.")
         
     def exportUserInfo(self) :
         """Exports user information to the environment."""
         self.logdebug("Exporting user information to the environment...")
-        os.environ["PYKOTAOVERCHARGE"] = str(self.User.OverCharge)
-        os.environ["PYKOTALIMITBY"] = str(self.User.LimitBy)
-        os.environ["PYKOTABALANCE"] = str(self.User.AccountBalance or 0.0)
-        os.environ["PYKOTALIFETIMEPAID"] = str(self.User.LifeTimePaid or 0.0)
-        os.environ["PYKOTAUSERDESCRIPTION"] = str(self.User.Description or "")
+        setenv("PYKOTAOVERCHARGE", str(self.User.OverCharge), self.charset)
+        setenv("PYKOTALIMITBY", str(self.User.LimitBy), self.charset)
+        setenv("PYKOTABALANCE", str(self.User.AccountBalance or 0.0), self.charset)
+        setenv("PYKOTALIFETIMEPAID", str(self.User.LifeTimePaid or 0.0), self.charset)
+        setenv("PYKOTAUSERDESCRIPTION", str(self.User.Description or ""), self.charset)
         
-        os.environ["PYKOTAPAGECOUNTER"] = str(self.UserPQuota.PageCounter or 0)
-        os.environ["PYKOTALIFEPAGECOUNTER"] = str(self.UserPQuota.LifePageCounter or 0)
-        os.environ["PYKOTASOFTLIMIT"] = str(self.UserPQuota.SoftLimit)
-        os.environ["PYKOTAHARDLIMIT"] = str(self.UserPQuota.HardLimit)
-        os.environ["PYKOTADATELIMIT"] = str(self.UserPQuota.DateLimit)
-        os.environ["PYKOTAWARNCOUNT"] = str(self.UserPQuota.WarnCount)
+        setenv("PYKOTAPAGECOUNTER", str(self.UserPQuota.PageCounter or 0), self.charset)
+        setenv("PYKOTALIFEPAGECOUNTER", str(self.UserPQuota.LifePageCounter or 0), self.charset)
+        setenv("PYKOTASOFTLIMIT", str(self.UserPQuota.SoftLimit), self.charset)
+        setenv("PYKOTAHARDLIMIT", str(self.UserPQuota.HardLimit), self.charset)
+        setenv("PYKOTADATELIMIT", str(self.UserPQuota.DateLimit), self.charset)
+        setenv("PYKOTAWARNCOUNT", str(self.UserPQuota.WarnCount), self.charset)
         
         # TODO : move this elsewhere once software accounting is done only once.
-        os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
+        setenv("PYKOTAPRECOMPUTEDJOBPRICE", str(self.softwareJobPrice), self.charset)
         
         self.logdebug("Environment updated.")
         
@@ -575,33 +577,33 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Exporting printer information to the environment...")
         # exports the list of printers groups the current
         # printer is a member of
-        os.environ["PYKOTAPGROUPS"] = ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)])
-        os.environ["PYKOTAPRINTERDESCRIPTION"] = str(self.Printer.Description or "")
-        os.environ["PYKOTAPRINTERMAXJOBSIZE"] = str(self.Printer.MaxJobSize or _("Unlimited"))
-        os.environ["PYKOTAPRINTERPASSTHROUGHMODE"] = (self.Printer.PassThrough and _("ON")) or _("OFF")
-        os.environ["PYKOTAPRICEPERPAGE"] = str(self.Printer.PricePerPage or 0)
-        os.environ["PYKOTAPRICEPERJOB"] = str(self.Printer.PricePerJob or 0)
+        setenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)]), self.charset)
+        setenv("PYKOTAPRINTERDESCRIPTION", str(self.Printer.Description or ""), self.charset)
+        setenv("PYKOTAPRINTERMAXJOBSIZE", str(self.Printer.MaxJobSize or _("Unlimited")), self.charset)
+        setenv("PYKOTAPRINTERPASSTHROUGHMODE", (self.Printer.PassThrough and _("ON")) or _("OFF"), self.charset)
+        setenv("PYKOTAPRICEPERPAGE", str(self.Printer.PricePerPage or 0), self.charset)
+        setenv("PYKOTAPRICEPERJOB", str(self.Printer.PricePerJob or 0), self.charset)
         self.logdebug("Environment updated.")
         
     def exportPhaseInfo(self, phase) :
         """Exports phase information to the environment."""
         self.logdebug("Exporting phase information [%s] to the environment..." % phase)
-        os.environ["PYKOTAPHASE"] = phase
+        setenv("PYKOTAPHASE", phase, self.charset)
         self.logdebug("Environment updated.")
         
     def exportJobSizeAndPrice(self) :
         """Exports job's size and price information to the environment."""
         self.logdebug("Exporting job's size and price information to the environment...")
-        os.environ["PYKOTAJOBSIZE"] = str(self.JobSize)
-        os.environ["PYKOTAJOBPRICE"] = str(self.JobPrice)
+        setenv("PYKOTAJOBSIZE", str(self.JobSize), self.charset)
+        setenv("PYKOTAJOBPRICE", str(self.JobPrice), self.charset)
         self.logdebug("Environment updated.")
         
     def exportReason(self) :
         """Exports the job's action status and optional reason."""
         self.logdebug("Exporting job's action status...")
-        os.environ["PYKOTAACTION"] = str(self.Action)
+        setenv("PYKOTAACTION", str(self.Action), self.charset)
         if self.Reason :
-            os.environ["PYKOTAREASON"] = str(self.Reason)
+            setenv("PYKOTAREASON", str(self.Reason), self.charset)
         self.logdebug("Environment updated.")
         
     def acceptJob(self) :        
@@ -1077,7 +1079,7 @@ class CUPSBackend(PyKotaTool) :
             if not self.didUserConfirm() :
                 self.Action = "CANCEL"
                 self.Reason = _("Print job cancelled.")
-                os.environ["PYKOTASTATUS"] = "CANCELLED"
+                setenv("PYKOTASTATUS", "CANCELLED", self.charset)
                 
         # exports some new environment variables
         self.exportReason()
@@ -1252,18 +1254,18 @@ class CUPSBackend(PyKotaTool) :
         """Launches the original backend."""
         originalbackend = os.path.join(os.path.split(sys.argv[0])[0], self.RealBackend)
         if not isBanner :
-            arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:]
+            arguments = [os.environ["DEVICE_URI"]] + [a.encode("UTF-8") for a in sys.argv[1:]]
         else :    
             # For banners, we absolutely WANT
             # to remove any filename from the command line !
             self.logdebug("It looks like we try to print a banner.")
-            arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:6]
+            arguments = [os.environ["DEVICE_URI"]] + [a.encode("UTF-8") for a in sys.argv[1:6]]
         arguments[2] = self.UserName # in case it was overwritten by external script
         # TODO : do something about job-billing option, in case it was overwritten as well...
         # TODO : do something about the job title : if we are printing a banner and the backend
         # TODO : uses the job's title to name an output file (cups-pdf:// for example), we're stuck !
         
-        self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a for a in arguments])))
+        self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a.decode("UTF-8") for a in arguments])))
         pid = os.fork()
         self.logdebug("Forked !")
         if pid == 0 :

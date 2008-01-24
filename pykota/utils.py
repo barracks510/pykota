@@ -39,15 +39,17 @@ def initlocale(lang="", cset=None) :
     except locale.Error :    
         charset = sys.stdout.encoding or sys.getfilesystemencoding()
 
-    # Dirty hack : if the charset is ASCII, we can safely use UTF-8 instead
-    # This has the advantage of allowing transparent support for recent
-    # versions of CUPS which (en-)force charset to UTF-8 when printing.
-    # This should be needed only when printing, but is probably (?) safe
-    # to do when using interactive commands.
-    if charset.upper() in ('ASCII', 'ANSI_X3.4-1968') :
+    if (not charset) or charset in ("ASCII", "ANSI_X3.4-1968") :
         charset = "UTF-8"
+        
     return (language, charset)
 
+def setenv(varname, value, charset) :
+    """Sets an environment variable."""
+    if value is None :
+        value = "None"
+    os.environ[varname] = value.encode(charset, "replace")    
+    
 def initgettext(lang, cset) :
     """Initializes gettext translations for PyKota."""
     try :
@@ -85,7 +87,11 @@ def N_(message) :
     return message
 
 def databaseToUnicode(text) :
-    """Converts from database format (UTF-8) to unicode."""
+    """Converts from database format (UTF-8) to unicode.
+    
+       We use "replace" to accomodate legacy datas which may not
+       have been recorded correctly.
+    """
     if text is not None :
         return text.decode("UTF-8", "replace")
     else : 
@@ -94,13 +100,15 @@ def databaseToUnicode(text) :
 def unicodeToDatabase(text) :
     """Converts from unicode to database format (UTF-8)."""
     if text is not None : 
-        return text.encode("UTF-8", "replace")
+        return text.encode("UTF-8")
     else :    
         return None
             
 def logerr(text) :
     """Logs an unicode text to stderr."""
-    sys.stderr.write(text.encode(sys.stdout.encoding or locale.getlocale()[1], \
+    sys.stderr.write(text.encode(sys.stdout.encoding \
+                                     or locale.getlocale()[1] \
+                                     or "ANSI_X3.4-1968", \
                                  "replace"))
     sys.stderr.flush()
             

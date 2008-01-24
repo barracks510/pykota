@@ -22,12 +22,14 @@
 """This module exectures some application intialization code."""
 
 import sys
+import os
 import locale
 import gettext
 
 from pykota.utils import *
 
-(lang, charset) = initlocale()
+(lang, charset) = initlocale(os.environ.get("PYKOTALANG", ""),
+                             os.environ.get("PYKOTACHARSET"))
 initgettext(lang, charset)
 
 sys.argv = [a.decode(charset, "replace") for a in sys.argv]
