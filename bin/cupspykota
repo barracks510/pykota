@@ -300,7 +300,7 @@ class CUPSBackend(PyKotaTool) :
         if self.Ticket.BillingCode is None :
             self.OriginalJobBillingCode = None
         else :    
-            self.Ticket.BillingCode = self.UTF8ToUserCharset(self.Ticket.BillingCode)
+            self.Ticket.BillingCode = self.UTF8ToUserCharset(self.Ticket.BillingCode).decode("UTF-8")
             self.OriginalJobBillingCode = self.Ticket.BillingCode[:]
             
         baselockfilename = self.DeviceURI.replace("/", ".")
@@ -415,13 +415,13 @@ class CUPSBackend(PyKotaTool) :
                         self.logdebug("Seen CANCEL command.")
                         action = "CANCEL"
                     elif line.startswith("USERNAME=") :    
-                        username = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
+                        username = self.userCharsetToUTF8(line.split("=", 1)[1].strip()).decode("UTF-8")
                         self.logdebug("Seen new username [%s]" % username)
                     elif line.startswith("BILLINGCODE=") :    
-                        billingcode = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
+                        billingcode = self.userCharsetToUTF8(line.split("=", 1)[1].strip()).decode("UTF-8")
                         self.logdebug("Seen new billing code [%s]" % billingcode)
                     elif line.startswith("REASON=") :
-                        reason = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
+                        reason = self.userCharsetToUTF8(line.split("=", 1)[1].strip()).decode("UTF-8")
                         self.logdebug("Seen new reason [%s]" % reason)
             except IOError, msg :            
                 self.logdebug("IOError while reading subprocess' output : %s" % msg)
@@ -558,7 +558,7 @@ class CUPSBackend(PyKotaTool) :
         setenv("PYKOTALIMITBY", str(self.User.LimitBy), self.charset)
         setenv("PYKOTABALANCE", str(self.User.AccountBalance or 0.0), self.charset)
         setenv("PYKOTALIFETIMEPAID", str(self.User.LifeTimePaid or 0.0), self.charset)
-        setenv("PYKOTAUSERDESCRIPTION", str(self.User.Description or ""), self.charset)
+        setenv("PYKOTAUSERDESCRIPTION", self.User.Description or "", self.charset)
         
         setenv("PYKOTAPAGECOUNTER", str(self.UserPQuota.PageCounter or 0), self.charset)
         setenv("PYKOTALIFEPAGECOUNTER", str(self.UserPQuota.LifePageCounter or 0), self.charset)
@@ -578,7 +578,7 @@ class CUPSBackend(PyKotaTool) :
         # exports the list of printers groups the current
         # printer is a member of
         setenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)]), self.charset)
-        setenv("PYKOTAPRINTERDESCRIPTION", str(self.Printer.Description or ""), self.charset)
+        setenv("PYKOTAPRINTERDESCRIPTION", self.Printer.Description or "", self.charset)
         setenv("PYKOTAPRINTERMAXJOBSIZE", str(self.Printer.MaxJobSize or _("Unlimited")), self.charset)
         setenv("PYKOTAPRINTERPASSTHROUGHMODE", (self.Printer.PassThrough and _("ON")) or _("OFF"), self.charset)
         setenv("PYKOTAPRICEPERPAGE", str(self.Printer.PricePerPage or 0), self.charset)
@@ -601,9 +601,9 @@ class CUPSBackend(PyKotaTool) :
     def exportReason(self) :
         """Exports the job's action status and optional reason."""
         self.logdebug("Exporting job's action status...")
-        setenv("PYKOTAACTION", str(self.Action), self.charset)
+        setenv("PYKOTAACTION", self.Action or "", self.charset)
         if self.Reason :
-            setenv("PYKOTAREASON", str(self.Reason), self.charset)
+            setenv("PYKOTAREASON", self.Reason or "", self.charset)
         self.logdebug("Environment updated.")
         
     def acceptJob(self) :        
