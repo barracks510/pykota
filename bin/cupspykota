@@ -945,7 +945,7 @@ class CUPSBackend(PyKotaTool) :
                 else :
                     try :
                         msg = MIMEText(fullmessage, _charset=self.charset)
-                        msg["Subject"] = Header(_("Print Quota"), charset=self.charset)
+                        msg["Subject"] = Header(_("Print Quota"), charset=self.charset, errors="replace")
                         msg["From"] = adminmail
                         if mailto in ("BOTH", "USER") :
                             msg["To"] = usermail

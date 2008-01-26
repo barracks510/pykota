@@ -246,7 +246,7 @@ class Tool :
                 server = smtplib.SMTP(self.smtpserver)
                 msg = MIMEText(fullmessage, _charset=self.charset)
                 msg["Subject"] = Header("PyKota v%s crash traceback !" \
-                                        % __version__, charset=self.charset)
+                                        % __version__, charset=self.charset, errors="replace")
                 msg["From"] = admin
                 msg["To"] = crashrecipient
                 msg["Cc"] = admin
