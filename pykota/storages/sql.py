@@ -827,7 +827,7 @@ class SQLStorage :
         query += " ORDER BY jobhistory.id DESC"
         if limit :
             # TODO : LIMIT is not supported under DB2.
-            # TODO : so we must use something like " FETCH FIRST %i ROWS ONLY" % self.doQuote(int(limit))
+            # TODO : so we must use something like " FETCH FIRST %s ROWS ONLY" % self.doQuote(int(limit))
             query += " LIMIT %s" % self.doQuote(int(limit)) 
         jobs = []    
         result = self.doSearch(query)    
