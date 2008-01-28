@@ -178,10 +178,10 @@ class PkRefund(PyKotaTool) :
         self.canvas.saveState()
         self.canvas.setFont("Helvetica-Bold", size)
         self.canvas.setFillColorRGB(0, 0, 0)
-        self.canvas.drawRightString(xcenter, self.ypos, "%s :" % self.userCharsetToUTF8(label))
+        self.canvas.drawRightString(xcenter, self.ypos, "%s :" % label)
         self.canvas.setFont("Courier-Bold", size)
         self.canvas.setFillColorRGB(0, 0, 1)
-        self.canvas.drawString(xcenter + 0.5*cm, self.ypos, self.userCharsetToUTF8(value))
+        self.canvas.drawString(xcenter + 0.5*cm, self.ypos, value)
         self.canvas.restoreState()
         self.ypos -= (size + 4)
         
@@ -213,8 +213,8 @@ class PkRefund(PyKotaTool) :
                                         pageCompression=1)
         
         c.setAuthor(self.effectiveUserName)
-        c.setTitle("PyKota print job refunding receipts")
-        c.setSubject("Print job refunding receipts generated with PyKota")
+        c.setTitle(_("PyKota print job refunding receipts"))
+        c.setSubject(_("Print job refunding receipts generated with PyKota"))
         
         self.canvas.beginForm("background")
         self.canvas.saveState()
@@ -241,7 +241,7 @@ class PkRefund(PyKotaTool) :
         self.canvas.setFont("Helvetica-Bold", 14)
         self.canvas.setFillColorRGB(0, 0, 0)
         msg = _("Here's the receipt for the refunding of your print jobs")
-        self.canvas.drawCentredString(xcenter, self.ypos, "%s :" % self.userCharsetToUTF8(msg))
+        self.canvas.drawCentredString(xcenter, self.ypos, "%s :" % msg)
         
         self.yorigine = self.ypos
         self.canvas.restoreState()

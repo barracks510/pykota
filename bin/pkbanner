@@ -48,6 +48,7 @@ from pykota.utils import *
 
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Tool
+from pykota import version
 
 __doc__ = N_("""pkbanner v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -121,11 +122,11 @@ class PyKotaBanner(Tool) :
         (r, g, b) =  [ color + (savetoner * (1.0 - color)) for color in (0, 0, 0) ] # Black * savetoner
         canvas.setFillColorRGB(r, g, b)
         message = "%s :" % _(label)
-        canvas.drawRightString(x, y, self.userCharsetToUTF8(message))
+        canvas.drawRightString(x, y, message)
         canvas.setFont("Courier-Bold", size)
         (r, g, b) =  [ color + (savetoner * (1.0 - color)) for color in (1, 0, 0) ] # Red * savetoner
         canvas.setFillColorRGB(r, g, b)
-        canvas.drawString(x + 0.5*cm, y, self.userCharsetToUTF8(value))
+        canvas.drawString(x + 0.5*cm, y, value)
         canvas.restoreState()
         return (size + 4)
     
@@ -134,9 +135,9 @@ class PyKotaBanner(Tool) :
         document = cStringIO.StringIO()
         c = canvas.Canvas(document, pagesize=pagesize, pageCompression=1)
         
-        c.setAuthor("Jerome Alet")
-        c.setTitle("PyKota generated Banner")
-        c.setSubject("This is a print banner generated with PyKota")
+        c.setAuthor(self.effectiveUserName)
+        c.setTitle(_("PyKota generated Banner"))
+        c.setSubject(_("This is a print banner generated with PyKota"))
         
         xcenter = pagesize[0] / 2.0
         ycenter = pagesize[1] / 2.0
