@@ -38,10 +38,10 @@ class PyKotaOptionParser(optparse.OptionParser) :
         self.examples = []
         optparse.OptionParser.__init__(self, *args, **kwargs)
         self.disable_interspersed_args()
-        self.add_option("-", "--version",
-                             action="store_true",
-                             dest="version",
-                             help=_("show %prog's version number and exit."))
+        self.add_option("-v", "--version",
+                              action="store_true",
+                              dest="version",
+                              help=_("show %prog's version number and exit."))
         
     def format_help(self, formatter=None) :
         """

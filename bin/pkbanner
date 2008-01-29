@@ -21,6 +21,8 @@
 #
 #
 
+"""A banner generator for PyKota"""        
+
 import sys
 import os
 import time
@@ -45,57 +47,12 @@ else :
     
 import pykota.appinit
 from pykota.utils import *
+from pykota.commandline import parser
 
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Tool
 from pykota import version
 
-__doc__ = N_("""pkbanner v%(__version__)s (c) %(__years__)s %(__author__)s
-
-Generates banners.
-
-command line usage :
-
-  pkbanner  [options]  [more info]
-
-options :
-
-  -v | --version       Prints pkbanner's version number then exits.
-  -h | --help          Prints this message then exits.
-  
-  -l | --logo img      Use the image as the banner's logo. The logo will
-                       be drawn at the center top of the page. The default
-                       logo is /usr/share/pykota/logos/pykota.jpeg
-                       
-  -p | --pagesize sz   Sets sz as the page size. Most well known
-                       page sizes are recognized, like 'A4' or 'Letter'
-                       to name a few. The default size is A4.
-  
-  -s | --savetoner s   Sets the text luminosity factor to s%%. This can be 
-                       used to save toner. The default value is 0, which
-                       means that no toner saving will be done.
-  
-  -u | --url u         Uses u as an url to be written at the bottom of 
-                       the banner page. The default url is :
-                       http://www.pykota.com/
-  
-examples :                              
-
-  Using pkbanner directly from the command line is not recommended,
-  excepted for testing purposes. You should use pkbanner in the
-  'startingbanner' or 'endingbanner' directives in pykota.conf
-  
-    startingbanner: /usr/bin/pkbanner --logo="" --savetoner=75
-  
-      With such a setting in pykota.conf, all print jobs will be 
-      prefixed with an A4 banner with no logo, and text luminosity will
-      be increased by 75%%. The PostScript output will be directly sent
-      to your printer.
-      
-  You'll find more examples in the sample configuration file included    
-  in PyKota.
-""")
-        
 class PyKotaBanner(Tool) :        
     """A class for pkbanner."""
     def getPageSize(self, pgsize) :
@@ -252,23 +209,23 @@ class PyKotaBanner(Tool) :
             raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
             
         try :
-            savetoner = int(options["savetoner"])
-            if (savetoner < 0) or (savetoner > 99) :
+            if (options.savetoner < 0) or (options.savetoner > 99) :
                 raise ValueError, _("Allowed range is (0..99)")
-            savetoner /= 100.0    
-        except (TypeError, ValueError), msg :
-            self.printInfo(_("Invalid 'savetoner' option %s : %s") % (options["savetoner"], msg), "warn")
+        except ValueError, msg :
+            self.printInfo(_("Invalid 'savetoner' option %s : %s") % (options.savetoner, msg), "warn")
             savetoner = 0.0
+        else :    
+            savetoner = options.savetoner / 100.0    
             
-        pagesize = self.getPageSize(options["pagesize"])
+        pagesize = self.getPageSize(options.pagesize)
         if pagesize is None :
             pagesize = self.getPageSize("a4")
-            self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options["pagesize"], "warn")
+            self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options.pagesize, "warn")
             
         self.logdebug("Generating the banner in PDF format...")    
         doc = self.genPDF(pagesize, 
-                          options["logo"].strip(), 
-                          options["url"].strip(), 
+                          options.logo.strip().encode(sys.getfilesystemencoding(), "replace"), 
+                          options.url.strip(), 
                           " ".join(arguments).strip(), 
                           savetoner)
         
@@ -292,41 +249,38 @@ class PyKotaBanner(Tool) :
 
 if __name__ == "__main__" :
     # TODO : --papertray : to print banners on a different paper (colored for example)
+    parser = parser.PyKotaOptionParser(description=_("Banner generator for PyKota"))
+    parser.add_option("-l", "--logo",
+                            dest="logo",
+                            default=u"/usr/share/pykota/logos/pykota.jpeg",
+                            help=_("The image to use as the banner's logo. The logo will be drawn at the center top of the page. The default logo is %default"))
+    parser.add_option("-p", "--pagesize",
+                            dest="pagesize",
+                            default=u"A4",
+                            help=_("Sets the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default"))
+    parser.add_option("-s", "--savetoner",
+                            dest="savetoner",
+                            type="int",
+                            default=0,
+                            help=_("Sets the text luminosity to this percent. This can be used to save toner. The default value is %default, which means that no toner saving will be done."))
+    parser.add_option("-u", "--url",
+                            dest="url",
+                            default=u"http://www.pykota.com",
+                            help=_("Sets the url to write at the bottom of the banner page. The default url is %default"))
+    parser.add_example('--logo="" --savetoner=75',
+                       _("This would generate an A4 banner with no logo, and text luminosity would be increased by 75%%."))
+    (options, arguments) = parser.parse_args()                   
+    if options.version :
+        from pykota import version
+        sys.stdout.write("%s\n" % version.__version__)
+        sys.exit(0)
+    
     retcode = 0
     try :
-        defaults = { \
-                     "savetoner" : "0", \
-                     "pagesize" : "a4", \
-                     "logo" : "/usr/share/pykota/logos/pykota.jpeg",
-                     "url" : "http://www.pykota.com/",
-                   }
-        short_options = "vhs:l:p:u:"
-        long_options = ["help", "version", "savetoner=", "pagesize=", "logo=", "url="]
-        
         # Initializes the command line tool
-        banner = PyKotaBanner(doc=__doc__)
+        banner = PyKotaBanner()
         banner.deferredInit()
-        
-        # parse and checks the command line
-        (options, args) = banner.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
-        
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["savetoner"] = options["s"] or options["savetoner"] or defaults["savetoner"]
-        options["pagesize"] = options["p"] or options["pagesize"] or defaults["pagesize"]
-        options["url"] = options["u"] or options["url"] or defaults["url"]
-        
-        options["logo"] = options["l"] or options["logo"]
-        if options["logo"] is None : # Allows --logo="" to disable the logo entirely
-            options["logo"] = defaults["logo"]  
-        
-        if options["help"] :
-            banner.display_usage_and_quit()
-        elif options["version"] :
-            banner.display_version_and_quit()
-        else :
-            retcode = banner.main(args, options)
+        retcode = banner.main(arguments, options)
     except KeyboardInterrupt :        
         logerr("\nInterrupted with Ctrl+C !\n")
         retcode = -3
