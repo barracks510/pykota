@@ -57,15 +57,28 @@ class Storage(BaseStorage, SQLStorage) :
         self.cursor = self.database.cursor()
         self.cursor.execute("SET NAMES 'utf8';")
         self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED;") # Same as PostgreSQL and Oracle's default
-        self.closed = 0
+        self.closed = False
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
+        try :
+            # Here we try to select a string (an &eacute;) which is
+            # already encoded in UTF-8. If python-mysqldb suffers from 
+            # the double encoding problem, we will catch the exception
+            # and activate a workaround.
+            self.cursor.execute("SELECT '%s';" % (chr(0xc3) + chr(0xa9))) # &eacute; in UTF-8
+            self.cursor.fetchall()
+        except UnicodeDecodeError :    
+            self.needsworkaround = True
+            self.tool.logdebug("Database needs encoding workaround.")
+        else :
+            self.needsworkaround = False
+            self.tool.logdebug("Database doesn't need encoding workaround.")
             
     def close(self) :    
         """Closes the database connection."""
         if not self.closed :
             self.cursor.close()
             self.database.close()
-            self.closed = 1
+            self.closed = True
             self.tool.logdebug("Database closed.")
         
     def beginTransaction(self) :    
@@ -88,15 +101,16 @@ class Storage(BaseStorage, SQLStorage) :
         query = query.strip()    
         if not query.endswith(';') :    
             query += ';'
+        self.querydebug("QUERY : %s" % query)
+        if self.needsworkaround :    
+            query = query.decode("UTF-8")
         try :
-            self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             raise PyKotaStorageError, repr(msg)
         else :    
             # This returns a list of lists. Integers are returned as longs.
-            result = self.cursor.fetchall()
-            return result
+            return self.cursor.fetchall()
             
     def doSearch(self, query) :        
         """Does a search query."""
@@ -109,12 +123,7 @@ class Storage(BaseStorage, SQLStorage) :
             for row in result :
                 rowdict = {}
                 for field in fields.keys() :
-                    value = row[field]
-                    try :
-                        value = value.encode("UTF-8")
-                    except:
-                        pass
-                    rowdict[fields[field]] = value
+                    rowdict[fields[field]] = row[field]
                 rows.append(rowdict)
             # returns a list of dicts
             return rows
@@ -124,8 +133,10 @@ class Storage(BaseStorage, SQLStorage) :
         query = query.strip()    
         if not query.endswith(';') :    
             query += ';'
+        self.querydebug("QUERY : %s" % query)
+        if self.needsworkaround :    
+            query = query.decode("UTF-8")
         try :
-            self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))
@@ -140,26 +151,12 @@ class Storage(BaseStorage, SQLStorage) :
         elif type(field) == type(0L) :
             return field
         elif field is not None :
-            newfield = self.database.string_literal(field)
-            try :
-                return newfield.encode("UTF-8")
-            except :    
-                return newfield
+            return self.database.string_literal(field)
         else :
-            self.tool.logdebug("WARNING: field has no type, returning NULL")
             return "NULL"
 
     def prepareRawResult(self, result) :
         """Prepares a raw result by including the headers."""
         if result :
-            entries = [tuple([f[0] for f in self.cursor.description])]
-            for entry in result :
-                row = []
-                for value in entry :
-                    try :
-                        value = value.encode("UTF-8")
-                    except :
-                        pass
-                    row.append(value)
-                entries.append(tuple(row))
-            return entries
+            return [tuple([f[0] for f in self.cursor.description])] \
+                 + list(result)

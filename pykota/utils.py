@@ -25,6 +25,7 @@ import sys
 import os
 import locale
 import gettext
+from types import UnicodeType
 
 def initlocale(lang="", cset=None) :
     """Initializes the locale stuff."""
@@ -93,7 +94,11 @@ def databaseToUnicode(text) :
        have been recorded correctly.
     """
     if text is not None :
-        return text.decode("UTF-8", "replace")
+        if not isinstance(text, UnicodeType) :
+            return text.decode("UTF-8", "replace")
+        else :    
+            # MySQL already returns unicode objects
+            return text
     else : 
         return None
     
