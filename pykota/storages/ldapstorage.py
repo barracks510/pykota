@@ -166,7 +166,7 @@ class Storage(BaseStorage) :
             except ldap.NO_SUCH_OBJECT, msg :        
                 raise PyKotaStorageError, (_("Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s") % (base, msg))
             except ldap.LDAPError, msg :    
-                message = (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
+                message = (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % msg
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
@@ -192,9 +192,9 @@ class Storage(BaseStorage) :
                 self.querydebug("%s" % entry)
                 self.database.add_s(dn, entry)
             except ldap.ALREADY_EXISTS, msg :        
-                raise PyKotaStorageError, "Entry %s already exists : %s" % (dn, str(msg))
+                raise PyKotaStorageError, "Entry %s already exists : %s" % (dn, msg)
             except ldap.LDAPError, msg :
-                message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
+                message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % msg
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
@@ -216,7 +216,7 @@ class Storage(BaseStorage) :
             except ldap.NO_SUCH_OBJECT :    
                 self.tool.printInfo("Entry %s was already missing before we deleted it. This **MAY** be normal." % dn, "info")
             except ldap.LDAPError, msg :
-                message = (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % str(msg)
+                message = (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % msg
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
@@ -273,7 +273,7 @@ class Storage(BaseStorage) :
                 if modentry :
                     self.database.modify_s(dn, modentry)
             except ldap.LDAPError, msg :
-                message = (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % str(msg)
+                message = (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % msg
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
