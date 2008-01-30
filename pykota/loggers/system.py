@@ -46,5 +46,9 @@ class Logger :
                            "LOG_%s" % self.levels.get(level.lower(), \
                                                       "DEBUG").upper(), \
                            syslog.LOG_DEBUG)
-        syslog.syslog(priority, "(PID %s) : %s" \
-                                      % (os.getpid(), message.strip().encode(sys.stdout.encoding or "UTF-8", "replace")))
+        try :                   
+            message = message.strip().encode(sys.stdout.encoding or "UTF-8", \
+                                             "replace")
+        except UnicodeDecodeError :    
+            pass
+        syslog.syslog(priority, "(PID %s) : %s" % (os.getpid(), message))
