@@ -579,7 +579,7 @@ class CUPSBackend(PyKotaTool) :
         # printer is a member of
         setenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)]), self.charset)
         setenv("PYKOTAPRINTERDESCRIPTION", self.Printer.Description or "", self.charset)
-        setenv("PYKOTAPRINTERMAXJOBSIZE", str(self.Printer.MaxJobSize or _("Unlimited")), self.charset)
+        setenv("PYKOTAPRINTERMAXJOBSIZE", ((self.Printer.MaxJobSize is None) and _("Unlimited")) or str(self.Printer.MaxJobSize), self.charset)
         setenv("PYKOTAPRINTERPASSTHROUGHMODE", (self.Printer.PassThrough and _("ON")) or _("OFF"), self.charset)
         setenv("PYKOTAPRICEPERPAGE", str(self.Printer.PricePerPage or 0), self.charset)
         setenv("PYKOTAPRICEPERJOB", str(self.Printer.PricePerJob or 0), self.charset)

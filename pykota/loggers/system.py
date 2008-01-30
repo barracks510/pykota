@@ -22,6 +22,7 @@
 
 """This module defines a class for PyKota logging through syslog."""
 
+import sys
 import os
 import syslog
 
@@ -46,4 +47,4 @@ class Logger :
                                                       "DEBUG").upper(), \
                            syslog.LOG_DEBUG)
         syslog.syslog(priority, "(PID %s) : %s" \
-                                      % (os.getpid(), message.strip()))
+                                      % (os.getpid(), message.strip().encode(sys.stdout.encoding or "UTF-8", "replace")))
