@@ -22,8 +22,6 @@
 
 """This module defines a class to access to a SQLite database backend."""
 
-import time
-
 from pykota.errors import PyKotaStorageError
 from pykota.storage import BaseStorage
 from pykota.storages.sql import SQLStorage
@@ -56,23 +54,18 @@ class Storage(BaseStorage, SQLStorage) :
         
     def beginTransaction(self) :    
         """Starts a transaction."""
-        self.before = time.time()
         self.cursor.execute("BEGIN;")
         self.tool.logdebug("Transaction begins...")
         
     def commitTransaction(self) :    
         """Commits a transaction."""
         self.cursor.execute("COMMIT;")
-        after = time.time()
         self.tool.logdebug("Transaction committed.")
-        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.cursor.execute("ROLLBACK;")
-        after = time.time()
         self.tool.logdebug("Transaction aborted.")
-        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def doRawSearch(self, query) :
         """Does a raw search query."""
@@ -80,15 +73,12 @@ class Storage(BaseStorage, SQLStorage) :
         if not query.endswith(';') :    
             query += ';'
         try :
-            before = time.time()
             self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
-            raise PyKotaStorageError, str(msg)
+            raise PyKotaStorageError, repr(msg)
         else :    
             result = self.cursor.fetchall()
-            after = time.time()
-            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
             
     def doSearch(self, query) :        
@@ -117,15 +107,11 @@ class Storage(BaseStorage, SQLStorage) :
         if not query.endswith(';') :    
             query += ';'
         try :
-            before = time.time()
             self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))
-            raise PyKotaStorageError, str(msg)
-        else :    
-            after = time.time()
-            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            raise PyKotaStorageError, repr(msg)
             
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
