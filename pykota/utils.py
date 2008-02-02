@@ -27,6 +27,8 @@ import locale
 import gettext
 from types import UnicodeType
 
+from pykota.errors import PyKotaCommandLineError
+
 def initlocale(lang="", cset=None) :
     """Initializes the locale stuff."""
     try :
@@ -116,14 +118,58 @@ def logerr(text) :
                                      or "ANSI_X3.4-1968", \
                                  "replace"))
     sys.stderr.flush()
+    
+def loginvalidparam(opt, value, defaultvalue, additionalinfo=None) :
+    """Logs an error when an invalid parameter to a command line option
+       is encountered.
+    """   
+    message = _("Invalid value '%(value)s' for the %(opt)s command line option, using default '%(defaultvalue)s' instead") \
+                                % locals()
+    if additionalinfo :
+        logerr("%s (%s)\n" % (message, additionalinfo))
+    else :    
+        logerr("%s\n" % message)
             
 def crashed(message="Bug in PyKota") :    
     """Minimal crash method."""
     import traceback
     from pykota.version import __version__
+    charset = sys.stdout.encoding or locale.getlocale()[1] or "ANSI_X3.4-1968"
     lines = []
     for line in traceback.format_exception(*sys.exc_info()) :
+        line = line.decode(charset, "replace")
         lines.extend([l for l in line.split("\n") if l])
     msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % __version__, message] + lines)])
     logerr(msg)
     return msg
+    
+def run(optparser, workclass, requireargs=False) :
+    """Runs a PyKota command line tool."""
+    appname = os.path.basename(sys.argv[0])
+    retcode = 0
+    (options, arguments) = optparser.parse_args()                   
+    if requireargs and not arguments :
+        logerr("%s\n" % (_("%(appname)s requires arguments, please use --help") \
+                            % locals()))
+        retcode = -1
+    try :
+        application = workclass()
+        application.deferredInit()
+        retcode = application.main(arguments, options)
+    except KeyboardInterrupt :        
+        logerr("\nInterrupted with Ctrl+C !\n")
+        retcode = -3
+    except PyKotaCommandLineError, msg :    
+        logerr("%s : %s\n" % (sys.argv[0], msg))
+        retcode = -2
+    except SystemExit :        
+        pass
+    except :
+        title = _("%(appname)s failed") % locals()
+        try :
+            application.crashed(title)
+        except :    
+            crashed(title)
+        retcode = -1
+        
+    sys.exit(retcode)    
