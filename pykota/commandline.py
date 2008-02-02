@@ -54,10 +54,19 @@ class PyKotaOptionParser(optparse.OptionParser) :
             formatter = self.formatter
         result = []
         result.append(optparse.OptionParser.format_help(self, formatter) + "\n")
-        result.append(self.format_examples() + "\n")
-        result.append(self.format_copyright() + "\n")
+        result.append(self.format_examples())
+        result.append(self.format_copyright())
         return "".join(result)
+            
+    def parse_args(self, args=None, values=None) :
+        """Parses command line arguments, and handles -v|--version as well."""
+        (options, arguments) = optparse.OptionParser.parse_args(self, args, values)
+        self.handle_generic_options(options)
+        return (options, arguments)    
         
+    #    
+    # Below are PyKota specific additions    
+    #
     def format_examples(self, formatter=None) :
         """Formats examples our way."""
         if formatter is None :
@@ -91,11 +100,9 @@ class PyKotaOptionParser(optparse.OptionParser) :
         """Adds an usage example."""
         self.examples.append(("%prog " + command, doc))
         
-    def parse_args(self, args=None, values=None) :
-        """Parses command line arguments, and handles -v|--version as well."""
-        (options, arguments) = optparse.OptionParser.parse_args(self, args, values)
+    def handle_generic_options(self, options) :    
+        """Handles options which are common to all PyKota command line tools."""
         if options.version :
             sys.stdout.write("%s (PyKota) %s\n" % (os.path.basename(sys.argv[0]),
                                                    version.__version__))
             sys.exit(0)
-        return (options, arguments)    
