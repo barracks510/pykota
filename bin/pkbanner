@@ -27,11 +27,11 @@ import sys
 import os
 import time
 import cStringIO
-import popen2
+import subprocess
 
 try :
     from reportlab.pdfgen import canvas
-    from reportlab.lib import pagesizes
+    import reportlab.lib
     from reportlab.lib.units import cm
 except ImportError :    
     hasRL = False
@@ -47,24 +47,28 @@ else :
     
 import pykota.appinit
 from pykota.utils import *
-from pykota.commandline import parser
+from pykota import commandline
 
-from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.errors import PyKotaToolError
 from pykota.tool import Tool
 from pykota import version
 
-class PyKotaBanner(Tool) :        
-    """A class for pkbanner."""
-    def getPageSize(self, pgsize) :
-        """Returns the correct page size or None if not found."""
+def getPageSize(pgsize) :
+    """Returns the correct page size or None if not found."""
+    try :
         try :
-            return getattr(pagesizes, pgsize.upper())
+            return getattr(reportlab.lib.pagesizes, pgsize.upper())
         except AttributeError :    
             try :
-                return getattr(pagesizes, pgsize.lower())
+                return getattr(reportlab.lib.pagesizes, pgsize.lower())
             except AttributeError :
                 pass
-                
+    except UnicodeError :            
+        pass
+    return None        
+    
+class PyKotaBanner(Tool) :        
+    """A class for pkbanner."""
     def getVar(self, varname) :            
         """Extracts a variable from the environment and returns its value or 'Unknown' in the current locale."""
         return os.environ.get(varname) or _("Unknown")
@@ -135,7 +139,7 @@ class PyKotaBanner(Tool) :
         ypos -= self.printVar(c, xcenter, ypos, _("Job"), job, 14, savetoner) 
         
         # Current date (TODO : at the time the banner was printed ! Change this to job's submission date)
-        datetime = time.strftime("%c", time.localtime())
+        datetime = time.strftime("%c", time.localtime()).decode(self.charset, "replace")
         ypos -= self.printVar(c, xcenter, ypos, _("Date"), datetime, 14, savetoner) 
         
         # Result of the print job
@@ -208,92 +212,76 @@ class PyKotaBanner(Tool) :
         if not hasPIL :
             raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
             
-        try :
-            if (options.savetoner < 0) or (options.savetoner > 99) :
-                raise ValueError, _("Allowed range is (0..99)")
-        except ValueError, msg :
-            self.printInfo(_("Invalid 'savetoner' option %s : %s") % (options.savetoner, msg), "warn")
-            savetoner = 0.0
-        else :    
-            savetoner = options.savetoner / 100.0    
-            
-        pagesize = self.getPageSize(options.pagesize)
-        if pagesize is None :
-            pagesize = self.getPageSize("a4")
-            self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options.pagesize, "warn")
-            
         self.logdebug("Generating the banner in PDF format...")    
-        doc = self.genPDF(pagesize, 
+        doc = self.genPDF(getPageSize(options.pagesize),
                           options.logo.strip().encode(sys.getfilesystemencoding(), "replace"), 
                           options.url.strip(), 
                           " ".join(arguments).strip(), 
-                          savetoner)
+                          options.savetoner)
         
         self.logdebug("Converting the banner to PostScript...")    
-        os.environ["PATH"] = "%s:/bin:/usr/bin:/usr/local/bin:/opt/bin:/sbin:/usr/sbin" % os.environ.get("PATH", "")
-        child = popen2.Popen3("gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sDEVICE=pswrite -sOutputFile=- -")
-        try :
-            child.tochild.write(doc)
-            child.tochild.close()
-            sys.stdout.write(child.fromchild.read())
-            sys.stdout.flush()
-            child.fromchild.close()
-        except IOError, msg :    
-            self.printInfo("I/O Error %s" % msg, "error")
-        status = child.wait()
+        command = "gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sDEVICE=pswrite -sOutputFile=- -"
+        subpr = subprocess.Popen(command,
+                                 shell=True,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+        try :                         
+            (out, err) = subpr.communicate(doc)
+        except OSError, msg :    
+            raise PyKotaToolError, _("Impossible to execute '%(command)s'") % locals()
+        status = subpr.wait()
         if os.WIFEXITED(status) :
             status = os.WEXITSTATUS(status)
         self.logdebug("PDF to PostScript converter exit code is %s" % str(status))
+        sys.stdout.write(out)
+        sys.stdout.flush()
         self.logdebug("Banner completed.")
         return status
 
 if __name__ == "__main__" :
+    def checkandset_pagesize(option, opt, value, parser) :
+        """Checks and sets the page size."""
+        if getPageSize(value) is None :
+            loginvalidparam(opt, value, option.default)
+            setattr(parser.values, option.dest, option.default)
+        else :    
+            setattr(parser.values, option.dest, value)
+        
+    def checkandset_savetoner(option, opt, value, parser) :    
+        """Checks and sets the save toner value."""
+        if (value < 0.0) or (value > 99.0) :
+            loginvalidparam(opt, value, option.default, \
+                            _("Allowed range is (0..99)"))
+            setattr(parser.values, option.dest, option.default)
+        else :    
+            setattr(parser.values, option.dest, value / 100.0)
+        
     # TODO : --papertray : to print banners on a different paper (colored for example)
-    parser = parser.PyKotaOptionParser(description=_("Banner generator for PyKota"))
+    parser = commandline.PyKotaOptionParser(description=_("Banner generator for PyKota"))
     parser.add_option("-l", "--logo",
                             dest="logo",
                             default=u"/usr/share/pykota/logos/pykota.jpeg",
                             help=_("The image to use as the banner's logo. The logo will be drawn at the center top of the page. The default logo is %default"))
     parser.add_option("-p", "--pagesize",
+                            type="string",
+                            action="callback",
+                            callback=checkandset_pagesize,
                             dest="pagesize",
                             default=u"A4",
                             help=_("Sets the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default"))
     parser.add_option("-s", "--savetoner",
+                            type="float",
+                            action="callback",
+                            callback=checkandset_savetoner,
                             dest="savetoner",
-                            type="int",
-                            default=0,
+                            default=0.0,
                             help=_("Sets the text luminosity to this percent. This can be used to save toner. The default value is %default, which means that no toner saving will be done."))
     parser.add_option("-u", "--url",
                             dest="url",
                             default=u"http://www.pykota.com",
                             help=_("Sets the url to write at the bottom of the banner page. The default url is %default"))
     parser.add_example('--logo="" --savetoner=75',
-                       _("This would generate an A4 banner with no logo, and text luminosity would be increased by 75%%."))
-    (options, arguments) = parser.parse_args()                   
-    if options.version :
-        from pykota import version
-        sys.stdout.write("%s\n" % version.__version__)
-        sys.exit(0)
-    
-    retcode = 0
-    try :
-        # Initializes the command line tool
-        banner = PyKotaBanner()
-        banner.deferredInit()
-        retcode = banner.main(arguments, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        try :
-            banner.crashed("pkbanner failed")
-        except :    
-            crashed("pkbanner failed")
-        retcode = -1
-        
-    sys.exit(retcode)    
+                       _("This would generate a banner in the default page size, with no logo, and text luminosity would be increased by 75%."))
+                       
+    run(parser, PyKotaBanner)
