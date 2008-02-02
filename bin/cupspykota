@@ -226,7 +226,7 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Initializing backend...")
         
         if not self.checkCUPSVersion() :
-            self.printInfo("BEWARE : CUPS is too old. You must use CUPS v1.3.4 or higher.", "error")
+            self.printInfo("BEWARE : CUPS is too old. You should use CUPS v1.3.4 or higher.", "error")
         
         self.PrinterName = os.environ.get("PRINTER", "")
         directories = [ self.config.getPrinterDirectory(self.PrinterName),
@@ -258,8 +258,8 @@ class CUPSBackend(PyKotaTool) :
                                      copies, fname, sys.argv[5].strip())
         self.UserName = self.Ticket.OriginatingUserName                             
                                      
-        self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
-                   (self.myname, self.PrinterName, self.UserName, self.Ticket.JobId))
+        self.DataFile = (os.path.join(self.Directory, "%s-%s-%s-%s" % \
+                   (self.myname, self.PrinterName, self.UserName, self.Ticket.JobId)).encode(sys.getfilesystemencoding(), "replace")
         
         muststartwith = "%s:" % self.myname
         device_uri = os.environ.get("DEVICE_URI", "")
@@ -300,7 +300,6 @@ class CUPSBackend(PyKotaTool) :
         if self.Ticket.BillingCode is None :
             self.OriginalJobBillingCode = None
         else :    
-            self.Ticket.BillingCode = self.UTF8ToUserCharset(self.Ticket.BillingCode).decode("UTF-8")
             self.OriginalJobBillingCode = self.Ticket.BillingCode[:]
             
         baselockfilename = self.DeviceURI.replace("/", ".")
@@ -415,13 +414,13 @@ class CUPSBackend(PyKotaTool) :
                         self.logdebug("Seen CANCEL command.")
                         action = "CANCEL"
                     elif line.startswith("USERNAME=") :    
-                        username = self.userCharsetToUTF8(line.split("=", 1)[1].strip()).decode("UTF-8")
+                        username = line.split("=", 1)[1].strip().decode(self.charset, "replace")
                         self.logdebug("Seen new username [%s]" % username)
                     elif line.startswith("BILLINGCODE=") :    
-                        billingcode = self.userCharsetToUTF8(line.split("=", 1)[1].strip()).decode("UTF-8")
+                        billingcode = line.split("=", 1)[1].strip().decode(self.charset, "replace")
                         self.logdebug("Seen new billing code [%s]" % billingcode)
                     elif line.startswith("REASON=") :
-                        reason = self.userCharsetToUTF8(line.split("=", 1)[1].strip()).decode("UTF-8")
+                        reason = line.split("=", 1)[1].strip().decode(self.charset, "replace")
                         self.logdebug("Seen new reason [%s]" % reason)
             except IOError, msg :            
                 self.logdebug("IOError while reading subprocess' output : %s" % msg)

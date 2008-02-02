@@ -149,20 +149,6 @@ class Tool :
         arguments = " ".join(['"%s"' % arg for arg in sys.argv])
         self.logdebug("Command line arguments : %s" % arguments)
         
-    def UTF8ToUserCharset(self, text) :
-        """Converts from UTF-8 to user's charset."""
-        if text is None :
-            return None
-        else :    
-            return text.decode("UTF-8", "replace").encode(self.charset, "replace") 
-        
-    def userCharsetToUTF8(self, text) :
-        """Converts from user's charset to UTF-8."""
-        if text is None :
-            return None
-        else :    
-            return text.decode(self.charset, "replace").encode("UTF-8", "replace")    
-        
     def display(self, message) :
         """Display a message but only if stdout is a tty."""
         if sys.stdout.isatty() :

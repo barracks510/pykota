@@ -159,6 +159,20 @@ class TimeoutError(Exception) :
     
 class PyKotaNotify(Tool) :        
     """A class for pknotify."""
+    def UTF8ToUserCharset(self, text) :
+        """Converts from UTF-8 to user's charset."""
+        if text is None :
+            return None
+        else :    
+            return text.decode("UTF-8", "replace").encode(self.charset, "replace") 
+        
+    def userCharsetToUTF8(self, text) :
+        """Converts from user's charset to UTF-8."""
+        if text is None :
+            return None
+        else :    
+            return text.decode(self.charset, "replace").encode("UTF-8", "replace")    
+        
     def sanitizeMessage(self, msg) :
         """Replaces \\n and returns a messagee in xmlrpclib Binary format."""
         return xmlrpclib.Binary(self.userCharsetToUTF8(msg.replace("\\n", "\n")))
