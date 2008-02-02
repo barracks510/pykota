@@ -258,7 +258,7 @@ if __name__ == "__main__" :
             setattr(parser.values, option.dest, value / 100.0)
         
     # TODO : --papertray : to print banners on a different paper (colored for example)
-    parser = PyKotaOptionParser(description=_("Banner generator for PyKota"))
+    parser = PyKotaOptionParser(description=_("Banner generator for PyKota."))
     parser.add_option("-l", "--logo",
                             dest="logo",
                             default=u"/usr/share/pykota/logos/pykota.jpeg",
