@@ -38,8 +38,11 @@ class PyKotaOptionParser(optparse.OptionParser) :
         Initializes our option parser with additional attributes.
         """
         self.examples = []
+        kwargs["version"] = "%s (PyKota) %s" % (os.path.basename(sys.argv[0]),
+                                                version.__version__)
         optparse.OptionParser.__init__(self, *args, **kwargs)
         self.disable_interspersed_args()
+        self.remove_version_and_help()
         self.add_generic_options()
         
     def format_help(self, formatter=None) :
@@ -55,12 +58,6 @@ class PyKotaOptionParser(optparse.OptionParser) :
         result.append(self.format_copyright())
         return "".join(result)
             
-    def parse_args(self, args=None, values=None) :
-        """Parses command line arguments, and handles -v|--version as well."""
-        (options, arguments) = optparse.OptionParser.parse_args(self, args, values)
-        self.handle_generic_options(options)
-        return (options, arguments)    
-        
     #    
     # Below are PyKota specific additions    
     #
@@ -97,16 +94,19 @@ class PyKotaOptionParser(optparse.OptionParser) :
         """Adds an usage example."""
         self.examples.append(("%prog " + command, doc))
         
+    def remove_version_and_help(self) :   
+        """Removes the default definitions for options version and help."""
+        for o in ("-h", "-help", "--help", "-v", "-version", "--version") :
+            try :
+                self.remove_option(o)
+            except ValueError :     
+                pass
+                
     def add_generic_options(self) :    
         """Adds options which are common to all PyKota command line tools."""
+        self.add_option("-h", "--help",
+                              action="help",
+                              help=_("show this help message and exit"))
         self.add_option("-v", "--version",
-                              action="store_true",
-                              dest="version",
+                              action="version",
                               help=_("show the version number and exit"))
-        
-    def handle_generic_options(self, options) :    
-        """Handles options which are common to all PyKota command line tools."""
-        if options.version :
-            sys.stdout.write("%s (PyKota) %s\n" % (os.path.basename(sys.argv[0]),
-                                                   version.__version__))
-            sys.exit(0)
