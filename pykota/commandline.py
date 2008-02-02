@@ -40,10 +40,7 @@ class PyKotaOptionParser(optparse.OptionParser) :
         self.examples = []
         optparse.OptionParser.__init__(self, *args, **kwargs)
         self.disable_interspersed_args()
-        self.add_option("-v", "--version",
-                              action="store_true",
-                              dest="version",
-                              help=_("show %prog's version number and exit."))
+        self.add_generic_options()
         
     def format_help(self, formatter=None) :
         """
@@ -99,6 +96,13 @@ class PyKotaOptionParser(optparse.OptionParser) :
     def add_example(self, command, doc) :    
         """Adds an usage example."""
         self.examples.append(("%prog " + command, doc))
+        
+    def add_generic_options(self) :    
+        """Adds options which are common to all PyKota command line tools."""
+        self.add_option("-v", "--version",
+                              action="store_true",
+                              dest="version",
+                              help=_("show the version number and exit"))
         
     def handle_generic_options(self, options) :    
         """Handles options which are common to all PyKota command line tools."""
