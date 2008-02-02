@@ -119,7 +119,7 @@ if __name__ == "__main__" :
                             type="float",
                             dest="initbalance",
                             default=0.0,
-                            help=_("Sets the user's initial account balance value. If the user already exists, actual balance is left unmodified. If unset, the default value is %default"))
+                            help=_("Sets the user's initial account balance value. If the user already exists, actual balance is left unchanged. If unset, the default value is %default"))
     parser.add_option("-e", "--email",
                             dest="email",
                             help=_("Sets the user's email address"))
