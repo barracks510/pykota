@@ -165,7 +165,7 @@ if __name__ == "__main__" :
     parser.add_option("-f", "--font",
                             dest="font",
                             default=pyosd.default_font,
-                            help=_("Set the font to use. Defaults to %default."))
+                            help=_("Set the font to use. Defaults to %default"))
     parser.add_option("-l", "--loop",
                             type="int",
                             action="callback",
