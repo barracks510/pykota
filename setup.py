@@ -131,7 +131,6 @@ setup(name = "pykota", version = __version__,
                    "pykota.loggers", 
                    "pykota.accounters", 
                    "pykota.reporters",
-                   "pykota.commandline",
                  ],
       scripts = [ "bin/pknotify", "bin/pkusers", "bin/pkinvoice", "bin/pksetup", \
                   "bin/pkrefund", "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", \
