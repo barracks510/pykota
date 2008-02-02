@@ -133,7 +133,7 @@ class Tool :
         self.maildomain = self.config.getMailDomain()
         self.logger = logger.openLogger(self.config.getLoggingBackend())
             
-        # We NEED this here, even when not in an accounting filter/backend    
+        # TODO : We NEED this here, even when not in an accounting filter/backend    
         self.softwareJobSize = 0
         self.softwareJobPrice = 0.0
         
