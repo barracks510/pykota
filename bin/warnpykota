@@ -24,63 +24,166 @@
 import sys
 import os
 import pwd
+import socket
+import smtplib
+from email.MIMEText import MIMEText
+from email.Header import Header
+import email.Utils
 
 import pykota.appinit
 from pykota.utils import *
-
+from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
 from pykota.tool import PyKotaTool
 
-__doc__ = N_("""warnpykota v%(__version__)s (c) %(__years__)s %(__author__)s
-
-Sends mail to users over print quota.
-
-command line usage :
-
-  warnpykota  [options]  [names]
-
-options :
-
-  -v | --version       Prints warnpykota's version number then exits.
-  -h | --help          Prints this message then exits.
-  
-  -u | --users         Warns users over their print quota, this is the 
-                       default.
-  
-  -g | --groups        Warns users whose groups quota are over limit.
-  
-  -P | --printer p     Verify quotas on this printer only. Actually p can
-                       use wildcards characters to select only
-                       some printers. The default value is *, meaning
-                       all printers.
-                       You can specify several names or wildcards, 
-                       by separating them with commas.
-  
-examples :                              
-
-  $ warnpykota --printer lp
-  
-  This will warn all users of the lp printer who have exceeded their
-  print quota.
-
-  $ warnpykota 
-  
-  This will warn all users  who have exceeded their print quota on
-  any printer.
-
-  $ warnpykota --groups --printer "laserjet*" "dev*"
-  
-  This will warn all users of groups which names begins with "dev" and
-  who have exceeded their print quota on any printer which name begins 
-  with "laserjet"
-  
-  If launched by an user who is not a PyKota administrator, additionnal
-  arguments representing users or groups names are ignored, and only the
-  current user/group is reported.
-""")
+"""This command line tool can automatically send periodic email
+notifications to users or groups who have reached the limit of their
+printing quota."""
         
 class WarnPyKota(PyKotaTool) :        
     """A class for warnpykota."""
+    def sendMessage(self, adminmail, touser, fullmessage) :
+        """Sends an email message containing headers to some user."""
+        smtpserver = self.smtpserver
+        try :    
+            server = smtplib.SMTP(smtpserver)
+        except socket.error, msg :    
+            self.printInfo(_("Impossible to connect to SMTP server : %(smtpserver)s") \
+                                                % locals(), \
+                           "error")
+        else :
+            try :
+                server.sendmail(adminmail, [touser], fullmessage)
+            except smtplib.SMTPException, answer :    
+                for (k, v) in answer.recipients.items() :
+                    errormsg = v[0]
+                    errorvalue = v[1]
+                    self.printInfo(_("Impossible to send mail to %(touser)s, error %(errormsg)s : %(errorvalue)s") \
+                                        % locals(), \
+                                   "error")
+            server.quit()
+            
+    def sendMessageToUser(self, admin, adminmail, user, subject, message) :
+        """Sends an email message to a user."""
+        message += _("\n\nPlease contact your system administrator :\n\n\t%s - <%s>\n") % (admin, adminmail)
+        usermail = user.Email or user.Name
+        if "@" not in usermail :
+            usermail = "%s@%s" % (usermail, self.maildomain or self.smtpserver or "localhost")
+        msg = MIMEText(message.encode(self.charset, "replace"), _charset=self.charset)
+        msg["Subject"] = Header(subject, charset=self.charset)
+        msg["From"] = adminmail
+        msg["To"] = usermail
+        msg["Date"] = email.Utils.formatdate(localtime=True)
+        self.sendMessage(adminmail, usermail, msg.as_string())
+        
+    def sendMessageToAdmin(self, adminmail, subject, message) :
+        """Sends an email message to the Print Quota administrator."""
+        if "@" not in adminmail :
+            adminmail = "%s@%s" % (adminmail, self.maildomain or self.smtpserver or "localhost")
+        msg = MIMEText(message.encode(self.charset, "replace"), _charset=self.charset)
+        msg["Subject"] = Header(subject, charset=self.charset)
+        msg["From"] = adminmail
+        msg["To"] = adminmail
+        self.sendMessage(adminmail, adminmail, msg.as_string())
+        
+    def warnGroupPQuota(self, grouppquota) :
+        """Checks a group quota and send messages if quota is exceeded on current printer."""
+        group = grouppquota.Group
+        groupname = group.Name
+        printer = grouppquota.Printer
+        printername = printer.Name
+        admin = self.config.getAdmin(printername)
+        adminmail = self.config.getAdminMail(printername)
+        (mailto, arguments) = self.config.getMailTo(printername)
+        if group.LimitBy in ("noquota", "nochange") :
+            action = "ALLOW"
+        else :    
+            action = self.checkGroupPQuota(grouppquota)
+            if action.startswith("POLICY_") :
+                action = action[7:]
+            if action == "DENY" :
+                adminmessage = _("Print Quota exceeded for group %(groupname)s on printer %(printername)s") % locals()
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    for user in self.storage.getGroupMembers(group) :
+                        if mailto != "EXTERNAL" :
+                            self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), self.config.getHardWarn(printername))
+                        else :    
+                            self.externalMailTo(arguments, action, user, printer, self.config.getHardWarn(printername))
+            elif action == "WARN" :    
+                adminmessage = _("Print Quota low for group %(groupname)s on printer %(printername)s") % locals()
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+                if group.LimitBy and (group.LimitBy.lower() == "balance") : 
+                    message = self.config.getPoorWarn()
+                else :     
+                    message = self.config.getSoftWarn(printername)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    for user in self.storage.getGroupMembers(group) :
+                        if mailto != "EXTERNAL" :
+                            self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
+                        else :    
+                            self.externalMailTo(arguments, action, user, printer, message)
+        return action        
+        
+    def warnUserPQuota(self, userpquota) :
+        """Checks a user quota and send him a message if quota is exceeded on current printer."""
+        user = userpquota.User
+        username = user.Name
+        printer = userpquota.Printer
+        printername = printer.Name
+        admin = self.config.getAdmin(printername)
+        adminmail = self.config.getAdminMail(printername)
+        (mailto, arguments) = self.config.getMailTo(printername)
+        
+        if user.LimitBy in ("noquota", "nochange") :
+            action = "ALLOW"
+        elif user.LimitBy == "noprint" :
+            action = "DENY"
+            message = _("User %(username)s is not allowed to print at this time.") % locals()
+            self.printInfo(message)
+            if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                if mailto != "EXTERNAL" :
+                    self.sendMessageToUser(admin, adminmail, user, _("Printing denied."), message)
+                else :    
+                    self.externalMailTo(arguments, action, user, printer, message)
+            if mailto in [ "BOTH", "ADMIN" ] :
+                self.sendMessageToAdmin(adminmail, _("Print Quota"), message)
+        else :
+            action = self.checkUserPQuota(userpquota)
+            if action.startswith("POLICY_") :
+                action = action[7:]
+                
+            if action == "DENY" :
+                adminmessage = _("Print Quota exceeded for user %(username)s on printer %(printername)s") % locals()
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    message = self.config.getHardWarn(printername)
+                    if mailto != "EXTERNAL" :
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Exceeded"), message)
+                    else :    
+                        self.externalMailTo(arguments, action, user, printer, message)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+            elif action == "WARN" :    
+                adminmessage = _("Print Quota low for user %(username)s on printer %(printername)s") % locals()
+                self.printInfo(adminmessage)
+                if mailto in [ "BOTH", "USER", "EXTERNAL" ] :
+                    if user.LimitBy and (user.LimitBy.lower() == "balance") : 
+                        message = self.config.getPoorWarn()
+                    else :     
+                        message = self.config.getSoftWarn(printername)
+                    if mailto != "EXTERNAL" :    
+                        self.sendMessageToUser(admin, adminmail, user, _("Print Quota Low"), message)
+                    else :    
+                        self.externalMailTo(arguments, action, user, printer, message)
+                if mailto in [ "BOTH", "ADMIN" ] :
+                    self.sendMessageToAdmin(adminmail, _("Print Quota"), adminmessage)
+        return action        
+        
     def main(self, ugnames, options) :
         """Warn users or groups over print quota."""
         if self.config.isAdmin :
@@ -94,8 +197,8 @@ class WarnPyKota(PyKotaTool) :
             # the utility of this is discutable, but at least it
             # protects other users from mail bombing if they are
             # over quota.
-            username = pwd.getpwuid(os.geteuid())[0]
-            if options["groups"] :
+            username = pwd.getpwuid(os.geteuid())[0].decode("ANSI_X3.4-1968", "replace")
+            if options.groups :
                 user = self.storage.getUser(username)
                 if user.Exists :
                     ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
@@ -103,13 +206,15 @@ class WarnPyKota(PyKotaTool) :
                     ugnames = [ ]
             else :
                 ugnames = [ username ]
-        
-        printers = self.storage.getMatchingPrinters(options["printer"])
+                
+        printername = options.printer
+        printers = self.storage.getMatchingPrinters(printername)
         if not printers :
-            raise PyKotaCommandLineError, _("There's no printer matching %s") % options["printer"]
+            raise PyKotaCommandLineError, _("There's no printer matching %(printername)s") \
+                                                        % locals()
         alreadydone = {}
         for printer in printers :
-            if options["groups"] :
+            if options.groups :
                 for (group, grouppquota) in self.storage.getPrinterGroupsAndQuotas(printer, ugnames) :
                     self.warnGroupPQuota(grouppquota)
             else :
@@ -127,54 +232,22 @@ class WarnPyKota(PyKotaTool) :
                                 alreadydone[user.Name] = (action in ('WARN', 'DENY'))
                      
 if __name__ == "__main__" : 
-    retcode = 0
-    try :
-        defaults = { \
-                     "printer" : "*", \
-                   }
-        short_options = "vhugP:"
-        long_options = ["help", "version", "users", "groups", "printer="]
-        
-        # Initializes the command line tool
-        sender = WarnPyKota(doc=__doc__)
-        sender.deferredInit()
-        
-        # parse and checks the command line
-        (options, args) = sender.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
-        
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["users"] = options["u"] or options["users"]
-        options["groups"] = options["g"] or options["groups"]
-        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
-        
-        if options["help"] :
-            sender.display_usage_and_quit()
-        elif options["version"] :
-            sender.display_version_and_quit()
-        elif options["users"] and options["groups"] :    
-            raise PyKotaCommandLineError, _("incompatible options, see help.")
-        else :
-            retcode = sender.main(args, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        try :
-            sender.crashed("warnpykota failed")
-        except :    
-            crashed("warnpykota failed")
-        retcode = -1
-        
-    try :
-        sender.storage.close()
-    except (TypeError, NameError, AttributeError) :    
-        pass
-        
-    sys.exit(retcode)    
+    parser = PyKotaOptionParser(description=_("A tool to warn users and groups who have reached the limit of their printing quota."),
+                                usage="warnpykota [options] [usernames|groupnames]")
+    parser.add_option("-g", "--groups",
+                            action="store_true",
+                            dest="groups",
+                            help=_("Notify all members for all the named groups which have reached the limit of their printing quota. Without this option, individual users are notified instead of users groups."))
+    parser.add_option("-P", "--printer",
+                            dest="printer",
+                            default="*",
+                            help=_("Check if quota is over on this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
+                            
+    parser.add_example('',
+                       _("This would notify all users who have reached the limit of their printing quota on any printer."))
+    parser.add_example('--printer HP2100',
+                       _("This would notify all users who have reached the limit of their printing quota on printer 'HP2100'."))
+    parser.add_example('--groups --printer "HP*,XER*" "dev*"',
+                       _("This would notify all users of the groups whose name begins with 'dev' and for which the printing quota limit is reached on any printer whose name begins with 'HP' or 'XER'."))
+                       
+    run(parser, WarnPyKota)
