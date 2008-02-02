@@ -238,13 +238,13 @@ class Tool :
         fullmessage = "========== Traceback :\n\n%s\n\n========== sys.argv :\n\n%s\n\n========== Environment :\n\n%s\n" % \
                         (msg, \
                          "\n".join(["    %s" % repr(a) for a in sys.argv]), \
-                         "\n".join(["    %s=%s" % (k, v) for (k, v) in os.environ.items()]))
+                         "\n".join(["    %s=%s" % (k, repr(v)) for (k, v) in os.environ.items()]))
         try :
             crashrecipient = self.config.getCrashRecipient()
             if crashrecipient :
                 admin = self.config.getAdminMail("global") # Nice trick, isn't it ?
                 server = smtplib.SMTP(self.smtpserver)
-                msg = MIMEText(fullmessage, _charset=self.charset)
+                msg = MIMEText(fullmessage.encode(self.charset, "replace"), _charset=self.charset)
                 msg["Subject"] = Header("PyKota v%s crash traceback !" \
                                         % __version__, charset=self.charset, errors="replace")
                 msg["From"] = admin
@@ -254,7 +254,8 @@ class Tool :
                 server.sendmail(admin, [admin, crashrecipient], msg.as_string())
                 server.quit()
         except :
-            pass
+            self.printInfo("PyKota double crash !", "error")
+            raise
         return fullmessage    
         
     def parseCommandline(self, argv, short, long, allownothing=0) :
