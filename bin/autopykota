@@ -119,10 +119,10 @@ if __name__ == "__main__" :
                             type="float",
                             dest="initbalance",
                             default=0.0,
-                            help=_("Sets the user's initial account balance value. If the user already exists, actual balance is left unchanged. If unset, the default value is %default"))
+                            help=_("Set the user's initial account balance value. If the user already exists, actual balance is left unchanged. If unset, the default value is %default"))
     parser.add_option("-e", "--email",
                             dest="email",
-                            help=_("Sets the user's email address"))
+                            help=_("Set the user's email address"))
                             
     parser.add_example('--email="@example.com" --initbalance=10.0',
                        _("This would set the current user's email address to $PYKOTAUSERNAME@example.com, and would set the initial value of his account balance to 10.0 credits."))
