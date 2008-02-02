@@ -21,6 +21,8 @@
 
 """This modules defines a command line options parser for PyKota's command line tools."""
 
+import sys
+import os
 import optparse
 from gettext import gettext as _
 
@@ -88,3 +90,12 @@ class PyKotaOptionParser(optparse.OptionParser) :
     def add_example(self, command, doc) :    
         """Adds an usage example."""
         self.examples.append(("%prog " + command, doc))
+        
+    def parse_args(self, args=None, values=None) :
+        """Parses command line arguments, and handles -v|--version as well."""
+        (options, arguments) = optparse.OptionParser.parse_args(self, args, values)
+        if options.version :
+            sys.stdout.write("%s (PyKota) %s\n" % (os.path.basename(sys.argv[0]),
+                                                   version.__version__))
+            sys.exit(0)
+        return (options, arguments)    
