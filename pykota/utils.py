@@ -152,24 +152,31 @@ def run(optparser, workclass, requireargs=False) :
         logerr("%s\n" % (_("%(appname)s requires arguments, please use --help") \
                             % locals()))
         retcode = -1
+    application = None    
     try :
-        application = workclass()
-        application.deferredInit()
-        retcode = application.main(arguments, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        title = _("%(appname)s failed") % locals()
         try :
-            application.crashed(title)
+            application = workclass()
+            application.deferredInit()
+            retcode = application.main(arguments, options)
+        except KeyboardInterrupt :        
+            logerr("\nInterrupted with Ctrl+C !\n")
+            retcode = -3
+        except PyKotaCommandLineError, msg :    
+            logerr("%s : %s\n" % (sys.argv[0], msg))
+            retcode = -2
+        except SystemExit :        
+            pass
+        except :
+            title = _("%(appname)s failed") % locals()
+            try :
+                application.crashed(title)
+            except :    
+                crashed(title)
+            retcode = -1
+    finally :    
+        try :
+            application.storage.close()
         except :    
-            crashed(title)
-        retcode = -1
-        
+            pass
+            
     sys.exit(retcode)    
