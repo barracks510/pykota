@@ -27,6 +27,7 @@ import sys
 import os
 import cgi
 import urllib
+from xml.sax import saxutils
 
 from mx import DateTime
 
@@ -103,7 +104,11 @@ class PyKotaReportGUI(PyKotaTool) :
                               version.__version__, _("PyKota Reports"), \
                               _("Report")) ]
         content.append(self.body)                      
-        content.append(footer % (_("Report"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__))
+        content.append(footer % (_("Report"), 
+                                 version.__doc__, 
+                                 version.__years__, 
+                                 version.__author__, 
+                                 saxutils.escape(version.__gplblurb__)))
         for c in content :
             sys.stdout.write(c.encode(self.charset, "replace"))
         sys.stdout.flush()

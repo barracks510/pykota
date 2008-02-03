@@ -27,6 +27,7 @@ import sys
 import os
 import cgi
 import urllib
+from xml.sax import saxutils
 
 import pykota.appinit
 from pykota import version, utils
@@ -135,7 +136,11 @@ class PyKotaDumperGUI(DumPyKota) :
         content.append(self.htmlOrderbyInput(self.options.get("orderby", "")))
         content.append(u"<br />")
         content.append(self.htmlSumCheckbox(self.options.get("sum", "")))
-        content.append(footer % (_("Dump"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__))
+        content.append(footer % (_("Dump"), 
+                                 version.__doc__, 
+                                 version.__years__, 
+                                 version.__author__, 
+                                 saxutils.escape(version.__gplblurb__)))
         for c in content :
             sys.stdout.write(c.encode(self.charset, "replace"))
         sys.stdout.flush()

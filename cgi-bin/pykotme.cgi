@@ -28,6 +28,7 @@ import os
 import cgi
 import urllib
 import cStringIO
+from xml.sax import saxutils
 
 import pykota.appinit
 
@@ -104,7 +105,11 @@ class PyKotMeGUI(PyKotaTool) :
                         version.__version__, _("PyKota Quotes"), \
                         _("Quote")) ]
         content.append(self.body)
-        content.append(footer % (_("Quote"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__))
+        content.append(footer % (_("Quote"), 
+                                 version.__doc__, 
+                                 version.__years__, 
+                                 version.__author__, 
+                                 saxutils.escape(version.__gplblurb__)))
         for c in content :
             sys.stdout.write(c.encode(self.charset, "replace"))
         sys.stdout.flush()
