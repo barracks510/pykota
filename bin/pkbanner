@@ -217,7 +217,7 @@ class PyKotaBanner(Tool) :
                           options.logo.strip().encode(sys.getfilesystemencoding(), "replace"), 
                           options.url.strip(), 
                           " ".join(arguments).strip(), 
-                          options.savetoner)
+                          options.savetoner / 100.0)
         
         self.logdebug("Converting the banner to PostScript...")    
         command = "gs -q -dNOPAUSE -dBATCH -dPARANOIDSAFER -sDEVICE=pswrite -sOutputFile=- -"
@@ -253,9 +253,9 @@ if __name__ == "__main__" :
         if (value < 0.0) or (value > 99.0) :
             loginvalidparam(opt, value, option.default, \
                             _("Allowed range is (0..99)"))
-            setattr(optionparser.values, option.dest, option.default / 100.0)
+            setattr(optionparser.values, option.dest, option.default)
         else :    
-            setattr(optionparser.values, option.dest, value / 100.0)
+            setattr(optionparser.values, option.dest, value)
         
     # TODO : --papertray : to print banners on a different paper (colored for example)
     parser = PyKotaOptionParser(description=_("Banner generator for PyKota."))
