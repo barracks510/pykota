@@ -26,7 +26,7 @@ import os
 import locale
 import gettext
 
-from pykota.utils import *
+from pykota.utils import initlocale, initgettext
 
 (lang, charset) = initlocale(os.environ.get("PYKOTALANG", ""),
                              os.environ.get("PYKOTACHARSET"))

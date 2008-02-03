@@ -21,6 +21,10 @@
 #
 #
 
+"""This command line tool can automatically send periodic email
+notifications to users or groups who have reached the limit of their
+printing quota."""
+        
 import sys
 import os
 import pwd
@@ -31,15 +35,11 @@ from email.Header import Header
 import email.Utils
 
 import pykota.appinit
-from pykota.utils import *
+from pykota.utils import run
 from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
 from pykota.tool import PyKotaTool
 
-"""This command line tool can automatically send periodic email
-notifications to users or groups who have reached the limit of their
-printing quota."""
-        
 class WarnPyKota(PyKotaTool) :        
     """A class for warnpykota."""
     def sendMessage(self, adminmail, touser, fullmessage) :

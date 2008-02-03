@@ -22,15 +22,6 @@
 #
 #
 
-import sys
-import os
-
-import pykota.appinit
-from pykota.utils import *
-from pykota.commandline import PyKotaOptionParser
-from pykota.errors import PyKotaToolError
-from pykota.tool import PyKotaTool
-
 """A tool to automate user account creation and initial balance setting.
 
 THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !
@@ -38,6 +29,15 @@ THIS TOOL MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !
 THIS TOOL MUST NOT BE USED FROM THE COMMAND LINE BUT ONLY AS PART
 OF AN external policy IN pykota.conf
 """
+
+import sys
+import os
+
+import pykota.appinit
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser
+from pykota.errors import PyKotaToolError
+from pykota.tool import PyKotaTool
 
 class AutoPyKota(PyKotaTool) :
     """A class for the automat."""

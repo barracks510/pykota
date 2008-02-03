@@ -46,7 +46,7 @@ else :
     hasPIL = True
     
 import pykota.appinit
-from pykota.utils import *
+from pykota.utils import run, loginvalidparam
 from pykota.commandline import PyKotaOptionParser
 
 from pykota.errors import PyKotaToolError
@@ -240,22 +240,22 @@ class PyKotaBanner(Tool) :
         return status
 
 if __name__ == "__main__" :
-    def checkandset_pagesize(option, opt, value, parser) :
+    def checkandset_pagesize(option, opt, value, optionparser) :
         """Checks and sets the page size."""
         if getPageSize(value) is None :
             loginvalidparam(opt, value, option.default)
-            setattr(parser.values, option.dest, option.default)
+            setattr(optionparser.values, option.dest, option.default)
         else :    
-            setattr(parser.values, option.dest, value)
+            setattr(optionparser.values, option.dest, value)
         
-    def checkandset_savetoner(option, opt, value, parser) :    
+    def checkandset_savetoner(option, opt, value, optionparser) :    
         """Checks and sets the save toner value."""
         if (value < 0.0) or (value > 99.0) :
             loginvalidparam(opt, value, option.default, \
                             _("Allowed range is (0..99)"))
-            setattr(parser.values, option.dest, option.default)
+            setattr(optionparser.values, option.dest, option.default)
         else :    
-            setattr(parser.values, option.dest, value / 100.0)
+            setattr(optionparser.values, option.dest, value / 100.0)
         
     # TODO : --papertray : to print banners on a different paper (colored for example)
     parser = PyKotaOptionParser(description=_("Banner generator for PyKota."))

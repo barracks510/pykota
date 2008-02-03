@@ -21,6 +21,8 @@
 #
 #
 
+"""An On Screen Display (OSD) monitor for PyKota's end users."""
+
 import sys
 import os
 import pwd
@@ -29,16 +31,14 @@ import time
 try :
     import pyosd
 except ImportError :    
-    logerr("Sorry ! You need both xosd and the Python OSD library (pyosd) for this software to work.\n")
+    sys.stderr.write("Sorry ! You need both xosd and the Python OSD library (pyosd) for this software to work.\n")
     sys.exit(-1)
 
 import pykota.appinit
-from pykota.utils import *
+from pykota.utils import run, loginvalidparam
 from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import PyKotaTool
-
-"""An On Screen Display (OSD) monitor for PyKota's end users."""
 
 class PyKOSD(PyKotaTool) :
     """A class for an On Screen Display print quota monitor."""
@@ -124,15 +124,15 @@ class PyKOSD(PyKotaTool) :
         return 0    
         
 if __name__ == "__main__" :
-    def checkandset_positiveint(option, opt, value, parser) :    
+    def checkandset_positiveint(option, opt, value, optionparser) :    
         """Checks and sets positive integer values."""
         if value < 0 :
             loginvalidparam(opt, value, option.default)
-            setattr(parser.values, option.dest, option.default)
+            setattr(optionparser.values, option.dest, option.default)
         else :    
-            setattr(parser.values, option.dest, value)
+            setattr(optionparser.values, option.dest, value)
             
-    def checkandset_color(option, opt, value, parser) :    
+    def checkandset_color(option, opt, value, optionparser) :    
         """Checks and sets the color value."""
         if not value.startswith("#") :
             value = "#%s" % value
@@ -144,12 +144,13 @@ if __name__ == "__main__" :
             error = False
         if (len(value) != 7) or error :
             loginvalidparam(opt, value, option.default)
-            setattr(parser.values, option.dest, option.default)
+            setattr(optionparser.values, option.dest, option.default)
         else :    
-            setattr(parser.values, option.dest, value)
+            setattr(optionparser.values, option.dest, value)
             
     parser = PyKotaOptionParser(description=_("An On Screen Display (OSD) monitor for PyKota's end users."))
     parser.add_option("-c", "--color", "--colour",
+                            type="string",
                             action="callback",
                             callback=checkandset_color,
                             dest="color",
