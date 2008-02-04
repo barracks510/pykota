@@ -259,7 +259,7 @@ class CUPSBackend(PyKotaTool) :
         self.UserName = self.Ticket.OriginatingUserName                             
                                      
         self.DataFile = (os.path.join(self.Directory, "%s-%s-%s-%s" % \
-                   (self.myname, self.PrinterName, self.UserName, self.Ticket.JobId)).encode(sys.getfilesystemencoding(), "replace")
+                   (self.myname, self.PrinterName, self.UserName, self.Ticket.JobId))).encode(sys.getfilesystemencoding(), "replace")
         
         muststartwith = "%s:" % self.myname
         device_uri = os.environ.get("DEVICE_URI", "")
