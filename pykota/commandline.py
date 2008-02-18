@@ -65,6 +65,15 @@ def checkandset_positivefloat(option, opt, value, optionparser) :
     else :    
         setattr(optionparser.values, option.dest, value)
 
+def checkandset_percent(option, opt, value, optionparser) :    
+    """Checks if an option argument is comprised between 0.0 included and 100.0 not included, and validates the option if it is the case."""
+    if not (0.0 <= value < 100.0) :
+        loginvalidparam(opt, value, option.default, \
+                        _("Value must be comprised between 0.0 included and 100.0 not included"))
+        setattr(optionparser.values, option.dest, option.default)
+    else :    
+        setattr(optionparser.values, option.dest, value)
+
 class PyKotaOptionParser(optparse.OptionParser) :
     """
     This class to define additional methods, and different help
