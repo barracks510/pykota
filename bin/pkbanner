@@ -233,7 +233,7 @@ if __name__ == "__main__" :
     parser.add_option("-l", "--logo",
                             dest="logo",
                             default=u"/usr/share/pykota/logos/pykota.jpeg",
-                            help=_("The image to use as the banner's logo. The logo will be drawn at the center top of the page. The default logo is %default"))
+                            help=_("The image to use as a logo. The logo will be drawn at the center top of the page. The default logo is %default"))
     parser.add_option("-p", "--pagesize",
                             type="string",
                             action="callback",

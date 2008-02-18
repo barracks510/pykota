@@ -46,6 +46,24 @@ def checkandset_savetoner(option, opt, value, optionparser) :
         setattr(optionparser.values, option.dest, option.default)
     else :    
         setattr(optionparser.values, option.dest, value)
+        
+def checkandset_positiveint(option, opt, value, optionparser) :    
+    """Checks if an option argument is a positive integer and validates the option if it is the case."""
+    if not (value >= 0) :
+        loginvalidparam(opt, value, option.default, \
+                        _("Value must be positive"))
+        setattr(optionparser.values, option.dest, option.default)
+    else :    
+        setattr(optionparser.values, option.dest, value)
+        
+def checkandset_positivefloat(option, opt, value, optionparser) :    
+    """Checks if an option argument is a positive integer and validates the option if it is the case."""
+    if not (value >= 0.0) :
+        loginvalidparam(opt, value, option.default, \
+                        _("Value must be positive"))
+        setattr(optionparser.values, option.dest, option.default)
+    else :    
+        setattr(optionparser.values, option.dest, value)
 
 class PyKotaOptionParser(optparse.OptionParser) :
     """
