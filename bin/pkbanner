@@ -46,27 +46,15 @@ else :
     hasPIL = True
     
 import pykota.appinit
-from pykota.utils import run, loginvalidparam
-from pykota.commandline import PyKotaOptionParser
-
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser, \
+                               checkandset_pagesize, \
+                               checkandset_savetoner
+from pykota.pdfutils import getPageSize
 from pykota.errors import PyKotaToolError
 from pykota.tool import Tool
 from pykota import version
 
-def getPageSize(pgsize) :
-    """Returns the correct page size or None if not found."""
-    try :
-        try :
-            return getattr(reportlab.lib.pagesizes, pgsize.upper())
-        except AttributeError :    
-            try :
-                return getattr(reportlab.lib.pagesizes, pgsize.lower())
-            except AttributeError :
-                pass
-    except UnicodeError :            
-        pass
-    return None        
-    
 class PyKotaBanner(Tool) :        
     """A class for pkbanner."""
     def getVar(self, varname) :            
@@ -240,23 +228,6 @@ class PyKotaBanner(Tool) :
         return status
 
 if __name__ == "__main__" :
-    def checkandset_pagesize(option, opt, value, optionparser) :
-        """Checks and sets the page size."""
-        if getPageSize(value) is None :
-            loginvalidparam(opt, value, option.default)
-            setattr(optionparser.values, option.dest, option.default)
-        else :    
-            setattr(optionparser.values, option.dest, value)
-        
-    def checkandset_savetoner(option, opt, value, optionparser) :    
-        """Checks and sets the save toner value."""
-        if (value < 0.0) or (value > 99.0) :
-            loginvalidparam(opt, value, option.default, \
-                            _("Allowed range is (0..99)"))
-            setattr(optionparser.values, option.dest, option.default)
-        else :    
-            setattr(optionparser.values, option.dest, value)
-        
     # TODO : --papertray : to print banners on a different paper (colored for example)
     parser = PyKotaOptionParser(description=_("Banner generator for PyKota."))
     parser.add_option("-l", "--logo",

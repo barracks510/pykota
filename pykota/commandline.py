@@ -27,6 +27,25 @@ import optparse
 from gettext import gettext as _
 
 from pykota import version
+from pykota.utils import loginvalidparam
+
+def checkandset_pagesize(option, opt, value, optionparser) :
+    """Checks and sets the page size."""
+    from pykota.pdfutils import getPageSize
+    if getPageSize(value) is None :
+        loginvalidparam(opt, value, option.default)
+        setattr(optionparser.values, option.dest, option.default)
+    else :    
+        setattr(optionparser.values, option.dest, value)
+    
+def checkandset_savetoner(option, opt, value, optionparser) :    
+    """Checks and sets the save toner value."""
+    if (value < 0.0) or (value > 99.0) :
+        loginvalidparam(opt, value, option.default, \
+                        _("Allowed range is (0..99)"))
+        setattr(optionparser.values, option.dest, option.default)
+    else :    
+        setattr(optionparser.values, option.dest, value)
 
 class PyKotaOptionParser(optparse.OptionParser) :
     """
