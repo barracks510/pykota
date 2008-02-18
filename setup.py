@@ -90,25 +90,42 @@ data_files.append((directory, ["checkdeps.py", "bin/cupspykota", \
                                "untested/netatalk/netatalk.sh", \
                                "untested/netatalk/pagecount.ps"]))
 
-data_files.append((os.sep.join([directory, "conf"]), ["conf/README", "conf/pykota.conf.sample", "conf/pykotadmin.conf.sample"]))
+data_files.append((os.sep.join([directory, "conf"]), 
+                  ["conf/README", "conf/pykota.conf.sample", 
+                   "conf/pykotadmin.conf.sample"]))
 
-data_files.append((os.sep.join([directory, "cgi-bin"]), ["cgi-bin/README", "cgi-bin/printquota.cgi", "cgi-bin/dumpykota.cgi", "cgi-bin/pykotme.cgi"]))
+data_files.append((os.sep.join([directory, "cgi-bin"]), 
+                  ["cgi-bin/README", 
+                   "cgi-bin/printquota.cgi", 
+                   "cgi-bin/dumpykota.cgi", 
+                   "cgi-bin/pykotme.cgi"]))
 
-data_files.append((os.sep.join([directory, "logos"]), glob.glob(os.sep.join(["logos", "*.jpeg"])) + glob.glob(os.sep.join(["logos", "*.png"])) + glob.glob(os.sep.join(["logos", "*.xcf"]))))
+data_files.append((os.sep.join([directory, "logos"]), 
+                  glob.glob(os.sep.join(["logos", "*.jpeg"])) \
+                + glob.glob(os.sep.join(["logos", "*.png"])) \
+                + glob.glob(os.sep.join(["logos", "*.xcf"]))))
 
-data_files.append((os.sep.join([directory, "stylesheets"]), glob.glob(os.sep.join(["stylesheets", "*.css"])) + [ "stylesheets/README" ]))
+data_files.append((os.sep.join([directory, "stylesheets"]), 
+                  glob.glob(os.sep.join(["stylesheets", "*.css"])) \
+                + [ "stylesheets/README" ]))
 
 pgdirectory = os.sep.join([directory, "postgresql"])
-data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", "initscripts/postgresql/pykota-postgresql.sql"]))
+data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", 
+                                 "initscripts/postgresql/pykota-postgresql.sql"]))
 
 ldapdirectory = os.sep.join([directory, "ldap"])
-data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", "initscripts/ldap/pykota.schema", "initscripts/ldap/pykota-sample.ldif"]))
+data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", 
+                                   "initscripts/ldap/pykota.schema", 
+                                   "initscripts/ldap/pykota-schema-sunds.ldif", 
+                                   "initscripts/ldap/pykota-sample.ldif"]))
 
 mysqldirectory = os.sep.join([directory, "mysql"])
-data_files.append((mysqldirectory, ["initscripts/mysql/README.mysql", "initscripts/mysql/pykota-mysql.sql"]))
+data_files.append((mysqldirectory, ["initscripts/mysql/README.mysql", 
+                                    "initscripts/mysql/pykota-mysql.sql"]))
 
 sqlitedirectory = os.sep.join([directory, "sqlite"])
-data_files.append((sqlitedirectory, ["initscripts/sqlite/README.sqlite", "initscripts/sqlite/pykota-sqlite.sql"]))
+data_files.append((sqlitedirectory, ["initscripts/sqlite/README.sqlite", 
+                                     "initscripts/sqlite/pykota-sqlite.sql"]))
 
 class MyInstallData(install_data) :
     """A special class to ensure permissions are OK on the cupspykota backend."""
