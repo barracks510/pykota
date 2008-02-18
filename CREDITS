@@ -92,6 +92,7 @@ Contributors :
   - Jabka Atu - Fixed a problem with Debian changelog file.
   - Jan Christoph Nordholz - T.U. Berlin - Explained the cause of a strange
     problem with MySQL connections to 'localhost:3306'.
+  - Darin Perusich - Cognigen Corp. - Ported the LDAP schema to Sun DS
 
 ==============================================================
 

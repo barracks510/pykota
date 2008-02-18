@@ -19,13 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ============================================================
 
 Documentation :
----------------
+===============
 
-pykota.schema :
+OpenLDAP : 
+----------
 
-    This file can be used to modify an existing LDAP directory
-    to add the necessary object classes and attributes for use 
-    with PyKota.
+    The pykota.schema file can be used to modify an existing OpenLDAP 
+    directory to add the necessary object classes and attributes for 
+    use with PyKota.
     
     Include it in your LDAP server's configuration.
     For example, with OpenLDAP under Debian :
@@ -111,19 +112,29 @@ pykota.schema :
 
     NB: On Red Hat-based distros, use '/sbin/service ldap stop' and 
         '/sbin/service ldap start' instead.
-    
-pykota-sample.ldif :
+        
+Sun Directory Server :        
+----------------------
 
-    You can use this file to initialize an LDAP tree for PyKota, if
-    you want.
+    Use the pykota-schema-sunds.ldif file to make PyKota's LDAP schema known
+    to your Sun Directory Server :
+    
+    % ldapmodify -h sunds.domain.com -D "cn=Directory Manager" -f pykota-schema-sunds.ldif
+    
+    
+Initial datas :   
+===============
+    
+    You can use the pykota-sample.ldif file to initialize an LDAP tree 
+    for PyKota, if you want.
     
     The structure used in this file is NOT mandatory !
     Provided you put correct parameters into /etc/pykota/pykota.conf,
     you can structure your LDAP directory the way you want.
     
 To use an LDAP directory as the Quota Storage, just modify  
-/etc/pykota/pykota.conf to make it contain lines similar to the LDAP
+~pykota/pykota.conf to make it contain lines similar to the LDAP
 related ones in conf/pykota.conf.sample, but adapted to your
 own configuration. Also de-activate the PostgreSQL-related lines.
-    
+Don't forget to adapt ~pykota/pykotadmin.conf as well.    
 ============================================================
