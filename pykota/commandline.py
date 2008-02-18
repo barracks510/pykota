@@ -108,7 +108,7 @@ class PyKotaOptionParser(optparse.OptionParser) :
         if self.filterexpressions :
             result.append(formatter.format_heading(_("filtering expressions")))
             formatter.indent()
-            result.append(formatter.format_description(_("Use the filtering expressions to extract only parts of the datas. Allowed filters are of the form 'key=value'.")))
+            result.append(formatter.format_description(_("Use the filtering expressions to extract only parts of the datas. Allowed filters are of the form 'key=value'. Wildcards are not expanded as part of these filtering expressions, so you can't use them here.")))
             result.append("\n")
             result.append(formatter.format_heading(_("allowed keys for now")))
             formatter.indent() 
@@ -130,16 +130,9 @@ class PyKotaOptionParser(optparse.OptionParser) :
             result.append(formatter.format_description(_("now[+-N] : now more or less N days (e.g. now-15)")))
             formatter.dedent()    
             result.append("\n")
+            result.append(formatter.format_description(_("'now' and 'today' are not exactly the same since 'today' represents the first or last second of the day depending on if it's used in a 'start=' or 'end=' date expression.")))
+            result.append("\n")
         return "".join(result)
-        
-
-  #'now' and 'today' are not exactly the same since today represents the first
-  #or last second of the day depending on if it's used in a start= or end=
-  #date expression. The utility to be able to specify dates in the future is
-  #a question which remains to be answered :-)
-  #
-  #Contrary to other PyKota management tools, wildcard characters are not 
-  #expanded, so you can't use them.
         
     def format_examples(self, formatter=None) :
         """Formats examples our way."""
