@@ -74,6 +74,7 @@ class PyKotaOptionParser(optparse.OptionParser) :
         """
         Initializes our option parser with additional attributes.
         """
+        self.filterexpressions = []
         self.examples = []
         kwargs["version"] = "%s (PyKota) %s" % (os.path.basename(sys.argv[0]),
                                                 version.__version__)
@@ -91,6 +92,7 @@ class PyKotaOptionParser(optparse.OptionParser) :
             formatter = self.formatter
         result = []
         result.append(optparse.OptionParser.format_help(self, formatter) + "\n")
+        result.append(self.format_filterexpressions())
         result.append(self.format_examples())
         result.append(self.format_copyright())
         return "".join(result)
@@ -98,6 +100,47 @@ class PyKotaOptionParser(optparse.OptionParser) :
     #    
     # Below are PyKota specific additions    
     #
+    def format_filterexpressions(self, formatter=None) :
+        """Formats filter expressions our way."""
+        if formatter is None :
+            formatter = self.formatter
+        result = []    
+        if self.filterexpressions :
+            result.append(formatter.format_heading(_("filtering expressions")))
+            formatter.indent()
+            result.append(formatter.format_description(_("Use the filtering expressions to extract only parts of the datas. Allowed filters are of the form 'key=value'.")))
+            result.append("\n")
+            result.append(formatter.format_heading(_("allowed keys for now")))
+            formatter.indent() 
+            for (expression, explanation) in self.filterexpressions :
+                result.append(formatter.format_description("%s : %s" % (expression, explanation)))
+            formatter.dedent()    
+            result.append("\n")
+            result.append(formatter.format_heading(_("formatting of dates with the 'start' and 'end' filtering keys")))
+            formatter.indent()
+            result.append(formatter.format_description(_("YYYY : year boundaries")))
+            result.append(formatter.format_description(_("YYYYMM : month boundaries")))
+            result.append(formatter.format_description(_("YYYYMMDD : day boundaries")))
+            result.append(formatter.format_description(_("YYYYMMDDhh : hour boundaries")))
+            result.append(formatter.format_description(_("YYYYMMDDhhmm : minute boundaries")))
+            result.append(formatter.format_description(_("YYYYMMDDhhmmss : second boundaries")))
+            result.append(formatter.format_description(_("yesterday[+-N] : yesterday more or less N days (e.g. : yesterday-15)")))
+            result.append(formatter.format_description(_("today[+-N] : today more or less N days (e.g. : today-15)")))
+            result.append(formatter.format_description(_("tomorrow[+-N] : tomorrow more or less N days (e.g. : tomorrow-15)")))
+            result.append(formatter.format_description(_("now[+-N] : now more or less N days (e.g. now-15)")))
+            formatter.dedent()    
+            result.append("\n")
+        return "".join(result)
+        
+
+  #'now' and 'today' are not exactly the same since today represents the first
+  #or last second of the day depending on if it's used in a start= or end=
+  #date expression. The utility to be able to specify dates in the future is
+  #a question which remains to be answered :-)
+  #
+  #Contrary to other PyKota management tools, wildcard characters are not 
+  #expanded, so you can't use them.
+        
     def format_examples(self, formatter=None) :
         """Formats examples our way."""
         if formatter is None :
@@ -126,6 +169,10 @@ class PyKotaOptionParser(optparse.OptionParser) :
             result.append(formatter.format_description(part) + "\n")
         formatter.dedent()    
         return "".join(result)
+        
+    def add_filterexpression(self, expression, doc) :    
+        """Adds a filtering expression."""
+        self.filterexpressions.append((expression, doc))
         
     def add_example(self, command, doc) :    
         """Adds an usage example."""
