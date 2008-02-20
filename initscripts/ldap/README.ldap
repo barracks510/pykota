@@ -116,11 +116,7 @@ OpenLDAP :
 Sun Directory Server :        
 ----------------------
 
-    Use the pykota-schema-sunds.ldif file to make PyKota's LDAP schema known
-    to your Sun Directory Server :
-    
-    % ldapmodify -h sunds.domain.com -D "cn=Directory Manager" -f pykota-schema-sunds.ldif
-    
+    See README.sunds
     
 Initial datas :   
 ===============
