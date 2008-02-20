@@ -115,7 +115,9 @@ data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql",
 
 ldapdirectory = os.sep.join([directory, "ldap"])
 data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", 
+                                   "initscripts/ldap/README.sunds", 
                                    "initscripts/ldap/pykota.schema", 
+                                   "initscripts/ldap/pykota-sunds-indexes.ldif", 
                                    "initscripts/ldap/pykota-schema-sunds.ldif", 
                                    "initscripts/ldap/pykota-sample.ldif"]))
 
