@@ -10,9 +10,9 @@
 #
 # Adapted for Sun Directory Server by Darin Perusich
 #
-#       Implementaion Details:
+#	Implementaion Details:
 #
-#       % ldapmodify -h sunds.domain.com -D "cn=Directory Manager" -f pykota-schema-sunds.ldif
+#	% ldapmodify -h sunds.domain.com -D "cn=Directory Manager" -f pykota-schema-sunds.ldif
 #
 # 16868.x       => Conseil Internet & Logiciels Libres
 # 16868.1.x     => Pykota
@@ -306,3 +306,4 @@ add: objectClasses
 objectClasses: ( 1.3.6.1.4.1.16868.1.2.9 NAME 'pykotaObject' SUP top STRUCTURAL
         DESC 'PyKota Object'
         MUST ( cn ) )
+

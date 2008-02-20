@@ -1,0 +1,43 @@
+dn: cn=pykotaUserName, cn=index, cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+objectClass: nsIndex
+objectClass: top
+cn: pykotausername
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+nsIndexType: sub
+
+dn: cn=pykotaGroupName, cn=index, cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+objectClass: nsIndex
+objectClass: top
+cn: pykotaGroupName
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+nsIndexType: sub
+
+dn: cn=pykotaPrinterName, cn=index, cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+objectClass: nsIndex
+objectClass: top
+cn: pykotaPrinterName
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+nsIndexType: sub
+
+dn: cn=pykotaBillingCode, cn=index, cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+objectClass: nsIndex
+objectClass: top
+cn: pykotaBillingCode
+nsSystemIndex: false
+nsIndexType: eq
+nsIndexType: pres
+nsIndexType: sub
+
+dn: cn=pykotaLastJobIdent, cn=index, cn=userRoot,cn=ldbm database,cn=plugins,cn=config
+objectClass: nsIndex
+objectClass: top
+cn: pykotaLastJobIdent
+nsSystemIndex: false
+nsIndexType: eq
+
