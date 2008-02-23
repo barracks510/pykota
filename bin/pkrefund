@@ -21,6 +21,8 @@
 #
 #
 
+"""A refunding tool for PyKota"""
+
 import sys
 import os
 import pwd
@@ -44,111 +46,15 @@ else :
     hasPIL = True
 
 import pykota.appinit
-from pykota.utils import *
-
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser, \
+                               checkandset_pagesize, \
+                               checkandset_positiveint
+from pykota.pdfutils import getPageSize
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Percent, PyKotaTool
-
-__doc__ = N_("""pkrefund v%(__version__)s (c) %(__years__)s %(__author__)s
-
-Refunds jobs.
-
-command line usage :
-
-  pkrefund [options] [filterexpr]
-
-options :
-
-  -v | --version       Prints pkrefund's version number then exits.
-  -h | --help          Prints this message then exits.
-  
-  -f | --force         Doesn't ask for confirmation before refunding jobs.
-  -r | --reason txt    Sets textual information to explain the refunding.
-
-  -l | --logo img      Use the image as the receipt's logo. The logo will
-                       be drawn at the center top of the page. The default
-                       logo is /usr/share/pykota/logos/pykota.jpeg
-
-  -p | --pagesize sz   Sets sz as the page size. Most well known
-                       page sizes are recognized, like 'A4' or 'Letter'
-                       to name a few. The default size is A4.
-
-  -n | --number N      Sets the number of the first receipt. This number
-                       will automatically be incremented for each receipt.
-
-  -o | --output f.pdf  Defines the name of the PDF file which will contain
-                       the receipts. If not set, then no PDF file will
-                       be created. If set to '-', then --force is assumed,
-                       and the PDF document is sent to standard output.
-
-  -u | --unit u        Defines the name of the unit to use on the receipts.
-                       The default unit is 'Credits', optionally translated
-                       to your native language if it is supported by PyKota.
-  
-
-  Use the filter expressions to extract only parts of the 
-  datas. Allowed filters are of the form :
-                
-         key=value
-                         
-  Allowed keys for now are :  
-                       
-         username       User's name
-         printername    Printer's name
-         hostname       Client's hostname
-         jobid          Job's Id
-         billingcode    Job's billing code
-         start          Job's date of printing
-         end            Job's date of printing
-         
-  Dates formatting with 'start' and 'end' filter keys :
-  
-    YYYY : year boundaries
-    YYYYMM : month boundaries
-    YYYYMMDD : day boundaries
-    YYYYMMDDhh : hour boundaries
-    YYYYMMDDhhmm : minute boundaries
-    YYYYMMDDhhmmss : second boundaries
-    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)
-    today[+-NbDays] : today more or less N days (e.g. : today-15)
-    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)
-    now[+-NbDays] : now more or less N days (e.g. now-15)
-
-  'now' and 'today' are not exactly the same since today represents the first
-  or last second of the day depending on if it's used in a start= or end=
-  date expression. The utility to be able to specify dates in the future is
-  a question which remains to be answered :-)
-  
-  Contrary to other PyKota management tools, wildcard characters are not 
-  expanded, so you can't use them.
-  
-Examples :
-
-  $ pkrefund --output /tmp/receipts.pdf jobid=503
-  
-  This will refund all jobs which Id is 503. BEWARE : installing CUPS
-  afresh will reset the first job id at 1, so you probably want to use
-  a more precise filter as explained below. A confirmation will
-  be asked for each job to refund, and a PDF file named /tmp/receipts.pdf
-  will be created which will contain printable receipts.
-  
-  $ pkrefund --reason "Hardware problem" jobid=503 start=today-7
-  
-  Refunds all jobs which id is 503 but which were printed during the
-  past week. The reason will be marked as being an hardware problem.
-  
-  $ pkrefund --force username=jerome printername=HP2100
-  
-  Refunds all jobs printed by user jerome on printer HP2100. No
-  confirmation will be asked.
-  
-  $ pkrefund --force printername=HP2100 start=200602 end=yesterday
-  
-  Refunds all jobs printed on printer HP2100 between February 1st 2006
-  and yesterday. No confirmation will be asked.
-""")
         
-class PkRefund(PyKotaTool) :        
+class PKRefund(PyKotaTool) :        
     """A class for refund manager."""
     validfilterkeys = [ "username",
                         "printername",
@@ -159,16 +65,6 @@ class PkRefund(PyKotaTool) :
                         "end",
                       ]
                       
-    def getPageSize(self, pgsize) :
-        """Returns the correct page size or None if not found."""
-        try :
-            return getattr(pagesizes, pgsize.upper())
-        except AttributeError :    
-            try :
-                return getattr(pagesizes, pgsize.lower())
-            except AttributeError :
-                pass
-                
     def printVar(self, label, value, size) :
         """Outputs a variable onto the PDF canvas.
         
@@ -193,7 +89,8 @@ class PkRefund(PyKotaTool) :
             self.printVar(_("Refunding receipt"), "#%s" % receiptnumber, 22)
             self.printVar(_("Username"), name, 22)
             self.ypos -= 20
-            self.printVar(_("Edited on"), time.strftime("%c", time.localtime()), 14)
+            datetime = time.strftime("%c", time.localtime()).decode(self.charset, "replace")
+            self.printVar(_("Edited on"), datetime, 14)
                 
             self.ypos -= 20
             self.printVar(_("Jobs refunded"), str(values["nbjobs"]), 18)
@@ -260,7 +157,7 @@ class PkRefund(PyKotaTool) :
         
     def genReceipts(self, peruser, logo, outfname, firstnumber, reason, unit) :
         """Generates the receipts file."""
-        if outfname and len(peruser) :
+        if len(peruser) :
             percent = Percent(self, size=len(peruser))
             if outfname != "-" :
                 percent.display("%s...\n" % _("Generating receipts"))
@@ -278,37 +175,20 @@ class PkRefund(PyKotaTool) :
             if outfname != "-" :
                 percent.done()
         
-    def main(self, arguments, options, restricted=1) :
-        """Print Quota Data Dumper."""
+    def main(self, arguments, options) :
+        """Refunds jobs."""
         if not hasRL :
             raise PyKotaToolError, "The ReportLab module is missing. Download it from http://www.reportlab.org"
         if not hasPIL :
             raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
             
-        if restricted and not self.config.isAdmin :
+        if not self.config.isAdmin :
             raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
             
-        if (not options["reason"]) or not options["reason"].strip() :
+        self.pagesize = getPageSize(options.pagesize)
+        
+        if (not options.reason) or (not options.reason.strip()) :
             raise PyKotaCommandLineError, _("Refunding for no reason is forbidden. Please use the --reason command line option.")
-            
-        outfname = options["output"]
-        if outfname :
-            outfname = outfname.strip()
-            if outfname == "-" :
-                options["force"] = True
-                self.printInfo(_("The PDF file containing the receipts will be sent to stdout. --force is assumed."), "warn")
-            
-        try :    
-            firstnumber = int(options["number"])
-            if firstnumber <= 0 :
-                raise ValueError
-        except (ValueError, TypeError) :    
-            raise PyKotaCommandLineError, _("Incorrect value '%s' for the --number command line option") % options["number"]
-            
-        self.pagesize = self.getPageSize(options["pagesize"])
-        if self.pagesize is None :
-            self.pagesize = self.getPageSize("a4")
-            self.printInfo(_("Invalid 'pagesize' option %s, defaulting to A4.") % options["pagesize"], "warn")
             
         extractonly = {}
         for filterexp in arguments :
@@ -324,8 +204,12 @@ class PkRefund(PyKotaTool) :
                     extractonly.update({ filterkey : filtervalue })
             
         percent = Percent(self)
+        outfname = options.output.strip().encode(sys.getfilesystemencoding())
         if outfname != "-" :
             percent.display("%s..." % _("Extracting datas"))
+        else :    
+            options.force = True
+            self.printInfo(_("The PDF file containing the receipts will be sent to stdout. --force is assumed."), "warn")
             
         username = extractonly.get("username")    
         if username :
@@ -351,23 +235,23 @@ class PkRefund(PyKotaTool) :
                                             start=start,
                                             end=end,
                                             limit=0)
+                                            
         peruser = {}                                    
         nbjobs = 0                                    
         nbpages = 0                                            
         nbcredits = 0.0
-        reason = (options.get("reason") or "").strip()
         percent.setSize(len(jobs))
         if outfname != "-" :
             percent.display("\n")
         for job in jobs :                                    
             if job.JobSize and (job.JobAction not in ("DENY", "CANCEL", "REFUND")) :
-                if options["force"] :
+                if options.force :
                     nbpages += job.JobSize
                     nbcredits += job.JobPrice
                     counters = peruser.setdefault(job.UserName, { "nbjobs" : 0, "nbpages" : 0, "nbcredits" : 0.0 })
                     counters["nbpages"] += job.JobSize
                     counters["nbcredits"] += job.JobPrice
-                    job.refund(reason)
+                    job.refund(options.reason)
                     counters["nbjobs"] += 1
                     nbjobs += 1
                     if outfname != "-" :
@@ -391,7 +275,7 @@ class PkRefund(PyKotaTool) :
                             counters = peruser.setdefault(job.UserName, { "nbjobs" : 0, "nbpages" : 0, "nbcredits" : 0.0 })
                             counters["nbpages"] += job.JobSize
                             counters["nbcredits"] += job.JobPrice
-                            job.refund(reason)
+                            job.refund(options.reason)
                             counters["nbjobs"] += 1
                             nbjobs += 1
                             break    
@@ -400,65 +284,78 @@ class PkRefund(PyKotaTool) :
                     print        
         if outfname != "-" :
             percent.done()
-        self.genReceipts(peruser, options["logo"].strip(), outfname, firstnumber, reason, options["unit"])
+        self.genReceipts(peruser, 
+                         options.logo.strip().encode(sys.getfilesystemencoding()), 
+                         outfname, 
+                         options.number, 
+                         options.reason, 
+                         options.unit or _("Credits"))
         if outfname != "-" :    
-            print _("Refunded %i users for %i jobs, %i pages and %.3f credits") % (len(peruser), nbjobs, nbpages, nbcredits)
+            nbusers = len(peruser)
+            print _("Refunded %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
+                     % locals()
             
 if __name__ == "__main__" : 
-    retcode = 0
-    try :
-        defaults = { "unit" : N_("Credits"),
-                     "pagesize" : "a4", \
-                     "logo" : "/usr/share/pykota/logos/pykota.jpeg",
-                     "number" : "1",
-                   }
-        short_options = "vhfru:o:p:l:n:"
-        long_options = ["help", "version", "force", "reason=", "unit=", "output=", "pagesize=", "logo=", "number="]
-        
-        # Initializes the command line tool
-        refundmanager = PkRefund(doc=__doc__)
-        refundmanager.deferredInit()
-        
-        # parse and checks the command line
-        (options, args) = refundmanager.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
-        
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["force"] = options["f"] or options["force"]
-        options["reason"] = options["r"] or options["reason"]
-        options["unit"] = options["u"] or options["unit"] or defaults["unit"]
-        options["output"] = options["o"] or options["output"]
-        options["pagesize"] = options["p"] or options["pagesize"] or defaults["pagesize"]
-        options["number"] = options["n"] or options["number"] or defaults["number"]
-        options["logo"] = options["l"] or options["logo"]
-        if options["logo"] is None : # Allows --logo="" to disable the logo entirely
-            options["logo"] = defaults["logo"]  
-        
-        if options["help"] :
-            refundmanager.display_usage_and_quit()
-        elif options["version"] :
-            refundmanager.display_version_and_quit()
-        else :
-            retcode = refundmanager.main(args, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        try :
-            refundmanager.crashed("pkrefund failed")
-        except :    
-            crashed("pkrefund failed")
-        retcode = -1
-
-    try :
-        refundmanager.storage.close()
-    except (TypeError, NameError, AttributeError) :    
-        pass
-        
-    sys.exit(retcode)    
+    parser = PyKotaOptionParser(description=_("Refunding tool for PyKota."),
+                                usage="pkrefund [options] [filterexpr]")
+    parser.add_option("-f", "--force",
+                            dest="force",
+                            action="store_true",
+                            help=_("Doesn't ask for confirmation before refunding."))
+    parser.add_option("-l", "--logo",
+                            dest="logo",
+                            default=u"/usr/share/pykota/logos/pykota.jpeg",
+                            help=_("The image to use as a logo. The logo will be drawn at the center top of the page. The default logo is %default"))
+    parser.add_option("-p", "--pagesize",
+                            type="string",
+                            action="callback",
+                            callback=checkandset_pagesize,
+                            dest="pagesize",
+                            default=u"A4",
+                            help=_("Set the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default"))
+    parser.add_option("-n", "--number",                        
+                            dest="number",
+                            type="int",
+                            action="callback",
+                            callback=checkandset_positiveint,
+                            default=1,
+                            help=_("Sets the number of the first receipt. This number will automatically be incremented for each receipt. The default value is %default"))
+    parser.add_option("-o", "--output",
+                            dest="output",
+                            type="string",
+                            default=u"-",
+                            help=_("The name of the file to which the PDF receipts will be written. If not set or set to '%default', the PDF document will be sent to the standard output."))
+    parser.add_option("-r", "--reason",
+                            dest="reason",
+                            type="string",
+                            help=_("The reason why there was a refund."))
+                            
+    # TODO : due to Python's optparse.py bug #1498146 fixed in rev 46861
+    # TODO : we can't use 'default=_("Credits")' for this option
+    parser.add_option("-u", "--unit",                   
+                            dest="unit",
+                            type="string",
+                            help=_("The name of the unit to use on the receipts. The default value is 'Credits' or its locale translation."))
+                            
+    parser.add_filterexpression("username", _("User's name"))
+    parser.add_filterexpression("printername", _("Printer's name"))
+    parser.add_filterexpression("hostname", _("Host's name"))
+    parser.add_filterexpression("jobid", _("Job's id"))
+    parser.add_filterexpression("billingcode", _("Job's billing code"))
+    parser.add_filterexpression("start", _("Job's date of printing"))
+    parser.add_filterexpression("end", _("Job's date of printing"))
+    
+    parser.add_example('--output /tmp/receipts.pdf jobid=503',
+                       _("This would refund all jobs which Id is 503. A confirmation would be asked for each job to refund, and a PDF file named /tmp/receipts.pdf would be created containing printable receipts. BEWARE of job ids rolling over if you reset CUPS' history."))
+  
+    parser.add_example('--reason "Hardware problem" jobid=503 start=today-7',
+                       _("This would refund all jobs which id is 503 but which would have been printed during the  past week. The reason would be marked as being an hardware problem."))
+  
+    parser.add_example('--force username=jerome printername=HP2100',
+                       _("This would refund all jobs printed by user jerome on printer HP2100. No confirmation would be asked."))
+  
+    parser.add_example('--force printername=HP2100 start=200602 end=yesterday',
+                       _("This would refund all jobs printed on printer HP2100 between February 1st 2006 and yesterday. No confirmation would be asked."))
+    
+    (options, arguments) = parser.parse_args()
+    run(parser, PKRefund)                   
