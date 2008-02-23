@@ -164,8 +164,7 @@ class PKInvoice(PyKotaTool) :
     def genInvoices(self, peruser, logo, outfname, firstnumber, unit, vat) :
         """Generates the invoices file."""
         if len(peruser) :
-            percent = Percent(self)
-            percent.setSize(len(peruser))
+            percent = Percent(self, size=len(peruser))
             if outfname != "-" :
                 percent.display("%s...\n" % _("Generating invoices"))
                 
@@ -264,8 +263,9 @@ class PKInvoice(PyKotaTool) :
                          options.unit or _("Credits"), 
                          options.vat)
         if outfname != "-" :    
-            print _("Invoiced %i users for %i jobs, %i pages and %.3f credits") \
-                % (len(peruser), nbjobs, nbpages, nbcredits)
+            nbusers = len(peruser)
+            print _("Invoiced %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
+                     % locals()
                      
 if __name__ == "__main__" : 
     parser = PyKotaOptionParser(description=_("Invoice generator for PyKota."),
