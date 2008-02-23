@@ -206,14 +206,6 @@
               </listitem>  
               <listitem>
                 <para>
-                  <command>pkmail</command> : to let users obtain their print quota situation by email.
-                  In the future other functionnalities will be added.
-                  This command is not meant to be used from the command line, but
-                  instead as a pipe from your mail server's <filename>/etc/aliases</filename> file.
-                </para>
-              </listitem>  
-              <listitem>
-                <para>
                   <command>pknotify</command> : a client for the <application>PyKotIcon</application> cross-platform generic network dialog box manager. This
                   tools allow you to interact with end users at printing time.
                 </para>

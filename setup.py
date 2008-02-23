@@ -152,7 +152,7 @@ setup(name = "pykota", version = __version__,
                    "pykota.reporters",
                  ],
       scripts = [ "bin/pknotify", "bin/pkusers", "bin/pkinvoice", "bin/pksetup", \
-                  "bin/pkrefund", "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", \
+                  "bin/pkrefund", "bin/pkturnkey", "bin/pkbcodes", \
                   "bin/pkbanner", "bin/autopykota", "bin/dumpykota", \
                   "bin/pykosd", "bin/edpykota", "bin/repykota", \
                   "bin/warnpykota", "bin/pykotme", "bin/pkprinters" ],
