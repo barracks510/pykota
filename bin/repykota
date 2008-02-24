@@ -21,6 +21,8 @@
 #
 #
 
+"""Minimalist print accounting reports for PyKota."""
+
 import sys
 import os
 import pwd
@@ -28,73 +30,27 @@ import pwd
 from mx import DateTime
 
 import pykota.appinit
-from pykota.utils import *
-
-from pykota.errors import PyKotaToolError, PyKotaCommandLineError
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser
+from pykota.errors import PyKotaCommandLineError
 from pykota.tool import PyKotaTool
 from pykota import reporter
-
-__doc__ = N_("""repykota v%(__version__)s (c) %(__years__)s %(__author__)s
-
-Generates print quota reports.
-
-command line usage :
-
-  repykota [options] 
-
-options :
-
-  -v | --version       Prints repykota's version number then exits.
-  -h | --help          Prints this message then exits.
-  
-  -u | --users         Generates a report on users quota, this is 
-                       the default.
-  
-  -g | --groups        Generates a report on group quota instead of users.
-  
-  -i | --ingroups g1[,g2...]  Only lists users who are members of these
-                              groups. Reserved to PyKota Administrators.
-  
-  -P | --printer p     Report quotas on this printer only. Actually p can
-                       use wildcards characters to select only
-                       some printers. The default value is *, meaning
-                       all printers.
-                       You can specify several names or wildcards, 
-                       by separating them with commas.
-  
-examples :                              
-
-  $ repykota --printer lp
-  
-  This will print the quota status for all users who use the lp printer.
-
-  $ repykota 
-  
-  This will print the quota status for all users on all printers.
-  
-  $ repykota --printer "laser*,*pson" jerome "jo*"
-  
-  This will print the quota status for user jerome and all users
-  whose name begins with "jo" on all printers which name begins
-  with "laser" or ends with "pson".
-  
-  If launched by an user who is not a PyKota administrator, additionnal
-  arguments representing users or groups names are ignored, and only the
-  current user/group is reported.
-""")
         
 class RePyKota(PyKotaTool) :        
     """A class for repykota."""
     def main(self, ugnames, options) :
         """Print Quota reports generator."""
+        if options.ingroups and options.groups :
+            raise PyKotaCommandLineError, _("Incompatible options, see help.")
+            
         if self.config.isAdmin :
             # PyKota administrator
             if not ugnames :
                 # no username, means all usernames
                 ugnames = [ "*" ]
                 
-            if options["ingroups"] :
-                groupsnames = options["ingroups"].split(",")
+            if options.ingroups :
+                groupsnames = options.ingroups.split(",")
                 groups = [self.storage.getGroup(gname) for gname in groupsnames]
                 members = {}
                 for group in groups :
@@ -106,11 +62,11 @@ class RePyKota(PyKotaTool) :
                 ugnames = [ m for m in members.keys() if self.matchString(m, ugnames) ]
         else :        
             # reports only the current user
-            if options["ingroups"] :
+            if options.ingroups :
                 raise PyKotaCommandLineError, _("Option --ingroups is reserved to PyKota Administrators.")
                 
             username = pwd.getpwuid(os.geteuid())[0]
-            if options["groups"] :
+            if options.groups :
                 user = self.storage.getUser(username)
                 if user.Exists :
                     ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
@@ -119,63 +75,33 @@ class RePyKota(PyKotaTool) :
             else :
                 ugnames = [ username ]
         
-        printers = self.storage.getMatchingPrinters(options["printer"])
+        printers = self.storage.getMatchingPrinters(options.printer)
         if not printers :
-            raise PyKotaCommandLineError, _("There's no printer matching %s") % options["printer"]
+            raise PyKotaCommandLineError, _("There's no printer matching %s") % options.printer
             
-        self.reportingtool = reporter.openReporter(self, "text", printers, ugnames, (options["groups"] and 1) or 0)    
+        self.reportingtool = reporter.openReporter(self, "text", printers, ugnames, options.groups)
         print self.reportingtool.generateReport()
                     
 if __name__ == "__main__" : 
-    retcode = 0
-    try :
-        defaults = { \
-                     "printer" : "*", \
-                   }
-        short_options = "vhugi:P:"
-        long_options = ["help", "version", "users", "groups", "ingroups=", "printer="]
-        
-        # Initializes the command line tool
-        reportTool = RePyKota(doc=__doc__)
-        reportTool.deferredInit()
-        
-        # parse and checks the command line
-        (options, args) = reportTool.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
-        
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["users"] = options["u"] or options["users"]
-        options["groups"] = options["g"] or options["groups"]
-        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
-        options["ingroups"] = options["i"] or options["ingroups"]
-        
-        if options["help"] :
-            reportTool.display_usage_and_quit()
-        elif options["version"] :
-            reportTool.display_version_and_quit()
-        elif (options["users"] or options["ingroups"]) and options["groups"] :
-            raise PyKotaCommandLineError, _("incompatible options, see help.")
-        else :
-            retcode = reportTool.main(args, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        try :
-            reportTool.crashed("repykota failed")
-        except :    
-            crashed("repykota failed")
-        retcode = -1
-
-    try :
-        reportTool.storage.close()
-    except (TypeError, NameError, AttributeError) :    
-        pass
-        
-    sys.exit(retcode)    
+    parser = PyKotaOptionParser(description=_("Minimalist print accounting reports for PyKota. If not launched by a PyKota administrator, additionnal arguments representing users or groups names are ignored, limiting the scope of the reports to the current user."),
+                                usage="repykota [options] [usernames|groupnames]")
+    parser.add_option("-g", "--groups",
+                            action="store_true",
+                            dest="groups",
+                            help=_("Generate group print quota reports instead of user print quota reports."))
+    parser.add_option("-i", "--ingroups",
+                            dest="ingroups",
+                            help=_("Only reports users who are members of the specified groups. This option is reserved to PyKota administrators."))
+    parser.add_option("-P", "--printer",
+                            dest="printer",
+                            default="*",
+                            help=_("Reports for this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
+                            
+    parser.add_example('',
+                       _("This would generate a report for all users on all printers."))
+    parser.add_example('--printer HP2100',
+                       _("This would generate a report for all users who print to printer 'HP2100'."))
+    parser.add_example('--printer "laser*,*pson" jerome "jo*"',
+                       _("This would generate a report for all users named 'jerome' or whose name begins with 'jo', on all printers which name begins with 'laser' or ends with 'pson'."))
+                       
+    run(parser, RePyKota)
