@@ -22,10 +22,12 @@
 
 """This module defines classes used to parse PyKota configuration files."""
 
+import sys
 import os
 import tempfile
 import ConfigParser
 
+from pykota.utils import unicodeToDatabase
 from pykota.errors import PyKotaConfigError    
 
 class PyKotaConfig :
@@ -96,12 +98,12 @@ class PyKotaConfig :
         backend = self.getGlobalOption("storagebackend").lower()
         backendinfo["storagebackend"] = backend
         if backend == "sqlitestorage" :
-            issqlite = 1
+            issqlite = True
             backendinfo["storagename"] = self.getGlobalOption("storagename")
             for option in ["storageserver", "storageuser", "storageuserpw"] :
                 backendinfo[option] = None          
         else :
-            issqlite = 0
+            issqlite = False
             for option in ["storageserver", "storagename", "storageuser"] :
                 backendinfo[option] = self.getGlobalOption(option)
             backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=True)  # password is optional
@@ -150,7 +152,7 @@ class PyKotaConfig :
                         "newuser", "newgroup", \
                         "usermail", \
                       ] :
-            ldapinfo[option] = self.getGlobalOption(option).strip()
+            ldapinfo[option] = unicodeToDatabase(self.getGlobalOption(option).strip())
         for field in ["newuser", "newgroup"] :
             if ldapinfo[field].lower().startswith('attach(') :
                 ldapinfo[field] = ldapinfo[field][7:-1]
@@ -159,10 +161,10 @@ class PyKotaConfig :
         ldapinfo["ldaptls"] = self.isTrue(self.getGlobalOption("ldaptls", ignore=True))
         ldapinfo["cacert"] = self.getGlobalOption("cacert", ignore=True)
         if ldapinfo["cacert"] :
-            ldapinfo["cacert"] = ldapinfo["cacert"].strip()
+            ldapinfo["cacert"] = ldapinfo["cacert"].strip().encode(sys.getfilesystemencoding(), "replace")
         if ldapinfo["ldaptls"] :    
             if not os.access(ldapinfo["cacert"] or "", os.R_OK) :
-                raise PyKotaConfigError, _("Option ldaptls is set, but certificate %s is not readable.") % str(ldapinfo["cacert"])
+                raise PyKotaConfigError, _("Option ldaptls is set, but certificate %s is not readable.") % repr(ldapinfo["cacert"])
         return ldapinfo
         
     def getLoggingBackend(self) :    
