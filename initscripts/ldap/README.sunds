@@ -1,3 +1,22 @@
+#=====================================================
+#
+# (c) 2008 Darin Perusich <darin _AT_ darins _DOT_ net>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#=====================================================
+
 Documentation :
 ---------------
 
@@ -6,111 +25,111 @@ Schema Modifications :
 
 pykota-schema-sunds.ldif :
 
-	This file can be used to extend the schema for
-	Sun Directory Server to add the necessary object classes
-	and attribute type for use with PyKota.
+        This file can be used to extend the schema for
+        Sun Directory Server to add the necessary object classes
+        and attribute type for use with PyKota.
 
-	To extend the schema:
+        To extend the schema:
 
-	% ldapmodify -h ldap.domain.com -D "cn=Directory Manager" -f pykota-schema-sunds.ldif
+        % ldapmodify -h ldap.domain.com -D "cn=Directory Manager" -f pykota-schema-sunds.ldif
 
-	Sun Directory Server will replicate schema changes in a
-	multi-master replication environment.
+        Sun Directory Server will replicate schema changes in a
+        multi-master replication environment.
 
 Database Indexes :
 ------------------
 
 pykota-sunds-indexes.ldif :
 
-	Creating indexes while not mandatory will speed up queries
-	to the PyKota objects. This will setup the following indexes:
+        Creating indexes while not mandatory will speed up queries
+        to the PyKota objects. This will setup the following indexes:
 
-	pykotaUserName:		presence, equality, substring
-	pykotaGroupName:	presence, equality, substring
-	pykotaPrinterName:	presence, equality, substring
-	pykotaBillingCode:	presence, equality, substring
-	pykotaLastJobIdent:	equality
+        pykotaUserName:         presence, equality, substring
+        pykotaGroupName:        presence, equality, substring
+        pykotaPrinterName:      presence, equality, substring
+        pykotaBillingCode:      presence, equality, substring
+        pykotaLastJobIdent:     equality
 
-	To define the indexes:
+        To define the indexes:
 
-	% ldapmodify -a -h ldap.domain.com -D "cn=Directory Manager" -f pykota-sunds-indexes.ldif
-	
-	By default configuration settings are NOT replicated in a
-	replication environment so the following indexes must be
-	defined on all hosts.
+        % ldapmodify -a -h ldap.domain.com -D "cn=Directory Manager" -f pykota-sunds-indexes.ldif
+        
+        By default configuration settings are NOT replicated in a
+        replication environment so the following indexes must be
+        defined on all hosts.
 
-	To initialize the indexes:
+        To initialize the indexes:
 
-	% ServerRoot/slapd-serverID/db2index.pl \
-			-D "cn=Directory Manager" -w password -n userRoot \
-			-t pykotaUserName
+        % ServerRoot/slapd-serverID/db2index.pl \
+                        -D "cn=Directory Manager" -w password -n userRoot \
+                        -t pykotaUserName
 
-	% ServerRoot/slapd-serverID/db2index.pl \
-			-D "cn=Directory Manager" -w password -n userRoot \
-			-t pykotaGroupName
+        % ServerRoot/slapd-serverID/db2index.pl \
+                        -D "cn=Directory Manager" -w password -n userRoot \
+                        -t pykotaGroupName
 
-	% ServerRoot/slapd-serverID/db2index.pl \
-			-D "cn=Directory Manager" -w password -n userRoot \
-			-t pykotaPrinterName
+        % ServerRoot/slapd-serverID/db2index.pl \
+                        -D "cn=Directory Manager" -w password -n userRoot \
+                        -t pykotaPrinterName
 
-	% ServerRoot/slapd-serverID/db2index.pl \
-			-D "cn=Directory Manager" -w password -n userRoot \
-			-t pykotaBillingCode
+        % ServerRoot/slapd-serverID/db2index.pl \
+                        -D "cn=Directory Manager" -w password -n userRoot \
+                        -t pykotaBillingCode
 
-	% ServerRoot/slapd-serverID/db2index.pl \
-			-D "cn=Directory Manager" -w password -n userRoot \
-			-t pykotaLastJobIdent
+        % ServerRoot/slapd-serverID/db2index.pl \
+                        -D "cn=Directory Manager" -w password -n userRoot \
+                        -t pykotaLastJobIdent
 
-	This must be preformed on all hosts within a replication environment.
+        This must be preformed on all hosts within a replication environment.
 
-	Managing Indexes References :
-		http://docs.sun.com/source/816-6698-10/indexing.html
+        Managing Indexes References :
+                http://docs.sun.com/source/816-6698-10/indexing.html
 
 Directory Information Tree (DIT) :
 ----------------------------------
 
 pykota-sample.ldif :
 
-	This is provided with PyKota though it will need to be modified
-	in order to be incorporated into your environment. Sun Directory Server
-	will encrypt the userPassword entry so you may wish to leave it as
-	plain text when creating the pykotaadmin and pykotauser entries.
-	
-	If a Password Policy is being enforced it would be advisable exclude
-	both the pykotauser and pykotaadmin from that policy. This is especially
-	true if passwordMustChange is set to 'On' since they will fail to authenticate
-	until the password is changed.
+        This is provided with PyKota though it will need to be modified
+        in order to be incorporated into your environment. Sun Directory Server
+        will encrypt the userPassword entry so you may wish to leave it as
+        plain text when creating the pykotaadmin and pykotauser entries.
+        
+        If a Password Policy is being enforced it would be advisable exclude
+        both the pykotauser and pykotaadmin from that policy. This is especially
+        true if passwordMustChange is set to 'On' since they will fail to authenticate
+        until the password is changed.
 
-	Sun Directory Server will replicate DIT changes in a
-	multi-master replication environment.
+        Sun Directory Server will replicate DIT changes in a
+        multi-master replication environment.
 
 Access Control Instructions (ACI) :
 -----------------------------------
  
-	The provided ACI's must not be blindly added using ldapmodify or
-	ldapadd, if you do so you will clobber any existing ACI's for a
-	given object! You must first query the server for any existing
-	ACI's and capture them to a file, append the PyKota ACI's to said
-	file and then modify the object. This is especially pertinent in
-	regards to ou=People which has 5 default ACI's associated with it.
+        The provided ACI's must not be blindly added using ldapmodify or
+        ldapadd, if you do so you will clobber any existing ACI's for a
+        given object! You must first query the server for any existing
+        ACI's and capture them to a file, append the PyKota ACI's to said
+        file and then modify the object. This is especially pertinent in
+        regards to ou=People which has 5 default ACI's associated with it.
 
-	It is stongly recommended to use the Directory Server Console to
-	add the ACI's. You have been warned, there is no warrenty, good luck.
+        It is stongly recommended to use the Directory Server Console to
+        add the ACI's. You have been warned, there is no warrenty, good luck.
 
-	Managing Access Control:
-		http://docs.sun.com/source/816-6698-10/aci.html
+        Managing Access Control:
+                http://docs.sun.com/source/816-6698-10/aci.html
 
 pykota-admin-aci :
 
-	dn: ou=pykota,dc=example,dc=com
-	aci: (targetattr="*") (version 3.0; acl "PyKota Pykota ACI"; allow(all) userdn="ldap:///cn=pykotaadmin,ou=PyKota,dc=example,dc=com";)
+        dn: ou=pykota,dc=example,dc=com
+        aci: (targetattr="*") (version 3.0; acl "PyKota Pykota ACI"; allow(all) userdn="ldap:///cn=pykotaadmin,ou=PyKota,dc=example,dc=com";)
 
-	dn: ou=People,dc=example,dc=com
-	aci: (targetattr="*") (version 3.0; acl "PyKota People ACI"; allow(write) userdn="ldap:///cn=pykotaadmin,ou=PyKota,dc=example,dc=com";)
+        dn: ou=People,dc=example,dc=com
+        aci: (targetattr="*") (version 3.0; acl "PyKota People ACI"; allow(add, write) userdn="ldap:///cn=pykotaadmin,ou=PyKota,dc=example,dc=com";)
 
-	dn: ou=groups,dc=example,dc=com
-	aci: (targetattr="*") (version 3.0; acl "PyKota Groups ACI"; allow(write) userdn="ldap:///cn=pykotaadmin,ou=PyKota,dc=example,dc=com";)
+        dn: ou=groups,dc=example,dc=com
+        aci: (targetattr="*") (version 3.0; acl "PyKota Groups ACI"; allow(add, write) userdn="ldap:///cn=pykotaadmin,ou=PyKota,dc=example,dc=com";)
 
-	Sun Directory Server will replicate ACI changes in a
-	multi-master replication environment.
+        Sun Directory Server will replicate ACI changes in a
+        multi-master replication environment.
 
