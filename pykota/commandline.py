@@ -27,7 +27,7 @@ import optparse
 from gettext import gettext as _
 
 from pykota import version
-from pykota.utils import loginvalidparam
+from pykota.utils import loginvalidparam, getdefaultcharset
 
 def checkandset_pagesize(option, opt, value, optionparser) :
     """Checks and sets the page size."""
@@ -73,6 +73,24 @@ def checkandset_percent(option, opt, value, optionparser) :
         setattr(optionparser.values, option.dest, option.default)
     else :    
         setattr(optionparser.values, option.dest, value)
+
+def load_arguments_file(option, opt, value, optionparser) :    
+    """Checks if an option argument is comprised between 0.0 included and 100.0 not included, and validates the option if it is the case."""
+    setattr(optionparser.values, option.dest, value)
+    try :
+        argsfile = open(value.encode(getdefaultcharset(), "replace"), "r")
+    except IOError :
+        loginvalidparam(opt, value, additionalinfo=_("this option will be ignored"))
+    else :
+        arguments = [ l.strip().decode(getdefaultcharset(), "replace") for l in argsfile.readlines() ]
+        argsfile.close()
+        for i in range(len(arguments)) :
+            argi = arguments[i]
+            if argi.startswith('"') and argi.endswith('"') :
+                arguments[i] = argi[1:-1]
+        arguments.reverse()        
+        for arg in arguments :
+            optionparser.rargs.insert(0, arg)        
 
 class PyKotaOptionParser(optparse.OptionParser) :
     """
@@ -196,3 +214,9 @@ class PyKotaOptionParser(optparse.OptionParser) :
         self.add_option("-v", "--version",
                               action="version",
                               help=_("show the version number and exit"))
+        self.add_option("-A", "--arguments",
+                              action="callback",
+                              type="string",
+                              dest="argumentsfile",
+                              callback=load_arguments_file,
+                              help=_("loads additional options and arguments from a file, one per line"))
