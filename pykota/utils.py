@@ -111,20 +111,23 @@ def unicodeToDatabase(text) :
     else :    
         return None
             
+def getdefaultcharset() :            
+    """Returns the default charset to use."""
+    return sys.stdout.encoding or locale.getlocale()[1] or "ANSI_X3.4-1968"
+    
 def logerr(text) :
     """Logs an unicode text to stderr."""
-    sys.stderr.write(text.encode(sys.stdout.encoding \
-                                     or locale.getlocale()[1] \
-                                     or "ANSI_X3.4-1968", \
-                                 "replace"))
+    sys.stderr.write(text.encode(getdefaultcharset(), "replace"))
     sys.stderr.flush()
     
-def loginvalidparam(opt, value, defaultvalue, additionalinfo=None) :
+def loginvalidparam(opt, value, defaultvalue=None, additionalinfo=None) :
     """Logs an error when an invalid parameter to a command line option
        is encountered.
     """   
-    message = _("Invalid value '%(value)s' for the %(opt)s command line option, using default '%(defaultvalue)s' instead") \
+    message = _("Invalid value '%(value)s' for the %(opt)s command line option") \
                                 % locals()
+    if defaultvalue is not None :                            
+        message += ", using default '%(defaultvalue)s' instead" % locals()
     if additionalinfo :
         logerr("%s (%s)\n" % (message, additionalinfo))
     else :    
@@ -134,10 +137,9 @@ def crashed(message="Bug in PyKota") :
     """Minimal crash method."""
     import traceback
     from pykota.version import __version__
-    charset = sys.stdout.encoding or locale.getlocale()[1] or "ANSI_X3.4-1968"
     lines = []
     for line in traceback.format_exception(*sys.exc_info()) :
-        line = line.decode(charset, "replace")
+        line = line.decode(getdefaultcharset(), "replace")
         lines.extend([l for l in line.split("\n") if l])
     msg = "ERROR: ".join(["%s\n" % l for l in (["ERROR: PyKota v%s" % __version__, message] + lines)])
     logerr(msg)
