@@ -95,7 +95,7 @@ if __name__ == "__main__" :
     parser.add_option("-P", "--printer",
                             dest="printer",
                             default="*",
-                            help=_("Reports for this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
+                            help=_("Acts on this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
                             
     parser.add_example('',
                        _("This would generate a report for all users on all printers."))

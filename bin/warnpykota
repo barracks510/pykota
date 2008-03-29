@@ -241,7 +241,7 @@ if __name__ == "__main__" :
     parser.add_option("-P", "--printer",
                             dest="printer",
                             default="*",
-                            help=_("Check if quota is over on this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
+                            help=_("Acts on this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
                             
     parser.add_example('',
                        _("This would notify all users who have reached the limit of their printing quota on any printer."))
