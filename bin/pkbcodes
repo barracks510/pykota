@@ -149,7 +149,7 @@ if __name__ == "__main__" :
                             action="store_const",
                             const="list",
                             dest="action",
-                            help=_("Display information about the specified billing codes."))
+                            help=_("Display detailed informations about the specified billing codes."))
     parser.add_option("-r", "--reset",
                             action="store_true",
                             dest="reset",
