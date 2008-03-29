@@ -21,82 +21,56 @@
 #
 #
 
+"""A print quote generator for PyKota"""
+
 import sys
 import os
 import pwd
 
 import pykota.appinit
-from pykota.utils import *
-
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
 from pykota.tool import PyKotaTool
 from pykota.accounter import openAccounter
     
-
-__doc__ = N_("""pykotme v%(__version__)s (c) %(__years__)s %(__author__)s
-
-Gives print quotes to users.
-
-command line usage :
-
-  pykotme  [options]  [files]
-
-options :
-
-  -v | --version       Prints pykotme's version number then exits.
-  -h | --help          Prints this message then exits.
-  
-  -P | --printer p     Gives a quote for this printer only. Actually p can
-                       use wildcards characters to select only
-                       some printers. The default value is *, meaning
-                       all printers.
-                       You can specify several names or wildcards, 
-                       by separating them with commas.
-  
-examples :                              
-
-  $ pykotme --printer apple file1.ps file2.ps
-  
-  This will give a print quote to the current user. The quote will show
-  the price and size of a job consisting in file1.ps and file2.ps 
-  which would be sent to the apple printer.
-  
-  $ pykotme --printer apple,hplaser <file1.ps
-  
-  This will give a print quote to the current user. The quote will show
-  the price and size of a job consisting in file1.ps as read from
-  standard input, which would be sent to the apple or hplaser
-  printer.
-
-  $ pykotme 
-  
-  This will give a quote for a job consisting of what is on standard 
-  input. The quote will list the job size, and the price the job
-  would cost on each printer.
-""")
-        
-        
 class PyKotMe(PyKotaTool) :        
     """A class for pykotme."""
     def main(self, files, options) :
         """Gives print quotes."""
         if (not sys.stdin.isatty()) and ("-" not in files) :
+            # TODO : create a named temporary file for standard input
+            # TODO : because if there are several printers on the command
+            # TODO : line and they have different preaccounter directives,
+            # TODO : the standard input will already be consumed when looping
+            # TODO : over the second printer below.
             files.append("-")
             
-        printers = self.storage.getMatchingPrinters(options["printer"])
+        printers = self.storage.getMatchingPrinters(options.printer)
         if not printers :
-            raise PyKotaCommandLineError, _("There's no printer matching %s") % options["printer"]
+            raise PyKotaCommandLineError, _("There's no printer matching %s") % options.printer
             
         username = pwd.getpwuid(os.getuid())[0]
-        user = self.storage.getUser(username)
-        if user.Exists and user.LimitBy and (user.LimitBy.lower() == "balance"):
-            print _("Your account balance : %.2f") % (user.AccountBalance or 0.0)
+        if options.user :
+            if not self.config.isAdmin :
+                self.printInfo(_("The --user command line option will be ignored because you are not a PyKota Administrator."), "warn")
+            else :    
+                username = options.user
             
-        if user.Exists :
+        user = self.storage.getUser(username)
+        if not user.Exists :
+            self.printInfo(_("There's no user matching '%(username)s'.") \
+                                              % locals(),
+                           "error")                   
+        else :                   
+            if user.LimitBy and (user.LimitBy.lower() == "balance"):
+                self.display("%s\n" % (_("Your account balance : %.2f") % (user.AccountBalance or 0.0)))
+            
             sizeprinted = False
             done = {}
             for printer in printers :
                 # Now fake some values. TODO : improve API to not need this anymore    
+                printername = printer.Name
                 self.PrinterName = printer.Name
                 self.JobSizeBytes = 1
                 self.preaccounter = openAccounter(self, ispreaccounter=1)
@@ -113,68 +87,36 @@ class PyKotMe(PyKotaTool) :
                     done[key] = (totalsize, inkusage)    
                 (totalsize, inkusage) = done[key]    
                 if not sizeprinted :    
-                    print _("Job size : %i pages") % totalsize    
+                    self.display("%s\n" % (_("Job size : %i pages") % totalsize))
                     sizeprinted = True
                 userpquota = self.storage.getUserPQuota(user, printer)
                 if userpquota.Exists :
                     if printer.MaxJobSize and (totalsize > printer.MaxJobSize) :
-                        print _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
+                        self.display("%s\n" % (_("User %(username)s is not allowed to print so many pages on printer %(printername)s at this time.") % locals()))
                     else :    
                         cost = userpquota.computeJobPrice(totalsize, inkusage)
                         msg = _("Cost on printer %s : %.2f") % (printer.Name, cost)
                         if printer.PassThrough :
                             msg = "%s (%s)" % (msg, _("won't be charged, printer is in passthrough mode"))
                         elif user.LimitBy == "nochange" :    
-                            msg = "%s (%s)" % (msg, _("won't be charged, your account is immutable"))
-                        print msg    
+                            msg = "%s (%s)" % (msg, _("won't be charged, account is immutable"))
+                        self.display("%s\n" % msg)
             if user.LimitBy == "noprint" :
-                print _("Your account settings forbid you to print at this time.")
+                self.display("%s\n" % (_("User %(username)s is forbidden to print at this time.") % locals()))
             
 if __name__ == "__main__" : 
-    retcode = 0
-    try :
-        defaults = { \
-                     "printer" : "*", \
-                   }
-        short_options = "vhP:"
-        long_options = ["help", "version", "printer="]
-        
-        # Initializes the command line tool
-        sender = PyKotMe(doc=__doc__)
-        sender.deferredInit()
-        
-        # parse and checks the command line
-        (options, args) = sender.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
-        
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
-        
-        if options["help"] :
-            sender.display_usage_and_quit()
-        elif options["version"] :
-            sender.display_version_and_quit()
-        else :
-            retcode = sender.main(args, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        try :
-            sender.crashed("pykotme failed")
-        except :    
-            crashed("pykotme failed")
-        retcode = -1
+    parser = PyKotaOptionParser(description=_("Generates print quotes for end users."),
+                                usage="pykotme [options] [files]")
+    parser.add_option("-P", "--printer",
+                            dest="printer",
+                            default="*",
+                            help=_("Acts on this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
+    parser.add_option("-u", "--user",
+                            dest="user",
+                            help=_("Acts on this user only. Only one username can be specified this way. The default value is the name of the user who launched this command. This option is ignored when the command is not launched by a PyKota Administrator."))
 
-    try :
-        sender.storage.close()
-    except (TypeError, NameError, AttributeError) :    
-        pass
-        
-    sys.exit(retcode)    
+    parser.add_example("--printer apple file1.ps <file2.pclxl",                            
+                       _("This would show the number of pages needed to print these two files, as well as the cost of printing them to the 'apple' printer."))
+    parser.add_example("--user john",
+                       _("This would show the number of pages needed to print the content of the standard input, and the cost of printing this on all printers for user 'john'."))
+    run(parser, PyKotMe)
