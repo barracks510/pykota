@@ -219,4 +219,4 @@ class PyKotaOptionParser(optparse.OptionParser) :
                               type="string",
                               dest="argumentsfile",
                               callback=load_arguments_file,
-                              help=_("loads additional options and arguments from a file, one per line"))
+                              help=_("loads additional options and arguments from a file, one per line."))
