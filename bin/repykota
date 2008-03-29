@@ -91,7 +91,7 @@ if __name__ == "__main__" :
                             help=_("Generate group print quota reports instead of user print quota reports."))
     parser.add_option("-i", "--ingroups",
                             dest="ingroups",
-                            help=_("Only reports users who are members of the specified groups. This option is reserved to PyKota administrators."))
+                            help=_("Only report users who are members of the specified groups. This option is reserved to PyKota administrators."))
     parser.add_option("-P", "--printer",
                             dest="printer",
                             default="*",

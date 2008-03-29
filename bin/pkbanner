@@ -233,14 +233,14 @@ if __name__ == "__main__" :
     parser.add_option("-l", "--logo",
                             dest="logo",
                             default=u"/usr/share/pykota/logos/pykota.jpeg",
-                            help=_("The image to use as a logo. The logo will be drawn at the center top of the page. The default logo is %default"))
+                            help=_("The image to use as a logo. The logo will be drawn at the center top of the page. The default logo is %default."))
     parser.add_option("-p", "--pagesize",
                             type="string",
                             action="callback",
                             callback=checkandset_pagesize,
                             dest="pagesize",
                             default=u"A4",
-                            help=_("Set the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default"))
+                            help=_("Set the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default."))
     parser.add_option("-s", "--savetoner",
                             type="float",
                             action="callback",
@@ -251,7 +251,7 @@ if __name__ == "__main__" :
     parser.add_option("-u", "--url",
                             dest="url",
                             default=u"http://www.pykota.com",
-                            help=_("Set the url to write at the bottom of the banner page. The default url is %default"))
+                            help=_("Set the url to write at the bottom of the banner page. The default url is %default."))
     parser.add_example('--logo="" --savetoner=75',
                        _("This would generate a banner in the default page size, with no logo, and text luminosity would be increased by 75%."))
                        

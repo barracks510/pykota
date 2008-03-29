@@ -116,7 +116,7 @@ if __name__ == "__main__" :
                             help=_("Acts on this user only. Only one username can be specified this way. The default value is the name of the user who launched this command. This option is ignored when the command is not launched by a PyKota Administrator."))
 
     parser.add_example("--printer apple file1.ps <file2.pclxl",                            
-                       _("This would show the number of pages needed to print these two files, as well as the cost of printing them to the 'apple' printer."))
+                       _("This would show the number of pages needed to print these two files, as well as the cost of printing them to the 'apple' printer for the user who launched this command."))
     parser.add_example("--user john",
                        _("This would show the number of pages needed to print the content of the standard input, and the cost of printing this on all printers for user 'john'."))
     run(parser, PyKotMe)
