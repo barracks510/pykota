@@ -77,21 +77,21 @@ class Accounter(AccounterBase) :
                 
     def withExternalScript(self) :    
         """Does software accounting through an external script."""
-        self.filter.printInfo(_("Launching SOFTWARE(%s)...") % self.arguments)
+        self.filter.logdebug(_("Launching SOFTWARE(%s)...") % self.arguments)
         pagecounter = None
         child = os.popen(self.arguments, "r")
         try :
             answer = child.read()
         except (IOError, OSError), msg :    
             msg = "%s : %s" % (self.arguments, msg) 
-            self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg)
+            self.filter.printInfo(_("Unable to compute job size with accounter %s") % msg, "warn")
         else :    
             lines = [l.strip() for l in answer.split("\n")]
             for i in range(len(lines)) : 
                 try :
                     pagecounter = int(lines[i])
                 except (AttributeError, ValueError) :
-                    self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
+                    self.filter.logdebug(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
                 else :    
                     break
                     
@@ -101,7 +101,7 @@ class Accounter(AccounterBase) :
                 status = os.WEXITSTATUS(status)
         except TypeError :        
             pass # None means no error occured.
-        self.filter.printInfo(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
+        self.filter.logdebug(_("Software accounter %s exit code is %s") % (self.arguments, str(status)))
             
         if pagecounter is None :    
             message = _("Unable to compute job size with accounter %s") % self.arguments
@@ -112,9 +112,12 @@ class Accounter(AccounterBase) :
         self.filter.logdebug("Software accounter %s said job is %s pages long." % (self.arguments, repr(pagecounter)))
             
         pagecounter = pagecounter or 0    
-        if self.filter.Ticket.FileName is not None :
-            # when a filename is passed as an argument, the backend 
-            # must generate the correct number of copies.
-            pagecounter *= self.filter.Ticket.Copies
+        try :
+            if self.filter.Ticket.FileName is not None :
+                # when a filename is passed as an argument, the backend 
+                # must generate the correct number of copies.
+                pagecounter *= self.filter.Ticket.Copies
+        except AttributeError :        
+            pass # when called from pykotme. TODO : clean this mess some day.
                         
         return pagecounter
