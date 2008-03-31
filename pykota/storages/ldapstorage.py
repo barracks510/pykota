@@ -365,7 +365,7 @@ class Storage(BaseStorage) :
             user.ident = result[0][0]
             user.Description = databaseToUnicode(fields.get("description", [None])[0])
             user.Email = fields.get(self.info["usermail"], [None])[0]
-            user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+            user.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments", "pykotaOverCharge"], base=self.info["balancebase"])
             if not result :
                 raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
@@ -413,7 +413,7 @@ class Storage(BaseStorage) :
             group.ident = result[0][0]
             group.Name = fields.get("pykotaGroupName", [databaseToUnicode(groupname)])[0] 
             group.Description = databaseToUnicode(fields.get("description", [None])[0])
-            group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+            group.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
             for member in self.getGroupMembers(group) :
@@ -658,9 +658,9 @@ class Storage(BaseStorage) :
                     group.ident = groupid
                     group.LimitBy = fields.get("pykotaLimitBy")
                     if group.LimitBy is not None :
-                        group.LimitBy = group.LimitBy[0]
+                        group.LimitBy = databaseToUnicode(group.LimitBy[0])
                     else :    
-                        group.LimitBy = "quota"
+                        group.LimitBy = u"quota"
                     group.AccountBalance = 0.0
                     group.LifeTimePaid = 0.0
                     for member in self.getGroupMembers(group) :
@@ -745,7 +745,7 @@ class Storage(BaseStorage) :
                     user = StorageUser(self, username)
                     user.ident = userid
                     user.Email = fields.get(self.info["usermail"], [None])[0]
-                    user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    user.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
                     user.Description = databaseToUnicode(fields.get("description", [""])[0]) 
                     uname = unicodeToDatabase(username)
                     result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % \
@@ -811,8 +811,8 @@ class Storage(BaseStorage) :
                 if patdict.has_key(groupname) or self.tool.matchString(groupname, patterns) :
                     group = StorageGroup(self, groupname)
                     group.ident = groupid
-                    group.Name = fields.get("pykotaGroupName", [databaseToUnicode(groupname)])[0] 
-                    group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    group.Name = fields.get("pykotaGroupName", [groupname])[0] 
+                    group.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
                     group.Description = databaseToUnicode(fields.get("description", [""])[0]) 
                     group.AccountBalance = 0.0
                     group.LifeTimePaid = 0.0
@@ -920,7 +920,7 @@ class Storage(BaseStorage) :
         uname = unicodeToDatabase(user.Name)
         newfields = {
                        "pykotaUserName" : uname,
-                       "pykotaLimitBy" : (user.LimitBy or "quota"),
+                       "pykotaLimitBy" : unicodeToDatabase(user.LimitBy or u"quota"),
                        "description" : unicodeToDatabase(user.Description or ""),
                        self.info["usermail"] : user.Email or "",
                     }   
@@ -995,7 +995,7 @@ class Storage(BaseStorage) :
         gname = unicodeToDatabase(group.Name)
         newfields = { 
                       "pykotaGroupName" : gname,
-                      "pykotaLimitBy" : (group.LimitBy or "quota"),
+                      "pykotaLimitBy" : unicodeToDatabase(group.LimitBy or u"quota"),
                       "description" : unicodeToDatabase(group.Description or "")
                     } 
         mustadd = 1
@@ -1126,7 +1126,7 @@ class Storage(BaseStorage) :
     def saveUser(self, user) :
         """Saves the user to the database in a single operation."""
         newfields = {
-                       "pykotaLimitBy" : (user.LimitBy or "quota"),
+                       "pykotaLimitBy" : unicodeToDatabase(user.LimitBy or u"quota"),
                        "description" : unicodeToDatabase(user.Description or ""), 
                        self.info["usermail"] : user.Email or "",
                     }   
@@ -1141,7 +1141,7 @@ class Storage(BaseStorage) :
     def saveGroup(self, group) :
         """Saves the group to the database in a single operation."""
         newfields = {
-                       "pykotaLimitBy" : (group.LimitBy or "quota"),
+                       "pykotaLimitBy" : unicodeToDatabase(group.LimitBy or u"quota"),
                        "description" : unicodeToDatabase(group.Description or ""), 
                     }   
         self.doModify(group.ident, newfields)
