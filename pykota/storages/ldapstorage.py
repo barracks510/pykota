@@ -319,7 +319,7 @@ class Storage(BaseStorage) :
         ldapfilter = "objectClass=pykotaBilling"
         result = self.doSearch(ldapfilter, ["pykotaBillingCode"], base=self.info["billingcodebase"])
         if result :
-            return [databaseToUnicode(bc) for bc in self.filterNames(result, "pykotaBillingCode", billingcode)]
+            return self.filterNames(result, "pykotaBillingCode", billingcode)
         else :    
             return []
         
@@ -364,7 +364,7 @@ class Storage(BaseStorage) :
             fields = result[0][1]
             user.ident = result[0][0]
             user.Description = databaseToUnicode(fields.get("description", [None])[0])
-            user.Email = fields.get(self.info["usermail"], [None])[0]
+            user.Email = databaseToUnicode(fields.get(self.info["usermail"], [None])[0])
             user.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments", "pykotaOverCharge"], base=self.info["balancebase"])
             if not result :
@@ -411,7 +411,7 @@ class Storage(BaseStorage) :
         if result :
             fields = result[0][1]
             group.ident = result[0][0]
-            group.Name = fields.get("pykotaGroupName", [databaseToUnicode(groupname)])[0] 
+            group.Name = databaseToUnicode(fields.get("pykotaGroupName", [groupname])[0])
             group.Description = databaseToUnicode(fields.get("description", [None])[0])
             group.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
             group.AccountBalance = 0.0
@@ -436,7 +436,7 @@ class Storage(BaseStorage) :
         if result :
             fields = result[0][1]       # take only first matching printer, ignore the rest
             printer.ident = result[0][0]
-            printer.Name = fields.get("pykotaPrinterName", [databaseToUnicode(printername)])[0] 
+            printer.Name = databaseToUnicode(fields.get("pykotaPrinterName", [printername])[0])
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0])
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0])
             printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
@@ -591,7 +591,7 @@ class Storage(BaseStorage) :
             if result :
                 fields = result[0][1]
                 lastjob.ident = result[0][0]
-                lastjob.JobId = fields.get("pykotaJobId")[0]
+                lastjob.JobId = databaseToUnicode(fields.get("pykotaJobId")[0])
                 lastjob.UserName = databaseToUnicode(fields.get("pykotaUserName")[0])
                 lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0])
                 try :
@@ -602,15 +602,15 @@ class Storage(BaseStorage) :
                     lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 except ValueError :    
                     lastjob.JobPrice = None
-                lastjob.JobAction = fields.get("pykotaAction", [""])[0]
+                lastjob.JobAction = databaseToUnicode(fields.get("pykotaAction", [""])[0])
                 lastjob.JobFileName = databaseToUnicode(fields.get("pykotaFileName", [""])[0]) 
                 lastjob.JobTitle = databaseToUnicode(fields.get("pykotaTitle", [""])[0]) 
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
                 lastjob.JobOptions = databaseToUnicode(fields.get("pykotaOptions", [""])[0]) 
-                lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
+                lastjob.JobHostName = databaseToUnicode(fields.get("pykotaHostName", [""])[0])
                 lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
                 lastjob.JobBillingCode = databaseToUnicode(fields.get("pykotaBillingCode", [None])[0])
-                lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
+                lastjob.JobMD5Sum = databaseToUnicode(fields.get("pykotaMD5Sum", [None])[0])
                 lastjob.JobPages = fields.get("pykotaPages", [""])[0]
                 try :
                     lastjob.PrecomputedJobSize = int(fields.get("pykotaPrecomputedJobSize", [0])[0])
@@ -620,7 +620,7 @@ class Storage(BaseStorage) :
                     lastjob.PrecomputedJobPrice = float(fields.get("pykotaPrecomputedJobPrice", [0.0])[0])
                 except ValueError :    
                     lastjob.PrecomputedJobPrice = None
-                if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
+                if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == u"hidden" :
                     (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
@@ -744,7 +744,7 @@ class Storage(BaseStorage) :
                 if patdict.has_key(username) or self.tool.matchString(username, patterns) :
                     user = StorageUser(self, username)
                     user.ident = userid
-                    user.Email = fields.get(self.info["usermail"], [None])[0]
+                    user.Email = databaseToUnicode(fields.get(self.info["usermail"], [None])[0])
                     user.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
                     user.Description = databaseToUnicode(fields.get("description", [""])[0]) 
                     uname = unicodeToDatabase(username)
@@ -811,7 +811,7 @@ class Storage(BaseStorage) :
                 if patdict.has_key(groupname) or self.tool.matchString(groupname, patterns) :
                     group = StorageGroup(self, groupname)
                     group.ident = groupid
-                    group.Name = fields.get("pykotaGroupName", [groupname])[0] 
+                    group.Name = databaseToUnicode(fields.get("pykotaGroupName", [groupname])[0]) 
                     group.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
                     group.Description = databaseToUnicode(fields.get("description", [""])[0]) 
                     group.AccountBalance = 0.0
@@ -922,7 +922,7 @@ class Storage(BaseStorage) :
                        "pykotaUserName" : uname,
                        "pykotaLimitBy" : unicodeToDatabase(user.LimitBy or u"quota"),
                        "description" : unicodeToDatabase(user.Description or ""),
-                       self.info["usermail"] : user.Email or "",
+                       self.info["usermail"] : unicodeToDatabase(user.Email or ""),
                     }   
                        
         mustadd = 1
@@ -1206,22 +1206,22 @@ class Storage(BaseStorage) :
             dn = printer.LastJob.ident
         if self.privacy :    
             # For legal reasons, we want to hide the title, filename and options
-            title = filename = options = "hidden"
+            title = filename = options = u"hidden"
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,
                    "pykotaUserName" : uname,
                    "pykotaPrinterName" : pname,
-                   "pykotaJobId" : jobid,
+                   "pykotaJobId" : unicodeToDatabase(jobid),
                    "pykotaPrinterPageCounter" : str(pagecounter),
-                   "pykotaAction" : action,
+                   "pykotaAction" : unicodeToDatabase(action),
                    "pykotaFileName" : ((filename is None) and "None") or unicodeToDatabase(filename), 
                    "pykotaTitle" : ((title is None) and "None") or unicodeToDatabase(title), 
                    "pykotaCopies" : str(copies), 
                    "pykotaOptions" : ((options is None) and "None") or unicodeToDatabase(options), 
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
-                   "pykotaMD5Sum" : str(jobmd5sum),
+                   "pykotaMD5Sum" : unicodeToDatabase(jobmd5sum),
                    "pykotaPages" : jobpages,            # don't add this attribute if it is not set, so no string conversion
                    "pykotaBillingCode" : unicodeToDatabase(jobbilling), # don't add this attribute if it is not set, so no string conversion
                    "pykotaPrecomputedJobSize" : str(precomputedsize),
@@ -1353,7 +1353,7 @@ class Storage(BaseStorage) :
             for (ident, fields) in result :
                 job = StorageJob(self)
                 job.ident = ident
-                job.JobId = fields.get("pykotaJobId")[0]
+                job.JobId = databaseToUnicode(fields.get("pykotaJobId")[0])
                 job.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
                 try :
                     job.JobSize = int(fields.get("pykotaJobSize", [0])[0])
@@ -1363,15 +1363,15 @@ class Storage(BaseStorage) :
                     job.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 except ValueError :
                     job.JobPrice = None
-                job.JobAction = fields.get("pykotaAction", [""])[0]
+                job.JobAction = databaseToUnicode(fields.get("pykotaAction", [""])[0])
                 job.JobFileName = databaseToUnicode(fields.get("pykotaFileName", [""])[0]) 
                 job.JobTitle = databaseToUnicode(fields.get("pykotaTitle", [""])[0]) 
                 job.JobCopies = int(fields.get("pykotaCopies", [0])[0])
                 job.JobOptions = databaseToUnicode(fields.get("pykotaOptions", [""])[0]) 
-                job.JobHostName = fields.get("pykotaHostName", [""])[0]
+                job.JobHostName = databaseToUnicode(fields.get("pykotaHostName", [""])[0])
                 job.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
                 job.JobBillingCode = databaseToUnicode(fields.get("pykotaBillingCode", [None])[0])
-                job.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
+                job.JobMD5Sum = databaseToUnicode(fields.get("pykotaMD5Sum", [None])[0])
                 job.JobPages = fields.get("pykotaPages", [""])[0]
                 try :
                     job.PrecomputedJobSize = int(fields.get("pykotaPrecomputedJobSize", [0])[0])
@@ -1381,7 +1381,7 @@ class Storage(BaseStorage) :
                     job.PrecomputedJobPrice = float(fields.get("pykotaPrecomputedJobPrice", [0.0])[0])
                 except ValueError :
                     job.PrecomputedJobPrice = None
-                if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
+                if job.JobTitle == job.JobFileName == job.JobOptions == u"hidden" :
                     (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
