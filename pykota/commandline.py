@@ -210,10 +210,10 @@ class PyKotaOptionParser(optparse.OptionParser) :
         """Adds options which are common to all PyKota command line tools."""
         self.add_option("-h", "--help",
                               action="help",
-                              help=_("show this help message and exit"))
+                              help=_("show this help message and exit."))
         self.add_option("-v", "--version",
                               action="version",
-                              help=_("show the version number and exit"))
+                              help=_("show the version number and exit."))
         self.add_option("-A", "--arguments",
                               action="callback",
                               type="string",
