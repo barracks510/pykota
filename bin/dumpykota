@@ -21,186 +21,63 @@
 #
 #
 
+"""A versatile data dumper for PyKota"""
+
 import sys
 
 import pykota.appinit
-from pykota.utils import *
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser
 
 from pykota.errors import PyKotaCommandLineError
 from pykota.dumper import DumPyKota
 
-__doc__ = N_("""dumpykota v%(__version__)s (c) %(__years__)s %(__author__)s
-
-Dumps PyKota database's content.
-
-command line usage :
-
-  dumpykota [options] [filterexpr]
-
-options :
-
-  -v | --version       Prints dumpykota's version number then exits.
-  -h | --help          Prints this message then exits.
-  
-  -d | --data type     Dumps 'type' datas. Allowed types are :
-                       
-                         - history : dumps the jobs history.
-                         - users : dumps users.
-                         - groups : dumps user groups.
-                         - printers : dump printers.
-                         - upquotas : dump user quotas.
-                         - gpquotas : dump user groups quotas.
-                         - payments : dumps user payments.
-                         - pmembers : dumps printer groups members.
-                         - umembers : dumps user groups members.
-                         - billingcodes : dumps billing codes.
-                         - all : dumps all PyKota datas. The output format
-                                 is always XML in this case.
-                         
-                       NB : the -d | --data command line option   
-                       is MANDATORY.
-  
-  -f | --format fmt    Dumps datas in the 'fmt' format. When not specified,
-                       the format is to dump datas in the csv format (comma
-                       separated values). All data dumped is between double
-                       quotes. Allowed formats are :
-                       
-                         - csv : separate datas with commas
-                         - ssv : separate datas with semicolons
-                         - tsv : separate datas with tabs
-                         - xml : dump data as XML 
-                         - cups : dump datas in CUPS' page_log format :
-                                  ONLY AVAILABLE WITH --data history
-                         
-  -o | --output fname  All datas will be dumped to the file instead of
-                       to the standard output. The special '-' filename
-                       is the default value and means stdout.
-                       WARNING : existing files are truncated !
-
-  -O | --orderby exp   Change the ordering or result. 'exp' is a comma
-                       separated list of ordering statements, for example
-                       '--orderby +username,-printername'. Not all expression
-                       values are meaningful, so using this command line 
-                       switch is not recommanded if you don't know the 
-                       exact layout of PyKota's database schema.
-                       
-  -s | --sum           Summarize the selected datas.
-                           ONLY AVAILABLE WITH --data history or payments
-
-  Use the filter expressions to extract only parts of the 
-  datas. Allowed filters are of the form :
-                
-         key=value
-                         
-  Allowed keys for now are :  
-                       
-         username       User's name
-         groupname      Users group's name
-         printername    Printer's name
-         pgroupname     Printers group's name
-         hostname       Client's hostname
-         jobid          Job's Id
-         billingcode    Job's billing code
-         start          Job's date of printing
-         end            Job's date of printing
-         
-  Dates formatting with 'start' and 'end' filter keys :
-  
-    YYYY : year boundaries
-    YYYYMM : month boundaries
-    YYYYMMDD : day boundaries
-    YYYYMMDDhh : hour boundaries
-    YYYYMMDDhhmm : minute boundaries
-    YYYYMMDDhhmmss : second boundaries
-    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)
-    today[+-NbDays] : today more or less N days (e.g. : today-15)
-    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)
-    now[+-NbDays] : now more or less N days (e.g. now-15)
-
-  'now' and 'today' are not exactly the same since today represents the first
-  or last second of the day depending on if it's used in a start= or end=
-  date expression. The utility to be able to specify dates in the future is
-  a question which remains to be answered :-)
-  
-  Contrary to other PyKota management tools, wildcard characters are not 
-  expanded, so you can't use them.
-  
-  NB : not all keys are allowed for each data type, so the result may be 
-  empty if you use a key not available for a particular data type.
-  
-Examples :
-
-  $ dumpykota --data history --format csv >myfile.csv
-  
-  This dumps the history in a comma separated values file, for possible
-  use in a spreadsheet.
-  
-  $ dumpykota --data users --format xml -o users.xml
-  
-  Dumps all users datas to the users.xml file.
-  
-  $ dumpykota --data history printername=HP2100 username=jerome
-  
-  Dumps the job history for user jerome on printer HP2100 only.
-  
-  $ dumpykota --data history start=200503 end=20050730234615
-  
-  Dumps all jobs printed between March 1st 2005 at midnight and
-  July 30th 2005 at 23 hours 46 minutes and 15 secondes included.
-""")
-        
 if __name__ == "__main__" : 
-    retcode = 0
-    try :
-        defaults = { \
-                     "format" : "csv", \
-                     "output" : "-", \
-                   }
-        short_options = "vhd:f:o:sO:"
-        long_options = ["help", "version", "data=", "format=", "output=", "sum", "orderby="]
-        
-        # Initializes the command line tool
-        dumper = DumPyKota(doc=__doc__)
-        dumper.deferredInit()
-        
-        # parse and checks the command line
-        (options, args) = dumper.parseCommandline(sys.argv[1:], short_options, long_options, allownothing=1)
-        
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["data"] = options["d"] or options["data"]
-        options["format"] = options["f"] or options["format"] or defaults["format"]
-        options["output"] = options["o"] or options["output"] or defaults["output"]
-        options["sum"] = options["s"] or options["sum"]
-        options["orderby"] = options["O"] or options["orderby"]
-        
-        if options["help"] :
-            dumper.display_usage_and_quit()
-        elif options["version"] :
-            dumper.display_version_and_quit()
-        elif options["data"] is None :    
-            raise PyKotaCommandLineError, _("The -d | --data command line option is mandatory, see help.")
-        else :
-            retcode = dumper.main(args, options)
-    except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :        
-        pass
-    except :
-        try :
-            dumper.crashed("dumpykota failed")
-        except :    
-            crashed("dumpykota failed")
-        retcode = -1
+    parser = PyKotaOptionParser(description=_("Data Dumper for PyKota."),
+                                usage="dumpykota [options] [filterexpr]")
+                                
+    parser.add_option("-d", "--data",                            
+                            dest="data",
+                            help=_("Select the type of datas to dump. This option is mandatory. Supported data types are : history, payments, billingcodes, users, groups, printers, upquotas, gpquotas, umembers, pmembers, and all. The 'all' value forces the output format to XML."))
+    parser.add_option("-f", "--format",                            
+                            default="csv",
+                            dest="format",
+                            help=_("Select the output format, the default being comma separated values. Supported formats are : csv, ssv, tsv, xml and cups. The 'cups' output format only works when dumping the history, and produces CUPS' page_log compatible output."))
+    parser.add_option("-o", "--output",                            
+                            dest="output",
+                            default=u"-",
+                            help=_("The name of the file the data dump will be written to. The default value is '-', which tells dumpykota to write the dump to stdout."))
+    parser.add_option("-O", "--orderby",                            
+                            dest="orderby",
+                            help=_("Change the ordering of the output based on a comma separated list of ordering statements. For example '-username,+printername' would sort the output by descending order of user names and ascending order of printer names. Not all expressions are supported, and you should not use this if you don't know the internal structure of PyKota's database." ))
+    parser.add_option("-s", "--sum",                            
+                            dest="sum",
+                            action="store_true",
+                            default=False,
+                            help=_("Summarize the output. Only available when dumping the printing history or the payments."))
+                                
+    parser.add_filterexpression("username", _("User's name"))
+    parser.add_filterexpression("groupname", _("Users group's name"))
+    parser.add_filterexpression("printername", _("Printer's name"))
+    parser.add_filterexpression("pgroupname", _("Printers group's name"))
+    parser.add_filterexpression("hostname", _("Host's name"))
+    parser.add_filterexpression("jobid", _("Job's id"))
+    parser.add_filterexpression("billingcode", _("Job's billing code"))
+    parser.add_filterexpression("start", _("Job's date of printing"))
+    parser.add_filterexpression("end", _("Job's date of printing"))
+    
+    parser.add_example('--unit EURO --output /tmp/invoices.pdf start=now-30', 
+                       _("This would generate a PDF document containing invoices for all users who have spent some credits last month. Amounts would be in EURO and not VAT information would be included."))
 
-    try :
-        dumper.storage.close()
-    except (TypeError, NameError, AttributeError) :    
-        pass
-        
-    sys.exit(retcode)    
+    parser.add_example("--data history --format csv >myfile.csv",
+                       _("This would dump the whole printing history to stdout in the CSV format, and redirect the output to a file."))
+  
+    parser.add_example("--data users --format xml -o users.xml",
+                       _("This would dump all users into the 'users.xml' file in the XML format."))
+  
+    parser.add_example("--data history printername=HP2100 username=jerome",
+                       _("This would dump jerome's printing history on printer HP2100."))
+  
+    parser.add_example("--data history start=200503 end=20050730234615",
+                       _("This would dump all jobs printer between March 1st 2008 at midnight and July 30th 2008 at 23 hours 46 minutes and 15 seconds, included."))
+    run(parser, DumPyKota)                   
