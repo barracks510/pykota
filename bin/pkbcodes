@@ -45,8 +45,8 @@ class PKBcodes(PyKotaTool) :
         
     def main(self, names, options) :
         """Manage billing codes."""
-        if (not self.config.isAdmin) and (options.action != "list") :
-            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+        if options.action != "list" :
+            self.adminOnly()
            
         islist = (options.action == "list")
         isadd = (options.action == "add")

@@ -380,10 +380,8 @@ class PKTurnKey(Tool) :
         
     def main(self, names, options) :
         """Intializes PyKota's database."""
-        if not self.config.isAdmin :
-            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], \
-                                   _("You're not allowed to use this command."))
-            
+        self.adminOnly()
+        
         if not names :
             names = ["*"]
             

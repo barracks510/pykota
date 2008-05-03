@@ -170,6 +170,11 @@ class Tool :
                                                       "replace")))
         sys.stderr.flush()
         
+    def adminOnly(self, restricted=True) :
+        """Raises an exception if the user is not a PyKota administrator."""
+        if restricted and not self.config.isAdmin :
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+            
     def matchString(self, s, patterns) :
         """Returns True if the string s matches one of the patterns, else False."""
         if not patterns :

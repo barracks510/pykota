@@ -188,8 +188,7 @@ class PKInvoice(PyKotaTool) :
         if not hasPIL :
             raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
             
-        if not self.config.isAdmin :
-            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+        self.adminOnly()
         
         self.pagesize = getPageSize(options.pagesize)
             
