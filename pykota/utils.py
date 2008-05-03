@@ -23,12 +23,18 @@
 
 import sys
 import os
+import pwd
 import locale
 import gettext
 from types import UnicodeType
 
 from pykota.errors import PyKotaCommandLineError
 
+def onlyAdmin(app, restricted=True) :
+    """Raises an exception if the user is not a PyKota administrator."""
+    if restricted and not app.config.isAdmin :
+        raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], _("You're not allowed to use this command."))
+        
 def initlocale(lang="", cset=None) :
     """Initializes the locale stuff."""
     try :
