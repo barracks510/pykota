@@ -101,8 +101,14 @@ maildomain : %(dnsdomain)s
 admin : %(adminname)s
 adminmail : %(adminemail)s
 
-# Use usernames as-is or convert them to lowercase ?
-utolower : No
+# Use usernames as-is or convert them to lowercase or uppercase ?
+usernamecase : native
+
+# Winbind separator character, uncomment if needed
+# winbind_separator : /
+
+# Should we forbid unknown users from printing ?
+reject_unknown : No
 
 # Should we hide some fields in the history (title, filename) ?
 privacy : no
@@ -192,16 +198,10 @@ class PyKotaSetup :
                  "python-egenix-mxdatetime",
                  "python-imaging",
                  "python-pysnmp4",
-                 "python-pam" ]
+                 "python-pam",
+                 "pkpgcounter" ]
         
-    otherpackages = [ { "name" : "pkpgcounter",
-                        "version" : "3.50",
-                        "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
-                        "commands" : [ "tar -zxf %(name)s-%(version)s.tar.gz",
-                                       "cd %(name)s-%(version)s",
-                                       "python setup.py install",
-                                     ],
-                      },
+    otherpackages = [
                       { "name" : "pkipplib",
                         "version" : "0.07",
                         "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
