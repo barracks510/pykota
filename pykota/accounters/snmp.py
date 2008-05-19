@@ -282,7 +282,7 @@ if hasV4 :
                                              "error")
                 self.initValues()
             else :                                 
-                self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint()))
+                self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint() or "0"))
                 self.printerStatus = int(varBinds[1][1].prettyPrint())
                 self.deviceStatus = int(varBinds[2][1].prettyPrint())
                 self.printerDetectedErrorState = self.extractErrorStates(str(varBinds[3][1]))
