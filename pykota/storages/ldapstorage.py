@@ -1845,11 +1845,10 @@ class Storage(BaseStorage) :
 
     def refundJob(self, jobident) :   
         """Marks a job as refunded in the history."""
-        dn = "cn=%s,%s" % (ident, self.info["jobbase"])
         fields = {
                      "pykotaAction" : "REFUND",
                  }    
-        self.doModify(dn, fields)         
+        self.doModify(jobident, fields)         
         
     def storageUserFromRecord(self, username, record) :
         """Returns a StorageUser instance from a database record."""
