@@ -41,7 +41,7 @@ Licensing information :
   * You can access to PyKota's latest development tree by using 
     SubVersion (aka SVN) :
   
-      $ svn co svn://svn.librelogiciel.com/pykota/trunk pykota
+      $ svn co svn://svn.pykota.com/pykota/trunk pykota
 
   * You are encouraged to support the project by purchasing unlimited
     entry passes to 'OFFICIAL' packages, or Technical Support contracts.
@@ -53,4 +53,5 @@ Licensing information :
   
         http://www.pykota.com/purchase
         http://www.pykota.com/technical-support
+	http://trac.pykota.com
         
