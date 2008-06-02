@@ -258,7 +258,7 @@ Then :
  
 Download the latest PyKota version from the Subversion tree :
 
-    $ svn co svn://svn.librelogiciel.com/pykota/trunk pykota
+    $ svn co http://svn.pykota.com/pykota/trunk pykota
 
 You can now check if the dependencies are correct by typing :
 
@@ -576,6 +576,14 @@ IRC :
   wouldn't benefit from the solutions.
   
   PyKota's main author is known as 'tamere' on IRC.
+  
+Bug Tracker :    
+-------------
+
+  You can report bugs to our bug tracker on the development website
+  at :
+  
+      http://trac.pykota.com
     
 ============================================================
     
