@@ -18,79 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ============================================================
 
-TODO, in no particular order :
-        
-        - Ensure no banner is printed if the user cancelled his job
-          through pknotify+PyKotIcon.
-        
-        - Add a third settable price for printers : a minimal cost
-          for a page, with a default value of 0.0. The value would
-          be used instead of the computed price in the case of ink
-          accounting if the computed price would be lower than this
-          minimal price. The value wouldn't be used (yet?) for 
-          normal page accounting.
-          
-        - Document the PYKOTA_HOME environment variable.
-        
-        - LDAP : See if setting cn=ThePrinter for user print quota entries
-          could be done, only in the case where userquotabase=user
-          (idem for groups). Would make direct modifications (e.g.
-          with gq) more easy.
-          
-        - Allow the disabling of an user print quota entry without
-          deleting it.
-        
-        - Store the value of the user's account balance in the
-          printing history (the value at the time of printing) 
-          as well as in the payments history (as a safety check
-          in case an user complains).
-          
-        - PJL for non-networked backends (see ML's history)
-        
-        - Add the listing of the member printers in pkprinters if the printer
-          is a printer group.
-          
-        - Allow several levels of administrative priviledges by allowing
-          files like ~pykota/pykotadmin.someusername.conf (readonly by
-          user 'someusername'), and have the database server deal
-          with the permissions : no need for additionnal code or data
-          in PyKota's database !
-        
-        - Try to talk to education based distribution coordinators
-          (SambaEdu, SkoleLinux, K12LTSP, ...) to see how to
-          better integrate PyKota with these.
-          
-        - Add most configuration directives to the database itself,
-          while still allowing to overwrite them with the configuration
-          files at run time.
-        
-        - Price and statistics per page format.
-        
-        - Allow the admin to choose an action to take when the database
-          is unavailable (server is down or something like that), so
-          introduce two directives :
-          
-            nodb: accept|reject|hold
-            lognodb: /path/to/file/for/later/batch/update/of/database
-        
-        - CUPS accepts the "STATE: ..." message as backchannel
-          data : use this to tell CUPS what action has been taken
-          for current job. I did some testing but wasn't able to
-          make it work...
-          
-        - Documentation...
-          
-        - Learn more bits of PHP to help with phpPyKotaAdmin, which
-          is a GREAT tool !
-       
-        - Multidatabase support, e.g. store users in LDAP, quota  
-          related datas in PostgreSQL, history in text file,
-          and so on... For 2.0, probably not before.
-          
-        - Re-add support for LPRng if interest is high enough (it is
-          not for now)
-        
-        
-============================================================
+If you want to look at the publicly planned features, please look at :
 
-Please e-mail bugs to: alet@librelogiciel.com (Jerome Alet)
+        http://trac.pykota.com/report/1
+
+If you want some feature to be added, please file a bug request
+at :
+
+        http://trac.pykota.com/newticket
+        
+Thanks in advance.
