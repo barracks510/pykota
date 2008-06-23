@@ -57,7 +57,7 @@ def checkandset_positiveint(option, opt, value, optionparser) :
         setattr(optionparser.values, option.dest, value)
         
 def checkandset_positivefloat(option, opt, value, optionparser) :    
-    """Checks if an option argument is a positive integer and validates the option if it is the case."""
+    """Checks if an option argument is a positive float and validates the option if it is the case."""
     if not (value >= 0.0) :
         loginvalidparam(opt, value, option.default, \
                         _("Value must be positive"))
@@ -75,7 +75,7 @@ def checkandset_percent(option, opt, value, optionparser) :
         setattr(optionparser.values, option.dest, value)
 
 def load_arguments_file(option, opt, value, optionparser) :    
-    """Checks if an option argument is comprised between 0.0 included and 100.0 not included, and validates the option if it is the case."""
+    """Loads arguments from a file, one per line."""
     setattr(optionparser.values, option.dest, value)
     try :
         argsfile = open(value.encode(getdefaultcharset(), "replace"), "r")
