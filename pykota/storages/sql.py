@@ -344,7 +344,7 @@ class SQLStorage :
         
     def getUserNbJobsFromHistory(self, user) :
         """Returns the number of jobs the user has in history."""
-        result = self.doSearch("SELECT COUNT(*) FROM jobhistory WHERE userid=%s" % self.doQuote(user.ident))
+        result = self.doSearch("SELECT COUNT(*) AS count FROM jobhistory WHERE userid=%s" % self.doQuote(user.ident))
         if result :
             return result[0]["count"]
         return 0
