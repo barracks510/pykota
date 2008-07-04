@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 #
 # PyKota : Print Quotas for CUPS
 #
