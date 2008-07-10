@@ -45,11 +45,11 @@ try :
 except ImportError :    
     def detectCharset(text) :
         """Fakes a charset detection if the chardet module is not installed."""
-        return "ISO-8859-15"
+        return "UTF-8"
 else :    
     def detectCharset(text) :
         """Uses the chardet module to workaround CUPS lying to us."""
-        return chardet.detect(text)["encoding"]
+        return chardet.detect(text)["encoding"] or "UTF-8"
 
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
