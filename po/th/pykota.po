@@ -1,21 +1,27 @@
-#
-# PyKota : Print Quotas for CUPS
-#
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# PyKota
+# 
+# PyKota : Print Quotas for CUPS and LPRng
+# 
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
 # $Id$
+# 
+# PyKota translation master file.
+# Copyright (c) 2003, 2004, 2005 Conseil Internet & Logiciels Libres
+# Jerome Alet <alet@librelogiciel.com>, 2003, 2004, 2005.
 # 
 msgid ""
 msgstr ""
@@ -26,7 +32,7 @@ msgstr ""
 "Last-Translator: Suthep Yonpimai <tomzt@hotmail.com>\n"
 "Language-Team: Thai <tomzt@hotmail.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=TIS-620\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #
@@ -77,7 +83,7 @@ msgstr ""
 
 #, python-format
 msgid "SIGTERM received, job %s cancelled."
-msgstr "ได้รับค่า SIGTERM , งาน %s ถูกยกเลิก."
+msgstr "���Ѻ��� SIGTERM , �ҹ %s �١¡��ԡ."
 
 #, python-format
 msgid "Network error while querying the CUPS server : %s"
@@ -109,56 +115,93 @@ msgstr ""
 msgid "Beware : computed job size (%s) != precomputed job size (%s)"
 msgstr ""
 
-msgid "The job size will be trusted anyway according to the 'trustjobsize' directive"
+msgid ""
+"The job size will be trusted anyway according to the 'trustjobsize' directive"
 msgstr ""
 
 #, python-format
-msgid "The job size will be trusted because it is inferior to the 'trustjobsize' directive's limit %s"
+msgid ""
+"The job size will be trusted because it is inferior to the 'trustjobsize' "
+"directive's limit %s"
 msgstr ""
 
 #, python-format
-msgid "The job size will be modified according to the 'trustjobsize' directive : %s"
+msgid ""
+"The job size will be modified according to the 'trustjobsize' directive : %s"
 msgstr ""
 
 #, python-format
-msgid "Printer %s not registered in the PyKota system, applying external policy (%s) for printer %s"
-msgstr "เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
+msgid ""
+"Printer %s not registered in the PyKota system, applying external policy (%"
+"s) for printer %s"
+msgstr ""
+"����ͧ����� %s �ѧ�����ŧ����¹��к��ͧ PyKota ,ŧ����¹���ǹ�������ҹ��¹͡ (%"
+"s) ����Ѻ����ͧ����� %s"
 
 #, python-format
-msgid "User %s not registered in the PyKota system, applying external policy (%s) for printer %s"
-msgstr "ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ,ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
+msgid ""
+"User %s not registered in the PyKota system, applying external policy (%s) "
+"for printer %s"
+msgstr ""
+"����� %s �ѧ�����ŧ����¹��к��ͧ PyKota, ,ŧ����¹���ǹ�������ҹ��¹͡ (%s) "
+"����Ѻ����ͧ����� %s"
 
 #, python-format
-msgid "User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s"
-msgstr "ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานภายนอก (%s) สำหรับเครื่องพิมพ์ %s"
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"external policy (%s) for printer %s"
+msgstr ""
+"����� %s ������ǵ��㹡�þ���캹����ͧ����� %s ��к��ͧ PyKota, "
+"ŧ����¹���ǹ�������ҹ��¹͡ (%s) ����Ѻ����ͧ����� %s"
 
 #, python-format
-msgid "External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files."
-msgstr "กฏการใช้งานภายนอก %s สำหรับเครื่องพิมพ์ %s แจ้งข้อผิดพลาด. ยกเลิกการทำงาน. กรุณาตรวจสอบไฟล์คอนฟิกกุเรชั่นของ PyKota"
+msgid ""
+"External policy %s for printer %s produced an error. Job rejected. Please "
+"check PyKota's configuration files."
+msgstr ""
+"�������ҹ��¹͡ %s ����Ѻ����ͧ����� %s �駢�ͼԴ��Ҵ. ¡��ԡ��÷ӧҹ. "
+"��سҵ�Ǩ�ͺ���͹�ԡ���ê�蹢ͧ PyKota"
 
 #, python-format
-msgid "Printer %s not registered in the PyKota system, applying default policy (%s)"
-msgstr "เครื่องพิมพ์ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s)"
+msgid ""
+"Printer %s not registered in the PyKota system, applying default policy (%s)"
+msgstr ""
+"����ͧ����� %s �ѧ�����ŧ����¹��к��ͧ PyKota, ŧ����¹���ǹ�������ҹ���ͧ�� (%"
+"s)"
 
 #, python-format
-msgid "User %s not registered in the PyKota system, applying default policy (%s) for printer %s"
-msgstr "ผู้ใช้ %s ยังไม่ได้ลงทะเบียนในระบบของ PyKota, ลงทะเบียนในส่วนกฏการใช้งานเบื้องต้น (%s) สำหรับเครื่องพิมพ์ %s"
+msgid ""
+"User %s not registered in the PyKota system, applying default policy (%s) "
+"for printer %s"
+msgstr ""
+"����� %s �ѧ�����ŧ����¹��к��ͧ PyKota, ŧ����¹���ǹ�������ҹ���ͧ�� (%s) "
+"����Ѻ����ͧ����� %s"
 
 #, python-format
-msgid "User %s doesn't have quota on printer %s in the PyKota system, applying default policy (%s)"
-msgstr "ผู้ใช้ %s ไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบของ PyKota , ลงทะเบียน ในส่วนกฏการใช้งานเบื้องต้น (%s)"
+msgid ""
+"User %s doesn't have quota on printer %s in the PyKota system, applying "
+"default policy (%s)"
+msgstr ""
+"����� %s ������ǵ��㹡�þ���캹����ͧ����� %s ��к��ͧ PyKota , ŧ����¹ "
+"���ǹ�������ҹ���ͧ�� (%s)"
 
 #, python-format
-msgid "Printer %s still not registered in the PyKota system, job will be rejected"
-msgstr "เครื่องพิมพ์ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก"
+msgid ""
+"Printer %s still not registered in the PyKota system, job will be rejected"
+msgstr "����ͧ����� %s �ѧ�������ŧ����¹��к� PyKota, �ҹ�����觨ж١¡��ԡ"
 
 #, python-format
-msgid "User %s still not registered in the PyKota system, job will be rejected on printer %s"
-msgstr "ผู้ใช้ %s ยังคงไม่ได้ลงทะเบียนในระบบ PyKota, งานที่สั่งจะถูกยกเลิก printer %s"
+msgid ""
+"User %s still not registered in the PyKota system, job will be rejected on "
+"printer %s"
+msgstr "����� %s �ѧ�������ŧ����¹��к� PyKota, �ҹ�����觨ж١¡��ԡ printer %s"
 
 #, python-format
-msgid "User %s still doesn't have quota on printer %s in the PyKota system, job will be rejected"
-msgstr "ผู้ใช้ %s ยังคงไม่มีโควต้าในการพิมพ์บนเครื่องพิมพ์ %s ในระบบ PyKota ,งานที่สั่งจะถูกยกเลิก "
+msgid ""
+"User %s still doesn't have quota on printer %s in the PyKota system, job "
+"will be rejected"
+msgstr ""
+"����� %s �ѧ��������ǵ��㹡�þ���캹����ͧ����� %s ��к� PyKota ,�ҹ�����觨ж١¡��ԡ "
 
 msgid "Job is a dupe"
 msgstr ""
@@ -191,27 +234,29 @@ msgstr ""
 
 #, python-format
 msgid "Impossible to connect to SMTP server : %s"
-msgstr "ไม่สามารถติดต่อกับ SMTP เซิร์ฟเวอร์ได้"
+msgstr "�������ö�Դ��͡Ѻ SMTP �����������"
 
 msgid "Print Quota"
-msgstr "โควต้าในการพิมพ์"
+msgstr "�ǵ��㹡�þ����"
 
 #, python-format
 msgid "Impossible to send mail to %s, error %s : %s"
-msgstr "ไม่สามารถส่งเมล์ถึง %s, พบข้อผิดพลาด %s : %s"
+msgstr "�������ö������֧ %s, ����ͼԴ��Ҵ %s : %s"
 
 #, python-format
 msgid "Problem when sending mail : %s"
 msgstr ""
 
 msgid "Job contains no data. Printing is denied."
-msgstr "ไม่พบข้อมูลในงาน ปฏิเสธการพิมพ์ "
+msgstr "��辺������㹧ҹ ����ʸ��þ���� "
 
 msgid "Error in external policy script. Printing is denied."
 msgstr ""
 
 #, python-format
-msgid "Still no print quota entry for user %s on printer %s after external policy. Printing is denied."
+msgid ""
+"Still no print quota entry for user %s on printer %s after external policy. "
+"Printing is denied."
 msgstr ""
 
 msgid "Printing is denied by printer policy."
@@ -222,7 +267,7 @@ msgstr ""
 
 #, python-format
 msgid "Invalid policy %s for printer %s"
-msgstr "กฏการใช้ %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
+msgstr "������� %s ����Ѻ����ͧ����� %s ���١��ͧ"
 
 #, python-format
 msgid "Precomputed job size (%s pages) too large for printer %s."
@@ -241,11 +286,11 @@ msgstr ""
 
 #, python-format
 msgid "Print Quota exceeded for user %s on printer %s"
-msgstr "โควต้าในการพิมพ์ของ %s บนเครื่องพิมพ์ %s หมดแล้ว"
+msgstr "�ǵ��㹡�þ����ͧ %s ������ͧ����� %s �������"
 
 #, python-format
 msgid "Print Quota low for user %s on printer %s"
-msgstr "โควต้าในการพิมพ์ของ %s บนเครื่องพิมพ์ %s ใกล้หมดแล้ว"
+msgstr "�ǵ��㹡�þ����ͧ %s ������ͧ����� %s ����������"
 
 msgid "Job denied, no accounting will be done."
 msgstr ""
@@ -254,7 +299,7 @@ msgid "Job cancelled, no accounting will be done."
 msgstr ""
 
 msgid "Job accounting begins."
-msgstr "เริ่มการทำงานของสมาชิก"
+msgstr "�������÷ӧҹ�ͧ��Ҫԡ"
 
 msgid "Job denied, no accounting has been done."
 msgstr ""
@@ -263,23 +308,25 @@ msgid "Job cancelled, no accounting has been done."
 msgstr ""
 
 msgid "Job accounting ends."
-msgstr "จบการทำงานของสมาชิก"
+msgstr "����÷ӧҹ�ͧ��Ҫԡ"
 
-msgid "Job size forced to 0 because the real CUPS backend failed. No accounting will be done."
+msgid ""
+"Job size forced to 0 because the real CUPS backend failed. No accounting "
+"will be done."
 msgstr ""
 
 msgid "The real CUPS backend failed, but the job will be accounted for anyway."
 msgstr ""
 
 msgid "Job size forced to 0 because printing is denied."
-msgstr "ขนาดของงานถูกเปลี่ยนเป็น 0 เพราะปฏิเสธการพิมพ์"
+msgstr "��Ҵ�ͧ�ҹ�١����¹�� 0 ���л���ʸ��þ����"
 
 msgid "Job size forced to 0 because printing was cancelled."
 msgstr ""
 
 #, python-format
 msgid "Job size : %i"
-msgstr "ขนาดงาน : %i"
+msgstr "��Ҵ�ҹ : %i"
 
 #, python-format
 msgid "User %s's quota on printer %s won't be modified"
@@ -287,10 +334,10 @@ msgstr ""
 
 #, python-format
 msgid "Updating user %s's quota on printer %s"
-msgstr "กำลังปรับปรุงโควต้าของผู้ใช้ %s บนเครื่องพิมพ์ %s"
+msgstr "���ѧ��Ѻ��ا�ǵ�Ңͧ����� %s ������ͧ����� %s"
 
 msgid "Job added to history."
-msgstr "ส่งงานเข้าสู่ประวัติ"
+msgstr "�觧ҹ���������ѵ�"
 
 #, python-format
 msgid "Billing code %s was updated."
@@ -360,7 +407,8 @@ msgid ""
 "\n"
 "  -O | --orderby exp   Change the ordering or result. 'exp' is a comma\n"
 "                       separated list of ordering statements, for example\n"
-"                       '--orderby +username,-printername'. Not all expression\n"
+"                       '--orderby +username,-printername'. Not all "
+"expression\n"
 "                       values are meaningful, so using this command line \n"
 "                       switch is not recommanded if you don't know the \n"
 "                       exact layout of PyKota's database schema.\n"
@@ -393,12 +441,14 @@ msgid ""
 "    YYYYMMDDhh : hour boundaries\n"
 "    YYYYMMDDhhmm : minute boundaries\n"
 "    YYYYMMDDhhmmss : second boundaries\n"
-"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)\n"
+"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-"
+"15)\n"
 "    today[+-NbDays] : today more or less N days (e.g. : today-15)\n"
 "    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)\n"
 "    now[+-NbDays] : now more or less N days (e.g. now-15)\n"
 "\n"
-"  'now' and 'today' are not exactly the same since today represents the first\n"
+"  'now' and 'today' are not exactly the same since today represents the "
+"first\n"
 "  or last second of the day depending on if it's used in a start= or end=\n"
 "  date expression. The utility to be able to specify dates in the future is\n"
 "  a question which remains to be answered :-)\n"
@@ -485,7 +535,8 @@ msgid ""
 "  -s | --skipexisting  In combination with the --add option above, tells\n"
 "                       edpykota to not modify existing print quota entries.\n"
 "                       \n"
-"  -S | --softlimit sl  Sets the quota soft limit to sl pages.                       \n"
+"  -S | --softlimit sl  Sets the quota soft limit to sl "
+"pages.                       \n"
 "  \n"
 "  -H | --hardlimit hl  Sets the quota hard limit to hl pages.\n"
 "  \n"
@@ -494,14 +545,18 @@ msgid ""
 "                       used, + is assumed.\n"
 "\n"
 "  -U | --used u        Sets the page counters for the user u pages on\n"
-"                       the selected printers. Doesn't work for groups, since\n"
-"                       their page counters are the sum of all their members'\n"
+"                       the selected printers. Doesn't work for groups, "
+"since\n"
+"                       their page counters are the sum of all their "
+"members'\n"
 "                       page counters.\n"
 "                       Useful for migrating users from a different system\n"
 "                       where they have already used some pages. Actual\n"
-"                       and Life Time page counters may be increased or decreased\n"
+"                       and Life Time page counters may be increased or "
+"decreased\n"
 "                       if u is prefixed with + or -.\n"
-"                       WARNING : BOTH page counters are modified in all cases,\n"
+"                       WARNING : BOTH page counters are modified in all "
+"cases,\n"
 "                       so be careful.\n"
 "                       NB : if u equals '0', then the action taken is\n"
 "                       the same as if --hardreset was used.\n"
@@ -604,15 +659,15 @@ msgstr ""
 
 #, python-format
 msgid "Invalid softlimit value %s."
-msgstr "ค่า %s ของ softlimit ไม่ถูกต้อง"
+msgstr "��� %s �ͧ softlimit ���١��ͧ"
 
 #, python-format
 msgid "Invalid hardlimit value %s."
-msgstr "ค่า %s ของ hardlimitไม่ถูกต้อง "
+msgstr "��� %s �ͧ hardlimit���١��ͧ "
 
 #, python-format
 msgid "Hard limit %i is less than soft limit %i, values will be exchanged."
-msgstr "ค่า Hard limit %i มีค่าน้อยกว่า soft limit %i กรุณาแก้ไข"
+msgstr "��� Hard limit %i �դ�ҹ��¡��� soft limit %i ��س����"
 
 #, python-format
 msgid "Undefined hard limit set to soft limit (%s)."
@@ -633,10 +688,10 @@ msgid "Modification"
 msgstr ""
 
 msgid "incompatible options, see help."
-msgstr "ตัวเลือกไม่เหมาะสม, กรุณาดูจากส่วนช่วยเหลือ"
+msgstr "������͡����������, ��سҴ٨ҡ��ǹ���������"
 
 msgid "You have to pass user or group names on the command line"
-msgstr "คุณได้รับการผ่านผู้ใช้ หรือกลุ่มผู้ใช้บนคอมมานด์ไลน์"
+msgstr "�س���Ѻ��ü�ҹ����� ���͡��������麹����ҹ���Ź�"
 
 #, python-format
 msgid ""
@@ -694,7 +749,7 @@ msgstr ""
 
 #, python-format
 msgid "There's no printer matching %s"
-msgstr "ไม่พบเครื่องพิมพ์ %s ที่ใช้งานได้"
+msgstr "��辺����ͧ����� %s �����ҹ��"
 
 #, python-format
 msgid ""
@@ -807,7 +862,7 @@ msgid "Job"
 msgstr ""
 
 msgid "Date"
-msgstr "วันที่"
+msgstr "�ѹ���"
 
 msgid "Allowed"
 msgstr ""
@@ -828,10 +883,10 @@ msgid "Result"
 msgstr ""
 
 msgid "Title"
-msgstr "ชื่อเรื่อง"
+msgstr "��������ͧ"
 
 msgid "Filename"
-msgstr "ชื่อแฟ้มข้อมูล"
+msgstr "�������������"
 
 #, python-format
 msgid "Pages printed so far on %s"
@@ -983,9 +1038,11 @@ msgid ""
 "                       set to '-', the PDF document is sent to standard\n"
 "                       output. \n"
 "                       \n"
-"  -u | --unit u        Defines the name of the unit to use on the invoice.                       \n"
+"  -u | --unit u        Defines the name of the unit to use on the "
+"invoice.                       \n"
 "                       The default unit is 'Credits', optionally translated\n"
-"                       to your native language if it is supported by PyKota.\n"
+"                       to your native language if it is supported by "
+"PyKota.\n"
 "  \n"
 "  -V | --vat p         Sets the percent value of the applicable VAT to be\n"
 "                       exposed. The default is 0.0, meaning no VAT\n"
@@ -1015,12 +1072,14 @@ msgid ""
 "    YYYYMMDDhh : hour boundaries\n"
 "    YYYYMMDDhhmm : minute boundaries\n"
 "    YYYYMMDDhhmmss : second boundaries\n"
-"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)\n"
+"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-"
+"15)\n"
 "    today[+-NbDays] : today more or less N days (e.g. : today-15)\n"
 "    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)\n"
 "    now[+-NbDays] : now more or less N days (e.g. now-15)\n"
 "\n"
-"  'now' and 'today' are not exactly the same since today represents the first\n"
+"  'now' and 'today' are not exactly the same since today represents the "
+"first\n"
 "  or last second of the day depending on if it's used in a start= or end=\n"
 "  date expression. The utility to be able to specify dates in the future is\n"
 "  a question which remains to be answered :-)\n"
@@ -1130,7 +1189,8 @@ msgstr ""
 msgid ""
 "pknotify v%(__version__)s (c) %(__years__)s %(__author__)s\n"
 "\n"
-"Notifies or ask questions to end users who launched the PyKotIcon application.\n"
+"Notifies or ask questions to end users who launched the PyKotIcon "
+"application.\n"
 "\n"
 "command line usage :\n"
 "\n"
@@ -1149,19 +1209,23 @@ msgid ""
 "  -a | --ask                 Tells pknotify to ask something to the end\n"
 "                             user. Then pknotify will output the result.\n"
 "                       \n"
-"  -C | --checkauth           When --ask is used and both an 'username' and a\n"
+"  -C | --checkauth           When --ask is used and both an 'username' and "
+"a\n"
 "                             'password' are asked to the end user, then\n"
 "                             pknotify will try to authenticate the user\n"
 "                             through PAM. If authentified, this program\n"
 "                             will print \"AUTH=YES\", else \"AUTH=NO\".\n"
-"                             If a field is missing, \"AUTH=IMPOSSIBLE\" will\n"
+"                             If a field is missing, \"AUTH=IMPOSSIBLE\" "
+"will\n"
 "                             be printed. If the user is authenticated, then\n"
 "                             \"USERNAME=xxxx\" will be printed as well.\n"
 "                             \n"
-"  -c | --confirm             Tells pknotify to ask for either a confirmation                       \n"
+"  -c | --confirm             Tells pknotify to ask for either a "
+"confirmation                       \n"
 "                             or abortion.\n"
 "                             \n"
-"  -D | --denyafter N         With --checkauth above, makes pknotify loop                           \n"
+"  -D | --denyafter N         With --checkauth above, makes pknotify "
+"loop                           \n"
 "                             up to N times if the password is incorrect.\n"
 "                             After having reached the limit, \"DENY\" will\n"
 "                             be printed, which effectively rejects the job.\n"
@@ -1175,16 +1239,21 @@ msgid ""
 "                             of the print job to continue, or the job to\n"
 "                             be cancelled. The default value is CANCEL.\n"
 "                             \n"
-"  -n | --notify              Tells pknotify to send an informational message\n"
+"  -n | --notify              Tells pknotify to send an informational "
+"message\n"
 "                             to the end user.\n"
 "                             \n"
 "  -q | --quit                Tells pknotify to send a message asking the\n"
 "                             PyKotIcon application to exit. This option can\n"
-"                             be combined with the other ones to make PyKotIcon\n"
-"                             exit after having sent the answer from the dialog.\n"
+"                             be combined with the other ones to make "
+"PyKotIcon\n"
+"                             exit after having sent the answer from the "
+"dialog.\n"
 "                             \n"
-"  -t | --timeout T           Tells pknotify to ignore the end user's answer if\n"
-"                             it comes past T seconds after the dialog box being\n"
+"  -t | --timeout T           Tells pknotify to ignore the end user's answer "
+"if\n"
+"                             it comes past T seconds after the dialog box "
+"being\n"
 "                             opened. The default value is 0 seconds, which \n"
 "                             tells pknotify to wait indefinitely.\n"
 "                             Use this option to avoid having an user who\n"
@@ -1211,13 +1280,15 @@ msgid ""
 "                     message to display. If the dialog is confirmed\n"
 "                     then pknotify will print OK, else CANCEL.\n"
 "                     \n"
-"    -n | --notify : A single argument is expected, representing the                 \n"
+"    -n | --notify : A single argument is expected, representing "
+"the                 \n"
 "                    message to display. In this case pknotify will\n"
 "                    always print OK.\n"
 "                    \n"
 "examples :                    \n"
 "\n"
-"  pknotify -d client:7654 --noremote CONTINUE --confirm \"This job costs 10 credits\"\n"
+"  pknotify -d client:7654 --noremote CONTINUE --confirm \"This job costs 10 "
+"credits\"\n"
 "  \n"
 "  Would display the cost of the print job and asks for confirmation.\n"
 "  If the end user doesn't have PyKotIcon running and accepting connections\n"
@@ -1225,7 +1296,8 @@ msgid ""
 "  to print this job.\n"
 "  \n"
 "  pknotify --destination $PYKOTAJOBORIGINATINGHOSTNAME:7654 \\\n"
-"           --checkauth --ask \"Your name:username:\" \"Your password:password:\"\n"
+"           --checkauth --ask \"Your name:username:\" \"Your password:"
+"password:\"\n"
 "           \n"
 "  Asks an username and password, and checks if they are valid.         \n"
 "  NB : The PYKOTAJOBORIGINATINGHOSTNAME environment variable is\n"
@@ -1252,11 +1324,15 @@ msgid "Password correct for user %s"
 msgstr ""
 
 #, python-format
-msgid "The end user at %s:%i didn't answer within %i seconds. The print job will be cancelled."
+msgid ""
+"The end user at %s:%i didn't answer within %i seconds. The print job will be "
+"cancelled."
 msgstr ""
 
 #, python-format
-msgid "Are you sure that PyKotIcon is running and accepting incoming connections on %s:%s ?"
+msgid ""
+"Are you sure that PyKotIcon is running and accepting incoming connections on "
+"%s:%s ?"
 msgstr ""
 
 msgid "Connection error"
@@ -1319,7 +1395,8 @@ msgid ""
 "  -l | --list          List informations about the printer(s) and the\n"
 "                       printers groups it is a member of.\n"
 "                       \n"
-"  -r | --remove        In combination with the --groups option above,                       \n"
+"  -r | --remove        In combination with the --groups option "
+"above,                       \n"
 "                       remove printers from the specified printers groups.\n"
 "                       \n"
 "  -s | --skipexisting  In combination with the --add option above, tells\n"
@@ -1341,7 +1418,8 @@ msgid ""
 "  \n"
 "examples :                              \n"
 "\n"
-"  $ pkprinters --add -D \"HP Printer\" --charge 0.05,0.1 hp2100 hp2200 hp8000\n"
+"  $ pkprinters --add -D \"HP Printer\" --charge 0.05,0.1 hp2100 hp2200 "
+"hp8000\n"
 "  \n"
 "  Will create three printers named hp2100, hp2200 and hp8000.\n"
 "  Their price per page will be set at 0.05 unit, and their price\n"
@@ -1353,12 +1431,14 @@ msgid ""
 "            \n"
 "  $ pkprinters --delete \"*\"\n"
 "  \n"
-"  This will completely delete all printers and associated quota information,\n"
+"  This will completely delete all printers and associated quota "
+"information,\n"
 "  as well as their job history. USE WITH CARE !\n"
 "  \n"
 "  $ pkprinters --groups Laser,HP \"hp*\"\n"
 "  \n"
-"  This will put all printers which name matches \"hp*\" into printers groups \n"
+"  This will put all printers which name matches \"hp*\" into printers "
+"groups \n"
 "  Laser and HP, which MUST already exist.\n"
 "  \n"
 "  $ pkprinters --groups LexMark --remove hp2200\n"
@@ -1381,14 +1461,14 @@ msgid "NO"
 msgstr ""
 
 msgid "in"
-msgstr "ใน"
+msgstr "�"
 
 msgid "Rerouting printers to CUPS"
 msgstr ""
 
 #, python-format
 msgid "Invalid charge amount value %s"
-msgstr "อัตราค่าบริการไม่ถูกต้อง %s"
+msgstr "�ѵ�Ҥ�Һ�ԡ�����١��ͧ %s"
 
 #, python-format
 msgid "Invalid maximum job size value %s"
@@ -1396,21 +1476,21 @@ msgstr ""
 
 #, python-format
 msgid "Printer %s already exists, skipping."
-msgstr "เครื่องพิมพ์ %s ได้ถูกติดตั้งแล้ว, ข้ามไป"
+msgstr "����ͧ����� %s ��١�Դ�������, �����"
 
 #, python-format
 msgid "Printer %s already exists, will be modified."
-msgstr "เครื่องพิมพ์ %s ได้ถูกติดตั้งแล้ว, ทำการแก้ใขหรือไม่"
+msgstr "����ͧ����� %s ��١�Դ�������, �ӡ������������"
 
 #, python-format
 msgid "Invalid printer name %s"
-msgstr "ชื่อเครื่องพิมพ์ %s ไม่ถูกต้อง"
+msgstr "��������ͧ����� %s ���١��ͧ"
 
 msgid "You have to pass printer groups names on the command line"
-msgstr "คุณได้ผ่านชื่อกลุ่มเครื่องพิมพ์บนคอมมานด์ไลน์"
+msgstr "�س���ҹ���͡��������ͧ����캹����ҹ���Ź�"
 
 msgid "You have to pass printer names on the command line"
-msgstr "คุณได้ผ่านชื่อเครื่องพิมพ์บนคอมมานด์ไลน์"
+msgstr "�س���ҹ��������ͧ����캹����ҹ���Ź�"
 
 #, python-format
 msgid ""
@@ -1448,7 +1528,8 @@ msgid ""
 "\n"
 "  -u | --unit u        Defines the name of the unit to use on the receipts.\n"
 "                       The default unit is 'Credits', optionally translated\n"
-"                       to your native language if it is supported by PyKota.\n"
+"                       to your native language if it is supported by "
+"PyKota.\n"
 "  \n"
 "\n"
 "  Use the filter expressions to extract only parts of the \n"
@@ -1474,12 +1555,14 @@ msgid ""
 "    YYYYMMDDhh : hour boundaries\n"
 "    YYYYMMDDhhmm : minute boundaries\n"
 "    YYYYMMDDhhmmss : second boundaries\n"
-"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-15)\n"
+"    yesterday[+-NbDays] : yesterday more or less N days (e.g. : yesterday-"
+"15)\n"
 "    today[+-NbDays] : today more or less N days (e.g. : today-15)\n"
 "    tomorrow[+-NbDays] : tomorrow more or less N days (e.g. : tomorrow-15)\n"
 "    now[+-NbDays] : now more or less N days (e.g. now-15)\n"
 "\n"
-"  'now' and 'today' are not exactly the same since today represents the first\n"
+"  'now' and 'today' are not exactly the same since today represents the "
+"first\n"
 "  or last second of the day depending on if it's used in a start= or end=\n"
 "  date expression. The utility to be able to specify dates in the future is\n"
 "  a question which remains to be answered :-)\n"
@@ -1534,10 +1617,14 @@ msgstr ""
 msgid "Generating receipts"
 msgstr ""
 
-msgid "Refunding for no reason is forbidden. Please use the --reason command line option."
+msgid ""
+"Refunding for no reason is forbidden. Please use the --reason command line "
+"option."
 msgstr ""
 
-msgid "The PDF file containing the receipts will be sent to stdout. --force is assumed."
+msgid ""
+"The PDF file containing the receipts will be sent to stdout. --force is "
+"assumed."
 msgstr ""
 
 #, python-format
@@ -1616,7 +1703,8 @@ msgid ""
 "  -f | --force         Modifies the database instead of printing what\n"
 "                       it would do.\n"
 "                       \n"
-"  -u | --uidmin uid    Only adds users whose uid is greater than or equal to\n"
+"  -u | --uidmin uid    Only adds users whose uid is greater than or equal "
+"to\n"
 "                       uid. You can pass an username there as well, and its\n"
 "                       uid will be used automatically.\n"
 "                       If not set, 0 will be used automatically.\n"
@@ -1625,19 +1713,23 @@ msgid ""
 "  -U | --uidmax uid    Only adds users whose uid is lesser than or equal to\n"
 "                       uid. You can pass an username there as well, and its\n"
 "                       uid will be used automatically.\n"
-"                       If not set, a large value will be used automatically.\n"
+"                       If not set, a large value will be used "
+"automatically.\n"
 "                       Implies -d | --dousers.\n"
 "\n"
-"  -g | --gidmin gid    Only adds groups whose gid is greater than or equal to\n"
+"  -g | --gidmin gid    Only adds groups whose gid is greater than or equal "
+"to\n"
 "                       gid. You can pass a groupname there as well, and its\n"
 "                       gid will be used automatically.\n"
 "                       If not set, 0 will be used automatically.\n"
 "                       Implies -D | --dogroups.\n"
 "                       \n"
-"  -G | --gidmax gid    Only adds groups whose gid is lesser than or equal to\n"
+"  -G | --gidmax gid    Only adds groups whose gid is lesser than or equal "
+"to\n"
 "                       gid. You can pass a groupname there as well, and its\n"
 "                       gid will be used automatically.\n"
-"                       If not set, a large value will be used automatically.\n"
+"                       If not set, a large value will be used "
+"automatically.\n"
 "                       Implies -D | --dogroups.\n"
 "\n"
 "examples :                              \n"
@@ -1656,7 +1748,9 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid "Printer %s is not managed by PyKota yet. Please modify printers.conf and restart CUPS."
+msgid ""
+"Printer %s is not managed by PyKota yet. Please modify printers.conf and "
+"restart CUPS."
 msgstr ""
 
 msgid "Please be patient..."
@@ -1691,7 +1785,8 @@ msgstr ""
 msgid "The --uidmin or --uidmax command line option implies --dousers as well."
 msgstr ""
 
-msgid "The --gidmin or --gidmax command line option implies --dogroups as well."
+msgid ""
+"The --gidmin or --gidmax command line option implies --dogroups as well."
 msgstr ""
 
 msgid "The --dogroups command line option implies --dousers as well."
@@ -1747,7 +1842,8 @@ msgid ""
 "                       \n"
 "  -L | --list          Lists users or groups.\n"
 "  \n"
-"  -l | --limitby l     Choose if the user/group is limited in printing                     \n"
+"  -l | --limitby l     Choose if the user/group is limited in "
+"printing                     \n"
 "                       by its account balance or by its page quota.\n"
 "                       The default value is 'quota'. Allowed values\n"
 "                       are 'quota' 'balance' 'noquota' 'noprint' \n"
@@ -1758,9 +1854,11 @@ msgid ""
 "                         - noquota : no limit, accounting still done.\n"
 "                         - nochange : no limit, accounting not done. \n"
 "                         - noprint : printing is denied. \n"
-"                       NB : nochange and noprint are not supported for groups.\n"
+"                       NB : nochange and noprint are not supported for "
+"groups.\n"
 "                       \n"
-"  -b | --balance b     Sets the user's account balance to b.                     \n"
+"  -b | --balance b     Sets the user's account balance to "
+"b.                     \n"
 "                       Account balance may be increase or decreased\n"
 "                       if b is prefixed with + or -.\n"
 "                       WARNING : when decreasing account balance,\n"
@@ -1774,7 +1872,8 @@ msgid ""
 "                       Only meaningful if -b | --balance is also used.\n"
 "                       \n"
 "                       \n"
-"  -r | --remove        In combination with the --ingroups option above,                       \n"
+"  -r | --remove        In combination with the --ingroups option "
+"above,                       \n"
 "                       remove users from the specified users groups.\n"
 "                       \n"
 "  -s | --skipexisting  In combination with the --add option above, tells\n"
@@ -1834,7 +1933,7 @@ msgstr ""
 
 #, python-format
 msgid "Invalid email address %s"
-msgstr "email address %s ไม่ถูกต้อง"
+msgstr "email address %s ���١��ͧ"
 
 #, python-format
 msgid "There's no %s matching %s"
@@ -1862,7 +1961,7 @@ msgstr ""
 
 #, python-format
 msgid "Invalid limitby value %s"
-msgstr "ค่าการจำกัด %s ไม่ถูกต้อง"
+msgstr "��ҡ�èӡѴ %s ���١��ͧ"
 
 #, python-format
 msgid "Invalid overcharge value %s"
@@ -1870,7 +1969,7 @@ msgstr ""
 
 #, python-format
 msgid "Invalid balance value %s"
-msgstr "ยอดเงินคงเหลือไม่ถูกต้อง %s"
+msgstr "�ʹ�Թ����������١��ͧ %s"
 
 #, python-format
 msgid "There's no users group matching %s"
@@ -1921,7 +2020,8 @@ msgid ""
 "  -d | --duration d    Sets the duration of the display in seconds. \n"
 "                       Defaults to 3 seconds.\n"
 "                       \n"
-"  -f | --font f        Sets the font to use for display.                      \n"
+"  -f | --font f        Sets the font to use for "
+"display.                      \n"
 "                       Defaults to the Python OSD library's default.\n"
 "  \n"
 "  -l | --loop n        Sets the number of times the info will be displayed.\n"
@@ -1942,31 +2042,31 @@ msgstr ""
 
 #, python-format
 msgid "Invalid duration option %s"
-msgstr "การตั้งค่าช่วงเวลาไม่ถูกต้อง"
+msgstr "��õ�駤�Ҫ�ǧ�������١��ͧ"
 
 #, python-format
 msgid "Invalid loop option %s"
-msgstr "กาตั้งค่าการทำซ้ำไม่ถูกต้อง"
+msgstr "�ҵ�駤�ҡ�÷ӫ�����١��ͧ"
 
 #, python-format
 msgid "Invalid sleep option %s"
-msgstr "การตั้งค่าการพักเครื่องไม่ถูกต้อง"
+msgstr "��õ�駤�ҡ�þѡ����ͧ���١��ͧ"
 
 #, python-format
 msgid "Invalid color option %s"
-msgstr "การตั้งค่าสีไม่ถูกต้อง"
+msgstr "��õ�駤�������١��ͧ"
 
 #, python-format
 msgid "User %s doesn't exist in PyKota's database"
-msgstr "ไม่มีชื่อผู้ใช้ %s ในฐานข้อมูลของ PyKota"
+msgstr "����ժ��ͼ���� %s 㹰ҹ�����Ţͧ PyKota"
 
 #, python-format
 msgid "Pages used on %s : %s"
-msgstr "จำนวนหน้าที่ใช้ไปบน %s : %s"
+msgstr "�ӹǹ˹�ҷ����仺� %s : %s"
 
 #, python-format
 msgid "PyKota Units left : %.2f"
-msgstr "หน่วยที่เหลือของ PyKota : %.2f"
+msgstr "˹��·������ͧ͢ PyKota : %.2f"
 
 msgid "Printing denied."
 msgstr ""
@@ -2023,15 +2123,15 @@ msgstr ""
 
 #, python-format
 msgid "Your account balance : %.2f"
-msgstr "ยอดเงินคงเหลือของคุณ : %.2f"
+msgstr "�ʹ�Թ������ͧ͢�س : %.2f"
 
 #, python-format
 msgid "Job size : %i pages"
-msgstr "จำนวนงาน : %i หน้า"
+msgstr "�ӹǹ�ҹ : %i ˹��"
 
 #, python-format
 msgid "Cost on printer %s : %.2f"
-msgstr "ราคาการพิมพ์ของเครื่องพิมพ์ %s : %.2f"
+msgstr "�Ҥҡ�þ����ͧ����ͧ����� %s : %.2f"
 
 msgid "won't be charged, printer is in passthrough mode"
 msgstr ""
@@ -2041,23 +2141,25 @@ msgstr ""
 
 #, python-format
 msgid "Unsupported accounter backend %s"
-msgstr "ระบบบัญชีสมาชิกไม่สนับสนุนการทำงาน %s"
+msgstr "�к��ѭ����Ҫԡ���ʹѺʹع��÷ӧҹ %s"
 
 #, python-format
-msgid "Configuration file %s can't be read. Please check that the file exists and that your permissions are sufficient."
+msgid ""
+"Configuration file %s can't be read. Please check that the file exists and "
+"that your permissions are sufficient."
 msgstr ""
 
 #, python-format
 msgid "Configuration file %s not found."
-msgstr "ขอภัย! ไม่พบคอนฟิกไฟล์ %s"
+msgstr "�����! ��辺�͹�ԡ��� %s"
 
 #, python-format
 msgid "Option %s not found in section global of %s"
-msgstr "ไม่พบตัวเลือก %s ในหมวดทั่วไปของ %s "
+msgstr "��辺������͡ %s ���Ǵ����仢ͧ %s "
 
 #, python-format
 msgid "Option %s not found in section %s of %s"
-msgstr "ไม่พบตัวเลือก %s ในหมวด %s ของ %s"
+msgstr "��辺������͡ %s ���Ǵ %s �ͧ %s"
 
 #, python-format
 msgid "Option ldaptls is set, but certificate %s is not readable."
@@ -2065,7 +2167,7 @@ msgstr ""
 
 #, python-format
 msgid "Option logger only supports values in %s"
-msgstr "ตัวเลือกบันทึกการทำงานสนับสนุนค่าเฉพาะใน %s"
+msgstr "������͡�ѹ�֡��÷ӧҹʹѺʹع���੾��� %s"
 
 #, python-format
 msgid "Invalid preaccounter %s for printer %s"
@@ -2077,11 +2179,11 @@ msgstr ""
 
 #, python-format
 msgid "Invalid accounter %s for printer %s"
-msgstr "ระบบบัญชีสมาชิก %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
+msgstr "�к��ѭ����Ҫԡ %s ����Ѻ����ͧ����� %s ���١��ͧ"
 
 #, python-format
 msgid "Option accounter in section %s only supports values in %s"
-msgstr "ตัวเลือกระบบบัญชีสมาชิกในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+msgstr "������͡�к��ѭ����Ҫԡ���Ǵ %s ʹѺʹع੾�Ф��� %s"
 
 #, python-format
 msgid "Invalid unknown_billingcode directive %s for printer %s"
@@ -2093,10 +2195,12 @@ msgstr ""
 
 #, python-format
 msgid "Option enforcement in section %s only supports values in %s"
-msgstr "ตัวเลือก enforcement ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+msgstr "������͡ enforcement ���Ǵ %s ʹѺʹع੾�Ф��� %s"
 
 #, python-format
-msgid "Option onbackenderror in section %s only supports values 'charge', 'nocharge', and 'retry:num:delay'"
+msgid ""
+"Option onbackenderror in section %s only supports values 'charge', "
+"'nocharge', and 'retry:num:delay'"
 msgstr ""
 
 #, python-format
@@ -2105,15 +2209,15 @@ msgstr ""
 
 #, python-format
 msgid "Option policy in section %s only supports values in %s"
-msgstr "ตัวเลือกกฏการใช้ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+msgstr "������͡����������Ǵ %s ʹѺʹع੾�Ф��� %s"
 
 #, python-format
 msgid "Invalid option mailto %s for printer %s"
-msgstr "ตัวเลือกส่งเมล์  %s สำหรับเครื่องพิมพ์ %s ไม่ถูกต้อง"
+msgstr "������͡������  %s ����Ѻ����ͧ����� %s ���١��ͧ"
 
 #, python-format
 msgid "Option mailto in section %s only supports values in %s"
-msgstr "ตัวเลือกส่งเมล์ในหมวด %s สนับสนุนเฉพาะค่าใน %s"
+msgstr "������͡���������Ǵ %s ʹѺʹع੾�Ф��� %s"
 
 #, python-format
 msgid "Invalid maximal deny banners counter %s"
@@ -2121,11 +2225,11 @@ msgstr ""
 
 #, python-format
 msgid "Invalid grace delay %s"
-msgstr "ค่า grace delay %s ไม่ถูกต้อง"
+msgstr "��� grace delay %s ���١��ͧ"
 
 #, python-format
 msgid "Invalid poor man's threshold %s"
-msgstr "ค่า poor man's threshold %s ไม่ถูกต้อง"
+msgstr "��� poor man's threshold %s ���١��ͧ"
 
 #, python-format
 msgid "Invalid balancezero value %s"
@@ -2136,25 +2240,25 @@ msgid ""
 "Soon you'll not be allowed to print anymore.\n"
 "Please contact the Print Quota Administrator to solve the problem."
 msgstr ""
-"ขออภัย! ยอดเงินของท่านเหลือน้อย\n"
-"ท่านจะไม่สามารพิมพ์เอกสารใดๆได้ในระยะเวลอันใกล้\n"
-"กรุณาติดต่อผู้ดูแลระบบการพิมพ์เพื่อแก้ไขปัญหา"
+"������! �ʹ�Թ�ͧ��ҹ����͹���\n"
+"��ҹ���������þ�����͡����������������ѹ���\n"
+"��سҵԴ��ͼ������к���þ����������䢻ѭ��"
 
 #, python-format
 msgid ""
 "You are not allowed to print anymore because\n"
 "your Print Quota is exceeded on printer %s."
 msgstr ""
-"ขออภัย! คุณไม่สามารถทำการพิมพ์สิ่งใดได้เนื่องจาก\n"
-"สิทธิ์ในการพิมพ์ของคุณเกินกำหนดบนเครื่องพิมพ์ %s."
+"������! �س�������ö�ӡ�þ�������������ͧ�ҡ\n"
+"�Է���㹡�þ����ͧ�س�Թ��˹�������ͧ����� %s."
 
 #, python-format
 msgid ""
 "You will soon be forbidden to print anymore because\n"
 "your Print Quota is almost reached on printer %s."
 msgstr ""
-"ขออภัย! คุณจะไม่ได้รับอนุญาตให้ทำการพิมพ์ใดๆได้อีกเพราะ\n"
-"โควต้าในการพิมพ์ของคุณใกล้หมดบนเครื่องพิมพ์ %s."
+"������! �س��������Ѻ͹حҵ���ӡ�þ���������ա����\n"
+"�ǵ��㹡�þ����ͧ�س������������ͧ����� %s."
 
 #, python-format
 msgid "Incorrect value %s for the duplicatesdelay directive in section %s"
@@ -2173,7 +2277,7 @@ msgid "Option trustjobsize for printer %s is incorrect"
 msgstr ""
 
 msgid "History"
-msgstr "ประวัติ"
+msgstr "����ѵ�"
 
 msgid "Users"
 msgstr ""
@@ -2224,7 +2328,9 @@ msgstr ""
 msgid "Invalid modifier [%s] for --data command line option, see help."
 msgstr ""
 
-msgid "Dumping all PyKota's datas forces format to XML, and disables --sum and filters."
+msgid ""
+"Dumping all PyKota's datas forces format to XML, and disables --sum and "
+"filters."
 msgstr ""
 
 #, python-format
@@ -2243,47 +2349,51 @@ msgstr ""
 
 #, python-format
 msgid "Unsupported logging subsystem %s"
-msgstr "ระบบบันทึกการย่อยไม่สนับสนุนการทำงาน %s"
+msgstr "�к��ѹ�֡����������ʹѺʹع��÷ӧҹ %s"
 
 #, python-format
 msgid "Report for %s quota on printer %s"
-msgstr "รายงานสิทธิ์การพิมพ์สำหรับ %s บนเครื่องพิมพ์ %s"
+msgstr "��§ҹ�Է����þ��������Ѻ %s ������ͧ����� %s"
 
 #, python-format
 msgid "Pages grace time: %i days"
-msgstr "หน้า grace time : %i วัน"
+msgstr "˹�� grace time : %i �ѹ"
 
 #, python-format
 msgid "Price per job: %.3f"
-msgstr "ราคาต่องาน : %.3f"
+msgstr "�Ҥҵ�ͧҹ : %.3f"
 
 #, python-format
 msgid "Price per page: %.3f"
-msgstr "ราคาต่อหน้า : %.3f "
+msgstr "�Ҥҵ��˹�� : %.3f "
 
-msgid "Group          overcharge   used    soft    hard    balance grace         total       paid warn"
+msgid ""
+"Group          overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
 msgstr ""
 
-msgid "User           overcharge   used    soft    hard    balance grace         total       paid warn"
+msgid ""
+"User           overcharge   used    soft    hard    balance grace         "
+"total       paid warn"
 msgstr ""
 
 msgid "unknown"
-msgstr "ไม่ทราบข้อมูล"
+msgstr "����Һ������"
 
 #, python-format
 msgid "Real : %s"
-msgstr "เป็นจริง : %s"
+msgstr "�繨�ԧ : %s"
 
 #, python-format
 msgid "Total : %9i"
-msgstr "รวม : %9i"
+msgstr "��� : %9i"
 
 msgid "N/A"
 msgstr ""
 
 #, python-format
 msgid "Unsupported reporter backend %s"
-msgstr "ระบบรายงานไม่สนับสนุน %s"
+msgstr "�к���§ҹ���ʹѺʹع %s"
 
 #, python-format
 msgid "Refunded %i pages and %.3f credits by %s (%s) on %s"
@@ -2291,7 +2401,7 @@ msgstr ""
 
 #, python-format
 msgid "Unsupported quota storage backend %s"
-msgstr "ระบบสิทธิ์ในการใช้พื้นที่ไม่สนับสนุน %s"
+msgstr "�к��Է���㹡�����鹷�����ʹѺʹع %s"
 
 msgid "Done"
 msgstr ""
@@ -2340,17 +2450,19 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"กรุณาติดต่อผู้ดูแลระบบ :\n"
+"��سҵԴ��ͼ������к� :\n"
 "\n"
 "\t%s - <%s>\n"
 
 #, python-format
 msgid "Unable to match user %s on printer %s, applying default policy (%s)"
-msgstr "ไม่พบชื่อผู้ใช้ %s บนเครื่องพิมพ์ %s, ตรวจสอบกฏการใช้งานเบื้องต้น (%s)"
+msgstr "��辺���ͼ���� %s ������ͧ����� %s, ��Ǩ�ͺ�������ҹ���ͧ�� (%s)"
 
 #, python-format
-msgid "Unable to find user %s's account balance, applying default policy (%s) for printer %s"
-msgstr "ไม่พบยอดเงินของผู้ใช้ %s, ตรวจสอบกฏการใช้งานเบื้องต้น(%s) ของ เครื่องพิมพ์ %s"
+msgid ""
+"Unable to find user %s's account balance, applying default policy (%s) for "
+"printer %s"
+msgstr "��辺�ʹ�Թ�ͧ����� %s, ��Ǩ�ͺ�������ҹ���ͧ��(%s) �ͧ ����ͧ����� %s"
 
 #, python-format
 msgid "User %s will not be charged for printing."
@@ -2358,48 +2470,58 @@ msgstr ""
 
 #, python-format
 msgid "Print Quota exceeded for group %s on printer %s"
-msgstr "ขออภัย! โควต้าในการพิมพ์ของกลุ่ม %s บนเครื่องพิมพ์ %s หมดแล้ว"
+msgstr "������! �ǵ��㹡�þ����ͧ����� %s ������ͧ����� %s �������"
 
 msgid "Print Quota Exceeded"
-msgstr "โควต้าในการพิมพ์เกินแล้ว"
+msgstr "�ǵ��㹡�þ�����Թ����"
 
 #, python-format
 msgid "Print Quota low for group %s on printer %s"
-msgstr "โควต้าในการพิมพ์ของกลุ่ม %s บนเครื่องพิมพ์ %s ใกล้หมดแล้ว"
+msgstr "�ǵ��㹡�þ����ͧ����� %s ������ͧ����� %s ����������"
 
 msgid "Print Quota Low"
-msgstr "โควต้าในการพิมพ์ใกล้หมดแล้ว"
+msgstr "�ǵ��㹡�þ��������������"
 
 #, python-format
-msgid "Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s"
-msgstr "ผลการค้นหา %s ไม่พบ. อาจมีการตั้งค่าไม่ถูกต้อง กรุณา ตรวสอบ /etc/pykota/pykota.conf : %s อีกครั้ง"
+msgid ""
+"Search base %s doesn't seem to exist. Probable misconfiguration. Please "
+"double check /etc/pykota/pykota.conf : %s"
+msgstr ""
+"�š�ä��� %s ��辺. �Ҩ�ա�õ�駤�����١��ͧ ��س� ����ͺ /etc/pykota/pykota.conf : %"
+"s �ա����"
 
 #, python-format
 msgid "Search for %s(%s) from %s(scope=%s) returned no answer."
-msgstr "ผลการค้นหา %s(%s) จาก %s(scope=%s) คือ ไม่พบสิ่งที่ค้น."
+msgstr "�š�ä��� %s(%s) �ҡ %s(scope=%s) ��� ��辺��觷���."
 
 #, python-format
 msgid "Problem adding LDAP entry (%s, %s)"
-msgstr "เกิดปัญหาในการเพิ่มข้อมูลเข้าสู่ LDAP (%s, %s)"
+msgstr "�Դ�ѭ��㹡������������������ LDAP (%s, %s)"
 
 #, python-format
 msgid "Problem deleting LDAP entry (%s)"
-msgstr "เกิดปัญหาในการลบข้อมูลจาก LDAP (%s, %s)"
+msgstr "�Դ�ѭ��㹡��ź�����Ũҡ LDAP (%s, %s)"
 
 #, python-format
 msgid "Problem modifying LDAP entry (%s, %s)"
-msgstr "เกิดปัญหาในการแก้ใขข้อมูลใน LDAP (%s, %s)"
+msgstr "�Դ�ѭ��㹡����㢢������ LDAP (%s, %s)"
 
 #, python-format
-msgid "No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?"
+msgid ""
+"No pykotaAccountBalance object found for user %s. Did you create LDAP "
+"entries manually ?"
 msgstr ""
 
 msgid "Hidden because of privacy concerns"
 msgstr ""
 
 #, python-format
-msgid "Unable to find an existing objectClass %s entry with %s=%s to attach pykotaAccount objectClass"
-msgstr "ไม่สามารถค้นพบออปเจ็กคลาส %s ที่เข้าถึงด้วย %s=%s เพื่อแนบกับ ระบบสมาชิก Pykota ออปเจ็กคลาส"
+msgid ""
+"Unable to find an existing objectClass %s entry with %s=%s to attach "
+"pykotaAccount objectClass"
+msgstr ""
+"�������ö�鹾��ͻ�硤��� %s �����Ҷ֧���� %s=%s ����Ṻ�Ѻ �к���Ҫԡ Pykota "
+"�ͻ�硤���"
 
 #, python-format
 msgid "%s. A new entry will be created instead."
@@ -2407,9 +2529,10 @@ msgstr ""
 
 #, python-format
 msgid "Unable to find an existing entry to attach pykotaGroup objectclass %s"
-msgstr "ไม่สามารถค้นพบสิ่งใดที่เข้าถึงเพื่อเชื่อมต่อกับ pykotaGroup ออปเจ็กคลาส %s"
+msgstr "�������ö�鹾����㴷����Ҷ֧�����������͡Ѻ pykotaGroup �ͻ�硤��� %s"
 
-msgid "Your version of python-mysqldb is too old. Please install a newer release."
+msgid ""
+"Your version of python-mysqldb is too old. Please install a newer release."
 msgstr ""
 
 #, python-format
@@ -2421,7 +2544,9 @@ msgid "Retrieving printer %s's page counter from database instead."
 msgstr ""
 
 #, python-format
-msgid "Couldn't retrieve printer %s's internal page counter either before or after printing."
+msgid ""
+"Couldn't retrieve printer %s's internal page counter either before or after "
+"printing."
 msgstr ""
 
 #, python-format
@@ -2438,15 +2563,15 @@ msgstr ""
 
 #, python-format
 msgid "Unknown printer address in HARDWARE(%s) for printer %s"
-msgstr "ไม่พบที่อยู่ของเครื่องพิมพ์ในอุปกรณ์ (%s) สำหรับเครื่องพิมพ์ %s"
+msgstr "��辺�������ͧ����ͧ�������ػ�ó� (%s) ����Ѻ����ͧ����� %s"
 
 #, python-format
 msgid "Launching HARDWARE(%s)..."
-msgstr "เริ่มการทำงานของอุปกรณ์ (%s)..."
+msgstr "�������÷ӧҹ�ͧ�ػ�ó� (%s)..."
 
 #, python-format
 msgid "SIGTERM was sent to hardware accounter %s (pid: %s)"
-msgstr "สัญญาณ SIGTERM ถูกส่งไปยังอุปกรณ์ระบบบัญชีสมาชิก %s (pid: %s)"
+msgstr "�ѭ�ҳ SIGTERM �١����ѧ�ػ�ó��к��ѭ����Ҫԡ %s (pid: %s)"
 
 #, python-format
 msgid "Line [%s] skipped in accounter's output. Trying again..."
@@ -2458,10 +2583,12 @@ msgstr ""
 
 #, python-format
 msgid "Unable to query printer %s via HARDWARE(%s)"
-msgstr "ไม่สามารค้นหาเครื่องพิมพ์ %s โดยผ่านอุปกรณ์(%s)"
+msgstr "�������ä�������ͧ����� %s �¼�ҹ�ػ�ó�(%s)"
 
 #, python-format
-msgid "Unable to precompute the job's size and ink coverage with the generic PDL analyzer : %s"
+msgid ""
+"Unable to precompute the job's size and ink coverage with the generic PDL "
+"analyzer : %s"
 msgstr ""
 
 #, python-format
@@ -2485,11 +2612,15 @@ msgid "Waiting for printer %s's idle status to stabilize..."
 msgstr ""
 
 #, python-format
-msgid "PJL querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s."
+msgid ""
+"PJL querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
 msgstr ""
 
 #, python-format
-msgid "SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s."
+msgid ""
+"SNMP querying stage interrupted. Using latest value seen for internal page "
+"counter (%s) on printer %s."
 msgstr ""
 
 #, python-format
@@ -2506,26 +2637,26 @@ msgstr ""
 
 #, python-format
 msgid "Unable to precompute the job's size with the generic PDL analyzer : %s"
-msgstr "ไม่สามารถทำการคำนวณขนาดของงานได้ด้วย PDL analyzer : %s"
+msgstr "�������ö�ӡ�äӹǳ��Ҵ�ͧ�ҹ����� PDL analyzer : %s"
 
 #, python-format
 msgid "Launching SOFTWARE(%s)..."
-msgstr "เริ่มการทำงานของซอฟต์แวร์(%s)..."
+msgstr "�������÷ӧҹ�ͧ�Ϳ������(%s)..."
 
 #, python-format
 msgid "Unable to compute job size with accounter %s"
-msgstr "ไม่สามารถคำนวณขนาดงานได้ด้วยระบบสมาชิก %s"
+msgstr "�������ö�ӹǳ��Ҵ�ҹ������к���Ҫԡ %s"
 
 #, python-format
 msgid "Problem while waiting for software accounter pid %s to exit : %s"
-msgstr "เกิดปัญหาจากการคอยซอฟต์แวร์ระบบสมาชิก pid %s เพื่อออก : %s"
+msgstr "�Դ�ѭ�Ҩҡ��ä�«Ϳ�������к���Ҫԡ pid %s �����͡ : %s"
 
 #, python-format
 msgid "Software accounter %s exit code is %s"
-msgstr "ซอฟต์แวร์ระบบสมาชิก %s ที่สั่งการออกคือ %s"
+msgstr "�Ϳ�������к���Ҫԡ %s �����觡���͡��� %s"
 
 msgid "Totals may be inaccurate if some users are members of several groups."
-msgstr "จำนวนรวมอาจไม่ถูกต้อง หากผู้ใช้บางท่านเป็นสมาชิกของกลุ่มหลายกลุ่ม."
+msgstr "�ӹǹ����Ҩ���١��ͧ �ҡ�����ҧ��ҹ����Ҫԡ�ͧ��������¡����."
 
 msgid "PyKota Data Dumper"
 msgstr ""
@@ -2552,34 +2683,34 @@ msgid "only for payments or history"
 msgstr ""
 
 msgid "PyKota Reports"
-msgstr "รายงาน PyKota"
+msgstr "��§ҹ PyKota"
 
 msgid "Report"
-msgstr "รายงาน"
+msgstr "��§ҹ"
 
 msgid "Printer"
-msgstr "เครื่องพิมพ์"
+msgstr "����ͧ�����"
 
 msgid "User / Group names mask"
-msgstr "ซ่อน ชื่อผู้ใช้/ชื่อกลุ่มผู้ใช้"
+msgstr "��͹ ���ͼ����/���͡���������"
 
 msgid "Groups report"
-msgstr "รายงานกลุ่ม"
+msgstr "��§ҹ�����"
 
 msgid "Empty"
-msgstr "ล้าง"
+msgstr "��ҧ"
 
 msgid "Action"
-msgstr "กิจกรรม"
+msgstr "�Ԩ����"
 
 msgid "User"
-msgstr "ผู้ใช้"
+msgstr "�����"
 
 msgid "Hostname"
-msgstr "ชื่อเครื่อง"
+msgstr "��������ͧ"
 
 msgid "JobId"
-msgstr "หมายเลขงาน"
+msgstr "�����Ţ�ҹ"
 
 msgid "Number of pages"
 msgstr ""
@@ -2588,7 +2719,7 @@ msgid "Cost"
 msgstr ""
 
 msgid "Copies"
-msgstr "จำนวนสำเนา"
+msgstr "�ӹǹ����"
 
 msgid "Number of bytes"
 msgstr ""
@@ -2597,7 +2728,7 @@ msgid "Printer's internal counter"
 msgstr ""
 
 msgid "Options"
-msgstr "ตัวเลือก"
+msgstr "������͡"
 
 msgid "MD5Sum"
 msgstr ""
@@ -2618,7 +2749,7 @@ msgid "(not supported yet)"
 msgstr ""
 
 msgid "Previous page"
-msgstr "หน้าที่แล้ว"
+msgstr "˹�ҷ������"
 
 msgid "PyKota Quotes"
 msgstr ""
@@ -2626,106 +2757,115 @@ msgstr ""
 msgid "Quote"
 msgstr ""
 
-msgid "The exact cost of a print job can only be determined for a particular user. Please retry while logged-in."
+msgid ""
+"The exact cost of a print job can only be determined for a particular user. "
+"Please retry while logged-in."
 msgstr ""
 
 msgid "Ordering"
 msgstr ""
 
 #~ msgid "Impossible to add printer %s"
-#~ msgstr "ไม่สามารถทำการเพิ่มเครื่องพิมพ์ได้"
+#~ msgstr "�������ö�ӡ����������ͧ�������"
 
 #~ msgid "Prototype object %s not found in Quota Storage."
-#~ msgstr "ไม่พบวัตถุต้นแบบ %s ในโคว้ต้าพื้นที่"
+#~ msgstr "��辺�ѵ�ص�Ẻ %s �����Ҿ�鹷��"
 
 #~ msgid "Prototype %s not found in Quota Storage for printer %s."
-#~ msgstr "ไม่พบต้นแบบ %s ในโคว้ต้าพื้นที่สำหรับเครื่องพิมพ์ %s "
+#~ msgstr "��辺��Ẻ %s �����Ҿ�鹷������Ѻ����ͧ����� %s "
 
 #~ msgid "Undefined hard limit set to soft limit (%s) on printer %s."
-#~ msgstr "ไม่ได้ทำการตั้งค่า hard limit ถึง soft limit (%s) บนเครื่องพิมพ์ %s"
+#~ msgstr "�����ӡ�õ�駤�� hard limit �֧ soft limit (%s) ������ͧ����� %s"
 
 #~ msgid "Undefined soft limit set to hard limit (%s) on printer %s."
-#~ msgstr "ไม่ได้ทำการตั้งค่า soft limit ถึง hard limit (%s) บนเครื่องพิมพ์ %s"
+#~ msgstr "�����ӡ�õ�駤�� soft limit �֧ hard limit (%s) ������ͧ����� %s"
 
 #~ msgid "Invalid group name %s"
-#~ msgstr "ชื่อกลุ่มผู้ใช้ %s ไม่ถูกต้อง"
+#~ msgstr "���͡��������� %s ���١��ͧ"
 
 #~ msgid "Invalid user name %s"
-#~ msgstr "ชื่อผู้ใช้ %s ไม่ถูกต้อง"
+#~ msgstr "���ͼ���� %s ���١��ͧ"
 
 #~ msgid "Quota not found for object %s on printer %s."
-#~ msgstr "ไม่พบโควต้าในการพิมพ์สำหรับ %s บนเครื่องพิมพ์ %s"
+#~ msgstr "��辺�ǵ��㹡�þ��������Ѻ %s ������ͧ����� %s"
 
 #~ msgid "Group %s not found in the PyKota Storage."
-#~ msgstr "ไม่พบกลุ่มผู้ใช้ %s ในส่วนเก็บข้อมูลของ PyKota"
+#~ msgstr "��辺���������� %s ���ǹ�红����Ţͧ PyKota"
 
 #~ msgid "File number %s unregistered twice from polling object, ignored."
-#~ msgstr "แฟ้มข้อมูลหมายเลข %s ไม่ได้รับการลงทะเบียน 2 ครั้งจากขั้นเตรียมการ ,ข้ามไป"
+#~ msgstr "��������������Ţ %s ������Ѻ���ŧ����¹ 2 ���駨ҡ����������� ,�����"
 
 #~ msgid "SIGTERM was sent to real backend %s (pid: %s)"
-#~ msgstr "สัญญาณ SIGTERM ถูกส่งไปยังเครื่องรับ %s (pid: %s)"
+#~ msgstr "�ѭ�ҳ SIGTERM �١����ѧ����ͧ�Ѻ %s (pid: %s)"
 
 #~ msgid "CUPS backend %s died abnormally."
-#~ msgstr "CUPS ของเครื่องรับ %s มีการหยุดทำงานแบบผิดปรกติ"
+#~ msgstr "CUPS �ͧ����ͧ�Ѻ %s �ա����ش�ӧҹẺ�Դ�á��"
 
 #~ msgid "Software accounting already done in first pass. Ignoring."
-#~ msgstr "พบมีซอฟต์แวร์ระบบบัญชีสมาชิกแล้วในส่วนแรก ข้ามไป"
+#~ msgstr "���իͿ�������к��ѭ����Ҫԡ�������ǹ�á �����"
 
 #~ msgid "Hardware accounting already done in first pass. Ignoring."
-#~ msgstr "พบมีฮาร์ดแวร์ระบบบัญชีสมาชิกแล้วในส่วนแรก ข้ามไป"
+#~ msgstr "�������������к��ѭ����Ҫԡ�������ǹ�á �����"
 
 #~ msgid "Invalid DeviceURI : %s"
-#~ msgstr "ค่า DeviceURI : %s ไม่ถูกต้อง"
+#~ msgstr "��� DeviceURI : %s ���١��ͧ"
 
 #~ msgid ""
 #~ "\n"
 #~ "Please wait while pkhint analyzes your printing system's configuration..."
 #~ msgstr ""
 #~ "\n"
-#~ "กรุณารอ pkhint จะทำการวิเคราะห์การตั้งค่าระบบการพิมพ์ของท่าน..."
+#~ "��س��� pkhint �зӡ�����������õ�駤���к���þ����ͧ��ҹ..."
 
 #~ msgid "Unknown device %s for printer %s"
-#~ msgstr "ไม่รู้จักอุปกรณ์ %s สำหรับเครื่องพิมพ์ %s"
+#~ msgstr "������ѡ�ػ�ó� %s ����Ѻ����ͧ����� %s"
 
 #~ msgid ""
 #~ "\n"
 #~ "Put the following lines into your /etc/pykota/pykota.conf file :\n"
 #~ msgstr ""
 #~ "\n"
-#~ "กรุณาใส่บรรทัดต่อไปนี้ลงในแฟ้ม /etc/pykota/pykota.conf file :\n"
+#~ "��س�����÷Ѵ���仹��ŧ���� /etc/pykota/pykota.conf file :\n"
 
 #~ msgid "# BEWARE : if software accounting is suggested, this doesn't mean"
-#~ msgstr "# โปรดระวัง : ถ้าซอฟต์แวร์ระบบสมาชิกมีข้อแนะนำ"
+#~ msgstr "# �ô���ѧ : ��ҫͿ�������к���Ҫԡ�բ���й�"
 
-#~ msgid "# that hardware accounting wouldn't work, this only means that PyKota"
-#~ msgstr "# ฮาร์ดแวร์ระบบสมาชิกไม่สามารถทำงานได้, ปัญหานี้อาจเกิดเฉพาะกับ PyKota"
+#~ msgid ""
+#~ "# that hardware accounting wouldn't work, this only means that PyKota"
+#~ msgstr "# ���������к���Ҫԡ�������ö�ӧҹ��, �ѭ�ҹ���Ҩ�Դ੾�СѺ PyKota"
 
 #~ msgid "# wasn't able to autodetect which hardware accounting method to use."
-#~ msgstr "# ตรวจไม่พบฮาร์ดแวร์ระบบสมาชิกที่สามารถใช้ได้"
+#~ msgstr "# ��Ǩ��辺���������к���Ҫԡ�������ö����"
 
 #~ msgid "JobSize"
-#~ msgstr "ขนาดงาน"
+#~ msgstr "��Ҵ�ҹ"
 
 #~ msgid "JobPrice"
-#~ msgstr "ราคางาน"
+#~ msgstr "�Ҥҧҹ"
 
 #~ msgid "JobBytes"
-#~ msgstr "ข้อมูลขนาดงาน"
+#~ msgstr "�����Ţ�Ҵ�ҹ"
 
 #~ msgid "PageCounter"
-#~ msgstr "จำนวนหน้า"
+#~ msgstr "�ӹǹ˹��"
 
 #~ msgid "Printing system %s, args=%s"
-#~ msgstr "ระบบการพิมพ์ %s, args=%s"
+#~ msgstr "�к���þ���� %s, args=%s"
 
 #~ msgid "Printer hostname undefined, set to 'localhost'"
-#~ msgstr "ไม่ได้ตั้งชื่อเครื่องพิมพ์, กรุณาตั้งเป็น 'localhost'"
+#~ msgstr "������駪�������ͧ�����, ��سҵ���� 'localhost'"
 
 #~ msgid "Printing system unknown, args=%s"
-#~ msgstr "ไม่ทราบระบบการพิมพ์, args=%s"
+#~ msgstr "����Һ�к���þ����, args=%s"
 
-#~ msgid "Group           used    soft    hard    balance grace         total       paid"
-#~ msgstr "กลุ่ม           ใช้ไป    soft    hard    ยอดเงิน grace         รวม       ชำระ"
+#~ msgid ""
+#~ "Group           used    soft    hard    balance grace         total       "
+#~ "paid"
+#~ msgstr ""
+#~ "�����           ���    soft    hard    �ʹ�Թ grace         ���       ����"
 
-#~ msgid "User            used    soft    hard    balance grace         total       paid"
-#~ msgstr "ผู้ใช้            ใช้ไป    soft    hard    ยอดเงิน grace         รวม       ชำระ"
+#~ msgid ""
+#~ "User            used    soft    hard    balance grace         total       "
+#~ "paid"
+#~ msgstr ""
+#~ "�����            ���    soft    hard    �ʹ�Թ grace         ���       ����"

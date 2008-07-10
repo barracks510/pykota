@@ -1,20 +1,22 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -26,8 +28,16 @@ import os
 import imp
 from mx import DateTime
 
-from pykota.errors import PyKotaStorageError
-
+class PyKotaStorageError(Exception):
+    """An exception for database related stuff."""
+    def __init__(self, message = ""):
+        self.message = message
+        Exception.__init__(self, message)
+    def __repr__(self):
+        return self.message
+    __str__ = __repr__
+        
+        
 class StorageObject :
     """Object present in the database."""
     def __init__(self, parent) :
@@ -327,12 +337,12 @@ class StorageUserPQuota(StorageObject) :
                                 self.parent.tool.logdebug("No ink usage information. Using base cost of %f credits for page %i." % (pageprice, pageindex+1))
                                 totalprice += pageprice
                             else :    
-                                coefficients = upq.Printer.Coefficients
+                                coefficients = self.Printer.Coefficients
                                 for (ink, value) in usage.items() :
                                     coefvalue = coefficients.get(ink, 1.0)
                                     coefprice = (coefvalue * pageprice) / 100.0
                                     inkprice = coefprice * value
-                                    self.parent.tool.logdebug("Applying coefficient %f for color %s (used at %f%% on page %i) to base cost %f on printer %s gives %f" % (coefvalue, ink, value, pageindex+1, pageprice, upq.Printer.Name, inkprice))
+                                    self.parent.tool.logdebug("Applying coefficient %f for color %s (used at %f%% on page %i) to base cost %f gives %f" % (coefvalue, ink, value, pageindex+1, pageprice, inkprice))
                                     totalprice += inkprice
         if self.User.OverCharge != 1.0 : # TODO : beware of rounding errors
             overcharged = totalprice * self.User.OverCharge        
@@ -480,7 +490,7 @@ class StorageJob(StorageObject) :
         basereason = _("Refunded %i pages and %.3f credits by %s (%s) on %s") \
                         % (self.JobSize,
                            self.JobPrice,
-                           self.parent.tool.effectiveUserName,
+                           self.parent.tool.originalUserName,
                            os.getlogin(),
                            str(DateTime.now())[:19])
         if reason :                                               
@@ -579,10 +589,6 @@ class BaseStorage :
     def __del__(self) :        
         """Ensures that the database connection is closed."""
         self.close()
-        
-    def querydebug(self, qmsg) :    
-        """Logs a database query, where all queries are already UTF-8 encoded."""
-        self.tool.logdebug(qmsg.decode("UTF-8", "replace"))
         
     def getFromCache(self, cachetype, key) :
         """Tries to extract something from the cache."""
@@ -730,6 +736,14 @@ class BaseStorage :
             if gpq.Exists :
                 gpquotas.append(gpq)
         return gpquotas        
+        
+    def databaseToUserCharset(self, text) :
+        """Converts from database format (UTF-8) to user's charset."""
+        return self.tool.UTF8ToUserCharset(text)
+        
+    def userCharsetToDatabase(self, text) :
+        """Converts from user's charset to database format (UTF-8)."""
+        return self.tool.userCharsetToUTF8(text)
         
     def cleanDates(self, startdate, enddate) :    
         """Clean the dates to create a correct filter."""

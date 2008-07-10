@@ -25,21 +25,22 @@
 #     care and only when you need it.
 #
 #
-# PyKota - Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -49,13 +50,7 @@
 # All directives must be placed below the following line
 [global]
 
-# This directive configures the charset to use when reading PyKota's 
-# configuration files. All directives values will be decoded and
-# interpreted using the character set defined here.
-# This value can only be present in the [global] section.
-#
-# When not set, the default value 'UTF-8' is used.
-config_charset : UTF-8
+
 
 ####################################################################
 # SQLite3 : comment this section out if you use another backend    #
@@ -77,10 +72,7 @@ storagebackend: pgstorage
 # Quota Storage Server hostname (and optional port)
 # e.g. db.example.com:5432 (for PostgreSQL) or db.example.com:3306 (for MySQL)
 # NB : leave the directive empty to use unix sockets (same host only)
-# NB : Using the word 'localhost' for MySQL defaults to a UNIX socket 
-#      connection, which may be unexpected. Using 127.0.0.1 avoids this issue.
-#      See http://bugs.mysql.com/bug.php?id=31577 for more information.
-storageserver: 127.0.0.1
+storageserver: localhost
 
 #
 # name of the Quota Storage Database
@@ -373,7 +365,7 @@ usernamecase: native
 #
 # If winbind_separator is not set, which is the default, strict 
 # username equality checking will be done (modulo the setting
-# of the 'usernamecase' directive), this means that users 'DOMAIN1/jerome',
+# of the 'utolower' directive), this means that users 'DOMAIN1/jerome',
 # 'Domain2/jerome' and 'jerome' are different. 
 #
 # winbind_separator: /
@@ -605,8 +597,7 @@ keepfiles : no
 # available under the name 'pkpgcounter', recognizes several page description
 # languages, but may occasionally fail for some printer drivers.
 # You can however use any other command, provided it can read the datas to
-# parse from the file pointed to by the PYKOTADATAFILE environment
-# variable, and prints a single integer on its standard
+# parse from its standard input, and prints a single integer on its standard
 # output, representing the number of pages in the print job.
 # Software accounting unfortunately may overcharge users in case of paper
 # jams.
@@ -653,7 +644,7 @@ keepfiles : no
 # accounter : hardware(/bin/cat /usr/share/pykota/pagecount.pjl >/dev/lp0 && /usr/bin/head -2 </dev/lp0 | /usr/bin/tail -1)
 # accounter : hardware(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public %(printer)s | grep mib-2.43.10.2.1.4.1.1 | cut -d " " -f4)
 # accounter : hardware(/opt/local/net-snmp/bin/snmpwalk -v 1 -Cc -c public -Ov %(printer)s | grep Counter32 | tail -2 | head -1 | cut -d " " -f2)
-# accounter : software(/usr/bin/pkpgcounter "$PYKOTADATAFILE") 
+# accounter : software(/usr/bin/pkpgcounter) 
 # accounter : software()
 # accounter : ink(cmyk, 150)
 # accounter : ink(bw, 300)
@@ -724,8 +715,7 @@ skipinitialwait : no
 # NB : the preaccounter directive doesn't support hardware() for obvious 
 # reasons. If unset, "software()" is assumed. If you use your own script, 
 # ensure that it only prints the job's number of pages (or an estimation 
-# of it) on its standard output, and that it reads the print job's datas
-# from the file pointed to by the PYKOTADATAFILE environment variable.
+# of it) on its standard output.
 #
 # You may want to define for example 'preaccounter : software(/bin/echo 1)'
 # in the case your printer supports an hardware accounter but pkpgcounter
@@ -768,7 +758,7 @@ preaccounter: software()
 #
 # 'stop' means fail and stop the print queue. If an accounter
 # error occurs, most of the time this is a misconfiguration, so
-# stopping the print queue is usually the best thing to do 
+# stopping the print queue is usually the better thing to do 
 # until the admin has fixed the configuration.
 #
 # This value can be set either globally or on a per printer basis
@@ -914,20 +904,7 @@ hardwarn: Your Print Quota Hard Limit is reached.
 #       - User doesn't exist in PyKota's database
 #       - User has no quota entry for this Printer in PyKota's database
 #
-# Value can be either 'allow' or 'deny' or 'external(some command here)'
-#
-# 'Allow' means that the job will be printed even if the printer, the
-# user or this user's print quota entry on this printer doesn't exist
-# in PyKota's database. But the job won't appear in the printing history.
-#
-# 'Deny' means the job will be rejected if any of these three conditions
-# is met.
-#
-# 'External' means any command of your choice will be launched if any
-# of these three conditions is met. Once your command has ended, PyKota
-# will try again to retrieve the printer, user or user's print quota
-# entry from its database. If it fails to find any of them again, the
-# job will be rejected.
+# Value can be either allow or deny or external(some command here)
 #
 # This value can be set either globally or per printer or both.
 # If both are defined, the printer option has priority.
@@ -995,6 +972,7 @@ policy: deny
 #                  job's datas
 # PYKOTAFILENAME : The name of the file which contains the job's datas or 
 #                  empty if datas come from stdin
+# PYKOTACONTROLFILE : The name of the IPP message file
 # PYKOTAMD5SUM : Contains an hexadecimal digest of the md5 sum of the job's datas
 # PYKOTAPHASE : BEFORE or AFTER the job is sent to the printer
 # PYKOTAACTION : ALLOW or DENY or WARN for current print job

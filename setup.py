@@ -1,21 +1,24 @@
 #! /usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# PyKota : Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -36,10 +39,6 @@ except ImportError, msg :
 
 sys.path.insert(0, "pykota")
 from pykota.version import __version__, __doc__
-
-if (__version__.upper().find("BROKEN") != -1) and ("--force" not in sys.argv[1:]) :
-    sys.stderr.write("THIS DEVELOPMENT VERSION OF PYKOTA IS BROKEN. YOU MUST NOT USE IT. YOU SHOULD DOWNLOAD AN EARLIER RELEASE INSTEAD, EITHER THROUGH AN ENTRY PASS, OR BY DOWNLOADING THE LATEST STABLE TAG FROM SUBVERSION.\n")
-    sys.exit(-1)
 
 data_files = []
 mofiles = glob.glob(os.sep.join(["po", "*", "*.mo"]))
@@ -90,44 +89,25 @@ data_files.append((directory, ["checkdeps.py", "bin/cupspykota", \
                                "untested/netatalk/netatalk.sh", \
                                "untested/netatalk/pagecount.ps"]))
 
-data_files.append((os.sep.join([directory, "conf"]), 
-                  ["conf/README", "conf/pykota.conf.sample", 
-                   "conf/pykotadmin.conf.sample"]))
+data_files.append((os.sep.join([directory, "conf"]), ["conf/README", "conf/pykota.conf.sample", "conf/pykotadmin.conf.sample"]))
 
-data_files.append((os.sep.join([directory, "cgi-bin"]), 
-                  ["cgi-bin/README", 
-                   "cgi-bin/printquota.cgi", 
-                   "cgi-bin/dumpykota.cgi", 
-                   "cgi-bin/pykotme.cgi"]))
+data_files.append((os.sep.join([directory, "cgi-bin"]), ["cgi-bin/README", "cgi-bin/printquota.cgi", "cgi-bin/dumpykota.cgi", "cgi-bin/pykotme.cgi"]))
 
-data_files.append((os.sep.join([directory, "logos"]), 
-                  glob.glob(os.sep.join(["logos", "*.jpeg"])) \
-                + glob.glob(os.sep.join(["logos", "*.png"])) \
-                + glob.glob(os.sep.join(["logos", "*.xcf"]))))
+data_files.append((os.sep.join([directory, "logos"]), glob.glob(os.sep.join(["logos", "*.jpeg"])) + glob.glob(os.sep.join(["logos", "*.png"])) + glob.glob(os.sep.join(["logos", "*.xcf"]))))
 
-data_files.append((os.sep.join([directory, "stylesheets"]), 
-                  glob.glob(os.sep.join(["stylesheets", "*.css"])) \
-                + [ "stylesheets/README" ]))
+data_files.append((os.sep.join([directory, "stylesheets"]), glob.glob(os.sep.join(["stylesheets", "*.css"])) + [ "stylesheets/README" ]))
 
 pgdirectory = os.sep.join([directory, "postgresql"])
-data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", 
-                                 "initscripts/postgresql/pykota-postgresql.sql"]))
+data_files.append((pgdirectory, ["initscripts/postgresql/README.postgresql", "initscripts/postgresql/pykota-postgresql.sql"]))
 
 ldapdirectory = os.sep.join([directory, "ldap"])
-data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", 
-                                   "initscripts/ldap/README.sunds", 
-                                   "initscripts/ldap/pykota.schema", 
-                                   "initscripts/ldap/pykota-sunds-indexes.ldif", 
-                                   "initscripts/ldap/pykota-schema-sunds.ldif", 
-                                   "initscripts/ldap/pykota-sample.ldif"]))
+data_files.append((ldapdirectory, ["initscripts/ldap/README.ldap", "initscripts/ldap/pykota.schema", "initscripts/ldap/pykota-sample.ldif"]))
 
 mysqldirectory = os.sep.join([directory, "mysql"])
-data_files.append((mysqldirectory, ["initscripts/mysql/README.mysql", 
-                                    "initscripts/mysql/pykota-mysql.sql"]))
+data_files.append((mysqldirectory, ["initscripts/mysql/README.mysql", "initscripts/mysql/pykota-mysql.sql"]))
 
 sqlitedirectory = os.sep.join([directory, "sqlite"])
-data_files.append((sqlitedirectory, ["initscripts/sqlite/README.sqlite", 
-                                     "initscripts/sqlite/pykota-sqlite.sql"]))
+data_files.append((sqlitedirectory, ["initscripts/sqlite/README.sqlite", "initscripts/sqlite/pykota-sqlite.sql"]))
 
 class MyInstallData(install_data) :
     """A special class to ensure permissions are OK on the cupspykota backend."""
@@ -140,19 +120,14 @@ class MyInstallData(install_data) :
     
 os.umask(022)
 setup(name = "pykota", version = __version__,
-      license = "GNU GPL version 3 or later",
+      license = "GNU GPL",
       description = __doc__,
       author = "Jerome Alet",
       author_email = "alet@librelogiciel.com",
       url = "http://www.pykota.com",
-      packages = [ "pykota", 
-                   "pykota.storages", 
-                   "pykota.loggers", 
-                   "pykota.accounters", 
-                   "pykota.reporters",
-                 ],
+      packages = [ "pykota", "pykota.storages", "pykota.loggers", "pykota.accounters", "pykota.reporters" ],
       scripts = [ "bin/pknotify", "bin/pkusers", "bin/pkinvoice", "bin/pksetup", \
-                  "bin/pkrefund", "bin/pkturnkey", "bin/pkbcodes", \
+                  "bin/pkrefund", "bin/pkturnkey", "bin/pkbcodes", "bin/pkmail", \
                   "bin/pkbanner", "bin/autopykota", "bin/dumpykota", \
                   "bin/pykosd", "bin/edpykota", "bin/repykota", \
                   "bin/warnpykota", "bin/pykotme", "bin/pkprinters" ],

@@ -1,20 +1,23 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# (c) 2005, 2006 Matt Hyclak <hyclak@math.ohiou.edu>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -22,8 +25,9 @@
 
 """This module defines a class to access to a MySQL database backend."""
 
-from pykota.errors import PyKotaStorageError
-from pykota.storage import BaseStorage
+import time
+
+from pykota.storage import PyKotaStorageError, BaseStorage
 from pykota.storages.sql import SQLStorage
 
 try :
@@ -57,60 +61,54 @@ class Storage(BaseStorage, SQLStorage) :
         self.cursor = self.database.cursor()
         self.cursor.execute("SET NAMES 'utf8';")
         self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED;") # Same as PostgreSQL and Oracle's default
-        self.closed = False
+        self.closed = 0
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
-        try :
-            # Here we try to select a string (an &eacute;) which is
-            # already encoded in UTF-8. If python-mysqldb suffers from 
-            # the double encoding problem, we will catch the exception
-            # and activate a workaround.
-            self.cursor.execute("SELECT '%s';" % (chr(0xc3) + chr(0xa9))) # &eacute; in UTF-8
-            self.cursor.fetchall()
-        except UnicodeDecodeError :    
-            self.needsworkaround = True
-            self.tool.logdebug("Database needs encoding workaround.")
-        else :
-            self.needsworkaround = False
-            self.tool.logdebug("Database doesn't need encoding workaround.")
             
     def close(self) :    
         """Closes the database connection."""
         if not self.closed :
             self.cursor.close()
             self.database.close()
-            self.closed = True
+            self.closed = 1
             self.tool.logdebug("Database closed.")
         
     def beginTransaction(self) :    
         """Starts a transaction."""
+        self.before = time.time()
         self.cursor.execute("BEGIN;")
         self.tool.logdebug("Transaction begins...")
         
     def commitTransaction(self) :    
         """Commits a transaction."""
         self.database.commit()
+        after = time.time()
         self.tool.logdebug("Transaction committed.")
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.database.rollback()
+        after = time.time()
         self.tool.logdebug("Transaction aborted.")
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def doRawSearch(self, query) :
         """Does a raw search query."""
         query = query.strip()    
         if not query.endswith(';') :    
             query += ';'
-        self.querydebug("QUERY : %s" % query)
-        if self.needsworkaround :    
-            query = query.decode("UTF-8")
         try :
+            before = time.time()
+            self.tool.logdebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
-            raise PyKotaStorageError, repr(msg)
+            raise PyKotaStorageError, str(msg)
         else :    
             # This returns a list of lists. Integers are returned as longs.
-            return self.cursor.fetchall()
+            result = self.cursor.fetchall()
+            after = time.time()
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            return result
             
     def doSearch(self, query) :        
         """Does a search query."""
@@ -123,7 +121,12 @@ class Storage(BaseStorage, SQLStorage) :
             for row in result :
                 rowdict = {}
                 for field in fields.keys() :
-                    rowdict[fields[field]] = row[field]
+                    value = row[field]
+                    try :
+                        value = value.encode("UTF-8")
+                    except:
+                        pass
+                    rowdict[fields[field]] = value
                 rows.append(rowdict)
             # returns a list of dicts
             return rows
@@ -133,14 +136,16 @@ class Storage(BaseStorage, SQLStorage) :
         query = query.strip()    
         if not query.endswith(';') :    
             query += ';'
-        self.querydebug("QUERY : %s" % query)
-        if self.needsworkaround :    
-            query = query.decode("UTF-8")
         try :
+            before = time.time()
+            self.tool.logdebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))
-            raise PyKotaStorageError, repr(msg)
+            raise PyKotaStorageError, str(msg)
+        else :    
+            after = time.time()
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
@@ -151,12 +156,26 @@ class Storage(BaseStorage, SQLStorage) :
         elif type(field) == type(0L) :
             return field
         elif field is not None :
-            return self.database.string_literal(field)
+            newfield = self.database.string_literal(field)
+            try :
+                return newfield.encode("UTF-8")
+            except :    
+                return newfield
         else :
+            self.tool.logdebug("WARNING: field has no type, returning NULL")
             return "NULL"
 
     def prepareRawResult(self, result) :
         """Prepares a raw result by including the headers."""
         if result :
-            return [tuple([f[0] for f in self.cursor.description])] \
-                 + list(result)
+            entries = [tuple([f[0] for f in self.cursor.description])]
+            for entry in result :
+                row = []
+                for value in entry :
+                    try :
+                        value = value.encode("UTF-8")
+                    except :
+                        pass
+                    row.append(value)
+                entries.append(tuple(row))
+            return entries

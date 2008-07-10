@@ -1,20 +1,22 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -22,14 +24,19 @@
 
 """This module defines classes used to parse PyKota configuration files."""
 
-import sys
 import os
 import tempfile
 import ConfigParser
 
-from pykota.utils import unicodeToDatabase
-from pykota.errors import PyKotaConfigError    
-
+class PyKotaConfigError(Exception):
+    """An exception for PyKota config related stuff."""
+    def __init__(self, message = ""):
+        self.message = message
+        Exception.__init__(self, message)
+    def __repr__(self):
+        return self.message
+    __str__ = __repr__
+    
 class PyKotaConfig :
     """A class to deal with PyKota's configuration."""
     def __init__(self, directory) :
@@ -46,12 +53,6 @@ class PyKotaConfig :
             self.isAdmin = 1
         self.config = ConfigParser.ConfigParser()
         self.config.read([self.filename])
-        try :
-            self.config_charset = self.config.get("global", \
-                                                  "config_charset", \
-                                                   raw=1)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :
-            self.config_charset = "UTF-8"
             
     def isTrue(self, option) :        
         """Returns True if option is set to true, else False."""
@@ -71,10 +72,10 @@ class PyKotaConfig :
         """Returns the list of configured printers, i.e. all sections names minus 'global'."""
         return [pname for pname in self.config.sections() if pname != "global"]
         
-    def getGlobalOption(self, option, ignore=False) :    
+    def getGlobalOption(self, option, ignore=0) :    
         """Returns an option from the global section, or raises a PyKotaConfigError if ignore is not set, else returns None."""
         try :
-            return self.config.get("global", option, raw=1).decode(self.config_charset)
+            return self.config.get("global", option, raw=1)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
             if ignore :
                 return None
@@ -83,9 +84,9 @@ class PyKotaConfig :
                 
     def getPrinterOption(self, printername, option) :    
         """Returns an option from the printer section, or the global section, or raises a PyKotaConfigError."""
-        globaloption = self.getGlobalOption(option, ignore=True)
+        globaloption = self.getGlobalOption(option, ignore=1)
         try :
-            return self.config.get(printername, option, raw=1).decode(self.config_charset)
+            return self.config.get(printername, option, raw=1)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
             if globaloption is not None :
                 return globaloption
@@ -98,15 +99,15 @@ class PyKotaConfig :
         backend = self.getGlobalOption("storagebackend").lower()
         backendinfo["storagebackend"] = backend
         if backend == "sqlitestorage" :
-            issqlite = True
+            issqlite = 1
             backendinfo["storagename"] = self.getGlobalOption("storagename")
             for option in ["storageserver", "storageuser", "storageuserpw"] :
                 backendinfo[option] = None          
         else :
-            issqlite = False
+            issqlite = 0
             for option in ["storageserver", "storagename", "storageuser"] :
                 backendinfo[option] = self.getGlobalOption(option)
-            backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=True)  # password is optional
+            backendinfo["storageuserpw"] = self.getGlobalOption("storageuserpw", ignore=1)  # password is optional
             
         backendinfo["storageadmin"] = None
         backendinfo["storageadminpw"] = None
@@ -115,27 +116,27 @@ class PyKotaConfig :
             adminconf.read([self.adminfilename])
             if adminconf.sections() : # were we able to read the file ?
                 try :
-                    backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1).decode(self.config_charset)
+                    backendinfo["storageadmin"] = adminconf.get("global", "storageadmin", raw=1)
                 except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
                     if not issqlite :
                         raise PyKotaConfigError, _("Option %s not found in section global of %s") % ("storageadmin", self.adminfilename)
                 try :
-                    backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1).decode(self.config_charset)
+                    backendinfo["storageadminpw"] = adminconf.get("global", "storageadminpw", raw=1)
                 except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) :    
                     pass # Password is optional
                 # Now try to overwrite the storagebackend, storageserver 
                 # and storagename. This allows admins to use the master LDAP
                 # server directly and users to use the replicas transparently.
                 try :
-                    backendinfo["storagebackend"] = adminconf.get("global", "storagebackend", raw=1).decode(self.config_charset)
+                    backendinfo["storagebackend"] = adminconf.get("global", "storagebackend", raw=1)
                 except ConfigParser.NoOptionError :
                     pass
                 try :
-                    backendinfo["storageserver"] = adminconf.get("global", "storageserver", raw=1).decode(self.config_charset)
+                    backendinfo["storageserver"] = adminconf.get("global", "storageserver", raw=1)
                 except ConfigParser.NoOptionError :
                     pass
                 try :
-                    backendinfo["storagename"] = adminconf.get("global", "storagename", raw=1).decode(self.config_charset)
+                    backendinfo["storagename"] = adminconf.get("global", "storagename", raw=1)
                 except ConfigParser.NoOptionError :
                     pass
         return backendinfo
@@ -152,19 +153,19 @@ class PyKotaConfig :
                         "newuser", "newgroup", \
                         "usermail", \
                       ] :
-            ldapinfo[option] = unicodeToDatabase(self.getGlobalOption(option).strip())
+            ldapinfo[option] = self.getGlobalOption(option).strip()
         for field in ["newuser", "newgroup"] :
             if ldapinfo[field].lower().startswith('attach(') :
                 ldapinfo[field] = ldapinfo[field][7:-1]
                 
         # should we use TLS, by default (if unset) value is NO        
-        ldapinfo["ldaptls"] = self.isTrue(self.getGlobalOption("ldaptls", ignore=True))
-        ldapinfo["cacert"] = self.getGlobalOption("cacert", ignore=True)
+        ldapinfo["ldaptls"] = self.isTrue(self.getGlobalOption("ldaptls", ignore=1))
+        ldapinfo["cacert"] = self.getGlobalOption("cacert", ignore=1)
         if ldapinfo["cacert"] :
-            ldapinfo["cacert"] = ldapinfo["cacert"].strip().encode(sys.getfilesystemencoding(), "replace")
+            ldapinfo["cacert"] = ldapinfo["cacert"].strip()
         if ldapinfo["ldaptls"] :    
             if not os.access(ldapinfo["cacert"] or "", os.R_OK) :
-                raise PyKotaConfigError, _("Option ldaptls is set, but certificate %s is not readable.") % repr(ldapinfo["cacert"])
+                raise PyKotaConfigError, _("Option ldaptls is set, but certificate %s is not readable.") % str(ldapinfo["cacert"])
         return ldapinfo
         
     def getLoggingBackend(self) :    
@@ -180,13 +181,13 @@ class PyKotaConfig :
         
     def getLogoURL(self) :
         """Returns the URL to use for the logo in the CGI scripts."""
-        url = self.getGlobalOption("logourl", ignore=True) or \
+        url = self.getGlobalOption("logourl", ignore=1) or \
                    "http://www.pykota.com/pykota.png"
         return url.strip()           
         
     def getLogoLink(self) :
         """Returns the URL to go to when the user clicks on the logo in the CGI scripts."""
-        url = self.getGlobalOption("logolink", ignore=True) or \
+        url = self.getGlobalOption("logolink", ignore=1) or \
                    "http://www.pykota.com/"
         return url.strip()           
     
@@ -503,33 +504,33 @@ class PyKotaConfig :
             
     def getPrivacy(self) :        
         """Returns True if privacy is activated, else False."""
-        return self.isTrue(self.getGlobalOption("privacy", ignore=True))
+        return self.isTrue(self.getGlobalOption("privacy", ignore=1))
         
     def getDebug(self) :          
         """Returns True if debugging is activated, else False."""
-        return self.isTrue(self.getGlobalOption("debug", ignore=True))
+        return self.isTrue(self.getGlobalOption("debug", ignore=1))
             
     def getCaching(self) :          
         """Returns True if database caching is enabled, else False."""
-        return self.isTrue(self.getGlobalOption("storagecaching", ignore=True))
+        return self.isTrue(self.getGlobalOption("storagecaching", ignore=1))
             
     def getLDAPCache(self) :          
         """Returns True if low-level LDAP caching is enabled, else False."""
-        return self.isTrue(self.getGlobalOption("ldapcache", ignore=True))
+        return self.isTrue(self.getGlobalOption("ldapcache", ignore=1))
             
     def getDisableHistory(self) :          
         """Returns True if we want to disable history, else False."""
-        return self.isTrue(self.getGlobalOption("disablehistory", ignore=True))
+        return self.isTrue(self.getGlobalOption("disablehistory", ignore=1))
             
     def getUserNameToLower(self) :          
         """Deprecated."""
-        return self.getGlobalOption("utolower", ignore=True)
+        return self.getGlobalOption("utolower", ignore=1)
         
     def getUserNameCase(self) :
         """Returns value for user name case: upper, lower or native"""
         validvalues = [ "upper", "lower", "native" ]
         try :
-            value = self.getGlobalOption("usernamecase", ignore=True).strip().lower()
+            value = self.getGlobalOption("usernamecase", ignore=1).strip().lower()
         except AttributeError :    
             value = "native"
         if value not in validvalues :
@@ -538,7 +539,7 @@ class PyKotaConfig :
         
     def getRejectUnknown(self) :          
         """Returns True if we want to reject the creation of unknown users or groups, else False."""
-        return self.isTrue(self.getGlobalOption("reject_unknown", ignore=True))
+        return self.isTrue(self.getGlobalOption("reject_unknown", ignore=1))
         
     def getPrinterKeepFiles(self, printername) :          
         """Returns True if files must be kept on disk, else False."""
@@ -652,7 +653,7 @@ class PyKotaConfig :
         
     def getWinbindSeparator(self) :          
         """Returns the winbind separator's value if it is set, else None."""
-        return self.getGlobalOption("winbind_separator", ignore=True)
+        return self.getGlobalOption("winbind_separator", ignore=1)
 
     def getAccountBanner(self, printername) :
         """Returns which banner(s) to account for: NONE, BOTH, STARTING, ENDING."""
@@ -728,11 +729,11 @@ class PyKotaConfig :
         """Returns a mapping of coefficients for a particular printer."""
         branchbasename = "coefficient_"
         try :
-            globalbranches = [ (k, self.config.get("global", k).decode(self.config_charset)) for k in self.config.options("global") if k.startswith(branchbasename) ]
+            globalbranches = [ (k, self.config.get("global", k)) for k in self.config.options("global") if k.startswith(branchbasename) ]
         except ConfigParser.NoSectionError, msg :
             raise PyKotaConfigError, "Invalid configuration file : %s" % msg
         try :
-            sectionbranches = [ (k, self.config.get(printername, k).decode(self.config_charset)) for k in self.config.options(printername) if k.startswith(branchbasename) ]
+            sectionbranches = [ (k, self.config.get(printername, k)) for k in self.config.options(printername) if k.startswith(branchbasename) ]
         except ConfigParser.NoSectionError, msg :
             sectionbranches = []
         branches = {}

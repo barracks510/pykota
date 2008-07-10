@@ -1,11 +1,11 @@
 # $Id$
 
-PyKota - Print Quotas for CUPS
+PyKota - Print Quotas for CUPS and LPRng
 
-(c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-This program is free software: you can redistribute it and/or modify
+(c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
+the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -14,7 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ====================================================================
 
@@ -46,15 +47,12 @@ implemented :
     The command can read the job's data from its standard input and MUST
     output the job's size on its standard output. Changes to the user
     account are reported immediately. PyKota by default internally
-    uses the code from pkpgcounter which can handle a large number
-    of Page Description Languages, and can parse documents produced
-    either by GhostScript or by a number of native printer drivers.
+    uses the code from pkpgcounter which can handle
+    several Page Description Languages : DSC compliant and binary PostScript,
+    PDF, PCLXL (aka PCL6), PCL3/4/5, ESC/P2, DVI, TIFF, OpenDocument,
+    Zenographics ZjStream, Samsung QPDL,Samsung SPL1, and plain text.
     Of course this means you have to install pkpgcounter if you want to
     use the default PDL parser.
-    An up-to-date list of supported Page Description Languages and their
-    level of support is available from :
-      
-      http://www.pykota.com/software/pkpgcounter/
     
   - The 'ink' method consists in using pkpgcounter's code to compute  
     how much of each page is covered by ink in each color of a particular
@@ -136,7 +134,7 @@ Prerequisite :
   
   You need to have the following tools installed on the CUPS Server :
   
-    - CUPS (http://www.cups.org). PyKota v1.27 requires CUPS v1.3.4 or higher.
+    - CUPS (http://www.cups.org)
     - Python v2.3 or higher (http://www.python.org)
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The pkpgcounter command line tool, version 1.56 or higher. This
@@ -153,9 +151,10 @@ Prerequisite :
       Versions 2.x won't work. Versions 4.x now work (tested with v4.1.5a).
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
+    - The Python-chardet module to autodetect user's character set when  
+      printing. (http://chardet.feedparser.org)
     - SNMP tools (specifically the snmpget command) if you prefer to
-      use your own script to request query printers instead of PyKota's
-      internal SNMP handling facilities, which is not recommanded...
+      use your own script to request query printers.
       (http://www.net-snmp.org)
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
@@ -258,7 +257,7 @@ Then :
  
 Download the latest PyKota version from the Subversion tree :
 
-    $ svn co http://svn.pykota.com/pykota/trunk pykota
+    $ svn co svn://svn.librelogiciel.com/pykota/trunk pykota
 
 You can now check if the dependencies are correct by typing :
 
@@ -332,10 +331,6 @@ The rest of the installation depends on your printing system :
   
     Once and for all :
     
-        Modify CUPS' cupsd.conf to make CUPS listen to 127.0.0.1:631
-        INSTEAD OF to an unix domain socket, in addition to any
-        external network interface CUPS might already be listening to.
-        
         Create a symbolic link to the cupspykota backend 
         in CUPS's backend directory :
         
@@ -438,6 +433,13 @@ The rest of the installation depends on your printing system :
         described above to help with manual configuration of the file
         /etc/pykota/pykota.conf
 
+  - LPRng Printing System :
+  
+    IMPORTANT : This release of PyKota DOES NOT support LPRng.
+    
+    If you want to use PyKota with LPRng, you have to download
+    an earlier release of PyKota, for example v1.22HotFix1.
+        
 Now you can begin to populate the PyKota's database with printers,
 users and groups :
   
@@ -576,14 +578,6 @@ IRC :
   wouldn't benefit from the solutions.
   
   PyKota's main author is known as 'tamere' on IRC.
-  
-Bug Tracker :    
--------------
-
-  You can report bugs to our bug tracker on the development website
-  at :
-  
-      http://trac.pykota.com
     
 ============================================================
     

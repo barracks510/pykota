@@ -1,11 +1,11 @@
 # $Id$
 
-PyKota - Print Quotas for CUPS
+PyKota - Print Quotas for CUPS and LPRng
 
-(c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-This program is free software: you can redistribute it and/or modify
+(c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
+the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -14,7 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ============================================================
 
@@ -70,7 +71,7 @@ Contributors :
   - Paolo Nobili - Università degli Studi di Padova - SNMP waiting script
   - Beda Szukics - Kantonsschule Obwalden - German translation
   - Klaus Ade Johnstad - SkoleLinux - Norwegian Bokmål translation
-  - Matt Hyclak - Numerous code contributions and help.
+  - Matt Hyclak - Worked on banner handling and made MySQL support a reality
   - Wilson Roberto Afonso - Sent a patch for PJL.
   - Baris Cicek - Turkish translation.
   - Kanakorn Horsiritham - Wrote phpPykotaAdmin.
@@ -88,11 +89,6 @@ Contributors :
   - Georger Araujo - Fixed a charset problem with MySQL.
   - Nuno Rodrigues - Faculdade de Ciências e Tecnologia / Universidade Nova 
     de Lisboa : Portuguese translation.
-  - Christopher Hoskin - Jesus College Oxford - Patch for parsing Device URI.
-  - Jabka Atu - Fixed a problem with Debian changelog file.
-  - Jan Christoph Nordholz - T.U. Berlin - Explained the cause of a strange
-    problem with MySQL connections to 'localhost:3306'.
-  - Darin Perusich - Cognigen Corp. - Ported the LDAP schema to Sun DS
 
 ==============================================================
 

@@ -1,23 +1,24 @@
 #! /usr/bin/python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
 
 # PyKota Print Quota Reports generator
 #
-# PyKota - Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -27,11 +28,11 @@ import sys
 import os
 import cgi
 import urllib
-from xml.sax import saxutils
 
-import pykota.appinit
-from pykota import version, utils
+from pykota import version
+from pykota.tool import PyKotaToolError
 from pykota.dumper import DumPyKota
+from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 
 header = """Content-type: text/html;charset=%s
 
@@ -67,6 +68,7 @@ header = """Content-type: text/html;charset=%s
     </script>
   </head>
   <body>
+    <!-- %s %s -->
     <p>
       <form action="dumpykota.cgi" method="GET" name="mainform" onsubmit="return checkvalues()">
         <table>
@@ -121,29 +123,23 @@ class PyKotaDumperGUI(DumPyKota) :
     def guiDisplay(self) :
         """Displays the dumper interface."""
         global header, footer
-        content = [ header % (self.charset, _("PyKota Data Dumper"), \
+        print header % (self.charset, _("PyKota Data Dumper"), \
+                        self.language, self.charset, \
                         self.config.getLogoLink(), \
                         self.config.getLogoURL(), version.__version__, \
                         self.config.getLogoLink(), \
                         version.__version__, _("PyKota Data Dumper"), \
-                        _("Dump"), _("Please click on the above button")) ]
-        content.append(self.htmlListDataTypes(self.options.get("data", "")))
-        content.append(u"<br />")
-        content.append(self.htmlListFormats(self.options.get("format", "")))
-        content.append(u"<br />")
-        content.append(self.htmlFilterInput(" ".join(self.arguments)))
-        content.append(u"<br />")
-        content.append(self.htmlOrderbyInput(self.options.get("orderby", "")))
-        content.append(u"<br />")
-        content.append(self.htmlSumCheckbox(self.options.get("sum", "")))
-        content.append(footer % (_("Dump"), 
-                                 version.__doc__, 
-                                 version.__years__, 
-                                 version.__author__, 
-                                 saxutils.escape(version.__gplblurb__)))
-        for c in content :
-            sys.stdout.write(c.encode(self.charset, "replace"))
-        sys.stdout.flush()
+                        _("Dump"), _("Please click on the above button"))
+        print self.htmlListDataTypes(self.options.get("data", "")) 
+        print "<br />"
+        print self.htmlListFormats(self.options.get("format", ""))
+        print "<br />"
+        print self.htmlFilterInput(" ".join(self.arguments))
+        print "<br />"
+        print self.htmlOrderbyInput(self.options.get("orderby", ""))
+        print "<br />"
+        print self.htmlSumCheckbox(self.options.get("sum", ""))
+        print footer % (_("Dump"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
         
     def htmlListDataTypes(self, selected="") :    
         """Displays the datatype selection list."""
@@ -240,8 +236,7 @@ class PyKotaDumperGUI(DumPyKota) :
                 self.guiDisplay()
             
 if __name__ == "__main__" :
-    utils.reinitcgilocale()
-    admin = PyKotaDumperGUI()
+    admin = PyKotaDumperGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.options = { "output" : "-",

@@ -1,21 +1,24 @@
 #! /usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# PyKota : Print Quotas for CUPS and LPRng
+#
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -64,9 +67,6 @@ pykotaconf = """#
 #
 [global]
 
-# The charset to use when parsing the configuration files
-config_charset : UTF-8
-
 # Database settings
 storagebackend : pgstorage
 storageserver : %(storageserver)s
@@ -101,14 +101,8 @@ maildomain : %(dnsdomain)s
 admin : %(adminname)s
 adminmail : %(adminemail)s
 
-# Use usernames as-is or convert them to lowercase or uppercase ?
-usernamecase : native
-
-# Winbind separator character, uncomment if needed
-# winbind_separator : /
-
-# Should we forbid unknown users from printing ?
-reject_unknown : No
+# Use usernames as-is or convert them to lowercase ?
+utolower : No
 
 # Should we hide some fields in the history (title, filename) ?
 privacy : no
@@ -198,10 +192,17 @@ class PyKotaSetup :
                  "python-egenix-mxdatetime",
                  "python-imaging",
                  "python-pysnmp4",
-                 "python-pam",
-                 "pkpgcounter" ]
+                 "python-chardet",
+                 "python-pam" ]
         
-    otherpackages = [
+    otherpackages = [ { "name" : "pkpgcounter",
+                        "version" : "2.17",
+                        "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
+                        "commands" : [ "tar -zxf %(name)s-%(version)s.tar.gz",
+                                       "cd %(name)s-%(version)s",
+                                       "python setup.py install",
+                                     ],
+                      },
                       { "name" : "pkipplib",
                         "version" : "0.07",
                         "url" : "http://www.pykota.com/software/%(name)s/download/tarballs/%(name)s-%(version)s.tar.gz",
@@ -210,13 +211,14 @@ class PyKotaSetup :
                                        "python setup.py install",
                                      ],
                       },
-                      { "name" : "ghostpdl",
-                        "version" : "1.51",
-                        "url" : "http://mirror.cs.wisc.edu/pub/mirrors/ghost/GPL/%(name)s/%(name)s-%(version)s.tar.bz2",
+                      { "name" : "ghostpcl",
+                        "version" : "1.41p1",
+                        "url" : "ftp://mirror.cs.wisc.edu/pub/mirrors/ghost/AFPL/GhostPCL/%(name)s_%(version)s.tar.bz2", 
                         "commands" : [ "bunzip2 <%(name)s_%(version)s.tar.bz2 | tar -xf -",
                                        "cd %(name)s_%(version)s",
-                                       "make pcl",
-                                       "make pcl_install",
+                                       "make fonts",
+                                       "make product",
+                                       "make install",
                                      ],
                       },
                    ]  
@@ -279,7 +281,7 @@ class PyKotaSetup :
             if url.startswith("svn://") :
                 download = 'svn export "%(url)s" %(name)s' % locals()
             else :    
-                download = 'wget --user-agent=pksetup "%(url)s"' % locals()
+                download = 'wget "%(url)s"' % locals()
             if self.confirmCommand("to download %(name)s" % locals(), download) :
                 self.confirmCommand("to install %(name)s" % locals(), commands)
         self.confirmCommand("to remove the temporary directory %(directory)s" % locals(),     
@@ -307,13 +309,10 @@ class PyKotaSetup :
                 pgconfdir = pgconfdirs[i]
                 pgconffile = pgconffiles[i]
                 if (len(pgconfdirs) == 1) or self.yesno("Do PostgreSQL configuration files reside in %(pgconfdir)s" % locals()) :
-                    answer = self.confirmPipe("to see if PostgreSQL accepts TCP/IP connections", 'egrep \\"^tcpip_socket|^listen_addresses\\" %(pgconffile)s' % locals())
+                    answer = self.confirmPipe("to see if PostgreSQL accepts TCP/IP connections", "grep ^tcpip_socket %(pgconffile)s" % locals())
                     conflines = pghbaconf.split("\n")
                     if answer is not False :
-                        answer = answer.strip().lower()
-                        tcpip = answer.endswith("true")
-                        if tcpip is False :
-                            tcpip = answer.startswith("listen_addresses")
+                        tcpip = answer.strip().lower().endswith("true")
                     else :    
                         tcpip = False
                     if tcpip :    
@@ -321,23 +320,15 @@ class PyKotaSetup :
                     else :
                         conflines.insert(1, "local\tpykota\tpykotaadmin,pykotauser\t\tmd5")
                     conf = "\n".join(conflines)
-                    port = 5432
-                    if tcpip :
-                        answer = self.confirmPipe("to see on which TCP port PostgreSQL accepts connections", "grep ^port %(pgconffile)s" % locals())
-                        if answer is not False :
-                            try :
-                                port = int([p.strip() for p in answer.strip().split("=")][1])
-                            except (ValueError, IndexError, TypeError) :
-                                pass
                     self.confirmCommand("to configure PostgreSQL correctly for PyKota", 'echo "%(conf)s" >%(pgconfdir)s/pg_hba.conf' % locals())
                     self.confirmCommand("to make PostgreSQL take the changes into account", self.pgrestart)
-                    return (tcpip, port)
-        return (None, None)
+                    return tcpip
+        return None    
         
-    def genConfig(self, adminname, adminemail, dnsdomain, smtpserver, home, tcpip, port) :
+    def genConfig(self, adminname, adminemail, dnsdomain, smtpserver, home, tcpip) :        
         """Generates minimal configuration files for PyKota."""
         if tcpip :
-            storageserver = "localhost:%i" % port
+            storageserver = "localhost"
         else :    
             storageserver = ""
         conf = pykotaconf % locals()
@@ -410,13 +401,13 @@ class PyKotaSetup :
         smtpserver = raw_input("What is the hostname or IP address of your SMTP server ? ").strip()
         homedirectory = self.addPyKotaUser()
         if homedirectory is None :
-            logerr("Installation can't proceed. You MUST create a system user named 'pykota'.\n")
+            sys.stderr.write("Installation can't proceed. You MUST create a system user named 'pykota'.\n")
         else :    
             self.upgradeSystem()
             self.setupPackages()
             self.downloadOtherPackages()
-            (tcpip, port) = self.configurePostgreSQL()
-            self.genConfig(adminname, adminemail, dnsdomain, smtpserver, homedirectory, tcpip, port)
+            tcpip = self.configurePostgreSQL()
+            self.genConfig(adminname, adminemail, dnsdomain, smtpserver, homedirectory, tcpip)
             self.setupDatabase()
             self.setupBackend()
             self.managePrinters(self.listPrinters())
@@ -459,7 +450,7 @@ class Ubuntu(Debian) :
 if __name__ == "__main__" :        
     retcode = 0
     if (len(sys.argv) != 2) or (sys.argv[1] == "-h") or (sys.argv[1] == "--help") :
-        print "pksetup v0.1 (c) 2003-2008 Jerome Alet - alet@librelogiciel.com\n\nusage : pksetup distribution\n\ne.g. : pksetup debian\n\nIMPORTANT : only Debian and Ubuntu are currently supported."
+        print "pksetup v0.1 (c) 2003-2007 Jerome Alet - alet@librelogiciel.com\n\nusage : pksetup distribution\n\ne.g. : pksetup debian\n\nIMPORTANT : only Debian and Ubuntu are currently supported."
     elif (sys.argv[1] == "-v") or (sys.argv[1] == "--version") :    
         print "0.1" # pksetup's own version number
     else :    
@@ -467,12 +458,12 @@ if __name__ == "__main__" :
         try :
             installer = globals()[classname]()
         except KeyError :    
-            logerr("There's currently no support for the %s distribution, sorry.\n" % sys.argv[1])
+            sys.stderr.write("There's currently no support for the %s distribution, sorry.\n" % sys.argv[1])
             retcode = -1
         else :    
             try :
                 retcode = installer.setup()
             except KeyboardInterrupt :             
-                logerr("\n\n\nWARNING : Setup was aborted at user's request !\n\n")
+                sys.stderr.write("\n\n\nWARNING : Setup was aborted at user's request !\n\n")
                 retcode = -1
     sys.exit(retcode)

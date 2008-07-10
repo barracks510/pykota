@@ -1,22 +1,24 @@
 #! /usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
+
+# CUPSPyKota accounting backend
 #
-# PyKota : Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -43,13 +45,19 @@ import email.Utils
 
 from mx import DateTime
 
-import pykota.appinit
-from pykota.utils import *
-
-from pykota.errors import PyKotaToolError
-from pykota.tool import PyKotaTool
+from pykota.tool import PyKotaTool, PyKotaToolError, crashed
 from pykota.accounter import openAccounter
-from pykota import cups
+# TODO : remove the three lines below and the code which handles
+# TODO : them in a future release.
+from pykota.ipp import IPPRequest as oldIPPRequest
+from pykota.ipp import IPPError as oldIPPError
+
+try :
+    from pkipplib import pkipplib
+except ImportError :        
+    haspkipplib = False
+else :    
+    haspkipplib = True
     
 class FakeObject :        
     """Fake object."""
@@ -75,7 +83,6 @@ class CUPSBackend(PyKotaTool) :
         PyKotaTool.__init__(self)
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         signal.signal(signal.SIGPIPE, signal.SIG_IGN)
-        self.oldSigIntHandler = signal.signal(signal.SIGINT, signal.SIG_IGN)
         self.MyName = "PyKota"
         self.myname = "cupspykota"
         self.pid = os.getpid()
@@ -88,12 +95,41 @@ class CUPSBackend(PyKotaTool) :
         PyKotaTool.deferredInit(self)
         if not self.config.isAdmin :
             from pykota import config
-            username = self.effectiveUserName
+            username = self.originalUserName
             raise config.PyKotaConfigError, _("User %(username)s is not allowed to read ~pykota/pykotadmin.conf, you must check the permissions.") % locals()
+        self.gotSigTerm = 0
+        self.disableSigInt()
+        self.installSigTermHandler()
+        
+    def sigtermHandler(self, signum, frame) :
+        """Sets an attribute whenever SIGTERM is received."""
+        self.gotSigTerm = 1
+        self.printInfo(_("SIGTERM received, job %s cancelled.") % self.JobId)
+        os.environ["PYKOTASTATUS"] = "CANCELLED"
+        
+    def deinstallSigTermHandler(self) :           
+        """Deinstalls the SIGTERM handler."""
+        self.logdebug("Deinstalling SIGTERM handler...")
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        self.logdebug("SIGTERM handler deinstalled.")
+        
+    def installSigTermHandler(self) :           
+        """Installs the SIGTERM handler."""
+        self.logdebug("Installing SIGTERM handler...")
+        signal.signal(signal.SIGTERM, self.sigtermHandler)
+        self.logdebug("SIGTERM handler installed.")
+        
+    def disableSigInt(self) :    
+        """Disables the SIGINT signal (which raises KeyboardInterrupt)."""
+        self.logdebug("Disabling SIGINT...")
+        self.oldSigIntHandler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+        self.logdebug("SIGINT disabled.")
         
     def enableSigInt(self) :    
         """Enables the SIGINT signal (which raises KeyboardInterrupt)."""
+        self.logdebug("Enabling SIGINT...")
         signal.signal(signal.SIGINT, self.oldSigIntHandler)
+        self.logdebug("SIGINT enabled.")
         
     def waitForLock(self) :    
         """Waits until we can acquire the lock file."""
@@ -128,11 +164,10 @@ class CUPSBackend(PyKotaTool) :
         
            Executes each existing backend in turn in device enumeration mode.
            Returns the list of available backends.
-           
-           Unfortunately this method can't output any debug information
-           to stdout or stderr, else CUPS considers that the device is
-           not available.
         """
+        # Unfortunately this method can't output any debug information
+        # to stdout or stderr, else CUPS considers that the device is
+        # not available.
         available = []
         (directory, myname) = os.path.split(sys.argv[0])
         if not directory :
@@ -202,21 +237,6 @@ class CUPSBackend(PyKotaTool) :
                              % (self.myname, self.MyName, self.MyName))
         return available
                         
-    def checkCUPSVersion(self) :                    
-        """Checks if CUPS is not v1.3.4 or higher."""
-        fullversion = os.environ.get("SOFTWARE", "")
-        if fullversion.startswith("CUPS/") :
-            vnum = fullversion.split("/")[1]
-            try :
-               (major, minor, release) = [int(p) for p in vnum.split(".")]
-            except ValueError :   
-                pass
-            else :    
-                return (major > 1) \
-                        or ((major == 1) and (minor > 3)) \
-                        or ((major == 1) and (minor == 3) and (release >= 4))
-        return False
-        
     def initBackendParameters(self) :    
         """Initializes the backend's attributes."""
         # check that the DEVICE_URI environment variable's value is 
@@ -224,9 +244,6 @@ class CUPSBackend(PyKotaTool) :
         # If this is the case, we have to remove the prefix from 
         # the environment before launching the real backend 
         self.logdebug("Initializing backend...")
-        
-        if not self.checkCUPSVersion() :
-            self.printInfo("BEWARE : CUPS is too old. You should use CUPS v1.3.4 or higher.", "error")
         
         self.PrinterName = os.environ.get("PRINTER", "")
         directories = [ self.config.getPrinterDirectory(self.PrinterName),
@@ -242,24 +259,19 @@ class CUPSBackend(PyKotaTool) :
                 
         self.Action = "ALLOW"   # job allowed by default
         self.Reason = None
-        try :
-            copies = int(sys.argv[4].strip())
-            if copies < 1 :
-                raise ValueError
-        except (ValueError, TypeError) :    
-            self.logdebug("Invalid number of copies '%s', using 1 instead." % sys.argv[4])
-            copies = 1
+        self.JobId = sys.argv[1].strip()
+        # use CUPS' user when printing test pages from CUPS' web interface
+        self.UserName = sys.argv[2].strip() or self.originalUserName or pwd.getpwuid(os.geteuid())[0]
+        self.OriginalUserName = self.UserName[:]
+        self.Title = sys.argv[3].strip()
+        self.Copies = int(sys.argv[4].strip())
+        self.Options = sys.argv[5].strip()
         if len(sys.argv) == 7 :
-            fname = sys.argv[6] # read job's datas from file
+            self.InputFile = sys.argv[6] # read job's datas from file
         else :    
-            fname = None        # read job's datas from stdin            
-            
-        self.Ticket = cups.JobTicket(sys.argv[1].strip(), self.PrinterName, \
-                                     copies, fname, sys.argv[5].strip())
-        self.UserName = self.Ticket.OriginatingUserName                             
-                                     
-        self.DataFile = (os.path.join(self.Directory, "%s-%s-%s-%s" % \
-                   (self.myname, self.PrinterName, self.UserName, self.Ticket.JobId))).encode(sys.getfilesystemencoding(), "replace")
+            self.InputFile = None        # read job's datas from stdin
+        self.DataFile = os.path.join(self.Directory, "%s-%s-%s-%s" % \
+                   (self.myname, self.PrinterName, self.UserName, self.JobId))
         
         muststartwith = "%s:" % self.myname
         device_uri = os.environ.get("DEVICE_URI", "")
@@ -291,16 +303,55 @@ class CUPSBackend(PyKotaTool) :
                 checkauth = destination.split("@", 1)    
                 if len(checkauth) == 2 :
                     destination = checkauth[1]
-                printerhostname = destination.split("/")[0].split(":")[0]
+            printerhostname = destination.split("/")[0].split(":")[0]
             
         self.PrinterHostName = printerhostname    
         self.RealBackend = backend
         self.DeviceURI = device_uri
         
-        if self.Ticket.BillingCode is None :
+        connerror = False
+        if haspkipplib :
+            self.ControlFile = "NotUsedAnymore"
+            self.logdebug("Querying CUPS server...")
+            cupsserver = pkipplib.CUPS() # TODO : username and password and/or encryption
+            answer = cupsserver.getJobAttributes(self.JobId)
+            if answer is None :
+                self.printInfo(_("Network error while querying the CUPS server : %s") \
+                                          % cupsserver.lastErrorMessage, "error")
+                connerror = True                        
+            else :    
+                self.logdebug("CUPS server answered without error.")
+                try :
+                    john = answer.job["job-originating-host-name"]
+                except KeyError :    
+                    try :
+                        john = answer.operation["job-originating-host-name"]
+                    except KeyError :    
+                        john = (None, None)
+                try :        
+                    jbing = answer.job["job-billing"]
+                except KeyError :    
+                    jbing = (None, None)
+                    
+        if connerror or not haspkipplib :        
+            (ippfilename, ippmessage) = self.parseIPPRequestFile()
+            self.ControlFile = ippfilename
+            john = ippmessage.operation_attributes.get("job-originating-host-name", \
+                   ippmessage.job_attributes.get("job-originating-host-name", \
+                   (None, None)))
+            jbing = ippmessage.job_attributes.get("job-billing", (None, None))
+                
+        if type(john) == type([]) : 
+            john = john[-1]
+        (chtype, self.ClientHost) = john 
+        if type(jbing) == type([]) : 
+            jbing = jbing[-1]
+        (jbtype, self.JobBillingCode) = jbing
+        if self.JobBillingCode is None :
             self.OriginalJobBillingCode = None
         else :    
-            self.OriginalJobBillingCode = self.Ticket.BillingCode[:]
+            self.JobBillingCode = self.UTF8ToUserCharset(self.JobBillingCode)
+            self.OriginalJobBillingCode = self.JobBillingCode[:]
             
         baselockfilename = self.DeviceURI.replace("/", ".")
         baselockfilename = baselockfilename.replace(":", ".")
@@ -313,15 +364,16 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("DeviceURI : %s" % self.DeviceURI)
         self.logdebug("Printername : %s" % self.PrinterName)
         self.logdebug("Username : %s" % self.UserName)
-        self.logdebug("JobId : %s" % self.Ticket.JobId)
-        self.logdebug("Title : %s" % self.Ticket.Title)
-        self.logdebug("Filename : %s" % self.Ticket.FileName)
-        self.logdebug("Copies : %s" % self.Ticket.Copies)
-        self.logdebug("Options : %s" % self.Ticket.Options)
+        self.logdebug("JobId : %s" % self.JobId)
+        self.logdebug("Title : %s" % self.Title)
+        self.logdebug("Filename : %s" % self.InputFile)
+        self.logdebug("Copies : %s" % self.Copies)
+        self.logdebug("Options : %s" % self.Options)
         self.logdebug("Directory : %s" % self.Directory) 
         self.logdebug("DataFile : %s" % self.DataFile)
-        self.logdebug("JobBillingCode : %s" % self.Ticket.BillingCode)
-        self.logdebug("JobOriginatingHostName : %s" % self.Ticket.OriginatingHostName)
+        self.logdebug("ControlFile : %s" % self.ControlFile)
+        self.logdebug("JobBillingCode : %s" % self.JobBillingCode)
+        self.logdebug("JobOriginatingHostName : %s" % self.ClientHost)
         
         # fakes some entries to allow for external mailto
         # before real entries are extracted from the database.
@@ -360,14 +412,14 @@ class CUPSBackend(PyKotaTool) :
         # do we want to strip some prefix off of titles ?    
         stripprefix = self.config.getStripTitle(self.PrinterName)
         if stripprefix :
-            if fnmatch.fnmatch(self.Ticket.Title[:len(stripprefix)], stripprefix) :
+            if fnmatch.fnmatch(self.Title[:len(stripprefix)], stripprefix) :
                 self.logdebug("Prefix [%s] removed from job's title [%s]." \
-                                      % (stripprefix, self.Ticket.Title))
-                self.Ticket.Title = self.Ticket.Title[len(stripprefix):]
+                                      % (stripprefix, self.Title))
+                self.Title = self.Title[len(stripprefix):]
                 
         self.logdebug("Username : %s" % self.UserName)
-        self.logdebug("BillingCode : %s" % self.Ticket.BillingCode)
-        self.logdebug("Title : %s" % self.Ticket.Title)
+        self.logdebug("BillingCode : %s" % self.JobBillingCode)
+        self.logdebug("Title : %s" % self.Title)
         self.logdebug("Job's attributes sanitizing done.")
                 
     def didUserConfirm(self) :
@@ -403,6 +455,7 @@ class CUPSBackend(PyKotaTool) :
             username = billingcode = action = reason = None
             self.logdebug("Launching subprocess [%s] to overwrite the job ticket." \
                                      % jobticketcommand)
+            self.regainPriv()                         
             inputfile = os.popen(jobticketcommand, "r")
             try :
                 for line in inputfile.xreadlines() :
@@ -414,17 +467,18 @@ class CUPSBackend(PyKotaTool) :
                         self.logdebug("Seen CANCEL command.")
                         action = "CANCEL"
                     elif line.startswith("USERNAME=") :    
-                        username = line.split("=", 1)[1].strip().decode(self.charset, "replace")
+                        username = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
                         self.logdebug("Seen new username [%s]" % username)
                     elif line.startswith("BILLINGCODE=") :    
-                        billingcode = line.split("=", 1)[1].strip().decode(self.charset, "replace")
+                        billingcode = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
                         self.logdebug("Seen new billing code [%s]" % billingcode)
                     elif line.startswith("REASON=") :
-                        reason = line.split("=", 1)[1].strip().decode(self.charset, "replace")
+                        reason = self.userCharsetToUTF8(line.split("=", 1)[1].strip())
                         self.logdebug("Seen new reason [%s]" % reason)
             except IOError, msg :            
                 self.logdebug("IOError while reading subprocess' output : %s" % msg)
             inputfile.close()    
+            self.dropPriv()
             
             # now overwrite the job's ticket if new data was supplied
             if action == "DENY" :
@@ -433,14 +487,14 @@ class CUPSBackend(PyKotaTool) :
             elif action == "CANCEL" :
                 self.Action = action
                 self.Reason = (reason or _("Print job cancelled."))
-                setenv("PYKOTASTATUS", "CANCELLED", self.charset)
+                os.environ["PYKOTASTATUS"] = "CANCELLED"
             else :
                 # don't overwrite anything unless job authorized
                 # to continue to the physical printer.
                 if username and username.strip() :
                     self.UserName = username
                 if billingcode is not None :
-                    self.Ticket.BillingCode = billingcode 
+                    self.JobBillingCode = billingcode 
         self.logdebug("Job ticket overwriting done.")
             
     def saveDatasAndCheckSum(self) :
@@ -448,9 +502,10 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Duplicating data stream into %s" % self.DataFile)
         mustclose = 0
         outfile = open(self.DataFile, "wb")    
-        if self.Ticket.FileName is not None :
-            infile = open(self.Ticket.FileName, "rb")
-            self.logdebug("Reading input datas from %s" % self.Ticket.FileName)
+        if self.InputFile is not None :
+            self.regainPriv()
+            infile = open(self.InputFile, "rb")
+            self.logdebug("Reading input datas from %s" % self.InputFile)
             mustclose = 1
         else :    
             infile = sys.stdin
@@ -471,6 +526,7 @@ class CUPSBackend(PyKotaTool) :
             dummy += 1    
         if mustclose :    
             infile.close()
+            self.dropPriv()
             
         outfile.close()
         self.JobSizeBytes = sizeread    
@@ -483,6 +539,8 @@ class CUPSBackend(PyKotaTool) :
     def clean(self) :
         """Cleans up the place."""
         self.logdebug("Cleaning up...")
+        self.regainPriv()
+        self.deinstallSigTermHandler()
         if (self.DataFile is not None) and os.path.exists(self.DataFile) :
             try :
                 keep = self.config.getPrinterKeepFiles(self.PrinterName)
@@ -525,49 +583,116 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Precomputed job's price is %.3f credits." \
                                    % self.softwareJobPrice)
         
+    def getCupsConfigDirectives(self, directives=[]) :
+        """Retrieves some CUPS directives from its configuration file.
+        
+           Returns a mapping with lowercased directives as keys and 
+           their setting as values.
+        """
+        self.logdebug("Parsing CUPS' configuration file...")
+        dirvalues = {} 
+        cupsroot = os.environ.get("CUPS_SERVERROOT", "/etc/cups")
+        cupsdconf = os.path.join(cupsroot, "cupsd.conf")
+        try :
+            conffile = open(cupsdconf, "r")
+        except IOError :    
+            raise PyKotaToolError, "Unable to open %s" % cupsdconf
+        else :    
+            for line in conffile.readlines() :
+                linecopy = line.strip().lower()
+                for di in [d.lower() for d in directives] :
+                    if linecopy.startswith("%s " % di) :
+                        try :
+                            val = line.split()[1]
+                        except :    
+                            pass # ignore errors, we take the last value in any case.
+                        else :    
+                            dirvalues[di] = val
+            conffile.close()            
+        self.logdebug("CUPS' configuration file parsed successfully.")
+        return dirvalues       
+            
+    def parseIPPRequestFile(self) :        
+        """Parses the IPP message file and returns a tuple (filename, parsedvalue)."""
+        self.logdebug("Parsing IPP request file...")
+        
+        class DummyClass :
+            """Class used to avoid errors."""
+            operation_attributes = {}
+            job_attributes = {}
+            
+        ippmessage = DummyClass() # in case the code below fails
+        
+        self.regainPriv()
+        cupsdconf = self.getCupsConfigDirectives(["RequestRoot"])
+        requestroot = cupsdconf.get("requestroot", "/var/spool/cups")
+        if (len(self.JobId) < 5) and self.JobId.isdigit() :
+            ippmessagefile = "c%05i" % int(self.JobId)
+        else :    
+            ippmessagefile = "c%s" % self.JobId
+        ippmessagefile = os.path.join(requestroot, ippmessagefile)
+        try :
+            ippdatafile = open(ippmessagefile)
+        except :    
+            self.logdebug("Unable to open IPP request file %s" % ippmessagefile)
+        else :    
+            self.logdebug("Parsing of IPP request file %s begins." % ippmessagefile)
+            try :
+                ippmessage = oldIPPRequest(ippdatafile.read())
+                ippmessage.parse()
+            except oldIPPError, msg :    
+                self.printInfo("Error while parsing %s : %s" \
+                                      % (ippmessagefile, msg), "warn")
+            else :    
+                self.logdebug("Parsing of IPP request file %s ends." \
+                                       % ippmessagefile)
+            ippdatafile.close()
+        self.dropPriv()
+        self.logdebug("IPP request file parsed successfully.")
+        return (ippmessagefile, ippmessage)
+                
     def exportJobInfo(self) :    
         """Exports the actual job's attributes to the environment."""
         self.logdebug("Exporting job information to the environment...")
-        setenv("DEVICE_URI", self.DeviceURI, self.charset) # WARNING !
-        setenv("PYKOTACHARSET", self.charset, self.charset)
-        setenv("PYKOTALANG", self.language, self.charset)
-        setenv("PYKOTAPRINTERNAME", self.PrinterName, self.charset)
-        setenv("PYKOTADIRECTORY", self.Directory, self.charset)
-        setenv("PYKOTADATAFILE", self.DataFile, self.charset)
-        setenv("PYKOTAJOBSIZEBYTES", str(self.JobSizeBytes), self.charset)
-        setenv("PYKOTAMD5SUM", self.JobMD5Sum, self.charset)
-        setenv("PYKOTAJOBORIGINATINGHOSTNAME", self.Ticket.OriginatingHostName or "", self.charset)
-        setenv("PYKOTAJOBID", self.Ticket.JobId, self.charset)
-        setenv("PYKOTAUSERNAME", self.UserName, self.charset)
-        setenv("PYKOTAORIGINALUSERNAME", self.Ticket.OriginalUserName, self.charset)
-        setenv("PYKOTATITLE", self.Ticket.Title, self.charset)
-        setenv("PYKOTACOPIES", str(self.Ticket.Copies), self.charset)
-        setenv("PYKOTAOPTIONS", self.Ticket.Options, self.charset)
-        setenv("PYKOTAFILENAME", self.Ticket.FileName or "", self.charset)
-        setenv("PYKOTAJOBBILLING", self.Ticket.BillingCode or "", self.charset)
-        setenv("PYKOTAORIGINALJOBBILLING", self.OriginalJobBillingCode or "", self.charset)
-        setenv("PYKOTAPRINTERHOSTNAME", self.PrinterHostName, self.charset)
-        setenv("PYKOTAPRECOMPUTEDJOBSIZE", str(self.softwareJobSize), self.charset)
+        os.environ["DEVICE_URI"] = self.DeviceURI       # WARNING !
+        os.environ["PYKOTAPRINTERNAME"] = self.PrinterName
+        os.environ["PYKOTADIRECTORY"] = self.Directory
+        os.environ["PYKOTADATAFILE"] = self.DataFile
+        os.environ["PYKOTAJOBSIZEBYTES"] = str(self.JobSizeBytes)
+        os.environ["PYKOTAMD5SUM"] = self.JobMD5Sum
+        os.environ["PYKOTAJOBORIGINATINGHOSTNAME"] = self.ClientHost or ""
+        os.environ["PYKOTAJOBID"] = self.JobId
+        os.environ["PYKOTAUSERNAME"] = self.UserName
+        os.environ["PYKOTAORIGINALUSERNAME"] = self.OriginalUserName
+        os.environ["PYKOTATITLE"] = self.Title
+        os.environ["PYKOTACOPIES"] = str(self.Copies)
+        os.environ["PYKOTAOPTIONS"] = self.Options
+        os.environ["PYKOTAFILENAME"] = self.InputFile or ""
+        os.environ["PYKOTAJOBBILLING"] = self.JobBillingCode or ""
+        os.environ["PYKOTAORIGINALJOBBILLING"] = self.OriginalJobBillingCode or ""
+        os.environ["PYKOTACONTROLFILE"] = self.ControlFile
+        os.environ["PYKOTAPRINTERHOSTNAME"] = self.PrinterHostName
+        os.environ["PYKOTAPRECOMPUTEDJOBSIZE"] = str(self.softwareJobSize)
         self.logdebug("Environment updated.")
         
     def exportUserInfo(self) :
         """Exports user information to the environment."""
         self.logdebug("Exporting user information to the environment...")
-        setenv("PYKOTAOVERCHARGE", str(self.User.OverCharge), self.charset)
-        setenv("PYKOTALIMITBY", str(self.User.LimitBy), self.charset)
-        setenv("PYKOTABALANCE", str(self.User.AccountBalance or 0.0), self.charset)
-        setenv("PYKOTALIFETIMEPAID", str(self.User.LifeTimePaid or 0.0), self.charset)
-        setenv("PYKOTAUSERDESCRIPTION", self.User.Description or "", self.charset)
+        os.environ["PYKOTAOVERCHARGE"] = str(self.User.OverCharge)
+        os.environ["PYKOTALIMITBY"] = str(self.User.LimitBy)
+        os.environ["PYKOTABALANCE"] = str(self.User.AccountBalance or 0.0)
+        os.environ["PYKOTALIFETIMEPAID"] = str(self.User.LifeTimePaid or 0.0)
+        os.environ["PYKOTAUSERDESCRIPTION"] = str(self.User.Description or "")
         
-        setenv("PYKOTAPAGECOUNTER", str(self.UserPQuota.PageCounter or 0), self.charset)
-        setenv("PYKOTALIFEPAGECOUNTER", str(self.UserPQuota.LifePageCounter or 0), self.charset)
-        setenv("PYKOTASOFTLIMIT", str(self.UserPQuota.SoftLimit), self.charset)
-        setenv("PYKOTAHARDLIMIT", str(self.UserPQuota.HardLimit), self.charset)
-        setenv("PYKOTADATELIMIT", str(self.UserPQuota.DateLimit), self.charset)
-        setenv("PYKOTAWARNCOUNT", str(self.UserPQuota.WarnCount), self.charset)
+        os.environ["PYKOTAPAGECOUNTER"] = str(self.UserPQuota.PageCounter or 0)
+        os.environ["PYKOTALIFEPAGECOUNTER"] = str(self.UserPQuota.LifePageCounter or 0)
+        os.environ["PYKOTASOFTLIMIT"] = str(self.UserPQuota.SoftLimit)
+        os.environ["PYKOTAHARDLIMIT"] = str(self.UserPQuota.HardLimit)
+        os.environ["PYKOTADATELIMIT"] = str(self.UserPQuota.DateLimit)
+        os.environ["PYKOTAWARNCOUNT"] = str(self.UserPQuota.WarnCount)
         
         # TODO : move this elsewhere once software accounting is done only once.
-        setenv("PYKOTAPRECOMPUTEDJOBPRICE", str(self.softwareJobPrice), self.charset)
+        os.environ["PYKOTAPRECOMPUTEDJOBPRICE"] = str(self.softwareJobPrice)
         
         self.logdebug("Environment updated.")
         
@@ -576,33 +701,33 @@ class CUPSBackend(PyKotaTool) :
         self.logdebug("Exporting printer information to the environment...")
         # exports the list of printers groups the current
         # printer is a member of
-        setenv("PYKOTAPGROUPS", ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)]), self.charset)
-        setenv("PYKOTAPRINTERDESCRIPTION", self.Printer.Description or "", self.charset)
-        setenv("PYKOTAPRINTERMAXJOBSIZE", ((self.Printer.MaxJobSize is None) and _("Unlimited")) or str(self.Printer.MaxJobSize), self.charset)
-        setenv("PYKOTAPRINTERPASSTHROUGHMODE", (self.Printer.PassThrough and _("ON")) or _("OFF"), self.charset)
-        setenv("PYKOTAPRICEPERPAGE", str(self.Printer.PricePerPage or 0), self.charset)
-        setenv("PYKOTAPRICEPERJOB", str(self.Printer.PricePerJob or 0), self.charset)
+        os.environ["PYKOTAPGROUPS"] = ",".join([p.Name for p in self.storage.getParentPrinters(self.Printer)])
+        os.environ["PYKOTAPRINTERDESCRIPTION"] = str(self.Printer.Description or "")
+        os.environ["PYKOTAPRINTERMAXJOBSIZE"] = str(self.Printer.MaxJobSize or _("Unlimited"))
+        os.environ["PYKOTAPRINTERPASSTHROUGHMODE"] = (self.Printer.PassThrough and _("ON")) or _("OFF")
+        os.environ["PYKOTAPRICEPERPAGE"] = str(self.Printer.PricePerPage or 0)
+        os.environ["PYKOTAPRICEPERJOB"] = str(self.Printer.PricePerJob or 0)
         self.logdebug("Environment updated.")
         
     def exportPhaseInfo(self, phase) :
         """Exports phase information to the environment."""
         self.logdebug("Exporting phase information [%s] to the environment..." % phase)
-        setenv("PYKOTAPHASE", phase, self.charset)
+        os.environ["PYKOTAPHASE"] = phase
         self.logdebug("Environment updated.")
         
     def exportJobSizeAndPrice(self) :
         """Exports job's size and price information to the environment."""
         self.logdebug("Exporting job's size and price information to the environment...")
-        setenv("PYKOTAJOBSIZE", str(self.JobSize), self.charset)
-        setenv("PYKOTAJOBPRICE", str(self.JobPrice), self.charset)
+        os.environ["PYKOTAJOBSIZE"] = str(self.JobSize)
+        os.environ["PYKOTAJOBPRICE"] = str(self.JobPrice)
         self.logdebug("Environment updated.")
         
     def exportReason(self) :
         """Exports the job's action status and optional reason."""
         self.logdebug("Exporting job's action status...")
-        setenv("PYKOTAACTION", self.Action or "", self.charset)
+        os.environ["PYKOTAACTION"] = str(self.Action)
         if self.Reason :
-            setenv("PYKOTAREASON", self.Reason or "", self.charset)
+            os.environ["PYKOTAREASON"] = str(self.Reason)
         self.logdebug("Environment updated.")
         
     def acceptJob(self) :        
@@ -637,7 +762,7 @@ class CUPSBackend(PyKotaTool) :
         try :
             return "%s@%s(%s) => %s" % (self.UserName, \
                                         self.PrinterName, \
-                                        self.Ticket.JobId, \
+                                        self.JobId, \
                                         message)
         except :                                               
             return message
@@ -844,17 +969,17 @@ class CUPSBackend(PyKotaTool) :
         """
         self.logdebug("Retrieving billing code information from the database...")
         self.BillingCode = None
-        if self.Ticket.BillingCode :
-            self.BillingCode = self.storage.getBillingCode(self.Ticket.BillingCode)
+        if self.JobBillingCode :
+            self.BillingCode = self.storage.getBillingCode(self.JobBillingCode)
             if self.BillingCode.Exists :
-                self.logdebug("Billing code [%s] found in database." % self.Ticket.BillingCode)
+                self.logdebug("Billing code [%s] found in database." % self.JobBillingCode)
             else :
-                msg = "Unknown billing code [%s] : " % self.Ticket.BillingCode
+                msg = "Unknown billing code [%s] : " % self.JobBillingCode
                 (newaction, script) = self.config.getUnknownBillingCode(self.PrinterName)
                 if newaction == "CREATE" :
                     self.logdebug(msg + "will be created.")
                     self.storage.addBillingCode(self.BillingCode)
-                    self.BillingCode = self.storage.getBillingCode(self.Ticket.BillingCode)
+                    self.BillingCode = self.storage.getBillingCode(self.JobBillingCode)
                     if self.BillingCode.Exists :
                         self.logdebug(msg + "has been created.")
                     else :    
@@ -922,7 +1047,9 @@ class CUPSBackend(PyKotaTool) :
             (mailto, arguments) = self.config.getMailTo(self.PrinterName)
             if mailto == "EXTERNAL" :
                 # TODO : clean this again
+                self.regainPriv()
                 self.externalMailTo(arguments, self.Action, self.User, self.Printer, self.Reason)
+                self.dropPriv()
             else :    
                 # TODO : clean this again
                 admin = self.config.getAdmin(self.PrinterName)
@@ -944,7 +1071,7 @@ class CUPSBackend(PyKotaTool) :
                 else :
                     try :
                         msg = MIMEText(fullmessage, _charset=self.charset)
-                        msg["Subject"] = Header(_("Print Quota"), charset=self.charset, errors="replace")
+                        msg["Subject"] = Header(_("Print Quota"), charset=self.charset)
                         msg["From"] = adminmail
                         if mailto in ("BOTH", "USER") :
                             msg["To"] = usermail
@@ -1078,7 +1205,7 @@ class CUPSBackend(PyKotaTool) :
             if not self.didUserConfirm() :
                 self.Action = "CANCEL"
                 self.Reason = _("Print job cancelled.")
-                setenv("PYKOTASTATUS", "CANCELLED", self.charset)
+                os.environ["PYKOTASTATUS"] = "CANCELLED"
                 
         # exports some new environment variables
         self.exportReason()
@@ -1101,14 +1228,17 @@ class CUPSBackend(PyKotaTool) :
             self.printInfo(_("Job cancelled, no accounting will be done."))
         else :
             self.printInfo(_("Job accounting begins."))
+            self.deinstallSigTermHandler()
             self.accounter.beginJob(self.Printer)
+            self.installSigTermHandler()
         
         # handle starting banner pages with accounting
         if (self.Action != "CANCEL") and accountbanner in ["STARTING", "BOTH"] :
-            self.handleBanner("starting", 1)
+            if not self.gotSigTerm :
+                self.handleBanner("starting", 1)
         
-        # pass the job's data to the real backend if needed   
-        if self.Action in ("ALLOW", "WARN") :
+        # pass the job's data to the real backend    
+        if (not self.gotSigTerm) and (self.Action in ["ALLOW", "WARN"]) :
             retcode = self.printJobDatas()
         else :        
             retcode = self.removeJob()
@@ -1118,7 +1248,8 @@ class CUPSBackend(PyKotaTool) :
         
         # handle ending banner pages with accounting
         if (self.Action != "CANCEL") and accountbanner in ["ENDING", "BOTH"] :
-            self.handleBanner("ending", 1)
+            if not self.gotSigTerm :
+                self.handleBanner("ending", 1)
         
         # stops accounting
         if self.Action == "DENY" :
@@ -1126,7 +1257,9 @@ class CUPSBackend(PyKotaTool) :
         elif self.Action == "CANCEL" :    
             self.printInfo(_("Job cancelled, no accounting has been done."))
         else :
+            self.deinstallSigTermHandler()
             self.accounter.endJob(self.Printer)
+            self.installSigTermHandler()
             self.printInfo(_("Job accounting ends."))
         
         # Do all these database changes within a single transaction    
@@ -1177,10 +1310,10 @@ class CUPSBackend(PyKotaTool) :
                 self.JobPrice = self.UserPQuota.increasePagesUsage(self.JobSize, self.accounter.inkUsage)
             
             # adds the current job to history    
-            self.Printer.addJobToHistory(self.Ticket.JobId, self.User, self.accounter.getLastPageCounter(), \
-                                    self.Action, self.JobSize, self.JobPrice, self.Ticket.FileName, \
-                                    self.Ticket.Title, self.Ticket.Copies, self.Ticket.Options, self.Ticket.OriginatingHostName, \
-                                    self.JobSizeBytes, self.JobMD5Sum, None, self.Ticket.BillingCode, \
+            self.Printer.addJobToHistory(self.JobId, self.User, self.accounter.getLastPageCounter(), \
+                                    self.Action, self.JobSize, self.JobPrice, self.InputFile, \
+                                    self.Title, self.Copies, self.Options, self.ClientHost, \
+                                    self.JobSizeBytes, self.JobMD5Sum, None, self.JobBillingCode, \
                                     self.softwareJobSize, self.softwareJobPrice)
             self.printInfo(_("Job added to history."))
             
@@ -1229,12 +1362,12 @@ class CUPSBackend(PyKotaTool) :
                     break
         loopcnt = 1 
         while True :            
-            if self.Ticket.FileName is None :
+            if self.InputFile is None :
                 infile = open(self.DataFile, "rb")
             else :    
                 infile = None
             retcode = self.runOriginalBackend(infile)
-            if self.Ticket.FileName is None :
+            if self.InputFile is None :
                 infile.close()
             if not retcode :
                 break
@@ -1253,18 +1386,19 @@ class CUPSBackend(PyKotaTool) :
         """Launches the original backend."""
         originalbackend = os.path.join(os.path.split(sys.argv[0])[0], self.RealBackend)
         if not isBanner :
-            arguments = [os.environ["DEVICE_URI"]] + [a.encode("UTF-8") for a in sys.argv[1:]]
+            arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:]
         else :    
             # For banners, we absolutely WANT
             # to remove any filename from the command line !
             self.logdebug("It looks like we try to print a banner.")
-            arguments = [os.environ["DEVICE_URI"]] + [a.encode("UTF-8") for a in sys.argv[1:6]]
+            arguments = [os.environ["DEVICE_URI"]] + sys.argv[1:6]
         arguments[2] = self.UserName # in case it was overwritten by external script
         # TODO : do something about job-billing option, in case it was overwritten as well...
         # TODO : do something about the job title : if we are printing a banner and the backend
         # TODO : uses the job's title to name an output file (cups-pdf:// for example), we're stuck !
         
-        self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a.decode("UTF-8") for a in arguments])))
+        self.logdebug("Starting original backend %s with args %s" % (originalbackend, " ".join(['"%s"' % a for a in arguments])))
+        self.regainPriv()    
         pid = os.fork()
         self.logdebug("Forked !")
         if pid == 0 :
@@ -1278,16 +1412,18 @@ class CUPSBackend(PyKotaTool) :
                 self.logdebug("execve() failed: %s" % msg)
             self.logdebug("We shouldn't be there !!!")    
             os._exit(-1)
+        self.dropPriv()    
         
         self.logdebug("Waiting for original backend to exit...")    
-        killed = False
+        killed = 0
         status = -1
         while status == -1 :
             try :
                 status = os.waitpid(pid, 0)[1]
             except OSError, (err, msg) :
-                if err == 4 :
-                    killed = True
+                if (err == 4) and self.gotSigTerm :
+                    os.kill(pid, signal.SIGTERM)
+                    killed = 1
                     
         if os.WIFEXITED(status) :
             status = os.WEXITSTATUS(status)
@@ -1303,7 +1439,7 @@ class CUPSBackend(PyKotaTool) :
         elif not killed :
             self.Reason = "CUPS backend %s died abnormally." % originalbackend
             self.printInfo(self.Reason, "error")
-            return 1
+            return -1
         else :
             self.Reason = "CUPS backend %s was killed." % originalbackend
             self.printInfo(self.Reason, "warn")
@@ -1316,7 +1452,7 @@ if __name__ == "__main__" :
         print "\n".join(wrapper.discoverOtherBackends())
         sys.exit(0)                
     elif len(sys.argv) not in (6, 7) :    
-        logerr("ERROR: %s job-id user title copies options [file]\n"\
+        sys.stderr.write("ERROR: %s job-id user title copies options [file]\n"\
                               % sys.argv[0])
         sys.exit(1)
     else :    
@@ -1337,7 +1473,7 @@ if __name__ == "__main__" :
                 wrapper.exportJobInfo() # re-exports in case it was overwritten
                 retcode = wrapper.mainWork()
             except KeyboardInterrupt :    
-                wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.Ticket.JobId, "warn")
+                wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.JobId, "warn")
                 retcode = 0
             except SystemExit, err :    
                 retcode = err.code

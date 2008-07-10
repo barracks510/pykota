@@ -1,31 +1,31 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
 #
 
-"""This module defines the necessary classes and methods to retrieve 
-a printer's internal page counter over a TCP connection.""" 
-
 import sys
 import os
 import socket
+import errno
 import time
 import threading
 import Queue
@@ -34,13 +34,13 @@ from pykota import constants
 
 FORMFEEDCHAR = chr(0x0c)     # Form Feed character, ends PJL answers.
 
-# Old method : PJLMESSAGE = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
+# Old method : pjlMessage = "\033%-12345X@PJL USTATUSOFF\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n\033%-12345X"
 # Here's a new method, which seems to work fine on my HP2300N, while the 
 # previous one didn't.
 # TODO : We could also experiment with USTATUS JOB=ON and we would know for sure 
 # when the job is finished, without having to poll the printer repeatedly.
-PJLMESSAGE = "\033%-12345X@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n@PJL USTATUS DEVICE=OFF\033%-12345X"
-PJLSTATUSVALUES = {
+pjlMessage = "\033%-12345X@PJL USTATUS DEVICE=ON\r\n@PJL INFO STATUS\r\n@PJL INFO PAGECOUNT\r\n@PJL USTATUS DEVICE=OFF\033%-12345X"
+pjlStatusValues = {
                     "10000" : "Powersave Mode",
                     "10001" : "Ready Online",
                     "10002" : "Ready Offline",
@@ -110,22 +110,22 @@ class Handler :
     def readloop(self) :        
         """Reading loop thread."""
         self.parent.filter.logdebug("Reading thread started.")
-        readbuffer = []
+        buffer = []
         while not self.quitEvent.isSet() :
             try :
                 answer = self.sock.recv(1)
             except socket.timeout :    
                 pass
-            except socket.error, (dummy, msg) :
+            except socket.error, (err, msg) :
                 self.parent.filter.printInfo(_("Problem while receiving PJL answer from %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
                 if answer :
-                    readbuffer.append(answer)
+                    buffer.append(answer)
                     if answer.endswith(FORMFEEDCHAR) :
-                        self.queue.put("".join(readbuffer))
-                        readbuffer = []
-        if readbuffer :             
-            self.queue.put("".join(readbuffer))            
+                        self.queue.put("".join(buffer))
+                        buffer = []
+        if buffer :             
+            self.queue.put("".join(buffer))            
         self.parent.filter.logdebug("Reading thread ended.")
             
     def retrievePJLValues(self) :    
@@ -135,13 +135,13 @@ class Handler :
             time.sleep(1)
         try :
             try :
-                nbsent = self.sock.send(PJLMESSAGE)
-                if nbsent != len(PJLMESSAGE) :
+                nbsent = self.sock.send(pjlMessage)
+                if nbsent != len(pjlMessage) :
                     raise socket.error, "Short write"
             except socket.error, msg :
                 self.parent.filter.printInfo(_("Problem while sending PJL query to %s:%s : %s") % (self.printerHostname, self.port, str(msg)), "warn")
             else :    
-                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(PJLMESSAGE)))
+                self.parent.filter.logdebug("Query sent to %s : %s" % (self.printerHostname, repr(pjlMessage)))
                 actualpagecount = self.printerStatus = None
                 while (actualpagecount is None) or (self.printerStatus is None) :
                     try :
@@ -259,7 +259,7 @@ class Handler :
             
 def main(hostname) :
     """Tries PJL accounting for a printer host."""
-    class FakeFilter :
+    class fakeFilter :
         """Fakes a filter for testing purposes."""
         def __init__(self) :
             """Initializes the fake filter."""
@@ -275,19 +275,19 @@ def main(hostname) :
             """Prints debug message."""
             self.printInfo(msg, "debug")
             
-    class FakeAccounter :        
+    class fakeAccounter :        
         """Fakes an accounter for testing purposes."""
-        def __init__(self, hostname) :
+        def __init__(self) :
             """Initializes fake accounter."""
             self.arguments = "pjl:9100"
-            self.filter = FakeFilter()
-            self.protocolHandler = Handler(self, hostname)
+            self.filter = fakeFilter()
+            self.protocolHandler = Handler(self, sys.argv[1])
             
         def getLastPageCounter(self) :    
             """Fakes the return of a page counter."""
             return 0
         
-    acc = FakeAccounter(hostname)
+    acc = fakeAccounter()            
     return acc.protocolHandler.retrieveInternalPageCounter()
     
 if __name__ == "__main__" :            
@@ -295,7 +295,6 @@ if __name__ == "__main__" :
         sys.stderr.write("Usage :  python  %s  printer_ip_address\n" % sys.argv[0])
     else :    
         def _(msg) :
-            """Fake gettext method."""
             return msg
             
         pagecounter = main(sys.argv[1])

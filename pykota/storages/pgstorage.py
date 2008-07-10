@@ -1,20 +1,22 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -22,13 +24,11 @@
 
 """This module defines a class to access to a PostgreSQL database backend."""
 
+import time
 from types import StringType
 
-from pykota.errors import PyKotaStorageError
-from pykota.storage import BaseStorage
+from pykota.storage import PyKotaStorageError, BaseStorage
 from pykota.storages.sql import SQLStorage
-
-from pykota.utils import *                           
 
 try :
     import pg
@@ -74,18 +74,23 @@ class Storage(BaseStorage, SQLStorage) :
         
     def beginTransaction(self) :    
         """Starts a transaction."""
+        self.before = time.time()
         self.database.query("BEGIN;")
         self.tool.logdebug("Transaction begins...")
         
     def commitTransaction(self) :    
         """Commits a transaction."""
         self.database.query("COMMIT;")
+        after = time.time()
         self.tool.logdebug("Transaction committed.")
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.database.query("ROLLBACK;")
+        after = time.time()
         self.tool.logdebug("Transaction aborted.")
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def doRawSearch(self, query) :
         """Does a raw search query."""
@@ -93,10 +98,15 @@ class Storage(BaseStorage, SQLStorage) :
         if not query.endswith(';') :    
             query += ';'
         try :
-            self.querydebug("QUERY : %s" % query)
-            return self.database.query(query)
+            before = time.time()
+            self.tool.logdebug("QUERY : %s" % query)
+            result = self.database.query(query)
         except PGError, msg :    
-            raise PyKotaStorageError, repr(msg)
+            raise PyKotaStorageError, str(msg)
+        else :    
+            after = time.time()
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            return result
             
     def doSearch(self, query) :        
         """Does a search query."""
@@ -110,11 +120,16 @@ class Storage(BaseStorage, SQLStorage) :
         if not query.endswith(';') :    
             query += ';'
         try :
-            self.querydebug("QUERY : %s" % query)
-            return self.database.query(query)
+            before = time.time()
+            self.tool.logdebug("QUERY : %s" % query)
+            result = self.database.query(query)
         except PGError, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))
-            raise PyKotaStorageError, repr(msg)
+            raise PyKotaStorageError, str(msg)
+        else :    
+            after = time.time()
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
+            return result
             
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
@@ -139,7 +154,7 @@ class Storage(BaseStorage, SQLStorage) :
                 for j in range(nbfields) :
                     field = fields[j]
                     if type(field) == StringType :
-                        fields[j] = databaseToUnicode(field) 
+                        fields[j] = self.databaseToUserCharset(field) 
                 entries[i] = tuple(fields)    
             return entries
         

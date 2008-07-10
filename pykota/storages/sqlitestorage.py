@@ -1,20 +1,22 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -22,8 +24,9 @@
 
 """This module defines a class to access to a SQLite database backend."""
 
-from pykota.errors import PyKotaStorageError
-from pykota.storage import BaseStorage
+import time
+
+from pykota.storage import PyKotaStorageError, BaseStorage
 from pykota.storages.sql import SQLStorage
 
 try :
@@ -32,7 +35,7 @@ except ImportError :
     import sys
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PySQLite module installed correctly." % sys.version.split()[0]
-    
+
 class Storage(BaseStorage, SQLStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the SQLite database connection."""
@@ -54,18 +57,23 @@ class Storage(BaseStorage, SQLStorage) :
         
     def beginTransaction(self) :    
         """Starts a transaction."""
+        self.before = time.time()
         self.cursor.execute("BEGIN;")
         self.tool.logdebug("Transaction begins...")
         
     def commitTransaction(self) :    
         """Commits a transaction."""
         self.cursor.execute("COMMIT;")
+        after = time.time()
         self.tool.logdebug("Transaction committed.")
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def rollbackTransaction(self) :     
         """Rollbacks a transaction."""
         self.cursor.execute("ROLLBACK;")
+        after = time.time()
         self.tool.logdebug("Transaction aborted.")
+        #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
         
     def doRawSearch(self, query) :
         """Does a raw search query."""
@@ -73,12 +81,15 @@ class Storage(BaseStorage, SQLStorage) :
         if not query.endswith(';') :    
             query += ';'
         try :
-            self.querydebug("QUERY : %s" % query)
+            before = time.time()
+            self.tool.logdebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
-            raise PyKotaStorageError, repr(msg)
+            raise PyKotaStorageError, str(msg)
         else :    
             result = self.cursor.fetchall()
+            after = time.time()
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
             
     def doSearch(self, query) :        
@@ -107,11 +118,15 @@ class Storage(BaseStorage, SQLStorage) :
         if not query.endswith(';') :    
             query += ';'
         try :
-            self.querydebug("QUERY : %s" % query)
+            before = time.time()
+            self.tool.logdebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :    
             self.tool.logdebug("Query failed : %s" % repr(msg))
-            raise PyKotaStorageError, repr(msg)
+            raise PyKotaStorageError, str(msg)
+        else :    
+            after = time.time()
+            #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""

@@ -1,23 +1,24 @@
 #! /usr/bin/python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
 
 # PyKota Print Quota Reports generator
 #
-# PyKota - Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -27,16 +28,13 @@ import sys
 import os
 import cgi
 import urllib
-from xml.sax import saxutils
 
 from mx import DateTime
 
-import pykota.appinit
-
-from pykota import version, utils
-from pykota.tool import PyKotaTool
-from pykota.errors import PyKotaToolError, PyKotaReporterError
-from pykota.reporter import openReporter
+from pykota import version
+from pykota.tool import PyKotaTool, PyKotaToolError
+from pykota.reporter import PyKotaReporterError, openReporter
+from pykota.cgifuncs import getLanguagePreference, getCharsetPreference
 
 header = """Content-type: text/html;charset=%s
 
@@ -46,6 +44,7 @@ header = """Content-type: text/html;charset=%s
     <link rel="stylesheet" type="text/css" href="/pykota.css" />
   </head>
   <body>
+    <!-- %s %s -->
     <p>
       <form action="printquota.cgi" method="POST">
         <table>
@@ -97,21 +96,15 @@ class PyKotaReportGUI(PyKotaTool) :
     def guiDisplay(self) :
         """Displays the administrative interface."""
         global header, footer
-        content = [ header % (self.charset, _("PyKota Reports"), \
-                              self.config.getLogoLink(), \
-                              self.config.getLogoURL(), version.__version__, \
-                              self.config.getLogoLink(), \
-                              version.__version__, _("PyKota Reports"), \
-                              _("Report")) ]
-        content.append(self.body)                      
-        content.append(footer % (_("Report"), 
-                                 version.__doc__, 
-                                 version.__years__, 
-                                 version.__author__, 
-                                 saxutils.escape(version.__gplblurb__)))
-        for c in content :
-            sys.stdout.write(c.encode(self.charset, "replace"))
-        sys.stdout.flush()
+        print header % (self.charset, _("PyKota Reports"), \
+                        self.language, self.charset, \
+                        self.config.getLogoLink(), \
+                        self.config.getLogoURL(), version.__version__, \
+                        self.config.getLogoLink(), \
+                        version.__version__, _("PyKota Reports"), \
+                        _("Report"))
+        print self.body
+        print footer % (_("Report"), version.__doc__, version.__years__, version.__author__, version.__gplblurb__)
         
     def error(self, message) :
         """Adds an error message to the GUI's body."""
@@ -294,8 +287,7 @@ class PyKotaReportGUI(PyKotaTool) :
                 self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
             
 if __name__ == "__main__" :
-    utils.reinitcgilocale()
-    admin = PyKotaReportGUI()
+    admin = PyKotaReportGUI(lang=getLanguagePreference(), charset=getCharsetPreference())
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
     admin.guiAction()

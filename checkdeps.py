@@ -1,23 +1,24 @@
 #! /usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
 #
 # PyKota
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -80,6 +81,7 @@ if __name__ == "__main__" :
                        ("Python-pkpgcounter", "pkpgpdls", "Python-pkpgcounter is mandatory.\nGrab it from http://www.pykota.com/software/pkpgcounter/"),
                        ("Python-PAM", "PAM", "Python-PAM is recommended if you plan to use pknotify+PyKotIcon.\nGrab it from http://www.pangalactic.org/PyPAM/"),
                        ("Python-pkipplib", "pkipplib", "Python-pkipplib is now mandatory.\nGrab it from http://www.pykota.com/software/pkipplib/"),
+                       ("Python-chardet", "chardet", "Python-chardet is recommended.\nGrab it from http://chardet.feedparser.org/"),
                      ]
     commandstocheck = [ ("GhostScript", "gs", "Depending on your configuration, GhostScript may be needed in different parts of PyKota."),
                         ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."), 

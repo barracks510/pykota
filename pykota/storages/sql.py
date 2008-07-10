@@ -1,20 +1,22 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -25,8 +27,6 @@
 from pykota.storage import StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
                            StorageGroupPQuota, StorageBillingCode
-                           
-from pykota.utils import *                           
 
 class SQLStorage :
     def storageUserFromRecord(self, username, record) :
@@ -37,7 +37,7 @@ class SQLStorage :
         user.AccountBalance = record.get("balance")
         user.LifeTimePaid = record.get("lifetimepaid")
         user.Email = record.get("email")
-        user.Description = databaseToUnicode(record.get("description"))
+        user.Description = self.databaseToUserCharset(record.get("description"))
         user.OverCharge = record.get("overcharge", 1.0)
         user.Exists = True
         return user
@@ -49,7 +49,7 @@ class SQLStorage :
         group.LimitBy = record.get("limitby") or "quota"
         group.AccountBalance = record.get("balance")
         group.LifeTimePaid = record.get("lifetimepaid")
-        group.Description = databaseToUnicode(record.get("description"))
+        group.Description = self.databaseToUserCharset(record.get("description"))
         group.Exists = True
         return group
         
@@ -65,7 +65,7 @@ class SQLStorage :
             printer.PassThrough = True
         else :
             printer.PassThrough = False
-        printer.Description = databaseToUnicode(record.get("description") or "") # TODO : is 'or ""' still needed ?
+        printer.Description = self.databaseToUserCharset(record.get("description") or "") # TODO : is 'or ""' still needed ?
         printer.Exists = True
         return printer
         
@@ -77,20 +77,20 @@ class SQLStorage :
         job.JobSize = record.get("jobsize")
         job.JobPrice = record.get("jobprice")
         job.JobAction = record.get("action")
-        job.JobFileName = databaseToUnicode(record.get("filename") or "") 
-        job.JobTitle = databaseToUnicode(record.get("title") or "") 
+        job.JobFileName = self.databaseToUserCharset(record.get("filename") or "") 
+        job.JobTitle = self.databaseToUserCharset(record.get("title") or "") 
         job.JobCopies = record.get("copies")
-        job.JobOptions = databaseToUnicode(record.get("options") or "") 
+        job.JobOptions = self.databaseToUserCharset(record.get("options") or "") 
         job.JobDate = record.get("jobdate")
         job.JobHostName = record.get("hostname")
         job.JobSizeBytes = record.get("jobsizebytes")
         job.JobMD5Sum = record.get("md5sum")
         job.JobPages = record.get("pages")
-        job.JobBillingCode = databaseToUnicode(record.get("billingcode") or "")
+        job.JobBillingCode = self.databaseToUserCharset(record.get("billingcode") or "")
         job.PrecomputedJobSize = record.get("precomputedjobsize")
         job.PrecomputedJobPrice = record.get("precomputedjobprice")
-        job.UserName = databaseToUnicode(record.get("username"))
-        job.PrinterName = databaseToUnicode(record.get("printername"))
+        job.UserName = self.databaseToUserCharset(record.get("username"))
+        job.PrinterName = self.databaseToUserCharset(record.get("printername"))
         if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
             (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
         job.Exists = True
@@ -139,7 +139,7 @@ class SQLStorage :
         """Returns a StorageBillingCode instance from a database record."""
         code = StorageBillingCode(self, billingcode)
         code.ident = record.get("id")
-        code.Description = databaseToUnicode(record.get("description") or "") # TODO : is 'or ""' still needed ?
+        code.Description = self.databaseToUserCharset(record.get("description") or "") # TODO : is 'or ""' still needed ?
         code.Balance = record.get("balance") or 0.0
         code.PageCounter = record.get("pagecounter") or 0
         code.Exists = True
@@ -150,7 +150,7 @@ class SQLStorage :
         if only :
             expressions = []
             for (k, v) in only.items() :
-                expressions.append("%s=%s" % (k, self.doQuote(unicodeToDatabase(v))))
+                expressions.append("%s=%s" % (k, self.doQuote(self.userCharsetToDatabase(v))))
             return " AND ".join(expressions)     
         return ""        
         
@@ -300,7 +300,7 @@ class SQLStorage :
             if attrval is None :
                 self.tool.printInfo("Object %s has no %s attribute !" % (repr(record), attribute), "error")
             else :
-                attrval = databaseToUnicode(attrval)
+                attrval = self.databaseToUserCharset(attrval)
                 if patterns :
                     if (not isinstance(patterns, type([]))) and (not isinstance(patterns, type(()))) :
                         patterns = [ patterns ]
@@ -344,15 +344,15 @@ class SQLStorage :
         
     def getUserNbJobsFromHistory(self, user) :
         """Returns the number of jobs the user has in history."""
-        result = self.doSearch("SELECT COUNT(*) AS count FROM jobhistory WHERE userid=%s" % self.doQuote(user.ident))
+        result = self.doSearch("SELECT COUNT(*) FROM jobhistory WHERE userid=%s" % self.doQuote(user.ident))
         if result :
             return result[0]["count"]
         return 0
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
-        result = self.doSearch("SELECT * FROM users WHERE username=%s"\
-                      % self.doQuote(unicodeToDatabase(username)))
+        result = self.doSearch("SELECT * FROM users WHERE username=%s LIMIT 1"\
+                      % self.doQuote(self.userCharsetToDatabase(username)))
         if result :
             return self.storageUserFromRecord(username, result[0])
         else :    
@@ -360,8 +360,8 @@ class SQLStorage :
        
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
-        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description" \
-                      % self.doQuote(unicodeToDatabase(groupname)))
+        result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) WHERE groupname=%s GROUP BY groups.id,groups.groupname,groups.limitby,groups.description LIMIT 1" \
+                      % self.doQuote(self.userCharsetToDatabase(groupname)))
         if result :
             return self.storageGroupFromRecord(groupname, result[0])
         else :    
@@ -369,8 +369,8 @@ class SQLStorage :
        
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name."""
-        result = self.doSearch("SELECT * FROM printers WHERE printername=%s" \
-                      % self.doQuote(unicodeToDatabase(printername)))
+        result = self.doSearch("SELECT * FROM printers WHERE printername=%s LIMIT 1" \
+                      % self.doQuote(self.userCharsetToDatabase(printername)))
         if result :
             return self.storagePrinterFromRecord(printername, result[0])
         else :    
@@ -378,8 +378,8 @@ class SQLStorage :
         
     def getBillingCodeFromBackend(self, label) :        
         """Extracts a billing code information given its name."""
-        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s" \
-                      % self.doQuote(unicodeToDatabase(label)))
+        result = self.doSearch("SELECT * FROM billingcodes WHERE billingcode=%s LIMIT 1" \
+                      % self.doQuote(self.userCharsetToDatabase(label)))
         if result :
             return self.storageBillingCodeFromRecord(label, result[0])
         else :    
@@ -405,7 +405,7 @@ class SQLStorage :
         
     def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
-        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice FROM jobhistory, users WHERE userid=users.id AND jobhistory.id IN (SELECT max(id) FROM jobhistory WHERE printerid=%s)" % self.doQuote(printer.ident))
+        result = self.doSearch("SELECT jobhistory.id, jobid, userid, username, pagecounter, jobsize, jobprice, filename, title, copies, options, hostname, jobdate, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice FROM jobhistory, users WHERE printerid=%s AND userid=users.id ORDER BY jobdate DESC LIMIT 1" % self.doQuote(printer.ident))
         if result :
             return self.storageLastJobFromRecord(printer, result[0])
         else :    
@@ -417,7 +417,7 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM groupsmembers JOIN users ON groupsmembers.userid=users.id WHERE groupid=%s" % self.doQuote(group.ident))
         if result :
             for record in result :
-                user = self.storageUserFromRecord(databaseToUnicode(record.get("username")), \
+                user = self.storageUserFromRecord(self.databaseToUserCharset(record.get("username")), \
                                                   record)
                 groupmembers.append(user)
                 self.cacheEntry("USERS", user.Name, user)
@@ -429,7 +429,7 @@ class SQLStorage :
         result = self.doSearch("SELECT groupname FROM groupsmembers JOIN groups ON groupsmembers.groupid=groups.id WHERE userid=%s" % self.doQuote(user.ident))
         if result :
             for record in result :
-                groups.append(self.getGroup(databaseToUnicode(record.get("groupname"))))
+                groups.append(self.getGroup(self.databaseToUserCharset(record.get("groupname"))))
         return groups        
         
     def getParentPrintersFromBackend(self, printer) :    
@@ -439,7 +439,7 @@ class SQLStorage :
         if result :
             for record in result :
                 if record["groupid"] != printer.ident : # in case of integrity violation
-                    parentprinter = self.getPrinter(databaseToUnicode(record.get("printername")))
+                    parentprinter = self.getPrinter(self.databaseToUserCharset(record.get("printername")))
                     if parentprinter.Exists :
                         pgroups.append(parentprinter)
         return pgroups
@@ -461,7 +461,7 @@ class SQLStorage :
                 for p in patterns :
                     patdict[p] = None
             for record in result :
-                pname = databaseToUnicode(record["printername"])
+                pname = self.databaseToUserCharset(record["printername"])
                 if patdict.has_key(pname) or self.tool.matchString(pname, patterns) :
                     printer = self.storagePrinterFromRecord(pname, record)
                     printers.append(printer)
@@ -485,7 +485,7 @@ class SQLStorage :
                 for p in patterns :
                     patdict[p] = None
             for record in result :
-                uname = databaseToUnicode(record["username"])
+                uname = self.databaseToUserCharset(record["username"])
                 if patdict.has_key(uname) or self.tool.matchString(uname, patterns) :
                     user = self.storageUserFromRecord(uname, record)
                     users.append(user)
@@ -509,7 +509,7 @@ class SQLStorage :
                 for p in patterns :
                     patdict[p] = None
             for record in result :
-                gname = databaseToUnicode(record["groupname"])
+                gname = self.databaseToUserCharset(record["groupname"])
                 if patdict.has_key(gname) or self.tool.matchString(gname, patterns) :
                     group = self.storageGroupFromRecord(gname, record)
                     groups.append(group)
@@ -530,7 +530,7 @@ class SQLStorage :
                 for p in patterns :
                     patdict[p] = None
             for record in result :
-                codename = databaseToUnicode(record["billingcode"])
+                codename = self.databaseToUserCharset(record["billingcode"])
                 if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
                     code = self.storageBillingCodeFromRecord(codename, record)
                     codes.append(code)
@@ -543,7 +543,7 @@ class SQLStorage :
         result = self.doSearch("SELECT users.id as uid,username,description,balance,lifetimepaid,limitby,email,overcharge,userpquota.id,lifepagecounter,pagecounter,softlimit,hardlimit,datelimit,warncount FROM users JOIN userpquota ON users.id=userpquota.userid AND printerid=%s ORDER BY username ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                uname = databaseToUnicode(record.get("username"))
+                uname = self.databaseToUserCharset(record.get("username"))
                 if self.tool.matchString(uname, names) :
                     user = self.storageUserFromRecord(uname, record)
                     userpquota = self.storageUserPQuotaFromRecord(user, printer, record)
@@ -558,7 +558,7 @@ class SQLStorage :
         result = self.doSearch("SELECT groupname FROM groups JOIN grouppquota ON groups.id=grouppquota.groupid AND printerid=%s ORDER BY groupname ASC" % self.doQuote(printer.ident))
         if result :
             for record in result :
-                gname = databaseToUnicode(record.get("groupname"))
+                gname = self.databaseToUserCharset(record.get("groupname"))
                 if self.tool.matchString(gname, names) :
                     group = self.getGroup(gname)
                     grouppquota = self.getGroupPQuota(group, printer)
@@ -571,10 +571,10 @@ class SQLStorage :
         if oldentry.Exists :
             return oldentry
         self.doModify("INSERT INTO printers (printername, passthrough, maxjobsize, description, priceperpage, priceperjob) VALUES (%s, %s, %s, %s, %s, %s)" \
-                          % (self.doQuote(unicodeToDatabase(printer.Name)), \
+                          % (self.doQuote(self.userCharsetToDatabase(printer.Name)), \
                              self.doQuote((printer.PassThrough and "t") or "f"), \
                              self.doQuote(printer.MaxJobSize or 0), \
-                             self.doQuote(unicodeToDatabase(printer.Description)), \
+                             self.doQuote(self.userCharsetToDatabase(printer.Description)), \
                              self.doQuote(printer.PricePerPage or 0.0), \
                              self.doQuote(printer.PricePerJob or 0.0)))
         printer.isDirty = False
@@ -586,10 +586,10 @@ class SQLStorage :
         if oldentry.Exists :
             return oldentry
         self.doModify("INSERT INTO billingcodes (billingcode, balance, pagecounter, description) VALUES (%s, %s, %s, %s)" \
-                           % (self.doQuote(unicodeToDatabase(bcode.BillingCode)), 
+                           % (self.doQuote(self.userCharsetToDatabase(bcode.BillingCode)), 
                               self.doQuote(bcode.Balance or 0.0), \
                               self.doQuote(bcode.PageCounter or 0), \
-                              self.doQuote(unicodeToDatabase(bcode.Description))))
+                              self.doQuote(self.userCharsetToDatabase(bcode.Description))))
         bcode.isDirty = False
         return None # the entry created doesn't need further modification
         
@@ -599,13 +599,13 @@ class SQLStorage :
         if oldentry.Exists :
             return oldentry
         self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
-                                     (self.doQuote(unicodeToDatabase(user.Name)), \
+                                     (self.doQuote(self.userCharsetToDatabase(user.Name)), \
                                       self.doQuote(user.LimitBy or 'quota'), \
                                       self.doQuote(user.AccountBalance or 0.0), \
                                       self.doQuote(user.LifeTimePaid or 0.0), \
                                       self.doQuote(user.Email), \
                                       self.doQuote(user.OverCharge), \
-                                      self.doQuote(unicodeToDatabase(user.Description))))
+                                      self.doQuote(self.userCharsetToDatabase(user.Description))))
         if user.PaymentsBacklog :
             for (value, comment) in user.PaymentsBacklog :
                 self.writeNewPayment(user, value, comment)
@@ -619,9 +619,9 @@ class SQLStorage :
         if oldentry.Exists :
             return oldentry
         self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
-                              (self.doQuote(unicodeToDatabase(group.Name)), \
+                              (self.doQuote(self.userCharsetToDatabase(group.Name)), \
                                self.doQuote(group.LimitBy or "quota"), \
-                               self.doQuote(unicodeToDatabase(group.Description))))
+                               self.doQuote(self.userCharsetToDatabase(group.Description))))
         group.isDirty = False
         return None # the entry created doesn't need further modification
 
@@ -678,7 +678,7 @@ class SQLStorage :
         self.doModify("UPDATE printers SET passthrough=%s, maxjobsize=%s, description=%s, priceperpage=%s, priceperjob=%s WHERE id=%s" \
                               % (self.doQuote((printer.PassThrough and "t") or "f"), \
                                  self.doQuote(printer.MaxJobSize or 0), \
-                                 self.doQuote(unicodeToDatabase(printer.Description)), \
+                                 self.doQuote(self.userCharsetToDatabase(printer.Description)), \
                                  self.doQuote(printer.PricePerPage or 0.0), \
                                  self.doQuote(printer.PricePerJob or 0.0), \
                                  self.doQuote(printer.ident)))
@@ -691,14 +691,14 @@ class SQLStorage :
                                   self.doQuote(user.LifeTimePaid or 0.0), \
                                   self.doQuote(user.Email), \
                                   self.doQuote(user.OverCharge), \
-                                  self.doQuote(unicodeToDatabase(user.Description)), \
+                                  self.doQuote(self.userCharsetToDatabase(user.Description)), \
                                   self.doQuote(user.ident)))
                                   
     def saveGroup(self, group) :        
         """Saves the group to the database in a single operation."""
         self.doModify("UPDATE groups SET limitby=%s, description=%s WHERE id=%s" \
                                % (self.doQuote(group.LimitBy or 'quota'), \
-                                  self.doQuote(unicodeToDatabase(group.Description)), \
+                                  self.doQuote(self.userCharsetToDatabase(group.Description)), \
                                   self.doQuote(group.ident)))
         
     def writeUserPQuotaDateLimit(self, userpquota, datelimit) :    
@@ -718,7 +718,7 @@ class SQLStorage :
         self.doModify("UPDATE billingcodes SET balance=%s, pagecounter=%s, description=%s WHERE id=%s" \
                             % (self.doQuote(bcode.Balance or 0.0), \
                                self.doQuote(bcode.PageCounter or 0), \
-                               self.doQuote(unicodeToDatabase(bcode.Description)), \
+                               self.doQuote(self.userCharsetToDatabase(bcode.Description)), \
                                self.doQuote(bcode.ident)))
        
     def consumeBillingCode(self, bcode, pagecounter, balance) :
@@ -736,9 +736,9 @@ class SQLStorage :
     def writeNewPayment(self, user, amount, comment="") :
         """Adds a new payment to the payments history."""
         if user.ident is not None :
-            self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(unicodeToDatabase(comment))))
+            self.doModify("INSERT INTO payments (userid, amount, description) VALUES (%s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))
         else :    
-            self.doModify("INSERT INTO payments (userid, amount, description) VALUES ((SELECT id FROM users WHERE username=%s), %s, %s)" % (self.doQuote(unicodeToDatabase(user.Name)), self.doQuote(amount), self.doQuote(unicodeToDatabase(comment))))
+            self.doModify("INSERT INTO payments (userid, amount, description) VALUES ((SELECT id FROM users WHERE username=%s), %s, %s)" % (self.doQuote(self.userCharsetToDatabase(user.Name)), self.doQuote(amount), self.doQuote(self.userCharsetToDatabase(comment))))
         
     def writeLastJobSize(self, lastjob, jobsize, jobprice) :        
         """Sets the last job's size permanently."""
@@ -749,10 +749,10 @@ class SQLStorage :
         if self.privacy :    
             # For legal reasons, we want to hide the title, filename and options
             title = filename = options = "hidden"
-        filename = unicodeToDatabase(filename)
-        title = unicodeToDatabase(title)
-        options = unicodeToDatabase(options)
-        jobbilling = unicodeToDatabase(jobbilling)
+        filename = self.userCharsetToDatabase(filename)
+        title = self.userCharsetToDatabase(title)
+        options = self.userCharsetToDatabase(options)
+        jobbilling = self.userCharsetToDatabase(jobbilling)
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes), self.doQuote(jobmd5sum), self.doQuote(jobpages), self.doQuote(jobbilling), self.doQuote(precomputedsize), self.doQuote(precomputedprice)))
@@ -815,9 +815,9 @@ class SQLStorage :
         if hostname is not None :    
             where.append("hostname=%s" % self.doQuote(hostname))
         if billingcode is not None :    
-            where.append("billingcode=%s" % self.doQuote(unicodeToDatabase(billingcode)))
+            where.append("billingcode=%s" % self.doQuote(self.userCharsetToDatabase(billingcode)))
         if jobid is not None :    
-            where.append("jobid=%s" % self.doQuote(jobid)) # TODO : jobid is text, so unicodeToDatabase(jobid) but do all of them as well.
+            where.append("jobid=%s" % self.doQuote(jobid)) # TODO : jobid is text, so self.userCharsetToDatabase(jobid) but do all of them as well.
         if start is not None :    
             where.append("jobdate>=%s" % self.doQuote(start))
         if end is not None :    
@@ -826,9 +826,7 @@ class SQLStorage :
             query += " AND %s" % " AND ".join(where)
         query += " ORDER BY jobhistory.id DESC"
         if limit :
-            # TODO : LIMIT is not supported under DB2.
-            # TODO : so we must use something like " FETCH FIRST %s ROWS ONLY" % self.doQuote(int(limit))
-            query += " LIMIT %s" % self.doQuote(int(limit)) 
+            query += " LIMIT %s" % self.doQuote(int(limit))
         jobs = []    
         result = self.doSearch(query)    
         if result :

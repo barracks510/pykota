@@ -1,20 +1,22 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota : Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -36,13 +38,10 @@ import random
 
 from mx import DateTime
 
-from pykota.errors import PyKotaStorageError
-from pykota.storage import BaseStorage, \
+from pykota.storage import PyKotaStorageError, BaseStorage, \
                            StorageUser, StorageGroup, StoragePrinter, \
                            StorageJob, StorageLastJob, StorageUserPQuota, \
                            StorageGroupPQuota, StorageBillingCode
-                           
-from pykota.utils import *                           
 
 try :
     import ldap
@@ -161,22 +160,22 @@ class Storage(BaseStorage) :
                     self.tool.logdebug("LDAP cache hit %s => %s" % (base, entry))
                     result = [(base, entry)]
                 else :
-                    self.querydebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
+                    self.tool.logdebug("QUERY : Filter : %s, BaseDN : %s, Scope : %s, Attributes : %s" % (key, base, scope, fields))
                     result = self.database.search_s(base, scope, key, fields)
             except ldap.NO_SUCH_OBJECT, msg :        
                 raise PyKotaStorageError, (_("Search base %s doesn't seem to exist. Probable misconfiguration. Please double check /etc/pykota/pykota.conf : %s") % (base, msg))
             except ldap.LDAPError, msg :    
-                message = (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % msg
+                message = (_("Search for %s(%s) from %s(scope=%s) returned no answer.") % (key, fields, base, scope)) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
                 self.secondStageInit()
             else :     
-                self.querydebug("QUERY : Result : %s" % result)
+                self.tool.logdebug("QUERY : Result : %s" % result)
                 result = [ (dn, cidict(attrs)) for (dn, attrs) in result ]
                 if self.useldapcache :
                     for (dn, attributes) in result :
-                        self.querydebug("LDAP cache store %s => %s" % (dn, attributes))
+                        self.tool.logdebug("LDAP cache store %s => %s" % (dn, attributes))
                         self.ldapcache[dn] = attributes
                 return result
         raise PyKotaStorageError, message
@@ -187,21 +186,21 @@ class Storage(BaseStorage) :
         message = ""
         for tryit in range(3) :
             try :
-                self.querydebug("QUERY : ADD(%s, %s)" % (dn, fields))
+                self.tool.logdebug("QUERY : ADD(%s, %s)" % (dn, str(fields)))
                 entry = ldap.modlist.addModlist(fields)
-                self.querydebug("%s" % entry)
+                self.tool.logdebug("%s" % entry)
                 self.database.add_s(dn, entry)
             except ldap.ALREADY_EXISTS, msg :        
-                raise PyKotaStorageError, "Entry %s already exists : %s" % (dn, msg)
+                raise PyKotaStorageError, "Entry %s already exists : %s" % (dn, str(msg))
             except ldap.LDAPError, msg :
-                message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % msg
+                message = (_("Problem adding LDAP entry (%s, %s)") % (dn, str(fields))) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
                 self.secondStageInit()
             else :
                 if self.useldapcache :
-                    self.querydebug("LDAP cache add %s => %s" % (dn, fields))
+                    self.tool.logdebug("LDAP cache add %s => %s" % (dn, fields))
                     self.ldapcache[dn] = fields
                 return dn
         raise PyKotaStorageError, message
@@ -211,12 +210,12 @@ class Storage(BaseStorage) :
         message = ""
         for tryit in range(3) :
             try :
-                self.querydebug("QUERY : Delete(%s)" % dn)
+                self.tool.logdebug("QUERY : Delete(%s)" % dn)
                 self.database.delete_s(dn)
             except ldap.NO_SUCH_OBJECT :    
                 self.tool.printInfo("Entry %s was already missing before we deleted it. This **MAY** be normal." % dn, "info")
             except ldap.LDAPError, msg :
-                message = (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % msg
+                message = (_("Problem deleting LDAP entry (%s)") % dn) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
@@ -224,7 +223,7 @@ class Storage(BaseStorage) :
             else :    
                 if self.useldapcache :
                     try :
-                        self.querydebug("LDAP cache del %s" % dn)
+                        self.tool.logdebug("LDAP cache del %s" % dn)
                         del self.ldapcache[dn]
                     except KeyError :    
                         pass
@@ -240,13 +239,13 @@ class Storage(BaseStorage) :
                 if self.useldapcache and not flushcache :
                     if self.ldapcache.has_key(dn) :
                         old = self.ldapcache[dn]
-                        self.querydebug("LDAP cache hit %s => %s" % (dn, old))
+                        self.tool.logdebug("LDAP cache hit %s => %s" % (dn, old))
                         oldentry = {}
                         for (k, v) in old.items() :
                             if k != "createTimestamp" :
                                 oldentry[k] = v
                     else :    
-                        self.querydebug("LDAP cache miss %s" % dn)
+                        self.tool.logdebug("LDAP cache miss %s" % dn)
                         oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE)[0][1]
                 else :        
                     oldentry = self.doSearch("objectClass=*", base=dn, scope=ldap.SCOPE_BASE, flushcache=flushcache)[0][1]
@@ -255,7 +254,7 @@ class Storage(BaseStorage) :
                         try :
                             oldvalue = v["convert"](oldentry.get(k, [0])[0])
                         except ValueError :    
-                            self.querydebug("Error converting %s with %s(%s)" % (oldentry.get(k), k, v))
+                            self.tool.logdebug("Error converting %s with %s(%s)" % (oldentry.get(k), k, v))
                             oldvalue = 0
                         if v["operator"] == '+' :
                             newvalue = oldvalue + v["value"]
@@ -263,17 +262,17 @@ class Storage(BaseStorage) :
                             newvalue = oldvalue - v["value"]
                         fields[k] = str(newvalue)
                 fields = self.normalizeFields(fields)
-                self.querydebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry, fields))
+                self.tool.logdebug("QUERY : Modify(%s, %s ==> %s)" % (dn, oldentry, fields))
                 entry = ldap.modlist.modifyModlist(oldentry, fields, ignore_oldexistent=ignoreold)
                 modentry = []
                 for (mop, mtyp, mval) in entry :
                     if mtyp and (mtyp.lower() != "createtimestamp") :
                         modentry.append((mop, mtyp, mval))
-                self.querydebug("MODIFY : %s ==> %s ==> %s" % (fields, entry, modentry))
+                self.tool.logdebug("MODIFY : %s ==> %s ==> %s" % (fields, entry, modentry))
                 if modentry :
                     self.database.modify_s(dn, modentry)
             except ldap.LDAPError, msg :
-                message = (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % msg
+                message = (_("Problem modifying LDAP entry (%s, %s)") % (dn, fields)) + " : %s" % str(msg)
                 self.tool.printInfo("LDAP error : %s" % message, "error")
                 self.tool.printInfo("LDAP connection will be closed and reopened.", "warn")
                 self.close()
@@ -289,7 +288,7 @@ class Storage(BaseStorage) :
                                 del cachedentry[mtyp]
                             except KeyError :    
                                 pass
-                    self.querydebug("LDAP cache update %s => %s" % (dn, cachedentry))
+                    self.tool.logdebug("LDAP cache update %s => %s" % (dn, cachedentry))
                 return dn
         raise PyKotaStorageError, message
             
@@ -304,7 +303,7 @@ class Storage(BaseStorage) :
             if attrval is None :
                 self.tool.printInfo("Object %s has no %s attribute !" % (dn, attribute), "error")
             else :
-                attrval = databaseToUnicode(attrval)
+                attrval = self.databaseToUserCharset(attrval)
                 if patterns :
                     if (not isinstance(patterns, type([]))) and (not isinstance(patterns, type(()))) :
                         patterns = [ patterns ]
@@ -319,7 +318,7 @@ class Storage(BaseStorage) :
         ldapfilter = "objectClass=pykotaBilling"
         result = self.doSearch(ldapfilter, ["pykotaBillingCode"], base=self.info["billingcodebase"])
         if result :
-            return self.filterNames(result, "pykotaBillingCode", billingcode)
+            return [self.databaseToUserCharset(bc) for bc in self.filterNames(result, "pykotaBillingCode", billingcode)]
         else :    
             return []
         
@@ -352,20 +351,20 @@ class Storage(BaseStorage) :
         
     def getUserNbJobsFromHistory(self, user) :
         """Returns the number of jobs the user has in history."""
-        result = self.doSearch("(&(pykotaUserName=%s)(objectClass=pykotaJob))" % unicodeToDatabase(user.Name), None, base=self.info["jobbase"])
+        result = self.doSearch("(&(pykotaUserName=%s)(objectClass=pykotaJob))" % self.userCharsetToDatabase(user.Name), None, base=self.info["jobbase"])
         return len(result)
         
     def getUserFromBackend(self, username) :    
         """Extracts user information given its name."""
         user = StorageUser(self, username)
-        username = unicodeToDatabase(username)
+        username = self.userCharsetToDatabase(username)
         result = self.doSearch("(&(objectClass=pykotaAccount)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["userrdn"], username), ["pykotaUserName", "pykotaLimitBy", self.info["usermail"], "description"], base=self.info["userbase"])
         if result :
             fields = result[0][1]
             user.ident = result[0][0]
-            user.Description = databaseToUnicode(fields.get("description", [None])[0])
-            user.Email = databaseToUnicode(fields.get(self.info["usermail"], [None])[0])
-            user.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
+            user.Description = self.databaseToUserCharset(fields.get("description", [None])[0])
+            user.Email = fields.get(self.info["usermail"], [None])[0]
+            user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
             result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % (username, self.info["balancerdn"], username), ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments", "pykotaOverCharge"], base=self.info["balancebase"])
             if not result :
                 raise PyKotaStorageError, _("No pykotaAccountBalance object found for user %s. Did you create LDAP entries manually ?") % username
@@ -396,9 +395,7 @@ class Storage(BaseStorage) :
                         (date, amount) = payment.split(" # ")
                         description = ""
                     else :    
-                        description = databaseToUnicode(base64.decodestring(description))
-                    if amount.endswith(" #") :    
-                        amount = amount[:-2] # TODO : should be catched earlier, the bug is above I think
+                        description = self.databaseToUserCharset(base64.decodestring(description))
                     user.Payments.append((date, float(amount), description))
             user.Exists = True
         return user
@@ -406,14 +403,14 @@ class Storage(BaseStorage) :
     def getGroupFromBackend(self, groupname) :    
         """Extracts group information given its name."""
         group = StorageGroup(self, groupname)
-        groupname = unicodeToDatabase(groupname)
+        groupname = self.userCharsetToDatabase(groupname)
         result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % (groupname, self.info["grouprdn"], groupname), ["pykotaGroupName", "pykotaLimitBy", "description"], base=self.info["groupbase"])
         if result :
             fields = result[0][1]
             group.ident = result[0][0]
-            group.Name = databaseToUnicode(fields.get("pykotaGroupName", [groupname])[0])
-            group.Description = databaseToUnicode(fields.get("description", [None])[0])
-            group.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
+            group.Name = fields.get("pykotaGroupName", [self.databaseToUserCharset(groupname)])[0] 
+            group.Description = self.databaseToUserCharset(fields.get("description", [None])[0])
+            group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
             group.AccountBalance = 0.0
             group.LifeTimePaid = 0.0
             for member in self.getGroupMembers(group) :
@@ -426,7 +423,7 @@ class Storage(BaseStorage) :
     def getPrinterFromBackend(self, printername) :        
         """Extracts printer information given its name : returns first matching printer."""
         printer = StoragePrinter(self, printername)
-        printername = unicodeToDatabase(printername)
+        printername = self.userCharsetToDatabase(printername)
         result = self.doSearch("(&(objectClass=pykotaPrinter)(|(pykotaPrinterName=%s)(%s=%s)))" \
                       % (printername, self.info["printerrdn"], printername), \
                         ["pykotaPrinterName", "pykotaPricePerPage", \
@@ -436,7 +433,7 @@ class Storage(BaseStorage) :
         if result :
             fields = result[0][1]       # take only first matching printer, ignore the rest
             printer.ident = result[0][0]
-            printer.Name = databaseToUnicode(fields.get("pykotaPrinterName", [printername])[0])
+            printer.Name = fields.get("pykotaPrinterName", [self.databaseToUserCharset(printername)])[0] 
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0])
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0])
             printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
@@ -446,7 +443,7 @@ class Storage(BaseStorage) :
             else :
                 printer.PassThrough = 0
             printer.uniqueMember = fields.get("uniqueMember", [])
-            printer.Description = databaseToUnicode(fields.get("description", [""])[0]) 
+            printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
             printer.Exists = True
         return printer    
         
@@ -459,7 +456,7 @@ class Storage(BaseStorage) :
             else :    
                 base = self.info["userquotabase"]
             result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaUserName=%s)(pykotaPrinterName=%s))" % \
-                                      (unicodeToDatabase(user.Name), unicodeToDatabase(printer.Name)), \
+                                      (self.userCharsetToDatabase(user.Name), self.userCharsetToDatabase(printer.Name)), \
                                       ["pykotaPageCounter", "pykotaLifePageCounter", "pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaWarnCount", "pykotaMaxJobSize"], \
                                       base=base)
             if result :
@@ -504,7 +501,7 @@ class Storage(BaseStorage) :
             else :    
                 base = self.info["groupquotabase"]
             result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % \
-                                      (unicodeToDatabase(group.Name), unicodeToDatabase(printer.Name)), \
+                                      (self.userCharsetToDatabase(group.Name), self.userCharsetToDatabase(printer.Name)), \
                                       ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaMaxJobSize"], \
                                       base=base)
             if result :
@@ -536,7 +533,7 @@ class Storage(BaseStorage) :
                         grouppquota.MaxJobSize = int(grouppquota.MaxJobSize[0])
                 grouppquota.PageCounter = 0
                 grouppquota.LifePageCounter = 0
-                usernamesfilter = "".join(["(pykotaUserName=%s)" % unicodeToDatabase(member.Name) for member in self.getGroupMembers(group)])
+                usernamesfilter = "".join(["(pykotaUserName=%s)" % self.userCharsetToDatabase(member.Name) for member in self.getGroupMembers(group)])
                 if usernamesfilter :
                     usernamesfilter = "(|%s)" % usernamesfilter
                 if self.info["userquotabase"].lower() == "user" :
@@ -544,7 +541,7 @@ class Storage(BaseStorage) :
                 else :
                     base = self.info["userquotabase"]
                 result = self.doSearch("(&(objectClass=pykotaUserPQuota)(pykotaPrinterName=%s)%s)" % \
-                                          (unicodeToDatabase(printer.Name), usernamesfilter), \
+                                          (self.userCharsetToDatabase(printer.Name), usernamesfilter), \
                                           ["pykotaPageCounter", "pykotaLifePageCounter"], base=base)
                 if result :
                     for userpquota in result :    
@@ -556,7 +553,7 @@ class Storage(BaseStorage) :
     def getPrinterLastJobFromBackend(self, printer) :        
         """Extracts a printer's last job information."""
         lastjob = StorageLastJob(self, printer)
-        pname = unicodeToDatabase(printer.Name)
+        pname = self.userCharsetToDatabase(printer.Name)
         result = self.doSearch("(&(objectClass=pykotaLastjob)(|(pykotaPrinterName=%s)(%s=%s)))" % \
                                   (pname, self.info["printerrdn"], pname), \
                                   ["pykotaLastJobIdent"], \
@@ -591,8 +588,8 @@ class Storage(BaseStorage) :
             if result :
                 fields = result[0][1]
                 lastjob.ident = result[0][0]
-                lastjob.JobId = databaseToUnicode(fields.get("pykotaJobId")[0])
-                lastjob.UserName = databaseToUnicode(fields.get("pykotaUserName")[0])
+                lastjob.JobId = fields.get("pykotaJobId")[0]
+                lastjob.UserName = self.databaseToUserCharset(fields.get("pykotaUserName")[0])
                 lastjob.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0])
                 try :
                     lastjob.JobSize = int(fields.get("pykotaJobSize", [0])[0])
@@ -602,15 +599,15 @@ class Storage(BaseStorage) :
                     lastjob.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 except ValueError :    
                     lastjob.JobPrice = None
-                lastjob.JobAction = databaseToUnicode(fields.get("pykotaAction", [""])[0])
-                lastjob.JobFileName = databaseToUnicode(fields.get("pykotaFileName", [""])[0]) 
-                lastjob.JobTitle = databaseToUnicode(fields.get("pykotaTitle", [""])[0]) 
+                lastjob.JobAction = fields.get("pykotaAction", [""])[0]
+                lastjob.JobFileName = self.databaseToUserCharset(fields.get("pykotaFileName", [""])[0]) 
+                lastjob.JobTitle = self.databaseToUserCharset(fields.get("pykotaTitle", [""])[0]) 
                 lastjob.JobCopies = int(fields.get("pykotaCopies", [0])[0])
-                lastjob.JobOptions = databaseToUnicode(fields.get("pykotaOptions", [""])[0]) 
-                lastjob.JobHostName = databaseToUnicode(fields.get("pykotaHostName", [""])[0])
+                lastjob.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
+                lastjob.JobHostName = fields.get("pykotaHostName", [""])[0]
                 lastjob.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
-                lastjob.JobBillingCode = databaseToUnicode(fields.get("pykotaBillingCode", [None])[0])
-                lastjob.JobMD5Sum = databaseToUnicode(fields.get("pykotaMD5Sum", [None])[0])
+                lastjob.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
+                lastjob.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 lastjob.JobPages = fields.get("pykotaPages", [""])[0]
                 try :
                     lastjob.PrecomputedJobSize = int(fields.get("pykotaPrecomputedJobSize", [0])[0])
@@ -620,7 +617,7 @@ class Storage(BaseStorage) :
                     lastjob.PrecomputedJobPrice = float(fields.get("pykotaPrecomputedJobPrice", [0.0])[0])
                 except ValueError :    
                     lastjob.PrecomputedJobPrice = None
-                if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == u"hidden" :
+                if lastjob.JobTitle == lastjob.JobFileName == lastjob.JobOptions == "hidden" :
                     (lastjob.JobTitle, lastjob.JobFileName, lastjob.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
@@ -631,36 +628,36 @@ class Storage(BaseStorage) :
     def getGroupMembersFromBackend(self, group) :        
         """Returns the group's members list."""
         groupmembers = []
-        gname = unicodeToDatabase(group.Name)
+        gname = self.userCharsetToDatabase(group.Name)
         result = self.doSearch("(&(objectClass=pykotaGroup)(|(pykotaGroupName=%s)(%s=%s)))" % \
                                   (gname, self.info["grouprdn"], gname), \
                                   [self.info["groupmembers"]], \
                                   base=self.info["groupbase"])
         if result :
             for username in result[0][1].get(self.info["groupmembers"], []) :
-                groupmembers.append(self.getUser(databaseToUnicode(username)))
+                groupmembers.append(self.getUser(self.databaseToUserCharset(username)))
         return groupmembers        
         
     def getUserGroupsFromBackend(self, user) :        
         """Returns the user's groups list."""
         groups = []
-        uname = unicodeToDatabase(user.Name)
+        uname = self.userCharsetToDatabase(user.Name)
         result = self.doSearch("(&(objectClass=pykotaGroup)(%s=%s))" % \
                                   (self.info["groupmembers"], uname), \
                                   [self.info["grouprdn"], "pykotaGroupName", "pykotaLimitBy"], \
                                   base=self.info["groupbase"])
         if result :
             for (groupid, fields) in result :
-                groupname = databaseToUnicode((fields.get("pykotaGroupName", [None]) or fields.get(self.info["grouprdn"], [None]))[0])
+                groupname = self.databaseToUserCharset((fields.get("pykotaGroupName", [None]) or fields.get(self.info["grouprdn"], [None]))[0])
                 group = self.getFromCache("GROUPS", groupname)
                 if group is None :
                     group = StorageGroup(self, groupname)
                     group.ident = groupid
                     group.LimitBy = fields.get("pykotaLimitBy")
                     if group.LimitBy is not None :
-                        group.LimitBy = databaseToUnicode(group.LimitBy[0])
+                        group.LimitBy = group.LimitBy[0]
                     else :    
-                        group.LimitBy = u"quota"
+                        group.LimitBy = "quota"
                     group.AccountBalance = 0.0
                     group.LifeTimePaid = 0.0
                     for member in self.getGroupMembers(group) :
@@ -682,7 +679,7 @@ class Storage(BaseStorage) :
         if result :
             for (printerid, fields) in result :
                 if printerid != printer.ident : # In case of integrity violation.
-                    parentprinter = self.getPrinter(databaseToUnicode(fields.get("pykotaPrinterName")[0]))
+                    parentprinter = self.getPrinter(self.databaseToUserCharset(fields.get("pykotaPrinterName")[0]))
                     if parentprinter.Exists :
                         pgroups.append(parentprinter)
         return pgroups
@@ -704,7 +701,7 @@ class Storage(BaseStorage) :
                 for p in patterns :
                     patdict[p] = None
             for (printerid, fields) in result :
-                printername = databaseToUnicode(fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0])
+                printername = self.databaseToUserCharset(fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0])
                 if patdict.has_key(printername) or self.tool.matchString(printername, patterns) :
                     printer = StoragePrinter(self, printername)
                     printer.ident = printerid
@@ -717,7 +714,7 @@ class Storage(BaseStorage) :
                     else :
                         printer.PassThrough = 0
                     printer.uniqueMember = fields.get("uniqueMember", [])
-                    printer.Description = databaseToUnicode(fields.get("description", [""])[0]) 
+                    printer.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                     printer.Exists = True
                     printers.append(printer)
                     self.cacheEntry("PRINTERS", printer.Name, printer)
@@ -740,14 +737,14 @@ class Storage(BaseStorage) :
                 for p in patterns :
                     patdict[p] = None
             for (userid, fields) in result :
-                username = databaseToUnicode(fields.get("pykotaUserName", [""])[0] or fields.get(self.info["userrdn"], [""])[0])
+                username = self.databaseToUserCharset(fields.get("pykotaUserName", [""])[0] or fields.get(self.info["userrdn"], [""])[0])
                 if patdict.has_key(username) or self.tool.matchString(username, patterns) :
                     user = StorageUser(self, username)
                     user.ident = userid
-                    user.Email = databaseToUnicode(fields.get(self.info["usermail"], [None])[0])
-                    user.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
-                    user.Description = databaseToUnicode(fields.get("description", [""])[0]) 
-                    uname = unicodeToDatabase(username)
+                    user.Email = fields.get(self.info["usermail"], [None])[0]
+                    user.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    user.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
+                    uname = self.userCharsetToDatabase(username)
                     result = self.doSearch("(&(objectClass=pykotaAccountBalance)(|(pykotaUserName=%s)(%s=%s)))" % \
                                               (uname, self.info["balancerdn"], uname), \
                                               ["pykotaBalance", "pykotaLifeTimePaid", "pykotaPayments", "pykotaOverCharge"], \
@@ -781,9 +778,7 @@ class Storage(BaseStorage) :
                                 (date, amount) = payment.split(" # ")
                                 description = ""
                             else :    
-                                description = databaseToUnicode(base64.decodestring(description))
-                            if amount.endswith(" #") :    
-                                amount = amount[:-2] # TODO : should be catched earlier, the bug is above I think
+                                description = self.databaseToUserCharset(base64.decodestring(description))
                             user.Payments.append((date, float(amount), description))
                     user.Exists = True
                     users.append(user)
@@ -807,13 +802,13 @@ class Storage(BaseStorage) :
                 for p in patterns :
                     patdict[p] = None
             for (groupid, fields) in result :
-                groupname = databaseToUnicode(fields.get("pykotaGroupName", [""])[0] or fields.get(self.info["grouprdn"], [""])[0])
+                groupname = self.databaseToUserCharset(fields.get("pykotaGroupName", [""])[0] or fields.get(self.info["grouprdn"], [""])[0])
                 if patdict.has_key(groupname) or self.tool.matchString(groupname, patterns) :
                     group = StorageGroup(self, groupname)
                     group.ident = groupid
-                    group.Name = databaseToUnicode(fields.get("pykotaGroupName", [groupname])[0]) 
-                    group.LimitBy = databaseToUnicode(fields.get("pykotaLimitBy", ["quota"])[0])
-                    group.Description = databaseToUnicode(fields.get("description", [""])[0]) 
+                    group.Name = fields.get("pykotaGroupName", [self.databaseToUserCharset(groupname)])[0] 
+                    group.LimitBy = fields.get("pykotaLimitBy", ["quota"])[0]
+                    group.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                     group.AccountBalance = 0.0
                     group.LifeTimePaid = 0.0
                     for member in self.getGroupMembers(group) :
@@ -828,8 +823,8 @@ class Storage(BaseStorage) :
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of users who uses a given printer, along with their quotas."""
         usersandquotas = []
-        pname = unicodeToDatabase(printer.Name)
-        names = [unicodeToDatabase(n) for n in names]
+        pname = self.userCharsetToDatabase(printer.Name)
+        names = [self.userCharsetToDatabase(n) for n in names]
         if self.info["userquotabase"].lower() == "user" :
             base = self.info["userbase"]
         else :
@@ -840,7 +835,7 @@ class Storage(BaseStorage) :
                                   base=base)
         if result :
             for (userquotaid, fields) in result :
-                user = self.getUser(databaseToUnicode(fields.get("pykotaUserName")[0]))
+                user = self.getUser(self.databaseToUserCharset(fields.get("pykotaUserName")[0]))
                 userpquota = StorageUserPQuota(self, user, printer)
                 userpquota.ident = userquotaid
                 userpquota.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
@@ -873,8 +868,8 @@ class Storage(BaseStorage) :
     def getPrinterGroupsAndQuotas(self, printer, names=["*"]) :        
         """Returns the list of groups which uses a given printer, along with their quotas."""
         groupsandquotas = []
-        pname = unicodeToDatabase(printer.Name)
-        names = [unicodeToDatabase(n) for n in names]
+        pname = self.userCharsetToDatabase(printer.Name)
+        names = [self.userCharsetToDatabase(n) for n in names]
         if self.info["groupquotabase"].lower() == "group" :
             base = self.info["groupbase"]
         else :
@@ -885,7 +880,7 @@ class Storage(BaseStorage) :
                                   base=base)
         if result :
             for (groupquotaid, fields) in result :
-                group = self.getGroup(databaseToUnicode(fields.get("pykotaGroupName")[0]))
+                group = self.getGroup(self.databaseToUserCharset(fields.get("pykotaGroupName")[0]))
                 grouppquota = self.getGroupPQuota(group, printer)
                 groupsandquotas.append((group, grouppquota))
         groupsandquotas.sort(lambda x, y : cmp(x[0].Name, y[0].Name))            
@@ -896,14 +891,14 @@ class Storage(BaseStorage) :
         oldentry = self.getPrinter(printer.Name)
         if oldentry.Exists :
             return oldentry # we return the existing entry
-        printername = unicodeToDatabase(printer.Name)
+        printername = self.userCharsetToDatabase(printer.Name)
         fields = { self.info["printerrdn"] : printername,
                    "objectClass" : ["pykotaObject", "pykotaPrinter"],
                    "cn" : printername,
                    "pykotaPrinterName" : printername,
                    "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
                    "pykotaMaxJobSize" : str(printer.MaxJobSize or 0),
-                   "description" : unicodeToDatabase(printer.Description or ""),
+                   "description" : self.userCharsetToDatabase(printer.Description or ""),
                    "pykotaPricePerPage" : str(printer.PricePerPage or 0.0),
                    "pykotaPricePerJob" : str(printer.PricePerJob or 0.0),
                  } 
@@ -917,12 +912,12 @@ class Storage(BaseStorage) :
         oldentry = self.getUser(user.Name)
         if oldentry.Exists :
             return oldentry # we return the existing entry
-        uname = unicodeToDatabase(user.Name)
+        uname = self.userCharsetToDatabase(user.Name)
         newfields = {
                        "pykotaUserName" : uname,
-                       "pykotaLimitBy" : unicodeToDatabase(user.LimitBy or u"quota"),
-                       "description" : unicodeToDatabase(user.Description or ""),
-                       self.info["usermail"] : unicodeToDatabase(user.Email or ""),
+                       "pykotaLimitBy" : (user.LimitBy or "quota"),
+                       "description" : self.userCharsetToDatabase(user.Description or ""),
+                       self.info["usermail"] : user.Email or "",
                     }   
                        
         mustadd = 1
@@ -992,11 +987,11 @@ class Storage(BaseStorage) :
         oldentry = self.getGroup(group.Name)
         if oldentry.Exists :
             return oldentry # we return the existing entry
-        gname = unicodeToDatabase(group.Name)
+        gname = self.userCharsetToDatabase(group.Name)
         newfields = { 
                       "pykotaGroupName" : gname,
-                      "pykotaLimitBy" : unicodeToDatabase(group.LimitBy or u"quota"),
-                      "description" : unicodeToDatabase(group.Description or "")
+                      "pykotaLimitBy" : (group.LimitBy or "quota"),
+                      "description" : self.userCharsetToDatabase(group.Description or "")
                     } 
         mustadd = 1
         if self.info["newgroup"].lower() != 'below' :
@@ -1041,7 +1036,7 @@ class Storage(BaseStorage) :
                 fields = result[0][1]
                 if not fields.has_key(self.info["groupmembers"]) :
                     fields[self.info["groupmembers"]] = []
-                fields[self.info["groupmembers"]].append(unicodeToDatabase(user.Name))
+                fields[self.info["groupmembers"]].append(self.userCharsetToDatabase(user.Name))
                 self.doModify(group.ident, fields)
                 group.Members.append(user)
                 
@@ -1054,7 +1049,7 @@ class Storage(BaseStorage) :
                 if not fields.has_key(self.info["groupmembers"]) :
                     fields[self.info["groupmembers"]] = []
                 try :    
-                    fields[self.info["groupmembers"]].remove(unicodeToDatabase(user.Name))
+                    fields[self.info["groupmembers"]].remove(self.userCharsetToDatabase(user.Name))
                 except ValueError :
                     pass # TODO : Strange, shouldn't it be there ?
                 else :
@@ -1068,8 +1063,8 @@ class Storage(BaseStorage) :
         if oldentry.Exists :
             return oldentry # we return the existing entry
         uuid = self.genUUID()
-        uname = unicodeToDatabase(upq.User.Name)
-        pname = unicodeToDatabase(upq.Printer.Name)
+        uname = self.userCharsetToDatabase(upq.User.Name)
+        pname = self.userCharsetToDatabase(upq.Printer.Name)
         fields = { "cn" : uuid,
                    "objectClass" : ["pykotaObject", "pykotaUserPQuota"],
                    "pykotaUserName" : uname,
@@ -1096,8 +1091,8 @@ class Storage(BaseStorage) :
         if oldentry.Exists :
             return oldentry # we return the existing entry
         uuid = self.genUUID()
-        gname = unicodeToDatabase(gpq.Group.Name)
-        pname = unicodeToDatabase(gpq.Printer.Name)
+        gname = self.userCharsetToDatabase(gpq.Group.Name)
+        pname = self.userCharsetToDatabase(gpq.Printer.Name)
         fields = { "cn" : uuid,
                    "objectClass" : ["pykotaObject", "pykotaGroupPQuota"],
                    "pykotaGroupName" : gname,
@@ -1117,7 +1112,7 @@ class Storage(BaseStorage) :
         fields = {
                    "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
                    "pykotaMaxJobSize" : str(printer.MaxJobSize or 0),
-                   "description" : unicodeToDatabase(printer.Description or ""),
+                   "description" : self.userCharsetToDatabase(printer.Description or ""),
                    "pykotaPricePerPage" : str(printer.PricePerPage or 0.0),
                    "pykotaPricePerJob" : str(printer.PricePerJob or 0.0),
                  }
@@ -1126,8 +1121,8 @@ class Storage(BaseStorage) :
     def saveUser(self, user) :
         """Saves the user to the database in a single operation."""
         newfields = {
-                       "pykotaLimitBy" : unicodeToDatabase(user.LimitBy or u"quota"),
-                       "description" : unicodeToDatabase(user.Description or ""), 
+                       "pykotaLimitBy" : (user.LimitBy or "quota"),
+                       "description" : self.userCharsetToDatabase(user.Description or ""), 
                        self.info["usermail"] : user.Email or "",
                     }   
         self.doModify(user.ident, newfields)
@@ -1141,8 +1136,8 @@ class Storage(BaseStorage) :
     def saveGroup(self, group) :
         """Saves the group to the database in a single operation."""
         newfields = {
-                       "pykotaLimitBy" : unicodeToDatabase(group.LimitBy or u"quota"),
-                       "description" : unicodeToDatabase(group.Description or ""), 
+                       "pykotaLimitBy" : (group.LimitBy or "quota"),
+                       "description" : self.userCharsetToDatabase(group.Description or ""), 
                     }   
         self.doModify(group.ident, newfields)
         
@@ -1179,8 +1174,8 @@ class Storage(BaseStorage) :
         """Adds a new payment to the payments history."""
         payments = []
         for payment in user.Payments :
-            payments.append("%s # %s # %s" % (payment[0], str(payment[1]), base64.encodestring(unicodeToDatabase(payment[2])).strip()))
-        payments.append("%s # %s # %s" % (str(DateTime.now()), str(amount), base64.encodestring(unicodeToDatabase(comment)).strip()))
+            payments.append("%s # %s # %s" % (payment[0], str(payment[1]), base64.encodestring(self.userCharsetToDatabase(payment[2])).strip()))
+        payments.append("%s # %s # %s" % (str(DateTime.now()), str(amount), base64.encodestring(self.userCharsetToDatabase(comment)).strip()))
         fields = {
                    "pykotaPayments" : payments,
                  }
@@ -1196,8 +1191,8 @@ class Storage(BaseStorage) :
         
     def writeJobNew(self, printer, user, jobid, pagecounter, action, jobsize=None, jobprice=None, filename=None, title=None, copies=None, options=None, clienthost=None, jobsizebytes=None, jobmd5sum=None, jobpages=None, jobbilling=None, precomputedsize=None, precomputedprice=None) :
         """Adds a job in a printer's history."""
-        uname = unicodeToDatabase(user.Name)
-        pname = unicodeToDatabase(printer.Name)
+        uname = self.userCharsetToDatabase(user.Name)
+        pname = self.userCharsetToDatabase(printer.Name)
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             uuid = self.genUUID()
             dn = "cn=%s,%s" % (uuid, self.info["jobbase"])
@@ -1206,24 +1201,24 @@ class Storage(BaseStorage) :
             dn = printer.LastJob.ident
         if self.privacy :    
             # For legal reasons, we want to hide the title, filename and options
-            title = filename = options = u"hidden"
+            title = filename = options = "hidden"
         fields = {
                    "objectClass" : ["pykotaObject", "pykotaJob"],
                    "cn" : uuid,
                    "pykotaUserName" : uname,
                    "pykotaPrinterName" : pname,
-                   "pykotaJobId" : unicodeToDatabase(jobid),
+                   "pykotaJobId" : jobid,
                    "pykotaPrinterPageCounter" : str(pagecounter),
-                   "pykotaAction" : unicodeToDatabase(action),
-                   "pykotaFileName" : ((filename is None) and "None") or unicodeToDatabase(filename), 
-                   "pykotaTitle" : ((title is None) and "None") or unicodeToDatabase(title), 
+                   "pykotaAction" : action,
+                   "pykotaFileName" : ((filename is None) and "None") or self.userCharsetToDatabase(filename), 
+                   "pykotaTitle" : ((title is None) and "None") or self.userCharsetToDatabase(title), 
                    "pykotaCopies" : str(copies), 
-                   "pykotaOptions" : ((options is None) and "None") or unicodeToDatabase(options), 
+                   "pykotaOptions" : ((options is None) and "None") or self.userCharsetToDatabase(options), 
                    "pykotaHostName" : str(clienthost), 
                    "pykotaJobSizeBytes" : str(jobsizebytes),
-                   "pykotaMD5Sum" : unicodeToDatabase(jobmd5sum),
+                   "pykotaMD5Sum" : str(jobmd5sum),
                    "pykotaPages" : jobpages,            # don't add this attribute if it is not set, so no string conversion
-                   "pykotaBillingCode" : unicodeToDatabase(jobbilling), # don't add this attribute if it is not set, so no string conversion
+                   "pykotaBillingCode" : self.userCharsetToDatabase(jobbilling), # don't add this attribute if it is not set, so no string conversion
                    "pykotaPrecomputedJobSize" : str(precomputedsize),
                    "pykotaPrecomputedJobPrice" : str(precomputedprice),
                  }
@@ -1315,15 +1310,15 @@ class Storage(BaseStorage) :
         precond = "(objectClass=pykotaJob)"
         where = []
         if user is not None :
-            where.append("(pykotaUserName=%s)" % unicodeToDatabase(user.Name))
+            where.append("(pykotaUserName=%s)" % self.userCharsetToDatabase(user.Name))
         if printer is not None :
-            where.append("(pykotaPrinterName=%s)" % unicodeToDatabase(printer.Name))
+            where.append("(pykotaPrinterName=%s)" % self.userCharsetToDatabase(printer.Name))
         if hostname is not None :
             where.append("(pykotaHostName=%s)" % hostname)
         if billingcode is not None :
-            where.append("(pykotaBillingCode=%s)" % unicodeToDatabase(billingcode))
+            where.append("(pykotaBillingCode=%s)" % self.userCharsetToDatabase(billingcode))
         if jobid is not None :
-            where.append("(pykotaJobId=%s)" % jobid) # TODO : jobid is text, so unicodeToDatabase(jobid) but do all of them as well.
+            where.append("(pykotaJobId=%s)" % jobid) # TODO : jobid is text, so self.userCharsetToDatabase(jobid) but do all of them as well.
         if where :    
             where = "(&%s)" % "".join([precond] + where)
         else :    
@@ -1353,7 +1348,7 @@ class Storage(BaseStorage) :
             for (ident, fields) in result :
                 job = StorageJob(self)
                 job.ident = ident
-                job.JobId = databaseToUnicode(fields.get("pykotaJobId")[0])
+                job.JobId = fields.get("pykotaJobId")[0]
                 job.PrinterPageCounter = int(fields.get("pykotaPrinterPageCounter", [0])[0] or 0)
                 try :
                     job.JobSize = int(fields.get("pykotaJobSize", [0])[0])
@@ -1363,15 +1358,15 @@ class Storage(BaseStorage) :
                     job.JobPrice = float(fields.get("pykotaJobPrice", [0.0])[0])
                 except ValueError :
                     job.JobPrice = None
-                job.JobAction = databaseToUnicode(fields.get("pykotaAction", [""])[0])
-                job.JobFileName = databaseToUnicode(fields.get("pykotaFileName", [""])[0]) 
-                job.JobTitle = databaseToUnicode(fields.get("pykotaTitle", [""])[0]) 
+                job.JobAction = fields.get("pykotaAction", [""])[0]
+                job.JobFileName = self.databaseToUserCharset(fields.get("pykotaFileName", [""])[0]) 
+                job.JobTitle = self.databaseToUserCharset(fields.get("pykotaTitle", [""])[0]) 
                 job.JobCopies = int(fields.get("pykotaCopies", [0])[0])
-                job.JobOptions = databaseToUnicode(fields.get("pykotaOptions", [""])[0]) 
-                job.JobHostName = databaseToUnicode(fields.get("pykotaHostName", [""])[0])
+                job.JobOptions = self.databaseToUserCharset(fields.get("pykotaOptions", [""])[0]) 
+                job.JobHostName = fields.get("pykotaHostName", [""])[0]
                 job.JobSizeBytes = fields.get("pykotaJobSizeBytes", [0L])[0]
-                job.JobBillingCode = databaseToUnicode(fields.get("pykotaBillingCode", [None])[0])
-                job.JobMD5Sum = databaseToUnicode(fields.get("pykotaMD5Sum", [None])[0])
+                job.JobBillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [None])[0])
+                job.JobMD5Sum = fields.get("pykotaMD5Sum", [None])[0]
                 job.JobPages = fields.get("pykotaPages", [""])[0]
                 try :
                     job.PrecomputedJobSize = int(fields.get("pykotaPrecomputedJobSize", [0])[0])
@@ -1381,7 +1376,7 @@ class Storage(BaseStorage) :
                     job.PrecomputedJobPrice = float(fields.get("pykotaPrecomputedJobPrice", [0.0])[0])
                 except ValueError :
                     job.PrecomputedJobPrice = None
-                if job.JobTitle == job.JobFileName == job.JobOptions == u"hidden" :
+                if job.JobTitle == job.JobFileName == job.JobOptions == "hidden" :
                     (job.JobTitle, job.JobFileName, job.JobOptions) = (_("Hidden because of privacy concerns"),) * 3
                 date = fields.get("createTimestamp", ["19700101000000Z"])[0] # It's in UTC !
                 mxtime = DateTime.strptime(date[:14], "%Y%m%d%H%M%S").localtime()
@@ -1390,8 +1385,8 @@ class Storage(BaseStorage) :
                    ((start is None) and (job.JobDate <= end)) or \
                    ((end is None) and (job.JobDate >= start)) or \
                    ((job.JobDate >= start) and (job.JobDate <= end)) :
-                    job.UserName = databaseToUnicode(fields.get("pykotaUserName")[0])
-                    job.PrinterName = databaseToUnicode(fields.get("pykotaPrinterName")[0])
+                    job.UserName = self.databaseToUserCharset(fields.get("pykotaUserName")[0])
+                    job.PrinterName = self.databaseToUserCharset(fields.get("pykotaPrinterName")[0])
                     job.Exists = True
                     jobs.append(job)
             jobs.sort(lambda x, y : cmp(y.JobDate, x.JobDate))        
@@ -1401,7 +1396,7 @@ class Storage(BaseStorage) :
         
     def deleteUser(self, user) :    
         """Completely deletes an user from the Quota Storage."""
-        uname = unicodeToDatabase(user.Name)
+        uname = self.userCharsetToDatabase(user.Name)
         todelete = []    
         result = self.doSearch("(&(objectClass=pykotaJob)(pykotaUserName=%s))" % uname, base=self.info["jobbase"])
         for (ident, fields) in result :
@@ -1419,7 +1414,7 @@ class Storage(BaseStorage) :
             
             # if last job of current printer was printed by the user
             # to delete, we also need to delete the printer's last job entry.
-            printer = self.getPrinter(databaseToUnicode(fields["pykotaPrinterName"][0]))
+            printer = self.getPrinter(self.databaseToUserCharset(fields["pykotaPrinterName"][0]))
             if printer.LastJob.UserName == user.Name :
                 todelete.append(printer.LastJob.lastjobident)
             
@@ -1454,7 +1449,7 @@ class Storage(BaseStorage) :
         
     def deleteGroup(self, group) :    
         """Completely deletes a group from the Quota Storage."""
-        gname = unicodeToDatabase(group.Name)
+        gname = self.userCharsetToDatabase(group.Name)
         if self.info["groupquotabase"].lower() == "group" :
             base = self.info["groupbase"]
         else :
@@ -1525,8 +1520,8 @@ class Storage(BaseStorage) :
                 
     def deleteUserPQuota(self, upquota) :    
         """Completely deletes an user print quota entry from the database."""
-        uname = unicodeToDatabase(upquota.User.Name)
-        pname = unicodeToDatabase(upquota.Printer.Name)
+        uname = self.userCharsetToDatabase(upquota.User.Name)
+        pname = self.userCharsetToDatabase(upquota.Printer.Name)
         result = self.doSearch("(&(objectClass=pykotaJob)(pykotaUserName=%s)(pykotaPrinterName=%s))" \
                                    % (uname, pname), \
                                    base=self.info["jobbase"])
@@ -1542,7 +1537,7 @@ class Storage(BaseStorage) :
                 
     def deletePrinter(self, printer) :    
         """Completely deletes a printer from the Quota Storage."""
-        pname = unicodeToDatabase(printer.Name)
+        pname = self.userCharsetToDatabase(printer.Name)
         result = self.doSearch("(&(objectClass=pykotaLastJob)(pykotaPrinterName=%s))" % pname, base=self.info["lastjobbase"])
         for (ident, fields) in result :
             self.doDelete(ident)
@@ -1765,7 +1760,7 @@ class Storage(BaseStorage) :
     def getBillingCodeFromBackend(self, label) :
         """Extracts billing code information given its label : returns first matching billing code."""
         code = StorageBillingCode(self, label)
-        ulabel = unicodeToDatabase(label)
+        ulabel = self.userCharsetToDatabase(label)
         result = self.doSearch("(&(objectClass=pykotaBilling)(pykotaBillingCode=%s))" % \
                                   ulabel, \
                                   ["pykotaBillingCode", "pykotaBalance", "pykotaPageCounter", "description"], \
@@ -1773,10 +1768,10 @@ class Storage(BaseStorage) :
         if result :
             fields = result[0][1]       # take only first matching code, ignore the rest
             code.ident = result[0][0]
-            code.BillingCode = databaseToUnicode(fields.get("pykotaBillingCode", [ulabel])[0])
+            code.BillingCode = self.databaseToUserCharset(fields.get("pykotaBillingCode", [ulabel])[0])
             code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
             code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
-            code.Description = databaseToUnicode(fields.get("description", [""])[0]) 
+            code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
             code.Exists = True
         return code    
         
@@ -1789,10 +1784,10 @@ class Storage(BaseStorage) :
         dn = "cn=%s,%s" % (uuid, self.info["billingcodebase"])
         fields = { "objectClass" : ["pykotaObject", "pykotaBilling"],
                    "cn" : uuid,
-                   "pykotaBillingCode" : unicodeToDatabase(bcode.BillingCode),
+                   "pykotaBillingCode" : self.userCharsetToDatabase(bcode.BillingCode),
                    "pykotaPageCounter" : str(bcode.PageCounter or 0),
                    "pykotaBalance" : str(bcode.Balance or 0.0),
-                   "description" : unicodeToDatabase(bcode.Description or ""), 
+                   "description" : self.userCharsetToDatabase(bcode.Description or ""), 
                  } 
         self.doAdd(dn, fields)
         bcode.isDirty = False
@@ -1801,7 +1796,7 @@ class Storage(BaseStorage) :
     def saveBillingCode(self, bcode) :
         """Sets the new description for a billing code."""
         fields = {
-                   "description" : unicodeToDatabase(bcode.Description or ""), 
+                   "description" : self.userCharsetToDatabase(bcode.Description or ""), 
                    "pykotaPageCounter" : str(bcode.PageCounter or 0),
                    "pykotaBalance" : str(bcode.Balance or 0.0),
                  }
@@ -1823,13 +1818,13 @@ class Storage(BaseStorage) :
                 for p in patterns :
                     patdict[p] = None
             for (codeid, fields) in result :
-                codename = databaseToUnicode(fields.get("pykotaBillingCode", [""])[0])
+                codename = self.databaseToUserCharset(fields.get("pykotaBillingCode", [""])[0])
                 if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
                     code = StorageBillingCode(self, codename)
                     code.ident = codeid
                     code.PageCounter = int(fields.get("pykotaPageCounter", [0])[0])
                     code.Balance = float(fields.get("pykotaBalance", [0.0])[0])
-                    code.Description = databaseToUnicode(fields.get("description", [""])[0]) 
+                    code.Description = self.databaseToUserCharset(fields.get("description", [""])[0]) 
                     code.Exists = True
                     codes.append(code)
                     self.cacheEntry("BILLINGCODES", code.BillingCode, code)
@@ -1845,10 +1840,11 @@ class Storage(BaseStorage) :
 
     def refundJob(self, jobident) :   
         """Marks a job as refunded in the history."""
+        dn = "cn=%s,%s" % (ident, self.info["jobbase"])
         fields = {
                      "pykotaAction" : "REFUND",
                  }    
-        self.doModify(jobident, fields)         
+        self.doModify(dn, fields)         
         
     def storageUserFromRecord(self, username, record) :
         """Returns a StorageUser instance from a database record."""

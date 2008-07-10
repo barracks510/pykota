@@ -342,14 +342,6 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           <note>
             <title>Note</title>
             <para>
-              If you are using a Red Hat-based system, substitute 
-              <filename>/etc/openldap</filename> for 
-              <filename>/etc/ldap</filename>.
-            </para>
-          </note>
-          <note>
-            <title>Note</title>
-            <para>
               If you use RPM or DEB packages, the
               <filename>pykota.schema</filename> file is usually installed into the
               <filename>/usr/share/pykota/ldap</filename> directory, along
@@ -412,13 +404,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
     $ /etc/init.d/slapd start
           </screen>
         </para>
-        <note>
-          <title>Note</title>
-          <para>
-          On Red Hat-based distros, use '/sbin/service ldap stop' and 
-        '/sbin/service ldap start' instead.
-          </para>
-        </note>
+        
         <para>
           With an <acronym>LDAP</acronym> backend, PyKota will need some branches
           in your <acronym>LDAP</acronym> directory to put its own datas.
@@ -691,9 +677,8 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
         <itemizedlist>
           <listitem>
             <para>
-              <application>CUPS</application> version 1.3.4 or higher. NB : 
-              <application>PyKota</application> releases up to and including 1.26 support
-              <application>CUPS</application> version 1.1.14 or higher. 
+              <application>CUPS</application> version 1.1.14 or higher, version 1.2.4 or higher
+              is recommanded.
               You can download it from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
             </para>
           </listitem>  

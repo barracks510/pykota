@@ -1,21 +1,24 @@
 #! /usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: ISO-8859-15 -*-
+
+# PyKota Turn Key tool
 #
-# PyKota : Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
@@ -28,11 +31,7 @@ import grp
 import socket
 import signal
 
-import pykota.appinit
-from pykota.utils import *
-
-from pykota.errors import PyKotaToolError, PyKotaCommandLineError
-from pykota.tool import Tool
+from pykota.tool import Tool, PyKotaToolError, PyKotaCommandLineError, crashed, N_
 
 __doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
 
@@ -228,7 +227,7 @@ class PKTurnKey(Tool) :
                 from pysnmp.mapping.udp.role import Manager
                 from pysnmp.proto.api import alpha
             except ImportError :    
-                logerr("pysnmp doesn't seem to be installed. SNMP checks will be ignored !\n")
+                sys.stderr.write("pysnmp doesn't seem to be installed. SNMP checks will be ignored !\n")
                 return 0
         else :        
             hasV4 = True
@@ -380,8 +379,10 @@ class PKTurnKey(Tool) :
         
     def main(self, names, options) :
         """Intializes PyKota's database."""
-        self.adminOnly()
-        
+        if not self.config.isAdmin :
+            raise PyKotaCommandLineError, "%s : %s" % (pwd.getpwuid(os.geteuid())[0], \
+                                   _("You're not allowed to use this command."))
+            
         if not names :
             names = ["*"]
             
@@ -528,10 +529,10 @@ if __name__ == "__main__" :
         else :
             retcode = manager.main(args, options)
     except KeyboardInterrupt :        
-        logerr("\nInterrupted with Ctrl+C !\n")
+        sys.stderr.write("\nInterrupted with Ctrl+C !\n")
         retcode = -3
     except PyKotaCommandLineError, msg :    
-        logerr("%s : %s\n" % (sys.argv[0], msg))
+        sys.stderr.write("%s : %s\n" % (sys.argv[0], msg))
         retcode = -2
     except SystemExit :        
         pass

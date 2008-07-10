@@ -1,31 +1,30 @@
-# -*- coding: UTF-8 -*-
+# PyKota
+# -*- coding: ISO-8859-15 -*-
 #
-# PyKota : Print Quotas for CUPS
+# PyKota - Print Quotas for CUPS and LPRng
 #
-# (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
-# This program is free software: you can redistribute it and/or modify
+# (c) 2003, 2004, 2005, 2006, 2007 Jerome Alet <alet@librelogiciel.com>
+# This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # $Id$
 #
 #
 
-"""This module handles ink accounting in PyKota."""
-
 import os
+from pykota.accounter import AccounterBase, PyKotaAccounterError
 
-from pykota.errors import PyKotaAccounterError
-from pykota.accounter import AccounterBase
 
 class Accounter(AccounterBase) :
     cspaceExpanded = {
@@ -52,7 +51,7 @@ class Accounter(AccounterBase) :
         (colorspace, resolution) = parameters
         colorspace = colorspace.lower()
         if colorspace not in ("cmyk", "bw", "cmy", "rgb", "gc") :
-            raise PyKotaAccounterError, _("Invalid parameters for ink accounter : [%s]") % self.arguments
+            raise PyKotaAccounterError, "Invalid parameters for ink accounter : [%s]" % self.arguments
             
         try :    
             resolution = int(resolution)
@@ -87,13 +86,10 @@ class Accounter(AccounterBase) :
                             colordict[cspacelabels[color]] = page[color]
                         self.inkUsage.append(colordict)    
                     jobsize = len(pages)
-                    try :
-                        if self.filter.Ticket.FileName is not None :
-                            # when a filename is passed as an argument, the backend 
-                            # must generate the correct number of copies.
-                            jobsize *= self.filter.Ticket.Copies
-                            self.inkUsage *= self.filter.Ticket.Copies
-                    except AttributeError : # When not run from the cupspykota backend 
-                        pass
+                    if self.filter.InputFile is not None :
+                        # when a filename is passed as an argument, the backend 
+                        # must generate the correct number of copies.
+                        jobsize *= self.filter.Copies
+                        self.inkUsage *= self.filter.Copies
                     self.filter.logdebug("Ink usage : %s ===> %s" % (cspace, repr(self.inkUsage)))
         return jobsize        
