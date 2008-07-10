@@ -23,7 +23,7 @@
 """This module defines a class to access to an LDAP database backend.
 
 My IANA assigned number, for 
-"Conseil Internet & Logiciels Libres, Jérôme Alet" 
+"Conseil Internet & Logiciels Libres, Jerome Alet" 
 is 16868. Use this as a base to extend the LDAP schema.
 """
 
