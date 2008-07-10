@@ -170,7 +170,7 @@ class PKPrinters(PyKotaTool) :
     def reroutePrinterThroughPyKota(self, printer) :    
         """Reroutes a CUPS printer through PyKota."""
         uri = self.getPrinterDeviceURI(printer.Name)
-        if not self.isPrinterCaptured(deviceuri=uri) :
+        if uri and (not self.isPrinterCaptured(deviceuri=uri)) :
              newuri = "cupspykota://%s" % uri
              self.regainPriv() # to avoid having to enter password.
              os.system('lpadmin -p "%s" -v "%s"' % (printer.Name, newuri))
@@ -180,7 +180,7 @@ class PKPrinters(PyKotaTool) :
     def deroutePrinterFromPyKota(self, printer) :    
         """Deroutes a PyKota printer through CUPS only."""
         uri = self.getPrinterDeviceURI(printer.Name)
-        if self.isPrinterCaptured(deviceuri=uri) :
+        if uri and self.isPrinterCaptured(deviceuri=uri) :
              newuri = uri.replace("cupspykota:", "")
              if newuri.startswith("//") :
                  newuri = newuri[2:]
