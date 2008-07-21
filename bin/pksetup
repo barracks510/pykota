@@ -191,7 +191,6 @@ class PyKotaSetup :
                  "python-jaxml",
                  "python-reportlab",
                  "python-reportlab-accel",
-                 "python-psyco",
                  "python-pygresql",
                  "python-psyco",
                  "python-osd",
