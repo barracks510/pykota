@@ -183,8 +183,7 @@ Prerequisite :
       
     
   On Intel i386 architecture, and for performance reasons, it is
-  strongly suggested that you install the Python accelerator Psyco, 
-  available at :
+  suggested that you install the Python accelerator Psyco, available from :
   
       http://psyco.sourceforge.net
       
@@ -195,20 +194,8 @@ Prerequisite :
   Other architectures may be supported as well in the future, check    
   this on Psyco's website.
   
-  Installing Psyco is not mandatory, but it will speedup PCL5 parsing
-  by almost 3 times. PostScript and PDF parsing can also benefit,
-  but in an almost unnoticeable manner since this part of the code
-  is already optimal. For PCL5 this is a completely different matter,
-  and if you install Psyco you will never regret it !
-  Same remark applies for PCL6 (aka PCLXL) : the parser is completely
-  different, but the performance gain with Psyco is impressive.
-  
-  You may also benefit from having the following tools installed to
-  deal with some printers :
-  
-    - npadmin
-    - netcat
-    - ghostscript
+  Installing Psyco is not mandatory, but may really speed the parsing 
+  of some print jobs.
     
   You need to have the following tools installed on the database
   server :
@@ -244,10 +231,7 @@ Hint :
 
   - The Debian GNU/Linux distribution is to our knowledge the 
     easiest distribution to install PyKota on, because almost all
-    of PyKota dependencies are already included, excepted
-    the pkpgcounter utility which for now have to be downloaded
-    and installed separately, and maybe one or two other dependencies,
-    depending on the version of Debian you are using.
+    of PyKota dependencies are already included.
     We recommend you to use Debian's Etch distribution or
     more recent. PyKota works fine on Sarge, but some additional
     dependencies are missing in Sarge and have to be installed
@@ -515,52 +499,28 @@ please read this FAQ entry :
            
 ============================================================
 
-Additionnal tools :
--------------------
+Mailing lists :
+---------------
 
-Some people have developped tools around PyKota, and make
-them available under the GNU General Public License :
-
-  - Kanakorn Horsiritham developped phpPykotaAdmin which is 
-    a web based database independant administrative GUI,
-    written in PHP.
-  
-      http://opensource.psu.ac.th/~kanakorn/mambo/
-      
-    He was also kind enough to write an installation guide  
-    in english for CUPS and PyKota with phpPykotaAdmin on Fedora
-    Core 3. You'll find this document on the same website.
-    
-    This great software currently at version 0.3 is a wonderful
-    basis for an administrative GUI since it only depends on 
-    PyKota commands to be present to successfully manage
-    PyKota's database. 
-    
-    However this tool is very old now and doesn't work
-    with more recent versions of PyKota. It could be
-    a good starting point if you planned to develop such
-    a web user interface though.
-  
-Additionnal software will be listed here when they will be  
-ready.
-
-============================================================
-
-Mailing list :
---------------
-
-  A mailing list is dedicated to Pykota, you can subscribe to it
+  A mailing list is dedicated to PyKota, you can subscribe to it
   or consult its archives at :
   
-    http://cgi.librelogiciel.com/mailman/listinfo/pykota
+    http://lists.pykota.com/mailman/listinfo/pykota
     
-  The mailing list is the preferred way to obtain support, because  
+  This mailing list is the preferred way to obtain support, because  
   all members can help and can also benefit from the solutions
   proposed by other members. 
   
-  Posts by non-members are usually rejected.
+  Another mailing list, dedicated to developers, is available from :
   
-  The mailing list language is english and only english.
+    http://lists.pykota.com/mailman/listinfo/pykota-devel
+    
+  In this mailing list you can discuss implementation details, bugs,  
+  ideas, and so on. All commit messages are also sent to this list.
+  
+  Posts by non-members are rejected.
+  
+  The mailing lists language is english and only english.
     
 IRC :    
 -----
@@ -585,7 +545,3 @@ Bug Tracker :
   
       http://trac.pykota.com
     
-============================================================
-    
-Please e-mail bugs to the mailing list at : pykota@librelogiciel.com
-or to the main author at : alet@librelogiciel.com (Jerome Alet)
