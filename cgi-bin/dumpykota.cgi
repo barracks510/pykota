@@ -127,15 +127,15 @@ class PyKotaDumperGUI(DumPyKota) :
                         self.config.getLogoLink(), \
                         version.__version__, _("PyKota Data Dumper"), \
                         _("Dump"), _("Please click on the above button")) ]
-        content.append(self.htmlListDataTypes(self.options.get("data", "")))
+        content.append(self.htmlListDataTypes(self.options.data))
         content.append(u"<br />")
-        content.append(self.htmlListFormats(self.options.get("format", "")))
+        content.append(self.htmlListFormats(self.options.format))
         content.append(u"<br />")
         content.append(self.htmlFilterInput(" ".join(self.arguments)))
         content.append(u"<br />")
-        content.append(self.htmlOrderbyInput(self.options.get("orderby", "")))
+        content.append(self.htmlOrderbyInput(self.options.orderby))
         content.append(u"<br />")
-        content.append(self.htmlSumCheckbox(self.options.get("sum", "")))
+        content.append(self.htmlSumCheckbox(self.options.sum))
         content.append(footer % (_("Dump"), 
                                  version.__doc__, 
                                  version.__years__, 
@@ -189,15 +189,15 @@ class PyKotaDumperGUI(DumPyKota) :
             if wantreport :
                 try :
                     if self.form.has_key("datatype") :
-                        self.options["data"] = self.form["datatype"].value
+                        self.options.data = self.form["datatype"].value
                     if self.form.has_key("format") :
-                        self.options["format"] = self.form["format"].value
+                        self.options.format = self.form["format"].value
                     if self.form.has_key("filter") :    
                         self.arguments = self.form["filter"].value.split()
                     if self.form.has_key("sum") :    
-                        self.options["sum"] = self.form["sum"].value
+                        self.options.sum = self.form["sum"].value
                     if self.form.has_key("orderby") :    
-                        self.options["orderby"] = self.form["orderby"].value
+                        self.options.orderby = self.form["orderby"].value
                     # when no authentication is done, or when the remote username    
                     # is 'root' (even if not run as root of course), then unrestricted
                     # dump is allowed.
@@ -211,23 +211,23 @@ class PyKotaDumperGUI(DumPyKota) :
                         # non-'root' users when the script is password protected
                         # can not dump any data as they like, we restrict them
                         # to their own datas.
-                        if self.options["data"] not in ["printers", "pmembers", "groups", "gpquotas"] :
+                        if self.options.data not in ["printers", "pmembers", "groups", "gpquotas"] :
                             self.arguments.append("username=%s" % remuser)
                         
                     fname = "error"    
                     ctype = "text/plain"
-                    if self.options["format"] in ("csv", "ssv") :
+                    if self.options.format in ("csv", "ssv") :
                         #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
                         ctype = "text/comma-separated-values"
                         fname = "dump.csv"
-                    elif self.options["format"] == "tsv" :
+                    elif self.options.format == "tsv" :
                         #ctype = "application/vnd.sun.xml.calc"     # OpenOffice.org
                         ctype = "text/tab-separated-values"
                         fname = "dump.tsv"
-                    elif self.options["format"] == "xml" :
+                    elif self.options.format == "xml" :
                         ctype = "text/xml"
                         fname = "dump.xml"
-                    elif self.options["format"] == "cups" :
+                    elif self.options.format == "cups" :
                         ctype = "text/plain"
                         fname = "page_log"
                     print "Content-type: %s" % ctype    
@@ -239,17 +239,20 @@ class PyKotaDumperGUI(DumPyKota) :
             else :        
                 self.guiDisplay()
             
+class FakeCommandLineOptions :            
+    """A class to fake command line options."""
+    output = "-"
+    data = "history"
+    format = "cups"
+    sum = None
+    orderby = None
+    
 if __name__ == "__main__" :
     utils.reinitcgilocale()
     admin = PyKotaDumperGUI()
     admin.deferredInit()
     admin.form = cgi.FieldStorage()
-    admin.options = { "output" : "-",
-                "data" : "history",
-                "format" : "cups",
-                "sum" : None,
-                "orderby" : None,
-              }
+    admin.options = FakeCommandLineOptions()
     admin.arguments = []
     admin.guiAction()
     try :
