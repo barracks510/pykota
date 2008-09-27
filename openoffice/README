@@ -25,16 +25,16 @@ PDF and OpenOffice.org's sxc format.
 The sample report is a Jobs per User diagram, created from a
 simple SQL query to PyKota's database from within OpenOffice.org
 
-Since it works but I don't know OpenOffice enough to do something 
-really nice with it, I've added these screenshots and here's a small 
-howto below. For people interested in a more complete howto, please 
-see : http://kandalaya.org/download/oo-pgsql.html 
+Since it works but I don't know OpenOffice enough to do something
+really nice with it, I've added these screenshots and here's a small
+howto below. For people interested in a more complete howto, please
+see : http://kandalaya.org/download/oo-pgsql.html
 
 PyKota + PostgreSQL + OpenOffice.org HowTO :
 --------------------------------------------
 
         - Install and configure :
-        
+
           godbcconfig
           gtkodbcconfig0
           iodbc
@@ -42,21 +42,21 @@ PyKota + PostgreSQL + OpenOffice.org HowTO :
           odbc-postgresql
           odbcinst1
           unixodbc
-          
-        - Within gODBCConfig, add the PostgreSQL driver by 
+
+        - Within gODBCConfig, add the PostgreSQL driver by
           filling the Configure Driver form :
-          
+
                    Name : PostgreSQL
             Description : PostgreSQL
                  Driver : /usr/lib/postgresql/psqlodbc.so
                   Setup : /usr/lib/odbc/libodbcpsqlS.so
               FileUsage : 1
-        
+
           See gODBCConfig1.png
-          
+
           Then create a system DSN (only the more important fields
           are listed below) :
-          
+
                    DSN : PyKota
            Description : PostgreSQL access to PyKota
                 Driver : PostgreSQL
@@ -65,30 +65,30 @@ PyKota + PostgreSQL + OpenOffice.org HowTO :
               Username : pykotauser
               Password : pykotauser's password
                   Port : 5432
-                  
+
           See gODBCConfig2.png
-          
+
         - Then in OpenOffice.org add a new data source, selecting
           ODBC in the Database Type field. By clicking on the URL
           field's continuation dots, the PyKota DSN should appear.
           Just select it and you're done.
-          
+
           See ooo1.png
-          
+
         - You can now create your own queries to the PyKota database,
           and create any report you want.
-          
+
           See ooo2.png
-          
-        - When you've got something nice, please contribute it back  
+
+        - When you've got something nice, please contribute it back
           so we can learn from your experience.
-        
-WARNING :        
+
+WARNING :
 
         The above procedure doesn't work if you use the OpenLDAP backend
         to store PyKota's datas. A similar procedure is probably possible
         but last time I checked, the LDAP attributes accessible from
-        OpenOffice.org were limited to what one usually finds in 
+        OpenOffice.org were limited to what one usually finds in
         address books, unfortunately.
 
 Windows Users :
@@ -99,6 +99,6 @@ Windows Users :
         en: http://www.openoffice.org/nonav/issues/showattachment.cgi/3481/postgresql.sxw
         de: http://de.openoffice.org/doc/howto/datenquelle/tech_pgsql.html
         es: http://es.openoffice.org/files/documents/73/799/pgsql-win.sxw
-        
+
         Thanks to Johannes Lämmermann for this information.
 ====================================================================

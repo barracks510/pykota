@@ -7,12 +7,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -28,18 +28,18 @@ from pykota.errors import PyKotaStorageError
 from pykota.storage import BaseStorage
 from pykota.storages.sql import SQLStorage
 
-from pykota.utils import *                           
+from pykota.utils import *
 
 try :
     import pg
-except ImportError :    
+except ImportError :
     import sys
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PygreSQL module installed correctly." % sys.version.split()[0]
-else :    
+else :
     try :
         PGError = pg.Error
-    except AttributeError :    
+    except AttributeError :
         PGError = pg.error
 
 class Storage(BaseStorage, SQLStorage) :
@@ -49,85 +49,85 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             (host, port) = host.split(":")
             port = int(port)
-        except ValueError :    
+        except ValueError :
             port = 5432         # Use PostgreSQL's default tcp/ip port (5432).
-        
+
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         try :
             self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
-        except PGError, msg :    
+        except PGError, msg :
             msg = "%(msg)s --- the most probable cause of your problem is that PostgreSQL is down, or doesn't accept incoming connections because you didn't configure it as explained in PyKota's documentation." % locals()
             raise PGError, msg
         self.closed = 0
         try :
             self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
-        except PGError, msg :    
+        except PGError, msg :
             self.tool.logdebug("Impossible to set database client encoding to UTF-8 : %s" % msg)
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
-            
-    def close(self) :    
+
+    def close(self) :
         """Closes the database connection."""
         if not self.closed :
             self.database.close()
             self.closed = 1
             self.tool.logdebug("Database closed.")
-        
-    def beginTransaction(self) :    
+
+    def beginTransaction(self) :
         """Starts a transaction."""
         self.database.query("BEGIN;")
         self.tool.logdebug("Transaction begins...")
-        
-    def commitTransaction(self) :    
+
+    def commitTransaction(self) :
         """Commits a transaction."""
         self.database.query("COMMIT;")
         self.tool.logdebug("Transaction committed.")
-        
-    def rollbackTransaction(self) :     
+
+    def rollbackTransaction(self) :
         """Rollbacks a transaction."""
         self.database.query("ROLLBACK;")
         self.tool.logdebug("Transaction aborted.")
-        
+
     def doRawSearch(self, query) :
         """Does a raw search query."""
-        query = query.strip()    
-        if not query.endswith(';') :    
+        query = query.strip()
+        if not query.endswith(';') :
             query += ';'
         try :
             self.querydebug("QUERY : %s" % query)
             return self.database.query(query)
-        except PGError, msg :    
+        except PGError, msg :
             raise PyKotaStorageError, repr(msg)
-            
-    def doSearch(self, query) :        
+
+    def doSearch(self, query) :
         """Does a search query."""
         result = self.doRawSearch(query)
-        if (result is not None) and (result.ntuples() > 0) : 
+        if (result is not None) and (result.ntuples() > 0) :
             return result.dictresult()
-        
+
     def doModify(self, query) :
         """Does a (possibly multiple) modify query."""
-        query = query.strip()    
-        if not query.endswith(';') :    
+        query = query.strip()
+        if not query.endswith(';') :
             query += ';'
         try :
             self.querydebug("QUERY : %s" % query)
             return self.database.query(query)
-        except PGError, msg :    
+        except PGError, msg :
             self.tool.logdebug("Query failed : %s" % repr(msg))
             raise PyKotaStorageError, repr(msg)
-            
+
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
-        if type(field) == type(0.0) : 
+        if type(field) == type(0.0) :
             typ = "decimal"
-        elif type(field) == type(0) :    
+        elif type(field) == type(0) :
             typ = "int"
-        elif type(field) == type(0L) :    
+        elif type(field) == type(0L) :
             typ = "int"
-        else :    
+        else :
             typ = "text"
         return pg._quote(field, typ)
-        
+
     def prepareRawResult(self, result) :
         """Prepares a raw result by including the headers."""
         if result.ntuples() > 0 :
@@ -139,7 +139,7 @@ class Storage(BaseStorage, SQLStorage) :
                 for j in range(nbfields) :
                     field = fields[j]
                     if type(field) == StringType :
-                        fields[j] = databaseToUnicode(field) 
-                entries[i] = tuple(fields)    
+                        fields[j] = databaseToUnicode(field)
+                entries[i] = tuple(fields)
             return entries
-        
+

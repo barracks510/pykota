@@ -8,12 +8,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -31,8 +31,8 @@ def createBillingCodes(number) :
     argsfile.write('--add\n--reset\n--description\n"a billing code"\n')
     for bname in billingcodes :
         argsfile.write("%s\n" % bname)
-    argsfile.close()    
-    os.system('pkbcodes --arguments arguments.list') 
+    argsfile.close()
+    os.system('pkbcodes --arguments arguments.list')
     return billingcodes
 
 def deleteBillingCodes(billingcodes) :
@@ -42,9 +42,9 @@ def deleteBillingCodes(billingcodes) :
     argsfile.write('--delete\n')
     for bname in billingcodes :
         argsfile.write("%s\n" % bname)
-    argsfile.close()    
-    os.system('pkbcodes --arguments arguments.list') 
-    
+    argsfile.close()
+    os.system('pkbcodes --arguments arguments.list')
+
 def createPrinters(number) :
     """Creates a number of printers."""
     sys.stdout.write("Adding %i printers...\n" % number)
@@ -53,8 +53,8 @@ def createPrinters(number) :
     argsfile.write('--add\n--charge\n0.05\n--maxjobsize\n5\n--passthrough\n--description\n"a printer"\n')
     for pname in printernames :
         argsfile.write("%s\n" % pname)
-    argsfile.close()    
-    os.system('pkprinters --arguments arguments.list') 
+    argsfile.close()
+    os.system('pkprinters --arguments arguments.list')
     return printernames
 
 def deletePrinters(printernames) :
@@ -64,9 +64,9 @@ def deletePrinters(printernames) :
     argsfile.write('--delete\n')
     for pname in printernames :
         argsfile.write("%s\n" % pname)
-    argsfile.close()    
-    os.system('pkprinters --arguments arguments.list') 
-    
+    argsfile.close()
+    os.system('pkprinters --arguments arguments.list')
+
 def createUsers(number) :
     """Creates a number of users."""
     sys.stdout.write("Adding %i users...\n" % number)
@@ -75,8 +75,8 @@ def createUsers(number) :
     argsfile.write('--add\n--limitby\nbalance\n--balance\n50.0\n--description\n"an user"\n--comment\n"fake payment"\n')
     for uname in usernames :
         argsfile.write("%s\n" % uname)
-    argsfile.close()    
-    os.system('pkusers --arguments arguments.list') 
+    argsfile.close()
+    os.system('pkusers --arguments arguments.list')
     return usernames
 
 def deleteUsers(usernames) :
@@ -86,9 +86,9 @@ def deleteUsers(usernames) :
     argsfile.write('--delete\n')
     for uname in usernames :
         argsfile.write("%s\n" % uname)
-    argsfile.close()    
-    os.system('pkusers --arguments arguments.list') 
-    
+    argsfile.close()
+    os.system('pkusers --arguments arguments.list')
+
 def createGroups(number) :
     """Creates a number of groups."""
     sys.stdout.write("Adding %i groups...\n" % number)
@@ -97,8 +97,8 @@ def createGroups(number) :
     argsfile.write('--groups\n--add\n--limitby\nquota\n--description\n"a group"\n')
     for gname in groupnames :
         argsfile.write("%s\n" % gname)
-    argsfile.close()    
-    os.system('pkusers --arguments arguments.list') 
+    argsfile.close()
+    os.system('pkusers --arguments arguments.list')
     return groupnames
 
 def deleteGroups(groupnames) :
@@ -108,9 +108,9 @@ def deleteGroups(groupnames) :
     argsfile.write('--groups\n--delete\n')
     for gname in groupnames :
         argsfile.write("%s\n" % gname)
-    argsfile.close()    
-    os.system('pkusers --arguments arguments.list') 
-    
+    argsfile.close()
+    os.system('pkusers --arguments arguments.list')
+
 def createUserPQuotas(usernames, printernames) :
     """Creates a number of user print quota entries."""
     number = len(usernames) * len(printernames)
@@ -120,8 +120,8 @@ def createUserPQuotas(usernames, printernames) :
     argsfile.write("%s\n" % ",".join(printernames))
     for uname in usernames :
         argsfile.write("%s\n" % uname)
-    argsfile.close()    
-    os.system('edpykota --arguments arguments.list') 
+    argsfile.close()
+    os.system('edpykota --arguments arguments.list')
 
 def deleteUserPQuotas(usernames, printernames) :
     """Deletes all test user print quota entries."""
@@ -132,9 +132,9 @@ def deleteUserPQuotas(usernames, printernames) :
     argsfile.write("%s\n" % ",".join(printernames))
     for uname in usernames :
         argsfile.write("%s\n" % uname)
-    argsfile.close()    
-    os.system('edpykota --arguments arguments.list') 
-    
+    argsfile.close()
+    os.system('edpykota --arguments arguments.list')
+
 def createGroupPQuotas(groupnames, printernames) :
     """Creates a number of group print quota entries."""
     number = len(groupnames) * len(printernames)
@@ -144,8 +144,8 @@ def createGroupPQuotas(groupnames, printernames) :
     argsfile.write("%s\n" % ",".join(printernames))
     for gname in groupnames :
         argsfile.write("%s\n" % gname)
-    argsfile.close()    
-    os.system('edpykota --arguments arguments.list') 
+    argsfile.close()
+    os.system('edpykota --arguments arguments.list')
 
 def deleteGroupPQuotas(groupnames, printernames) :
     """Deletes all test group print quota entries."""
@@ -156,13 +156,13 @@ def deleteGroupPQuotas(groupnames, printernames) :
     argsfile.write("%s\n" % ",".join(printernames))
     for gname in groupnames :
         argsfile.write("%s\n" % gname)
-    argsfile.close()    
-    os.system('edpykota --arguments arguments.list') 
-    
-if __name__ == "__main__" :    
+    argsfile.close()
+    os.system('edpykota --arguments arguments.list')
+
+if __name__ == "__main__" :
     if len(sys.argv) == 1 :
         sys.stderr.write("usage :  %s  [--nodelete]  NbBillingCodes  NbPrinters  NbUsers  NbGroups\n" % sys.argv[0])
-    else :    
+    else :
         delete = True
         args = sys.argv[1:]
         if args[0] == "--nodelete" :
@@ -176,29 +176,29 @@ if __name__ == "__main__" :
             bcodes = createBillingCodes(nbbillingcodes)
         if nbprinters :
             printers = createPrinters(nbprinters)
-        if nbusers :    
+        if nbusers :
             users = createUsers(nbusers)
-        if nbgroups :    
+        if nbgroups :
             groups = createGroups(nbgroups)
-            
-        if nbusers and nbprinters :    
+
+        if nbusers and nbprinters :
             createUserPQuotas(users, printers)
             if delete :
                 deleteUserPQuotas(users, printers)
-            
-        if nbgroups and nbprinters :    
+
+        if nbgroups and nbprinters :
             createGroupPQuotas(groups, printers)
             if delete :
                 deleteGroupPQuotas(groups, printers)
-            
-        if delete :    
-            if nbbillingcodes :    
+
+        if delete :
+            if nbbillingcodes :
                 deleteBillingCodes(bcodes)
-            if nbgroups :    
+            if nbgroups :
                 deleteGroups(groups)
-            if nbusers :    
+            if nbusers :
                 deleteUsers(users)
-            if nbprinters :    
+            if nbprinters :
                 deletePrinters(printers)
         os.remove("arguments.list")
-        
+

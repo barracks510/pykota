@@ -7,12 +7,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -35,30 +35,30 @@ class Accounter(AccounterBase) :
         """Initializes querying accounter."""
         AccounterBase.__init__(self, kotabackend, arguments, ispreaccounter, name)
         self.isSoftware = 0
-        
-    def getPrinterInternalPageCounter(self) :    
+
+    def getPrinterInternalPageCounter(self) :
         """Returns the printer's internal page counter."""
         self.filter.logdebug("Reading printer %s's internal page counter..." % self.filter.PrinterName)
         counter = self.askPrinterPageCounter(self.filter.PrinterHostName)
         self.filter.logdebug("Printer %s's internal page counter value is : %s" % (self.filter.PrinterName, str(counter)))
-        return counter    
-        
-    def beginJob(self, printer) :    
+        return counter
+
+    def beginJob(self, printer) :
         """Saves printer internal page counter at start of job."""
         # save page counter before job
         self.LastPageCounter = self.getPrinterInternalPageCounter()
         self.fakeBeginJob()
-        
-    def fakeBeginJob(self) :    
+
+    def fakeBeginJob(self) :
         """Fakes a begining of a job."""
         self.counterbefore = self.getLastPageCounter()
-        
-    def endJob(self, printer) :    
+
+    def endJob(self, printer) :
         """Saves printer internal page counter at end of job."""
         # save page counter after job
         self.LastPageCounter = self.counterafter = self.getPrinterInternalPageCounter()
-        
-    def getJobSize(self, printer) :    
+
+    def getJobSize(self, printer) :
         """Returns the actual job size."""
         if (not self.counterbefore) or (not self.counterafter) :
             # there was a problem retrieving page counter
@@ -66,12 +66,12 @@ class Accounter(AccounterBase) :
             if printer.LastJob.Exists :
                 # if there's a previous job, use the last value from database
                 self.filter.printInfo(_("Retrieving printer %s's page counter from database instead.") % printer.Name, "warn")
-                if not self.counterbefore : 
+                if not self.counterbefore :
                     self.counterbefore = printer.LastJob.PrinterPageCounter or 0
                 if not self.counterafter :
                     self.counterafter = printer.LastJob.PrinterPageCounter or 0
-                before = min(self.counterbefore, self.counterafter)    
-                after = max(self.counterbefore, self.counterafter)    
+                before = min(self.counterbefore, self.counterafter)
+                after = max(self.counterbefore, self.counterafter)
                 self.counterbefore = before
                 self.counterafter = after
                 if (not self.counterbefore) or (not self.counterafter) or (self.counterbefore == self.counterafter) :
@@ -84,29 +84,29 @@ class Accounter(AccounterBase) :
                 self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
                 self.counterbefore = 0
                 self.counterafter = 1
-                
-        jobsize = (self.counterafter - self.counterbefore)    
+
+        jobsize = (self.counterafter - self.counterbefore)
         if jobsize < 0 :
-            # Try to take care of HP printers 
+            # Try to take care of HP printers
             # Their internal page counter is saved to NVRAM
             # only every 10 pages. If the printer was switched
             # off then back on during the job, and that the
-            # counters difference is negative, we know 
+            # counters difference is negative, we know
             # the formula (we can't know if more than eleven
             # pages were printed though) :
             if jobsize > -10 :
                 jobsize += 10
-            else :    
+            else :
                 # here we may have got a printer being replaced
                 # DURING the job. This is HIGHLY improbable (but already happened) !
                 self.filter.printInfo(_("Inconsistent values for printer %s's internal page counter.") % printer.Name, "warn")
                 self.filter.printInfo(_("Job's size forced to 1 page for printer %s.") % printer.Name, "warn")
                 jobsize = 1
         return jobsize
-        
+
     def askPrinterPageCounter(self, printer) :
         """Returns the page counter from the printer via an external command.
-        
+
            The external command must report the life time page number of the printer on stdout.
         """
         skipinitialwait = self.filter.config.getPrinterSkipInitialWait(printer)
@@ -116,48 +116,48 @@ class Accounter(AccounterBase) :
             return snmp.Handler(self, printer, skipinitialwait).retrieveInternalPageCounter()
         elif (cmdlower == "pjl") or cmdlower.startswith("pjl:") :
             return pjl.Handler(self, printer, skipinitialwait).retrieveInternalPageCounter()
-            
+
         if printer is None :
             raise PyKotaAccounterError, _("Unknown printer address in HARDWARE(%s) for printer %s") % (commandline, self.filter.PrinterName)
-        while 1 :    
+        while 1 :
             self.filter.printInfo(_("Launching HARDWARE(%s)...") % commandline)
             pagecounter = None
-            child = popen2.Popen4(commandline)    
+            child = popen2.Popen4(commandline)
             try :
                 answer = child.fromchild.read()
-            except IOError :    
+            except IOError :
                 # we were interrupted by a signal, certainely a SIGTERM
                 # caused by the user cancelling the current job
                 try :
                     os.kill(child.pid, signal.SIGTERM)
-                except :    
+                except :
                     pass # already killed ?
                 self.filter.printInfo(_("SIGTERM was sent to hardware accounter %s (pid: %s)") % (commandline, child.pid))
-            else :    
+            else :
                 lines = [l.strip() for l in answer.split("\n")]
-                for i in range(len(lines)) : 
+                for i in range(len(lines)) :
                     try :
                         pagecounter = int(lines[i])
                     except (AttributeError, ValueError) :
                         self.filter.printInfo(_("Line [%s] skipped in accounter's output. Trying again...") % lines[i])
-                    else :    
+                    else :
                         break
-            child.fromchild.close()    
+            child.fromchild.close()
             child.tochild.close()
             try :
                 status = child.wait()
-            except OSError, msg :    
+            except OSError, msg :
                 self.filter.logdebug("Error while waiting for hardware accounter pid %s : %s" % (child.pid, msg))
-            else :    
+            else :
                 if os.WIFEXITED(status) :
                     status = os.WEXITSTATUS(status)
                 self.filter.printInfo(_("Hardware accounter %s exit code is %s") % (self.arguments, str(status)))
-                
+
             if pagecounter is None :
                 message = _("Unable to query printer %s via HARDWARE(%s)") % (printer, commandline)
                 if self.onerror == "CONTINUE" :
                     self.filter.printInfo(message, "error")
                 else :
-                    raise PyKotaAccounterError, message 
-            else :        
-                return pagecounter        
+                    raise PyKotaAccounterError, message
+            else :
+                return pagecounter

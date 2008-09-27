@@ -10,12 +10,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -67,7 +67,7 @@ header = """Content-type: text/html;charset=%s
             </td>
           </tr>
         </table>"""
-    
+
 footer = """
         <table>
           <tr>
@@ -75,14 +75,14 @@ footer = """
               <input type="submit" name="report" value="%s" />
             </td>
           </tr>
-        </table>  
+        </table>
       </form>
     </p>
     <hr width="25%%" />
     <p>
       <font size="-2">
         <a href="http://www.pykota.com/">%s</a>
-        &copy; %s %s 
+        &copy; %s %s
         <br />
         <pre>
 %s
@@ -90,7 +90,7 @@ footer = """
       </font>
     </p>
   </body>
-</html>"""  
+</html>"""
 
 class PyKotaReportGUI(PyKotaTool) :
     """PyKota Administrative GUI"""
@@ -103,22 +103,22 @@ class PyKotaReportGUI(PyKotaTool) :
                               self.config.getLogoLink(), \
                               version.__version__, _("PyKota Reports"), \
                               _("Report")) ]
-        content.append(self.body)                      
-        content.append(footer % (_("Report"), 
-                                 version.__doc__, 
-                                 version.__years__, 
-                                 version.__author__, 
+        content.append(self.body)
+        content.append(footer % (_("Report"),
+                                 version.__doc__,
+                                 version.__years__,
+                                 version.__author__,
                                  saxutils.escape(version.__gplblurb__)))
         for c in content :
             sys.stdout.write(c.encode(self.charset, "replace"))
         sys.stdout.flush()
-        
+
     def error(self, message) :
         """Adds an error message to the GUI's body."""
         if message :
             self.body = '<p><font color="red">%s</font></p>\n%s' % (message, self.body)
-        
-    def htmlListPrinters(self, selected=[], mask="*") :    
+
+    def htmlListPrinters(self, selected=[], mask="*") :
         """Displays the printers multiple selection list."""
         printers = self.storage.getMatchingPrinters(mask)
         selectednames = [p.Name for p in selected]
@@ -130,26 +130,26 @@ class PyKotaReportGUI(PyKotaTool) :
                 message += '<option value="%s">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
         message += '</select></td></tr></table>'
         return message
-        
-    def htmlUGNamesInput(self, value="*") :    
+
+    def htmlUGNamesInput(self, value="*") :
         """Input field for user/group names wildcard."""
         return _("User / Group names mask") + (' : <input type="text" name="ugmask" size="20" value="%s" /> <em>e.g. <strong>jo*</strong></em>' % (value or "*"))
-        
+
     def htmlGroupsCheckbox(self, isgroup=0) :
         """Groups checkbox."""
         if isgroup :
             return _("Groups report") + ' : <input type="checkbox" checked="checked" name="isgroup" />'
-        else :    
+        else :
             return _("Groups report") + ' : <input type="checkbox" name="isgroup" />'
-            
+
     def guiAction(self) :
         """Main function"""
         printers = ugmask = isgroup = None
-        remuser = os.environ.get("REMOTE_USER", "root")    
+        remuser = os.environ.get("REMOTE_USER", "root")
         # special hack to accomodate mod_auth_ldap Apache module
         try :
             remuser = remuser.split("=")[1].split(",")[0]
-        except IndexError :    
+        except IndexError :
             pass
         self.body = "<p>%s</p>\n" % _("Please click on the above button")
         if self.form.has_key("report") :
@@ -158,27 +158,27 @@ class PyKotaReportGUI(PyKotaTool) :
                 if type(printersfield) != type([]) :
                     printersfield = [ printersfield ]
                 printers = [self.storage.getPrinter(p.value) for p in printersfield]
-            else :    
+            else :
                 printers = self.storage.getMatchingPrinters("*")
             if remuser == "root" :
-                if self.form.has_key("ugmask") :     
+                if self.form.has_key("ugmask") :
                     ugmask = self.form["ugmask"].value
-                else :     
+                else :
                     ugmask = "*"
-            else :        
-                if self.form.has_key("isgroup") :    
+            else :
+                if self.form.has_key("isgroup") :
                     user = self.storage.getUser(remuser)
                     if user.Exists :
                         ugmask = " ".join([ g.Name for g in self.storage.getUserGroups(user) ])
-                    else :    
+                    else :
                         ugmask = remuser # result will probably be empty, we don't care
-                else :    
+                else :
                     ugmask = remuser
-            if self.form.has_key("isgroup") :    
+            if self.form.has_key("isgroup") :
                 isgroup = 1
-            else :    
+            else :
                 isgroup = 0
-        self.body += self.htmlListPrinters(printers or [])            
+        self.body += self.htmlListPrinters(printers or [])
         self.body += "<br />"
         self.body += self.htmlUGNamesInput(ugmask)
         self.body += "<br />"
@@ -188,34 +188,34 @@ class PyKotaReportGUI(PyKotaTool) :
                 if printers and ugmask :
                     self.reportingtool = openReporter(admin, "html", printers, ugmask.split(), isgroup)
                     self.body += "%s" % self.reportingtool.generateReport()
-            else :        
+            else :
                 if remuser != "root" :
                     username = remuser
-                elif self.form.has_key("username") :    
+                elif self.form.has_key("username") :
                     username = self.form["username"].value
-                else :    
+                else :
                     username = None
-                if username is not None :    
+                if username is not None :
                     user = self.storage.getUser(username)
-                else :    
+                else :
                     user = None
                 if self.form.has_key("printername") :
                     printer = self.storage.getPrinter(self.form["printername"].value)
-                else :    
+                else :
                     printer = None
-                if self.form.has_key("datelimit") :    
+                if self.form.has_key("datelimit") :
                     datelimit = self.form["datelimit"].value
-                else :    
+                else :
                     datelimit = None
-                if self.form.has_key("hostname") :    
+                if self.form.has_key("hostname") :
                     hostname = self.form["hostname"].value
-                else :    
+                else :
                     hostname = None
-                if self.form.has_key("billingcode") :    
+                if self.form.has_key("billingcode") :
                     billingcode = self.form["billingcode"].value
-                else :    
+                else :
                     billingcode = None
-                self.report = ["<h2>%s</h2>" % _("History")]    
+                self.report = ["<h2>%s</h2>" % _("History")]
                 history = self.storage.retrieveHistory(user=user, printer=printer, hostname=hostname, billingcode=billingcode, end=datelimit)
                 if not history :
                     self.report.append("<h3>%s</h3>" % _("Empty"))
@@ -231,10 +231,10 @@ class PyKotaReportGUI(PyKotaTool) :
                     oddeven = 0
                     for job in history :
                         oddeven += 1
-                        if job.JobAction == "ALLOW" :    
+                        if job.JobAction == "ALLOW" :
                             if oddeven % 2 :
                                 oddevenclass = "odd"
-                            else :    
+                            else :
                                 oddevenclass = "even"
                         else :
                             oddevenclass = (job.JobAction or "UNKNOWN").lower()
@@ -242,11 +242,11 @@ class PyKotaReportGUI(PyKotaTool) :
                         printername_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "printername" : job.PrinterName}), job.PrinterName)
                         if job.JobHostName :
                             hostname_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "hostname" : job.JobHostName}), job.JobHostName)
-                        else :    
+                        else :
                             hostname_url = None
                         if job.JobBillingCode :
                             billingcode_url = '<a href="%s?%s">%s</a>' % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode({"history" : 1, "billingcode" : job.JobBillingCode}), job.JobBillingCode)
-                        else :    
+                        else :
                             billingcode_url = None
                         curdate = DateTime.ISO.ParseDateTime(str(job.JobDate)[:19])
                         self.report.append('<tr class="%s">%s</tr>' % \
@@ -285,14 +285,14 @@ class PyKotaReportGUI(PyKotaTool) :
                         dico.update({ "username" : user.Name })
                     if printer and printer.Exists :
                         dico.update({ "printername" : printer.Name })
-                    if hostname :    
+                    if hostname :
                         dico.update({ "hostname" : hostname })
                     prevurl = "%s?%s" % (os.environ.get("SCRIPT_NAME", ""), urllib.urlencode(dico))
                     self.report.append('<a href="%s">%s</a>' % (prevurl, _("Previous page")))
-                self.body = "\n".join(self.report)    
+                self.body = "\n".join(self.report)
         except :
                 self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
-            
+
 if __name__ == "__main__" :
     utils.reinitcgilocale()
     admin = PyKotaReportGUI()
@@ -302,7 +302,7 @@ if __name__ == "__main__" :
     admin.guiDisplay()
     try :
         admin.storage.close()
-    except (TypeError, NameError, AttributeError) :    
+    except (TypeError, NameError, AttributeError) :
         pass
-        
+
     sys.exit(0)

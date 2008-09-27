@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ====================================================================
 
-This directory contains scripts which may be used to query printers 
+This directory contains scripts which may be used to query printers
 for their life time page counter, so you could define them as
 hardware accounters in PyKota configuration file.
 

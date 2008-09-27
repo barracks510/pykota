@@ -20,36 +20,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Licensing information :
 
-  * PyKota is licensed under the terms of the GNU General Public License of 
+  * PyKota is licensed under the terms of the GNU General Public License of
     the Free Software Foundation, version 3, or at your option, any higher
     version.
 
-  * You can access to PyKota's latest development tree by using 
+  * You can access to PyKota's latest development tree by using
     SubVersion (aka SVN) :
-  
+
       $ svn co http://svn.pykota.com/pykota/trunk pykota
 
   * You are encouraged to support the project by purchasing an
     unlimited entry pass to the restricted areas of http://www.pykota.com
     or a Technical Support contract.
-    
+
     This gives you access to all the OFFICIAL packages : tar+gzip, Debian,
     Ubuntu, RPMs, etc... depending on the application, that you can
     redistribute if you want.
-    
+
     IMPORTANT : if you redistribute an OFFICIAL package in modified form,
     PLEASE edit pykota/version.py to remove the word OFFICIAL from
     the version number. If you redistribute an OFFICIAL package in
     an unmodified form, then no problem.
-    
-  * I ask you to not label or present a version of PyKota downloaded 
+
+  * I ask you to not label or present a version of PyKota downloaded
     from SVN as being the 'OFFICIAL' one. OFFICIAL packages are
     reasonably stable and well tested before shipping, while the
     latest development tree as extracted from subversion may contain
     bugs and/or incomplete functionnalities.
 
   * For more informations, please read :
-  
+
         http://www.pykota.com/purchase
         http://www.pykota.com/technical-support
-        
+

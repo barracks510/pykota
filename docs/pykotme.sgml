@@ -3,7 +3,7 @@
 <chapter>
   <title id="pykotme">Get print quotes before printing for real with <command>pykotme</command></title>
   <para>Last modified on $Date$</para>
-  
+
   <para>
     PyKota features a print quote generator, named <command>pykotme</command>.
     This command line tool can be used to learn in advance how much a print job
@@ -11,23 +11,23 @@
     You can then decide if printing your document is a good idea or not, and do it
     knowingly.
   </para>
-  
+
   <para>
     To get a print quote, you have to launch <command>pykotme</command>
     from the command line, passing your print job's content in any format
-    recognized by PyKota 
+    recognized by PyKota
     <footnote><para>PyKota now uses <ulink url="http://www.pykota.com/software/pkpgcounter">pkpgcounter</ulink>
     which recognizes PostScript (both binary and DSC compliant),
     PCLXL (aka PCL6), PDF, PCL3/4/5, ESC/P2, TIFF, DVI, OpenOffice Writer, and OpenOffice Impress.
     </para></footnote>, either in the form of one or more file names on the command line,
     or on its standard input (i.e. in a shell pipe or redirection).
   </para>
-  
+
   <para>
     Without any command line argument, <command>pykotme</command>
     automatically reads your job's data from its standard input.
   </para>
-  
+
   <para>
     By default, <command>pykotme</command>
     will display a quote for your job on all printers. You can restrict
@@ -37,53 +37,53 @@
     You can pass more than one printer name wildcard, separating
     them with commas.
   </para>
-  
+
   <para>
     <command>pykotme</command>'s functionnality is also available through the
     use of the <command>pykotme.cgi</command> <acronym>CGI</acronym> script.
     However without authentication <command>pykotme.cgi</command> will only
     return the print job's size and not its cost, because the cost depends on
-    the value of the user's overcharging factor and the printer being used. 
-    That's why if you want to 
-    obtain the same functionnality with the <acronym>CGI</acronym> script than 
+    the value of the user's overcharging factor and the printer being used.
+    That's why if you want to
+    obtain the same functionnality with the <acronym>CGI</acronym> script than
     with the command line tool, you must configure your web server to force
     users to authenticate whevenver they access to <command>pykotme.cgi</command>.
-    Then they will be able to choose one or more printers (all by default), 
+    Then they will be able to choose one or more printers (all by default),
     and also to enter their username,
     and the exact cost of the print job will be computed.
   </para>
-  
+
   <sect1>
     <title>Examples</title>
     <para>
       Here are some examples of <command>pykotme</command> usage.
     </para>
-    
+
     <para>
       The simplest form :
-<screen>    
+<screen>
 port50-2:~$ pykotme pykota.ps
 Your account balance : 16.25
 Job size : 22 pages
 Cost on printer apple : 1.35
-port50-2:~$ 
-</screen>    
+port50-2:~$
+</screen>
     </para>
-    
+
     <para>
       More complex, with printer name wildcard and within a pipe :
-<screen>      
+<screen>
 port50-2:~$ a2ps -o - pykota/README | pykotme --printer "a*"
 [pykota/README (plain): 6 pages on 3 sheets]
 [Total: 6 pages on 3 sheets] sent to the standard output
 Your account balance : 16.25
 Job size : 3 pages
 Cost on printer apple : 0.40
-port50-2:~$ 
+port50-2:~$
 </screen>
     </para>
   </sect1>
-  
+
   <sect1>
     <title>Reference</title>
     <para>
@@ -94,13 +94,13 @@ port50-2:~$
         <group choice="opt">
           <arg>-P <replaceable>printername</replaceable></arg>
           <arg>--printer <replaceable>printername</replaceable></arg>
-        </group>  
+        </group>
         <group choice="opt">
           <arg><replaceable>filename1</replaceable></arg>
           <arg><replaceable>filename2</replaceable></arg>
           <arg><replaceable>...</replaceable></arg>
           <arg><replaceable>filenameN</replaceable></arg>
-        </group>  
+        </group>
       </cmdsynopsis>
     </para>
   </sect1>

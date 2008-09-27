@@ -7,12 +7,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -31,11 +31,11 @@ from mx import DateTime
 
 try :
     import jaxml
-except ImportError :    
+except ImportError :
     sys.stderr.write("The jaxml Python module is not installed. XML output is disabled.\n")
     sys.stderr.write("Download jaxml from http://www.librelogiciel.com/software/ or from your Debian archive of choice\n")
     hasJAXML = False
-else :    
+else :
     hasJAXML = True
 
 from pykota.utils import *
@@ -44,7 +44,7 @@ from pykota import version
 from pykota.tool import PyKotaTool
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 
-class DumPyKota(PyKotaTool) :        
+class DumPyKota(PyKotaTool) :
     """A class for dumpykota."""
     validdatatypes = { u"history" : N_("History"),
                        u"users" : N_("Users"),
@@ -53,7 +53,7 @@ class DumPyKota(PyKotaTool) :
                        u"upquotas" : N_("Users Print Quotas"),
                        u"gpquotas" : N_("Users Groups Print Quotas"),
                        u"payments" : N_("History of Payments"),
-                       u"pmembers" : N_("Printers Groups Membership"), 
+                       u"pmembers" : N_("Printers Groups Membership"),
                        u"umembers" : N_("Users Groups Membership"),
                        u"billingcodes" : N_("Billing Codes"),
                        u"all": N_("All"),
@@ -63,25 +63,25 @@ class DumPyKota(PyKotaTool) :
                      u"tsv" : N_("Tabulation Separated Values"),
                      u"xml" : N_("eXtensible Markup Language"),
                      u"cups" : N_("CUPS' page_log"),
-                   }  
+                   }
     validfilterkeys = [ "username",
                         "groupname",
                         "printername",
                         "pgroupname",
                         "hostname",
                         "billingcode",
-                        "jobid", 
+                        "jobid",
                         "start",
                         "end",
                       ]
     def main(self, arguments, options, restricted=True) :
         """Print Quota Data Dumper."""
         self.adminOnly(restricted)
-            
+
         datatype = options.data
         if datatype not in self.validdatatypes.keys() :
             raise PyKotaCommandLineError, _("Invalid data type '%(datatype)s', see help.") % locals()
-                    
+
         orderby = options.orderby or []
         if orderby :
             fields = [f.strip() for f in orderby.split(",")]
@@ -90,118 +90,118 @@ class DumPyKota(PyKotaTool) :
                 if field.isalpha() \
                    or ((field[0] in ("+", "-")) and field[1:].isalpha()) :
                     orderby.append(field)
-                else :    
+                else :
                     logerr(_("Skipping invalid ordering statement '%(field)s'") % locals())
-            
+
         extractonly = {}
-        if datatype == u"all" :            
+        if datatype == u"all" :
             if (options.format != u"xml") or options.sum or arguments :
                 self.printInfo(_("Dumping all PyKota's datas forces format to XML, and disables --sum and filters."), "warn")
             options.format = u"xml"
             options.sum = None
-        else :    
+        else :
             for filterexp in arguments :
                 if filterexp.strip() :
                     try :
                         (filterkey, filtervalue) = [part.strip() for part in filterexp.split("=")]
                         filterkey = filterkey.encode("ASCII", "replace").lower()
                         if filterkey not in self.validfilterkeys :
-                            raise ValueError                
-                    except ValueError :    
+                            raise ValueError
+                    except ValueError :
                         raise PyKotaCommandLineError, _("Invalid filter value '%(filterexp)s', see help.") % locals()
-                    else :    
+                    else :
                         extractonly.update({ filterkey : filtervalue })
-            
+
         format = options.format
         if (format not in self.validformats.keys()) \
            or ((format == u"cups") \
               and ((datatype != u"history") or options.sum)) :
             raise PyKotaCommandLineError, _("Invalid format '%(format)s', see help.") % locals()
-            
+
         if (format == u"xml") and not hasJAXML :
             raise PyKotaToolError, _("XML output is disabled because the jaxml module is not available.")
-            
-        if datatype not in (u"payments", u"history") : 
-            if options.sum : 
+
+        if datatype not in (u"payments", u"history") :
+            if options.sum :
                 raise PyKotaCommandLineError, _("Invalid data type '%(datatype)s' for --sum command line option, see help.") % locals()
-            if extractonly.has_key(u"start") or extractonly.has_key(u"end") :    
+            if extractonly.has_key(u"start") or extractonly.has_key(u"end") :
                 self.printInfo(_("Invalid filter for the '%(datatype)s' data type.") % locals(), "warn")
                 try :
                     del extractonly[u"start"]
-                except KeyError :    
+                except KeyError :
                     pass
                 try :
                     del extractonly[u"end"]
-                except KeyError :    
+                except KeyError :
                     pass
-            
+
         retcode = 0
-        nbentries = 0    
+        nbentries = 0
         mustclose = False
         outfname = options.output.strip().encode(sys.getfilesystemencoding())
-        if outfname == "-" :    
+        if outfname == "-" :
             self.outfile = sys.stdout
-        else :    
+        else :
             self.outfile = open(outfname, "w")
             mustclose = True
-            
-        if datatype == u"all" :    
+
+        if datatype == u"all" :
             # NB : order does matter to allow easier or faster restore
             allentries = []
             datatypes = [ "printers", "pmembers", "users", "groups", \
                           "billingcodes", "umembers", "upquotas", \
                           "gpquotas", "payments", "history" ]
-            neededdatatypes = datatypes[:]              
+            neededdatatypes = datatypes[:]
             for datatype in datatypes :
                 entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly) # We don't care about ordering here
                 if entries :
                     nbentries += len(entries)
                     allentries.append(entries)
-                else :    
+                else :
                     neededdatatypes.remove(datatype)
             retcode = self.dumpXml(allentries, neededdatatypes)
-        else :    
+        else :
             datatype = datatype.encode("ASCII")
             format = format.encode("ASCII")
             entries = getattr(self.storage, "extract%s" % datatype.title())(extractonly, orderby)
             if entries :
                 nbentries = len(entries)
                 retcode = getattr(self, "dump%s" % format.title())([self.summarizeDatas(entries, datatype, extractonly, options.sum)], [datatype])
-                
+
         if mustclose :
             self.outfile.close()
-            if not nbentries : 
+            if not nbentries :
                 os.remove(options.output)
-            
+
         return retcode
-        
-    def summarizeDatas(self, entries, datatype, extractonly, sum=0) :    
+
+    def summarizeDatas(self, entries, datatype, extractonly, sum=0) :
         """Transforms the datas into a summarized view (with totals).
-        
+
            If sum is false, returns the entries unchanged.
-        """   
+        """
         if not sum :
             return entries
-        else :    
+        else :
             headers = entries[0]
             nbheaders = len(headers)
             fieldnumber = {}
             fieldname = {}
             for i in range(nbheaders) :
                 fieldnumber[headers[i]] = i
-            
+
             if datatype == "payments" :
                 totalize = [ ("amount", float) ]
                 keys = [ "username" ]
             else : # elif datatype == "history"
-                totalize = [ ("jobsize", int), 
+                totalize = [ ("jobsize", int),
                              ("jobprice", float),
                              ("jobsizebytes", int),
                              ("precomputedjobsize", int),
                              ("precomputedjobprice", float),
                            ]
                 keys = [ k for k in ("username", "printername", "hostname", "billingcode") if k in extractonly.keys() ]
-                
+
             newentries = [ headers ]
             sortedentries = entries[1:]
             if keys :
@@ -221,25 +221,25 @@ class DumPyKota(PyKotaTool) :
                     summary = [ "*" ] * nbheaders
                     for k in keys :
                         summary[fieldnumber[k]] = prevkeys[k]
-                    for k in totals.keys() :    
+                    for k in totals.keys() :
                         summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
                     newentries.append(summary)
-                    for k in totals.keys() :    
+                    for k in totals.keys() :
                         totals[k]["value"] = totals[k]["convert"](entry[fieldnumber[k]])
-                else :    
-                    for k in totals.keys() :    
+                else :
+                    for k in totals.keys() :
                         totals[k]["value"] += totals[k]["convert"](entry[fieldnumber[k]] or 0.0)
                 for k in keys :
                     prevkeys[k] = entry[fieldnumber[k]]
             summary = [ "*" ] * nbheaders
             for k in keys :
                 summary[fieldnumber[k]] = prevkeys[k]
-            for k in totals.keys() :    
+            for k in totals.keys() :
                 summary[fieldnumber[k]] = totals[k]["convert"](totals[k]["value"])
             newentries.append(summary)
             return newentries
-            
-    def dumpWithSeparator(self, separator, allentries) :    
+
+    def dumpWithSeparator(self, separator, allentries) :
         """Dumps datas with a separator."""
         for entries in allentries :
             for entry in entries :
@@ -251,29 +251,29 @@ class DumPyKota(PyKotaTool) :
                     except AttributeError :
                         if value is None :
                             strvalue = '"None"' # Double quotes around None to prevent spreadsheet from failing
-                        else :    
+                        else :
                             strvalue = str(value)
                     line.append(strvalue)
                 try :
                     self.outfile.write("%s\n" % separator.join(line))
-                except IOError, msg :    
+                except IOError, msg :
                     self.printInfo("%s : %s" % (_("PyKota data dumper failed : I/O error"), msg), "error")
                     return -1
-        return 0        
-        
-    def dumpCsv(self, allentries, dummy) :    
+        return 0
+
+    def dumpCsv(self, allentries, dummy) :
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator(",", allentries)
-                           
-    def dumpSsv(self, allentries, dummy) :    
+
+    def dumpSsv(self, allentries, dummy) :
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator(";", allentries)
-                           
-    def dumpTsv(self, allentries, dummy) :    
+
+    def dumpTsv(self, allentries, dummy) :
         """Dumps datas with a comma as the separator."""
         return self.dumpWithSeparator("\t", allentries)
-        
-    def dumpCups(self, allentries, dummy) :    
+
+    def dumpCups(self, allentries, dummy) :
         """Dumps history datas as CUPS' page_log format."""
         months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
         entries = allentries[0]
@@ -281,10 +281,10 @@ class DumPyKota(PyKotaTool) :
         fields = {}
         for i in range(len(fieldnames)) :
             fields[fieldnames[i]] = i
-        sortindex = fields["jobdate"]    
+        sortindex = fields["jobdate"]
         entries = entries[1:]
         entries.sort(lambda m, n, si=sortindex : cmp(m[si], n[si]))
-        for entry in entries :    
+        for entry in entries :
             printername = entry[fields["printername"]]
             username = entry[fields["username"]]
             jobid = entry[fields["jobid"]]
@@ -304,10 +304,10 @@ class DumPyKota(PyKotaTool) :
             billingcode = entry[fields["billingcode"]] or "-"
             for pagenum in range(1, jobsize+1) :
                 line = "%s %s %s [%s] %s %s %s %s" % (printername, username, jobid, jobdate, pagenum, copies, billingcode, hostname)
-                self.outfile.write("%s\n" % line.encode(self.charset, 
+                self.outfile.write("%s\n" % line.encode(self.charset,
                                                         "replace"))
-        return 0        
-        
+        return 0
+
     def dumpXml(self, allentries, datatypes) :
         """Dumps datas as XML."""
         x = jaxml.XML_document(encoding="UTF-8")
@@ -325,16 +325,16 @@ class DumPyKota(PyKotaTool) :
                                                                 "replace"), \
                                                    { "'" : "&apos;", \
                                                      '"' : "&quot;" })
-                    except AttributeError :    
+                    except AttributeError :
                         strvalue = str(value)
                     # We use 'str' instead of 'unicode' below to be compatible
                     # with older releases of PyKota.
-                    # The XML dump will contain UTF-8 encoded strings, 
+                    # The XML dump will contain UTF-8 encoded strings,
                     # not unicode strings anyway.
                     x.attribute(strvalue, \
                                 type=type(value).__name__.replace("unicode", "str"), \
                                 name=header)
-                x._pop()    
-            x._pop()    
+                x._pop()
+            x._pop()
         x._output(self.outfile)
-        return 0        
+        return 0

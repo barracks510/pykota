@@ -9,21 +9,21 @@ XS-Vcs-Browser: http://trac.pykota.com/browser/pykota/
 
 Package: pykota
 Architecture: all
-Depends: python, python-egenix-mxdatetime, cupsys,  python-pygresql | python-ldap | python-pysqlite2 | python-mysqldb, jaxml | python-jaxml, python-osd, python-reportlab, python-pysnmp4, python-imaging 
+Depends: python, python-egenix-mxdatetime, cupsys,  python-pygresql | python-ldap | python-pysqlite2 | python-mysqldb, jaxml | python-jaxml, python-osd, python-reportlab, python-pysnmp4, python-imaging
 Recommends: qa-assistant, snmp, netatalk, python-psyco, npadmin, python-pam
 Description: Print Quota/Accounting system for CUPS
- PyKota is a full featured, internationalized, centralized and extensible 
- Print Quota system for CUPS. It supports both PostgreSQL, MySQL, SQLite and 
- OpenLDAP (or other LDAP servers) as the quota database backend. 
+ PyKota is a full featured, internationalized, centralized and extensible
+ Print Quota system for CUPS. It supports both PostgreSQL, MySQL, SQLite and
+ OpenLDAP (or other LDAP servers) as the quota database backend.
  .
  One installed, type 'pksetup debian' to configure PyKota.
  .
- This software features most of what you might expect from a modern Print 
- Quota and Accounting Solution. However it can be extended at will 
+ This software features most of what you might expect from a modern Print
+ Quota and Accounting Solution. However it can be extended at will
  because it allows one to plug his own administrative scripts at
  several stages of the printing process.
  .
- Full access to source code is granted to all for no fee via Subversion, but 
- installable tarball, DEB and RPM download is for a fee. Redistribution and 
+ Full access to source code is granted to all for no fee via Subversion, but
+ installable tarball, DEB and RPM download is for a fee. Redistribution and
  modification is allowed to all under the terms of the GNU GPL version 3 or
  later.

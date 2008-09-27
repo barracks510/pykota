@@ -8,12 +8,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -35,20 +35,20 @@ from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
 from pykota.tool import PyKotaTool
 from pykota import reporter
-        
-class RePyKota(PyKotaTool) :        
+
+class RePyKota(PyKotaTool) :
     """A class for repykota."""
     def main(self, ugnames, options) :
         """Print Quota reports generator."""
         if options.ingroups and options.groups :
             raise PyKotaCommandLineError, _("Incompatible options, see help.")
-            
+
         if self.config.isAdmin :
             # PyKota administrator
             if not ugnames :
                 # no username, means all usernames
                 ugnames = [ "*" ]
-                
+
             if options.ingroups :
                 groupsnames = options.ingroups.split(",")
                 groups = [self.storage.getGroup(gname) for gname in groupsnames]
@@ -56,33 +56,33 @@ class RePyKota(PyKotaTool) :
                 for group in groups :
                     if not group.Exists :
                         self.printInfo("Group %s doesn't exist." % group.Name, "warn")
-                    else :    
+                    else :
                         for user in self.storage.getGroupMembers(group) :
                             members[user.Name] = user
                 ugnames = [ m for m in members.keys() if self.matchString(m, ugnames) ]
-        else :        
+        else :
             # reports only the current user
             if options.ingroups :
                 raise PyKotaCommandLineError, _("Option --ingroups is reserved to PyKota Administrators.")
-                
+
             username = pwd.getpwuid(os.geteuid())[0]
             if options.groups :
                 user = self.storage.getUser(username)
                 if user.Exists :
                     ugnames = [ g.Name for g in self.storage.getUserGroups(user) ]
-                else :    
+                else :
                     ugnames = [ ]
             else :
                 ugnames = [ username ]
-        
+
         printers = self.storage.getMatchingPrinters(options.printer)
         if not printers :
             raise PyKotaCommandLineError, _("There's no printer matching %s") % options.printer
-            
+
         self.reportingtool = reporter.openReporter(self, "text", printers, ugnames, options.groups)
         print self.reportingtool.generateReport()
-                    
-if __name__ == "__main__" : 
+
+if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Minimalist print accounting reports for PyKota. If not launched by a PyKota administrator, additionnal arguments representing users or groups names are ignored, limiting the scope of the reports to the current user."),
                                 usage="repykota [options] [usernames|groupnames]")
     parser.add_option("-g", "--groups",
@@ -96,12 +96,12 @@ if __name__ == "__main__" :
                             dest="printer",
                             default="*",
                             help=_("Acts on this printer only. You can specify several printer names by separating them with commas. The default value is '%default', which means all printers."))
-                            
+
     parser.add_example('',
                        _("This would generate a report for all users on all printers."))
     parser.add_example('--printer HP2100',
                        _("This would generate a report for all users who print to printer 'HP2100'."))
     parser.add_example('--printer "laser*,*pson" jerome "jo*"',
                        _("This would generate a report for all users named 'jerome' or whose name begins with 'jo', on all printers which name begins with 'laser' or ends with 'pson'."))
-                       
+
     run(parser, RePyKota)

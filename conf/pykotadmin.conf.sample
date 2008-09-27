@@ -1,6 +1,6 @@
 # PyKota sample administrator's configuration file
 #
-# Under NO circumstances regular users should 
+# Under NO circumstances regular users should
 # be allowed to read this file.
 #
 #
@@ -30,12 +30,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -70,7 +70,7 @@ storageadminpw : readwritepw
 # storageserver: ldap://ldapmaster.example.com:389
 # storagename: dc=example,dc=com
 #
-# NB : the user and password below are the ones contained in 
+# NB : the user and password below are the ones contained in
 # the sample LDIF file pykota/initscripts/ldap/pykota-sample.ldif
 # Please adapt these lines to your own needs.
 # storageadmin: cn=pykotaadmin,dc=example,dc=com

@@ -3,24 +3,24 @@
 <chapter>
   <title>Uses On Screen Display to show personal print quota information with pykosd</title>
   <para>Last modified on $Date$</para>
-  
+
   <para>
-    <command>pykosd</command> is a graphical <application>X Window</application> application which when launched 
+    <command>pykosd</command> is a graphical <application>X Window</application> application which when launched
     will display print quota information for the current user.
-  </para>  
-  
+  </para>
+
   <para>
     Whenever you launch <command>pykosd</command>, it will display the current user's print quota
     information in the top-left corner of the screen, above all existing windows, and with
-    a transparent background. 
+    a transparent background.
   </para>
-  
+
   <para>
     By default, the information will remain displayed during <literal>3</literal> seconds, and
-    will be refreshed every <literal>180</literal> seconds. The program will loop forever 
+    will be refreshed every <literal>180</literal> seconds. The program will loop forever
     until <keysym>Ctrl+C</keysym> is pressed, unless a specific number of iterations was
     asked for.
-    
+
     <tip>
       <title>Tip</title>
       <para>
@@ -28,7 +28,7 @@
       </para>
     </tip>
   </para>
-  
+
   <sect1>
     <title>Reference</title>
     <para>

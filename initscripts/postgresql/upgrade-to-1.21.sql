@@ -6,12 +6,12 @@
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
@@ -21,12 +21,12 @@
 --
 -- This script has to be used if you already
 -- have a pre-1.21 version of PyKota to upgrade
--- your database schema. 
+-- your database schema.
 --
 -- YOU DON'T NEED TO USE IT IF YOU'VE JUST INSTALLED PYKOTA
 --
-                        
---                         
+
+--
 -- Modify the old database schema
 --
 ALTER TABLE users DROP COLUMN coefficient;
@@ -50,16 +50,16 @@ ALTER TABLE jobhistory ADD COLUMN pages TEXT;
 ALTER TABLE jobhistory ADD COLUMN billingcode TEXT;
 CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 
--- 
+--
 -- Create the table for coefficients wrt paper sizes and the like
 --
-CREATE TABLE coefficients (id SERIAL PRIMARY KEY NOT NULL, 
-                           printerid INTEGER NOT NULL REFERENCES printers(id), 
-                           label TEXT NOT NULL, 
-                           coefficient FLOAT DEFAULT 1.0, 
+CREATE TABLE coefficients (id SERIAL PRIMARY KEY NOT NULL,
+                           printerid INTEGER NOT NULL REFERENCES printers(id),
+                           label TEXT NOT NULL,
+                           coefficient FLOAT DEFAULT 1.0,
                            CONSTRAINT coeffconstraint UNIQUE (printerid, label));
-                           
-REVOKE ALL ON coefficients FROM public;                        
+
+REVOKE ALL ON coefficients FROM public;
 REVOKE ALL ON coefficients_id_seq FROM public;
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON coefficients TO pykotaadmin;
 GRANT SELECT, UPDATE ON coefficients_id_seq TO pykotaadmin;

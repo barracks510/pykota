@@ -23,7 +23,7 @@ put on a web server along with PyKota command line tools.
 
 Be sure to restrict access to these CGI scripts as necessary.
 
-If you protect access to printquota.cgi or dumpykota.cgi with 
+If you protect access to printquota.cgi or dumpykota.cgi with
 username+password authentication, the REMOTE_USER CGI environment variable
 is honored, so an user can only see his own datas, but not
 other users' datas. However, the special REMOTE_USER value 'root'
@@ -35,17 +35,17 @@ is completely unrestricted.
 If you don't protect access to pykotme.cgi with username+password
 authentication, then only the job's size will be displayed
 to you. This is due to the cost of a print job on a particular printer
-depending on the user because of the overcharging factor's value. 
-So if you want pykotme.cgi to produce complete web quotes, you must 
-ensure that the user logs in from his web browser whenever he uses 
+depending on the user because of the overcharging factor's value.
+So if you want pykotme.cgi to produce complete web quotes, you must
+ensure that the user logs in from his web browser whenever he uses
 this CGI script.
 
 You must ensure that the user your web server runs as can read
 PyKota's pykota.conf configuration file. No read access to
 PyKota's pykotadmin.conf configuration file is necessary though.
 
-The web server doesn't need to be a print server nor a PyKota 
-Storage Backend server, but it must contain a correctly configured 
-PyKota installation. 
+The web server doesn't need to be a print server nor a PyKota
+Storage Backend server, but it must contain a correctly configured
+PyKota installation.
 
 ====================================================================

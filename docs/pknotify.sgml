@@ -3,20 +3,20 @@
 <chapter>
   <title>Interact with end users with pknotify and pykoticon</title>
   <para>Last modified on $Date$</para>
-  
+
   <para>
     Printing under GNU/Linux and UNIX-Like systems usually lack features to dialog with end users.
     They usually submit their print jobs, and then wait for them to complete, most of the time
     silently.
   </para>
-  
+
   <para>
     Some add-ons to printing systems, like print accounting software, could however benefit
     a lot from being able to interact with users who submitted print jobs. That's exactly what
     allow the <command>pknotify</command> and <command>pykoticon</command> commands, and they
     do so in a completely generic way.
   </para>
-  
+
   <para>
     <application>PyKotIcon</application> is a cross-platform, generic, networked, dialog box manager
     which sits on client hosts and listen for incoming connections coming from the print servers.
@@ -48,19 +48,19 @@
       </listitem>
     </itemizedlist>
   </para>
-  
+
   <para>
     It is important to know that <application>PyKotIcon</application> is completely independant from <application>PyKota</application>
     and can be used outside of <application>PyKota</application>. In reality <application>PyKotIcon</application>
     knows NOTHING about print accounting, and doesn't need to. That's why it's distributed separately.
   </para>
-  
+
   <para>
     <application>pknotify</application> is a client program for <application>PyKotIcon</application>, which is usually
     launched from directives in <filename>~pykota/pykota.conf</filename>, but which can be used directly
     from the command line as well, if needed.
   </para>
-  
+
   <para>
     <application>pknotify</application>, through command line options, can use any of the functions published
     by <application>PyKotIcon</application>. In addition, if it is configured to tell <application>PyKotIcon</application>
@@ -71,11 +71,11 @@
     print server (NB : in the clear for now), which uses them to decide if printing is to be denied, or
     allowed to continue until the next phase of print accounting and optional quota enforcement.
   </para>
-  
+
   <para>
     For more details, see <command>pknotify</command>'s manual page.
   </para>
-  
+
   <warning><title>Warning</title>
     <para>
       While <application>PyKotIcon</application> sits on the printing clients, it is in fact

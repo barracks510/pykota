@@ -6,12 +6,12 @@
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --
@@ -34,20 +34,20 @@ CREATE DATABASE pykota DEFAULT CHARACTER SET 'utf8';
 --
 -- Create the print quota database users
 -- NOTE: Change the "IDENTIFIED BY" strings to the passwords you would like.
--- 
+--
 GRANT USAGE ON *.* TO 'pykotauser'@'localhost' IDENTIFIED BY 'readonlypw';
 GRANT USAGE ON *.* TO 'pykotaadmin'@'localhost' IDENTIFIED BY 'readwritepw';
 
--- 
+--
 -- If necessary activate the lines below (and keep the preceding ones
 -- activated at the same time)
 --
 -- GRANT USAGE ON *.* TO 'pykotauser'@'%' IDENTIFIED BY 'readonlypw';
 -- GRANT USAGE ON *.* TO 'pykotaadmin'@'%' IDENTIFIED BY 'readwritepw';
 
--- 
+--
 -- Now connect to the new database
--- 
+--
 USE pykota;
 
 --
@@ -55,13 +55,13 @@ USE pykota;
 --
 CREATE TABLE users (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                    username VARCHAR(255) UNIQUE NOT NULL,
-                   email TEXT, 
+                   email TEXT,
                    balance FLOAT DEFAULT 0.0,
                    lifetimepaid FLOAT DEFAULT 0.0,
                    limitby VARCHAR(30) DEFAULT 'quota',
                    description TEXT,
                    overcharge FLOAT NOT NULL DEFAULT 1.0) TYPE=INNODB;
-                   
+
 --
 -- Create the groups table
 --
@@ -69,7 +69,7 @@ CREATE TABLE groups (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                     groupname VARCHAR(255) UNIQUE NOT NULL,
                     description TEXT,
                     limitby VARCHAR(30) DEFAULT 'quota') TYPE=INNODB;
-                    
+
 --
 -- Create the printers table
 --
@@ -80,27 +80,27 @@ CREATE TABLE printers (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                       priceperjob FLOAT DEFAULT 0.0,
                       passthrough ENUM('t','f') DEFAULT 'f',
                       maxjobsize INT4) TYPE=INNODB;
-                    
+
 --
 -- Create the print quota table for users
 --
 CREATE TABLE userpquota (id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                        userid INT4, 
-                        printerid INT4, 
+                        userid INT4,
+                        printerid INT4,
                         lifepagecounter INT4 DEFAULT 0,
                         pagecounter INT4 DEFAULT 0,
                         softlimit INT4,
                         hardlimit INT4,
                         datelimit DATETIME,
                         maxjobsize INT4,
-                        warncount INT4 DEFAULT 0, 
+                        warncount INT4 DEFAULT 0,
                         INDEX (userid),
                         FOREIGN KEY (userid) REFERENCES users(id),
                         INDEX (printerid),
-                        FOREIGN KEY (printerid) REFERENCES printers(id)) 
+                        FOREIGN KEY (printerid) REFERENCES printers(id))
                         TYPE=INNODB;
 CREATE UNIQUE INDEX userpquota_up_id_ix ON userpquota (userid, printerid);
-                        
+
 --
 -- Create the job history table
 --
@@ -131,12 +131,12 @@ CREATE INDEX jobhistory_u_id_ix ON jobhistory (userid);
 CREATE INDEX jobhistory_p_id_ix ON jobhistory (printerid);
 CREATE INDEX jobhistory_pd_id_ix ON jobhistory (printerid, jobdate);
 CREATE INDEX jobhistory_hostname_ix ON jobhistory (hostname);
-                        
+
 --
 -- Create the print quota table for groups
 --
 CREATE TABLE grouppquota(id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                         groupid INT4, 
+                         groupid INT4,
                          printerid INT4,
                          softlimit INT4,
                          hardlimit INT4,
@@ -148,8 +148,8 @@ CREATE TABLE grouppquota(id INT8 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                          FOREIGN KEY (printerid) REFERENCES printers(id))
                          TYPE=INNODB;
 CREATE UNIQUE INDEX grouppquota_up_id_ix ON grouppquota (groupid, printerid);
-                        
---                         
+
+--
 -- Create the groups/members relationship
 --
 CREATE TABLE groupsmembers(groupid INT4 NOT NULL,
@@ -159,8 +159,8 @@ CREATE TABLE groupsmembers(groupid INT4 NOT NULL,
                            INDEX (userid),
                            FOREIGN KEY (userid) REFERENCES users(id),
                            PRIMARY KEY (groupid, userid)) TYPE=INNODB;
-                           
---                         
+
+--
 -- Create the printer groups relationship
 --
 CREATE TABLE printergroupsmembers(groupid INT4 NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE printergroupsmembers(groupid INT4 NOT NULL,
                            PRIMARY KEY (groupid, printerid)) TYPE=INNODB;
 --
 -- Create the table for payments
--- 
+--
 CREATE TABLE payments (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                        userid INT4,
                        amount FLOAT,
@@ -194,7 +194,7 @@ CREATE TABLE coefficients (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                            CONSTRAINT coeffconstraint UNIQUE (printerid, label)
                            ) TYPE=INNODB;
 
--- 
+--
 -- Create the table for the billing codes
 --
 CREATE TABLE billingcodes (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -202,13 +202,13 @@ CREATE TABLE billingcodes (id INT4 PRIMARY KEY NOT NULL AUTO_INCREMENT,
                            description TEXT,
                            balance FLOAT DEFAULT 0.0,
                            pagecounter INT4 DEFAULT 0) TYPE=INNODB;
---                        
--- Set some ACLs                        
+--
+-- Set some ACLs
 --
 GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON `pykota`.* TO 'pykotaadmin'@'localhost';
 GRANT SELECT ON `pykota`.* TO 'pykotauser'@'localhost';
 
--- 
+--
 -- If necessary activate the lines below (and keep the preceding ones
 -- activated at the same time)
 --

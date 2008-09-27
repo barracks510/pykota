@@ -7,12 +7,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -35,7 +35,7 @@ import socket
 
 try :
     from pysnmp.entity.rfc3413.oneliner import cmdgen
-except ImportError :    
+except ImportError :
     hasV4 = False
     try :
         from pysnmp.asn1.encoding.ber.error import TypeMismatchError
@@ -49,7 +49,7 @@ else :
 
 from pykota import constants
 
-#                      
+#
 # Documentation taken from RFC 3805 (Printer MIB v2) and RFC 2790 (Host Resource MIB)
 #
 pageCounterOID = "1.3.6.1.2.1.43.10.2.1.4.1.1"  # SNMPv2-SMI::mib-2.43.10.2.1.4.1.1
@@ -66,7 +66,7 @@ deviceStatusValues = { 1 : 'unknown',
                        3 : 'warning',
                        4 : 'testing',
                        5 : 'down',
-                     }  
+                     }
 hrPrinterDetectedErrorStateOID = "1.3.6.1.2.1.25.3.5.1.2.1" # SNMPv2-SMI::mib-2.25.3.5.1.2.1
 printerDetectedErrorStateValues = [ { 128 : 'Low Paper',
                                        64 : 'No Paper',
@@ -86,8 +86,8 @@ printerDetectedErrorStateValues = [ { 128 : 'Low Paper',
                                         2 : 'Overdue Preventive Maintainance',
                                         1 : 'Not Assigned in RFC3805',
                                     },
-                                  ]  
-                                  
+                                  ]
+
 # The default error mask to use when checking error conditions.
 defaultErrorMask = 0x4fcc # [ 'No Paper',
                           #   'Door Open',
@@ -99,8 +99,8 @@ defaultErrorMask = 0x4fcc # [ 'No Paper',
                           #   'Output Full',
                           #   'Input Tray Empty',
                           # ]
-                          
-# WARNING : some printers don't support this one :                  
+
+# WARNING : some printers don't support this one :
 prtConsoleDisplayBufferTextOID = "1.3.6.1.2.1.43.16.5.1.2.1.1" # SNMPv2-SMI::mib-2.43.16.5.1.2.1.1
 class BaseHandler :
     """A class for SNMP print accounting."""
@@ -110,24 +110,24 @@ class BaseHandler :
         self.skipinitialwait = skipinitialwait
         try :
             self.community = self.parent.arguments.split(":")[1].strip()
-        except IndexError :    
+        except IndexError :
             self.community = "public"
         self.port = 161
         self.initValues()
-        
-    def initValues(self) :    
+
+    def initValues(self) :
         """Initializes SNMP values."""
         self.printerInternalPageCounter = None
         self.printerStatus = None
         self.deviceStatus = None
         self.printerDetectedErrorState = None
         self.timebefore = time.time()   # resets timer also in case of error
-        
-    def retrieveSNMPValues(self) :    
+
+    def retrieveSNMPValues(self) :
         """Retrieves a printer's internal page counter and status via SNMP."""
         raise RuntimeError, "You have to overload this method."
-        
-    def extractErrorStates(self, value) :    
+
+    def extractErrorStates(self, value) :
         """Returns a list of textual error states from a binary value."""
         states = []
         for i in range(min(len(value), len(printerDetectedErrorStateValues))) :
@@ -136,16 +136,16 @@ class BaseHandler :
             for (k, v) in bytedescription.items() :
                 if byte & k :
                     states.append(v)
-        return states            
-        
-    def checkIfError(self, errorstates) :    
+        return states
+
+    def checkIfError(self, errorstates) :
         """Checks if any error state is fatal or not."""
         if errorstates is None :
             return True
         else :
             try :
                 errormask = self.parent.filter.config.getPrinterSNMPErrorMask(self.parent.filter.PrinterName)
-            except AttributeError : # debug mode    
+            except AttributeError : # debug mode
                 errormask = defaultErrorMask
             if errormask is None :
                 errormask = defaultErrorMask
@@ -160,15 +160,15 @@ class BaseHandler :
                     self.parent.filter.logdebug("Error condition '%s' encountered. PyKota will wait until this problem is fixed." % err)
                     return True
             self.parent.filter.logdebug("No error condition matching mask 0x%04x" % errormask)
-            return False    
-        
+            return False
+
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
         noprintingmaxdelay = constants.get(self.parent.filter, "NoPrintingMaxDelay")
         if not noprintingmaxdelay :
             self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
-        else :    
+        else :
             self.parent.filter.logdebug("Will wait until printer %s is in 'printing' state or %i seconds have elapsed." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         previousValue = self.parent.getLastPageCounter()
         firstvalue = None
@@ -177,11 +177,11 @@ class BaseHandler :
             statusAsString = printerStatusValues.get(self.printerStatus)
             if statusAsString in ('printing', 'warmup') :
                 break
-            if self.printerInternalPageCounter is not None :    
+            if self.printerInternalPageCounter is not None :
                 if firstvalue is None :
                     # first time we retrieved a page counter, save it
                     firstvalue = self.printerInternalPageCounter
-                else :     
+                else :
                     # second time (or later)
                     if firstvalue < self.printerInternalPageCounter :
                         # Here we have a printer which lies :
@@ -204,14 +204,14 @@ class BaseHandler :
                                 # Here the job won't be printed, because probably
                                 # the printer rejected it for some reason.
                                 self.parent.filter.printInfo("Printer %s probably won't print this job !!!" % self.parent.filter.PrinterName, "warn")
-                            else :     
+                            else :
                                 # Here the job has already been entirely printed, and
                                 # the printer has already passed from 'idle' to 'printing' to 'idle' again.
                                 self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                             break
-            self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)    
+            self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)
             time.sleep(statusstabilizationdelay)
-        
+
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
@@ -227,21 +227,21 @@ class BaseHandler :
                          ((pstatusAsString == 'other') and \
                           (dstatusAsString == 'running'))) :
                 idle_flag = 1       # Standby / Powersave is considered idle
-            if idle_flag :    
+            if idle_flag :
                 if (self.printerInternalPageCounter is not None) \
                    and self.skipinitialwait \
                    and (os.environ.get("PYKOTAPHASE") == "BEFORE") :
                     self.parent.filter.logdebug("No need to wait for the printer to be idle, it is the case already.")
-                    return 
+                    return
                 idle_num += 1
                 if idle_num >= statusstabilizationloops :
                     # printer status is stable, we can exit
                     break
-            else :    
+            else :
                 idle_num = 0
-            self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)    
+            self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)
             time.sleep(statusstabilizationdelay)
-            
+
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal SNMP handling."""
         try :
@@ -250,13 +250,13 @@ class BaseHandler :
                (os.environ.get("PYKOTAPHASE") == "AFTER") and \
                self.parent.filter.JobSizeBytes :
                 self.waitPrinting()
-            self.waitIdle()    
-        except :    
+            self.waitIdle()
+        except :
             self.parent.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
             raise
         return self.printerInternalPageCounter
-            
-if hasV4 :            
+
+if hasV4 :
     class Handler(BaseHandler) :
         """A class for pysnmp v4.x"""
         def retrieveSNMPValues(self) :
@@ -269,19 +269,19 @@ if hasV4 :
                                                   tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
                                                   tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]))
-            except socket.gaierror, msg :                                      
+            except socket.gaierror, msg :
                 errorIndication = repr(msg)
-            except :                                      
+            except :
                 errorIndication = "Unknown SNMP/Network error. Check your wires."
-            if errorIndication :                                                  
+            if errorIndication :
                 self.parent.filter.printInfo("SNMP Error : %s" % errorIndication, "error")
                 self.initValues()
-            elif errorStatus :    
+            elif errorStatus :
                 self.parent.filter.printInfo("SNMP Error : %s at %s" % (errorStatus.prettyPrint(), \
                                                                         varBinds[int(errorIndex)-1]), \
                                              "error")
                 self.initValues()
-            else :                                 
+            else :
                 self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint() or "0"))
                 self.printerStatus = int(varBinds[1][1].prettyPrint())
                 self.deviceStatus = int(varBinds[2][1].prettyPrint())
@@ -294,7 +294,7 @@ if hasV4 :
 else :
     class Handler(BaseHandler) :
         """A class for pysnmp v3.4.x"""
-        def retrieveSNMPValues(self) :    
+        def retrieveSNMPValues(self) :
             """Retrieves a printer's internal page counter and status via SNMP."""
             ver = alpha.protoVersions[alpha.protoVersionId1]
             req = ver.Message()
@@ -309,18 +309,18 @@ else :
                 tsp.sendAndReceive(req.berEncode(), \
                                    (self.printerHostname, self.port), \
                                    (self.handleAnswer, req))
-            except (SnmpOverUdpError, select.error), msg :    
+            except (SnmpOverUdpError, select.error), msg :
                 self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
                 self.initValues()
             tsp.close()
-        
+
         def handleAnswer(self, wholeMsg, notusedhere, req):
             """Decodes and handles the SNMP answer."""
             ver = alpha.protoVersions[alpha.protoVersionId1]
             rsp = ver.Message()
             try :
                 rsp.berDecode(wholeMsg)
-            except TypeMismatchError, msg :    
+            except TypeMismatchError, msg :
                 self.parent.filter.printInfo(_("SNMP message decoding error for printer %s : %s") % (self.printerHostname, msg), "warn")
                 self.initValues()
             else :
@@ -332,7 +332,7 @@ else :
                         self.values = []
                         for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
                             self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
-                        try :    
+                        try :
                             # keep maximum value seen for printer's internal page counter
                             self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
                             self.printerStatus = self.values[1]
@@ -343,12 +343,12 @@ else :
                                     printerStatusValues.get(self.printerStatus), \
                                     deviceStatusValues.get(self.deviceStatus), \
                                     self.printerDetectedErrorState))
-                        except IndexError :    
+                        except IndexError :
                             self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
                             pass
-                        else :    
+                        else :
                             return 1
-                    
+
 def main(hostname) :
     """Tries SNMP accounting for a printer host."""
     class fakeFilter :
@@ -357,37 +357,37 @@ def main(hostname) :
             """Initializes the fake filter."""
             self.PrinterName = "FakePrintQueue"
             self.JobSizeBytes = 1
-            
+
         def printInfo(self, msg, level="info") :
             """Prints informational message."""
             sys.stderr.write("%s : %s\n" % (level.upper(), msg))
             sys.stderr.flush()
-            
-        def logdebug(self, msg) :    
+
+        def logdebug(self, msg) :
             """Prints debug message."""
             self.printInfo(msg, "debug")
-            
-    class fakeAccounter :        
+
+    class fakeAccounter :
         """Fakes an accounter for testing purposes."""
         def __init__(self) :
             """Initializes fake accounter."""
             self.arguments = "snmp:public"
             self.filter = fakeFilter()
             self.protocolHandler = Handler(self, hostname)
-            
-        def getLastPageCounter(self) :    
+
+        def getLastPageCounter(self) :
             """Fakes the return of a page counter."""
             return 0
-        
-    acc = fakeAccounter()            
+
+    acc = fakeAccounter()
     return acc.protocolHandler.retrieveInternalPageCounter()
-        
-if __name__ == "__main__" :            
-    if len(sys.argv) != 2 :    
+
+if __name__ == "__main__" :
+    if len(sys.argv) != 2 :
         sys.stderr.write("Usage :  python  %s  printer_ip_address\n" % sys.argv[0])
-    else :    
+    else :
         def _(msg) :
             return msg
-            
+
         pagecounter = main(sys.argv[1])
         print "Internal page counter's value is : %s" % pagecounter

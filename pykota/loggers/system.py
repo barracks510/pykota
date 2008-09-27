@@ -7,12 +7,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -35,20 +35,20 @@ class Logger :
     def __init__(self) :
         """Opens the logging subsystem."""
         syslog.openlog("PyKota", 0, syslog.LOG_LPR)
-        
-    def __del__(self) :    
+
+    def __del__(self) :
         """Ensures the logging subsystem is closed."""
         syslog.closelog()
-        
+
     def log_message(self, message, level="info") :
         """Sends the message to syslog."""
         priority = getattr(syslog, \
                            "LOG_%s" % self.levels.get(level.lower(), \
                                                       "DEBUG").upper(), \
                            syslog.LOG_DEBUG)
-        try :                   
+        try :
             message = message.strip().encode(sys.stdout.encoding or "UTF-8", \
                                              "replace")
-        except UnicodeDecodeError :    
+        except UnicodeDecodeError :
             pass
         syslog.syslog(priority, "(PID %s) : %s" % (os.getpid(), message))

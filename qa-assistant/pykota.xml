@@ -42,7 +42,7 @@
         <state name="Fail">PyKota is not downloaded</state>
       </states>
       <description>PyKota must be downloaded before being installed.
-        You can download its latest development tree with 
+        You can download its latest development tree with
         'svn export svn://svn.librelogiciel.com/pykota/trunk pykota'
       </description>
     </entry>
@@ -52,16 +52,16 @@
       Some of them are required, other ones simply recommended : they don't
       prevent most of PyKota from working, but some functionnalities will
       be unavailable to you if they are not installed. You can see the
-      status for each of PyKota's dependencies with 
+      status for each of PyKota's dependencies with
       'python pykota/checkdeps.py'
-    </description>  
+    </description>
     <entry name="python-egenix-mxdatetime" display="true">
       <states>
         <state name="Pass">python-egenix-mxdatetime is installed</state>
         <state name="Fail">python-egenix-mxdatetime is not installed</state>
       </states>
       <description>
-        python-egenix-mxdatetime is required for PyKota to work. 
+        python-egenix-mxdatetime is required for PyKota to work.
         You must install it with 'apt-get install python-egenix-mxdatetime'
       </description>
     </entry>
@@ -83,7 +83,7 @@
         <state name="Not-Applicable">I don't want to use a PostgreSQL database backend for PyKota</state>
       </states>
       <description>
-        python-pygresql allows PyKota to use a PostgreSQL database backend. 
+        python-pygresql allows PyKota to use a PostgreSQL database backend.
         If this is what you want you must install it with 'apt-get install python-pygresql'
       </description>
     </entry>
@@ -94,7 +94,7 @@
         <state name="Not-Applicable">I don't want to use an LDAP database backend for PyKota</state>
       </states>
       <description>
-        python-ldap allows PyKota to use an LDAP database backend. 
+        python-ldap allows PyKota to use an LDAP database backend.
         If this is what you want you must install it with 'apt-get install python-ldap'
       </description>
     </entry>
@@ -105,7 +105,7 @@
         <state name="Not-Applicable">I don't want to use a MySQL database backend for PyKota</state>
       </states>
       <description>
-        python-mysqldb allows PyKota to use a MySQL database backend. 
+        python-mysqldb allows PyKota to use a MySQL database backend.
         If this is what you want you must install it with 'apt-get install python-mysqldb'
       </description>
     </entry>
@@ -116,7 +116,7 @@
         <state name="Not-Applicable">I don't want to use an SQLite database backend for PyKota</state>
       </states>
       <description>
-        python-pysqlite2 allows PyKota to use an SQLite database backend. 
+        python-pysqlite2 allows PyKota to use an SQLite database backend.
         If this is what you want you must install it with 'apt-get install python-pysqlite2'
       </description>
     </entry>
@@ -127,7 +127,7 @@
         <state name="Not-Applicable">I don't want to use 'pykosd', PyKota's X-Window end user print quota reminder</state>
       </states>
       <description>
-        python-osd is only needed if you want to use the 'pykosd' utility, which is an X-Window 
+        python-osd is only needed if you want to use the 'pykosd' utility, which is an X-Window
         print quota reminded for end users.
         You can install it with 'apt-get install python-osd'
       </description>
@@ -179,7 +179,7 @@
       </states>
       <description>
         python-pam allows PyKota to check an user's name and password through PAM at printing time, provided you
-        use the PyKotIcon end user helper tool on all client hosts. 
+        use the PyKotIcon end user helper tool on all client hosts.
         If you don't have guest logins or people with administrator (or root) access on their own
         machine, you probably don't need this module.
         You can install it with 'apt-get install python-pam'
@@ -219,7 +219,7 @@
         <state name="Not-Applicable">python-psyco is not supported on this platform</state>
       </states>
       <description>
-        python-psyco is an accelerator module for the Python language which can make the parsing 
+        python-psyco is an accelerator module for the Python language which can make the parsing
         of Page Description Languages by pkpgcounter faster.
         It is only supported on the x86 platform though, so if you use something else you
         won't be able to install it.
@@ -230,7 +230,7 @@
   </category>
   <category name="Print Server Installation procedure">
     <description>PyKota needs to be installed on the CUPS server.
-    </description>  
+    </description>
     <entry name="Go to PyKota's download directory" display="true">
       <states>
         <state name="Pass">Working directory is now pykota/</state>
@@ -300,7 +300,7 @@
         <state name="Fail">Permissions on configuration files are incorrect</state>
       </states>
       <description>
-        Any user who with read access to ~pykota/pykotadmin.conf will be considered a PyKota 
+        Any user who with read access to ~pykota/pykotadmin.conf will be considered a PyKota
         administrator, with full read+write access to PyKota's database.
         Any user with read access to ~pykota/pykota.conf will have read access to PyKota's database. Access
         is limited to this particular user's personal datas and to impersonal datas like printers
@@ -361,5 +361,5 @@
         PyKota's configuration files.
       </description>
     </entry>
-  </category>  
+  </category>
 </checklist>

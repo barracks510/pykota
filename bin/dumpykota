@@ -8,12 +8,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -32,30 +32,30 @@ from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
 from pykota.dumper import DumPyKota
 
-if __name__ == "__main__" : 
+if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Data Dumper for PyKota."),
                                 usage="dumpykota [options] [filterexpr]")
-                                
-    parser.add_option("-d", "--data",                            
+
+    parser.add_option("-d", "--data",
                             dest="data",
                             help=_("Select the type of datas to dump. This option is mandatory. Supported data types are : history, payments, billingcodes, users, groups, printers, upquotas, gpquotas, umembers, pmembers, and all. The 'all' value forces the output format to XML."))
-    parser.add_option("-f", "--format",                            
+    parser.add_option("-f", "--format",
                             default="csv",
                             dest="format",
                             help=_("Select the output format, the default being comma separated values. Supported formats are : csv, ssv, tsv, xml and cups. The 'cups' output format only works when dumping the history, and produces CUPS' page_log compatible output."))
-    parser.add_option("-o", "--output",                            
+    parser.add_option("-o", "--output",
                             dest="output",
                             default=u"-",
                             help=_("The name of the file the data dump will be written to. The default value is '-', which tells dumpykota to write the dump to stdout."))
-    parser.add_option("-O", "--orderby",                            
+    parser.add_option("-O", "--orderby",
                             dest="orderby",
                             help=_("Change the ordering of the output based on a comma separated list of ordering statements. For example '-username,+printername' would sort the output by descending order of user names and ascending order of printer names. Not all expressions are supported, and you should not use this if you don't know the internal structure of PyKota's database." ))
-    parser.add_option("-s", "--sum",                            
+    parser.add_option("-s", "--sum",
                             dest="sum",
                             action="store_true",
                             default=False,
                             help=_("Summarize the output. Only available when dumping the printing history or the payments."))
-                                
+
     parser.add_filterexpression("username", _("User's name"))
     parser.add_filterexpression("groupname", _("Users group's name"))
     parser.add_filterexpression("printername", _("Printer's name"))
@@ -65,19 +65,19 @@ if __name__ == "__main__" :
     parser.add_filterexpression("billingcode", _("Job's billing code"))
     parser.add_filterexpression("start", _("Job's date of printing"))
     parser.add_filterexpression("end", _("Job's date of printing"))
-    
-    parser.add_example('--unit EURO --output /tmp/invoices.pdf start=now-30', 
+
+    parser.add_example('--unit EURO --output /tmp/invoices.pdf start=now-30',
                        _("This would generate a PDF document containing invoices for all users who have spent some credits last month. Amounts would be in EURO and not VAT information would be included."))
 
     parser.add_example("--data history --format csv >myfile.csv",
                        _("This would dump the whole printing history to stdout in the CSV format, and redirect the output to a file."))
-  
+
     parser.add_example("--data users --format xml -o users.xml",
                        _("This would dump all users into the 'users.xml' file in the XML format."))
-  
+
     parser.add_example("--data history printername=HP2100 username=jerome",
                        _("This would dump jerome's printing history on printer HP2100."))
-  
+
     parser.add_example("--data history start=200503 end=20050730234615",
                        _("This would dump all jobs printer between March 1st 2008 at midnight and July 30th 2008 at 23 hours 46 minutes and 15 seconds, included."))
-    run(parser, DumPyKota)                   
+    run(parser, DumPyKota)

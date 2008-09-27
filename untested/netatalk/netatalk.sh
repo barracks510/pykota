@@ -8,7 +8,7 @@
 # my HP LasetJet 2100 TN with AppleTalk enabled.
 #
 # As always, YMMV.
-# 
+#
 echo Please uncomment one of the lines, adapt the script and restart.
 echo You can get AppleTalk printer\'s names with the nbplkup command.
 # /usr/bin/pap -p "RAMPAL-16/600:LaserWriter" pagecount.ps 2>/dev/null | grep -v status | grep -v Connect

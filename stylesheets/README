@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ====================================================================
 
-This directory contains CSS stylesheets for use with PyKota's web based 
+This directory contains CSS stylesheets for use with PyKota's web based
 tools. Just copy them in your web server's DocumentRoot (e.g. /var/www)
 so that the CGI scripts will find them.
 

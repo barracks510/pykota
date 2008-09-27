@@ -10,12 +10,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -37,7 +37,7 @@ from pykota.tool import PyKotaTool
 from pykota.errors import PyKotaToolError
 
 from pkpgpdls import analyzer, pdlparser
-    
+
 
 header = """Content-type: text/html;charset=%s
 
@@ -68,7 +68,7 @@ header = """Content-type: text/html;charset=%s
             </td>
           </tr>
         </table>"""
-    
+
 footer = """
         <table>
           <tr>
@@ -76,14 +76,14 @@ footer = """
               <input type="submit" name="report" value="%s" />
             </td>
           </tr>
-        </table>  
+        </table>
       </form>
     </p>
     <hr width="25%%" />
     <p>
       <font size="-2">
         <a href="http://www.pykota.com/">%s</a>
-        &copy; %s %s 
+        &copy; %s %s
         <br />
         <pre>
 %s
@@ -91,7 +91,7 @@ footer = """
       </font>
     </p>
   </body>
-</html>"""  
+</html>"""
 
 class PyKotMeGUI(PyKotaTool) :
     """PyKota Quote's Generator GUI"""
@@ -105,21 +105,21 @@ class PyKotMeGUI(PyKotaTool) :
                         version.__version__, _("PyKota Quotes"), \
                         _("Quote")) ]
         content.append(self.body)
-        content.append(footer % (_("Quote"), 
-                                 version.__doc__, 
-                                 version.__years__, 
-                                 version.__author__, 
+        content.append(footer % (_("Quote"),
+                                 version.__doc__,
+                                 version.__years__,
+                                 version.__author__,
                                  saxutils.escape(version.__gplblurb__)))
         for c in content :
             sys.stdout.write(c.encode(self.charset, "replace"))
         sys.stdout.flush()
-        
+
     def error(self, message) :
         """Adds an error message to the GUI's body."""
         if message :
             self.body = '<p><font color="red">%s</font></p>\n%s' % (message, self.body)
-        
-    def htmlListPrinters(self, selected=[], mask="*") :    
+
+    def htmlListPrinters(self, selected=[], mask="*") :
         """Displays the printers multiple selection list."""
         printers = self.storage.getMatchingPrinters(mask)
         selectednames = [p.Name for p in selected]
@@ -131,7 +131,7 @@ class PyKotMeGUI(PyKotaTool) :
                 message += '<option value="%s">%s (%s)</option>' % (printer.Name, printer.Name, printer.Description)
         message += '</select></td></tr></table>'
         return message
-        
+
     def guiAction(self) :
         """Main function"""
         printers = inputfile = None
@@ -142,13 +142,13 @@ class PyKotMeGUI(PyKotaTool) :
                 if type(printersfield) != type([]) :
                     printersfield = [ printersfield ]
                 printers = [self.storage.getPrinter(p.value) for p in printersfield]
-            else :    
+            else :
                 printers = self.storage.getMatchingPrinters("*")
-            if self.form.has_key("inputfile") :    
+            if self.form.has_key("inputfile") :
                 inputfile = self.form["inputfile"].value
-                
-        if os.environ.get("REMOTE_USER") is not None :        
-            self.body += self.htmlListPrinters(printers or [])            
+
+        if os.environ.get("REMOTE_USER") is not None :
+            self.body += self.htmlListPrinters(printers or [])
             self.body += "<br />"
         self.body += _("Filename") + " : "
         self.body += '<input type="file" size="64" name="inputfile" />'
@@ -157,43 +157,43 @@ class PyKotMeGUI(PyKotaTool) :
             try :
                 parser = analyzer.PDLAnalyzer(cStringIO.StringIO(inputfile))
                 jobsize = parser.getJobSize()
-            except pdlparser.PDLParserError, msg :    
+            except pdlparser.PDLParserError, msg :
                 self.body += '<p><font color="red">%s</font></p>' % msg
                 jobsize = 0 # unknown file format ?
-            else :    
+            else :
                 self.body += "<p>%s</p>" % (_("Job size : %i pages") % jobsize)
-                
+
             remuser = os.environ.get("REMOTE_USER")
             # special hack to accomodate mod_auth_ldap Apache module
             try :
                 remuser = remuser.split("=")[1].split(",")[0]
-            except :    
+            except :
                 pass
-            if not remuser :    
+            if not remuser :
                 self.body += "<p>%s</p>" % _("The exact cost of a print job can only be determined for a particular user. Please retry while logged-in.")
-            else :    
-                try :    
+            else :
+                try :
                     user = self.storage.getUser(remuser)
                     if user.Exists :
                         if user.LimitBy == "noprint" :
                             self.body += "<p>%s</p>" % _("Your account settings forbid you to print at this time.")
-                        else :    
+                        else :
                             for printer in printers :
                                 upquota = self.storage.getUserPQuota(user, printer)
                                 if upquota.Exists :
                                     if printer.MaxJobSize and (jobsize > printer.MaxJobSize) :
                                         msg = _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
-                                    else :    
+                                    else :
                                         cost = upquota.computeJobPrice(jobsize)
                                         msg = _("Cost on printer %s : %.2f") % (printer.Name, cost)
                                         if printer.PassThrough :
                                             msg = "%s (%s)" % (msg, _("won't be charged, printer is in passthrough mode"))
-                                        elif user.LimitBy == "nochange" :    
+                                        elif user.LimitBy == "nochange" :
                                             msg = "%s (%s)" % (msg, _("won't be charged, your account is immutable"))
                                     self.body += "<p>%s</p>" % msg
                 except :
                     self.body += '<p><font color="red">%s</font></p>' % self.crashed("CGI Error").replace("\n", "<br />")
-            
+
 if __name__ == "__main__" :
     utils.reinitcgilocale()
     admin = PyKotMeGUI()
@@ -203,7 +203,7 @@ if __name__ == "__main__" :
     admin.guiDisplay()
     try :
         admin.storage.close()
-    except (TypeError, NameError, AttributeError) :    
+    except (TypeError, NameError, AttributeError) :
         pass
-        
+
     sys.exit(0)

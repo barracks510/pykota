@@ -8,12 +8,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -33,16 +33,16 @@ try :
     from reportlab.pdfgen import canvas
     from reportlab.lib import pagesizes
     from reportlab.lib.units import cm
-except ImportError :    
+except ImportError :
     hasRL = False
-else :    
+else :
     hasRL = True
-    
+
 try :
-    import PIL.Image 
-except ImportError :    
+    import PIL.Image
+except ImportError :
     hasPIL = False
-else :    
+else :
     hasPIL = True
 
 import pykota.appinit
@@ -55,7 +55,7 @@ from pykota.pdfutils import getPageSize
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Percent, PyKotaTool
 
-class PKInvoice(PyKotaTool) :        
+class PKInvoice(PyKotaTool) :
     """A class for invoice generator."""
     validfilterkeys = [ "username",
                         "printername",
@@ -65,12 +65,12 @@ class PKInvoice(PyKotaTool) :
                         "start",
                         "end",
                       ]
-                      
+
     def printVar(self, label, value, size) :
         """Outputs a variable onto the PDF canvas.
-        
+
            Returns the number of points to substract to current Y coordinate.
-        """   
+        """
         xcenter = (self.pagesize[0] / 2.0) - 1*cm
         self.canvas.saveState()
         self.canvas.setFont("Helvetica-Bold", size)
@@ -81,7 +81,7 @@ class PKInvoice(PyKotaTool) :
         self.canvas.drawString(xcenter + 0.5*cm, self.ypos, value)
         self.canvas.restoreState()
         self.ypos -= (size + 4)
-        
+
     def pagePDF(self, invoicenumber, name, values, unit, vat) :
         """Generates a new page in the PDF document."""
         amount = values["nbcredits"]
@@ -95,7 +95,7 @@ class PKInvoice(PyKotaTool) :
             self.ypos -= 20
             datetime = time.strftime("%c", time.localtime()).decode(self.charset, "replace")
             self.printVar(_("Edited on"), datetime, 14)
-                
+
             self.ypos -= 20
             self.printVar(_("Number of jobs printed"), str(values["nbjobs"]), 18)
             self.printVar(_("Number of pages printed"), str(values["nbpages"]), 18)
@@ -106,92 +106,92 @@ class PKInvoice(PyKotaTool) :
                 self.printVar("%s (%.2f%%)" % (_("Included VAT"), vat), "%.3f %s" % (vatamount, unit), 14)
             self.canvas.showPage()
             return 1
-        return 0    
-        
+        return 0
+
     def initPDF(self, logo) :
         """Initializes the PDF document."""
-        self.pdfDocument = cStringIO.StringIO()        
+        self.pdfDocument = cStringIO.StringIO()
         self.canvas = c = canvas.Canvas(self.pdfDocument, \
                                         pagesize=self.pagesize, \
                                         pageCompression=1)
-        
+
         c.setAuthor(self.effectiveUserName)
         c.setTitle(_("PyKota invoices"))
         c.setSubject(_("Invoices generated with PyKota"))
-        
+
         self.canvas.beginForm("background")
         self.canvas.saveState()
-        
-        self.ypos = self.pagesize[1] - (2 * cm)            
-        
+
+        self.ypos = self.pagesize[1] - (2 * cm)
+
         xcenter = self.pagesize[0] / 2.0
         if logo :
-            try :    
+            try :
                 imglogo = PIL.Image.open(logo)
-            except IOError :    
+            except IOError :
                 self.printInfo("Unable to open image %s" % logo, "warn")
             else :
                 (width, height) = imglogo.size
-                multi = float(width) / (8 * cm) 
+                multi = float(width) / (8 * cm)
                 width = float(width) / multi
                 height = float(height) / multi
                 self.ypos -= height
                 c.drawImage(logo, xcenter - (width / 2.0), \
                                   self.ypos, \
                                   width, height)
-        
+
         self.ypos -= (cm + 20)
         self.canvas.setFont("Helvetica-Bold", 14)
         self.canvas.setFillColorRGB(0, 0, 0)
         msg = _("Here's the invoice for your printouts")
         self.canvas.drawCentredString(xcenter, self.ypos, "%s :" % msg)
-        
+
         self.yorigine = self.ypos
         self.canvas.restoreState()
         self.canvas.endForm()
-        
-    def endPDF(self, fname) :    
+
+    def endPDF(self, fname) :
         """Flushes the PDF generator."""
         self.canvas.save()
-        if fname != "-" :        
+        if fname != "-" :
             outfile = open(fname, "w")
             outfile.write(self.pdfDocument.getvalue())
             outfile.close()
-        else :    
+        else :
             sys.stdout.write(self.pdfDocument.getvalue())
             sys.stdout.flush()
-        
+
     def genInvoices(self, peruser, logo, outfname, firstnumber, unit, vat) :
         """Generates the invoices file."""
         if len(peruser) :
             percent = Percent(self, size=len(peruser))
             if outfname != "-" :
                 percent.display("%s...\n" % _("Generating invoices"))
-                
+
             self.initPDF(logo)
             number = firstnumber
             for (name, values) in peruser.items() :
                 number += self.pagePDF(number, name, values, unit, vat)
                 if outfname != "-" :
                     percent.oneMore()
-                    
+
             if number > firstnumber :
                 self.endPDF(outfname)
-                
+
             if outfname != "-" :
                 percent.done()
-        
+
     def main(self, arguments, options) :
         """Generate invoices."""
         if not hasRL :
             raise PyKotaToolError, "The ReportLab module is missing. Download it from http://www.reportlab.org"
         if not hasPIL :
             raise PyKotaToolError, "The Python Imaging Library is missing. Download it from http://www.pythonware.com/downloads"
-            
+
         self.adminOnly()
-        
+
         self.pagesize = getPageSize(options.pagesize)
-            
+
         extractonly = {}
         for filterexp in arguments :
             if filterexp.strip() :
@@ -199,50 +199,50 @@ class PKInvoice(PyKotaTool) :
                     (filterkey, filtervalue) = [part.strip() for part in filterexp.split("=")]
                     filterkey = filterkey.lower()
                     if filterkey not in self.validfilterkeys :
-                        raise ValueError                
-                except ValueError :    
+                        raise ValueError
+                except ValueError :
                     raise PyKotaCommandLineError, _("Invalid filter value [%s], see help.") % filterexp
-                else :    
+                else :
                     extractonly.update({ filterkey : filtervalue })
-            
+
         percent = Percent(self)
         outfname = options.output.strip().encode(sys.getfilesystemencoding())
         if outfname != "-" :
             percent.display("%s..." % _("Extracting datas"))
-            
-        username = extractonly.get("username")    
+
+        username = extractonly.get("username")
         if username :
             user = self.storage.getUser(username)
         else :
             user = None
-            
-        printername = extractonly.get("printername")    
+
+        printername = extractonly.get("printername")
         if printername :
             printer = self.storage.getPrinter(printername)
-        else :    
+        else :
             printer = None
-            
+
         start = extractonly.get("start")
         end = extractonly.get("end")
         (start, end) = self.storage.cleanDates(start, end)
-        
-        jobs = self.storage.retrieveHistory(user=user,    
-                                            printer=printer, 
+
+        jobs = self.storage.retrieveHistory(user=user,
+                                            printer=printer,
                                             hostname=extractonly.get("hostname"),
                                             billingcode=extractonly.get("billingcode"),
                                             jobid=extractonly.get("jobid"),
                                             start=start,
                                             end=end,
                                             limit=0)
-            
-        peruser = {}                                    
-        nbjobs = 0                                    
-        nbpages = 0                                            
+
+        peruser = {}
+        nbjobs = 0
+        nbpages = 0
         nbcredits = 0.0
         percent.setSize(len(jobs))
         if outfname != "-" :
             percent.display("\n")
-        for job in jobs :                                    
+        for job in jobs :
             if job.JobSize and (job.JobAction not in ("DENY", "CANCEL", "REFUND")) :
                 nbpages += job.JobSize
                 nbcredits += job.JobPrice
@@ -255,18 +255,18 @@ class PKInvoice(PyKotaTool) :
                     percent.oneMore()
         if outfname != "-" :
             percent.done()
-        self.genInvoices(peruser, 
-                         options.logo.strip().encode(sys.getfilesystemencoding()), 
-                         outfname, 
-                         options.number, 
-                         options.unit or _("Credits"), 
+        self.genInvoices(peruser,
+                         options.logo.strip().encode(sys.getfilesystemencoding()),
+                         outfname,
+                         options.number,
+                         options.unit or _("Credits"),
                          options.vat)
-        if outfname != "-" :    
+        if outfname != "-" :
             nbusers = len(peruser)
             print _("Invoiced %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
                      % locals()
-                     
-if __name__ == "__main__" : 
+
+if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Invoice generator for PyKota."),
                                 usage="pkinvoice [options] [filterexpr]")
     parser.add_option("-l", "--logo",
@@ -280,7 +280,7 @@ if __name__ == "__main__" :
                             dest="pagesize",
                             default=u"A4",
                             help=_("Set the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default."))
-    parser.add_option("-n", "--number",                        
+    parser.add_option("-n", "--number",
                             dest="number",
                             type="int",
                             action="callback",
@@ -292,31 +292,31 @@ if __name__ == "__main__" :
                             type="string",
                             default=u"-",
                             help=_("The name of the file to which the PDF invoices will be written. If not set or set to '%default', the PDF document will be sent to the standard output."))
-                            
+
     # TODO : due to Python's optparse.py bug #1498146 fixed in rev 46861
     # TODO : we can't use 'default=_("Credits")' for this option
-    parser.add_option("-u", "--unit",                   
+    parser.add_option("-u", "--unit",
                             dest="unit",
                             type="string",
                             help=_("The name of the unit to use on the invoices. The default value is 'Credits' or its locale translation."))
-                            
-    parser.add_option("-V", "--vat", 
+
+    parser.add_option("-V", "--vat",
                             dest="vat",
                             type="float",
                             action="callback",
                             callback=checkandset_percent,
                             default=0.0,
                             help=_("The value in percent of the applicable VAT to be exposed. The default is %default, meaning no VAT."))
-                            
-    parser.add_filterexpression("username", _("User's name"))                        
-    parser.add_filterexpression("printername", _("Printer's name"))                        
-    parser.add_filterexpression("hostname", _("Host's name"))                        
-    parser.add_filterexpression("jobid", _("Job's id"))                        
+
+    parser.add_filterexpression("username", _("User's name"))
+    parser.add_filterexpression("printername", _("Printer's name"))
+    parser.add_filterexpression("hostname", _("Host's name"))
+    parser.add_filterexpression("jobid", _("Job's id"))
     parser.add_filterexpression("billingcode", _("Job's billing code"))
-    parser.add_filterexpression("start", _("Job's date of printing"))                        
-    parser.add_filterexpression("end", _("Job's date of printing"))                        
-    
-    parser.add_example('--unit EURO --output /tmp/invoices.pdf start=now-30', 
+    parser.add_filterexpression("start", _("Job's date of printing"))
+    parser.add_filterexpression("end", _("Job's date of printing"))
+
+    parser.add_example('--unit EURO --output /tmp/invoices.pdf start=now-30',
                        _("This would generate a PDF document containing invoices for all users who have spent some credits last month. Amounts would be in EURO and not VAT information would be included."))
-                       
-    run(parser, PKInvoice)                   
+
+    run(parser, PKInvoice)

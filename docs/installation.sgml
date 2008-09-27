@@ -2,48 +2,48 @@
 
 <chapter>
   <title id="installation">Installation</title>
-  
+
   <para>Last modified on $Date$</para>
-  
+
   <para>
     Before being able to use <application>PyKota</application>, you have of course to
     install it first. But before installing, you must carefully plan your installation.
   </para>
-  
+
   <para>
     First you have to determine which machine will be the <application>PyKota</application>
     database server. The database server is the host responsible
     for keeping a centralized database of print usage for all your printers, users and groups.
   </para>
-  
+
   <para>
     Then you have to list all the <firstterm>Print Servers</firstterm> for which
     you plan to use print quota facilities.
   </para>
-  
+
   <para>
     With most database backends, several print servers can share a single database, however
     as we'll see later this is not possible if you choose to use <application>SQLite</application>
     as your print quota database backend.
   </para>
-  
+
   <para>
     Finally you have to download <application>PyKota</application>'s latest version
-    or buy an official package, from 
+    or buy an official package, from
     <ulink url="http://www.pykota.com/software/pykota">http://www.pykota.com/software/pykota</ulink>.
     If you've just bought an official package, then as soon as you've receive it you
     have to decompress and visit its archive, to do so just type the following commands :
     <screen>
-jerome@nordine:~$ tar -zxf pykota-1.26_official.tar.gz    
+jerome@nordine:~$ tar -zxf pykota-1.26_official.tar.gz
 jerome@nordine:~$ cd pykota-1.26_official
 jerome@nordine:~/pykota-1.26_official$
     </screen>
   </para>
-  
+
   <para>
     You can see many files in this directory, the first ones to read are <filename>README</filename>,
     then <filename>COPYING</filename> and <filename>LICENSE</filename>. They will give you
-    basic installation instructions and explain the licensing terms under which 
+    basic installation instructions and explain the licensing terms under which
     <application>PyKota</application> is distributed. Of course they are also mostly
     boring to read ! Detailed installation and operating instructions are defined
     in the <filename>./docs</filename> directory, in the form of <acronym>SGML</acronym>
@@ -53,10 +53,10 @@ jerome@nordine:~/pykota-1.26_official$
     which already contains these compiled forms of the documentation. Of course you already
     know this because that's what you are currently reading !
   </para>
-  
+
   <sect1>
     <title>Interactive step-by-step installation of PyKota with pksetup</title>
-    
+
     <para>
       <command>pksetup</command> is a command line tool with which you'll be able
       to install <application>PyKota</application> and all its dependencies in
@@ -65,10 +65,10 @@ jerome@nordine:~/pykota-1.26_official$
       installation in an automated way. This can be useful if you've got
       several servers to install identically.
     </para>
-    
+
     <para>
       Currently, <command>pksetup</command> is experimental, and only works
-      with <ulink url="http://www.debian.org">Debian</ulink> and 
+      with <ulink url="http://www.debian.org">Debian</ulink> and
       <ulink url="http://www.ubuntu.com">Ubuntu</ulink> distributions.
       In addition, the database backend which will be installed with
       this command is <ulink url="http://www.postgresql.org">PostgreSQL</ulink>
@@ -76,18 +76,18 @@ jerome@nordine:~/pykota-1.26_official$
       database backend, or use a different distribution, or want to do
       the installation manually, then read and follow the instructions in the next section.
     </para>
-    
+
     <para>
       To launch the installation procedure, just type <literal>pksetup</literal>
       followed with the name of your distribution, like :
-    <screen>    
+    <screen>
 jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
-    </screen>  
+    </screen>
       and then follow the instructions and answer to the several questions you'll
       be asked.
     </para>
   </sect1>
-  
+
   <sect1>
     <title>Manual installation</title>
     <para>
@@ -99,38 +99,38 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           use the same machine as both a Print Server and a database server.
           This is especially the case if you've got only one server.
         </para>
-      </note>  
+      </note>
     </para>
-    
+
     <sect2>
       <title>Database server installation</title>
-      
+
       <para>
         Depending on <application>PyKota</application>'s version number, different
         types of storage backends may be supported, so we will see for each one of
         them how to configure it.
       </para>
-      
+
       <sect3>
         <title>PostgreSQL</title>
-        
+
         <para>
           <application>PostgreSQL</application> is an <firstterm>Object Relationnal DataBase
           Management System</firstterm> distributed under a <firstterm>Free Software</firstterm>
-          license from the 
+          license from the
           <ulink url="http://www.postgresql.org">http://www.postgresql.org</ulink>
           web site. It certainely is the free <acronym>RDBMS</acronym> which has the most advanced
           features, and is widely used all over the world.
         </para>
-        
+
         <para>
           To configure your database, you must have PostgreSQL already working.
           The complete installation of <application>PostgreSQL</application> is not covered by
-          the present manual, please refer to your system's documentation or to 
+          the present manual, please refer to your system's documentation or to
           <ulink url="http://www.postgresql.org">http://www.postgresql.org</ulink> for
           details.
         </para>
-        
+
         <para>
           One thing you have to check, though, is that every Print Server on which you
           want to install the print quota mechanism, must be able to connect to the
@@ -145,13 +145,13 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           self documented and easy to modify too. Allowing <acronym>TCP/IP</acronym> connections
           is not necessary though if your print quota database server and your Print Server are
           the very same host.
-        </para>  
-        
+        </para>
+
         <para>
           Here's an excerpt from a <filename>pg_hba.conf</filename> file. This one rejects all
           connections to PyKota's database excepted when made from the same host by <application>PostgreSQL</application> users
           <literal>pykotauser</literal> or <literal>pykotaadmin</literal> with the correct password.
-    <screen>        
+    <screen>
           local all    postgres                              ident sameuser
           local all    all                                   reject
           host  pykota pykotauser  127.0.0.1 255.255.255.255 crypt
@@ -159,7 +159,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           host  pykota all         127.0.0.1 255.255.255.255 reject
     </screen>
        </para>
-       
+
        <para>
           Of course if your print server and your database servers have different <acronym>IP</acronym>
           addresses, you have to replace the <literal>127.0.0.1</literal> address above with your print
@@ -172,9 +172,9 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               Don't forget to restart <application>PostgreSQL</application> if you modify
               any of its configuration files, in order for the changes to take effect.
             </para>
-          </tip>  
+          </tip>
         </para>
-        
+
         <para>
           Be careful, you may be unable to connect from a Print Server to the <application>PostgreSQL</application>
           server even if the configuration is correct. Sometimes your connections may be blocked by
@@ -185,12 +185,12 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           <note>
             <title>Note</title>
             <para>
-              The TCP/IP network port used by PostgreSQL may be different. When in doubt, ask your 
-              <firstterm>System Administrator</firstterm> for the correct value. 
+              The TCP/IP network port used by PostgreSQL may be different. When in doubt, ask your
+              <firstterm>System Administrator</firstterm> for the correct value.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           Now that your <application>PostgreSQL</application> server is up and running, and
           is waiting for your connections, you have to create the print quota database.
@@ -202,10 +202,10 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           The print quota database Administrator is not present in the quota database
           itself, he is only defined in <application>PostgreSQL</application> and don't
           have to exist on any system, nor in the print quota database. His default name
-          is <literal>pykotaadmin</literal>. 
+          is <literal>pykotaadmin</literal>.
           A print quota database read-only user is also created under the name of <literal>pykotauser</literal>.
-          This read-only user is used by <application>PyKota</application> to connect to the 
-          print quota database when an user who is not a <application>PyKota</application> administrator 
+          This read-only user is used by <application>PyKota</application> to connect to the
+          print quota database when an user who is not a <application>PyKota</application> administrator
           <footnote><para>a <application>PyKota</application> administrator is an user who can read the <filename>~pykota/pykotadmin.conf</filename> file.</para></footnote>
           launches a pykota command. This prevents normal
           users from being able to modify their own, or other users', quota information.
@@ -216,14 +216,14 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           <note>
             <title>Note</title>
             <para>
-              You can choose other names and passwords if you want by modifying the 
+              You can choose other names and passwords if you want by modifying the
               <filename>initscripts/postgresql/pykota-postgresql.sql</filename> file
               accordingly, and report your changes into <application>PyKota</application>'s
               configuration files.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           To run this script, you can use the <command>psql</command> frontend to
           <application>PostgreSQL</application>, but your priviledges must be sufficient
@@ -235,31 +235,31 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
     jerome@nordine:~$ cd pykota-1.26_official/initscripts/postgresql
     jerome@nordine:~/pykota-1.26_official/initscripts$ psql -h localhost -U postgres template1
     Welcome to psql, the PostgreSQL interactive terminal.
-    
+
     Type:  \copyright for distribution terms
          \h for help with SQL commands
          \? for help on internal slash commands
          \g or terminate with semicolon to execute query
          \q to quit
-    
-    template1=# \i pykota-postgresql.sql 
+
+    template1=# \i pykota-postgresql.sql
               ... a lot of output lines
-    pykota=#       
+    pykota=#
           </screen>
           <note>
             <title>Note</title>
             <para>
               If you use RPM or DEB packages, usually the
               <filename>pykota-postgresql.sql</filename> file gets installed into the
-              <filename>/usr/share/pykota/postgresql</filename> directory, along 
+              <filename>/usr/share/pykota/postgresql</filename> directory, along
               with a README file.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           If you want to you can change passwords later in
-          <application>PostgreSQL</application> for the 
+          <application>PostgreSQL</application> for the
           <literal>pykotaadmin</literal> and <literal>pykotauser</literal> users.
           To do so, just type the following lines while still being at the <command>psql</command>
           prompt (replace the password values by your own :
@@ -271,16 +271,16 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
     jerome@nordine:~/pykota-1.26_official/initscripts/postgresql$
           </screen>
         </para>
-        
+
         <para>
           The <literal>\q</literal> command above will quit the <command>psql</command>
           program and return you to the shell's command line prompt.
         </para>
-        
+
         <para>
           To improve security further, you could encrypt your database connections, or
           take any other step as needed. Please refer to <application>PostgreSQL</application>'s
-          documentation for details. 
+          documentation for details.
           <warning>
             <title>Warning</title>
             <para>
@@ -292,13 +292,13 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               unauthorized use. This has nothing to do with <application>PyKota</application>
               though, it is just a general rule to keep in mind.
             </para>
-          </warning>  
+          </warning>
         </para>
-        
+
         <para>
           For more details, please see <filename>initscripts/mysql/README.postgresql</filename>.
         </para>
-        
+
         <para>
           If no error occured, then your print quota database is ready to be used.
           Now you can let the print quota database server alone, the remaining work
@@ -311,39 +311,39 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               an unexpected problem (like a bug) happened. Please contact us via email so that we
               can try to fix the problem. Thanks in advance.
             </para>
-          </tip>  
+          </tip>
         </para>
-        
-      </sect3>  
-      
+
+      </sect3>
+
       <sect3>
         <title>LDAP</title>
-        
+
         <para>
-          Any <acronym>LDAP</acronym> server, and particularly <application>OpenLDAP</application>, can be used 
+          Any <acronym>LDAP</acronym> server, and particularly <application>OpenLDAP</application>, can be used
           as a print quota database backend.
           Some other LDAP servers can be used, but this is currently untested in production.
         </para>
-        
+
         <para>
           <application>OpenLDAP</application> is a Lightweight Directory Access Protocol server
           implementation published as Free Software.
           You can download it from <ulink url="http://www.openldap.org">http://www.openldap.org</ulink>.
         </para>
-        
+
         <para>
           To use <application>OpenLDAP</application> as your print quota database backend, you have to copy the
-          <filename>pykota/initscripts/ldap/pykota.schema</filename> into <application>OpenLDAP</application>'s 
+          <filename>pykota/initscripts/ldap/pykota.schema</filename> into <application>OpenLDAP</application>'s
           schemas directory.
           Under Debian GNU/Linux, this is something like :
-          <screen>        
+          <screen>
     $ cp pykota.schema /etc/ldap/schema
           </screen>
           <note>
             <title>Note</title>
             <para>
-              If you are using a Red Hat-based system, substitute 
-              <filename>/etc/openldap</filename> for 
+              If you are using a Red Hat-based system, substitute
+              <filename>/etc/openldap</filename> for
               <filename>/etc/ldap</filename>.
             </para>
           </note>
@@ -356,22 +356,22 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               with a README file, and may also be installed automatically in
               your <acronym>LDAP</acronym> server's schemas directory.
             </para>
-          </note>  
+          </note>
        </para>
-       <para>   
-         Then edit <filename>/etc/ldap/slapd.conf</filename> and add a line to    
+       <para>
+         Then edit <filename>/etc/ldap/slapd.conf</filename> and add a line to
          include the PyKota schema. You should have something
          like :
-         <screen>    
+         <screen>
     # Schema and objectClass definitions
     include         /etc/ldap/schema/core.schema
     include         /etc/ldap/schema/cosine.schema
     include         /etc/ldap/schema/nis.schema
     include         /etc/ldap/schema/inetorgperson.schema
     include         /etc/ldap/schema/pykota.schema
-          </screen>        
+          </screen>
         </para>
-        
+
         <para>
           While this is not mandatory, it is recommended that you setup
           some indexes for some often accessed PyKota attributes.
@@ -386,27 +386,27 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
     index pykotaLastJobIdent eq
           </screen>
         </para>
-        
+
         <para>
-          Now you must ensure that the DNs you'll use to bind to    
+          Now you must ensure that the DNs you'll use to bind to
           your OpenLDAP server don't have search queries size limits,
           which gives for example (OpenLDAP 2.1.x or above) :
-          
-    <screen>        
+
+    <screen>
     # No Limits for PyKota's administrator and read-only user
     limits dn="cn=pykotaadmin,dc=example,dc=com" size.soft=-1 size.hard=soft
     limits dn="cn=pykotauser,dc=example,dc=com" size.soft=-1 size.hard=soft
-    </screen>        
-    
+    </screen>
+
           Where pykotaadmin and pykotauser are the usernames used to bind to your
-          OpenLDAP server within PyKota, respectively in ReadWrite mode 
+          OpenLDAP server within PyKota, respectively in ReadWrite mode
           (as set in pykotadmin.conf) and in ReadOnly mode (as set in pykota.conf).
         </para>
-        
+
         <para>
           Finally, stop the <application>OpenLDAP</application> server, generate
           the index files, and restart <application>OpenLDAP</application>
-          <screen>    
+          <screen>
     $ /etc/init.d/slapd stop
     $ slapindex
     $ /etc/init.d/slapd start
@@ -415,7 +415,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
         <note>
           <title>Note</title>
           <para>
-          On Red Hat-based distros, use '/sbin/service ldap stop' and 
+          On Red Hat-based distros, use '/sbin/service ldap stop' and
         '/sbin/service ldap start' instead.
           </para>
         </note>
@@ -429,14 +429,14 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           branch. While this will separate these datas from your existing users and groups
           entries, this may ease the maintainance.
         </para>
-        
+
         <para>
           PyKota needs at least an <literal>ou</literal> for printers, for users quotas, for
           groups quotas, for print jobs, for billing codes, and for pointers to the last job of each printer.
           In the future, this last <literal>ou</literal> may disappear as its content
           will probably be attached to each printer.
         </para>
-        
+
         <para>
           Actually PyKota doesn't create these <literal>ou</literal>s for you, because it's
           difficult to guess what is the best configuration for you. So you have to
@@ -449,12 +449,12 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
             <para>
               If you use RPM or DEB packages, usually the
               <filename>pykota-sample.ldif</filename> file is installed into the
-              <filename>/usr/share/pykota/ldap</filename> directory, along 
+              <filename>/usr/share/pykota/ldap</filename> directory, along
               with a README file.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           If no error occured, then your print quota database is ready to be used.
           Now you can let the print quota database server alone, the remaining work
@@ -467,30 +467,30 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               an unexpected problem (like a bug) happened. Please contact us via email so that we
               can try to fix the problem. Thanks in advance.
             </para>
-          </tip>  
+          </tip>
         </para>
-      </sect3>  
-      
+      </sect3>
+
       <sect3>
         <title>MySQL</title>
-        
+
         <para>
           <application>MySQL</application> is a simple Relationnal DataBase
           Management System distributed under a <firstterm>Free Software</firstterm>
-          license from the 
+          license from the
           <ulink url="http://www.mysql.org">http://www.mysql.org</ulink>
-          web site. 
+          web site.
         </para>
-        
+
         <para>
           To configure your database, you must have MySQL version 4.1 or higher already working.
           We recommend that you use MySQL 5.0 or higher though.
           The complete installation of <application>MySQL</application> is not covered by
-          the present manual, please refer to your system's documentation or to 
+          the present manual, please refer to your system's documentation or to
           <ulink url="http://www.mysql.org">http://www.mysql.org</ulink> for
           details.
         </para>
-        
+
         <para>
           One thing you have to check, though, is that every Print Server on which you
           want to install the print quota mechanism, must be able to connect to the
@@ -505,9 +505,9 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               Don't forget to restart <application>MySQL</application> if you modify
               any of its configuration files, in order for the changes to take effect.
             </para>
-          </tip>  
+          </tip>
         </para>
-        
+
         <para>
           Be careful, you may be unable to connect from a Print Server to the <application>MySQL</application>
           server even if the configuration is correct. Sometimes your connections may be blocked by
@@ -518,19 +518,19 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           <note>
             <title>Note</title>
             <para>
-              The TCP/IP network port used by MySQL may be different. When in doubt, ask your 
-              <firstterm>System Administrator</firstterm> for the correct value. 
+              The TCP/IP network port used by MySQL may be different. When in doubt, ask your
+              <firstterm>System Administrator</firstterm> for the correct value.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           Now that your <application>MySQL</application> server is up and running, and
           is waiting for your connections, you have to create the print quota database.
           To do so, you'll have to feed <application>MySQL</application> with the
           <filename>pykota-1.26_official/initscripts/mysql/pykota-mysql.sql</filename> file.
           This file will create an empty
-          print quota database and set some permissions on it. 
+          print quota database and set some permissions on it.
           The database which will be created will be named <literal>pykota</literal> by default.
           Two database users will be defined to have access in readonly and read+write modes under
           the respective names <literal>pykotauser</literal> and <literal>pykotaadmin</literal>.
@@ -540,14 +540,14 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           <note>
             <title>Note</title>
             <para>
-              You can choose other names and passwords if you want by modifying the 
+              You can choose other names and passwords if you want by modifying the
               <filename>initscripts/mysql/pykota-mysql.sql</filename> file
               accordingly, and report your changes into <application>PyKota</application>'s
               configuration files.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           To run this script, you can use the <command>mysql</command> frontend to
           <application>MySQL</application>, but your priviledges must be sufficient
@@ -563,22 +563,22 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
             <para>
               If you use RPM or DEB packages, usually the
               <filename>pykota-mysql.sql</filename> file gets installed into the
-              <filename>/usr/share/pykota/mysql</filename> directory, along 
+              <filename>/usr/share/pykota/mysql</filename> directory, along
               with a README file.
             </para>
-          </note>  
+          </note>
         </para>
-        
+
         <para>
           To improve security further, you could encrypt your database connections, or
           take any other step as needed. Please refer to <application>MySQL</application>'s
-          documentation for details. 
+          documentation for details.
         </para>
-        
+
         <para>
           For more details, please see <filename>initscripts/mysql/README.mysql</filename>.
         </para>
-        
+
         <para>
           If no error occured, then your print quota database is ready to be used.
           Now you can let the print quota database server alone, the remaining work
@@ -591,38 +591,38 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               an unexpected problem (like a bug) happened. Please contact us via email so that we
               can try to fix the problem. Thanks in advance.
             </para>
-          </tip>  
+          </tip>
         </para>
-        
-      </sect3>  
-      
+
+      </sect3>
+
       <sect3>
         <title>SQLite</title>
-        
+
         <para>
           <application>SQLite</application> is an embeddable Relationnal DataBase
           distributed under a Free Software
-          license from the 
+          license from the
           <ulink url="http://www.sqlite.org">http://www.sqlite.org</ulink>
-          web site. 
+          web site.
           If is very easy to configure and use, offers a very small memory footprint,
           is very fast, but can only be used on the print server because it doesn't include
           a server daemon : the database is directly embedded in the application.
         </para>
-        
+
         <para>
           To configure your database, you must have SQLite already working.
           The complete installation of <application>SQLite</application> is not covered by
-          the present manual, please refer to your system's documentation or to 
+          the present manual, please refer to your system's documentation or to
           <ulink url="http://www.sqlite.org">http://www.sqlite.org</ulink> for
           details.
         </para>
-        
+
         <para>
           Once <application>SQLite</application> is installed, you have to decide where
           you'll put your database. A good idea is to store it into the <literal>pykota</literal>
           user's home directory. Then to create the database, just type :
-    <screen>        
+    <screen>
     # sqlite3 ~pykota/pykota.db &lt;pykota/initscripts/sqlite/pykota.sqlite
     # chown pykota.pykota ~pykota/pykota.db
     # chmod 660 ~pykota/pykota.db
@@ -633,11 +633,11 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           If user <literal>pykota</literal> doesn't exist yet, then please
           follow the instructions a bit below which explain how to install PyKota on the print server.
         </para>
-        
+
         <para>
           Once this is done, you'll want to set in <filename>~pykota/pykota.conf</filename> the
           following lines in the <literal>[global]</literal> section :
-    <screen>        
+    <screen>
     storagebackend : sqlitestorage
     storagename : /etc/pykota/pykota.db
     </screen>
@@ -656,47 +656,47 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               an unexpected problem (like a bug) happened. Please contact us via email so that we
               can try to fix the problem. Thanks in advance.
             </para>
-          </tip>  
+          </tip>
         </para>
-      </sect3>  
-      
+      </sect3>
+
       <sect3>
         <title>Berkeley DB</title>
-        
+
         <para>
           A <application>Berkeley DB</application> backend is planned, but it actually
           doesn't exist. It seems that remote storage won't be possible with such a backend,
           so in other terms this means that you will have a different quota database on
           each print server. This may still prove to be useful for small configurations.
         </para>
-      </sect3>  
-    </sect2>  
-    
+      </sect3>
+    </sect2>
+
     <sect2>
       <title>Print Server Installation</title>
-      
+
       <para>
         For each Print Server on which you plan to implement the print quota
-        mechanism, you have, of course, to have an already working printing environment. 
-        Currently <application>PyKota</application> works with 
+        mechanism, you have, of course, to have an already working printing environment.
+        Currently <application>PyKota</application> works with
         <ulink url="http://www.cups.org"><application>CUPS</application></ulink>
         but older releases also supported <ulink url="http://lprng.sourceforge.net"><application>LPRng</application></ulink>.
         <application>LPRng</application> support might be re-added in the future.
       </para>
-      
+
       <para>
         Here's the list of software you have to install on each Print Server, version numbers
-        are given as an indication of which was successfully tested, but older versions may 
+        are given as an indication of which was successfully tested, but older versions may
         work too.
         <itemizedlist>
           <listitem>
             <para>
-              <application>CUPS</application> version 1.3.4 or higher. NB : 
+              <application>CUPS</application> version 1.3.4 or higher. NB :
               <application>PyKota</application> releases up to and including 1.26 support
-              <application>CUPS</application> version 1.1.14 or higher. 
+              <application>CUPS</application> version 1.1.14 or higher.
               You can download it from <ulink url="http://www.cups.org">http://www.cups.org</ulink>
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               <application>Python</application> version 2.3 or higher.
@@ -706,7 +706,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               modules which are needed by <application>PyKota</application> may require a more recent version
               of this language.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               print quota database client libraries, depending on your print quota database backend :
@@ -720,34 +720,34 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
                           <application>PostgreSQL</application> client libraries. They must match the <application>PostgreSQL</application>
                           version used on your print quota database server.
                         </para>
-                      </listitem>  
+                      </listitem>
                       <listitem>
                         <para>
-                          The <application>PygreSQL</application> python module. 
+                          The <application>PygreSQL</application> python module.
                           <application>PygreSQL</application> is normally included in
                           <application>PostgreSQL</application>, but you may want to
                           download it from <ulink url="http://www.pygresql.org">http://www.pygresql.org</ulink>
                         </para>
-                      </listitem>  
-                    </itemizedlist>  
+                      </listitem>
+                    </itemizedlist>
                   </para>
-                </listitem>  
+                </listitem>
                 <listitem>
                   <para>
-                    OpenLDAP backend : 
+                    OpenLDAP backend :
                     <itemizedlist>
                       <listitem>
                         <para>
                           <application>OpenLDAP</application> client libraries. They must match
                           the <application>OpenLDAP</application> version used on your print quota database server.
                         </para>
-                      </listitem>  
+                      </listitem>
                       <listitem>
                         <para>
                           The <application>Python-LDAP</application> python module.
                           You may download this module from <ulink url="http://python-ldap.sourceforge.net">http://python-ldap.sourceforge.net</ulink>
                         </para>
-                      </listitem>  
+                      </listitem>
                     </itemizedlist>
                   </para>
                 </listitem>
@@ -760,20 +760,20 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
                           <application>MySQL</application> client libraries. They must match the <application>MySQL</application>
                           version used on your database server.
                         </para>
-                      </listitem>  
+                      </listitem>
                       <listitem>
                         <para>
-                          The <application>Python-MySQL</application> python module, version 1.2.x or higher. 
+                          The <application>Python-MySQL</application> python module, version 1.2.x or higher.
                           You can download it from <ulink url="http://sourceforge.net/projects/mysql-python">http://sourceforge.net/projects/mysql-python</ulink>
                         </para>
-                      </listitem>  
-                    </itemizedlist>  
+                      </listitem>
+                    </itemizedlist>
                   </para>
                 </listitem>
                 <listitem>
                   <para>
                     SQLite backend : SQLite is not a database server, but an embeddable database, so
-                    if you want to use it you MUST install SQLite on your print server. With 
+                    if you want to use it you MUST install SQLite on your print server. With
                     <application>PostgreSQL</application>, <application>MySQL</application> or
                     <application>OpenLDAP</application> you can store your datas on a different
                     machine than the print server, but this is not possible with <application>SQLite</application>.
@@ -781,17 +781,17 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
                       <listitem>
                         <para>
                           <application>SQLite</application> version 3.2.1 or higher and its library.
-                          You can download it from 
+                          You can download it from
                           <ulink url="http://www.sqlite.org">http://www.sqlite.org</ulink>
                         </para>
-                      </listitem>  
+                      </listitem>
                       <listitem>
                         <para>
                           The <application>Python-SQLite</application> python module version 2.0.5 or higher.
-                          You can download it from 
+                          You can download it from
                           <ulink url="http://www.pysqlite.org">http://www.pysqlite.org</ulink>
                         </para>
-                      </listitem>  
+                      </listitem>
                     </itemizedlist>
                   </para>
                 </listitem>
@@ -800,9 +800,9 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
                     Berkeley DB backend : Not supported yet.
                   </para>
                 </listitem>
-              </itemizedlist>  
+              </itemizedlist>
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               <application>ucd-snmp</application> or <application>net-snmp</application> tools, version 4.2.5 or above. You only need
@@ -811,7 +811,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               You only need this if PyKota's internal SNMP accounting code doesn't work for your SNMP-aware
               printers.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               <application>netatalk</application> version 1.6.1 or above. You only need
@@ -819,57 +819,57 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               You can download this software from <ulink url="http://netatalk.sourceforge.net/">http://netatalk.sourceforge.net/</ulink>.
               You only need this if you plan to query your printers for their internal page counter via AppleTalk.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               eGenix' mxDateTime Python module version 2.0.3 or above. It must match your default Python version.
               You can download it from <ulink url="http://www.egenix.com">http://www.egenix.com</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               The Python acccelerator <application>Psyco</application>. It must match your default Python version.
               You can download it from <ulink url="http://psyco.sourceforge.net">http://psyco.sourceforge.net</ulink>.
-              You only need this if you run on the <literal>x86</literal> architecture because 
+              You only need this if you run on the <literal>x86</literal> architecture because
               <application>Psyco</application> doesn't yet exist on other architectures.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               The <application>pysnmp</application> Python module version 3.4.2, or higher, version 4 is recommanded.
               You can download it from <ulink url="http://pysnmp.sourceforge.net">http://pysnmp.sourceforge.net</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
-              The <application>JAXML</application> Python module. 
+              The <application>JAXML</application> Python module.
               You can download it from <ulink url="http://www.librelogiciel.com/software/">http://www.librelogiciel.com/software/</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
-              The <application>ReportLab</application> Toolkit Python module. 
+              The <application>ReportLab</application> Toolkit Python module.
               You can download it from <ulink url="http://www.reportlab.org">http://www.reportlab.org</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
-              The <application>Python Imaging Library - PIL</application> module. 
+              The <application>Python Imaging Library - PIL</application> module.
               You can download it from <ulink url="http://www.pythonware.com">http://www.pythonware.com</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
-              The <application>PyOSD</application> Python module. 
+              The <application>PyOSD</application> Python module.
               You can download it from <ulink url="http://repose.cx/pyosd/">http://repose.cx/pyosd/</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
-              The <application>pkpgcounter</application> Generic Page Description Language parser. 
+              The <application>pkpgcounter</application> Generic Page Description Language parser.
               You can download it from <ulink url="http://www.pykota.com.com/software/pkpgcounter">http://www.pykota.com/software/pkpgcounter</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               The <application>PyPAM</application> Python interface to <acronym>PAM</acronym>.
@@ -877,16 +877,16 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               and <command>pykoticon</command>. You don't need this module otherwise.
               If needed, you can download it from <ulink url="http://www.pangalactic.org/PyPAM/">http://www.pangalactic.org/PyPAM/</ulink>.
             </para>
-          </listitem>  
+          </listitem>
           <listitem>
             <para>
               The <application>PkIPPLib</application> Python <acronym>IPP</acronym> library.
               You can download it from <ulink url="http://www.pykota.com/software/pkipplib">http://www.pykota.com/software/pkipplib</ulink>.
             </para>
-          </listitem>  
-        </itemizedlist>  
+          </listitem>
+        </itemizedlist>
       </para>
-      
+
       <para>
         Instead of downloading all these programs' sources and compiling them, which really
         is a boring task considering that many software are needed, you may prefer to look
@@ -896,46 +896,46 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
         install than sources tarballs. This is probably the same for the many *BSD
         distributions.
       </para>
-      
+
       <para>
          You can check that all needed software is installed by launching the <command>checkdeps.py</command>
          command :
-        <screen>      
-    $ python checkdeps.py      
+        <screen>
+    $ python checkdeps.py
         </screen>
       </para>
-      
+
       <para>
         Once all these software are installed, installing PyKota itself is a breeze.
-        PyKota being written entirely in the Python language, which is interpreted, 
+        PyKota being written entirely in the Python language, which is interpreted,
         there's no need to compile anything. You just have to execute the installation
         script :
-        <screen>      
-    $ python setup.py install      
+        <screen>
+    $ python setup.py install
         </screen>
       </para>
-      
+
       <para>
-        The setup script will automatically create the 
-        <filename>/usr/share/pykota/conf</filename> directory and put the sample 
+        The setup script will automatically create the
+        <filename>/usr/share/pykota/conf</filename> directory and put the sample
         configuration files <filename>conf/pykota.conf.sample</filename> and
         <filename>conf/pykotadmin.conf.sample</filename> there, along with
         a <filename>README</filename> file explaining their purpose.
       </para>
-      
+
       <para>
         Now you have to create a <literal>pykota</literal> system user and group. The <application>PyKota</application>
         software will automatically search its configuration files in user <literal>pykota</literal>'s
         home directory. For example we could create the user and group, and set <filename>/etc/pykota</filename>
         as the home directory, but any other home directory will do :
-    <screen>      
+    <screen>
       adduser --system --group --home /etc/pykota --gecos PyKota pykota
     </screen>
       </para>
-      
+
       <para>
         You now have to copy the sample configuration files into the <filename>~pykota</filename>
-        directory, under the respective names <filename>pykota.conf</filename> and 
+        directory, under the respective names <filename>pykota.conf</filename> and
         <filename>pykotadmin.conf</filename>. Once copied there, you just
         have to modify these files to adapt them to your own setup.
         These files are heavily commented, so you should have no problem.
@@ -948,24 +948,24 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
         <application>PyKota</application> can be really heavily customized, and can delegate some work
         to any external command of your choice.
       </para>
-      
+
       <para>
         Please create a backup copy of the <filename>~pykota</filename>
         directory before modifying a working installation.
       </para>
-      
+
       <para>
         PyKota features some interesting possibilities which allow you to
         define options either globally so that they apply to all printers,
         or on a per printer basis. Please see the sample configuration files
         to see what I mean. In the simplest form, only a <literal>[global]</literal> section is
-        needed. In more complex configurations, you will have to create 
+        needed. In more complex configurations, you will have to create
         one section per printer. Each section in the configuration files
         begins with a name between square brackets <literal>[]</literal>.
         The name to use to define a particular printer section is the name
         of the print queue you want to manage with PyKota.
       </para>
-      
+
       <para>
         After you have modified <application>PyKota</application>'s configuration files, you have to
         double check their permissions, otherwise your installation may be
@@ -979,71 +979,71 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
         On the other hand, the <filename>~pykota/pykotadmin.conf</filename>
         file contains the read-write user's identity and password. You must then
         ensure that no normal user can read this file. It should only be readable
-        by the <literal>root</literal> user, which is always the case, and by 
+        by the <literal>root</literal> user, which is always the case, and by
         <application>PyKota</application> administrators. In addition,
-        users for which <application>CUPS</application> doesn't run as user <literal>root</literal> will 
+        users for which <application>CUPS</application> doesn't run as user <literal>root</literal> will
         have to ensure that the user their printing system is run as
         can read both of these files. An easy way to do so is to put the <literal>lp</literal> user
         (for example) into the <literal>pykota</literal> system group, then
         to give the correct permissions to <application>PyKota</application>'s configuration files :
         <screen>
-    $ chown -R pykota.pykota ~pykota/      
+    $ chown -R pykota.pykota ~pykota/
     $ chmod 750 ~pykota/
-    $ chmod 644 ~pykota/pykota.conf      
-    $ chmod 640 ~pykota/pykotadmin.conf      
+    $ chmod 644 ~pykota/pykota.conf
+    $ chmod 640 ~pykota/pykotadmin.conf
         </screen>
-        
+
         <warning>
           <title>Warning</title>
           <para>
-            All the users allowed to read the <filename>~pykota/pykotadmin.conf</filename> 
+            All the users allowed to read the <filename>~pykota/pykotadmin.conf</filename>
             are considered to be <application>PyKota</application> administrators. So be
             careful with these files permissions.
           </para>
         </warning>
       </para>
-      
+
       <para>
         On some systems, you may be able to strenghten permissions like this :
         <screen>
-    $ chown -R pykota.pykota ~pykota/      
+    $ chown -R pykota.pykota ~pykota/
     $ chmod 750 ~pykota/
-    $ chmod 640 ~pykota/pykota.conf      
-    $ chmod 600 ~pykota/pykotadmin.conf      
+    $ chmod 640 ~pykota/pykota.conf
+    $ chmod 600 ~pykota/pykotadmin.conf
         </screen>
       </para>
-      
+
       <para>
         And on other ones, you may need to relax them, and change the files' owner :
         <screen>
-    $ chown pykota.pykota ~pykota/      
+    $ chown pykota.pykota ~pykota/
     $ chmod 755 ~pykota/
-    $ chown lp.pykota ~pykota/pykota.conf      
-    $ chmod 640 ~pykota/pykota.conf      
-    $ chown lp.pykota ~pykota/pykotadmin.conf      
-    $ chmod 640 ~pykota/pykotadmin.conf      
+    $ chown lp.pykota ~pykota/pykota.conf
+    $ chmod 640 ~pykota/pykota.conf
+    $ chown lp.pykota ~pykota/pykotadmin.conf
+    $ chmod 640 ~pykota/pykotadmin.conf
         </screen>
       </para>
-      
+
       <para>
         This all depends on the printing system you are using, and the user the
         printing system is usually running as. You need to remember three things :
-        
+
         <itemizedlist>
           <listitem>
             <para>
               The user your printing system runs as MUST be allowed to read
               both <application>PyKota</application>'s configuration files.
-            </para>  
-          </listitem>  
-          <listitem>        
+            </para>
+          </listitem>
+          <listitem>
             <para>
               Any user who can read <filename>pykotadmin.conf</filename>
               is a <application>PyKota</application> administrator, and
               can do whatever he wants to the print quota database.
             </para>
           </listitem>
-          <listitem>        
+          <listitem>
             <para>
               If <filename>cupsd.conf</filename> contains <literal>RunAsUser</literal>, then
               you won't be able to authenticate users with <command>pknotify</command> and <command>pykoticon</command>.
@@ -1051,61 +1051,61 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               owned by the user <application>CUPS</application> runs as.
             </para>
           </listitem>
-        </itemizedlist>  
+        </itemizedlist>
       </para>
-      
+
       <para>
         Don't forget to restart your print server sofware if you changed group membership for the user it runs
         as, otherwise your change wouldn't be taken into account.
       </para>
-      
+
       <para>
         Now depending on your printing system, the configuration to do is particular.
         We will now see how to plug PyKota into <application>CUPS</application> since <application>LPRng</application>
         is not supported anymore.
       </para>
-      
+
       <sect3>
         <title>With CUPS</title>
-        
+
         <para>
           From version 1.16alpha7 on, configuring <application>PyKota</application> to integrate
           within <application>CUPS</application> is more than easy.
         </para>
-        
+
         <para>
           You just have to create a symbolic link to the <command>cupspykota</command>
           command in <application>CUPS</application>' backend directory :
-          <screen>        
-    $ cd /usr/lib/cups/backend        
+          <screen>
+    $ cd /usr/lib/cups/backend
     $ ln -s /usr/share/pykota/cupspykota cupspykota
           </screen>
         </para>
-        
+
         <para>
           If you use CUPS v1.2 or higher, you must
           also type the following command to allow the <command>cupspykota</command>
           backend to correctly support other backends which must be run
           as the root user (e.g. the <command>lpd</command> backend) :
-          <screen>        
+          <screen>
     $ chmod 700 /usr/share/pykota/cupspykota
           </screen>
         </para>
-        
+
         <para>
           You have to restart <application>CUPS</application> for this modification to
-          take effect : 
+          take effect :
           <screen>
-    $ /etc/init.d/cupsys restart        
+    $ /etc/init.d/cupsys restart
           </screen>
         </para>
-        
+
         <para>
-          Now point your web browser to CUPS configuration page, usually at 
+          Now point your web browser to CUPS configuration page, usually at
           <ulink url="http://localhost:631">http://localhost:631</ulink> on
           your print server.
         </para>
-        
+
         <para>
           Then when creating new printers or reconfiguring existing ones, just
           choose devices which are <literal>PyKota managed</literal>
@@ -1113,7 +1113,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
             <para>
               Debian 3.0 Woody is known to have problems : CUPS 1.1.14 doesn't automatically
               detect <literal>PyKota managed</literal> devices. So you have to manually
-              modify CUPS' <filename>printers.conf</filename> file as explained in 
+              modify CUPS' <filename>printers.conf</filename> file as explained in
               PyKota's toplevel <filename>README</filename> file.
             </para>
           </footnote>
@@ -1122,12 +1122,12 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           for each regular device available from CUPS, so just choose the appropriate
           one.
         </para>
-        
+
         <para>
           Repeat the above procedure for each print queue on which you want to use
           PyKota. That's all !
         </para>
-        
+
         <sect4>
           <title>Troubleshooting</title>
           <para>
@@ -1135,27 +1135,27 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
             to ask on PyKota's mailing list, describing the symptoms, as
             well as the hardware and software you use.
           </para>
-          
+
           <para>
-            A searchable FAQ is now available at 
+            A searchable FAQ is now available at
             <ulink url="http://otrs.librelogiciel.com/otrs/public.pl">http://otrs.librelogiciel.com/public.pl</ulink>.
             A FAQ entry explaining in great details how to diagnose a problem correctly is
-            available at 
+            available at
             <ulink url="http://otrs.librelogiciel.com/otrs/public.pl?ID=2">http://otrs.librelogiciel.com/public.pl?ID=2</ulink>.
           </para>
-          
+
           <para>
             You can also ask questions on IRC :
             <screen>
-    /server irc.freenode.net          
+    /server irc.freenode.net
     /join #pykota
             </screen>
-          </para>  
-        </sect4>  
-        
+          </para>
+        </sect4>
+
       </sect3>
-      
-    </sect2>  
+
+    </sect2>
   </sect1>
 </chapter>
 

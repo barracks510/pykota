@@ -1,6 +1,6 @@
-/* 
+/*
   PyKota - Print Quotas for CUPS
-  
+
   (c) 2003, 2004, 2005, 2006, 2007, 2008 Jerome Alet <alet@librelogiciel.com>
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,47 +25,47 @@ body {
 .even {
         background-color: #DEDEDE;
       }
-      
-.odd {      
+
+.odd {
         background-color: #FFFFFF;
-     }   
-     
-.warn {     
+     }
+
+.warn {
         background-color: orange;
       }
-      
-.deny {     
+
+.deny {
         background-color: red;
       }
-      
-.problem {     
+
+.problem {
         background-color: #DEBDEB;
       }
-      
-.cancel {     
+
+.cancel {
         background-color: #BEDBED;
       }
-      
-.refund {      
+
+.refund {
         background-color: green;
-      }  
-      
-.pykotacolsheader {      
+      }
+
+.pykotacolsheader {
         background-color: #AAAAAA;
       }
-      
-a:link {      
+
+a:link {
         color : blue;
        }
-       
-a:visited {      
+
+a:visited {
         color : purple;
        }
-       
-a:hover {      
+
+a:hover {
         color : green;
        }
-       
-a:active {      
+
+a:active {
         color : magenta;
        }

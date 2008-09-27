@@ -9,19 +9,19 @@
 
 # Read what Jem has to say about it :
 
-# It seems that network sockets or some other control specific method is the 
-# best way to query the printers. What I have is a bit (well, more than just 
-# a bit) of a brute forced solution. However, it has been working for us for 
+# It seems that network sockets or some other control specific method is the
+# best way to query the printers. What I have is a bit (well, more than just
+# a bit) of a brute forced solution. However, it has been working for us for
 # about a month and only needs a bidirectional /dev/lp0
 
-# I'm not at all happy about the sleep's I have in there. On occasion, there 
-# are missing page counts in the log but since the * next * user to print 
-# gets a good pagecount, the parser (a separate program) finds the 
+# I'm not at all happy about the sleep's I have in there. On occasion, there
+# are missing page counts in the log but since the * next * user to print
+# gets a good pagecount, the parser (a separate program) finds the
 # responsibility.
-# 
-# If you find a way to improve what I have, please let me know. Note that 
-# when this is invoked from printcap, it's expecting that the data coming it 
-# at stdin is a pre-formatted print job (the Windows machines do that 
+#
+# If you find a way to improve what I have, please let me know. Note that
+# when this is invoked from printcap, it's expecting that the data coming it
+# at stdin is a pre-formatted print job (the Windows machines do that
 # anyway).
 
 # Copyright (C) 2003 Jem E. Berkes

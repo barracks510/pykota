@@ -24,7 +24,7 @@ utility.
 Just copy the XML files from this directory to /usr/share/qa-assistant/data/
 
 If you want to setup PyKota on a new machine, or help somebody do so,
-launch qa-assitant, then start a new QA review, and choose any of the 
+launch qa-assitant, then start a new QA review, and choose any of the
 "PyKota Installation" templates. The other templates are unrelated
 to PyKota and are installed as part of qa-assistant.
 

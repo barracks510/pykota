@@ -8,12 +8,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -60,48 +60,48 @@ class AutoPyKota(PyKotaTool) :
                 printer = self.storage.getPrinterFromBackend(printername)
                 if printer.Exists :
                     self.logdebug("Printer %s created successfully." % printername)
-                else :    
+                else :
                     self.logdebug("Impossible to create printer %s." % printername)
                 printernames = [printername]
-            else :    
+            else :
                 printernames = [printer.Name] + [p.Name for p in self.storage.getParentPrinters(printer)]
-            
+
             user = self.storage.getUser(username)
             if not user.Exists :
                 self.logdebug("Creating user %s which doesn't exist yet." % username)
                 if (options.email is None) :
                     os.system('pkusers --add --limitby balance --balance "%s" --description "%s" "%s"' \
-                                       % (options.initbalance, 
+                                       % (options.initbalance,
                                           _("user created with autopykota").encode(self.charset, "replace"),
                                           username.encode(self.charset)))
                 else :
                     os.system('pkusers --add --limitby balance --balance "%s" --email "%s" --description "%s" "%s"' \
-                                       % (options.initbalance, 
-                                          options.email.encode(self.charset), 
+                                       % (options.initbalance,
+                                          options.email.encode(self.charset),
                                           _("user created with autopykota").encode(self.charset, "replace"),
                                           username.encode(self.charset)))
-                    
+
                 user = self.storage.getUserFromBackend(username)
                 if user.Exists :
                     self.logdebug("User %s created successfully." % username)
-                else :    
+                else :
                     self.logdebug("Impossible to create user %s." % username)
-                
-            if user.Exists and printer.Exists :    
+
+            if user.Exists and printer.Exists :
                 userpquota = self.storage.getUserPQuota(user, printer)
                 if not userpquota.Exists :
                     self.logdebug("Creating a print quota entry for user %s on printers %s" \
                                         % (username, printernames))
                     os.system('edpykota --add --printer "%s" "%s"' \
-                                % (','.join(printernames).encode(self.charset), 
+                                % (','.join(printernames).encode(self.charset),
                                    username.encode(self.charset)))
-                    userpquota = self.storage.getUserPQuotaFromBackend(user, 
+                    userpquota = self.storage.getUserPQuotaFromBackend(user,
                                                                        printer)
                     if userpquota.Exists :
                         self.logdebug("User %s's print quota entry on printer %s created successfully." \
                                             % (username, printername))
                         return 0
-                    else :    
+                    else :
                         self.logdebug("Impossible to create user %s's print quota entry on printer %s." \
                                             % (username, printername))
                         return -1
@@ -109,10 +109,10 @@ class AutoPyKota(PyKotaTool) :
                     self.logdebug("User %s's print quota entry on printer %s already exists. Nothing to do." \
                                         % (username, printername))
                     return 0
-            else :        
+            else :
                 return -1
-                
-if __name__ == "__main__" :    
+
+if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("A tool to automate user account creation and initial balance setting. THIS TOOL MUST NOT BE USED FROM THE COMMAND LINE BUT ONLY AS PART OF AN external policy IN pykota.conf, AND MUST NOT BE USED IF YOU WANT TO LIMIT YOUR USERS BY PAGE QUOTA !"),
                                 usage="autopykota { -i | --initbalance value } [options]")
     parser.add_option("-i", "--initbalance",
@@ -123,8 +123,8 @@ if __name__ == "__main__" :
     parser.add_option("-e", "--email",
                             dest="email",
                             help=_("Set the user's email address."))
-                            
+
     parser.add_example('--email="@example.com" --initbalance=10.0',
                        _("This would set the current user's email address to $PYKOTAUSERNAME@example.com, and would set the initial value of his account balance to 10.0 credits."))
-                       
+
     run(parser, AutoPyKota)

@@ -21,20 +21,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Sponsors :
 ----------
 
-This document used to list all the sponsors of the PyKota project. 
-But, because of the success of this software, this is no longer 
-practical to do so. That's why the list of all the sponsors of the 
-PyKota project is now available online, and is updated in real time, 
-at : 
+This document used to list all the sponsors of the PyKota project.
+But, because of the success of this software, this is no longer
+practical to do so. That's why the list of all the sponsors of the
+PyKota project is now available online, and is updated in real time,
+at :
 
-        http://www.pykota.com/sponsorslist        
-  
-  
+        http://www.pykota.com/sponsorslist
+
+
 Contributors :
 --------------
 
   The following people contributed code or ideas to PyKota :
-  
+
   - Joël Collet : PyKota's logo
   - Stefan Wold - Stockholm University : inital code for external policies
                                          and additionnal swedish translations.
@@ -54,7 +54,7 @@ Contributors :
   - René Lund Jensen : Contributed the pagecount.pl script
   - Henrik Janhagen - Kungliga Tekniska Högskolan : Swedish translation
   - Hugo Monteiro : Portuguese Portuguese translation
-  - Peter Hawkins : First try at Debian packaging 
+  - Peter Hawkins : First try at Debian packaging
   - Michele Baldessari : Italian translation
   - Ryan Suarez : Created a WiKi with lots of shemas
   - Eduardo Gielamo Oliveira and Rodolfo Broco Manin : PCL page counter
@@ -63,7 +63,7 @@ Contributors :
   - Suthep Yonpimai : Thai translation
   - Jurandy Martins - Universidade Estadual de Campinas : Brazilian translation
   - Spyros Melissovas - University of Ioannina : Greek translation
-  - Alban Crequy - Revolution Linux 
+  - Alban Crequy - Revolution Linux
   - Johannes Laemmermann - German translation
   - Paulo Silva - Eurotux - Improved ESC/P2 miniparser
   - Christian Andreetta - SNMP waiting script
@@ -75,7 +75,7 @@ Contributors :
   - Baris Cicek - Turkish translation.
   - Kanakorn Horsiritham - Wrote phpPykotaAdmin.
   - Tsang Yu Pong, Teddy - PHC Wing Kwong College - Chinese (Trad.) translation
-  - Marcus Flávio de Lima - Universidade Federal de Minas Gerais : 
+  - Marcus Flávio de Lima - Universidade Federal de Minas Gerais :
     Brazilian PyKota+LDAP Documentation
   - Rong-En Fan - Helped improve the PJL stuff.
   - Michal Dobroczynski - Polish translation.
@@ -86,7 +86,7 @@ Contributors :
   - Andrew Ross - Parakeet Print Quota : Provided a patch to allow the
     configuration files directory to be set at run time.
   - Georger Araujo - Fixed a charset problem with MySQL.
-  - Nuno Rodrigues - Faculdade de Ciências e Tecnologia / Universidade Nova 
+  - Nuno Rodrigues - Faculdade de Ciências e Tecnologia / Universidade Nova
     de Lisboa : Portuguese translation.
   - Christopher Hoskin - Jesus College Oxford - Patch for parsing Device URI.
   - Jabka Atu - Fixed a problem with Debian changelog file.
@@ -99,10 +99,10 @@ Contributors :
   IF YOUR NAME DOESN'T APPEAR IN THE LISTS ABOVE, AND YOU
   THINK YOU DESERVE TO BE LISTED, JUST SEND ME AN EMAIL
   ASKING FOR BEING INCLUDED.
-  
+
   I APOLOGIZE IN ADVANCE IF I'VE FORGOTTEN TO ADD YOUR NAME.
-  
-  ALSO, SOME PEOPLE MAY HAVE REFUSED TO BE LISTED HERE, THIS 
+
+  ALSO, SOME PEOPLE MAY HAVE REFUSED TO BE LISTED HERE, THIS
   IS YOUR RIGHT TO DO SO TOO, JUST TELL ME.
-  
+
 ==============================================================
