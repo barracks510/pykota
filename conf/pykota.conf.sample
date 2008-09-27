@@ -363,10 +363,10 @@ usernamecase: native
 # system are split on the separator's value, and only the last part
 # (real username) is used.
 #
-# If winbind_separator is not set, which is the default, strict 
-# username equality checking will be done (modulo the setting
-# of the 'utolower' directive), this means that users 'DOMAIN1/jerome',
-# 'Domain2/jerome' and 'jerome' are different. 
+# If winbind_separator is not set, which is the default, strict
+# username equality checking will be done (modulo the setting of the
+# 'usernamecase' directive), this means that users 'DOMAIN1/jerome',
+# 'Domain2/jerome' and 'jerome' are different.
 #
 # winbind_separator: /
 

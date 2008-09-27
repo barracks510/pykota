@@ -101,8 +101,8 @@ maildomain : %(dnsdomain)s
 admin : %(adminname)s
 adminmail : %(adminemail)s
 
-# Use usernames as-is or convert them to lowercase ?
-utolower : No
+# Use usernames as-is or convert them to lowercase or uppercase ?
+usernamecase : native
 
 # Should we hide some fields in the history (title, filename) ?
 privacy : no
