@@ -484,7 +484,7 @@ onbackenderror : nocharge
 # This value can be set either globally or on a per printer basis
 # If both are defined, the printer option has priority.
 #
-# IMPORTANT :
+# IMPORTANT :
 #
 #       If you use this directive to interact with the end user in
 #       some way, for example through pknotify+pykoticon or similar
