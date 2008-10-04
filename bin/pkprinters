@@ -109,6 +109,19 @@ class PKPrinters(PyKotaTool) :
                 raise PyKotaCommandLineError, _("You must specify printers names on the command line.")
             names = [u"*"]
 
+        if options.remove and not options.groups :
+            raise PyKotaCommandLineError, _("You must specify printers groups names on the command line")
+        elif (((islist or isdelete) and (options.charge  \
+                                        or options.groups \
+                                        or options.remove \
+                                        or options.description \
+                                        or options.skipexisting \
+                                        or options.passthrough \
+                                        or options.nopassthrough \
+                                        or options.maxjobsize))) \
+              or (options.cups and options.list) :
+            raise PyKotaCommandLineError, _("Incompatible command line options. Please look at the online help or manual page.")
+
         if not islist :
             percent = Percent(self)
 
