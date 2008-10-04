@@ -117,7 +117,7 @@ class PKTurnKey(Tool) :
             result = server.doRequest(req)
             try :
                 deviceuri = result.printer["device-uri"][0][1]
-            except (AttributeError, IndexError) :
+            except (AttributeError, IndexError, KeyError) :
                 deviceuri = None
             if deviceuri is not None :
                 if self.matchString(queuename, namestomatch) :
