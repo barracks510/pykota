@@ -28,6 +28,8 @@ import grp
 import socket
 import signal
 
+from pkipplib import pkipplib
+
 import pykota.appinit
 from pykota.utils import *
 
@@ -107,18 +109,22 @@ class PKTurnKey(Tool) :
     def listPrinters(self, namestomatch) :
         """Returns a list of tuples (queuename, deviceuri) for all existing print queues."""
         self.printInfo("Extracting all print queues.")
-        result = os.popen("lpstat -v", "r")
-        lines = result.readlines()
-        result.close()
         printers = []
-        for line in lines :
-            (begin, end) = line.split(':', 1)
-            deviceuri = end.strip()
-            queuename = begin.split()[-1]
-            if self.matchString(queuename, namestomatch) :
-                printers.append((queuename, deviceuri))
-            else :
-                self.printInfo("Print queue %s skipped." % queuename)
+        server = pkipplib.CUPS()
+        for queuename in server.getPrinters() :
+            req = server.newRequest(pkipplib.IPP_GET_PRINTER_ATTRIBUTES)
+            req.operation["printer-uri"] = ("uri", server.identifierToURI("printers", queuename))
+            req.operation["requested-attributes"] = ("keyword", "device-uri")
+            result = server.doRequest(req)
+            try :
+                deviceuri = result.printer["device-uri"][0][1]
+            except (AttributeError, IndexError, KeyError) :
+                deviceuri = None
+            if deviceuri is not None :
+                if self.matchString(queuename, namestomatch) :
+                    printers.append((queuename, deviceuri))
+                else :
+                    self.printInfo("Print queue %s skipped." % queuename)
         return printers
 
     def listUsers(self, uidmin, uidmax) :
