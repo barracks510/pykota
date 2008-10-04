@@ -63,9 +63,10 @@ class PKPrinters(PyKotaTool) :
         cups = pkipplib.CUPS()
         req = cups.newRequest(pkipplib.IPP_GET_PRINTER_ATTRIBUTES)
         req.operation["printer-uri"] = ("uri", cups.identifierToURI("printers", printername))
+        req.operation["requested-attributes"] = ("keyword", "device-uri")
         try :
             return cups.doRequest(req).printer["device-uri"][0][1]
-        except :
+        except (AttributeError, IndexError) :
             self.printInfo(_("Impossible to retrieve %(printername)s's DeviceURI") % locals(), "warn")
             return ""
 
