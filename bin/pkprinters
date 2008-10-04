@@ -21,6 +21,8 @@
 #
 #
 
+"""A printers manager for PyKota."""
+
 import os
 import sys
 import pwd
@@ -110,7 +112,7 @@ class PKPrinters(PyKotaTool) :
             names = [u"*"]
 
         if options.remove and not options.groups :
-            raise PyKotaCommandLineError, _("You must specify printers groups names on the command line")
+            raise PyKotaCommandLineError, _("You must specify printers groups names on the command line.")
         elif (((islist or isdelete) and (options.charge  \
                                         or options.groups \
                                         or options.remove \
