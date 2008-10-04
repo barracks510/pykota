@@ -38,18 +38,18 @@ class Storage(BaseStorage, SQLStorage) :
         """Opens the SQLite database connection."""
         BaseStorage.__init__(self, pykotatool)
 
-        self.tool.logdebug("Trying to open database (dbname=%s)..." % dbname)
+        self.tool.logdebug("Trying to open database (dbname=%s)..." % repr(dbname))
         self.database = sqlite.connect(dbname, isolation_level=None)
         self.cursor = self.database.cursor()
-        self.closed = 0
-        self.tool.logdebug("Database opened (dbname=%s)" % dbname)
+        self.closed = False
+        self.tool.logdebug("Database opened (dbname=%s)" % repr(dbname))
 
     def close(self) :
         """Closes the database connection."""
         if not self.closed :
             self.cursor.close()
             self.database.close()
-            self.closed = 1
+            self.closed = True
             self.tool.logdebug("Database closed.")
 
     def beginTransaction(self) :

@@ -43,12 +43,25 @@ class Storage(BaseStorage, SQLStorage) :
         except ValueError :
             port = 3306           # Use the default MySQL port
 
-        self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
+        self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." \
+                               % (repr(host),
+                                  repr(port),
+                                  repr(dbname),
+                                  repr(user)))
         try :
-            self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd, charset="utf8")
+            self.database = MySQLdb.connect(host=host,
+                                            port=port,
+                                            db=dbname,
+                                            user=user,
+                                            passwd=passwd,
+                                            charset="utf8")
         except TypeError :
             self.tool.logdebug("'charset' argument not allowed with this version of python-mysqldb, retrying without...")
-            self.database = MySQLdb.connect(host=host, port=port, db=dbname, user=user, passwd=passwd)
+            self.database = MySQLdb.connect(host=host,
+                                            port=port,
+                                            db=dbname,
+                                            user=user,
+                                            passwd=passwd)
 
         try :
             self.database.autocommit(1)
@@ -58,7 +71,11 @@ class Storage(BaseStorage, SQLStorage) :
         self.cursor.execute("SET NAMES 'utf8';")
         self.cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED;") # Same as PostgreSQL and Oracle's default
         self.closed = False
-        self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
+        self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" \
+                               % (repr(host),
+                                  repr(port),
+                                  repr(dbname),
+                                  repr(user)))
         try :
             # Here we try to select a string (an &eacute;) which is
             # already encoded in UTF-8. If python-mysqldb suffers from

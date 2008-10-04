@@ -75,7 +75,10 @@ class Storage(BaseStorage) :
         message = ""
         for tryit in range(3) :
             try :
-                self.tool.logdebug("Trying to open database (host=%s, dbname=%s, user=%s)..." % (self.savedhost, self.saveddbname, self.saveduser))
+                self.tool.logdebug("Trying to open database (host=%s, dbname=%s, user=%s)..." \
+                                       % (repr(self.savedhost),
+                                          repr(self.saveddbname),
+                                          repr(self.saveduser)))
                 self.database = ldap.initialize(self.savedhost)
                 if self.info["ldaptls"] :
                     # we want TLS
@@ -90,7 +93,8 @@ class Storage(BaseStorage) :
                 self.tool.printInfo("Trying again in 2 seconds...", "warn")
                 time.sleep(2)
             except ldap.LDAPError :
-                message = "Unable to connect to LDAP server %s as %s." % (self.savedhost, self.saveduser)
+                message = "Unable to connect to LDAP server %s as %s." \
+                    % (repr(self.savedhost), repr(self.saveduser))
                 self.tool.printInfo("%s" % message, "error")
                 self.tool.printInfo("Trying again in 2 seconds...", "warn")
                 time.sleep(2)
@@ -99,8 +103,11 @@ class Storage(BaseStorage) :
                 if self.useldapcache :
                     self.tool.logdebug("Low-Level LDAP Caching enabled.")
                     self.ldapcache = {} # low-level cache specific to LDAP backend
-                self.closed = 0
-                self.tool.logdebug("Database opened (host=%s, dbname=%s, user=%s)" % (self.savedhost, self.saveddbname, self.saveduser))
+                self.closed = False
+                self.tool.logdebug("Database opened (host=%s, dbname=%s, user=%s)" \
+                                       % (repr(self.savedhost),
+                                          repr(self.saveddbname),
+                                          repr(self.saveduser)))
                 return # All is fine here.
         raise PyKotaStorageError, message
 
@@ -108,7 +115,7 @@ class Storage(BaseStorage) :
         """Closes the database connection."""
         if not self.closed :
             self.database.unbind_s()
-            self.closed = 1
+            self.closed = True
             self.tool.logdebug("Database closed.")
 
     def genUUID(self) :

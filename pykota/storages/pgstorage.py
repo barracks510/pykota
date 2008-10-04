@@ -52,24 +52,34 @@ class Storage(BaseStorage, SQLStorage) :
         except ValueError :
             port = 5432         # Use PostgreSQL's default tcp/ip port (5432).
 
-        self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
+        self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (repr(host),
+                                                                                                  repr(port),
+                                                                                                  repr(dbname),
+                                                                                                  repr(user)))
         try :
-            self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
+            self.database = pg.connect(host=host,
+                                       port=port,
+                                       dbname=dbname,
+                                       user=user,
+                                       passwd=passwd)
         except PGError, msg :
             msg = "%(msg)s --- the most probable cause of your problem is that PostgreSQL is down, or doesn't accept incoming connections because you didn't configure it as explained in PyKota's documentation." % locals()
             raise PGError, msg
-        self.closed = 0
+        self.closed = False
         try :
             self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
         except PGError, msg :
             self.tool.logdebug("Impossible to set database client encoding to UTF-8 : %s" % msg)
-        self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
+        self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (repr(host),
+                                                                                       repr(port),
+                                                                                       repr(dbname),
+                                                                                       repr(user)))
 
     def close(self) :
         """Closes the database connection."""
         if not self.closed :
             self.database.close()
-            self.closed = 1
+            self.closed = True
             self.tool.logdebug("Database closed.")
 
     def beginTransaction(self) :
