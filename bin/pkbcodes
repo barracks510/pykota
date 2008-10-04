@@ -45,12 +45,12 @@ class PKBcodes(PyKotaTool) :
 
     def main(self, names, options) :
         """Manage billing codes."""
-        if options.action != "list" :
-            self.adminOnly()
-
         islist = (options.action == "list")
         isadd = (options.action == "add")
         isdelete = (options.action == "delete")
+
+        if not islist :
+            self.adminOnly()
 
         if not names :
             if isdelete or isadd :
