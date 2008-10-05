@@ -21,6 +21,8 @@
 #
 #
 
+"""A tool that can be used to fill PyKota's database from system accounts, and detect the best accouting settings for the existing printers."""
+
 import sys
 import os
 import pwd
@@ -31,78 +33,10 @@ import signal
 from pkipplib import pkipplib
 
 import pykota.appinit
-from pykota.utils import *
-
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Tool
-
-__doc__ = N_("""pkturnkey v%(__version__)s (c) %(__years__)s %(__author__)s
-
-A turn key tool for PyKota. When launched, this command will initialize
-PyKota's database with all existing print queues and some or all users.
-For now, no prices or limits are set, so printing is fully accounted
-for, but not limited. That's why you'll probably want to also use
-edpykota once the database has been initialized.
-
-command line usage :
-
-  pkturnkey [options] [printqueues names]
-
-options :
-
-  -v | --version       Prints pkturnkey version number then exits.
-  -h | --help          Prints this message then exits.
-
-  -c | --doconf        Give hints about what to put into pykota.conf
-
-  -d | --dousers       Manages users accounts as well.
-
-  -D | --dogroups      Manages users groups as well.
-                       Implies -d | --dousers.
-
-  -e | --emptygroups   Includes empty groups.
-
-  -f | --force         Modifies the database instead of printing what
-                       it would do.
-
-  -u | --uidmin uid    Only adds users whose uid is greater than or equal to
-                       uid. You can pass an username there as well, and its
-                       uid will be used automatically.
-                       If not set, 0 will be used automatically.
-                       Implies -d | --dousers.
-
-  -U | --uidmax uid    Only adds users whose uid is lesser than or equal to
-                       uid. You can pass an username there as well, and its
-                       uid will be used automatically.
-                       If not set, a large value will be used automatically.
-                       Implies -d | --dousers.
-
-  -g | --gidmin gid    Only adds groups whose gid is greater than or equal to
-                       gid. You can pass a groupname there as well, and its
-                       gid will be used automatically.
-                       If not set, 0 will be used automatically.
-                       Implies -D | --dogroups.
-
-  -G | --gidmax gid    Only adds groups whose gid is lesser than or equal to
-                       gid. You can pass a groupname there as well, and its
-                       gid will be used automatically.
-                       If not set, a large value will be used automatically.
-                       Implies -D | --dogroups.
-
-examples :
-
-  $ pkturnkey --dousers --uidmin jerome
-
-  Will simulate the initialization of PyKota's database will all existing
-  printers and print accounts for all users whose uid is greater than
-  or equal to jerome's one. Won't manage any users group.
-
-  To REALLY initialize the database instead of simulating it, please
-  use the -f | --force command line switch.
-
-  You can limit the initialization to only a subset of the existing
-  printers, by passing their names at the end of the command line.
-""")
 
 class PKTurnKey(Tool) :
     """A class for an initialization tool."""
@@ -130,12 +64,12 @@ class PKTurnKey(Tool) :
     def listUsers(self, uidmin, uidmax) :
         """Returns a list of users whose uids are between uidmin and uidmax."""
         self.printInfo("Extracting all users whose uid is between %s and %s." % (uidmin, uidmax))
-        return [(entry[0], entry[3]) for entry in pwd.getpwall() if uidmin <= entry[2] <= uidmax]
+        return [(entry.pw_name, entry.pw_gid) for entry in pwd.getpwall() if uidmin <= entry.pw_uid <= uidmax]
 
     def listGroups(self, gidmin, gidmax, users) :
         """Returns a list of groups whose gids are between gidmin and gidmax."""
         self.printInfo("Extracting all groups whose gid is between %s and %s." % (gidmin, gidmax))
-        groups = [(entry[0], entry[2], entry[3]) for entry in grp.getgrall() if gidmin <= entry[2] <= gidmax]
+        groups = [(entry.gr_name, entry.gr_gid, entry.gr_mem) for entry in grp.getgrall() if gidmin <= entry.gr_gid <= gidmax]
         gidusers = {}
         usersgid = {}
         for u in users :
@@ -235,7 +169,7 @@ class PKTurnKey(Tool) :
                 from pysnmp.proto.api import alpha
             except ImportError :
                 logerr("pysnmp doesn't seem to be installed. SNMP checks will be ignored !\n")
-                return 0
+                return False
         else :
             hasV4 = True
 
@@ -291,14 +225,14 @@ class PKTurnKey(Tool) :
                             except :
                                 raise "No SNMP !"
                             else :
-                                self.SNMPOK = 1
-                                return 1
+                                self.SNMPOK = True
+                                return True
 
-        self.SNMPOK = 0
+        self.SNMPOK = False
         try :
             retrieveSNMPValues(hostname, community)
         except :
-            self.SNMPOK = 0
+            self.SNMPOK = False
         return self.SNMPOK
 
     def supportsPJL(self, hostname, port) :
@@ -306,7 +240,7 @@ class PKTurnKey(Tool) :
         def alarmHandler(signum, frame) :
             raise "Timeout !"
 
-        pjlsupport = 0
+        pjlsupport = False
         signal.signal(signal.SIGALRM, alarmHandler)
         signal.alarm(2) # wait at most 2 seconds
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -319,7 +253,7 @@ class PKTurnKey(Tool) :
         except :
             pass
         else :
-            pjlsupport = 1
+            pjlsupport = True
         s.close()
         signal.alarm(0)
         signal.signal(signal.SIGALRM, signal.SIG_IGN)
@@ -387,41 +321,56 @@ class PKTurnKey(Tool) :
         """Intializes PyKota's database."""
         self.adminOnly()
 
+        if options.uidmin or options.uidmax :
+            if not options.dousers :
+                self.printInfo(_("The --uidmin or --uidmax command line option implies --dousers as well."), "warn")
+            options.dousers = True
+
+        if options.gidmin or options.gidmax :
+            if not options.dogroups :
+                self.printInfo(_("The --gidmin or --gidmax command line option implies --dogroups as well."), "warn")
+            options.dogroups = True
+
+        if options.dogroups :
+            if not options.dousers :
+                self.printInfo(_("The --dogroups command line option implies --dousers as well."), "warn")
+            options.dousers = True
+
         if not names :
-            names = ["*"]
+            names = [u"*"]
 
         self.printInfo(_("Please be patient..."))
-        dryrun = not options["force"]
+        dryrun = not options.force
         if dryrun :
             self.printInfo(_("Don't worry, the database WILL NOT BE MODIFIED."))
         else :
             self.printInfo(_("Please WORRY NOW, the database WILL BE MODIFIED."))
 
-        if options["dousers"] :
-            if not options["uidmin"] :
+        if options.dousers :
+            if not options.uidmin :
                 self.printInfo(_("System users will have a print account as well !"), "warn")
                 uidmin = 0
             else :
                 try :
-                    uidmin = int(options["uidmin"])
+                    uidmin = int(options.uidmin)
                 except :
                     try :
-                        uidmin = pwd.getpwnam(options["uidmin"])[2]
+                        uidmin = pwd.getpwnam(options.uidmin).pw_uid
                     except KeyError, msg :
                         raise PyKotaCommandLineError, _("Unknown username %s : %s") \
-                                                   % (options["uidmin"], msg)
+                                                   % (options.uidmin, msg)
 
-            if not options["uidmax"] :
+            if not options.uidmax :
                 uidmax = sys.maxint
             else :
                 try :
-                    uidmax = int(options["uidmax"])
+                    uidmax = int(options.uidmax)
                 except :
                     try :
-                        uidmax = pwd.getpwnam(options["uidmax"])[2]
+                        uidmax = pwd.getpwnam(options.uidmax).pw_uid
                     except KeyError, msg :
                         raise PyKotaCommandLineError, _("Unknown username %s : %s") \
-                                                   % (options["uidmax"], msg)
+                                                   % (options.uidmax, msg)
 
             if uidmin > uidmax :
                 (uidmin, uidmax) = (uidmax, uidmin)
@@ -429,36 +378,36 @@ class PKTurnKey(Tool) :
         else :
             users = []
 
-        if options["dogroups"] :
-            if not options["gidmin"] :
+        if options.dogroups :
+            if not options.gidmin :
                 self.printInfo(_("System groups will have a print account as well !"), "warn")
                 gidmin = 0
             else :
                 try :
-                    gidmin = int(options["gidmin"])
+                    gidmin = int(options.gidmin)
                 except :
                     try :
-                        gidmin = grp.getgrnam(options["gidmin"])[2]
+                        gidmin = grp.getgrnam(options.gidmin).gr_gid
                     except KeyError, msg :
                         raise PyKotaCommandLineError, _("Unknown groupname %s : %s") \
-                                                   % (options["gidmin"], msg)
+                                                   % (options.gidmin, msg)
 
-            if not options["gidmax"] :
+            if not options.gidmax :
                 gidmax = sys.maxint
             else :
                 try :
-                    gidmax = int(options["gidmax"])
+                    gidmax = int(options.gidmax)
                 except :
                     try :
-                        gidmax = grp.getgrnam(options["gidmax"])[2]
+                        gidmax = grp.getgrnam(options.gidmax).gr_gid
                     except KeyError, msg :
                         raise PyKotaCommandLineError, _("Unknown groupname %s : %s") \
-                                                   % (options["gidmax"], msg)
+                                                   % (options.gidmax, msg)
 
             if gidmin > gidmax :
                 (gidmin, gidmax) = (gidmax, gidmin)
             groups = self.listGroups(gidmin, gidmax, users)
-            if not options["emptygroups"] :
+            if not options.emptygroups :
                 for (groupname, members) in groups.items() :
                     if not members :
                         del groups[groupname]
@@ -476,80 +425,50 @@ class PKTurnKey(Tool) :
         else :
             self.printInfo(_("Database initialized !"))
 
-        if options["doconf"] :
+        if options.doconf :
             self.hintConfig(printers)
 
 
 if __name__ == "__main__" :
-    retcode = 0
-    try :
-        short_options = "hvdDefu:U:g:G:c"
-        long_options = ["help", "version", "dousers", "dogroups", \
-                        "emptygroups", "force", "uidmin=", "uidmax=", \
-                        "gidmin=", "gidmax=", "doconf"]
+    parser = PyKotaOptionParser(description=_("A turn key tool for PyKota. When launched, this command will initialize PyKota's database with all existing print queues and some or all users. For now, no prices or limits are set, so printing is fully accounted for, but not limited. That's why you'll probably want to also use edpykota once the database has been initialized."),
+                                usage="pkturnkey [options] printer1 printer2 ... printerN")
+    parser.add_option("-c", "--doconf",
+                            action="store_true",
+                            dest="doconf",
+                            help=_("Try to autodetect the best print accounting settings for existing CUPS printers. All printers must be switched ON beforehand."))
+    parser.add_option("-d", "--dousers",
+                            action="store_true",
+                            dest="dousers",
+                            help=_("Create accounts for users, and allocate print quota entries for them."))
+    parser.add_option("-D", "--dogroups",
+                            action="store_true",
+                            dest="dogroups",
+                            help=_("Create accounts for users groups, and allocate print quota entries for them."))
+    parser.add_option("-e", "--emptygroups",
+                            action="store_true",
+                            dest="emptygroups",
+                            help=_("Also include groups which don't have any member."))
+    parser.add_option("-f", "--force",
+                            action="store_true",
+                            dest="force",
+                            help=_("Modifies PyKota's database content for real, instead of faking it (for safety reasons)."))
+    parser.add_option("-u", "--uidmin",
+                            dest="uidmin",
+                            help=_("Only include users whose uid is greater than or equal to this parameter. If you pass an username instead, his uid will be used automatically."))
+    parser.add_option("-U", "--uidmax",
+                            dest="uidmax",
+                            help=_("Only include users whose uid is lesser than or equal to this parameter. If you pass an username instead, his uid will be used automatically."))
+    parser.add_option("-g", "--gidmin",
+                            dest="gidmin",
+                            help=_("Only include users groups whose gid is greater than or equal to this parameter. If you pass a groupname instead, its gid will be used automatically."))
+    parser.add_option("-G", "--gidmax",
+                            dest="gidmax",
+                            help=_("Only include users groups whose gid is lesser than or equal to this parameter. If you pass a groupname instead, its gid will be used automatically."))
 
-        # Initializes the command line tool
-        manager = PKTurnKey(doc=__doc__)
-        manager.deferredInit()
-
-        # parse and checks the command line
-        (options, args) = manager.parseCommandline(sys.argv[1:], \
-                                                   short_options, \
-                                                   long_options, \
-                                                   allownothing=1)
-
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["dousers"] = options["d"] or options["dousers"]
-        options["dogroups"] = options["D"] or options["dogroups"]
-        options["emptygroups"] = options["e"] or options["emptygroups"]
-        options["force"] = options["f"] or options["force"]
-        options["uidmin"] = options["u"] or options["uidmin"]
-        options["uidmax"] = options["U"] or options["uidmax"]
-        options["gidmin"] = options["g"] or options["gidmin"]
-        options["gidmax"] = options["G"] or options["gidmax"]
-        options["doconf"] = options["c"] or options["doconf"]
-
-        if options["uidmin"] or options["uidmax"] :
-            if not options["dousers"] :
-                manager.printInfo(_("The --uidmin or --uidmax command line option implies --dousers as well."), "warn")
-            options["dousers"] = 1
-
-        if options["gidmin"] or options["gidmax"] :
-            if not options["dogroups"] :
-                manager.printInfo(_("The --gidmin or --gidmax command line option implies --dogroups as well."), "warn")
-            options["dogroups"] = 1
-
-        if options["dogroups"] :
-            if not options["dousers"] :
-                manager.printInfo(_("The --dogroups command line option implies --dousers as well."), "warn")
-            options["dousers"] = 1
-
-        if options["help"] :
-            manager.display_usage_and_quit()
-        elif options["version"] :
-            manager.display_version_and_quit()
-        else :
-            retcode = manager.main(args, options)
-    except KeyboardInterrupt :
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :
-        pass
-    except :
-        try :
-            manager.crashed("pkturnkey failed")
-        except :
-            crashed("pkturnkey failed")
-        retcode = -1
-
-    try :
-        manager.storage.close()
-    except (TypeError, NameError, AttributeError) :
-        pass
-
-    sys.exit(retcode)
+    parser.add_example("--dousers --uidmin jerome HPLASER1 HPLASER2",
+                       _("Would simulate the creation in PyKota's database of the printing accounts for all users whose uid is greater than or equal to 'jerome''s. Each of them would be given a print quota entry on printers 'HPLASER1' and 'HPLASER2'."))
+    parser.add_example("--force --dousers --uidmin jerome HPLASER1 HPLASER2",
+                       _("Would do the same as the example above, but for real. Please take great care when using the --force command line option."))
+    parser.add_example("--doconf",
+                       _("Would try to automatically detect the best print accounting settings for all active printers, and generate some lines for you to add into your pykota.conf"))
+    run(parser, PKTurnKey)
