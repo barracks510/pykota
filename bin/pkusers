@@ -24,6 +24,7 @@
 """A users and groups manager for PyKota."""
 
 import sys
+import os
 import pwd
 import grp
 
@@ -327,7 +328,7 @@ class PKUsers(PyKotaTool) :
 
 if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Manages PyKota users or users groups."),
-                                usage="pkusers [options] name1 name2 ... nameN")
+                                usage="pkusers [options] [usernames|groupnames]")
     parser.add_option("-a", "--add",
                             action="store_const",
                             const="add",
