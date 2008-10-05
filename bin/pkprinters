@@ -121,7 +121,7 @@ class PKPrinters(PyKotaTool) :
                                         or options.passthrough \
                                         or options.nopassthrough \
                                         or options.maxjobsize))) \
-              or (options.cups and options.list) :
+              or (options.cups and islist) :
             raise PyKotaCommandLineError, _("Incompatible command line options. Please look at the online help or manual page.")
 
         if not islist :
