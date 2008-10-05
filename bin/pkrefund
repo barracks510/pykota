@@ -256,15 +256,15 @@ class PKRefund(PyKotaTool) :
                     if outfname != "-" :
                         percent.oneMore()
                 else :
-                    print _("Date : %s") % str(job.JobDate)[:19]
-                    print _("Printer : %s") % job.PrinterName
-                    print _("User : %s") % job.UserName
-                    print _("JobId : %s") % job.JobId
-                    print _("Title : %s") % job.JobTitle
+                    self.display("%s\n" % (_("Date : %s") % str(job.JobDate)[:19]))
+                    self.display("%s\n" % (_("Printer : %s") % job.PrinterName))
+                    self.display("%s\n" % (_("User : %s") % job.UserName))
+                    self.display("%s\n" % (_("JobId : %s") % job.JobId))
+                    self.display("%s\n" % (_("Title : %s") % job.JobTitle))
                     if job.JobBillingCode :
-                        print _("Billing code : %s") % job.JobBillingCode
-                    print _("Pages : %i") % job.JobSize
-                    print _("Credits : %.3f") % job.JobPrice
+                        self.display("%s\n" % (_("Billing code : %s") % job.JobBillingCode))
+                    self.display("%s\n" % (_("Pages : %i") % job.JobSize))
+                    self.display("%s\n" % (_("Credits : %.3f") % job.JobPrice))
 
                     while True :
                         answer = raw_input("\t%s ? " % _("Refund (Y/N)")).strip().upper()
@@ -291,8 +291,8 @@ class PKRefund(PyKotaTool) :
                          options.unit or _("Credits"))
         if outfname != "-" :
             nbusers = len(peruser)
-            print _("Refunded %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
-                     % locals()
+            self.display("%s\n" % (_("Refunded %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
+                     % locals()))
 
 if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Refunding tool for PyKota."),

@@ -80,7 +80,7 @@ class RePyKota(PyKotaTool) :
             raise PyKotaCommandLineError, _("There's no printer matching %s") % options.printer
 
         self.reportingtool = reporter.openReporter(self, "text", printers, ugnames, options.groups)
-        print self.reportingtool.generateReport()
+        self.display(self.reportingtool.generateReport())
 
 if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Minimalist print accounting reports for PyKota. If not launched by a PyKota administrator, additionnal arguments representing users or groups names are ignored, limiting the scope of the reports to the current user."),

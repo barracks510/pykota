@@ -46,6 +46,7 @@ class Percent :
     """A class to display progress."""
     def __init__(self, app, size=None) :
         """Initializes the engine."""
+        self.isatty = sys.stdout.isatty()
         self.app = app
         self.size = None
         if size :
@@ -62,7 +63,9 @@ class Percent :
 
     def display(self, msg) :
         """Displays the value."""
-        self.app.display(msg)
+        if self.isatty :
+            self.app.display(msg)
+            sys.stdout.flush()
 
     def oneMore(self) :
         """Increments internal counter."""
@@ -150,11 +153,9 @@ class Tool :
         self.logdebug("Command line arguments : %s" % arguments)
 
     def display(self, message) :
-        """Display a message but only if stdout is a tty."""
-        if sys.stdout.isatty() :
-            sys.stdout.write(message.encode(self.charset, \
+        """Display a message after ensuring the correct charset is used."""
+        sys.stdout.write(message.encode(self.charset,
                                             "replace"))
-            sys.stdout.flush()
 
     def logdebug(self, message) :
         """Logs something to debug output if debug is enabled."""

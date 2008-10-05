@@ -330,16 +330,15 @@ class PKTurnKey(Tool) :
         if not printers :
             return
         sys.stderr.flush() # ensure outputs don't mix
-        print
-        print "--- CUT ---"
-        print "# Here are some lines that we suggest you add at the end"
-        print "# of the pykota.conf file. These lines gives possible"
-        print "# values for the way print jobs' size will be computed."
-        print "# NB : it is possible that a manual configuration gives"
-        print "# better results for you. As always, your mileage may vary."
-        print "#"
+        self.display("\n--- CUT ---\n")
+        self.display("# Here are some lines that we suggest you add at the end\n")
+        self.display("# of the pykota.conf file. These lines gives possible\n")
+        self.display("# values for the way print jobs' size will be computed.\n")
+        self.display("# NB : it is possible that a manual configuration gives\n")
+        self.display("# better results for you. As always, your mileage may vary.\n")
+        self.display("#\n")
         for (name, uri) in printers :
-            print "[%s]" % name
+            self.display("[%s]\n" % name)
             accounter = "software()"
             try :
                 uri = uri.split("cupspykota:", 2)[-1]
@@ -379,10 +378,10 @@ class PKTurnKey(Tool) :
                     elif self.supportsPJL(hostname, port) :
                         accounter = "hardware(pjl:%s)" % port
 
-            print "preaccounter : software()"
-            print "accounter : %s" % accounter
-            print
-        print "--- CUT ---"
+            self.display("preaccounter : software()\n")
+            self.display("accounter : %s\n" % accounter)
+            self.display("\n")
+        self.display("--- CUT ---\n")
 
     def main(self, names, options) :
         """Intializes PyKota's database."""

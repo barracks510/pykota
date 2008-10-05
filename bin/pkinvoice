@@ -263,8 +263,8 @@ class PKInvoice(PyKotaTool) :
                          options.vat)
         if outfname != "-" :
             nbusers = len(peruser)
-            print _("Invoiced %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
-                     % locals()
+            self.display("%s\n" % (_("Invoiced %(nbusers)i users for %(nbjobs)i jobs, %(nbpages)i pages and %(nbcredits).3f credits") \
+                     % locals()))
 
 if __name__ == "__main__" :
     parser = PyKotaOptionParser(description=_("Invoice generator for PyKota."),
