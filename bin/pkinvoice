@@ -53,7 +53,8 @@ from pykota.commandline import PyKotaOptionParser, \
                                checkandset_percent
 from pykota.pdfutils import getPageSize
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
-from pykota.tool import Percent, PyKotaTool
+from pykota.tool import PyKotaTool
+from pykota.progressbar import Percent
 
 class PKInvoice(PyKotaTool) :
     """A class for invoice generator."""

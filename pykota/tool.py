@@ -42,53 +42,6 @@ from pykota.errors import PyKotaCommandLineError
 from pykota import config, storage, logger
 from pykota.version import __version__, __author__, __years__, __gplblurb__
 
-class Percent :
-    """A class to display progress."""
-    def __init__(self, app, size=None) :
-        """Initializes the engine."""
-        self.isatty = sys.stdout.isatty()
-        self.app = app
-        self.size = None
-        if size :
-            self.setSize(size)
-        self.previous = None
-        self.before = time.time()
-
-    def setSize(self, size) :
-        """Sets the total size."""
-        self.number = 0
-        self.size = size
-        if size :
-            self.factor = 100.0 / float(size)
-
-    def display(self, msg) :
-        """Displays the value."""
-        if self.isatty :
-            self.app.display(msg)
-            sys.stdout.flush()
-
-    def oneMore(self) :
-        """Increments internal counter."""
-        if self.size :
-            self.number += 1
-            percent = "%.02f" % (float(self.number) * self.factor)
-            if percent != self.previous : # optimize for large number of items
-                self.display("\r%s%%" % percent)
-                self.previous = percent
-
-    def done(self) :
-        """Displays the 'done' message."""
-        after = time.time()
-        if self.size :
-            try :
-                speed = self.size / ((after - self.before) + 0.00000000001) # adds an epsilon to avoid an user's problem I can't reproduce...
-            except ZeroDivisionError :
-                speed = 1 # Fake value in case of division by zero, shouldn't happen anyway with the epsilon above...
-            self.display("\r100.00%%\r        \r%s. %s : %.2f %s.\n" \
-                     % (_("Done"), _("Average speed"), speed, _("entries per second")))
-        else :
-            self.display("\r100.00%%\r        \r%s.\n" % _("Done"))
-
 class Tool :
     """Base class for tools with no database access."""
     def __init__(self, doc="PyKota v%(__version__)s (c) %(__years__)s %(__author__)s") :
@@ -341,8 +294,8 @@ class PyKotaTool(Tool) :
         invalidchars = "/@?*,;&|"
         for c in list(invalidchars) :
             if c in name :
-                return 0
-        return 1
+                return False
+        return True
 
     def _checkUserPQuota(self, userpquota) :
         """Checks the user quota on a printer and deny or accept the job."""
@@ -465,7 +418,7 @@ class PyKotaTool(Tool) :
         printer = userpquota.Printer
 
         # indicates that a warning needs to be sent
-        warned = 0
+        warned = False
 
         # first we check any group the user is a member of
         for group in self.storage.getUserGroups(user) :
@@ -479,7 +432,7 @@ class PyKotaTool(Tool) :
                         if action == "DENY" :
                             return action
                         elif action == "WARN" :
-                            warned = 1
+                            warned = True
 
         # Then we check the user's account balance
         # if we get there we are sure that policy is not EXTERNAL
@@ -514,15 +467,15 @@ class PyKotaTool(Tool) :
                 return action
         else :
             # Then check the user quota on current printer and all its parents.
-            policyallowed = 0
+            policyallowed = False
             for upquota in [ userpquota ] + userpquota.ParentPrintersUserPQuota :
                 action = self._checkUserPQuota(upquota)
                 if action in ("DENY", "POLICY_DENY") :
                     return action
                 elif action == "WARN" :
-                    warned = 1
+                    warned = True
                 elif action == "POLICY_ALLOW" :
-                    policyallowed = 1
+                    policyallowed = True
             if warned :
                 return "WARN"
             elif policyallowed :

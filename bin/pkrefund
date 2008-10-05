@@ -52,7 +52,8 @@ from pykota.commandline import PyKotaOptionParser, \
                                checkandset_positiveint
 from pykota.pdfutils import getPageSize
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
-from pykota.tool import Percent, PyKotaTool
+from pykota.tool import PyKotaTool
+from pykota.progressbar import Percent
 
 class PKRefund(PyKotaTool) :
     """A class for refund manager."""

@@ -31,8 +31,9 @@ import pykota.appinit
 from pykota.utils import run
 from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
-from pykota.tool import Percent, PyKotaTool
+from pykota.tool import PyKotaTool
 from pykota.storage import StoragePrinter
+from pykota.progressbar import Percent
 
 from pkipplib import pkipplib
 
