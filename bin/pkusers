@@ -35,8 +35,6 @@ from pykota.errors import PyKotaCommandLineError
 from pykota.tool import Percent, PyKotaTool
 from pykota.storage import StorageUser, StorageGroup
 
-
-
 class PKUsers(PyKotaTool) :
     """A class for a users and users groups manager."""
     def modifyEntry(self, entry, groups, limitby, description, overcharge=None, balance=None, balancevalue=None, comment=None, email=None) :
