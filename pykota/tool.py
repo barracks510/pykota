@@ -186,22 +186,16 @@ class Tool :
                     return True
             return False
 
-    def sanitizeNames(self, options, names) :
-        """Ensures that an user can only see the datas he is allowed to see, by modifying the list of names."""
+    def sanitizeNames(self, names, isgroups) :
+        """Sanitize users and groups names if needed."""
         if not self.config.isAdmin :
             username = pwd.getpwuid(os.geteuid())[0]
-            if not options["list"] :
-                raise PyKotaCommandLineError, "%s : %s" % (username, _("You're not allowed to use this command."))
-            else :
-                if options["groups"] :
-                    user = self.storage.getUser(username)
-                    if user.Exists :
-                        return [ g.Name for g in self.storage.getUserGroups(user) ]
-                return [ username ]
-        elif not names :
-            return ["*"]
-        else :
-            return names
+            if isgroups :
+                user = self.storage.getUser(username)
+                if user.Exists :
+                    return [ g.Name for g in self.storage.getUserGroups(user) ]
+            return [ username ]
+        return names
 
     def display_version_and_quit(self) :
         """Displays version number, then exists successfully."""

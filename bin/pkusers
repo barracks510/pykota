@@ -70,17 +70,6 @@ class PKUsers(PyKotaTool) :
             else :
                 ugroup.addUserToGroup(user)
 
-    def sanitizeNames(self, names, isgroups) :
-        """Sanitize users and groups names if needed."""
-        if not self.config.isAdmin :
-            username = pwd.getpwuid(os.geteuid())[0]
-            if isgroups :
-                user = self.storage.getUser(username)
-                if user.Exists :
-                    return [ g.Name for g in self.storage.getUserGroups(user) ]
-            return [ username ]
-        return names
-
     def main(self, names, options) :
         """Manage users or groups."""
         islist = (options.action == "list")

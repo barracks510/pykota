@@ -21,131 +21,16 @@
 #
 #
 
+"""A print quota entries manager for PyKota."""
+
 import sys
 
 import pykota.appinit
-from pykota.utils import *
-
+from pykota.utils import run
+from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaCommandLineError
 from pykota.tool import Percent, PyKotaTool
 from pykota.storage import StorageUserPQuota, StorageGroupPQuota
-
-__doc__ = N_("""edpykota v%(__version__)s (c) %(__years__)s %(__author__)s
-
-A Print Quota editor for PyKota.
-
-command line usage :
-
-  edpykota [options] user1 user2 ... userN
-
-  edpykota [options] group1 group2 ... groupN
-
-options :
-
-  -v | --version       Prints edpykota's version number then exits.
-  -h | --help          Prints this message then exits.
-
-  -a | --add           Adds users or groups print quota entries if
-                       they don't exist in database.
-
-  -d | --delete        Deletes users or groups print quota entries.
-                       Users or groups are never deleted, you have
-                       to use the pkusers command to delete them.
-                       The history will be purge from all matching
-                       jobs, unless -g | --groups is used.
-
-  -P | --printer p     Edit quotas on printer p only. Actually p can
-                       use wildcards characters to select only
-                       some printers. The default value is *, meaning
-                       all printers.
-                       You can specify several names or wildcards,
-                       by separating them with commas.
-
-  -g | --groups        Edit groups print quota entries instead of
-                       users print quota entries.
-
-  -L | --list          Lists users or groups print quota entries.
-
-  -n | --noquota       Sets both soft and hard limits to None for users
-                       or groups print quota entries.
-
-  -r | --reset         Resets the actual page counter for the user
-                       or group to zero on the specified printers.
-                       The life time page counter is kept unchanged.
-
-  -R | --hardreset     Resets the actual and life time page counters
-                       for the user or group to zero on the specified
-                       printers. This is a shortcut for '--used 0'.
-
-  -s | --skipexisting  In combination with the --add option above, tells
-                       edpykota to not modify existing print quota entries.
-
-  -S | --softlimit sl  Sets the quota soft limit to sl pages.
-
-  -H | --hardlimit hl  Sets the quota hard limit to hl pages.
-
-  -I | --increase v    Increase existing Soft and Hard limits by the value
-                       of v. You can prefix v with + or -, if no sign is
-                       used, + is assumed.
-
-  -U | --used u        Sets the page counters for the user u pages on
-                       the selected printers. Doesn't work for groups, since
-                       their page counters are the sum of all their members'
-                       page counters.
-                       Useful for migrating users from a different system
-                       where they have already used some pages. Actual
-                       and Life Time page counters may be increased or decreased
-                       if u is prefixed with + or -.
-                       WARNING : BOTH page counters are modified in all cases,
-                       so be careful.
-                       NB : if u equals '0', then the action taken is
-                       the same as if --hardreset was used.
-
-  user1 through userN and group1 through groupN can use wildcards
-  if the --add option is not set.
-
-examples :
-
-  $ edpykota --add john paul george ringo
-
-  This will create print quota entries for users john, paul, george
-  and ringo on all printers. These print quota entries will have no
-  limit set.
-
-  $ edpykota --printer lp -S 50 -H 60 jerome
-
-  This will set jerome's print quota on the lp printer to a soft limit
-  of 50 pages, and a hard limit of 60 pages. Both user jerome and
-  printer lp have been previously created with the pkusers and pkprinters
-  commands, respectively.
-
-  $ edpykota -g -S 500 -H 550 financial support
-
-  This will set print quota soft limit to 500 pages and hard limit
-  to 550 pages for groups financial and support on all printers.
-
-  $ edpykota --reset jerome "jo*"
-
-  This will reset jerome's page counter to zero on all printers, as
-  well as every user whose name begins with 'jo'.
-  Their life time page counter on each printer will be kept unchanged.
-  You can also reset the life time page counters by using the
-  --hardreset | -R command line option.
-
-  $ edpykota --printer hpcolor --noquota jerome
-
-  This will tell PyKota to not limit jerome when printing on the
-  hpcolor printer. All his jobs will be allowed on this printer, but
-  accounting of the pages he prints will still be kept.
-  Print Quotas for jerome on other printers are unchanged.
-
-  $ edpykota --delete --printer "HP*,XER*" jerome rachel
-
-  This will delete users jerome and rachel's print quota
-  entries on all printers which name begin with 'HP' or
-  'XER'. The jobs printed by these users on these printers
-  will be deleted from the history.
-""")
 
 class EdPyKota(PyKotaTool) :
     """A class for edpykota."""
@@ -170,40 +55,65 @@ class EdPyKota(PyKotaTool) :
 
     def main(self, names, options) :
         """Edit user or group quotas."""
-        names = self.sanitizeNames(options, names)
-        suffix = (options["groups"] and "Group") or "User"
-        printernames = options["printer"].split(",")
+        islist = (options.action == "list")
+        isadd = (options.action == "add")
+        isdelete = (options.action == "delete")
 
-        if not options["list"] :
+        if not islist :
+            self.adminOnly()
+
+        names = self.sanitizeNames(names, options.groups)
+        if not names :
+            if isdelete :
+                raise PyKotaCommandLineError, _("You must specify users or groups names on the command line.")
+            names = [u"*"]
+
+        if (((islist or isdelete) and (options.used  \
+                                      or options.softlimit \
+                                      or options.hardlimit \
+                                      or options.reset \
+                                      or options.hardreset \
+                                      or options.noquota \
+                                      or options.increase \
+                                      or options.skipexisting))) \
+             or (options.groups and (options.used \
+                                  or options.increase \
+                                  or options.reset \
+                                  or options.hardreset)) :
+            raise PyKotaCommandLineError, _("Incompatible command line options. Please look at the online help or manual page.")
+
+        suffix = (options.groups and "Group") or "User"
+        printernames = options.printer.split(",")
+
+        if not islist :
             percent = Percent(self)
             percent.display("%s..." % _("Extracting datas"))
-        printers = self.storage.getMatchingPrinters(options["printer"])
+        printers = self.storage.getMatchingPrinters(options.printer)
         entries = getattr(self.storage, "getMatching%ss" % suffix)(",".join(names))
-        if not options["list"] :
+        if not islist :
             percent.setSize(len(printers) * len(entries))
 
-        if options["list"] :
+        if islist :
             for printer in printers :
                 for entry in entries :
                     pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
                     if pqentry.Exists :
-                        print "%s@%s" % (entry.Name, printer.Name)
-                        print "    %s" % (_("Page counter : %s") % pqentry.PageCounter)
-                        print "    %s" % (_("Lifetime page counter : %s") % pqentry.LifePageCounter)
-                        print "    %s" % (_("Soft limit : %s") % pqentry.SoftLimit)
-                        print "    %s" % (_("Hard limit : %s") % pqentry.HardLimit)
-                        print "    %s" % (_("Date limit : %s") % pqentry.DateLimit)
-                        print "    %s (Not supported yet)" % (_("Maximum job size : %s") % ((pqentry.MaxJobSize and (_("%s pages") % pqentry.MaxJobSize)) or _("Unlimited")))
+                        self.display("%s@%s\n" % (entry.Name, printer.Name))
+                        self.display("    %s\n" % (_("Page counter : %s") % pqentry.PageCounter))
+                        self.display("    %s\n" % (_("Lifetime page counter : %s") % pqentry.LifePageCounter))
+                        self.display("    %s\n" % (_("Soft limit : %s") % pqentry.SoftLimit))
+                        self.display("    %s\n" % (_("Hard limit : %s") % pqentry.HardLimit))
+                        self.display("    %s\n" % (_("Date limit : %s") % pqentry.DateLimit))
+                        self.display("    %s (Not supported yet)\n" % (_("Maximum job size : %s") % ((pqentry.MaxJobSize and (_("%s pages") % pqentry.MaxJobSize)) or _("Unlimited"))))
                         if hasattr(pqentry, "WarnCount") :
-                            print "    %s" % (_("Warning banners printed : %s") % pqentry.WarnCount)
-                        print
-        elif options["delete"] :
+                            self.display("    %s\n" % (_("Warning banners printed : %s") % pqentry.WarnCount))
+                        self.display("\n")
+        elif isdelete :
             percent.display("\n%s..." % _("Deletion"))
             getattr(self.storage, "deleteMany%sPQuotas" % suffix)(printers, entries)
             percent.display("\n")
         else :
-            skipexisting = options["skipexisting"]
-            used = options["used"]
+            used = options.used
             if used :
                 used = used.strip()
                 try :
@@ -211,35 +121,32 @@ class EdPyKota(PyKotaTool) :
                 except ValueError :
                     raise PyKotaCommandLineError, _("Invalid used value %s.") % used
 
-            increase = options["increase"]
+            increase = options.increase
             if increase :
                 try :
                     increase = int(increase.strip())
                 except ValueError :
                     raise PyKotaCommandLineError, _("Invalid increase value %s.") % increase
 
-            noquota = options["noquota"]
-            reset = options["reset"]
-            hardreset = options["hardreset"]
             softlimit = hardlimit = None
-            if not noquota :
-                if options["softlimit"] :
+            if not options.noquota :
+                if options.softlimit :
                     try :
-                        softlimit = int(options["softlimit"].strip())
+                        softlimit = int(options.softlimit.strip())
                         if softlimit < 0 :
                             raise ValueError
                     except ValueError :
-                        raise PyKotaCommandLineError, _("Invalid softlimit value %s.") % options["softlimit"]
-                if options["hardlimit"] :
+                        raise PyKotaCommandLineError, _("Invalid softlimit value %s.") % options.softlimit
+                if options.hardlimit :
                     try :
-                        hardlimit = int(options["hardlimit"].strip())
+                        hardlimit = int(options.hardlimit.strip())
                         if hardlimit < 0 :
                             raise ValueError
                     except ValueError :
-                        raise PyKotaCommandLineError, _("Invalid hardlimit value %s.") % options["hardlimit"]
+                        raise PyKotaCommandLineError, _("Invalid hardlimit value %s.") % options.hardlimit
                 if (softlimit is not None) and (hardlimit is not None) and (hardlimit < softlimit) :
-                    # error, exchange them
-                    self.printInfo(_("Hard limit %i is less than soft limit %i, values will be exchanged.") % (hardlimit, softlimit))
+                    self.printInfo(_("Hard limit %(hardlimit)i is less than soft limit %(softlimit)i, values will be exchanged.") \
+                                       % locals())
                     (softlimit, hardlimit) = (hardlimit, softlimit)
                 if hardlimit is None :
                     hardlimit = softlimit
@@ -252,10 +159,11 @@ class EdPyKota(PyKotaTool) :
 
             self.storage.beginTransaction()
             try :
-                if options["add"] :
+                if isadd :
                     percent.display("\n%s...\n" % _("Creation"))
                     if not entries :
-                        self.printInfo(_("No entry matches %s. Please use pkusers to create them first.") % (" ".join(names)), "warn")
+                        self.printInfo(_("No entry matches %s. Please use pkusers to create them first.") \
+                                           % (" ".join(names)), "warn")
 
                     factory = globals()["Storage%sPQuota" % suffix]
                     for printer in printers :
@@ -264,20 +172,34 @@ class EdPyKota(PyKotaTool) :
                             ename = entry.Name
                             pqkey = "%s@%s" % (ename, pname)
                             pqentry = factory(self.storage, entry, printer)
-                            self.modifyPQEntry(pqkey, pqentry, noquota, \
-                                                        softlimit, hardlimit, \
-                                                        increase, reset, \
-                                                        hardreset, suffix, used)
+                            self.modifyPQEntry(pqkey,
+                                               pqentry,
+                                               options.noquota,
+                                               softlimit,
+                                               hardlimit,
+                                               increase,
+                                               options.reset,
+                                               options.hardreset,
+                                               suffix,
+                                               used)
                             oldpqentry = getattr(self.storage, "add%sPQuota" % suffix)(pqentry)
                             if oldpqentry is not None :
-                                if skipexisting :
-                                    self.logdebug("%s print quota entry %s@%s already exists, skipping." % (suffix, ename, pname))
+                                if options.skipexisting :
+                                    self.logdebug("%s print quota entry %s@%s already exists, skipping." \
+                                                      % (suffix, ename, pname))
                                 else :
-                                    self.logdebug("%s print quota entry %s@%s already exists, will be modified." % (suffix, ename, pname))
-                                    self.modifyPQEntry(pqkey, oldpqentry, noquota, \
-                                                        softlimit, hardlimit, \
-                                                        increase, reset, \
-                                                        hardreset, suffix, used)
+                                    self.logdebug("%s print quota entry %s@%s already exists, will be modified." \
+                                                      % (suffix, ename, pname))
+                                    self.modifyPQEntry(pqkey,
+                                                       oldpqentry,
+                                                       options.noquota,
+                                                       softlimit,
+                                                       hardlimit,
+                                                       increase,
+                                                       options.reset,
+                                                       options.hardreset,
+                                                       suffix,
+                                                       used)
                                     oldpqentry.save()
                             percent.oneMore()
                 else :
@@ -287,10 +209,16 @@ class EdPyKota(PyKotaTool) :
                             pqkey = "%s@%s" % (entry.Name, printer.Name)
                             pqentry = getattr(self.storage, "get%sPQuota" % suffix)(entry, printer)
                             if pqentry.Exists :
-                                self.modifyPQEntry(pqkey, pqentry, noquota, \
-                                                    softlimit, hardlimit, \
-                                                    increase, reset, \
-                                                    hardreset, suffix, used)
+                                self.modifyPQEntry(pqkey,
+                                                   pqentry,
+                                                   options.noquota,
+                                                   softlimit,
+                                                   hardlimit,
+                                                   increase,
+                                                   options.reset,
+                                                   options.hardreset,
+                                                   suffix,
+                                                   used)
                                 pqentry.save()
                             percent.oneMore()
             except :
@@ -299,78 +227,74 @@ class EdPyKota(PyKotaTool) :
             else :
                 self.storage.commitTransaction()
 
-        if not options["list"] :
+        if not islist :
             percent.done()
 
 if __name__ == "__main__" :
-    retcode = 0
-    try :
-        defaults = { \
-                     "printer" : "*", \
-                   }
-        short_options = "vhdnagrLP:S:H:G:RU:I:s"
-        long_options = ["help", "version", \
-                        "delete", "list", \
-                        "noquota", "add", \
-                        "groups", "reset", "hardreset", \
-                        "printer=", "softlimit=", "hardlimit=", \
-                        "increase=", "used=", "skipexisting"]
+    parser = PyKotaOptionParser(description=_("Manages PyKota print quota entries for users or users groups. A print quota entry is related to both an user and a printer, or to both a group and a printer, meaning that for example different users can have different page count limits on the same printer. If an user doesn't have a print quota entry on a particular printer, he won't be allowed to print to it."),
+                                usage="edpykota [options] [usernames|groupnames]")
+    parser.add_option("-a", "--add",
+                            action="store_const",
+                            const="add",
+                            dest="action",
+                            help=_("Add new, or modify existing, users or groups print quota entries."))
+    parser.add_option("-d", "--delete",
+                            action="store_const",
+                            const="delete",
+                            dest="action",
+                            help=_("Delete the specified users or groups print quota entries. When deleting users print quota entries, the matching jobs are also deleted from the printing history."))
+    parser.add_option("-S", "--softlimit",
+                            dest="softlimit",
+                            help=_("Set the soft page count limit for the specified print quota entries. Users can print over this limit for a number of days specified in the 'gracedelay' directive in pykota.conf"))
+    parser.add_option("-H", "--hardlimit",
+                            dest="hardlimit",
+                            help=_("Set the hard page count limit for the specified print quota entries. Users are never allowed to print over this limit."))
+    parser.add_option("-g", "--groups",
+                            action="store_true",
+                            dest="groups",
+                            help=_("Manage groups print quota entries instead of users print quota entries."))
+    parser.add_option("-I", "--increase",
+                            dest="increase",
+                            help=_("Increase the existing soft and hard page count limits for the specified print quota entries. You can decrease the values instead by prefixing this parameter with a negative sign."))
+    parser.add_option("-L", "--list",
+                            action="store_const",
+                            const="list",
+                            dest="action",
+                            help=_("Display detailed informations about the specified users or groups print quota entries."))
+    parser.add_option("-n", "--noquota",
+                            dest="noquota",
+                            action="store_true",
+                            help=_("Set no limit for both soft and hard page counts for the specified users or groups print quota entries."))
+    parser.add_option("-P", "--printer",
+                            dest="printer",
+                            default="*",
+                            help=_("Specify a comma separated list of printers you want to manage print quota entries on. The default is '*', meaning all printers."))
+    parser.add_option("-r", "--reset",
+                            dest="reset",
+                            action="store_true",
+                            help=_("Reset the actual page counter for the specified users print quota entries (doesn't work for groups print quota entries). The life time page counter is left unchanged."))
+    parser.add_option("-R", "--hardreset",
+                            dest="hardreset",
+                            action="store_true",
+                            help=_("Reset the actual and life time page counters for the specified users print quota entries (doesn't work for groups print quota entries). This is a shortcut for --used 0."))
+    parser.add_option("-s", "--skipexisting",
+                            action="store_true",
+                            dest="skipexisting",
+                            help=_("If --add is used, ensure that existing users or groups print quota entries won't be modified."))
+    parser.add_option("-U", "--used",
+                            dest="used",
+                            help=_("Set the values of both the actual and life time page counters for the specified users print quota entries (doesn't work for groups print quota entries). This can be useful when migrating from a different print quota software. The values can also be increased or decreased by prefixing this parameter with either a positive or negative sign."))
 
-        # Initializes the command line tool
-        manager = EdPyKota(doc=__doc__)
-        manager.deferredInit()
-
-        # parse and checks the command line
-        (options, args) = manager.parseCommandline(sys.argv[1:], short_options, long_options)
-
-        # sets long options
-        options["help"] = options["h"] or options["help"]
-        options["version"] = options["v"] or options["version"]
-        options["add"] = options["a"] or options["add"]
-        options["groups"] = options["g"] or options["groups"]
-        options["printer"] = options["P"] or options["printer"] or defaults["printer"]
-        options["softlimit"] = options["S"] or options["softlimit"]
-        options["hardlimit"] = options["H"] or options["hardlimit"]
-        options["reset"] = options["r"] or options["reset"]
-        options["noquota"] = options["n"] or options["noquota"]
-        options["delete"] = options["d"] or options["delete"]
-        options["hardreset"] = options["R"] or options["hardreset"]
-        options["used"] = options["U"] or options["used"]
-        options["increase"] = options["I"] or options["increase"]
-        options["list"] = options["L"] or options["list"]
-        options["skipexisting"] = options["s"] or options["skipexisting"]
-
-        if options["help"] :
-            manager.display_usage_and_quit()
-        elif options["version"] :
-            manager.display_version_and_quit()
-        elif (options["add"] and options["delete"]) \
-             or (options["noquota"] and (options["hardlimit"] or options["softlimit"])) \
-             or (options["groups"] and options["used"]) \
-             or (options["skipexisting"] and not options["add"]) :
-            raise PyKotaCommandLineError, _("incompatible options, see help.")
-        elif options["delete"] and not args :
-            raise PyKotaCommandLineError, _("You have to pass user or group names on the command line")
-        else :
-            retcode = manager.main(args, options)
-    except KeyboardInterrupt :
-        logerr("\nInterrupted with Ctrl+C !\n")
-        retcode = -3
-    except PyKotaCommandLineError, msg :
-        logerr("%s : %s\n" % (sys.argv[0], msg))
-        retcode = -2
-    except SystemExit :
-        pass
-    except :
-        try :
-            manager.crashed("edpykota failed")
-        except :
-            crashed("edpykota failed")
-        retcode = -1
-
-    try :
-        manager.storage.close()
-    except (TypeError, NameError, AttributeError) :
-        pass
-
-    sys.exit(retcode)
+    parser.add_example("--add john paul george ringo",
+                       _("Would create print quota entries with no page count limits for these four users on all existing printers."))
+    parser.add_example("--printer HP --softlimit 50 --hardlimit 60 jerome",
+                       _("Would allow user 'jerome' to print up to 60 pages on printer 'HP'. This user would be warned when he would have reached 50 pages on this printer. Both the user and printer must have been created previously using the pkusers and pkprinters commands, respectively."))
+    parser.add_example("--groups --softlimit 500 --hardlimit 600 support financial",
+                       _("Would set soft and hard page count limits on any printer for groups 'support' and 'financial'."))
+    parser.add_example('--reset --printer HP jerome "jo*"',
+                       _("Would reset the actual page counter for users 'jerome' and all users whose name begins with 'jo' on printer 'HP'."))
+    parser.add_example("--printer HPCOLOR --noquota jerome",
+                       _("Would allow this user to print without any page limit on printer 'HPCOLOR'. Depending on how this user is limited, he may still be subject to being limited by the number of available credits in his account."))
+    parser.add_example("--add --skipexisting",
+                       _("Would create a print quota entry for each user on each printer for which none already existed. You'll most likely want to use this command at least once after initial setup."))
+    run(parser, EdPyKota)
