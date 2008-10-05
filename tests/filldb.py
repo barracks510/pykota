@@ -140,7 +140,7 @@ def createGroupPQuotas(groupnames, printernames) :
     number = len(groupnames) * len(printernames)
     sys.stdout.write("Adding %i group print quota entries...\n" % number)
     argsfile = open("arguments.list", "w")
-    argsfile.write('--groups\n--add\n--softlimit\n100\n--hardlimit\n110\n--reset\n--hardreset\n--printer\n')
+    argsfile.write('--groups\n--add\n--softlimit\n100\n--hardlimit\n110\n--printer\n')
     argsfile.write("%s\n" % ",".join(printernames))
     for gname in groupnames :
         argsfile.write("%s\n" % gname)
