@@ -58,7 +58,7 @@ def checkWithPrompt(prompt, module=None, command=None, helper=None) :
         sys.stdout.write("%s\n" % helper)
 
 if __name__ == "__main__" :
-    print "Checking PyKota dependencies..."
+    sys.stdout.write("Checking PyKota dependencies...\n")
 
     # checks if Python version is correct, we need >= 2.2
     if not (sys.version > "2.2") :

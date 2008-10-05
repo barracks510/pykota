@@ -268,7 +268,7 @@ class PyKotaSetup :
         """Downloads and install additional packages from http://www.pykota.com or other websites"""
         olddirectory = os.getcwd()
         directory = tempfile.mkdtemp()
-        print "\nDownloading additional software not available as packages in %(directory)s" % locals()
+        sys.stdout.write("\nDownloading additional software not available as packages in %(directory)s\n" % locals())
         os.chdir(directory)
         for package in self.otherpackages :
             name = package["name"]
@@ -419,8 +419,8 @@ class PyKotaSetup :
             self.setupDatabase()
             self.setupBackend()
             self.managePrinters(self.listPrinters())
-            print nowready
-            print "The script %s can be used to reinstall in unattended mode.\n" % self.genInstaller()
+            sys.stdout.write("%s\n" % nowready)
+            sys.stdout.write("The script %s can be used to reinstall in unattended mode.\n\n" % self.genInstaller())
 
     def genInstaller(self) :
         """Generates an installer script."""
@@ -458,9 +458,9 @@ class Ubuntu(Debian) :
 if __name__ == "__main__" :
     retcode = 0
     if (len(sys.argv) != 2) or (sys.argv[1] == "-h") or (sys.argv[1] == "--help") :
-        print "pksetup v0.1 (c) 2003-2008 Jerome Alet - alet@librelogiciel.com\n\nusage : pksetup distribution\n\ne.g. : pksetup debian\n\nIMPORTANT : only Debian and Ubuntu are currently supported."
+        sys.stdout.write("pksetup v0.1 (c) 2003-2008 Jerome Alet - alet@librelogiciel.com\n\nusage : pksetup distribution\n\ne.g. : pksetup debian\n\nIMPORTANT : only Debian and Ubuntu are currently supported.\n")
     elif (sys.argv[1] == "-v") or (sys.argv[1] == "--version") :
-        print "0.1" # pksetup's own version number
+        sys.stdout.write("0.1\n") # pksetup's own version number
     else :
         classname = sys.argv[1].strip().title()
         try :

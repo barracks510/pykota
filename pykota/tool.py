@@ -209,7 +209,7 @@ class Tool :
             self.clean()
         except AttributeError :
             pass
-        print __version__
+        self.display("%s\n" % __version__)
         sys.exit(0)
 
     def display_usage_and_quit(self) :
@@ -218,10 +218,9 @@ class Tool :
             self.clean()
         except AttributeError :
             pass
-        print _(self.documentation) % globals()
-        print __gplblurb__
-        print
-        print _("Please report bugs to :"), __author__
+        self.display("%s\n" % (_(self.documentation) % globals()))
+        self.display("%s\n\n" % __gplblurb__)
+        self.display("%s %s\n" % (_("Please report bugs to :"), __author__))
         sys.exit(0)
 
     def crashed(self, message="Bug in PyKota") :
