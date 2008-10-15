@@ -65,3 +65,7 @@ class PyKotaReporterError(PyKotaError) :
 class PyKotaLoggingError(PyKotaError) :
     """PyKota Exception for errors in PyKota logging."""
     pass
+
+class PyKotaTimeoutError(PyKotaError) :
+    """An exception for timeouts."""
+    pass
