@@ -79,7 +79,7 @@ class PyKotaNotify(Tool) :
     def checkAuth(self, username, password) :
         """Checks if we could authenticate an username with a password."""
         if not hasPAM :
-            raise PyKotaToolError, _("You MUST install PyPAM for this functionnality to work !")
+            raise PyKotaToolError, "You MUST install PyPAM for this functionnality to work !"
         else :
             retcode = False
             self.password = password
@@ -90,12 +90,12 @@ class PyKotaNotify(Tool) :
             try :
                 auth.authenticate()
                 auth.acct_mgmt()
-            except PAM.error, resp :
-                self.printInfo(_("Authentication error for user %s : %s") % (username, resp), "warn")
+            except PAM.error, response :
+                self.printInfo(_("Authentication error for user %(username)s : %(response)s") % locals(), "warn")
             except :
-                self.printInfo(_("Internal error : can't authenticate user %s") % username, "error")
+                self.printInfo(_("Internal error : can't authenticate user %(username)s") % locals(), "error")
             else :
-                self.logdebug(_("Password correct for user %s") % username)
+                self.logdebug("Entered password is correct for user %s" % username)
                 retcode = True
             return retcode
 
@@ -106,21 +106,14 @@ class PyKotaNotify(Tool) :
     def main(self, arguments, options) :
         """Notifies or asks questions to end users through PyKotIcon."""
         try :
-            (self.destination, self.port) = options["destination"].split(":")
+            (self.destination, self.port) = options.destination.split(":")
             self.port = int(self.port)
         except ValueError :
-            self.destination = options["destination"]
+            self.destination = options.destination
             self.port = 7654
 
         try :
-            denyafter = int(options["denyafter"])
-            if denyafter < 1 :
-                raise ValueError
-        except (ValueError, TypeError) :
-            denyafter = 1
-
-        try :
-            self.timeout = int(options["timeout"])
+            self.timeout = options.timeout
             if self.timeout < 0 :
                 raise ValueError
         except (ValueError, TypeError) :
@@ -133,13 +126,12 @@ class PyKotaNotify(Tool) :
         try :
             try :
                 server = xmlrpclib.ServerProxy("http://%s:%s" % (self.destination, self.port))
-                if options["ask"] :
+                if options.action == "ask" :
                     try :
-                        denyafter = int(options["denyafter"])
-                        if denyafter < 1 :
+                        if options.denyafter < 1 :
                             raise ValueError
                     except (ValueError, TypeError) :
-                        denyafter = 1
+                        options.denyafter = 1
                     labels = []
                     varnames = []
                     varvalues = {}
@@ -155,9 +147,9 @@ class PyKotaNotify(Tool) :
 
                     passnumber = 1
                     authok = None
-                    while (authok != "AUTH=YES") and (passnumber <= denyafter) :
+                    while (authok != "AUTH=YES") and (passnumber <= options.denyafter) :
                         result = server.askDatas(labels, varnames, varvalues)
-                        if not options["checkauth"] :
+                        if not options.checkauth :
                             break
                         if result["isValid"] :
                             if ("username" in varnames) and ("password" in varnames) :
@@ -170,8 +162,8 @@ class PyKotaNotify(Tool) :
                                 authok = "AUTH=IMPOSSIBLE"
                         passnumber += 1
 
-                    if options["checkauth"] and options["denyafter"] \
-                       and (passnumber > denyafter) \
+                    if options.checkauth and options.denyafter \
+                       and (passnumber > options.denyafter) \
                        and (authok != "AUTH=YES") :
                         print "DENY"
                     if result["isValid"] :
@@ -181,15 +173,15 @@ class PyKotaNotify(Tool) :
                                 print "%s=%s" % (varname.upper(), self.UTF8ToUserCharset(result[varname].data[:]))
                         if authok is not None :
                             print authok
-                elif options["confirm"] :
+                elif options.action == "confirm" :
                     print server.showDialog(self.sanitizeMessage(arguments[0]), True)
-                elif options["notify"] :
+                elif options.action == "notify" :
                     print server.showDialog(self.sanitizeMessage(arguments[0]), False)
 
-                if options["quit"] :
+                if options.quit :
                     server.quitApplication()
             except (xmlrpclib.ProtocolError, socket.error, socket.gaierror), msg :
-                print options["noremote"]
+                print options.noremote
                 #try :
                 #    errnum = msg.args[0]
                 #except (AttributeError, IndexError) :
