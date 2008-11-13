@@ -137,8 +137,7 @@ class CUPSBackend(PyKotaTool) :
         (directory, myname) = os.path.split(sys.argv[0])
         if not directory :
             directory = "./"
-        tmpdir = tempfile.gettempdir()
-        lockfilename = os.path.join(tmpdir, "%s..LCK" % myname)
+        lockfilename = os.path.join(tempfile.gettempdir(), "%s..LCK" % myname)
         if os.path.exists(lockfilename) :
             lockfile = open(lockfilename, "r")
             pid = int(lockfile.read())
@@ -230,8 +229,7 @@ class CUPSBackend(PyKotaTool) :
 
         self.PrinterName = os.environ.get("PRINTER", "")
         directories = [ self.config.getPrinterDirectory(self.PrinterName),
-                        "/tmp",
-                        "/var/tmp" ]
+                        tempfile.gettempdir() ]
         self.Directory = None
         for direc in directories :
             if os.access(direc, os.O_RDWR) :
