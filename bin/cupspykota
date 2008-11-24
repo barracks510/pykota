@@ -223,7 +223,7 @@ class CUPSBackend(PyKotaTool) :
         # If this is the case, we have to remove the prefix from
         # the environment before launching the real backend
         self.logdebug("Initializing backend...")
-
+        self.softwareJobSize = None
         if not self.checkCUPSVersion() :
             self.printInfo("BEWARE : CUPS is too old. You should use CUPS v1.3.4 or higher.", "error")
 
@@ -1327,12 +1327,13 @@ if __name__ == "__main__" :
                 if os.environ.get("PYKOTASTATUS") == "CANCELLED" :
                     raise KeyboardInterrupt
                 wrapper.saveDatasAndCheckSum()
+                wrapper.exportJobInfo() # exports a first time to give hints to external scripts
                 wrapper.preaccounter = openAccounter(wrapper, ispreaccounter=1)
                 wrapper.accounter = openAccounter(wrapper)
                 wrapper.precomputeJobSize()
-                wrapper.exportJobInfo() # exports a first time to give hints to external scripts
+                wrapper.exportJobInfo() # exports a second time, now that we know the job's size. TODO : don't reexport all
                 wrapper.overwriteJobAttributes()
-                wrapper.exportJobInfo() # re-exports in case it was overwritten
+                wrapper.exportJobInfo() # re-exports in case it was overwritten. TODO : don't reexport all.
                 retcode = wrapper.mainWork()
             except KeyboardInterrupt :
                 wrapper.printInfo(_("Job %s interrupted by the administrator !") % wrapper.Ticket.JobId, "warn")
