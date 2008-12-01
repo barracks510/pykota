@@ -1283,11 +1283,10 @@ class CUPSBackend(PyKotaTool) :
                     self.printInfo(_("The real CUPS backend failed, but the job will be accounted for anyway."), "warn")
 
             # retrieve the job size
+            self.JobSize = 0
             if self.Action == "DENY" :
-                self.JobSize = 0
                 self.printInfo(_("Job size forced to 0 because printing is denied."))
             elif self.Action == "CANCEL" :
-                self.JobSize = 0
                 self.printInfo(_("Job size forced to 0 because printing was cancelled."))
             else :
                 self.UserPQuota.resetDenyBannerCounter()
