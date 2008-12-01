@@ -1160,6 +1160,8 @@ class CUPSBackend(PyKotaTool) :
                     self.JobSize = self.accounter.getJobSize(self.Printer)
                     self.sanitizeJobSize()
                     self.JobSize += self.BannerSize
+                else :
+                    self.JobSize = 0
             self.printInfo(_("Job size : %i") % self.JobSize)
 
             if ((self.Action == "PROBLEM") and ("NOCHARGE" in onbackenderror)) or \
