@@ -941,8 +941,13 @@ class CUPSBackend(PyKotaTool) :
                     self.printInfo(_("Impossible to connect to SMTP server : %s") % msg, "error")
                 else :
                     try :
-                        msg = MIMEText(fullmessage, _charset=self.charset)
-                        msg["Subject"] = Header(_("Print Quota"), charset=self.charset, errors="replace")
+                        msg = MIMEText(fullmessage.encode(self.charset,
+                                                          "replace"),
+                                       _charset=self.charset)
+                        subject = _("Print Quota")
+                        msg["Subject"] = Header(subject.encode(self.charset, "replace"),
+                                                charset=self.charset,
+                                                errors="replace")
                         msg["From"] = adminmail
                         if mailto in ("BOTH", "USER") :
                             msg["To"] = usermail

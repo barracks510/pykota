@@ -70,7 +70,7 @@ class WarnPyKota(PyKotaTool) :
         if "@" not in usermail :
             usermail = "%s@%s" % (usermail, self.maildomain or self.smtpserver or "localhost")
         msg = MIMEText(message.encode(self.charset, "replace"), _charset=self.charset)
-        msg["Subject"] = Header(subject, charset=self.charset)
+        msg["Subject"] = Header(subject.encode(self.charset, "replace"), charset=self.charset)
         msg["From"] = adminmail
         msg["To"] = usermail
         msg["Date"] = email.Utils.formatdate(localtime=True)
@@ -81,7 +81,7 @@ class WarnPyKota(PyKotaTool) :
         if "@" not in adminmail :
             adminmail = "%s@%s" % (adminmail, self.maildomain or self.smtpserver or "localhost")
         msg = MIMEText(message.encode(self.charset, "replace"), _charset=self.charset)
-        msg["Subject"] = Header(subject, charset=self.charset)
+        msg["Subject"] = Header(subject.encode(self.charset, "replace"), charset=self.charset)
         msg["From"] = adminmail
         msg["To"] = adminmail
         self.sendMessage(adminmail, adminmail, msg.as_string())
