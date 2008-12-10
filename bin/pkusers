@@ -349,7 +349,7 @@ if __name__ == "__main__" :
                             help=_("Put the specified users into the specified groups. When combined with the --remove option, users are removed from the specified groups instead."))
     parser.add_option("-l", "--limitby",
                             dest="limitby",
-                            help=_("Set the limiting factor for the specified users or groups. Can be any of 'quota' (limit by number of pages per printer), 'balance' (limit by number of credits), 'noquota' (no limit but accounting done), 'nochange' (no limit and not accounting), or 'noprint' (printing is denied). The two latter ones are not supported for groups."))
+                            help=_("Set the limiting factor for the specified users or groups. Can be any of 'quota' (limit by number of pages per printer), 'balance' (limit by number of credits), 'noquota' (no limit but accounting done), 'nochange' (no limit and no accounting), or 'noprint' (printing is denied). The two latter ones are not supported for groups."))
     parser.add_option("-L", "--list",
                             action="store_const",
                             const="list",
