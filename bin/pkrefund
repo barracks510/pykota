@@ -29,6 +29,8 @@ import pwd
 import time
 import cStringIO
 
+from mx import DateTime
+
 try :
     from reportlab.pdfgen import canvas
     from reportlab.lib import pagesizes
@@ -235,6 +237,10 @@ class PKRefund(PyKotaTool) :
                                             start=start,
                                             end=end,
                                             limit=0)
+        try :
+            loginname = os.getlogin()
+        except OSError :
+            loginname = pwd.getpwuid(os.getuid()).pw_name
 
         peruser = {}
         nbjobs = 0
@@ -245,13 +251,28 @@ class PKRefund(PyKotaTool) :
             percent.display("\n")
         for job in jobs :
             if job.JobSize and (job.JobAction not in ("DENY", "CANCEL", "REFUND")) :
+                if options.info :
+                    reason = "%s : %s" % (options.info % { "nbpages" : job.JobSize,
+                                                           "nbcredits" : job.JobPrice,
+                                                           "effectiveuser" : self.effectiveUserName,
+                                                           "loginname" : loginname,
+                                                           "date" : str(DateTime.now())[:19],
+                                                         },
+                                          options.reason)
+                else :
+                    reason = options.reason
+
                 if options.force :
                     nbpages += job.JobSize
                     nbcredits += job.JobPrice
-                    counters = peruser.setdefault(job.UserName, { "nbjobs" : 0, "nbpages" : 0, "nbcredits" : 0.0 })
+                    counters = peruser.setdefault(job.UserName,
+                                                  { "nbjobs" : 0,
+                                                    "nbpages" : 0,
+                                                    "nbcredits" : 0.0,
+                                                  })
                     counters["nbpages"] += job.JobSize
                     counters["nbcredits"] += job.JobPrice
-                    job.refund(options.reason)
+                    job.refund(reason)
                     counters["nbjobs"] += 1
                     nbjobs += 1
                     if outfname != "-" :
@@ -272,23 +293,27 @@ class PKRefund(PyKotaTool) :
                         if answer == _("Y") :
                             nbpages += job.JobSize
                             nbcredits += job.JobPrice
-                            counters = peruser.setdefault(job.UserName, { "nbjobs" : 0, "nbpages" : 0, "nbcredits" : 0.0 })
+                            counters = peruser.setdefault(job.UserName,
+                                                          { "nbjobs" : 0,
+                                                            "nbpages" : 0,
+                                                            "nbcredits" : 0.0,
+                                                          })
                             counters["nbpages"] += job.JobSize
                             counters["nbcredits"] += job.JobPrice
-                            job.refund(options.reason)
+                            job.refund(reason)
                             counters["nbjobs"] += 1
                             nbjobs += 1
                             break
                         elif answer == _("N") :
                             break
-                    print
+                    sys.stdout.write("\n")
         if outfname != "-" :
             percent.done()
         self.genReceipts(peruser,
                          options.logo.strip().encode(sys.getfilesystemencoding()),
                          outfname,
                          options.number,
-                         options.reason,
+                         options.reason, # We don't want the full reason here.
                          options.unit or _("Credits"))
         if outfname != "-" :
             nbusers = len(peruser)
@@ -301,18 +326,16 @@ if __name__ == "__main__" :
     parser.add_option("-f", "--force",
                             dest="force",
                             action="store_true",
-                            help=_("Doesn't ask for confirmation before refunding."))
+                            help=_("Doesn't ask for confirmation before refunding. Only needed if you specify a filename for the PDF receipts. If you send such receipts to stdout, --force is assumed to be set."))
+    parser.add_option("-i", "--info",
+                            dest="info",
+                            type="string",
+                            default=_("Refunded %(nbpages)i pages and %(nbcredits).3f credits by %(effectiveuser)s (%(loginname)s) on %(date)s"),
+                            help=_("The informations to be prepended to the refunding reason, which can include some of Python's string interpolations to access to certain internal values. If you don't want such information, set this explicitely to an empty string. The default is '''%default'''"))
     parser.add_option("-l", "--logo",
                             dest="logo",
                             default=u"/usr/share/pykota/logos/pykota.jpeg",
                             help=_("The image to use as a logo. The logo will be drawn at the center top of the page. The default logo is %default."))
-    parser.add_option("-p", "--pagesize",
-                            type="string",
-                            action="callback",
-                            callback=checkandset_pagesize,
-                            dest="pagesize",
-                            default=u"A4",
-                            help=_("Set the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default."))
     parser.add_option("-n", "--number",
                             dest="number",
                             type="int",
@@ -324,7 +347,14 @@ if __name__ == "__main__" :
                             dest="output",
                             type="string",
                             default=u"-",
-                            help=_("The name of the file to which the PDF receipts will be written. If not set or set to '%default', the PDF document will be sent to the standard output."))
+                            help=_("The name of the file to which the PDF receipts will be written. If not set or set to '%default', the PDF document will be sent to the standard output, and --force will be assumed to be set."))
+    parser.add_option("-p", "--pagesize",
+                            type="string",
+                            action="callback",
+                            callback=checkandset_pagesize,
+                            dest="pagesize",
+                            default=u"A4",
+                            help=_("Set the size of the page. Most well known page sizes are recognized, like 'A4' or 'Letter' to name a few. The default page size is %default."))
     parser.add_option("-r", "--reason",
                             dest="reason",
                             type="string",
