@@ -230,12 +230,11 @@ class PyKotaDumperGUI(DumPyKota) :
                     elif self.options.format == "cups" :
                         ctype = "text/plain"
                         fname = "page_log"
-                    print "Content-type: %s" % ctype
-                    print "Content-disposition: attachment; filename=%s" % fname
-                    print
+                    sys.stdout.write("Content-type: %s\n" % ctype)
+                    sys.stdout.write("Content-disposition: attachment; filename=%s\n\n" % fname)
                     self.main(self.arguments, self.options, restricted=0)
                 except :
-                    print 'Content-type: text/html\n\n<html><head><title>CGI Error</title></head><body><p><font color="red">%s</font></p></body></html>' % self.crashed("CGI Error").replace("\n", "<br />")
+                    sys.stdout.write('Content-type: text/html\n\n<html><head><title>CGI Error</title></head><body><p><font color="red">%s</font></p></body></html>\n' % self.crashed("CGI Error").replace("\n", "<br />"))
             else :
                 self.guiDisplay()
 
