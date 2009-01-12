@@ -699,10 +699,10 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           </listitem>
           <listitem>
             <para>
-              <application>Python</application> version 2.3 or higher.
+              <application>Python</application> version 2.4 or higher.
               You can download it from <ulink url="http://www.python.org">http://www.python.org</ulink>.
               While <application>PyKota</application> itself will try to preserve compatibility
-              with <application>Python</application> version 2.3 for the near future, some <application>Python</application>
+              with <application>Python</application> version 2.4 for the near future, some <application>Python</application>
               modules which are needed by <application>PyKota</application> may require a more recent version
               of this language.
             </para>
@@ -809,7 +809,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               the <command>snmpget</command> command.
               You can download this software from <ulink url="http://www.sourceforge.net/projects/net-snmp/">http://www.sourceforge.net/projects/net-snmp/</ulink>.
               You only need this if PyKota's internal SNMP accounting code doesn't work for your SNMP-aware
-              printers.
+              printers. In 99% of the cases, you won't need to install this.
             </para>
           </listitem>
           <listitem>
@@ -817,7 +817,9 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               <application>netatalk</application> version 1.6.1 or above. You only need
               the <command>pap</command> command.
               You can download this software from <ulink url="http://netatalk.sourceforge.net/">http://netatalk.sourceforge.net/</ulink>.
-              You only need this if you plan to query your printers for their internal page counter via AppleTalk.
+              You only need this if you plan to query your printers for
+              their internal page counter via AppleTalk.
+              In 99% of the cases, you won't need to install this.
             </para>
           </listitem>
           <listitem>
@@ -831,7 +833,10 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
               The Python acccelerator <application>Psyco</application>. It must match your default Python version.
               You can download it from <ulink url="http://psyco.sourceforge.net">http://psyco.sourceforge.net</ulink>.
               You only need this if you run on the <literal>x86</literal> architecture because
-              <application>Psyco</application> doesn't yet exist on other architectures.
+              <application>Psyco</application> doesn't yet exist on
+              other architectures.
+              Feel free to install this or not. It might speedup the
+              parsing of some print jobs by <appname>PyKota</appname>.
             </para>
           </listitem>
           <listitem>
@@ -1083,12 +1088,29 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
         </para>
 
         <para>
+          As an alternative you can simply copy it :
+          <screen>
+            $ cp /usr/share/pykota/cupspykota /usr/lib/cups/backend
+          </screen>
+        </para>
+
+        <para>
           If you use CUPS v1.2 or higher, you must
-          also type the following command to allow the <command>cupspykota</command>
+          also type the following commands to allow the <command>cupspykota</command>
           backend to correctly support other backends which must be run
           as the root user (e.g. the <command>lpd</command> backend) :
           <screen>
+    $ chown root.root /usr/share/pykota/cupspykota
     $ chmod 700 /usr/share/pykota/cupspykota
+          </screen>
+        </para>
+
+        <para>
+          As an alternative, if you've copied the backend instead of
+          having created a symbolic link :
+          <screen>
+    $ chown root.root /usr/lib/cups/backend/cupspykota
+    $ chmod 700 /usr/lib/cups/backend/cupspykota
           </screen>
         </para>
 
