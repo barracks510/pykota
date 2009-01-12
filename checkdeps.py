@@ -60,30 +60,28 @@ def checkWithPrompt(prompt, module=None, command=None, helper=None) :
 if __name__ == "__main__" :
     sys.stdout.write("Checking PyKota dependencies...\n")
 
-    # checks if Python version is correct, we need >= 2.2
-    if not (sys.version > "2.2") :
-        sys.stderr.write("PyKota needs at least Python v2.2 !\nYour version seems to be older than that, please update.\nAborted !\n")
+    # checks if Python version is correct, we need >= 2.4
+    if not (sys.version > "2.4") :
+        sys.stderr.write("PyKota needs at least Python v2.4 !\nYour version seems to be older than that, please update.\nAborted !\n")
         sys.exit(-1)
 
     # checks if some needed Python modules are there or not.
-    modulestocheck = [ ("Python-PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota database backend.\nSee http://www.pygresql.org"),
-                       ("Python-SQLite", "pysqlite2", "Python-SQLite is mandatory if you want to use SQLite as the quota database backend.\nSee http://www.pysqlite.org"),
-                       ("MySQL-Python", "MySQLdb", "MySQL-Python is mandatory if you want to use MySQL as the quota database backend.\nSee http://sourceforge.net/projects/mysql-python"),
-                       ("Python-egenix-mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com"),
-                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota database backend.\nSee http://python-ldap.sf.net"),
-                       ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd. See http://repose.cx/pyosd/"),
-                       ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net"),
-                       ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/"),
-                       ("Python-ReportLab", "reportlab.pdfgen.canvas", "Python-ReportLab is required if you plan to have PyKota generate banners.\nSee http://www.reportlab.org/"),
-                       ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners.\nSee http://www.pythonware.com/downloads/"),
-                       ("Python-Psyco", "psyco", "Python-Psyco speeds up parsing of print files, you should use it.\nSee http://psyco.sourceforge.net/"),
-                       ("Python-pkpgcounter", "pkpgpdls", "Python-pkpgcounter is mandatory.\nGrab it from http://www.pykota.com/software/pkpgcounter/"),
-                       ("Python-PAM", "PAM", "Python-PAM is recommended if you plan to use pknotify+PyKotIcon.\nGrab it from http://www.pangalactic.org/PyPAM/"),
+    modulestocheck = [ ("Python-PygreSQL", "pg", "PygreSQL is mandatory if you want to use PostgreSQL as the quota database backend.\nSee http://www.pygresql.org or use 'apt-get install python-pygresql'"),
+                       ("Python-SQLite", "pysqlite2", "Python-SQLite is mandatory if you want to use SQLite as the quota database backend.\nSee http://www.pysqlite.org or use 'apt-get install python-pysqlite2'"),
+                       ("MySQL-Python", "MySQLdb", "MySQL-Python is mandatory if you want to use MySQL as the quota database backend.\nSee http://sourceforge.net/projects/mysql-python or use 'apt-get install python-mysqldb'"),
+                       ("Python-egenix-mxDateTime", "mx.DateTime", "eGenix' mxDateTime is mandatory for PyKota to work.\nSee http://www.egenix.com or use 'apt-get install python-egenix-mxdatetime'"),
+                       ("Python-LDAP", "ldap", "Python-LDAP is mandatory if you plan to use an LDAP\ndirectory as the quota database backend.\nSee http://python-ldap.sf.net or use 'apt-get install python-ldap'"),
+                       ("Python-OSD", "pyosd", "Python-OSD is recommended if you plan to use the X Window On Screen Display\nprint quota reminder named pykosd. See http://repose.cx/pyosd/ or use 'apt-get install python-osd'"),
+                       ("Python-SNMP", "pysnmp", "Python-SNMP is recommended if you plan to use hardware\naccounting with printers which support SNMP.\nSee http://pysnmp.sf.net or use 'apt-get install python-pysnmp4'"),
+                       ("Python-JAXML", "jaxml", "Python-JAXML is recommended if you plan to dump datas in the XML format.\nSee http://www.librelogiciel.com/software/ or use 'apt-get install python-jaxml'"),
+                       ("Python-ReportLab", "reportlab.pdfgen.canvas", "Python-ReportLab is required if you plan to have PyKota generate banners, invoices or receipts.\nSee http://www.reportlab.org/ or use 'apt-get install python-reportlab'"),
+                       ("Python-Imaging", "PIL.Image", "Python-Imaging is required if you plan to have PyKota generate banners, invoices or receipts.\nSee http://www.pythonware.com/downloads/ or use 'apt-get install python-imaging'"),
+                       ("Python-pkpgcounter", "pkpgpdls", "Python-pkpgcounter is mandatory.\nGrab it from http://www.pykota.com/software/pkpgcounter/ or use 'apt-get install pkpgcounter'"),
+                       ("Python-PAM", "PAM", "Python-PAM is recommended if you plan to use pknotify+PyKotIcon.\nGrab it from http://www.pangalactic.org/PyPAM/ or use 'apt-get install python-pam'"),
                        ("Python-pkipplib", "pkipplib", "Python-pkipplib is now mandatory.\nGrab it from http://www.pykota.com/software/pkipplib/"),
                      ]
-    commandstocheck = [ ("GhostScript", "gs", "Depending on your configuration, GhostScript may be needed in different parts of PyKota."),
-                        ("SNMP Tools", "snmpget", "SNMP Tools are needed if you want to use SNMP enabled printers."),
-                        ("Netatalk", "pap", "Netatalk is needed if you want to use AppleTalk enabled printers.")
+    commandstocheck = [ ("GhostScript", "gs", "GhostScript may be needed in different parts of PyKota. Install it from your favorite distribution, or use 'apt-get install ghostscript'."),
+                        ("Netatalk", "pap", "Netatalk is needed if you want to use hardware accounting with AppleTalk enabled printers. Install it from your favorite distribution or use 'apt-get install netatalk'")
                       ]
     for (name, module, helper) in modulestocheck :
         checkWithPrompt(name, module=module, helper=helper)
