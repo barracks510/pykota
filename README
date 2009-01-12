@@ -137,7 +137,7 @@ Prerequisite :
   You need to have the following tools installed on the CUPS Server :
 
     - CUPS (http://www.cups.org). PyKota v1.27 requires CUPS v1.3.4 or higher.
-    - Python v2.3 or higher (http://www.python.org)
+    - Python v2.4 or higher (http://www.python.org)
     - eGenix' mxDateTime Python extension (http://www.egenix.com)
     - The pkpgcounter command line tool, version 1.56 or higher. This
       tool is now mandatory for PyKota to work.
@@ -149,22 +149,22 @@ Prerequisite :
       to check usernames and passwords. (http://www.pangalactic.org/PyPAM)
     - The Python-SNMP module to query printers for their page counter.
       (http://pysnmp.sourceforge.net)
-      IMPORTANT : version 3.4.2 or higher is REQUIRED.
-      Versions 2.x won't work. Versions 4.x now work (tested with v4.1.5a).
+      IMPORTANT : version 3.4.2 or higher, preferably v4.x is now REQUIRED.
+      Versions 2.x won't work.
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
     - SNMP tools (specifically the snmpget command) if you prefer to
       use your own script to request query printers instead of PyKota's
-      internal SNMP handling facilities, which is not recommanded...
-      (http://www.net-snmp.org)
+      internal SNMP handling facilities, which is not recommended...
+      (http://www.net-snmp.org). You probably don't need this.
     - Netatalk (specifically the pap command) if you plan to
       request your printer's lifetime page counter via AppleTalk.
-      (http://netatalk.sourceforge.net)
+      (http://netatalk.sourceforge.net). You probably don't need this.
     - The ReportLab Python module (http://www.reportlab.org) if you want
-      to have PyKota generate nice banners for you.
+      to have PyKota generate nice banners, invoices or receipts in PDF for you.
     - The Python Imaging Library (aka PIL) module
       (http://www.pythonware.com/downloads) if you want to have PyKota
-      generate nice banners for you.
+      generate nice banners, invoices or receipts in PDF for you.
     - PostgreSQL's PygreSQL Python extension and the PostgreSQL client
       libraries if you plan to use PostgreSQL as the database backend.
       (http://www.postgresql.org and http://www.pygreql.org)
@@ -195,7 +195,8 @@ Prerequisite :
   this on Psyco's website.
 
   Installing Psyco is not mandatory, but may really speed the parsing
-  of some print jobs.
+  of some print jobs. Don't install it if you don't want or don't have a
+  supported architecture.
 
   You need to have the following tools installed on the database
   server :
