@@ -1,20 +1,20 @@
 -- phpMyAdmin SQL Dump
 -- version 2.6.0
 -- http://www.phpmyadmin.net
--- 
+--
 -- Host: localhost
 -- Generation Time: Jan 10, 2006 at 02:24 PM
 -- Server version: 3.23.58
 -- PHP Version: 4.3.2
--- 
+--
 -- Database: `pykota`
--- 
+--
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `history`
--- 
+--
 
 CREATE TABLE IF NOT EXISTS history (
   id int(4) unsigned NOT NULL auto_increment,
@@ -36,6 +36,6 @@ CREATE TABLE IF NOT EXISTS history (
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
--- 
+--
 -- Dumping data for table `history`
--- 
+--
