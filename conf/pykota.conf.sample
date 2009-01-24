@@ -685,7 +685,7 @@ accounter: software()
 # sending the job's datas to it ?
 #
 # This directive is only used when you use an internal
-# hardware accounting mechanism, like hardware(snmp) or
+# hardware accounting mechanism, like hardware(snmp) or
 # hardware(pjl), and is not used for external hardware
 # accounting mechanisms or for software or ink accounting.
 #
