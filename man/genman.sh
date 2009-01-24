@@ -18,7 +18,22 @@
 #
 # $Id$
 #
-for prog in pksetup pkrefund pknotify pkusers pkinvoice pkturnkey pkbcodes pkmail pkbanner autopykota dumpykota edpykota pykotme repykota warnpykota pkprinters pykosd ; do
+for prog in pksetup \
+    pkrefund \
+    pknotify \
+    pkusers \
+    pkinvoice \
+    pkturnkey \
+    pkbcodes \
+    pkbanner \
+    autopykota \
+    dumpykota \
+    edpykota \
+    pykotme \
+    repykota \
+    warnpykota \
+    pkprinters \
+    pykosd ; do
     echo "$prog" ;
     help2man --no-info \
              --section=1 \
