@@ -33,7 +33,7 @@ import signal
 from pkipplib import pkipplib
 
 import pykota.appinit
-from pykota.utils import run
+from pykota.utils import run, logerr
 from pykota.commandline import PyKotaOptionParser
 from pykota.errors import PyKotaToolError, PyKotaCommandLineError
 from pykota.tool import Tool
