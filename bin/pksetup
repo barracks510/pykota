@@ -413,7 +413,7 @@ class PyKotaSetup :
         smtpserver = raw_input("What is the hostname or IP address of your SMTP server ? ").strip()
         homedirectory = self.addPyKotaUser()
         if homedirectory is None :
-            logerr("Installation can't proceed. You MUST create a system user named 'pykota'.\n")
+            sys.stderr.write("Installation can't proceed. You MUST create a system user named 'pykota'.\n")
         else :
             self.upgradeSystem()
             self.setupPackages()
@@ -470,12 +470,12 @@ if __name__ == "__main__" :
         try :
             installer = globals()[classname]()
         except KeyError :
-            logerr("There's currently no support for the %s distribution, sorry.\n" % sys.argv[1])
+            sys.stderr.write("There's currently no support for the %s distribution, sorry.\n" % sys.argv[1])
             retcode = -1
         else :
             try :
                 retcode = installer.setup()
             except KeyboardInterrupt :
-                logerr("\n\n\nWARNING : Setup was aborted at user's request !\n\n")
+                sys.stderr.write("\n\n\nWARNING : Setup was aborted at user's request !\n\n")
                 retcode = -1
     sys.exit(retcode)
