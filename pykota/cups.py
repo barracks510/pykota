@@ -79,7 +79,11 @@ class JobTicket :
 
         # handle Kerberized usernames as described here :
         # http://www.mit.edu/~kerberos/krb5-1.5/krb5-1.5.4/doc/krb5-user/What-is-a-Kerberos-Principal_003f.html
-        self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
+        #
+        # Only does this if there's a "@" in the username, otherwise we could break non-kerberized
+        # usernames containing a "/", like Samba/Windows usernames in some cases.
+        if self.OriginatingUserName.find("@") != -1 :
+            self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
 
         for attrib in ("OriginatingUserName",
                        "OriginatingHostName",
