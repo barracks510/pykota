@@ -77,6 +77,10 @@ class JobTicket :
         (dummy, self.TimeAtProcessing) = self.getAttributeTypeAndValue(answer, "time-at-processing")
         (dummy, self.MimeType) = self.getAttributeTypeAndValue(answer, "document-format")
 
+        # handle Kerberized usernames as described here :
+        # http://www.mit.edu/~kerberos/krb5-1.5/krb5-1.5.4/doc/krb5-user/What-is-a-Kerberos-Principal_003f.html
+        self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
+
         for attrib in ("OriginatingUserName",
                        "OriginatingHostName",
                        "Title",
