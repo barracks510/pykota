@@ -96,7 +96,7 @@ class JobTicket :
                        "MimeType") :
             try :
                 setattr(self, attrib,
-                              getattr(self, attrib).decode("UTF-8", "replace"))
+                              getattr(self, attrib).decode(self.Charset, "replace")) # Charset itself should only be stored in ascii anyway
             except AttributeError :
                 pass
 
