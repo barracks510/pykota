@@ -57,15 +57,19 @@ class Storage(BaseStorage, SQLStorage) :
                                                                                                   repr(dbname),
                                                                                                   repr(user)))
         try :
-            self.database = pg.connect(host=host,
-                                       port=port,
-                                       dbname=dbname,
-                                       user=user,
-                                       passwd=passwd)
+            self.database = pg.DB(host=host,
+                                  port=port,
+                                  dbname=dbname,
+                                  user=user,
+                                  passwd=passwd)
         except PGError, msg :
             msg = "%(msg)s --- the most probable cause of your problem is that PostgreSQL is down, or doesn't accept incoming connections because you didn't configure it as explained in PyKota's documentation." % locals()
             raise PGError, msg
         self.closed = False
+        try :
+            self.quote = self.database._quote
+        except AttributeError : # pg <v4.x
+            self.quote = pg._quote
         try :
             self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
         except PGError, msg :
@@ -136,7 +140,7 @@ class Storage(BaseStorage, SQLStorage) :
             typ = "int"
         else :
             typ = "text"
-        return pg._quote(field, typ)
+        return self.quote(field, typ)
 
     def prepareRawResult(self, result) :
         """Prepares a raw result by including the headers."""
