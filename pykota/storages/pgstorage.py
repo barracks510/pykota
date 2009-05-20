@@ -13,7 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
@@ -32,14 +32,14 @@ from pykota.storages.sql import SQLStorage
 
 try :
     import pg
-except ImportError :    
+except ImportError :
     import sys
     # TODO : to translate or not to translate ?
     raise PyKotaStorageError, "This python version (%s) doesn't seem to have the PygreSQL module installed correctly." % sys.version.split()[0]
-else :    
+else :
     try :
         PGError = pg.Error
-    except AttributeError :    
+    except AttributeError :
         PGError = pg.error
 
 class Storage(BaseStorage, SQLStorage) :
@@ -49,100 +49,104 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             (host, port) = host.split(":")
             port = int(port)
-        except ValueError :    
+        except ValueError :
             port = 5432         # Use PostgreSQL's default tcp/ip port (5432).
-        
+
         self.tool.logdebug("Trying to open database (host=%s, port=%s, dbname=%s, user=%s)..." % (host, port, dbname, user))
         try :
-            self.database = pg.connect(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
-        except PGError, msg :    
+            self.database = pg.DB(host=host, port=port, dbname=dbname, user=user, passwd=passwd)
+        except PGError, msg :
             msg = "%(msg)s --- the most probable cause of your problem is that PostgreSQL is down, or doesn't accept incoming connections because you didn't configure it as explained in PyKota's documentation." % locals()
             raise PGError, msg
         self.closed = 0
         try :
+            self.quote = self.database._quote
+        except AttributeError : # pg <v4.x
+            self.quote = pg._quote
+        try :
             self.database.query("SET CLIENT_ENCODING TO 'UTF-8';")
-        except PGError, msg :    
+        except PGError, msg :
             self.tool.logdebug("Impossible to set database client encoding to UTF-8 : %s" % msg)
         self.tool.logdebug("Database opened (host=%s, port=%s, dbname=%s, user=%s)" % (host, port, dbname, user))
-            
-    def close(self) :    
+
+    def close(self) :
         """Closes the database connection."""
         if not self.closed :
             self.database.close()
             self.closed = 1
             self.tool.logdebug("Database closed.")
-        
-    def beginTransaction(self) :    
+
+    def beginTransaction(self) :
         """Starts a transaction."""
         self.before = time.time()
         self.database.query("BEGIN;")
         self.tool.logdebug("Transaction begins...")
-        
-    def commitTransaction(self) :    
+
+    def commitTransaction(self) :
         """Commits a transaction."""
         self.database.query("COMMIT;")
         after = time.time()
         self.tool.logdebug("Transaction committed.")
         #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
-        
-    def rollbackTransaction(self) :     
+
+    def rollbackTransaction(self) :
         """Rollbacks a transaction."""
         self.database.query("ROLLBACK;")
         after = time.time()
         self.tool.logdebug("Transaction aborted.")
         #self.tool.logdebug("Transaction duration : %.4f seconds" % (after - self.before))
-        
+
     def doRawSearch(self, query) :
         """Does a raw search query."""
-        query = query.strip()    
-        if not query.endswith(';') :    
+        query = query.strip()
+        if not query.endswith(';') :
             query += ';'
         try :
             before = time.time()
             self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
-        except PGError, msg :    
+        except PGError, msg :
             raise PyKotaStorageError, str(msg)
-        else :    
+        else :
             after = time.time()
             #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
-            
-    def doSearch(self, query) :        
+
+    def doSearch(self, query) :
         """Does a search query."""
         result = self.doRawSearch(query)
-        if (result is not None) and (result.ntuples() > 0) : 
+        if (result is not None) and (result.ntuples() > 0) :
             return result.dictresult()
-        
+
     def doModify(self, query) :
         """Does a (possibly multiple) modify query."""
-        query = query.strip()    
-        if not query.endswith(';') :    
+        query = query.strip()
+        if not query.endswith(';') :
             query += ';'
         try :
             before = time.time()
             self.tool.logdebug("QUERY : %s" % query)
             result = self.database.query(query)
-        except PGError, msg :    
+        except PGError, msg :
             self.tool.logdebug("Query failed : %s" % repr(msg))
             raise PyKotaStorageError, str(msg)
-        else :    
+        else :
             after = time.time()
             #self.tool.logdebug("Query Duration : %.4f seconds" % (after - before))
             return result
-            
+
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""
-        if type(field) == type(0.0) : 
+        if type(field) == type(0.0) :
             typ = "decimal"
-        elif type(field) == type(0) :    
+        elif type(field) == type(0) :
             typ = "int"
-        elif type(field) == type(0L) :    
+        elif type(field) == type(0L) :
             typ = "int"
-        else :    
+        else :
             typ = "text"
-        return pg._quote(field, typ)
-        
+        return self.quote(field, typ)
+
     def prepareRawResult(self, result) :
         """Prepares a raw result by including the headers."""
         if result.ntuples() > 0 :
@@ -154,7 +158,7 @@ class Storage(BaseStorage, SQLStorage) :
                 for j in range(nbfields) :
                     field = fields[j]
                     if type(field) == StringType :
-                        fields[j] = self.databaseToUserCharset(field) 
-                entries[i] = tuple(fields)    
+                        fields[j] = self.databaseToUserCharset(field)
+                entries[i] = tuple(fields)
             return entries
-        
+
