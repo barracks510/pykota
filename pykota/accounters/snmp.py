@@ -283,8 +283,8 @@ if hasV4 :
                 self.initValues()
             else :
                 self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint() or "0"))
-                self.printerStatus = int(varBinds[1][1].prettyPrint())
-                self.deviceStatus = int(varBinds[2][1].prettyPrint())
+                self.printerStatus = int(varBinds[1][1].prettyPrint() or "2") # or unknown
+                self.deviceStatus = int(varBinds[2][1].prettyPrint() or "1")  # or unknown
                 self.printerDetectedErrorState = self.extractErrorStates(str(varBinds[3][1]))
                 self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'" \
                      % (self.printerInternalPageCounter, \
