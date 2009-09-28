@@ -310,7 +310,7 @@ class PyKotaSetup :
                 pgconfdir = pgconfdirs[i]
                 pgconffile = pgconffiles[i]
                 if (len(pgconfdirs) == 1) or self.yesno("Do PostgreSQL configuration files reside in %(pgconfdir)s" % locals()) :
-                    answer = self.confirmPipe("to see if PostgreSQL accepts TCP/IP connections", 'egrep \\"^tcpip_socket|^listen_addresses\\" %(pgconffile)s' % locals())
+                    answer = self.confirmPipe("to see if PostgreSQL accepts TCP/IP connections", 'egrep "\\"^tcpip_socket|^listen_addresses\\"" %(pgconffile)s' % locals())
                     conflines = pghbaconf.split("\n")
                     if answer is not False :
                         answer = answer.strip().lower()
