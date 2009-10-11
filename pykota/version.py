@@ -13,7 +13,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
@@ -23,7 +23,7 @@
 
 """This module defines some application level constants."""
 
-__version__ = "1.26_unofficial"
+__version__ = "1.26_fixes_unofficial"
 
 __doc__ = "PyKota : a complete Printing Quota Solution for CUPS."
 
