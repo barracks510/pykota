@@ -162,75 +162,19 @@ class PKTurnKey(Tool) :
         try :
             from pysnmp.entity.rfc3413.oneliner import cmdgen
         except ImportError :
-            hasV4 = False
-            try :
-                from pysnmp.asn1.encoding.ber.error import TypeMismatchError
-                from pysnmp.mapping.udp.role import Manager
-                from pysnmp.proto.api import alpha
-            except ImportError :
-                logerr("pysnmp doesn't seem to be installed. SNMP checks will be ignored !\n")
-                return False
-        else :
-            hasV4 = True
-
-        if hasV4 :
-            def retrieveSNMPValues(hostname, community) :
-                """Retrieves a printer's internal page counter and status via SNMP."""
-                errorIndication, errorStatus, errorIndex, varBinds = \
-                     cmdgen.CommandGenerator().getCmd(cmdgen.CommunityData("pykota", community, 0), \
-                                                      cmdgen.UdpTransportTarget((hostname, 161)), \
-                                                      tuple([int(i) for i in pageCounterOID.split('.')]))
-                if errorIndication :
-                    raise "No SNMP !"
-                elif errorStatus :
-                    raise "No SNMP !"
-                else :
-                    self.SNMPOK = True
-        else :
-            def retrieveSNMPValues(hostname, community) :
-                """Retrieves a printer's internal page counter and status via SNMP."""
-                ver = alpha.protoVersions[alpha.protoVersionId1]
-                req = ver.Message()
-                req.apiAlphaSetCommunity(community)
-                req.apiAlphaSetPdu(ver.GetRequestPdu())
-                req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()))
-                tsp = Manager()
-                try :
-                    tsp.sendAndReceive(req.berEncode(), \
-                                       (hostname, 161), \
-                                       (handleAnswer, req))
-                except :
-                    raise "No SNMP !"
-                tsp.close()
-
-            def handleAnswer(wholemsg, notusedhere, req):
-                """Decodes and handles the SNMP answer."""
-                ver = alpha.protoVersions[alpha.protoVersionId1]
-                rsp = ver.Message()
-                try :
-                    rsp.berDecode(wholemsg)
-                except TypeMismatchError, msg :
-                    raise "No SNMP !"
-                else :
-                    if req.apiAlphaMatch(rsp):
-                        errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
-                        if errorStatus:
-                            raise "No SNMP !"
-                        else:
-                            self.values = []
-                            for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
-                                self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
-                            try :
-                                pagecounter = self.values[0]
-                            except :
-                                raise "No SNMP !"
-                            else :
-                                self.SNMPOK = True
-                                return True
-
-        self.SNMPOK = False
+            logerr("pysnmp doesn't seem to be installed. PyKota needs pysnmp v4.x, otherwise SNMP checks will be ignored !\n")
+            return False
         try :
-            retrieveSNMPValues(hostname, community)
+            errorIndication, errorStatus, errorIndex, varBinds = \
+                cmdgen.CommandGenerator().getCmd(cmdgen.CommunityData("pykota", community, 0), \
+                                                     cmdgen.UdpTransportTarget((hostname, 161)), \
+                                                     tuple([int(i) for i in pageCounterOID.split('.')]))
+            if errorIndication :
+                raise "No SNMP !"
+            elif errorStatus :
+                raise "No SNMP !"
+            else :
+                self.SNMPOK = True
         except :
             self.SNMPOK = False
         return self.SNMPOK

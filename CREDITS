@@ -93,6 +93,8 @@ Contributors :
   - Jan Christoph Nordholz - T.U. Berlin - Explained the cause of a strange
     problem with MySQL connections to 'localhost:3306'.
   - Darin Perusich - Cognigen Corp. - Ported the LDAP schema to Sun DS
+  - Ilya Etingof and Börje Sennung - Fixed performance problems in SNMP
+    queries.
 
 ==============================================================
 

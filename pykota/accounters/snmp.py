@@ -36,16 +36,7 @@ import socket
 try :
     from pysnmp.entity.rfc3413.oneliner import cmdgen
 except ImportError :
-    hasV4 = False
-    try :
-        from pysnmp.asn1.encoding.ber.error import TypeMismatchError
-        from pysnmp.mapping.udp.error import SnmpOverUdpError
-        from pysnmp.mapping.udp.role import Manager
-        from pysnmp.proto.api import alpha
-    except ImportError :
-        raise RuntimeError, "The pysnmp module is not available. Download it from http://pysnmp.sf.net/"
-else :
-    hasV4 = True
+    raise RuntimeError, "The pysnmp v4.x module is not available. Download it from http://pysnmp.sf.net/\nPyKota doesn't support earlier releases anymore."
 
 from pykota import constants
 
@@ -256,98 +247,46 @@ class BaseHandler :
             raise
         return self.printerInternalPageCounter
 
-if hasV4 :
-    class Handler(BaseHandler) :
-        """A class for pysnmp v4.x"""
-        def retrieveSNMPValues(self) :
-            """Retrieves a printer's internal page counter and status via SNMP."""
-            try :
-                errorIndication, errorStatus, errorIndex, varBinds = \
-                 cmdgen.CommandGenerator().getCmd(cmdgen.CommunityData("pykota", self.community, 0), \
-                                                  cmdgen.UdpTransportTarget((self.printerHostname, self.port)), \
-                                                  tuple([int(i) for i in pageCounterOID.split('.')]), \
-                                                  tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
-                                                  tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
-                                                  tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]))
-            except socket.gaierror, msg :
-                errorIndication = repr(msg)
-            except :
-                errorIndication = "Unknown SNMP/Network error. Check your wires."
-            if errorIndication :
-                self.parent.filter.printInfo("SNMP Error : %s" % errorIndication, "error")
-                self.initValues()
-            elif errorStatus :
-                self.parent.filter.printInfo("SNMP Error : %s at %s" % (errorStatus.prettyPrint(), \
+class Handler(BaseHandler) :
+    """A class for pysnmp v4.x, PyKota doesn't support earlier releases of pysnmp anymore.'"""
+    def __init__(self, *args):
+        BaseHandler.__init__(self, *args)
+        self.snmpEngine = cmdgen.CommandGenerator()
+        self.snmpAuth = cmdgen.CommunityData("pykota", self.community, 0)
+        self.snmpTarget = cmdgen.UdpTransportTarget((self.printerHostname, self.port))
+
+    def retrieveSNMPValues(self) :
+        """Retrieves a printer's internal page counter and status via SNMP."""
+        try :
+            errorIndication, errorStatus, errorIndex, varBinds = \
+                self.snmpEngine.getCmd(self.snmpAuth, \
+                                       self.snmpTarget, \
+                                       tuple([int(i) for i in pageCounterOID.split('.')]), \
+                                       tuple([int(i) for i in hrPrinterStatusOID.split('.')]), \
+                                       tuple([int(i) for i in hrDeviceStatusOID.split('.')]), \
+                                       tuple([int(i) for i in hrPrinterDetectedErrorStateOID.split('.')]))
+        except socket.gaierror, msg :
+            errorIndication = repr(msg)
+        except :
+            errorIndication = "Unknown SNMP/Network error. Check your wires."
+        if errorIndication :
+            self.parent.filter.printInfo("SNMP Error : %s" % errorIndication, "error")
+            self.initValues()
+        elif errorStatus :
+            self.parent.filter.printInfo("SNMP Error : %s at %s" % (errorStatus.prettyPrint(), \
                                                                         varBinds[int(errorIndex)-1]), \
                                              "error")
-                self.initValues()
-            else :
-                self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint() or "0"))
-                self.printerStatus = int(varBinds[1][1].prettyPrint() or "2") # or unknown
-                self.deviceStatus = int(varBinds[2][1].prettyPrint() or "1")  # or unknown
-                self.printerDetectedErrorState = self.extractErrorStates(str(varBinds[3][1]))
-                self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'" \
-                     % (self.printerInternalPageCounter, \
-                        printerStatusValues.get(self.printerStatus), \
-                        deviceStatusValues.get(self.deviceStatus), \
-                        self.printerDetectedErrorState))
-else :
-    class Handler(BaseHandler) :
-        """A class for pysnmp v3.4.x"""
-        def retrieveSNMPValues(self) :
-            """Retrieves a printer's internal page counter and status via SNMP."""
-            ver = alpha.protoVersions[alpha.protoVersionId1]
-            req = ver.Message()
-            req.apiAlphaSetCommunity(self.community)
-            req.apiAlphaSetPdu(ver.GetRequestPdu())
-            req.apiAlphaGetPdu().apiAlphaSetVarBindList((pageCounterOID, ver.Null()), \
-                                                        (hrPrinterStatusOID, ver.Null()), \
-                                                        (hrDeviceStatusOID, ver.Null()), \
-                                                        (hrPrinterDetectedErrorStateOID, ver.Null()))
-            tsp = Manager()
-            try :
-                tsp.sendAndReceive(req.berEncode(), \
-                                   (self.printerHostname, self.port), \
-                                   (self.handleAnswer, req))
-            except (SnmpOverUdpError, select.error), msg :
-                self.parent.filter.printInfo(_("Network error while doing SNMP queries on printer %s : %s") % (self.printerHostname, msg), "warn")
-                self.initValues()
-            tsp.close()
-
-        def handleAnswer(self, wholeMsg, notusedhere, req):
-            """Decodes and handles the SNMP answer."""
-            ver = alpha.protoVersions[alpha.protoVersionId1]
-            rsp = ver.Message()
-            try :
-                rsp.berDecode(wholeMsg)
-            except TypeMismatchError, msg :
-                self.parent.filter.printInfo(_("SNMP message decoding error for printer %s : %s") % (self.printerHostname, msg), "warn")
-                self.initValues()
-            else :
-                if req.apiAlphaMatch(rsp):
-                    errorStatus = rsp.apiAlphaGetPdu().apiAlphaGetErrorStatus()
-                    if errorStatus:
-                        self.parent.filter.printInfo(_("Problem encountered while doing SNMP queries on printer %s : %s") % (self.printerHostname, errorStatus), "warn")
-                    else:
-                        self.values = []
-                        for varBind in rsp.apiAlphaGetPdu().apiAlphaGetVarBindList():
-                            self.values.append(varBind.apiAlphaGetOidVal()[1].rawAsn1Value)
-                        try :
-                            # keep maximum value seen for printer's internal page counter
-                            self.printerInternalPageCounter = max(self.printerInternalPageCounter, self.values[0])
-                            self.printerStatus = self.values[1]
-                            self.deviceStatus = self.values[2]
-                            self.printerDetectedErrorState = self.extractErrorStates(self.values[3])
-                            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'" \
-                                 % (self.printerInternalPageCounter, \
-                                    printerStatusValues.get(self.printerStatus), \
-                                    deviceStatusValues.get(self.deviceStatus), \
-                                    self.printerDetectedErrorState))
-                        except IndexError :
-                            self.parent.filter.logdebug("SNMP answer is incomplete : %s" % str(self.values))
-                            pass
-                        else :
-                            return 1
+            self.initValues()
+        else :
+            self.printerInternalPageCounter = max(self.printerInternalPageCounter, int(varBinds[0][1].prettyPrint() or "0"))
+            self.printerStatus = int(varBinds[1][1].prettyPrint() or "2") # or unknown
+            self.deviceStatus = int(varBinds[2][1].prettyPrint() or "1")  # or unknown
+            self.printerDetectedErrorState = self.extractErrorStates(str(varBinds[3][1]))
+            self.parent.filter.logdebug("SNMP answer decoded : PageCounter : %s  PrinterStatus : '%s'  DeviceStatus : '%s'  PrinterErrorState : '%s'" \
+                                            % (self.printerInternalPageCounter, \
+                                                   printerStatusValues.get(self.printerStatus), \
+                                                   deviceStatusValues.get(self.deviceStatus), \
+                                                   self.printerDetectedErrorState))
 
 def main(hostname) :
     """Tries SNMP accounting for a printer host."""

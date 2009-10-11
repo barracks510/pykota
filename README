@@ -149,8 +149,8 @@ Prerequisite :
       to check usernames and passwords. (http://www.pangalactic.org/PyPAM)
     - The Python-SNMP module to query printers for their page counter.
       (http://pysnmp.sourceforge.net)
-      IMPORTANT : version 3.4.2 or higher, preferably v4.x is now REQUIRED.
-      Versions 2.x won't work.
+      IMPORTANT : version v4.x is now REQUIRED.
+      Versions 3.x or earlier are not supported anymore.
     - The Python-OSD module to use the graphical print quota reminder.
       (http://repose.cx/pyosd/)
     - SNMP tools (specifically the snmpget command) if you prefer to

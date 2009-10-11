@@ -841,7 +841,7 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           </listitem>
           <listitem>
             <para>
-              The <application>pysnmp</application> Python module version 3.4.2, or higher, version 4 is recommanded.
+              The <application>pysnmp</application> Python module version 4.x, or higher.
               You can download it from <ulink url="http://pysnmp.sourceforge.net">http://pysnmp.sourceforge.net</ulink>.
             </para>
           </listitem>
