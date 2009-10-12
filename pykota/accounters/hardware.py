@@ -109,7 +109,7 @@ class Accounter(AccounterBase) :
 
            The external command must report the life time page number of the printer on stdout.
         """
-        skipinitialwait = self.filter.config.getPrinterSkipInitialWait(printer)
+        skipinitialwait = self.filter.config.getPrinterSkipInitialWait(self.filter.PrinterName)
         commandline = self.arguments.strip() % locals()
         cmdlower = commandline.lower()
         if (cmdlower == "snmp") or cmdlower.startswith("snmp:") :
