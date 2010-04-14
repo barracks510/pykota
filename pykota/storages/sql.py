@@ -28,6 +28,8 @@ from pykota.storage import StorageUser, StorageGroup, StoragePrinter, \
 
 from pykota.utils import *
 
+MAXINNAMES = 500 # Maximum number of non-patterns names to use in a single IN statement
+
 class SQLStorage :
     def storageUserFromRecord(self, username, record) :
         """Returns a StorageUser instance from a database record."""
@@ -444,6 +446,14 @@ class SQLStorage :
                         pgroups.append(parentprinter)
         return pgroups
 
+    def hasWildCards(self, pattern) :
+        """Returns True if the pattern contains wildcards, else False."""
+        specialchars = "*?[!" # no need to check for ] since [ would be there first
+        for specialchar in specialchars :
+            if specialchar in pattern :
+                return True
+        return False
+
     def getMatchingPrinters(self, printerpattern) :
         """Returns the list of all printers for which name matches a certain pattern."""
         printers = []
@@ -453,13 +463,7 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM printers")
         if result :
             patterns = printerpattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for record in result :
                 pname = databaseToUnicode(record["printername"])
                 if patdict.has_key(pname) or self.tool.matchString(pname, patterns) :
@@ -474,22 +478,41 @@ class SQLStorage :
         # We 'could' do a SELECT username FROM users WHERE username LIKE ...
         # but we don't because other storages semantics may be different, so every
         # storage should use fnmatch to match patterns and be storage agnostic
-        result = self.doSearch("SELECT * FROM users")
-        if result :
-            patterns = userpattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
-            for record in result :
-                uname = databaseToUnicode(record["username"])
-                if patdict.has_key(uname) or self.tool.matchString(uname, patterns) :
-                    user = self.storageUserFromRecord(uname, record)
-                    users.append(user)
-                    self.cacheEntry("USERS", user.Name, user)
+        #
+        # This doesn't prevent us from being smarter, thanks to bse@chalmers.se
+        userpattern = userpattern or "*"
+        patterns = userpattern.split(",")
+        patdict = {}.fromkeys(patterns)
+        patterns = patdict.keys() # Ensures the uniqueness of each pattern, but we lose the cmd line ordering
+        # BEWARE : if a single pattern contains wild cards, we'll still use the slow route.
+        if self.hasWildCards(userpattern) :
+            # Slow route
+            result = self.doSearch("SELECT * FROM users")
+            if result :
+                for record in result :
+                    uname = databaseToUnicode(record["username"])
+                    if patdict.has_key(uname) or self.tool.matchString(uname, patterns) :
+                        user = self.storageUserFromRecord(uname, record)
+                        users.append(user)
+                        self.cacheEntry("USERS", user.Name, user)
+        else :
+            # Fast route (probably not faster with a few users)
+            while patterns :
+                subset = patterns[:MAXINNAMES]
+                nbpatterns = len(subset)
+                if nbpatterns == 1 :
+                    wherestmt = "username=%s" % self.doQuote(unicodeToDatabase(subset[0]))
+                else :
+                    wherestmt = "username IN (%s)" % ",".join([self.doQuote(unicodeToDatabase(p)) for p in subset])
+                result = self.doSearch("SELECT * FROM users WHERE %s" % wherestmt)
+                if result :
+                    for record in result :
+                        uname = databaseToUnicode(record["username"])
+                        user = self.storageUserFromRecord(uname, record)
+                        users.append(user)
+                        self.cacheEntry("USERS", user.Name, user)
+                patterns = patterns[MAXINNAMES:]
+        users.sort(key=lambda u : u.Name) # Adds some ordering, we've already lost the cmd line one anyway.
         return users
 
     def getMatchingGroups(self, grouppattern) :
@@ -501,13 +524,7 @@ class SQLStorage :
         result = self.doSearch("SELECT groups.*,COALESCE(SUM(balance), 0.0) AS balance, COALESCE(SUM(lifetimepaid), 0.0) AS lifetimepaid FROM groups LEFT OUTER JOIN users ON users.id IN (SELECT userid FROM groupsmembers WHERE groupid=groups.id) GROUP BY groups.id,groups.groupname,groups.limitby,groups.description")
         if result :
             patterns = grouppattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for record in result :
                 gname = databaseToUnicode(record["groupname"])
                 if patdict.has_key(gname) or self.tool.matchString(gname, patterns) :
@@ -522,13 +539,7 @@ class SQLStorage :
         result = self.doSearch("SELECT * FROM billingcodes")
         if result :
             patterns = billingcodepattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for record in result :
                 codename = databaseToUnicode(record["billingcode"])
                 if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :

@@ -703,13 +703,7 @@ class Storage(BaseStorage) :
                                   base=self.info["printerbase"])
         if result :
             patterns = printerpattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for (printerid, fields) in result :
                 printername = databaseToUnicode(fields.get("pykotaPrinterName", [""])[0] or fields.get(self.info["printerrdn"], [""])[0])
                 if patdict.has_key(printername) or self.tool.matchString(printername, patterns) :
@@ -739,13 +733,7 @@ class Storage(BaseStorage) :
                                   base=self.info["userbase"])
         if result :
             patterns = userpattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for (userid, fields) in result :
                 username = databaseToUnicode(fields.get("pykotaUserName", [""])[0] or fields.get(self.info["userrdn"], [""])[0])
                 if patdict.has_key(username) or self.tool.matchString(username, patterns) :
@@ -806,13 +794,7 @@ class Storage(BaseStorage) :
                                   base=self.info["groupbase"])
         if result :
             patterns = grouppattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for (groupid, fields) in result :
                 groupname = databaseToUnicode(fields.get("pykotaGroupName", [""])[0] or fields.get(self.info["grouprdn"], [""])[0])
                 if patdict.has_key(groupname) or self.tool.matchString(groupname, patterns) :
@@ -1822,13 +1804,7 @@ class Storage(BaseStorage) :
                                 base=self.info["billingcodebase"])
         if result :
             patterns = billingcodepattern.split(",")
-            try :
-                patdict = {}.fromkeys(patterns)
-            except AttributeError :
-                # Python v2.2 or earlier
-                patdict = {}
-                for p in patterns :
-                    patdict[p] = None
+            patdict = {}.fromkeys(patterns)
             for (codeid, fields) in result :
                 codename = databaseToUnicode(fields.get("pykotaBillingCode", [""])[0])
                 if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
