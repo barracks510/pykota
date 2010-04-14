@@ -282,7 +282,7 @@ class Handler(BaseHandler) :
             try :
                 self.printerStatus = int(varBinds[1][1].prettyPrint())
             except ValueError :
-                self parent.filter.logdebug("The printer reported a non-integer printer status, it will be converted to 2 ('unknown')")
+                self.parent.filter.logdebug("The printer reported a non-integer printer status, it will be converted to 2 ('unknown')")
                 self.printerStatus = 2
             try :
                 self.deviceStatus = int(varBinds[2][1].prettyPrint())
