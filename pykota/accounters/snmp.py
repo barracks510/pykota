@@ -163,10 +163,10 @@ class BaseHandler :
             self.parent.filter.logdebug("Will wait until printer %s is in 'printing' state or %i seconds have elapsed." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         previousValue = self.parent.getLastPageCounter()
         firstvalue = None
-        while 1:
+        while True :
             self.retrieveSNMPValues()
-            statusAsString = printerStatusValues.get(self.printerStatus)
-            if statusAsString in ('printing', 'warmup') :
+            pstatusAsString = printerStatusValues.get(self.printerStatus)
+            if pstatusAsString in ('printing', 'warmup') :
                 break
             if self.printerInternalPageCounter is not None :
                 if firstvalue is None :
@@ -186,7 +186,6 @@ class BaseHandler :
                          and not self.checkIfError(self.printerDetectedErrorState) :
                         # More than X seconds without the printer being in 'printing' mode
                         # We can safely assume this won't change if printer is now 'idle'
-                        pstatusAsString = printerStatusValues.get(self.printerStatus)
                         dstatusAsString = deviceStatusValues.get(self.deviceStatus)
                         if (pstatusAsString == 'idle') or \
                             ((pstatusAsString == 'other') and \
@@ -208,7 +207,7 @@ class BaseHandler :
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
         statusstabilizationloops = constants.get(self.parent.filter, "StatusStabilizationLoops")
         idle_num = idle_flag = 0
-        while 1 :
+        while True :
             self.retrieveSNMPValues()
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
