@@ -122,7 +122,7 @@ class Storage(BaseStorage, SQLStorage) :
         elif type(field) == type(0L) :
             return field
         elif field is not None :
-            return ("'%s'" % field.replace("'", "''")).decode("UTF-8")
+            return ("'%s'" % field.replace("'", "''"))
         else :
             return "NULL"
 
