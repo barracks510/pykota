@@ -594,6 +594,14 @@ class BaseStorage :
         """Ensures that the database connection is closed."""
         self.close()
 
+    def hasWildCards(self, pattern) :
+        """Returns True if the pattern contains wildcards, else False."""
+        specialchars = "*?[!" # no need to check for ] since [ would be there first
+        for specialchar in specialchars :
+            if specialchar in pattern :
+                return True
+        return False
+
     def getFromCache(self, cachetype, key) :
         """Tries to extract something from the cache."""
         if self.usecache :
