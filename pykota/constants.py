@@ -24,6 +24,7 @@
 STATUSSTABILIZATIONDELAY = 4.0 # time to sleep between two loops
 STATUSSTABILIZATIONLOOPS = 5  # number of consecutive times the 'idle' status must be seen before we consider it to be stable
 NOPRINTINGMAXDELAY = 60 # The printer must begin to print within 60 seconds by default.
+FIVEMINUTES = 300 # Five minutes : maximum delay between two SNMP queries
 
 def get(application, varname) :
     """Retrieves the value of a particular printer variable from configuration file, else a constant defined here."""

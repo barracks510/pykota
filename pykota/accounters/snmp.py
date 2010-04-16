@@ -156,6 +156,7 @@ class BaseHandler :
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
+        increment = 1
         noprintingmaxdelay = constants.get(self.parent.filter, "NoPrintingMaxDelay")
         if not noprintingmaxdelay :
             self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
@@ -165,7 +166,10 @@ class BaseHandler :
         firstvalue = None
         while True :
             self.retrieveSNMPValues()
+            waitdelay = statusstabilizationdelay * increment
+            error = self.checkIfError(self.printerDetectedErrorState)
             pstatusAsString = printerStatusValues.get(self.printerStatus)
+            dstatusAsString = deviceStatusValues.get(self.deviceStatus)
             if pstatusAsString in ('printing', 'warmup') :
                 break
             if self.printerInternalPageCounter is not None :
@@ -183,10 +187,9 @@ class BaseHandler :
                         break
                     elif noprintingmaxdelay \
                          and ((time.time() - self.timebefore) > noprintingmaxdelay) \
-                         and not self.checkIfError(self.printerDetectedErrorState) :
+                         and not error :
                         # More than X seconds without the printer being in 'printing' mode
                         # We can safely assume this won't change if printer is now 'idle'
-                        dstatusAsString = deviceStatusValues.get(self.deviceStatus)
                         if (pstatusAsString == 'idle') or \
                             ((pstatusAsString == 'other') and \
                              (dstatusAsString == 'running')) :
@@ -199,24 +202,30 @@ class BaseHandler :
                                 # the printer has already passed from 'idle' to 'printing' to 'idle' again.
                                 self.parent.filter.printInfo("Printer %s has probably already printed this job !!!" % self.parent.filter.PrinterName, "warn")
                             break
-            self.parent.filter.logdebug(_("Waiting for printer %s to be printing...") % self.parent.filter.PrinterName)
-            time.sleep(statusstabilizationdelay)
+                    if error or (dstatusAsString == "down") :
+                        if waitdelay < constants.FIVEMINUTES :
+                            increment *= 2
+            self.parent.filter.logdebug("Waiting %s seconds for printer %s to be printing..." % (waitdelay, self.parent.filter.PrinterName))
+            time.sleep(waitdelay)
 
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
         statusstabilizationloops = constants.get(self.parent.filter, "StatusStabilizationLoops")
-        idle_num = idle_flag = 0
+        increment = 1
+        idle_num = 0
         while True :
             self.retrieveSNMPValues()
+            waitdelay = statusstabilizationdelay * increment
+            error = self.checkIfError(self.printerDetectedErrorState)
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
-            idle_flag = 0
-            if (not self.checkIfError(self.printerDetectedErrorState)) \
-               and ((pstatusAsString == 'idle') or \
-                         ((pstatusAsString == 'other') and \
-                          (dstatusAsString == 'running'))) :
-                idle_flag = 1       # Standby / Powersave is considered idle
+            idle_flag = False
+            if (not error) and ((pstatusAsString == 'idle') or \
+                                    ((pstatusAsString == 'other') and \
+                                         (dstatusAsString == 'running'))) :
+                idle_flag = True # Standby / Powersave is considered idle
+                increment = 1 # Reset initial stabilization delay
             if idle_flag :
                 if (self.printerInternalPageCounter is not None) \
                    and self.skipinitialwait \
@@ -229,8 +238,12 @@ class BaseHandler :
                     break
             else :
                 idle_num = 0
-            self.parent.filter.logdebug(_("Waiting for printer %s's idle status to stabilize...") % self.parent.filter.PrinterName)
-            time.sleep(statusstabilizationdelay)
+            if error or (dstatusAsString == "down") :
+                if waitdelay < constants.FIVEMINUTES :
+                    increment *= 2
+            self.parent.filter.logdebug("Waiting %s seconds for printer %s's idle status to stabilize..." % (waitdelay,
+                                                                                                             self.parent.filter.PrinterName))
+            time.sleep(waitdelay)
 
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal SNMP handling."""
@@ -242,7 +255,7 @@ class BaseHandler :
                 self.waitPrinting()
             self.waitIdle()
         except :
-            self.parent.filter.printInfo(_("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s.") % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
+            self.parent.filter.printInfo("SNMP querying stage interrupted. Using latest value seen for internal page counter (%s) on printer %s." % (self.printerInternalPageCounter, self.parent.filter.PrinterName), "warn")
             raise
         return self.printerInternalPageCounter
 
@@ -332,8 +345,5 @@ if __name__ == "__main__" :
     if len(sys.argv) != 2 :
         sys.stderr.write("Usage :  python  %s  printer_ip_address\n" % sys.argv[0])
     else :
-        def _(msg) :
-            return msg
-
         pagecounter = main(sys.argv[1])
         print "Internal page counter's value is : %s" % pagecounter
