@@ -41,7 +41,7 @@ class StorageObject :
     def setDescription(self, description=None) :
         """Sets the object's description."""
         if description is not None :
-            self.Description = str(description)
+            self.Description = description
             self.isDirty = True
 
     def save(self) :
