@@ -446,74 +446,64 @@ class SQLStorage :
                         pgroups.append(parentprinter)
         return pgroups
 
-    def hasWildCards(self, pattern) :
-        """Returns True if the pattern contains wildcards, else False."""
-        specialchars = "*?[!" # no need to check for ] since [ would be there first
-        for specialchar in specialchars :
-            if specialchar in pattern :
-                return True
-        return False
-
-    def getMatchingPrinters(self, printerpattern) :
-        """Returns the list of all printers for which name matches a certain pattern."""
-        printers = []
-        # We 'could' do a SELECT printername FROM printers WHERE printername LIKE ...
-        # but we don't because other storages semantics may be different, so every
-        # storage should use fnmatch to match patterns and be storage agnostic
-        result = self.doSearch("SELECT * FROM printers")
-        if result :
-            patterns = printerpattern.split(",")
-            patdict = {}.fromkeys(patterns)
-            for record in result :
-                pname = databaseToUnicode(record["printername"])
-                if patdict.has_key(pname) or self.tool.matchString(pname, patterns) :
-                    printer = self.storagePrinterFromRecord(pname, record)
-                    printers.append(printer)
-                    self.cacheEntry("PRINTERS", printer.Name, printer)
-        return printers
-
-    def getMatchingUsers(self, userpattern) :
-        """Returns the list of all users for which name matches a certain pattern."""
-        users = []
-        # We 'could' do a SELECT username FROM users WHERE username LIKE ...
+    def getMatchingStuff(self, pattern, tablename, entrytype, keyname) :
+        """Returns the list of all entries for which the name matches a certain pattern."""
+        entries = []
+        # We 'could' do a SELECT xxxxname FROM xxxx WHERE xxxxname LIKE ...
         # but we don't because other storages semantics may be different, so every
         # storage should use fnmatch to match patterns and be storage agnostic
         #
         # This doesn't prevent us from being smarter, thanks to bse@chalmers.se
-        userpattern = userpattern or "*"
-        patterns = userpattern.split(",")
+        pattern = pattern or "*"
+        patterns = pattern.split(",")
         patdict = {}.fromkeys(patterns)
         patterns = patdict.keys() # Ensures the uniqueness of each pattern, but we lose the cmd line ordering
         # BEWARE : if a single pattern contains wild cards, we'll still use the slow route.
-        if self.hasWildCards(userpattern) :
+        storageEntryFromRecord = getattr(self, "storage%sFromRecord" % entrytype)
+        cachename = tablename.upper()
+        if self.hasWildCards(pattern) :
             # Slow route
-            result = self.doSearch("SELECT * FROM users")
+            result = self.doSearch("SELECT * FROM %s" % tablename)
             if result :
                 for record in result :
-                    uname = databaseToUnicode(record["username"])
-                    if patdict.has_key(uname) or self.tool.matchString(uname, patterns) :
-                        user = self.storageUserFromRecord(uname, record)
-                        users.append(user)
-                        self.cacheEntry("USERS", user.Name, user)
+                    name = databaseToUnicode(record[keyname])
+                    if patdict.has_key(name) or self.tool.matchString(name, patterns) :
+                        entry = storageEntryFromRecord(name, record)
+                        entries.append(entry)
+                        self.cacheEntry(cachename, entry.Name, entry)
         else :
-            # Fast route (probably not faster with a few users)
+            # Fast route (probably not faster with a few entries)
             while patterns :
                 subset = patterns[:MAXINNAMES]
                 nbpatterns = len(subset)
                 if nbpatterns == 1 :
-                    wherestmt = "username=%s" % self.doQuote(unicodeToDatabase(subset[0]))
+                    wherestmt = "%s=%s" % (keyname, self.doQuote(unicodeToDatabase(subset[0])))
                 else :
-                    wherestmt = "username IN (%s)" % ",".join([self.doQuote(unicodeToDatabase(p)) for p in subset])
-                result = self.doSearch("SELECT * FROM users WHERE %s" % wherestmt)
+                    wherestmt = "%s IN (%s)" % (keyname,
+                                                ",".join([self.doQuote(unicodeToDatabase(p)) for p in subset]))
+                result = self.doSearch("SELECT * FROM %s WHERE %s" % (tablename,
+                                                                      wherestmt))
                 if result :
                     for record in result :
-                        uname = databaseToUnicode(record["username"])
-                        user = self.storageUserFromRecord(uname, record)
-                        users.append(user)
-                        self.cacheEntry("USERS", user.Name, user)
+                        name = databaseToUnicode(record[keyname])
+                        entry = storageEntryFromRecord(name, record)
+                        entries.append(entry)
+                        self.cacheEntry(cachename, entry.Name, entry)
                 patterns = patterns[MAXINNAMES:]
-        users.sort(key=lambda u : u.Name) # Adds some ordering, we've already lost the cmd line one anyway.
-        return users
+        entries.sort(key=lambda e : e.Name) # Adds some ordering, we've already lost the cmd line one anyway.
+        return entries
+
+    def getMatchingPrinters(self, pattern) :
+        """Returns the list of all printers for which name matches a certain pattern."""
+        return self.getMatchingStuff(pattern, "printers", "Printer", "printername")
+
+    def getMatchingUsers(self, pattern) :
+        """Returns the list of all users for which name matches a certain pattern."""
+        return self.getMatchingStuff(pattern, "users", "User", "username")
+
+    def getMatchingBillingCodes(self, pattern) :
+        """Returns the list of all billing codes for which the label matches a certain pattern."""
+        return self.getMatchingStuff(pattern, "billingcodes", "BillingCode", "billingcode")
 
     def getMatchingGroups(self, grouppattern) :
         """Returns the list of all groups for which name matches a certain pattern."""
@@ -532,21 +522,6 @@ class SQLStorage :
                     groups.append(group)
                     self.cacheEntry("GROUPS", group.Name, group)
         return groups
-
-    def getMatchingBillingCodes(self, billingcodepattern) :
-        """Returns the list of all billing codes for which the label matches a certain pattern."""
-        codes = []
-        result = self.doSearch("SELECT * FROM billingcodes")
-        if result :
-            patterns = billingcodepattern.split(",")
-            patdict = {}.fromkeys(patterns)
-            for record in result :
-                codename = databaseToUnicode(record["billingcode"])
-                if patdict.has_key(codename) or self.tool.matchString(codename, patterns) :
-                    code = self.storageBillingCodeFromRecord(codename, record)
-                    codes.append(code)
-                    self.cacheEntry("BILLINGCODES", code.BillingCode, code)
-        return codes
 
     def getPrinterUsersAndQuotas(self, printer, names=["*"]) :
         """Returns the list of users who uses a given printer, along with their quotas."""

@@ -541,7 +541,7 @@ class StorageBillingCode(StorageObject) :
 class BaseStorage :
     def __init__(self, pykotatool) :
         """Opens the storage connection."""
-        self.closed = 1
+        self.closed = True
         self.tool = pykotatool
         self.usecache = pykotatool.config.getCaching()
         self.disablehistory = pykotatool.config.getDisableHistory()
@@ -570,6 +570,14 @@ class BaseStorage :
     def querydebug(self, qmsg) :
         """Logs a database query, where all queries are already UTF-8 encoded."""
         self.tool.logdebug(qmsg.decode("UTF-8", "replace"))
+
+    def hasWildCards(self, pattern) :
+        """Returns True if the pattern contains wildcards, else False."""
+        specialchars = "*?[!" # no need to check for ] since [ would be there first
+        for specialchar in specialchars :
+            if specialchar in pattern :
+                return True
+        return False
 
     def getFromCache(self, cachetype, key) :
         """Tries to extract something from the cache."""
