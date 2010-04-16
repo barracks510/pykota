@@ -72,8 +72,8 @@ class Storage(BaseStorage, SQLStorage) :
         query = query.strip()
         if not query.endswith(';') :
             query += ';'
+        self.querydebug("QUERY : %s" % query)
         try :
-            self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :
             raise PyKotaStorageError, repr(msg)
@@ -106,8 +106,8 @@ class Storage(BaseStorage, SQLStorage) :
         query = query.strip()
         if not query.endswith(';') :
             query += ';'
+        self.querydebug("QUERY : %s" % query)
         try :
-            self.querydebug("QUERY : %s" % query)
             self.cursor.execute(query)
         except self.database.Error, msg :
             self.tool.logdebug("Query failed : %s" % repr(msg))
