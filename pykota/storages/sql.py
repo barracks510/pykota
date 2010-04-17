@@ -35,10 +35,10 @@ class SQLStorage :
         """Returns a StorageUser instance from a database record."""
         user = StorageUser(self, username)
         user.ident = record.get("uid", record.get("userid", record.get("id")))
-        user.LimitBy = record.get("limitby") or "quota"
+        user.LimitBy = databaseToUnicode(record.get("limitby") or "quota")
         user.AccountBalance = record.get("balance")
         user.LifeTimePaid = record.get("lifetimepaid")
-        user.Email = record.get("email")
+        user.Email = databaseToUnicode(record.get("email"))
         user.Description = databaseToUnicode(record.get("description"))
         user.OverCharge = record.get("overcharge", 1.0)
         user.Exists = True
@@ -48,7 +48,7 @@ class SQLStorage :
         """Returns a StorageGroup instance from a database record."""
         group = StorageGroup(self, groupname)
         group.ident = record.get("id")
-        group.LimitBy = record.get("limitby") or "quota"
+        group.LimitBy = databaseToUnicode(record.get("limitby") or "quota")
         group.AccountBalance = record.get("balance")
         group.LifeTimePaid = record.get("lifetimepaid")
         group.Description = databaseToUnicode(record.get("description"))
@@ -84,7 +84,7 @@ class SQLStorage :
         job.JobCopies = record.get("copies")
         job.JobOptions = databaseToUnicode(record.get("options") or "")
         job.JobDate = record.get("jobdate")
-        job.JobHostName = record.get("hostname")
+        job.JobHostName = databaseToUnicode(record.get("hostname"))
         job.JobSizeBytes = record.get("jobsizebytes")
         job.JobMD5Sum = record.get("md5sum")
         job.JobPages = record.get("pages")
@@ -586,10 +586,10 @@ class SQLStorage :
             return oldentry
         self.doModify("INSERT INTO users (username, limitby, balance, lifetimepaid, email, overcharge, description) VALUES (%s, %s, %s, %s, %s, %s, %s)" % \
                                      (self.doQuote(unicodeToDatabase(user.Name)), \
-                                      self.doQuote(user.LimitBy or 'quota'), \
+                                      self.doQuote(unicodeToDatabase(user.LimitBy or 'quota')), \
                                       self.doQuote(user.AccountBalance or 0.0), \
                                       self.doQuote(user.LifeTimePaid or 0.0), \
-                                      self.doQuote(user.Email), \
+                                      self.doQuote(unicodeToDatabase(user.Email)), \
                                       self.doQuote(user.OverCharge), \
                                       self.doQuote(unicodeToDatabase(user.Description))))
         if user.PaymentsBacklog :
@@ -606,7 +606,7 @@ class SQLStorage :
             return oldentry
         self.doModify("INSERT INTO groups (groupname, limitby, description) VALUES (%s, %s, %s)" % \
                               (self.doQuote(unicodeToDatabase(group.Name)), \
-                               self.doQuote(group.LimitBy or "quota"), \
+                               self.doQuote(unicodeToDatabase(group.LimitBy or "quota")), \
                                self.doQuote(unicodeToDatabase(group.Description))))
         group.isDirty = False
         return None # the entry created doesn't need further modification
@@ -672,10 +672,10 @@ class SQLStorage :
     def saveUser(self, user) :
         """Saves the user to the database in a single operation."""
         self.doModify("UPDATE users SET limitby=%s, balance=%s, lifetimepaid=%s, email=%s, overcharge=%s, description=%s WHERE id=%s" \
-                               % (self.doQuote(user.LimitBy or 'quota'), \
+                               % (self.doQuote(unicodeToDatabase(user.LimitBy or 'quota')), \
                                   self.doQuote(user.AccountBalance or 0.0), \
                                   self.doQuote(user.LifeTimePaid or 0.0), \
-                                  self.doQuote(user.Email), \
+                                  self.doQuote(unicodeToDatabase(user.Email)), \
                                   self.doQuote(user.OverCharge), \
                                   self.doQuote(unicodeToDatabase(user.Description)), \
                                   self.doQuote(user.ident)))
@@ -683,7 +683,7 @@ class SQLStorage :
     def saveGroup(self, group) :
         """Saves the group to the database in a single operation."""
         self.doModify("UPDATE groups SET limitby=%s, description=%s WHERE id=%s" \
-                               % (self.doQuote(group.LimitBy or 'quota'), \
+                               % (self.doQuote(unicodeToDatabase(group.LimitBy or 'quota')), \
                                   self.doQuote(unicodeToDatabase(group.Description)), \
                                   self.doQuote(group.ident)))
 
@@ -735,45 +735,96 @@ class SQLStorage :
         if self.privacy :
             # For legal reasons, we want to hide the title, filename and options
             title = filename = options = "hidden"
-        filename = unicodeToDatabase(filename)
-        title = unicodeToDatabase(title)
-        options = unicodeToDatabase(options)
-        jobbilling = unicodeToDatabase(jobbilling)
         if (not self.disablehistory) or (not printer.LastJob.Exists) :
             if jobsize is not None :
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes), self.doQuote(jobmd5sum), self.doQuote(jobpages), self.doQuote(jobbilling), self.doQuote(precomputedsize), self.doQuote(precomputedprice)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" \
+                                  % (self.doQuote(user.ident),
+                                     self.doQuote(printer.ident),
+                                     self.doQuote(jobid),
+                                     self.doQuote(pagecounter),
+                                     self.doQuote(action),
+                                     self.doQuote(jobsize),
+                                     self.doQuote(jobprice),
+                                     self.doQuote(unicodeToDatabase(filename)),
+                                     self.doQuote(unicodeToDatabase(title)),
+                                     self.doQuote(copies),
+                                     self.doQuote(unicodeToDatabase(options)),
+                                     self.doQuote(unicodeToDatabase(clienthost)),
+                                     self.doQuote(jobsizebytes),
+                                     self.doQuote(jobmd5sum),
+                                     self.doQuote(jobpages),
+                                     self.doQuote(unicodeToDatabase(jobbilling)),
+                                     self.doQuote(precomputedsize),
+                                     self.doQuote(precomputedprice)))
             else :
-                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" % (self.doQuote(user.ident), self.doQuote(printer.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes), self.doQuote(jobmd5sum), self.doQuote(jobpages), self.doQuote(jobbilling), self.doQuote(precomputedsize), self.doQuote(precomputedprice)))
+                self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" \
+                                  % (self.doQuote(user.ident),
+                                     self.doQuote(printer.ident),
+                                     self.doQuote(jobid),
+                                     self.doQuote(pagecounter),
+                                     self.doQuote(action),
+                                     self.doQuote(unicodeToDatabase(filename)),
+                                     self.doQuote(unicodeToDatabase(title)),
+                                     self.doQuote(copies),
+                                     self.doQuote(unicodeToDatabase(options)),
+                                     self.doQuote(unicodeToDatabase(clienthost)),
+                                     self.doQuote(jobsizebytes),
+                                     self.doQuote(jobmd5sum),
+                                     self.doQuote(jobpages),
+                                     self.doQuote(unicodeToDatabase(jobbilling)),
+                                     self.doQuote(precomputedsize),
+                                     self.doQuote(precomputedprice)))
         else :
             # here we explicitly want to reset jobsize to NULL if needed
-            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobsizebytes=%s, md5sum=%s, pages=%s, billingcode=%s, precomputedjobsize=%s, precomputedjobprice=%s, jobdate=now() WHERE id=%s" % (self.doQuote(user.ident), self.doQuote(jobid), self.doQuote(pagecounter), self.doQuote(action), self.doQuote(jobsize), self.doQuote(jobprice), self.doQuote(filename), self.doQuote(title), self.doQuote(copies), self.doQuote(options), self.doQuote(clienthost), self.doQuote(jobsizebytes), self.doQuote(jobmd5sum), self.doQuote(jobpages), self.doQuote(jobbilling), self.doQuote(precomputedsize), self.doQuote(precomputedprice), self.doQuote(printer.LastJob.ident)))
+            self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobsizebytes=%s, md5sum=%s, pages=%s, billingcode=%s, precomputedjobsize=%s, precomputedjobprice=%s, jobdate=now() WHERE id=%s" \
+                              % (self.doQuote(user.ident),
+                                 self.doQuote(jobid),
+                                 self.doQuote(pagecounter),
+                                 self.doQuote(action),
+                                 self.doQuote(jobsize),
+                                 self.doQuote(jobprice),
+                                 self.doQuote(unicodeToDatabase(filename)),
+                                 self.doQuote(unicodeToDatabase(title)),
+                                 self.doQuote(copies),
+                                 self.doQuote(unicodeToDatabase(options)),
+                                 self.doQuote(unicodeToDatabase(clienthost)),
+                                 self.doQuote(jobsizebytes),
+                                 self.doQuote(jobmd5sum),
+                                 self.doQuote(jobpages),
+                                 self.doQuote(unicodeToDatabase(jobbilling)),
+                                 self.doQuote(precomputedsize),
+                                 self.doQuote(precomputedprice),
+                                 self.doQuote(printer.LastJob.ident)))
 
     def saveUserPQuota(self, userpquota) :
         """Saves an user print quota entry."""
         self.doModify("UPDATE userpquota SET softlimit=%s, hardlimit=%s, warncount=%s, datelimit=%s, pagecounter=%s, lifepagecounter=%s, maxjobsize=%s WHERE id=%s" \
-                              % (self.doQuote(userpquota.SoftLimit), \
-                                 self.doQuote(userpquota.HardLimit), \
-                                 self.doQuote(userpquota.WarnCount or 0), \
-                                 self.doQuote(userpquota.DateLimit), \
-                                 self.doQuote(userpquota.PageCounter or 0), \
-                                 self.doQuote(userpquota.LifePageCounter or 0), \
-                                 self.doQuote(userpquota.MaxJobSize), \
+                              % (self.doQuote(userpquota.SoftLimit),
+                                 self.doQuote(userpquota.HardLimit),
+                                 self.doQuote(userpquota.WarnCount or 0),
+                                 self.doQuote(userpquota.DateLimit),
+                                 self.doQuote(userpquota.PageCounter or 0),
+                                 self.doQuote(userpquota.LifePageCounter or 0),
+                                 self.doQuote(userpquota.MaxJobSize),
                                  self.doQuote(userpquota.ident)))
 
     def writeUserPQuotaWarnCount(self, userpquota, warncount) :
         """Sets the warn counter value for a user quota."""
-        self.doModify("UPDATE userpquota SET warncount=%s WHERE id=%s" % (self.doQuote(warncount), self.doQuote(userpquota.ident)))
+        self.doModify("UPDATE userpquota SET warncount=%s WHERE id=%s" \
+                          % (self.doQuote(warncount),
+                             self.doQuote(userpquota.ident)))
 
     def increaseUserPQuotaWarnCount(self, userpquota) :
         """Increases the warn counter value for a user quota."""
-        self.doModify("UPDATE userpquota SET warncount=warncount+1 WHERE id=%s" % self.doQuote(userpquota.ident))
+        self.doModify("UPDATE userpquota SET warncount=warncount+1 WHERE id=%s" \
+                          % self.doQuote(userpquota.ident))
 
     def saveGroupPQuota(self, grouppquota) :
         """Saves a group print quota entry."""
         self.doModify("UPDATE grouppquota SET softlimit=%s, hardlimit=%s, datelimit=%s WHERE id=%s" \
-                              % (self.doQuote(grouppquota.SoftLimit), \
-                                 self.doQuote(grouppquota.HardLimit), \
-                                 self.doQuote(grouppquota.DateLimit), \
+                              % (self.doQuote(grouppquota.SoftLimit),
+                                 self.doQuote(grouppquota.HardLimit),
+                                 self.doQuote(grouppquota.DateLimit),
                                  self.doQuote(grouppquota.ident)))
 
     def writePrinterToGroup(self, pgroup, printer) :
@@ -799,7 +850,7 @@ class SQLStorage :
         if printer is not None : # printer.ident is None anyway if printer doesn't exist
             where.append("printerid=%s" % self.doQuote(printer.ident))
         if hostname is not None :
-            where.append("hostname=%s" % self.doQuote(hostname))
+            where.append("hostname=%s" % self.doQuote(unicodeToDatabase(hostname)))
         if billingcode is not None :
             where.append("billingcode=%s" % self.doQuote(unicodeToDatabase(billingcode)))
         if jobid is not None :

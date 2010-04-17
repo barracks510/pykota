@@ -37,11 +37,15 @@ class Storage(BaseStorage, SQLStorage) :
     def __init__(self, pykotatool, host, dbname, user, passwd) :
         """Opens the SQLite database connection."""
         BaseStorage.__init__(self, pykotatool)
-
+        self.doModify = self.doQuery
         self.tool.logdebug("Trying to open database (dbname=%s)..." % repr(dbname))
         self.database = sqlite.connect(dbname, isolation_level=None)
         self.cursor = self.database.cursor()
         self.closed = False
+        try :
+            self.doQuery("PRAGMA foreign_keys = True;")
+        except PyKotaStorageError :
+            pass
         self.tool.logdebug("Database opened (dbname=%s)" % repr(dbname))
 
     def close(self) :
@@ -67,8 +71,8 @@ class Storage(BaseStorage, SQLStorage) :
         self.cursor.execute("ROLLBACK;")
         self.tool.logdebug("Transaction aborted.")
 
-    def doRawSearch(self, query) :
-        """Does a raw search query."""
+    def doQuery(self, query) :
+        """Executes an SQL query."""
         query = query.strip()
         if not query.endswith(';') :
             query += ';'
@@ -76,10 +80,14 @@ class Storage(BaseStorage, SQLStorage) :
         try :
             self.cursor.execute(query)
         except self.database.Error, msg :
+            self.tool.logdebug("Query failed : %s" % repr(msg))
             raise PyKotaStorageError, repr(msg)
-        else :
-            result = self.cursor.fetchall()
-            return result
+
+    def doRawSearch(self, query) :
+        """Executes a raw search query."""
+        self.doQuery(query)
+        result = self.cursor.fetchall()
+        return result
 
     def doSearch(self, query) :
         """Does a search query."""
@@ -100,18 +108,6 @@ class Storage(BaseStorage, SQLStorage) :
                     rowdict[fields[field]] = value
                 rows.append(rowdict)
             return rows
-
-    def doModify(self, query) :
-        """Does a (possibly multiple) modify query."""
-        query = query.strip()
-        if not query.endswith(';') :
-            query += ';'
-        self.querydebug("QUERY : %s" % query)
-        try :
-            self.cursor.execute(query)
-        except self.database.Error, msg :
-            self.tool.logdebug("Query failed : %s" % repr(msg))
-            raise PyKotaStorageError, repr(msg)
 
     def doQuote(self, field) :
         """Quotes a field for use as a string in SQL queries."""

@@ -23,7 +23,7 @@
 
 import time
 
-__version__ = "1.27alpha8_unofficial"
+__version__ = "1.27alpha9_unofficial"
 
 __doc__ = "PyKota : a complete Printing Quota Solution for CUPS."
 
