@@ -1208,7 +1208,7 @@ class Storage(BaseStorage) :
                    "pykotaTitle" : ((title is None) and "None") or unicodeToDatabase(title),
                    "pykotaCopies" : str(copies),
                    "pykotaOptions" : ((options is None) and "None") or unicodeToDatabase(options),
-                   "pykotaHostName" : str(clienthost),
+                   "pykotaHostName" : unicodeToDatabase(clienthost),
                    "pykotaJobSizeBytes" : str(jobsizebytes),
                    "pykotaMD5Sum" : unicodeToDatabase(jobmd5sum),
                    "pykotaPages" : jobpages,            # don't add this attribute if it is not set, so no string conversion
@@ -1308,7 +1308,7 @@ class Storage(BaseStorage) :
         if printer is not None :
             where.append("(pykotaPrinterName=%s)" % unicodeToDatabase(printer.Name))
         if hostname is not None :
-            where.append("(pykotaHostName=%s)" % hostname)
+            where.append("(pykotaHostName=%s)" % unicodeToDatabase(hostname))
         if billingcode is not None :
             where.append("(pykotaBillingCode=%s)" % unicodeToDatabase(billingcode))
         if jobid is not None :
