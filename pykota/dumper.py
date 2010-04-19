@@ -247,7 +247,8 @@ class DumPyKota(PyKotaTool) :
                 for value in entry :
                     try :
                         strvalue = '"%s"' % value.encode(self.charset, \
-                                                         "replace").replace(separator, "\\%s" % separator).replace('"', '\\"')
+                                                         "replace").replace(separator,
+                                                                            "\\%s" % separator).replace('"', '\\"')
                     except AttributeError :
                         if value is None :
                             strvalue = '"None"' # Double quotes around None to prevent spreadsheet from failing
@@ -330,7 +331,7 @@ class DumPyKota(PyKotaTool) :
                     # We use 'str' instead of 'unicode' below to be compatible
                     # with older releases of PyKota.
                     # The XML dump will contain UTF-8 encoded strings,
-                    # not unicode strings anyway.
+                    # not unicode strings anyway.
                     x.attribute(strvalue, \
                                 type=type(value).__name__.replace("unicode", "str"), \
                                 name=header)

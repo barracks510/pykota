@@ -126,14 +126,6 @@ class Storage(BaseStorage, SQLStorage) :
         """Prepares a raw result by including the headers."""
         if result :
             entries = [tuple([f[0] for f in self.cursor.description])]
-            for entry in result :
-                row = []
-                for value in entry :
-                    try :
-                        value = value.encode("UTF-8")
-                    except :
-                        pass
-                    row.append(value)
-                entries.append(tuple(row))
+            entries.extend(result)
             return entries
 
