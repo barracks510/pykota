@@ -74,7 +74,7 @@ class SQLStorage :
     def setJobAttributesFromRecord(self, job, record) :
         """Sets the attributes of a job from a database record."""
         job.ident = record.get("id")
-        job.JobId = record.get("jobid")
+        job.JobId = databaseToUnicode(record.get("jobid"))
         job.PrinterPageCounter = record.get("pagecounter")
         job.JobSize = record.get("jobsize")
         job.JobPrice = record.get("jobprice")
@@ -740,7 +740,7 @@ class SQLStorage :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, jobsize, jobprice, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" \
                                   % (self.doQuote(user.ident),
                                      self.doQuote(printer.ident),
-                                     self.doQuote(jobid),
+                                     self.doQuote(unicodeToDatabase(jobid)),
                                      self.doQuote(pagecounter),
                                      self.doQuote(action),
                                      self.doQuote(jobsize),
@@ -760,7 +760,7 @@ class SQLStorage :
                 self.doModify("INSERT INTO jobhistory (userid, printerid, jobid, pagecounter, action, filename, title, copies, options, hostname, jobsizebytes, md5sum, pages, billingcode, precomputedjobsize, precomputedjobprice) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" \
                                   % (self.doQuote(user.ident),
                                      self.doQuote(printer.ident),
-                                     self.doQuote(jobid),
+                                     self.doQuote(unicodeToDatabase(jobid)),
                                      self.doQuote(pagecounter),
                                      self.doQuote(action),
                                      self.doQuote(unicodeToDatabase(filename)),
@@ -778,7 +778,7 @@ class SQLStorage :
             # here we explicitly want to reset jobsize to NULL if needed
             self.doModify("UPDATE jobhistory SET userid=%s, jobid=%s, pagecounter=%s, action=%s, jobsize=%s, jobprice=%s, filename=%s, title=%s, copies=%s, options=%s, hostname=%s, jobsizebytes=%s, md5sum=%s, pages=%s, billingcode=%s, precomputedjobsize=%s, precomputedjobprice=%s, jobdate=now() WHERE id=%s" \
                               % (self.doQuote(user.ident),
-                                 self.doQuote(jobid),
+                                 self.doQuote(unicodeToDatabase(jobid)),
                                  self.doQuote(pagecounter),
                                  self.doQuote(action),
                                  self.doQuote(jobsize),
@@ -854,7 +854,7 @@ class SQLStorage :
         if billingcode is not None :
             where.append("billingcode=%s" % self.doQuote(unicodeToDatabase(billingcode)))
         if jobid is not None :
-            where.append("jobid=%s" % self.doQuote(jobid)) # TODO : jobid is text, so unicodeToDatabase(jobid) but do all of them as well.
+            where.append("jobid=%s" % self.doQuote(unicodeToDatabase(jobid)))
         if start is not None :
             where.append("jobdate>=%s" % self.doQuote(start))
         if end is not None :
