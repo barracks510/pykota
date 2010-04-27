@@ -379,7 +379,7 @@ class CUPSBackend(PyKotaTool) :
         if confirmationcommand :
             self.logdebug("Launching subprocess [%s] to ask for user confirmation." \
                                      % confirmationcommand)
-            inputfile = os.popen(confirmationcommand, "r")
+            inputfile = os.popen(confirmationcommand.encode(self.charset, "replace"), "r")
             try :
                 for answer in inputfile.xreadlines() :
                     answer = answer.strip().upper()
@@ -401,7 +401,7 @@ class CUPSBackend(PyKotaTool) :
             username = billingcode = action = reason = None
             self.logdebug("Launching subprocess [%s] to overwrite the job ticket." \
                                      % jobticketcommand)
-            inputfile = os.popen(jobticketcommand, "r")
+            inputfile = os.popen(jobticketcommand.encode(self.charset, "replace"), "r")
             try :
                 for line in inputfile.xreadlines() :
                     line = line.strip()
@@ -619,7 +619,7 @@ class CUPSBackend(PyKotaTool) :
         prehook = self.config.getPreHook(self.PrinterName)
         if prehook :
             self.logdebug("Executing pre-hook [%s]..." % prehook)
-            retcode = os.system(prehook)
+            retcode = os.system(prehook.encode(self.charset, "replace"))
             self.logdebug("pre-hook exited with status %s." % retcode)
 
     def launchPostHook(self) :
@@ -627,7 +627,7 @@ class CUPSBackend(PyKotaTool) :
         posthook = self.config.getPostHook(self.PrinterName)
         if posthook :
             self.logdebug("Executing post-hook [%s]..." % posthook)
-            retcode = os.system(posthook)
+            retcode = os.system(posthook.encode(self.charset, "replace"))
             self.logdebug("post-hook exited with status %s." % retcode)
 
     def improveMessage(self, message) :
@@ -671,7 +671,7 @@ class CUPSBackend(PyKotaTool) :
             if os.access(bannerfileorcommand, os.X_OK) or \
                   not os.path.isfile(bannerfileorcommand) :
                 self.logdebug("Launching %s to generate a banner." % bannerfileorcommand)
-                child = popen2.Popen3(bannerfileorcommand, capturestderr=1)
+                child = popen2.Popen3(bannerfileorcommand.encode(self.charset, "replace"), capturestderr=1)
                 self.runOriginalBackend(child.fromchild, isBanner=1)
                 child.tochild.close()
                 child.childerr.close()
@@ -807,7 +807,7 @@ class CUPSBackend(PyKotaTool) :
                     self.printInfo(_("User %s not registered in the PyKota system, applying external policy (%s) for printer %s") % (self.UserName, commandline, self.PrinterName))
                 if not userpquota.Exists :
                     self.printInfo(_("User %s doesn't have quota on printer %s in the PyKota system, applying external policy (%s) for printer %s") % (self.UserName, self.PrinterName, commandline, self.PrinterName))
-                if os.system(commandline) :
+                if os.system(commandline.encode(self.charset, "replace")) :
                     self.printInfo(_("External policy %s for printer %s produced an error. Job rejected. Please check PyKota's configuration files.") % (commandline, self.PrinterName), "error")
                     policy = "EXTERNALERROR"
                     break
@@ -862,7 +862,7 @@ class CUPSBackend(PyKotaTool) :
                     self.Action = newaction
                     if script is not None :
                         self.logdebug(msg + "launching subprocess [%s] to notify user." % script)
-                        os.system(script)
+                        os.system(script.encode(self.charset, "replace"))
         self.logdebug("Retrieval of billing code information done.")
 
     def checkIfDupe(self) :
@@ -893,13 +893,13 @@ class CUPSBackend(PyKotaTool) :
                     # TODO : actual LDAP schema. Maybe this is not very
                     # TODO : important, because usually duplicate jobs are sucessive.
                     msg = _("Job is a dupe")
-                    if denyduplicates == 1 :
+                    if denyduplicates is True :
                         self.printInfo("%s : %s." % (msg, _("Printing is denied by configuration")), "warn")
                         self.Action = "DENY"
                         self.Reason = _("Duplicate print jobs are not allowed on printer %s.") % self.PrinterName
                     else :
                         self.logdebug("Launching subprocess [%s] to see if duplicate jobs should be allowed or not." % denyduplicates)
-                        fanswer = os.popen(denyduplicates, "r")
+                        fanswer = os.popen(denyduplicates.encode(self.charset, "replace"), "r")
                         self.Action = fanswer.read().strip().upper()
                         fanswer.close()
                         if self.Action == "DENY" :

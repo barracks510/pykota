@@ -485,6 +485,7 @@ class PyKotaTool(Tool) :
 
     def externalMailTo(self, cmd, action, user, printer, message) :
         """Warns the user with an external command."""
+        cmd = cmd.encode(self.charset, "replace")
         message = message.encode(self.charset, "replace")
         username = user.Name
         printername = printer.Name
