@@ -192,7 +192,7 @@ class BaseHandler :
                         # We can safely assume this won't change if printer is now 'idle'
                         if (pstatusAsString == 'idle') or \
                             ((pstatusAsString == 'other') and \
-                             (dstatusAsString == 'running')) :
+                             (dstatusAsString in ('running', 'warning'))) :
                             if self.printerInternalPageCounter == previousValue :
                                 # Here the job won't be printed, because probably
                                 # the printer rejected it for some reason.
@@ -223,7 +223,7 @@ class BaseHandler :
             idle_flag = False
             if (not error) and ((pstatusAsString == 'idle') or \
                                     ((pstatusAsString == 'other') and \
-                                         (dstatusAsString == 'running'))) :
+                                         (dstatusAsString in ('running', 'warning')))) :
                 idle_flag = True # Standby / Powersave is considered idle
                 increment = 1 # Reset initial stabilization delay
             if idle_flag :
