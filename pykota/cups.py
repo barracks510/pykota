@@ -85,6 +85,14 @@ class JobTicket :
         if self.OriginatingUserName.find("@") != -1 :
             self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
 
+        # The options weren't retrieved from the job ticket but from the
+        # command line instead, so they already are in unicode form.
+        # That's why we convert them back to the ticket's charset.
+        try :
+            self.Options = self.Options.encode(self.Charset, "replace")
+        except AttributeError :
+            pass
+
         for attrib in ("OriginatingUserName",
                        "OriginatingHostName",
                        "Title",
