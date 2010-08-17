@@ -156,7 +156,6 @@ class BaseHandler :
     def waitPrinting(self) :
         """Waits for printer status being 'printing'."""
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
-        increment = 1
         noprintingmaxdelay = constants.get(self.parent.filter, "NoPrintingMaxDelay")
         if not noprintingmaxdelay :
             self.parent.filter.logdebug("Will wait indefinitely until printer %s is in 'printing' state." % self.parent.filter.PrinterName)
@@ -164,9 +163,10 @@ class BaseHandler :
             self.parent.filter.logdebug("Will wait until printer %s is in 'printing' state or %i seconds have elapsed." % (self.parent.filter.PrinterName, noprintingmaxdelay))
         previousValue = self.parent.getLastPageCounter()
         firstvalue = None
+        increment = 1
+        waitdelay = statusstabilizationdelay * increment
         while True :
             self.retrieveSNMPValues()
-            waitdelay = statusstabilizationdelay * increment
             error = self.checkIfError(self.printerDetectedErrorState)
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
@@ -205,18 +205,22 @@ class BaseHandler :
                     if error or (dstatusAsString == "down") :
                         if waitdelay < constants.FIVEMINUTES :
                             increment *= 2
-            self.parent.filter.logdebug("Waiting %s seconds for printer %s to be printing..." % (waitdelay, self.parent.filter.PrinterName))
+                    else :
+                        increment = 1
+            self.parent.filter.logdebug("Waiting %s seconds for printer %s to be printing..." % (waitdelay,
+                                                                                                 self.parent.filter.PrinterName))
             time.sleep(waitdelay)
+            waitdelay = statusstabilizationdelay * increment
 
     def waitIdle(self) :
         """Waits for printer status being 'idle'."""
         statusstabilizationdelay = constants.get(self.parent.filter, "StatusStabilizationDelay")
         statusstabilizationloops = constants.get(self.parent.filter, "StatusStabilizationLoops")
         increment = 1
+        waitdelay = statusstabilizationdelay * increment
         idle_num = 0
         while True :
             self.retrieveSNMPValues()
-            waitdelay = statusstabilizationdelay * increment
             error = self.checkIfError(self.printerDetectedErrorState)
             pstatusAsString = printerStatusValues.get(self.printerStatus)
             dstatusAsString = deviceStatusValues.get(self.deviceStatus)
@@ -241,9 +245,12 @@ class BaseHandler :
             if error or (dstatusAsString == "down") :
                 if waitdelay < constants.FIVEMINUTES :
                     increment *= 2
+            else :
+                increment = 1
             self.parent.filter.logdebug("Waiting %s seconds for printer %s's idle status to stabilize..." % (waitdelay,
                                                                                                              self.parent.filter.PrinterName))
             time.sleep(waitdelay)
+            waitdelay = statusstabilizationdelay * increment
 
     def retrieveInternalPageCounter(self) :
         """Returns the page counter from the printer via internal SNMP handling."""
