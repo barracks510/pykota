@@ -353,6 +353,11 @@ class StorageUserPQuota(StorageObject) :
                 upq.LifePageCounter = int(upq.LifePageCounter or 0) + jobsize
         return jobprice
 
+    def setMaxJobSize(self, maxjobsize) :
+        """Sets the maximal job size for this print quota entry."""
+        self.MaxJobSize = maxjobsize
+        self.isDirty = True
+
     def delete(self) :
         """Deletes an user print quota entry from the database."""
         self.parent.deleteUserPQuota(self)
@@ -379,7 +384,6 @@ class StorageGroupPQuota(StorageObject) :
         self.SoftLimit = None
         self.HardLimit = None
         self.DateLimit = None
-        self.MaxJobSize = None
 
     def __getattr__(self, name) :
         """Delays data retrieval until it's really needed."""

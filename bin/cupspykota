@@ -556,6 +556,7 @@ class CUPSBackend(PyKotaTool) :
         setenv("PYKOTABALANCE", str(self.User.AccountBalance or 0.0), self.charset)
         setenv("PYKOTALIFETIMEPAID", str(self.User.LifeTimePaid or 0.0), self.charset)
         setenv("PYKOTAUSERDESCRIPTION", self.User.Description or "", self.charset)
+        setenv("PYKOTAMAXJOBSIZE", ((self.UserPQuota.MaxJobSize is None) and _("Unlimited")) or str(self.UserPQuota.MaxJobSize), self.charset)
 
         setenv("PYKOTAPAGECOUNTER", str(self.UserPQuota.PageCounter or 0), self.charset)
         setenv("PYKOTALIFEPAGECOUNTER", str(self.UserPQuota.LifePageCounter or 0), self.charset)
@@ -1026,6 +1027,15 @@ class CUPSBackend(PyKotaTool) :
             if self.Printer.MaxJobSize and (self.softwareJobSize > self.Printer.MaxJobSize) :
                 # This printer was set to refuse jobs this large.
                 self.printInfo(_("Precomputed job size (%s pages) too large for printer %s.") % (self.softwareJobSize, self.PrinterName), "warn")
+                self.Action = "DENY"
+                # here we don't put the precomputed job size in the message
+                # because in case of error the user could complain :-)
+                self.Reason = _("You are not allowed to print so many pages on printer %s at this time.") % self.PrinterName
+
+        if self.Action not in ("DENY", "CANCEL") :
+            if (self.UserPQuota.MaxJobSize is not None) and (self.softwareJobSize > self.UserPQuota.MaxJobSize) :
+                # This user print quota entry was set to refuse jobs this large.
+                self.printInfo(_("Precomputed job size (%s pages) too large for user %s on printer %s.") % (self.softwareJobSize, self.UserName, self.PrinterName), "warn")
                 self.Action = "DENY"
                 # here we don't put the precomputed job size in the message
                 # because in case of error the user could complain :-)

@@ -111,7 +111,6 @@ CREATE TABLE grouppquota(id INTEGER PRIMARY KEY NOT NULL,
                          printerid INT4 REFERENCES printers(id),
                          softlimit INT4,
                          hardlimit INT4,
-                         maxjobsize INT4,
                          datelimit TEXT);
 CREATE INDEX grouppquota_g_id_ix ON grouppquota (groupid);
 CREATE INDEX grouppquota_p_id_ix ON grouppquota (printerid);

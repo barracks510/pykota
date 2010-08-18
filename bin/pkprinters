@@ -49,7 +49,10 @@ class PKPrinters(PyKotaTool) :
         if passthrough :
             printer.setPassThrough(True)
         if maxjobsize is not None :
-            printer.setMaxJobSize(maxjobsize)
+            if maxjobsize == "unlimited" :
+                printer.setMaxJobSize(None)
+            else :
+                printer.setMaxJobSize(maxjobsize)
 
     def managePrintersGroups(self, pgroups, printer, remove) :
         """Manage printer group membership."""
@@ -150,7 +153,7 @@ class PKPrinters(PyKotaTool) :
                 self.display("    %s\n" % \
                                      (_("Passthrough mode : %s") % ((printer.PassThrough and _("ON")) or _("OFF"))))
                 self.display("    %s\n" % \
-                                     (_("Maximum job size : %s") % ((printer.MaxJobSize and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited"))))
+                                     (_("Maximum job size : %s") % (((printer.MaxJobSize is not None) and (_("%s pages") % printer.MaxJobSize)) or _("Unlimited"))))
                 self.display("    %s\n" % (_("Routed through PyKota : %s") % ((self.isPrinterCaptured(printer.Name) and _("YES")) or _("NO"))))
                 if parents :
                     self.display("    %s %s\n" % (_("in"), parents))
@@ -187,12 +190,15 @@ class PKPrinters(PyKotaTool) :
                 charges = perpage = perjob = None
 
             if options.maxjobsize :
-                try :
-                    maxjobsize = int(options.maxjobsize)
-                    if maxjobsize < 0 :
-                        raise ValueError
-                except ValueError :
-                    raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options.maxjobsize
+                if options.maxjobsize.lower() == "unlimited" :
+                    maxjobsize = "unlimited"
+                else :
+                    try :
+                        maxjobsize = int(options.maxjobsize)
+                        if maxjobsize < 0 :
+                            raise ValueError
+                    except ValueError :
+                        raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options.maxjobsize
             else :
                 maxjobsize = None
 
@@ -305,7 +311,7 @@ if __name__ == "__main__" :
                             help=_("Display detailed informations about the specified printers."))
     parser.add_option("-m", "--maxjobsize",
                             dest="maxjobsize",
-                            help=_("Set the maximum job size in pages allowed on the specified printers."))
+                            help=_("Set the maximum job size in pages allowed on the specified printers. Accepted values are '0' to forbid printing, 'unlimited' to allow unrestricted printing, or any positive integer value."))
     parser.add_option("-n", "--nopassthrough",
                             action="store_true",
                             dest="nopassthrough",

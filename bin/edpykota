@@ -35,7 +35,7 @@ from pykota.progressbar import Percent
 
 class EdPyKota(PyKotaTool) :
     """A class for edpykota."""
-    def modifyPQEntry(self, pqkey, pqentry, noquota, softlimit, hardlimit, increase, reset, hardreset, suffix, used) :
+    def modifyPQEntry(self, pqkey, pqentry, noquota, softlimit, hardlimit, increase, reset, hardreset, suffix, used, maxjobsize) :
         """Modifies a print quota entry."""
         if noquota or ((softlimit is not None) and (hardlimit is not None)) :
             pqentry.setLimits(softlimit, hardlimit)
@@ -53,6 +53,11 @@ class EdPyKota(PyKotaTool) :
         if suffix == "User" :
             if used :
                 pqentry.setUsage(used)
+            if maxjobsize is not None :
+                if maxjobsize == "unlimited" :
+                    pqentry.setMaxJobSize(None)
+                else :
+                    pqentry.setMaxJobSize(maxjobsize)
 
     def main(self, names, options) :
         """Edit user or group quotas."""
@@ -76,8 +81,10 @@ class EdPyKota(PyKotaTool) :
                                       or options.hardreset \
                                       or options.noquota \
                                       or options.increase \
+                                      or options.maxjobsize \
                                       or options.skipexisting))) \
              or (options.groups and (options.used \
+                                  or options.maxjobsize \
                                   or options.increase \
                                   or options.reset \
                                   or options.hardreset)) :
@@ -105,7 +112,8 @@ class EdPyKota(PyKotaTool) :
                         self.display("    %s\n" % (_("Soft limit : %s") % pqentry.SoftLimit))
                         self.display("    %s\n" % (_("Hard limit : %s") % pqentry.HardLimit))
                         self.display("    %s\n" % (_("Date limit : %s") % pqentry.DateLimit))
-                        self.display("    %s (Not supported yet)\n" % (_("Maximum job size : %s") % ((pqentry.MaxJobSize and (_("%s pages") % pqentry.MaxJobSize)) or _("Unlimited"))))
+                        if suffix == "User" :
+                            self.display("    %s\n" % (_("Maximum job size : %s") % (((pqentry.MaxJobSize is not None) and (_("%s pages") % pqentry.MaxJobSize)) or _("Unlimited"))))
                         if hasattr(pqentry, "WarnCount") :
                             self.display("    %s\n" % (_("Warning banners printed : %s") % pqentry.WarnCount))
                         self.display("\n")
@@ -158,6 +166,19 @@ class EdPyKota(PyKotaTool) :
                     if softlimit is not None :
                         self.printInfo(_("Undefined soft limit set to hard limit (%s).") % str(softlimit))
 
+            if options.maxjobsize :
+                if options.maxjobsize.lower() == "unlimited" :
+                    maxjobsize = "unlimited"
+                else :
+                    try :
+                        maxjobsize = int(options.maxjobsize)
+                        if maxjobsize < 0 :
+                            raise ValueError
+                    except ValueError :
+                        raise PyKotaCommandLineError, _("Invalid maximum job size value %s") % options.maxjobsize
+            else :
+                maxjobsize = None
+
             self.storage.beginTransaction()
             try :
                 if isadd :
@@ -182,7 +203,8 @@ class EdPyKota(PyKotaTool) :
                                                options.reset,
                                                options.hardreset,
                                                suffix,
-                                               used)
+                                               used,
+                                               maxjobsize)
                             oldpqentry = getattr(self.storage, "add%sPQuota" % suffix)(pqentry)
                             if oldpqentry is not None :
                                 if options.skipexisting :
@@ -200,7 +222,8 @@ class EdPyKota(PyKotaTool) :
                                                        options.reset,
                                                        options.hardreset,
                                                        suffix,
-                                                       used)
+                                                       used,
+                                                       maxjobsize)
                                     oldpqentry.save()
                             percent.oneMore()
                 else :
@@ -219,7 +242,8 @@ class EdPyKota(PyKotaTool) :
                                                    options.reset,
                                                    options.hardreset,
                                                    suffix,
-                                                   used)
+                                                   used,
+                                                   maxjobsize)
                                 pqentry.save()
                             percent.oneMore()
             except :
@@ -262,6 +286,9 @@ if __name__ == "__main__" :
                             const="list",
                             dest="action",
                             help=_("Display detailed informations about the specified users or groups print quota entries."))
+    parser.add_option("-m", "--maxjobsize",
+                            dest="maxjobsize",
+                            help=_("Set the maximum job size in pages the specified users are allowed to print to the specified printers in a single job. Accepted values are '0' to forbid printing, 'unlimited' to allow unrestricted printing, or any positive integer value. This option is not supported for users groups."))
     parser.add_option("-n", "--noquota",
                             dest="noquota",
                             action="store_true",

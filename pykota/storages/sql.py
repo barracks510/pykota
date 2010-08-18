@@ -61,7 +61,7 @@ class SQLStorage :
         printer.ident = record.get("id")
         printer.PricePerJob = record.get("priceperjob") or 0.0
         printer.PricePerPage = record.get("priceperpage") or 0.0
-        printer.MaxJobSize = record.get("maxjobsize") or 0
+        printer.MaxJobSize = record.get("maxjobsize")
         printer.PassThrough = record.get("passthrough") or 0
         if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
             printer.PassThrough = True
@@ -118,6 +118,7 @@ class SQLStorage :
         userpquota.SoftLimit = record.get("softlimit")
         userpquota.HardLimit = record.get("hardlimit")
         userpquota.DateLimit = record.get("datelimit")
+        userpquota.MaxJobSize = record.get("maxjobsize")
         userpquota.WarnCount = record.get("warncount") or 0
         userpquota.Exists = True
         return userpquota
@@ -242,7 +243,7 @@ class SQLStorage :
         if thefilter :
             thefilter = "AND %s" % thefilter
         orderby = self.createOrderBy(["+grouppquota.id"], ordering)
-        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %(thefilter)s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,grouppquota.maxjobsize,groups.groupname,printers.printername ORDER BY %(orderby)s" % locals())
+        result = self.doRawSearch("SELECT groups.groupname,printers.printername,grouppquota.*,coalesce(sum(pagecounter), 0) AS pagecounter,coalesce(sum(lifepagecounter), 0) AS lifepagecounter FROM groups,printers,grouppquota,userpquota WHERE groups.id=grouppquota.groupid AND printers.id=grouppquota.printerid AND userpquota.printerid=grouppquota.printerid AND userpquota.userid IN (SELECT userid FROM groupsmembers WHERE groupsmembers.groupid=grouppquota.groupid) %(thefilter)s GROUP BY grouppquota.id,grouppquota.groupid,grouppquota.printerid,grouppquota.softlimit,grouppquota.hardlimit,grouppquota.datelimit,groups.groupname,printers.printername ORDER BY %(orderby)s" % locals())
         return self.prepareRawResult(result)
 
     def extractUmembers(self, extractonly={}, ordering=[]) :
@@ -559,7 +560,7 @@ class SQLStorage :
         self.doModify("INSERT INTO printers (printername, passthrough, maxjobsize, description, priceperpage, priceperjob) VALUES (%s, %s, %s, %s, %s, %s)" \
                           % (self.doQuote(unicodeToDatabase(printer.Name)), \
                              self.doQuote((printer.PassThrough and "t") or "f"), \
-                             self.doQuote(printer.MaxJobSize or 0), \
+                             self.doQuote(printer.MaxJobSize), \
                              self.doQuote(unicodeToDatabase(printer.Description)), \
                              self.doQuote(printer.PricePerPage or 0.0), \
                              self.doQuote(printer.PricePerJob or 0.0)))
@@ -649,13 +650,12 @@ class SQLStorage :
         oldentry = self.getGroupPQuota(gpq.Group, gpq.Printer)
         if oldentry.Exists :
             return oldentry
-        self.doModify("INSERT INTO grouppquota (groupid, printerid, softlimit, hardlimit, datelimit, maxjobsize) VALUES (%s, %s, %s, %s, %s, %s)" \
+        self.doModify("INSERT INTO grouppquota (groupid, printerid, softlimit, hardlimit, datelimit) VALUES (%s, %s, %s, %s, %s)" \
                           % (self.doQuote(gpq.Group.ident), \
                              self.doQuote(gpq.Printer.ident), \
                              self.doQuote(gpq.SoftLimit), \
                              self.doQuote(gpq.HardLimit), \
-                             self.doQuote(gpq.DateLimit), \
-                             self.doQuote(gpq.MaxJobSize)))
+                             self.doQuote(gpq.DateLimit)))
         gpq.isDirty = False
         return None # the entry created doesn't need further modification
 
@@ -663,7 +663,7 @@ class SQLStorage :
         """Saves the printer to the database in a single operation."""
         self.doModify("UPDATE printers SET passthrough=%s, maxjobsize=%s, description=%s, priceperpage=%s, priceperjob=%s WHERE id=%s" \
                               % (self.doQuote((printer.PassThrough and "t") or "f"), \
-                                 self.doQuote(printer.MaxJobSize or 0), \
+                                 self.doQuote(printer.MaxJobSize), \
                                  self.doQuote(unicodeToDatabase(printer.Description)), \
                                  self.doQuote(printer.PricePerPage or 0.0), \
                                  self.doQuote(printer.PricePerJob or 0.0), \

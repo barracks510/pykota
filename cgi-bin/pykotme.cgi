@@ -181,7 +181,8 @@ class PyKotMeGUI(PyKotaTool) :
                             for printer in printers :
                                 upquota = self.storage.getUserPQuota(user, printer)
                                 if upquota.Exists :
-                                    if printer.MaxJobSize and (jobsize > printer.MaxJobSize) :
+                                    if (printer.MaxJobSize and (jobsize > printer.MaxJobSize)) \
+                                            or (upquota.MaxJobSize and (jobsize > upquota.MaxJobSize)) :
                                         msg = _("You are not allowed to print so many pages on printer %s at this time.") % printer.Name
                                     else :
                                         cost = upquota.computeJobPrice(jobsize)

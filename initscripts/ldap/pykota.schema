@@ -4,7 +4,7 @@
 #
 # LDAP Schema for Pykota Quota System
 #
-# (c) 2003-2009 Jerome Alet <alet@librelogiciel.com>
+# (c) 2003-2010 Jerome Alet <alet@librelogiciel.com>
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -292,6 +292,9 @@ objectclass ( 1.3.6.1.4.1.16868.1.2.4 NAME 'pykotaUserPQuota' SUP top AUXILIARY
         MAY  ( pykotaMaxJobSize $ pykotaPageCounter $ pykotaLifePageCounter $ pykotaSoftLimit $ pykotaHardLimit $ pykotaDateLimit $ pykotaWarnCount ) )
 
 # pykotaGroupPQuota
+# NB : we still allow pykotaMaxJobSize here but
+# only to not break existing LDAP directories.
+# This attribute is not supported for users groups.
 objectclass ( 1.3.6.1.4.1.16868.1.2.5 NAME 'pykotaGroupPQuota' SUP top AUXILIARY
         DESC 'PyKota Group Quota on a Printer'
         MUST ( cn $ pykotaGroupName $ pykotaPrinterName )

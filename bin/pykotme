@@ -91,7 +91,8 @@ class PyKotMe(PyKotaTool) :
                     sizeprinted = True
                 userpquota = self.storage.getUserPQuota(user, printer)
                 if userpquota.Exists :
-                    if printer.MaxJobSize and (totalsize > printer.MaxJobSize) :
+                    if (printer.MaxJobSize and (totalsize > printer.MaxJobSize)) \
+                            or (userpquota.MaxJobSize and (totalsize > userpquota.MaxJobSize)) :
                         self.display("%s\n" % (_("User %(username)s is not allowed to print so many pages on printer %(printername)s at this time.") % locals()))
                     else :
                         cost = userpquota.computeJobPrice(totalsize, inkusage)

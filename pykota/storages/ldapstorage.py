@@ -446,7 +446,12 @@ class Storage(BaseStorage) :
             printer.Name = databaseToUnicode(fields.get("pykotaPrinterName", [printername])[0])
             printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0])
             printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0])
-            printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
+            printer.MaxJobSize = fields.get("pykotaMaxJobSize")
+            if printer.MaxJobSize is not None :
+                if printer.MaxJobSize[0].upper() == "NONE" :
+                    printer.MaxJobSize = None
+                else :
+                    printer.MaxJobSize = int(printer.MaxJobSize[0])
             printer.PassThrough = fields.get("pykotaPassThrough", [None])[0]
             if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
                 printer.PassThrough = 1
@@ -512,7 +517,7 @@ class Storage(BaseStorage) :
                 base = self.info["groupquotabase"]
             result = self.doSearch("(&(objectClass=pykotaGroupPQuota)(pykotaGroupName=%s)(pykotaPrinterName=%s))" % \
                                       (unicodeToDatabase(group.Name), unicodeToDatabase(printer.Name)), \
-                                      ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit", "pykotaMaxJobSize"], \
+                                      ["pykotaSoftLimit", "pykotaHardLimit", "pykotaDateLimit"], \
                                       base=base)
             if result :
                 fields = result[0][1]
@@ -535,12 +540,6 @@ class Storage(BaseStorage) :
                         grouppquota.DateLimit = None
                     else :
                         grouppquota.DateLimit = grouppquota.DateLimit[0]
-                grouppquota.MaxJobSize = fields.get("pykotaMaxJobSize")
-                if grouppquota.MaxJobSize is not None :
-                    if grouppquota.MaxJobSize[0].upper() == "NONE" :
-                        grouppquota.MaxJobSize = None
-                    else :
-                        grouppquota.MaxJobSize = int(grouppquota.MaxJobSize[0])
                 grouppquota.PageCounter = 0
                 grouppquota.LifePageCounter = 0
                 usernamesfilter = "".join(["(pykotaUserName=%s)" % unicodeToDatabase(member.Name) for member in self.getGroupMembers(group)])
@@ -711,7 +710,12 @@ class Storage(BaseStorage) :
                     printer.ident = printerid
                     printer.PricePerJob = float(fields.get("pykotaPricePerJob", [0.0])[0] or 0.0)
                     printer.PricePerPage = float(fields.get("pykotaPricePerPage", [0.0])[0] or 0.0)
-                    printer.MaxJobSize = int(fields.get("pykotaMaxJobSize", [0])[0])
+                    printer.MaxJobSize = fields.get("pykotaMaxJobSize")
+                    if printer.MaxJobSize is not None :
+                        if printer.MaxJobSize[0].upper() == "NONE" :
+                            printer.MaxJobSize = None
+                        else :
+                            printer.MaxJobSize = int(printer.MaxJobSize[0])
                     printer.PassThrough = fields.get("pykotaPassThrough", [None])[0]
                     if printer.PassThrough in (1, "1", "t", "true", "TRUE", "True") :
                         printer.PassThrough = 1
@@ -891,7 +895,7 @@ class Storage(BaseStorage) :
                    "cn" : printername,
                    "pykotaPrinterName" : printername,
                    "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
-                   "pykotaMaxJobSize" : str(printer.MaxJobSize or 0),
+                   "pykotaMaxJobSize" : str(printer.MaxJobSize),
                    "description" : unicodeToDatabase(printer.Description or ""),
                    "pykotaPricePerPage" : str(printer.PricePerPage or 0.0),
                    "pykotaPricePerJob" : str(printer.PricePerJob or 0.0),
@@ -1069,7 +1073,7 @@ class Storage(BaseStorage) :
                    "pykotaPageCounter" : str(upq.PageCounter or 0),
                    "pykotaLifePageCounter" : str(upq.LifePageCounter or 0),
                    "pykotaWarnCount" : str(upq.WarnCount or 0),
-                   "pykotaMaxJobSize" : str(upq.MaxJobSize or 0),
+                   "pykotaMaxJobSize" : str(upq.MaxJobSize),
                  }
         if self.info["userquotabase"].lower() == "user" :
             dn = "cn=%s,%s" % (uuid, upq.User.ident)
@@ -1105,7 +1109,7 @@ class Storage(BaseStorage) :
         """Saves the printer to the database in a single operation."""
         fields = {
                    "pykotaPassThrough" : (printer.PassThrough and "t") or "f",
-                   "pykotaMaxJobSize" : str(printer.MaxJobSize or 0),
+                   "pykotaMaxJobSize" : str(printer.MaxJobSize),
                    "description" : unicodeToDatabase(printer.Description or ""),
                    "pykotaPricePerPage" : str(printer.PricePerPage or 0.0),
                    "pykotaPricePerJob" : str(printer.PricePerJob or 0.0),
@@ -1250,7 +1254,7 @@ class Storage(BaseStorage) :
                    "pykotaWarnCount" : str(userpquota.WarnCount or 0),
                    "pykotaPageCounter" : str(userpquota.PageCounter or 0),
                    "pykotaLifePageCounter" : str(userpquota.LifePageCounter or 0),
-                   "pykotaMaxJobSize" : str(userpquota.MaxJobSize or 0),
+                   "pykotaMaxJobSize" : str(userpquota.MaxJobSize),
                  }
         self.doModify(userpquota.ident, fields)
 
@@ -1274,7 +1278,6 @@ class Storage(BaseStorage) :
                    "pykotaSoftLimit" : str(grouppquota.SoftLimit),
                    "pykotaHardLimit" : str(grouppquota.HardLimit),
                    "pykotaDateLimit" : str(grouppquota.DateLimit),
-                   "pykotaMaxJobSize" : str(grouppquota.MaxJobSize or 0),
                  }
         self.doModify(grouppquota.ident, fields)
 
@@ -1679,12 +1682,12 @@ class Storage(BaseStorage) :
         pname = extractonly.get("printername")
         entries = [p for p in [self.getPrinter(name) for name in self.getAllPrintersNames(pname)] if p.Exists]
         if entries :
-            fields = ("username", "printername", "dn", "userdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit")
+            fields = ("username", "printername", "dn", "userdn", "printerdn", "lifepagecounter", "pagecounter", "softlimit", "hardlimit", "datelimit", "maxjobsize")
             result = []
             uname = extractonly.get("username")
             for entry in entries :
                 for (user, userpquota) in self.getPrinterUsersAndQuotas(entry, names=[uname or "*"]) :
-                    result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit))
+                    result.append((user.Name, entry.Name, userpquota.ident, user.ident, entry.ident, userpquota.LifePageCounter, userpquota.PageCounter, userpquota.SoftLimit, userpquota.HardLimit, userpquota.DateLimit, userpquota.MaxJobSize))
             return [fields] + self.sortRecords(fields, result, ["+userdn"], ordering)
 
     def extractGpquotas(self, extractonly={}, ordering=[]) :
