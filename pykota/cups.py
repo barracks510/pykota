@@ -82,8 +82,11 @@ class JobTicket :
         #
         # Only does this if there's a "@" in the username, otherwise we could break non-kerberized
         # usernames containing a "/", like Samba/Windows usernames in some cases.
-        if self.OriginatingUserName.find("@") != -1 :
-            self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
+        try :
+            if self.OriginatingUserName.find("@") != -1 :
+                self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
+        except AttributeError : # None
+            pass
 
         # The options weren't retrieved from the job ticket but from the
         # command line instead, so they already are in unicode form.
