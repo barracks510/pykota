@@ -241,25 +241,25 @@ class DumPyKota(PyKotaTool) :
 
     def dumpWithSeparator(self, separator, allentries) :
         """Dumps datas with a separator."""
-        for entries in allentries :
-            for entry in entries :
-                line = []
-                for value in entry :
-                    try :
-                        strvalue = '"%s"' % value.encode(self.charset, \
-                                                         "replace").replace(separator,
-                                                                            "\\%s" % separator).replace('"', '\\"')
-                    except AttributeError :
-                        if value is None :
-                            strvalue = '"None"' # Double quotes around None to prevent spreadsheet from failing
-                        else :
-                            strvalue = str(value)
-                    line.append(strvalue)
-                try :
+        try :
+            for entries in allentries :
+                for entry in entries :
+                    line = []
+                    for value in entry :
+                        try :
+                            strvalue = '"%s"' % value.encode(self.charset, \
+                                                             "replace").replace(separator,
+                                                                                "\\%s" % separator).replace('"', '\\"')
+                        except AttributeError :
+                            if value is None :
+                                strvalue = '"None"' # Double quotes around None to prevent spreadsheet from failing
+                            else :
+                                strvalue = str(value)
+                        line.append(strvalue)
+
                     self.outfile.write("%s\n" % separator.join(line))
-                except IOError, msg :
-                    self.printInfo("%s : %s" % (_("PyKota data dumper failed : I/O error"), msg), "error")
-                    return -1
+        except IOError, msg :
+            pass # We used to return an error, not really needed
         return 0
 
     def dumpCsv(self, allentries, dummy) :
