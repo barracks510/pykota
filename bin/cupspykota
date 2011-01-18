@@ -531,7 +531,7 @@ class CUPSBackend(PyKotaTool) :
         setenv("PYKOTALANG", self.language, self.charset)
         setenv("PYKOTAPRINTERNAME", self.PrinterName, self.charset)
         setenv("PYKOTADIRECTORY", self.Directory, self.charset)
-        setenv("PYKOTADATAFILE", self.DataFile, self.charset)
+        setenv("PYKOTADATAFILE", self.DataFile.decode(sys.getfilesystemencoding()), self.charset)
         setenv("PYKOTAJOBSIZEBYTES", str(self.JobSizeBytes), self.charset)
         setenv("PYKOTAMD5SUM", self.JobMD5Sum, self.charset)
         setenv("PYKOTAJOBORIGINATINGHOSTNAME", self.Ticket.OriginatingHostName or "", self.charset)
