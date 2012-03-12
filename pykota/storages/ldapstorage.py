@@ -400,7 +400,12 @@ class Storage(BaseStorage) :
                         (date, amount, description) = payment.split(" # ")
                     except ValueError :
                         # Payment with no description (old Payment)
-                        (date, amount) = payment.split(" # ")
+                        try :
+                            (date, amount) = payment.split(" # ")
+                        except ValueError :
+                            # Payment with no date ? Bug or something else ?
+                            amount = payment.split(" # ")[0]
+                            date = ""
                         description = ""
                     else :
                         description = databaseToUnicode(base64.decodestring(description))
