@@ -86,7 +86,7 @@ class JobTicket :
             if self.OriginatingUserName.find("@") != -1 :
                 self.OriginatingUserName = self.OriginatingUserName.split("@", 1)[0].split("/")[0]
         except AttributeError : # None
-            pass
+            self.OriginatingUserName = ""
 
         # The options weren't retrieved from the job ticket but from the
         # command line instead, so they already are in unicode form.
