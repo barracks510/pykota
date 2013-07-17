@@ -192,7 +192,6 @@ class PyKotaSetup :
                  "python-reportlab",
                  "python-reportlab-accel",
                  "python-pygresql",
-                 "python-psyco",
                  "python-osd",
                  "python-egenix-mxdatetime",
                  "python-imaging",

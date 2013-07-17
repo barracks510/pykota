@@ -830,17 +830,6 @@ jerome@nordine:~/pykota-1.26_official$ ./bin/pksetup debian
           </listitem>
           <listitem>
             <para>
-              The Python acccelerator <application>Psyco</application>. It must match your default Python version.
-              You can download it from <ulink url="http://psyco.sourceforge.net">http://psyco.sourceforge.net</ulink>.
-              You only need this if you run on the <literal>x86</literal> architecture because
-              <application>Psyco</application> doesn't yet exist on
-              other architectures.
-              Feel free to install this or not. It might speedup the
-              parsing of some print jobs by <appname>PyKota</appname>.
-            </para>
-          </listitem>
-          <listitem>
-            <para>
               The <application>pysnmp</application> Python module version 4.x, or higher.
               You can download it from <ulink url="http://pysnmp.sourceforge.net">http://pysnmp.sourceforge.net</ulink>.
             </para>

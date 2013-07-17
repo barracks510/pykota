@@ -182,22 +182,6 @@ Prerequisite :
       version 1.2 or greater. Version 1.0 does not work correctly with 4.1.
 
 
-  On Intel i386 architecture, and for performance reasons, it is
-  suggested that you install the Python accelerator Psyco, available from :
-
-      http://psyco.sourceforge.net
-
-  Under Debian :
-
-      $ apt-get install python-psyco
-
-  Other architectures may be supported as well in the future, check
-  this on Psyco's website.
-
-  Installing Psyco is not mandatory, but may really speed the parsing
-  of some print jobs. Don't install it if you don't want or don't have a
-  supported architecture.
-
   You need to have the following tools installed on the database
   server :
 

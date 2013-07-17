@@ -212,21 +212,6 @@
         You can download it with 'wget http://www.pykota.com/software/pkpgcounter/download/tarballs/pkpgcounter-2.17.tar.gz'
       </description>
     </entry>
-    <entry name="python-psyco" display="true">
-      <states>
-        <state name="Pass">python-psyco is installed</state>
-        <state name="Fail">python-psyco is not installed</state>
-        <state name="Not-Applicable">python-psyco is not supported on this platform</state>
-      </states>
-      <description>
-        python-psyco is an accelerator module for the Python language which can make the parsing
-        of Page Description Languages by pkpgcounter faster.
-        It is only supported on the x86 platform though, so if you use something else you
-        won't be able to install it.
-        It recommended but not necessary that you install it for PyKota to work.
-        You can install it with 'apt-get install python-psyco'
-      </description>
-    </entry>
   </category>
   <category name="Print Server Installation procedure">
     <description>PyKota needs to be installed on the CUPS server.

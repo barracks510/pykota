@@ -9,8 +9,8 @@ XS-Vcs-Browser: http://trac.pykota.com/browser/pykota/
 
 Package: pykota
 Architecture: all
-Depends: python, python-egenix-mxdatetime, cupsys,  python-pygresql | python-ldap | python-pysqlite2 | python-mysqldb, jaxml | python-jaxml, python-osd, python-reportlab, python-pysnmp4, python-imaging
-Recommends: qa-assistant, snmp, netatalk, python-psyco, npadmin, python-pam
+Depends: python, python-egenix-mxdatetime, cups,  python-pygresql | python-ldap | python-pysqlite2 | python-mysqldb, jaxml | python-jaxml, python-osd, python-reportlab, python-pysnmp4, python-imaging
+Recommends: qa-assistant, snmp, netatalk, npadmin, python-pam
 Description: Print Quota/Accounting system for CUPS
  PyKota is a full featured, internationalized, centralized and extensible
  Print Quota system for CUPS. It supports both PostgreSQL, MySQL, SQLite and
